@@ -58,6 +58,26 @@ class GitCommit : public ObjectWrap {
     static void ShaWork(uv_work_t* req);
     static void ShaAfterWork(uv_work_t* req);
 
+    static Handle<Value> Message(const Arguments& args);
+    static void MessageWork(uv_work_t* req);
+    static void MessageAfterWork(uv_work_t* req);
+
+    static Handle<Value> Time(const Arguments& args);
+    static void TimeWork(uv_work_t* req);
+    static void TimeAfterWork(uv_work_t* req);
+
+    static Handle<Value> Offset(const Arguments& args);
+    static void OffsetWork(uv_work_t* req);
+    static void OffsetAfterWork(uv_work_t* req);
+
+    static Handle<Value> Author(const Arguments& args);
+    static void AuthorWork(uv_work_t* req);
+    static void AuthorAfterWork(uv_work_t* req);
+
+    static Handle<Value> Committer(const Arguments& args);
+    static void CommitterWork(uv_work_t* req);
+    static void CommitterAfterWork(uv_work_t* req);
+
     static Handle<Value> Tree(const Arguments& args);
     static void TreeWork(uv_work_t* req);
     static void TreeAfterWork(uv_work_t* req);
@@ -91,6 +111,43 @@ class GitCommit : public ObjectWrap {
       Persistent<Function> callback;
     };
 
+    struct MessageBaton {
+      uv_work_t request;
+
+      git_commit* rawCommit;
+      std::string message;
+
+      Persistent<Function> callback;
+    };
+
+    struct TimeBaton {
+      uv_work_t request;
+
+      git_commit* rawCommit;
+      git_time_t time;
+
+      Persistent<Function> callback;
+    };
+
+    struct SignatureBaton {
+      uv_work_t request;
+
+      git_commit* rawCommit;
+      git_signature* signature;
+
+      Persistent<Function> callback;
+    };
+
+    struct OffsetBaton {
+      uv_work_t request;
+
+      git_commit* rawCommit;
+      int offset;
+
+      Persistent<Function> callback;
+    };
+
+
     struct TreeBaton {
       uv_work_t request;
       const git_error* error;
@@ -101,11 +158,6 @@ class GitCommit : public ObjectWrap {
       Persistent<Function> callback;
     };
 
-    /**
-     * Contains references to the current commit, parent commit (output)
-     * parent commit's index, also contains references to an error code post
-     * lookup, and a callback function to execute.
-     */
     struct ParentBaton {
       uv_work_t request;
       const git_error* error;

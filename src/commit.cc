@@ -37,11 +37,15 @@ void GitCommit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "sha", Sha);
-
-  NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
-
+  NODE_SET_PROTOTYPE_METHOD(tpl, "message", Message);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "time", Time);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "offset", Offset);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "committer", Committer);
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
+
+  NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   target->Set(String::NewSymbol("Commit"), constructor_template);
@@ -59,7 +63,6 @@ Handle<Value> GitCommit::New(const Arguments& args) {
   HandleScope scope;
 
   GitCommit *commit = new GitCommit();
-
   commit->Wrap(args.This());
 
   return scope.Close(args.This());
@@ -68,30 +71,11 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
   HandleScope scope;
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-  commit->Close();
   git_commit_free(commit->commit);
   commit->commit = NULL;
 
   return scope.Close(Undefined());
 }
-
-// Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
-//   HandleScope scope;
-
-//   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-//   git_commit* rawCommit = commit->GetValue();
-
-//   GitCommitDetails* details = new GitCommitDetails;
-//   details->oid = git_commit_id(rawCommit);
-
-//   details->sha[GIT_OID_HEXSZ] = '\0';
-//   git_oid_fmt(details->sha, details->oid);
-
-//   details->message = git_commit_message(rawCommit);
-//   details->time = git_commit_time(rawCommit);
-//   details->timeOffset = git_commit_time_offset(rawCommit);
-//   details->committer = git_commit_committer(rawCommit);
-//   details->author = git_commit_author(rawCommit);
 //   details->parentCount = git_commit_parentcount(rawCommit);
 
 //   int parentCount = details->parentCount;
@@ -106,83 +90,6 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
 //   }
 
 //   return scope.Close(createCommitDetailsObject(details));
-// }
-// Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
-//   HandleScope scope;
-
-//   if(args.Length() == 0 || !args[0]->IsFunction()) {
-//     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-//   }
-
-//   FetchDetailsBaton* baton = new FetchDetailsBaton;
-//   baton->request.data = baton;
-//   baton->error = NULL;
-//   baton->details = new GitCommitDetails;
-//   baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->commit;
-//   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-
-//   uv_queue_work(uv_default_loop(), &baton->request, FetchDetailsWork, (uv_after_work_cb)FetchDetailsAfterWork);
-
-//   return Undefined();
-// }
-// void GitCommit::FetchDetailsWork(uv_work_t *req) {
-//   FetchDetailsBaton* baton = static_cast<FetchDetailsBaton*>(req->data);
-
-//   GitCommitDetails* details = baton->details;
-//   details->oid = git_commit_id(baton->rawCommit);
-
-//   details->sha[GIT_OID_HEXSZ] = '\0';
-//   git_oid_fmt(details->sha, details->oid);
-
-//   details->message = git_commit_message(baton->rawCommit);
-//   details->time = git_commit_time(baton->rawCommit);
-//   details->timeOffset = git_commit_time_offset(baton->rawCommit);
-//   details->committer = git_commit_committer(baton->rawCommit);
-//   details->author = git_commit_author(baton->rawCommit);
-//   details->parentCount = git_commit_parentcount(baton->rawCommit);
-
-//   int parentCount = details->parentCount;
-//   while (parentCount > 0) {
-//     int parentIndex = parentCount -1;
-//     char sha[GIT_OID_HEXSZ + 1];
-//     sha[GIT_OID_HEXSZ] = '\0';
-//     const git_oid *parentOid = git_commit_parent_id(baton->rawCommit, parentIndex);
-//     git_oid_fmt(sha, parentOid);
-//     details->parentShas.push_back(sha);
-//     parentCount--;
-//   }
-// }
-// void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
-//   HandleScope scope;
-
-//   FetchDetailsBaton* baton = static_cast<FetchDetailsBaton* >(req->data);
-
-//   if (baton->error) {
-//     Local<Value> argv[1] = {
-//       GitError::WrapError(baton->error)
-//     };
-
-//     TryCatch try_catch;
-
-//     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-//     if (try_catch.HasCaught()) {
-//         node::FatalException(try_catch);
-//     }
-//   } else {
-
-//     Handle<Value> argv[2] = {
-//       Local<Value>::New(Null()),
-//       createCommitDetailsObject(baton->details)
-//     };
-
-//     TryCatch try_catch;
-//     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-//     if (try_catch.HasCaught()) {
-//         node::FatalException(try_catch);
-//     }
-//   }
-//   delete req;
 // }
 
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
@@ -298,6 +205,204 @@ void GitCommit::ShaAfterWork(uv_work_t* req) {
   Handle<Value> argv[2] = {
     Local<Value>::New(Null()),
     String::New(baton->sha)
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
+}
+
+Handle<Value> GitCommit::Message(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  MessageBaton* baton = new MessageBaton;
+  baton->request.data = baton;
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, MessageWork, (uv_after_work_cb)MessageAfterWork);
+
+  return Undefined();
+}
+void GitCommit::MessageWork(uv_work_t* req) {
+  MessageBaton *baton = static_cast<MessageBaton *>(req->data);
+
+  baton->message = git_commit_message(baton->rawCommit);
+}
+void GitCommit::MessageAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  MessageBaton *baton = static_cast<MessageBaton *>(req->data);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    String::New(baton->message.c_str())
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
+}
+
+Handle<Value> GitCommit::Time(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  TimeBaton* baton = new TimeBaton;
+  baton->request.data = baton;
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, TimeWork, (uv_after_work_cb)TimeAfterWork);
+
+  return Undefined();
+}
+void GitCommit::TimeWork(uv_work_t* req) {
+  TimeBaton *baton = static_cast<TimeBaton *>(req->data);
+
+  baton->time = git_commit_time(baton->rawCommit);
+}
+void GitCommit::TimeAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  TimeBaton *baton = static_cast<TimeBaton *>(req->data);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    Integer::New(baton->time)
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
+}
+
+Handle<Value> GitCommit::Offset(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  OffsetBaton* baton = new OffsetBaton;
+  baton->request.data = baton;
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, OffsetWork, (uv_after_work_cb)OffsetAfterWork);
+
+  return Undefined();
+}
+void GitCommit::OffsetWork(uv_work_t* req) {
+  OffsetBaton *baton = static_cast<OffsetBaton *>(req->data);
+
+  baton->offset = git_commit_time_offset(baton->rawCommit);
+}
+void GitCommit::OffsetAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  OffsetBaton *baton = static_cast<OffsetBaton *>(req->data);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    Integer::New(baton->offset)
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
+}
+
+Handle<Value> GitCommit::Author(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  SignatureBaton* baton = new SignatureBaton;
+  baton->request.data = baton;
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, AuthorWork, (uv_after_work_cb)AuthorAfterWork);
+
+  return Undefined();
+}
+void GitCommit::AuthorWork(uv_work_t* req) {
+  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
+
+  baton->rawSignature = git_commit_author(baton->rawCommit);
+}
+void GitCommit::AuthorAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
+
+  Local<Object> signature = GitSignature::constructor_template->NewInstance();
+  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitCommit>(signature);
+  signatureInstance->SetValue(baton->rawSignature);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    signature
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
+}
+
+Handle<Value> GitCommit::Committer(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  SignatureBaton* baton = new SignatureBaton;
+  baton->request.data = baton;
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, CommitterWork, (uv_after_work_cb)CommitterAfterWork);
+
+  return Undefined();
+}
+void GitCommit::CommitterWork(uv_work_t* req) {
+  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
+
+  baton->rawSignature = git_commit_committer(baton->rawCommit);
+}
+void GitCommit::CommitterAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
+
+  Local<Object> signature = GitSignature::constructor_template->NewInstance();
+  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitCommit>(signature);
+  signatureInstance->SetValue(baton->rawSignature);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    signature
   };
 
   TryCatch try_catch;
