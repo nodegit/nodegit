@@ -16,7 +16,7 @@
 using namespace v8;
 using namespace node;
 
-void GitSignature::Initialize (Handle<v8::Object> target) {
+void GitSignature::Initialize(Handle<v8::Object> target) {
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
