@@ -21,9 +21,9 @@ using namespace node;
 class GitSignature : public ObjectWrap {
   public:
     static Persistent<Function> constructor_template;
+
     static void Initialize(Handle<v8::Object> target);
 
-    void New(const char *name, const char *email, time_t time, int offset);
     git_signature* GetValue();
     void SetValue(git_signature* GitSignature);
 

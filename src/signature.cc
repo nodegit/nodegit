@@ -36,23 +36,8 @@ git_signature* GitSignature::GetValue() {
   return this->sig;
 }
 
-void GitSignature::SetValue(git_signature* sig) {
-  this->sig = sig;
-  this->name = sig->name;
-  this->email = sig->email;
-}
-
-void GitSignature::New(const char *name, const char *email, time_t time, int offset) {
-  git_signature_new(&this->sig, name, email, time, offset);
-  //this->sig = git_signature_new(name, email, time, offset);
-}
-
-char* GitSignature::Name() {
-  return this->name;
-}
-
-char* GitSignature::Email() {
-  return this->email;
+void GitSignature::SetValue(git_signature* signature) {
+  this->signature = signature;
 }
 
 Handle<Value> GitSignature::New(const Arguments& args) {
