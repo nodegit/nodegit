@@ -2,6 +2,8 @@ var git = require('../'),
     rimraf = require('rimraf'),
     fs = require( 'fs' );
 
+var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
+
 // Helper functions
 var helper = {
   // Test if obj is a true function
@@ -32,6 +34,131 @@ exports.method = function(test){
   test.done();
 };
 
+exports.message = function(test) {
+  test.expect(3);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.message(function(error, message) {
+        test.equals(error, null, 'There should be no error');
+        test.notEqual(message, null, 'Message should not be null');
+        test.equals(message, 'Update README.md', 'Message should match expected value');
+        test.done();
+      });
+    });
+  });
+};
+
+exports.sha = function(test) {
+  test.expect(3);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.sha(function(error, sha) {
+        test.equals(error, null, 'There should be no error');
+        test.notEqual(sha, null, 'SHA should not be null');
+        test.equals(sha, historyCountKnownSHA, 'SHA should match expected value');
+        test.done();
+      });
+    });
+  });
+};
+
+exports.time = function(test) {
+  test.expect(3);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.time(function(error, time) {
+        test.equals(error, null, 'There should be no error');
+        test.notEqual(time, null, 'Time should not be null');
+        test.equals(time, 1362012884, 'Time should match expected value');
+        test.done();
+      });
+    });
+  });
+};
+
+exports.offset = function(test) {
+  test.expect(3);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.offset(function(error, offset) {
+        test.equals(error, null, 'There should be no error');
+        test.notEqual(offset, null, 'Offset should not be null');
+        test.equals(offset, 780, 'Offset should match expected value');
+        test.done();
+      });
+    });
+  });
+};
+
+exports.author = function(test) {
+  test.expect(3);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.author(function(error, author) {
+        test.equals(error, null, 'There should be no error');
+        test.notEqual(author, null, 'Author should not be null');
+        test.done();
+      });
+    });
+  });
+};
+
+exports.authorName = function(test) {
+  test.expect(1);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.author(function commitAuthor(error, author) {
+        author.name(function authorName(error, name) {
+          test.equals(name, 'Michael Robinson', 'The author name should match expected value');
+          test.done();
+        });
+      });
+    });
+  });
+};
+
+exports.authorEmail = function(test) {
+  test.expect(1);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.author(function commitAuthor(error, author) {
+        author.email(function authorName(error, email) {
+          test.equals(email, 'mike@pagesofinterest.net', 'The author email should match expected value');
+          test.done();
+        });
+      });
+    });
+  });
+};
+
+exports.committerName = function(test) {
+  test.expect(1);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.committer(function commitCommitter(error, committer) {
+        committer.name(function committerName(error, name) {
+          test.equals(name, 'Michael Robinson', 'The author name should match expected value');
+          test.done();
+        });
+      });
+    });
+  });
+};
+
+exports.committerEmail = function(test) {
+  test.expect(1);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.committer(function commitCommitter(error, committer) {
+        committer.email(function committerName(error, email) {
+          test.equals(email, 'mike@pagesofinterest.net', 'The committer email should match expected value');
+          test.done();
+        });
+      });
+    });
+  });
+};
+
 /**
  * Test that improper commit ID's result in an error message
  */
@@ -44,8 +171,6 @@ exports.improperCommitId = function(test) {
     });
   });
 };
-
-var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
 
 /**
  * Test that retreiving walking a given commit's history works as expected.
@@ -77,13 +202,9 @@ exports.masterHead = function(test) {
   test.expect(2);
   git.repo('../.git', function(error, repository) {
     repository.branch('master', function(error, branch) {
-
       test.equals(error, null, 'Getting branch should not error');
-
-      repository.commit(branch.sha, function(error, commit) {
-
+        repository.commit(branch.sha, function(error, commit) {
         test.equals(error, null, 'Getting latest branch commit should not error');
-
         test.done();
       });
     });
