@@ -11,7 +11,7 @@
 #include "../vendor/libgit2/include/git2.h"
 
 #include "../include/reference.h"
-#include "../include/sig.h"
+#include "../include/signature.h"
 #include "../include/error.h"
 #include "../include/blob.h"
 #include "../include/repo.h"
@@ -30,7 +30,7 @@ extern "C" void init(Handle<v8::Object> target) {
   GitError::Initialize(target);
 
   GitReference::Initialize(target);
-  GitSig::Initialize(target);
+  GitSignature::Initialize(target);
   GitBlob::Initialize(target);
   GitOid::Initialize(target);
   GitObject::Initialize(target);

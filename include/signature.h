@@ -5,8 +5,8 @@
  * Dual licensed under the MIT and GPL licenses.
  */
 
-#ifndef GitSig_H
-#define GitSig_H
+#ifndef GitSignature_H
+#define GitSignature_H
 
 #include <v8.h>
 #include <node.h>
@@ -18,23 +18,18 @@
 using namespace v8;
 using namespace node;
 
-class GitSig : public ObjectWrap {
+class GitSignature : public ObjectWrap {
   public:
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize(Handle<v8::Object> target);
 
     void New(const char *name, const char *email, time_t time, int offset);
     git_signature* GetValue();
-    void SetValue(git_signature* GitSig);
-    git_signature* Dup();
-    void Free();
-
-    char* Name();
-    char* Email();
+    void SetValue(git_signature* GitSignature);
 
   protected:
-    GitSig() {};
-    ~GitSig() {};
+    GitSignature() {};
+    ~GitSignature() {};
 
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Dup(const Arguments& args);
@@ -45,9 +40,6 @@ class GitSig : public ObjectWrap {
 
   private:
     git_signature* sig;
-
-    char* name;
-    char* email;
 };
 
 #endif
