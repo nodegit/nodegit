@@ -12,7 +12,7 @@
                 'src/reference.cc',
                 'src/repo.cc',
                 'src/revwalk.cc',
-                'src/sig.cc',
+                'src/signature.cc',
                 'src/tree.cc',
                 'src/tree_entry.cc',
                 'src/diff_list.cc',
