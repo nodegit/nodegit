@@ -1,6 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("nodegit-promise");
+var Promise = require("bluebird");
 var local = path.join.bind(path, __dirname);
 
 describe("Remote", function() {
@@ -88,7 +88,11 @@ describe("Remote", function() {
       .then(function() {
         return Remote.lookup(repository, "origin3");
       })
-      .then(Promise.reject, Promise.resolve);
+      .then(function() {
+        return Promise.reject();
+      }, function() {
+        return Promise.resolve();
+      });
   });
 
   it("can download from a remote", function() {

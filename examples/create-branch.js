@@ -13,6 +13,6 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
         repo.defaultSignature(),
         "Created new-branch on HEAD");
     });
-  }).done(function() {
+  }).then(function() {
     console.log("All done!");
   });

@@ -1,12 +1,10 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
-var Promise = require("nodegit-promise");
-var fse = promisify(require("fs-extra"));
+var promisify = require("thenify-all");
+var Promise = require("bluebird");
+var fse = promisify(require("fs-extra"), ["remove", "writeFile", "readFile"]);
 var local = path.join.bind(path, __dirname);
-var exec = promisify(function(command, opts, callback) {
-  return require("child_process").exec(command, opts, callback);
-});
+var exec = promisify(require("child_process").exec);
 
 describe("Status", function() {
   var NodeGit = require("../../");

@@ -1,5 +1,5 @@
-var Promise = require("nodegit-promise");
-var promisify = require("promisify-node");
+var Promise = require("bluebird");
+var promisify = require("thenify-all");
 var rawApi;
 
 // Attempt to load the production release first, if it fails fall back to the

@@ -1,6 +1,6 @@
 var nodegit = require("../");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var promisify = require("thenify-all");
+var fse = promisify(require("fs-extra"), ["remove"]);
 var path = "/tmp/nodegit-github-2factor-demo";
 
 var token = "{Your GitHub user token}";
@@ -35,7 +35,7 @@ var opts = {
 
 fse.remove(path).then(function() {
   nodegit.Clone(repoUrl, path, opts)
-    .done(function(repo) {
+    .then(function(repo) {
       if (repo instanceof nodegit.Repository) {
         console.info("We cloned the repo!");
       }

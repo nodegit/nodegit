@@ -18,7 +18,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
 
   return commit.getDiff();
 })
-.done(function(diffList) {
+.then(function(diffList) {
   diffList.forEach(function(diff) {
     diff.patches().forEach(function(patch) {
       console.log("diff", patch.oldFile().path(), patch.newFile().path());

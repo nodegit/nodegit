@@ -22,4 +22,4 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     // Don't forget to call `start()`!
     walker.start();
   })
-  .done();
+  .then();

@@ -54,11 +54,12 @@
     "node-pre-gyp"
   ],
   "dependencies": {
+    "bluebird": "^2.9.30",
     "fs-extra": "^0.18.2",
     "node-pre-gyp": "^0.6.5",
-    "nodegit-promise": "^2.0.1",
     "npm": "^2.9.0",
-    "promisify-node": "^0.1.5",
+    "thenify": "heavyk/thenify",
+    "thenify-all": "^1.6.0",
     "which-native-nodish": "^1.1.1"
   },
   "devDependencies": {
