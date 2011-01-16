@@ -1,0 +1,21 @@
+{
+  "name": "libgit2",
+  "description": "libgit2 bindings",
+  "version": "0.0.1",
+  "homepage": "https://github.com/tjfontaine/node-libgit2",
+  "author": "Timothy J Fontaine <tjfontaine@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tjfontaine/node-libgit2"
+  },
+  "main": "./lib/libgit2",
+  "directories": {
+    "lib": "lib",
+  },
+  "engines": {
+    "node": "*"
+  },
+  dependencies: {
+    "node-ffi": "*"
+  }
+}
