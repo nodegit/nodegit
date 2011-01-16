@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git://github.com/tjfontaine/node-libgit2"
   },
-  "main": "./lib/libgit2",
+  "main": "./lib/index.js",
   "directories": {
     "lib": "lib",
   },
