@@ -8,7 +8,8 @@ repo.refs(function(ref, head) {
   repo.walk(head, function(commit) {
     console.log('commit ' + commit.id)
     console.log('Author: ' + commit.author.name + ' <' + commit.author.email + '>')
-    //console.log('Date: ' + commit.author.time + ' ' + commit.author.offset)
+    var d = new Date(commit.author.time * 1000)
+    console.log('Date:   ' + d)
     console.log()
     console.log('    '+ commit.message_short)
     console.log()
