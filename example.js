@@ -4,7 +4,7 @@ var Repo = require('libgit2').Repo
 
 var repo_path = path.join(__dirname, '.git')
 var repo = new Repo(repo_path)
-repo.refs(function(ref, head) {
+repo.refs('HEAD', function(head) {
   repo.walk(head, function(commit) {
     console.log('commit ' + commit.id)
     console.log('Author: ' + commit.author.name + ' <' + commit.author.email + '>')
