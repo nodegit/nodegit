@@ -1,6 +1,6 @@
 var path = require('path')
 
-var Repo = require('libgit2').Repo
+var Repo = require('./lib').Repo
 
 var repo_path = path.join(__dirname, '.git')
 var repo = new Repo(repo_path)
