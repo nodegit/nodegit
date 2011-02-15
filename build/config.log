@@ -1,0 +1,59 @@
+# project noname (1.0) configured on Tue Feb 15 13:56:34 2011 by
+# waf 1.5.16 (abi 7, python 20701f0 on linux2)
+# using /usr/local/bin/node-waf configure build
+#
+
+----------------------------------------
+Setting srcdir to
+/home/tim/Dropbox/Projects/node-libgit2
+
+----------------------------------------
+Setting blddir to
+/home/tim/Dropbox/Projects/node-libgit2/build
+
+----------------------------------------
+Checking for program g++ or c++
+  find program=['g++', 'c++'] paths=[] var='CXX'
+  -> '/usr/bin/g++'
+
+----------------------------------------
+Checking for program cpp
+  find program=['cpp'] paths=[] var='CPP'
+  -> '/usr/bin/cpp'
+
+----------------------------------------
+Checking for program ar
+  find program=['ar'] paths=[] var='AR'
+  -> '/usr/bin/ar'
+
+----------------------------------------
+Checking for program ranlib
+  find program=['ranlib'] paths=[] var='RANLIB'
+  -> '/usr/bin/ranlib'
+
+----------------------------------------
+Checking for g++ 
+ok 
+
+----------------------------------------
+Checking for node path 
+not found
+
+----------------------------------------
+Checking for node prefix 
+ok /usr/local
+
+----------------------------------------
+Checking for library git2
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/default/test_1.o
+[0m['/usr/bin/g++', '-g', '../test.cpp', '-c', '-o', 'default/test_1.o']
+[2/2] [33mcxx_link: build/.conf_check_0/testbuild/default/test_1.o -> build/.conf_check_0/testbuild/default/testprog
+[0m['/usr/bin/g++', 'default/test_1.o', '-o', '/home/tim/Dropbox/Projects/node-libgit2/build/.conf_check_0/testbuild/default/testprog', '-Wl,-Bdynamic', '-lgit2']
+yes
