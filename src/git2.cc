@@ -25,9 +25,7 @@ class Git2 : public ObjectWrap {
     Git2() {}
     ~Git2() {}
 
-    ///home/tim/Dropbox/Projects/TabDeveloper/V4/.git
     int Repo (const char* path) {
-      git_repository *repo;
       return git_repository_open(&repo, path);
     }
   
@@ -41,27 +39,82 @@ class Git2 : public ObjectWrap {
       return args.This();
     }
 
+    struct async_repo {
+      Git2 *git2;
+      Persistent<Value> err;
+      Persistent<Value> path;
+      Persistent<Function> callback;
+    };
+
     static Handle<Value> Repo (const Arguments& args) {
       Git2 *git2 = ObjectWrap::Unwrap<Git2>(args.This());
+      Local<Function> callback;
 
       HandleScope scope;
 
-      if (args.Length() == 0 || !args[0]->IsString()) {
-        return ThrowException(
-          Exception::Error(String::New("Repository path required.")));
-      }
+      // Ensure first param is a string
+      if (args.Length() == 0 || !args[0]->IsString())
+        return ThrowException(Exception::Error(String::New("Path is required and must be a String.")));
 
-      String::Utf8Value path(args[0]->ToString());
-      
-      int err = git2->Repo(*path);
+      // Ensure second param is a function if it exists
+      if (args.Length() != 2 || !args[1]->IsFunction())
+        return ThrowException(Exception::Error(String::New("Callback must be a Function.")));
 
-      if(err != 0) {
-        return scope.Close(String::New(git_strerror(err)));
-      }
-      else {
-        return scope.Close(String::New("Successfully loaded repo."));
-      }
+      callback = Local<Function>::Cast(args[1]);
+
+      async_repo *ar = new async_repo();
+      ar->git2 = git2;
+      ar->path = Persistent<Value>::New( args[0] );
+      ar->callback = Persistent<Function>::New(callback);
+
+      git2->Ref();
+
+      // Place into EIO
+      eio_custom(AsyncRepo, EIO_PRI_DEFAULT, AsyncRepoComplete, ar);
+      ev_ref(EV_DEFAULT_UC);
+
+      return Undefined();
     }
+
+    static int AsyncRepo(eio_req *req) {
+      async_repo *ar = static_cast<async_repo *>(req->data);
+
+      String::Utf8Value path(ar->path);
+      ar->err = Persistent<Value>::New( Integer::New(ar->git2->Repo(*path)) );
+
+      return 0;
+    }
+
+    static int AsyncRepoComplete(eio_req *req) {
+      HandleScope scope;
+
+      async_repo *ar = static_cast<async_repo *>(req->data);
+      ev_unref(EV_DEFAULT_UC);
+      ar->git2->Unref();
+
+      Local<Value> argv[2];
+      argv[0] = Number::Cast(*ar->err);
+      //argv[0] = Number::New(0);
+      argv[1] = String::Cast(*ar->path);
+
+      TryCatch try_catch;
+
+      ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+
+      if (try_catch.HasCaught())
+        FatalException(try_catch);
+        
+      ar->err.Dispose();
+      ar->callback.Dispose();
+      ar->path.Dispose();
+
+      delete ar;
+
+      return 0;
+    }
+
+  private:
+    git_repository *repo;
 };
 
 Persistent<FunctionTemplate> Git2::s_ct;

@@ -3,7 +3,11 @@ var git2 = require('../build/default/git2');
 var g = new git2.Git2();
 
 // This is invalid
-console.log(g.repo('/etc/hosts'));
+g.repo('/etc/hosts', function(err, path) {
+    console.log(err, path);
+});
 
 // This is valid
-console.log(g.repo('/home/tim/Dropbox/Projects/TabDeveloper/V4/.git'));
+g.repo('/home/tim/Dropbox/Projects/TabDeveloper/V4/.git', function(err, path) {
+    console.log(err, path);
+});
