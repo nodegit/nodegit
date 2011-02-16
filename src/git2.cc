@@ -18,7 +18,7 @@ class Git2 : public ObjectWrap {
       s_ct->SetClassName(String::NewSymbol("Git2"));
 
       NODE_SET_PROTOTYPE_METHOD(s_ct, "git_repository_open", Repo);
-      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_strerror", Repo);
+      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_strerror", Error);
 
       target->Set(String::NewSymbol("Git2"), s_ct->GetFunction());
     }
@@ -113,22 +113,19 @@ class Git2 : public ObjectWrap {
       return 0;
     }
 
-    static Handle<Value> strerror (const Arguments& args) {
+    static Handle<Value> Error (const Arguments& args) {
       Git2 *git2 = ObjectWrap::Unwrap<Git2>(args.This());
 
       HandleScope scope;
 
-      if (args.Length() == 0 || !args[0]->IsString()) {
+      if (args.Length() == 0 || !args[0]->IsNumber()) {
         return ThrowException(
           Exception::Error(String::New("Error code required.")));
       }
+
+      Local<Integer> err = Local<Integer>::Cast( args[0] );
       
-      if (args[0] != 0) {
-        return scope.Close(String::New(git_strerror(Number::New(args[0]))));
-      }
-      else {
-        return scope.Close(String::New("Successfully loaded repo."));
-      }
+      return scope.Close(String::New(git_strerror(err->Value())));
     }
 
 
