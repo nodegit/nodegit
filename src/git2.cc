@@ -17,8 +17,8 @@ class Git2 : public ObjectWrap {
       s_ct->InstanceTemplate()->SetInternalFieldCount(1);
       s_ct->SetClassName(String::NewSymbol("Git2"));
 
-      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_repository_open", Repo);
-      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_strerror", Error);
+      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_repository_open", repository_open);
+      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_strerror", strerror);
 
       target->Set(String::NewSymbol("Git2"), s_ct->GetFunction());
     }
@@ -26,8 +26,12 @@ class Git2 : public ObjectWrap {
     Git2() {}
     ~Git2() {}
 
-    int Repo (const char* path) {
+    int repository_open (const char* path) {
       return git_repository_open(&repo, path);
+    }
+
+    const char* strerror (int err) {
+      return git_strerror(err);
     }
   
   protected:
@@ -47,7 +51,7 @@ class Git2 : public ObjectWrap {
       Persistent<Function> callback;
     };
 
-    static Handle<Value> Repo (const Arguments& args) {
+    static Handle<Value> repository_open (const Arguments& args) {
       Git2 *git2 = ObjectWrap::Unwrap<Git2>(args.This());
       Local<Function> callback;
 
@@ -81,7 +85,7 @@ class Git2 : public ObjectWrap {
       async_repo *ar = static_cast<async_repo *>(req->data);
 
       String::Utf8Value path(ar->path);
-      ar->err = Persistent<Value>::New( Integer::New(ar->git2->Repo(*path)) );
+      ar->err = Persistent<Value>::New( Integer::New(ar->git2->repository_open(*path)) );
 
       return 0;
     }
@@ -113,7 +117,7 @@ class Git2 : public ObjectWrap {
       return 0;
     }
 
-    static Handle<Value> Error (const Arguments& args) {
+    static Handle<Value> strerror (const Arguments& args) {
       Git2 *git2 = ObjectWrap::Unwrap<Git2>(args.This());
 
       HandleScope scope;
@@ -125,7 +129,7 @@ class Git2 : public ObjectWrap {
 
       Local<Integer> err = Local<Integer>::Cast( args[0] );
       
-      return scope.Close(String::New(git_strerror(err->Value())));
+      return scope.Close(String::New(git2->strerror(err->Value())));
     }
 
 
