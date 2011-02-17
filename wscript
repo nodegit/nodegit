@@ -1,4 +1,5 @@
 import Options
+import os
 from os import unlink, symlink, popen
 from os.path import exists 
 from logging import fatal
@@ -16,9 +17,8 @@ def configure(conf):
 
 
 def build(bld):
-  #bld.env.append_value('LD_LIBRARY_PATH', '/usr/local/lib')
-  bld.env['LD_LIBRARY_PATH'] = '/usr/local/lib'
   obj = bld.new_task_gen("cxx", "shlib", "node_addon")
+  obj.rpath = "/usr/local/lib"
   obj.target = "git2"
-  obj.source = "./src/git2.cc"
+  obj.source = "./src/repo.cc"
   obj.uselib = 'GIT2'

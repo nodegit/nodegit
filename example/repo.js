@@ -5,6 +5,7 @@ var g = new git2.Git2();
 // This is invalid
 g.git_repository_open('/etc/hosts', function(err, path) {
     console.log(g.git_strerror(err), path);
+    console.log(g.git_repository_open.toString());
 });
 
 // This is valid

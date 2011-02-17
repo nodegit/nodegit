@@ -1,33 +1,31 @@
-#include <node.h>
-#include <node_events.h>
-#include <git2.h>
+#include <git.h>
 
-using namespace node;
-using namespace v8;
 
 class Git2 : public ObjectWrap {
   public:
-    static Persistent<FunctionTemplate> s_ct;
+    static Persistent<ObjectTemplate> git; 
     static void Initialize (Handle<Object> target) {
       HandleScope scope;
 
-      Local<FunctionTemplate> t = FunctionTemplate::New(New);
+      Local<Object> _ = Object::New();
       
       s_ct = Persistent<FunctionTemplate>::New(t);
       s_ct->InstanceTemplate()->SetInternalFieldCount(1);
       s_ct->SetClassName(String::NewSymbol("Git2"));
 
-      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_repository_open", repository_open);
-      NODE_SET_PROTOTYPE_METHOD(s_ct, "git_strerror", strerror);
+      //NODE_SET_PROTOTYPE_METHOD(s_ct, "git_repository_open", repository_open);
+      //NODE_SET_PROTOTYPE_METHOD(s_ct, "git_repository_free", repository_free);
+      //NODE_SET_PROTOTYPE_METHOD(s_ct, "git_strerror", strerror);
 
-      target->Set(String::NewSymbol("Git2"), s_ct->GetFunction());
+      target->Set(String::NewSymbol("Git2"), _);
     }
-
-    Git2() {}
-    ~Git2() {}
 
     int repository_open (const char* path) {
       return git_repository_open(&repo, path);
+    }
+
+    void repository_free (git_repository *repo) {
+      git_repository_free(repo);
     }
 
     const char* strerror (int err) {
@@ -97,7 +95,7 @@ class Git2 : public ObjectWrap {
       ev_unref(EV_DEFAULT_UC);
       ar->git2->Unref();
 
-      Local<Value> argv[2];
+      Local<Value> argv[3];
       argv[0] = Number::Cast(*ar->err);
       argv[1] = String::Cast(*ar->path);
 
@@ -117,6 +115,21 @@ class Git2 : public ObjectWrap {
       return 0;
     }
 
+    static Handle<Value> repository_free (const Arguments& args) {
+      Git2 *git2 = ObjectWrap::Unwrap<Git2>(args.This());
+
+      HandleScope scope;
+
+      if (args.Length() == 0) {
+        return ThrowException(
+          Exception::Error(String::New("Repository required.")));
+      }
+
+      git_repository *repo = ObjectWrap::Unwrap<git_repository>(args[0]->ToObject());
+      
+      git2->repository_free(repo);
+    }
+
     static Handle<Value> strerror (const Arguments& args) {
       Git2 *git2 = ObjectWrap::Unwrap<Git2>(args.This());
 
@@ -131,17 +144,10 @@ class Git2 : public ObjectWrap {
       
       return scope.Close(String::New(git2->strerror(err->Value())));
     }
-
-
-  private:
-    git_repository *repo;
 };
 
-Persistent<FunctionTemplate> Git2::s_ct;
-extern "C" {
-    static void init (Handle<Object> target) {
-        Git2::Initialize(target);
-    }
+extern "C" void init (Handle<Object> target) {
+  HandleScope scope;
 
-    NODE_MODULE(git2, init);
+  Git2::Initialize(target);
 }
