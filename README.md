@@ -10,20 +10,22 @@ Building development
 --------------------
 
 #### Requirements ####
-To use node-libgit2 development tree, you will need to have the libgit2 api in /usr/local/lib and the NodeJS
+To use node-libgit2 development tree, you will need to have the libgit2 api in `/usr/local/lib` and the NodeJS
 framework installed.
 
-#### Order of importance ####
-
-* Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
-* Install NodeJS from [http://node.js.org/](http://node.js.org/)
-* Install NPM, [http://npmjs.org/](http://npmjs.org/) or install the packages from GitHub source.
-* Install nodeutils via `npm install nodeutils` to run the Unit Tests.
+    * Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
+    * Install NodeJS from [http://node.js.org/](http://node.js.org/)
 
 Unit testing
 ------------
 
-node-libgit2 utilizes nodeunit `npm install nodeunit` to handle its tests in the /test folder.
+node-libgit2 utilizes nodeunit `npm install nodeunit` or use `/vendor/nodeunit` to handle its tests in the
+`/test` folder.  Example of running repo tests with vendor script:
+    [tim@thinkpad Projects]$ cd node-libgit2
+    [tim@thinkpad node-libgit2]$ node-waf configure build
+    [tim@thinkpad node-libgit2]$ ./vendor/nodeunit/bin/nodeunit test/test-repo.js 
+
+You will most likely install nodeunit via npm or make an alias to the nodeunit binary in `/vendor`.
 
 Release information
 -------------------
@@ -39,3 +41,8 @@ The release schedule Tim Fontaine and I have decided on (atm) is the following:
 
 ### v0.0.3: ###
     * Custom odb backend
+
+Contact Information
+-------------------
+
+If you like what we are doing and would like to contribute, please fork or leave issues.
