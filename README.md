@@ -20,7 +20,9 @@ Unit testing
 ------------
 
 ##### New way #####
-Ensure the submodules `nodeunit` and `rimraf` are located in the `/vendor` subdirectory.  If they are not, run:
+Ensure the submodules `nodeunit` and `rimraf` are located in the `/vendor` subdirectory.
+
+If they are not, `cd` into the `node-libgit2` dir and run the following git commands:
     [tim@thinkpad Projects]$ cd node-libgit2
     [tim@thinkpad node-libgit2]$ git submodule init
     [tim@thinkpad node-libgit2]$ git submodule update 
