@@ -42,7 +42,7 @@ The release schedule Tim Fontaine and I have decided on (atm) is the following:
 ### v0.0.3: ###
     * Custom odb backend
 
-Contact Information
--------------------
+Getting involved
+----------------
 
 If you like what we are doing and would like to contribute, please fork or leave issues.
