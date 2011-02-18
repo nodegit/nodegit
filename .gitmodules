@@ -1,0 +1,6 @@
+[submodule "vendor/nodeunit"]
+	path = vendor/nodeunit
+	url = git://github.com/caolan/nodeunit.git
+[submodule "vendor/rimraf"]
+	path = vendor/rimraf
+	url = git://github.com/isaacs/rimraf.git
