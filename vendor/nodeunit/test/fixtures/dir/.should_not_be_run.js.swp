@@ -1,4 +1,0 @@
-var assert = require('assert');
-
-// throw an assertion error if this gets required
-assert.ok(false, 'this module should not be loaded!');

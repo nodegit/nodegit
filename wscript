@@ -20,5 +20,5 @@ def build(bld):
   obj = bld.new_task_gen("cxx", "shlib", "node_addon")
   obj.rpath = "/usr/local/lib"
   obj.target = "git2"
-  obj.source = "./src/repo.cc"
+  obj.source = "./src/index.cc ./src/repo.cc ./src/oid.cc"
   obj.uselib = 'GIT2'

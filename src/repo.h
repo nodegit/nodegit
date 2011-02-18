@@ -17,30 +17,32 @@ using namespace v8;
 class Repo : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
-    static void Initialize (Handle<v8::Object> target);
+    static void Initialize(Handle<v8::Object> target);
     int Open(const char* path);
+    void Free();
+    int Init(const char* path, bool is_bare);
+
     // TODO: Implement these methods
     //int Open2(const char* path);
     //int Open3(const char* path);
     //int Lookup(Object **obj, Oid *id, Otype type);
     //Odb Database();
     //int Index(Index **index);
-    //int NewObject(Object **obj, Otype type);
-    void Free();
-    int Init(const char* path, bool is_bare);
+    //int NewObject(git_object **obj, Otype type);
+    //int LookupRef(const char* name);
 
   protected:
     Repo() {}
     ~Repo() {}
-    static Handle<Value> New (const Arguments& args);
+    static Handle<Value> New(const Arguments& args);
 
-    static Handle<Value> Open (const Arguments& args);
+    static Handle<Value> Open(const Arguments& args);
     static int EIO_Open(eio_req *req);
     static int EIO_AfterOpen(eio_req *req);
 
-    static Handle<Value> Free (const Arguments& args);
+    static Handle<Value> Free(const Arguments& args);
 
-    static Handle<Value> Init (const Arguments& args);
+    static Handle<Value> Init(const Arguments& args);
     static int EIO_Init(eio_req *req);
     static int EIO_AfterInit(eio_req *req);
 

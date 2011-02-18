@@ -2,7 +2,6 @@ var git = require( '../build/default/git2' ),
     rimraf = require( '../vendor/rimraf'),
     fs = require( 'fs' );
 
-
 // Helper functions
 var helper = {
   // Test if obj is a true function
