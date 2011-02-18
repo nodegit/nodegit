@@ -6,8 +6,8 @@ with guidance from Tim Fontaine @tjfontaine
 
 Currently under active development, this branch will provide native extension methods to the libgit2 C API.
 
-Building development
---------------------
+Building
+--------
 
 #### Requirements ####
 To use node-libgit2 development tree, you will need to have the `libgit2` api in `/usr/local/lib` and the NodeJS
