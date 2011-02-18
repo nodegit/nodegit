@@ -1,7 +1,8 @@
 node.js libgit2 bindings
 ========================
 
-Tim Branyen @tbranyen and Tim Fontaine @tjfontaine
+Written by Tim Branyen @tbranyen 
+with guidance from Tim Fontaine @tjfontaine
 
 Currently under active development, this branch will provide native extension methods to the libgit2 C API.
 
@@ -14,9 +15,9 @@ framework installed.
 
 #### Order of importance ####
 
-* Install libgit2 from (http://libgit2.github.com/) 
-* Install NodeJS from (http://node.js.org/)
-* Install NPM, (http://npmjs.org/) or install the packages from GitHub source.
+* Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
+* Install NodeJS from [http://node.js.org/](http://node.js.org/)
+* Install NPM, [http://npmjs.org/](http://npmjs.org/) or install the packages from GitHub source.
 * Install nodeutils via `npm install nodeutils` to run the Unit Tests.
 
 Unit testing
