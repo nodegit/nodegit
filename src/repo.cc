@@ -181,16 +181,15 @@ int Repo::EIO_AfterInit(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->repo->Unref();
 
-  Local<Value> argv[2];
+  Local<Value> argv[3];
   argv[0] = Number::Cast(*ar->err);
   argv[1] = String::Cast(*ar->path);
-  // Todo: Figure out how to send back boolean
-  //argv[2] = Boolean::New(*ar->is_bare);
+  argv[2] = *ar->is_bare;
 
 
   TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 3, argv);
 
   if(try_catch.HasCaught())
     FatalException(try_catch);

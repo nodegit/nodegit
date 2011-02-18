@@ -1,34 +1,34 @@
 #!/usr/bin/env node
 
-require.paths.unshift('../vendor');
+require.paths.unshift( '../vendor' );
 
 try {
-    var reporter = require('../vendor/nodeunit').reporters.default;
+    var reporter = require( '../vendor/nodeunit' ).reporters.default;
 }
 catch(e) {
-    var sys = require('sys');
-    sys.puts("Cannot find nodeunit module.");
-    sys.puts("You can download submodules for this project by doing:");
-    sys.puts("");
-    sys.puts("    git submodule init");
-    sys.puts("    git submodule update");
-    sys.puts("");
+    var sys = require( 'sys' );
+    sys.puts( 'Cannot find nodeunit module.' );
+    sys.puts( 'You can download submodules for this project by doing:' );
+    sys.puts( '' );
+    sys.puts( '    git submodule init' );
+    sys.puts( '    git submodule update' );
+    sys.puts( '' );
     process.exit();
 }
 
 try {
-    var rimraf = require('../vendor/rimraf');
+    var rimraf = require( '../vendor/rimraf' );
 }
 catch(e) {
-    var sys = require('sys');
-    sys.puts("Cannot find rimraf module.");
-    sys.puts("You can download submodules for this project by doing:");
-    sys.puts("");
-    sys.puts("    git submodule init");
-    sys.puts("    git submodule update");
-    sys.puts("");
+    var sys = require( 'sys' );
+    sys.puts( 'Cannot find rimraf module.' );
+    sys.puts( 'You can download submodules for this project by doing:' );
+    sys.puts( '' );
+    sys.puts( '    git submodule init' );
+    sys.puts( '    git submodule update' );
+    sys.puts( '' );
     process.exit();
 }
 
-process.chdir('./');
-reporter.run(['test']);
+process.chdir( './' );
+reporter.run( ['test'] );

@@ -40,7 +40,7 @@ exports.constructor = function( test ){
 exports.open = function( test ) {
   var testRepo = new git.Repo();
 
-  test.expect( 8 );
+  test.expect( 7 );
 
   // Test for function
   helper.testFunction( test.equals, testRepo.open, 'Repo::Open' );
@@ -54,11 +54,6 @@ exports.open = function( test ) {
   helper.testException( test.ok, function() {
     testRepo.open( "some/path" );
   }, 'Throw an exception if no callback' );
-
-  // Test that both arguments result correctly
-  helper.testException( test.ifError, function() {
-    testRepo.open( "some/path", function() {} );
-  }, 'No exception is thrown which proper arguments' );
 
   // Test invalid repository
   testRepo.open( '/etc/hosts', function( err, path ) {
@@ -93,19 +88,35 @@ exports.free = function( test ) {
 exports.init = function( test ) {
   var testRepo = new git.Repo();
 
-  test.expect( 4 );
+  test.expect( 8 );
 
   // Test for function
   helper.testFunction( test.equals, testRepo.init, 'Repo::Init' );
 
+  // Test path argument existence
+  helper.testException( test.ok, function() {
+    testRepo.init();
+  }, 'Throw an exception if no path' );
+ 
+  // Test is_bare argument existence
+  helper.testException( test.ok, function() {
+    testRepo.init( "some/path" );
+  }, 'Throw an exception if no is_bare' );
+
+  // Test callback argument existence
+  helper.testException( test.ok, function() {
+    testRepo.init( "some/path", true );
+  }, 'Throw an exception if no callback' );
+
   // Cleanup, remove test repo directory - if it exists
   rimraf( './test.git', function() {
     // Create bare repo and test for creation
-    testRepo.init( './test.git', true, function( err, path ) {
+    testRepo.init( './test.git', true, function( err, path, is_bare ) {
       test.equals( 0, err, 'Successfully created bare repository' );
       // Verify repo exists
       testRepo.open( './test.git', function(err, path) {
         test.equals( 0, err, 'Valid repository created' );
+        test.equals( true, is_bare, 'Returns valid is_bare value' );
           // Cleanup, remove test repo directory
           rimraf( './test.git', function() {
             test.done();
