@@ -1,22 +1,32 @@
+/*
+Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+*/
+
+#include <v8.h>
+#include <node.h>
+#include <node_events.h>
 #include "repo.h"
 
-void Repo::Initialize (Handle<Object> target) {
+using namespace v8;
+using namespace node;
+
+void Repo::Init (Handle<Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(Repo::New);
+  Local<FunctionTemplate> t = FunctionTemplate::New(New);
   
-  Repo::s_ct = Persistent<FunctionTemplate>::New(t);
-  Repo::s_ct->InstanceTemplate()->SetInternalFieldCount(1);
-  Repo::s_ct->SetClassName(String::NewSymbol("Repo"));
+  constructor_template = Persistent<FunctionTemplate>::New(t);
+  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
+  constructor_template->SetClassName(String::NewSymbol("Repo"));
 
-  NODE_SET_PROTOTYPE_METHOD(Repo::s_ct, "open", Repo::open);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", open);
   //NODE_SET_PROTOTYPE_METHOD(s_ct, "free", free);
 
-  target->Set(String::NewSymbol("Repo"), Repo::s_ct->GetFunction());
+  target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
 }
 
 int Repo::open (const char* path) {
-  return git_repository_open(&this->repo, path);
+  return git_repository_open(&this->repo_, path);
 }
 
 Handle<Value> Repo::New (const Arguments& args) {
@@ -42,7 +52,7 @@ Handle<Value> Repo::open (const Arguments& args) {
 
   callback = Local<Function>::Cast(args[1]);
 
-  async_open *ar = new async_open();
+  open_request *ar = new open_request();
   ar->repo = repo;
   ar->path = Persistent<Value>::New( args[0] );
   ar->callback = Persistent<Function>::New(callback);
@@ -56,7 +66,7 @@ Handle<Value> Repo::open (const Arguments& args) {
 }
 
 int Repo::AsyncOpen(eio_req *req) {
-  async_open *ar = static_cast<async_open *>(req->data);
+  open_request *ar = static_cast<open_request *>(req->data);
 
   String::Utf8Value path(ar->path);
   ar->err = Persistent<Value>::New( Integer::New(ar->repo->open(*path)) );
@@ -67,7 +77,7 @@ int Repo::AsyncOpen(eio_req *req) {
 int Repo::AsyncOpenComplete(eio_req *req) {
   HandleScope scope;
 
-  async_open *ar = static_cast<async_open *>(req->data);
+  open_request *ar = static_cast<open_request *>(req->data);
   ev_unref(EV_DEFAULT_UC);
   ar->repo->Unref();
 
@@ -94,5 +104,7 @@ int Repo::AsyncOpenComplete(eio_req *req) {
 extern "C" void init (Handle<Object> target) {
   HandleScope scope;
 
-  Repo::Initialize(target);
+  Repo::Init(target);
 }
+
+Persistent<FunctionTemplate> Repo::constructor_template;
