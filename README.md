@@ -14,7 +14,7 @@ To use node-libgit2 development tree, you will need to have the `libgit2` api in
 framework installed.
 
     * Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
-    * Install NodeJS from [http://node.js.org/](http://node.js.org/)
+    * Install NodeJS from [http://nodejs.org/](http://nodejs.org/)
 
 Unit testing
 ------------
