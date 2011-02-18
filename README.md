@@ -19,6 +19,19 @@ framework installed.
 Unit testing
 ------------
 
+##### New way #####
+Ensure the submodules `nodeunit` and `rimraf` are located in the `/vendor` subdirectory.  If they are not, run:
+    git submodule init
+    git submodule update
+
+Then simply run `make unittest` in the project root.
+
+Example of new method:
+    [tim@thinkpad Projects]$ cd node-libgit2
+    [tim@thinkpad node-libgit2]$ node-waf configure build
+    [tim@thinkpad node-libgit2]$ make unittest 
+
+##### Old way #####
 node-libgit2 utilizes nodeunit `npm install nodeunit` or use `/vendor/nodeunit` to handle its tests in the
 `/test` folder.  Example of running repo tests with vendor script:
     [tim@thinkpad Projects]$ cd node-libgit2
