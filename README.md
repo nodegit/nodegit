@@ -9,7 +9,7 @@ Currently under active development, this branch will provide native extension me
 Building
 --------
 
-#### Requirements ####
+#### Dependancies ####
 To use node-libgit2 development tree, you will need to have the `libgit2` api in `/usr/local/lib` and the NodeJS
 framework installed.
 
