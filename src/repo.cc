@@ -3,24 +3,20 @@
 void Repo::Initialize (Handle<Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> t = FunctionTemplate::New(Repo::New);
   
-  s_ct = Persistent<FunctionTemplate>::New(t);
-  s_ct->InstanceTemplate()->SetInternalFieldCount(1);
-  s_ct->SetClassName(String::NewSymbol("Repo"));
+  Repo::s_ct = Persistent<FunctionTemplate>::New(t);
+  Repo::s_ct->InstanceTemplate()->SetInternalFieldCount(1);
+  Repo::s_ct->SetClassName(String::NewSymbol("Repo"));
 
-  NODE_SET_PROTOTYPE_METHOD(s_ct, "open", open);
+  NODE_SET_PROTOTYPE_METHOD(Repo::s_ct, "open", Repo::open);
   //NODE_SET_PROTOTYPE_METHOD(s_ct, "free", free);
 
-  target->Set(String::NewSymbol("Repo"), s_ct->GetFunction());
+  target->Set(String::NewSymbol("Repo"), Repo::s_ct->GetFunction());
 }
 
 int Repo::open (const char* path) {
-  return 0;
-}
-
-git_repository Repo::Value() {
-  return repo;
+  return git_repository_open(&this->repo, path);
 }
 
 Handle<Value> Repo::New (const Arguments& args) {
@@ -81,7 +77,7 @@ int Repo::AsyncOpenComplete(eio_req *req) {
 
   TryCatch try_catch;
 
-  ar->callback->Call(Repo, 2, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
 
   if (try_catch.HasCaught())
     FatalException(try_catch);
