@@ -1,12 +1,11 @@
 var git2 = require('../build/default/git2');
 
-// Access existing repository
 var repo = new git2.Repo();
-repo.open('./.git', function(err, path) {
-    console.log(err, path);
-});
 
 // Creating a git repo
-repo.init('./test.git', true, function(err, path) {
-    console.log(err, path);
+repo.init('./.git', false, function(err, path) {
+    // Access existing repository
+    repo.open('./.git', function(err, path) {
+        console.log(err, path);
+    });
 });
