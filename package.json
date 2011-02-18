@@ -1,21 +1,21 @@
 {
-  "name": "libgit2",
-  "description": "libgit2 bindings",
-  "version": "0.0.1",
-  "homepage": "https://github.com/tjfontaine/node-libgit2",
-  "author": "Timothy J Fontaine <tjfontaine@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/tjfontaine/node-libgit2"
+  'name': 'nodegit2',
+  'description': 'NodeJS libgit2 asynchronous native bindings',
+  'version': '0.0.1',
+  'homepage': 'https://github.com/tbranyen/nodegit2',
+  'author': 'Tim Branyen <tim@tabdeveloper.com>',
+  'repository': {
+    'type': 'git',
+    'url': 'git://github.com/tbranyen/nodegit2'
   },
-  "main": "./lib/index.js",
-  "directories": {
-    "lib": "lib",
+  'main': './lib/index.js',
+  'directories': {
+    'lib': 'lib',
   },
-  "engines": {
-    "node": "*"
+  'engines': {
+    'node': '*'
   },
   dependencies: {
-    "node-ffi": "*"
+   // 'node-ffi': '*'
   }
 }
