@@ -1,5 +1,5 @@
-node.js libgit2 bindings
-========================
+NodeJS libgit2 bindings
+=======================
 
 Written by Tim Branyen @tbranyen 
 with guidance from Tim Fontaine @tjfontaine
