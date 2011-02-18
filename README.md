@@ -10,7 +10,7 @@ Building development
 --------------------
 
 #### Requirements ####
-To use node-libgit2 development tree, you will need to have the libgit2 api in `/usr/local/lib` and the NodeJS
+To use node-libgit2 development tree, you will need to have the `libgit2` api in `/usr/local/lib` and the NodeJS
 framework installed.
 
     * Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
