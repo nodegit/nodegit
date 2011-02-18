@@ -33,7 +33,9 @@ Example of new method:
 
 ##### Old way #####
 node-libgit2 utilizes nodeunit `npm install nodeunit` or use `/vendor/nodeunit` to handle its tests in the
-`/test` folder.  Example of running repo tests with vendor script:
+`/test` folder.
+
+Example of running repo tests with vendor script:
     [tim@thinkpad Projects]$ cd node-libgit2
     [tim@thinkpad node-libgit2]$ node-waf configure build
     [tim@thinkpad node-libgit2]$ ./vendor/nodeunit/bin/nodeunit test/test-repo.js 

@@ -16,5 +16,19 @@ catch(e) {
     process.exit();
 }
 
+try {
+    var rimraf = require('../vendor/rimraf');
+}
+catch(e) {
+    var sys = require('sys');
+    sys.puts("Cannot find rimraf module.");
+    sys.puts("You can download submodules for this project by doing:");
+    sys.puts("");
+    sys.puts("    git submodule init");
+    sys.puts("    git submodule update");
+    sys.puts("");
+    process.exit();
+}
+
 process.chdir('./');
 reporter.run(['test']);
