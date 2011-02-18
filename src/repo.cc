@@ -19,14 +19,18 @@ void Repo::Init (Handle<Object> target) {
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Repo"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", open);
-  //NODE_SET_PROTOTYPE_METHOD(s_ct, "free", free);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", Open);
+  NODE_SET_PROTOTYPE_METHOD(s_ct, "free", Free);
 
   target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
 }
 
-int Repo::open (const char* path) {
-  return git_repository_open(&this->repo_, path);
+int Repo::Open (const char* path) {
+  return git_repository_open(&this->repo, path);
+}
+
+void Repo::Free () {
+  git_repository_free(this->repo);
 }
 
 Handle<Value> Repo::New (const Arguments& args) {
@@ -38,7 +42,7 @@ Handle<Value> Repo::New (const Arguments& args) {
   return args.This();
 }
 
-Handle<Value> Repo::open (const Arguments& args) {
+Handle<Value> Repo::Open (const Arguments& args) {
   Repo *repo = ObjectWrap::Unwrap<Repo>(args.This());
   Local<Function> callback;
 
@@ -69,7 +73,7 @@ int Repo::AsyncOpen(eio_req *req) {
   open_request *ar = static_cast<open_request *>(req->data);
 
   String::Utf8Value path(ar->path);
-  ar->err = Persistent<Value>::New( Integer::New(ar->repo->open(*path)) );
+  ar->err = Persistent<Value>::New( Integer::New(ar->repo->Open(*path)) );
 
   return 0;
 }
@@ -99,6 +103,16 @@ int Repo::AsyncOpenComplete(eio_req *req) {
   delete ar;
 
   return 0;
+}
+
+Handle<Value> Repo::Free (const Arguments& args) {
+  Repo *repo = ObjectWrap::Unwrap<Repo>(args.This());
+
+  HandleScope scope;
+
+  repo->Free();
+
+  return Undefined();
 }
 
 extern "C" void init (Handle<Object> target) {

@@ -5,6 +5,20 @@ Tim Branyen @tbranyen and Tim Fontaine @tjfontaine
 
 Currently under active development, this branch will provide native extension methods to the libgit2 C API.
 
+Building development
+--------------------
+
+#### Requirements ####
+To use node-libgit2 development tree, you will need to have the libgit2 api in /usr/local/lib and the NodeJS
+framework installed.
+
+#### Order of importance: ####
+
+* Install libgit2 from (http://libgit2.github.com/) 
+* Install NodeJS from (http://node.js.org/)
+* Install NPM, (http://npmjs.org/) or install the packages from GitHub source.
+* Install nodeutils via `npm install nodeutils` to run the Unit Tests.
+
 Unit testing
 ------------
 

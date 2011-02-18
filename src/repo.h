@@ -18,12 +18,15 @@ class Repo : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Init (Handle<Object> target);
-    int open(const char* path);
+    int Open(const char* path);
+    int Free();
   protected:
     Repo() {}
     ~Repo() {}
     static Handle<Value> New (const Arguments& args);
-    static Handle<Value> open (const Arguments& args);
+    static Handle<Value> Open (const Arguments& args);
+    static Handle<Value> Free (const Arguments& args);
+
     static int AsyncOpen(eio_req *req);
     static int AsyncOpenComplete(eio_req *req);
 

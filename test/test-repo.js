@@ -31,7 +31,12 @@ exports.constructor = function( test ){
 exports.open = function( test ) {
   var testRepo = new git.Repo();
 
-  test.expect( 6 );
+  test.expect( 8 );
+
+  // The property reports itself as a function
+  test.equals( typeof testRepo.open, 'function', 'Repo::Open reports as a function.' );
+  // This ensures the repo is actually a derivative of the Function [[Class]]
+  test.equals( toString.call( testRepo.open ), '[object Function]', 'Repo::Open [[Class]] is of type function.' );
 
   // Test path argument existence
   testException( test.ok, function() {
