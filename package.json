@@ -3,19 +3,19 @@
   'description': 'NodeJS libgit2 asynchronous native bindings',
   'version': '0.0.1',
   'homepage': 'https://github.com/tbranyen/nodegit2',
-  'author': 'Tim Branyen <tim@tabdeveloper.com>',
+  'author': 'Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)',
   'repository': {
     'type': 'git',
-    'url': 'git://github.com/tbranyen/nodegit2'
+    'url': 'git://github.com/tbranyen/nodegit2.git'
   },
   'main': './lib/index.js',
+  'modules': {
+    'repo': './lib/repo'
+  },
   'directories': {
-    'lib': 'lib',
+    'lib': './lib'
   },
   'engines': {
     'node': '*'
-  },
-  dependencies: {
-   // 'node-ffi': '*'
   }
 }

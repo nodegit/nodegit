@@ -40,7 +40,7 @@ __ You can skip this step and `nodegit2` will automatically fetch and install a 
 
 #### `nodegit2` has been compiled and tested to work with the setup required to build and run `NodeJS` itself ####
 
-Instructions on compiling NodeJS on a Windows platform can be found here:
+Instructions on compiling `NodeJS` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
 
 Example API Usage
