@@ -9,12 +9,34 @@ Currently under active development, this branch will provide native extension me
 Building
 --------
 
-#### Dependancies ####
+### Dependancies ###
 To use node-libgit2 development tree, you will need to have the `libgit2` api in `/usr/local/lib` and the NodeJS
-framework installed.
+framework installed, you will also need git installed and accessible from your PATH to fetch any vendor addons.
 
+### Linux/Mac OS X/BSD Variants ###
+You can skip this step and node-libgit2 will automatically fetch and install a fresh copy of libgit2 for you.
 * Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
+    [tim@thinkpad Projects]$ cd libgit2
+    [tim@thinkpad libgit2]$ ./configure
+    [tim@thinkpad libgit2]$ make 
+    [tim@thinkpad libgit2]$ sudo make install
+
 * Install NodeJS from [http://nodejs.org/](http://nodejs.org/)
+    [tim@thinkpad Projects]$ cd node-v0.4.0
+    [tim@thinkpad node-v0.4.0]$ ./configure
+    [tim@thinkpad node-v0.4.0]$ make 
+    [tim@thinkpad node-v0.4.0]$ sudo make install
+
+* Install nodegit2 by running the `make` and `make install` commands.  (Future will be on NPM)
+    [tim@thinkpad Projects]$ cd nodegit2
+    [tim@thinkpad nodegit2]$ make
+    [tim@thinkpad nodegit2]$ make install
+
+### Windows via Cygiwn ###
+
+nodegit2 has been compiled and tested to work with the setup required to build and run NodeJS itself, instructions on compiling NodeJS
+on a Windows platform can be found here:
+[https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows))
 
 Unit testing
 ------------
@@ -22,26 +44,26 @@ Unit testing
 ##### New way #####
 Ensure the submodules `nodeunit` and `rimraf` are located in the `/vendor` subdirectory.
 
-If they are not, `cd` into the `node-libgit2` dir and run the following git commands:
-    [tim@thinkpad Projects]$ cd node-libgit2
-    [tim@thinkpad node-libgit2]$ git submodule init
-    [tim@thinkpad node-libgit2]$ git submodule update 
+If they are not, `cd` into the `nodegit2` dir and run the following git commands:
+    [tim@thinkpad Projects]$ cd nodegit2
+    [tim@thinkpad nodegit2]$ git submodule init
+    [tim@thinkpad nodegit2]$ git submodule update 
 
 Then simply run `make unittest` in the project root.
 
 Example of new method:
-    [tim@thinkpad Projects]$ cd node-libgit2
-    [tim@thinkpad node-libgit2]$ node-waf configure build
-    [tim@thinkpad node-libgit2]$ make unittest 
+    [tim@thinkpad Projects]$ cd nodegit2
+    [tim@thinkpad nodegit2]$ node-waf configure build
+    [tim@thinkpad nodegit2]$ make unittest 
 
 ##### Old way #####
-node-libgit2 utilizes nodeunit `npm install nodeunit` or use `/vendor/nodeunit` to handle its tests in the
+nodegit2 utilizes nodeunit `npm install nodeunit` or use `/vendor/nodeunit` to handle its tests in the
 `/test` folder.
 
 Example of running repo tests with vendor script:
-    [tim@thinkpad Projects]$ cd node-libgit2
-    [tim@thinkpad node-libgit2]$ node-waf configure build
-    [tim@thinkpad node-libgit2]$ ./vendor/nodeunit/bin/nodeunit test/test-repo.js 
+    [tim@thinkpad Projects]$ cd nodegit2
+    [tim@thinkpad nodegit2]$ node-waf configure build
+    [tim@thinkpad nodegit2]$ ./vendor/nodeunit/bin/nodeunit test/test-repo.js 
 
 You will most likely install nodeunit via npm or make an alias to the nodeunit binary in `/vendor`.
 
