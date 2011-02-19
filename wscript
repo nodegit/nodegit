@@ -17,13 +17,9 @@ def configure(conf):
       Popen('git submodule init vendor/libgit2', shell=True).wait()
       Popen('git submodule update vendor/libgit2', shell=True).wait()
       os.chdir('vendor/libgit2')
-      Popen('python waf configure build-shared', shell=True).wait()
+      Popen('python waf configure build-shared install', shell=True).wait()
 
 def build(bld):
-  curdir = os.getcwd()
-  os.chdir('vendor/libgit2')
-  Popen('python waf install', shell=True).wait()
-  os.chdir(curdir)
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'git2'
   obj.rpath = '/usr/local/lib:vendor/libgit2/build/shared'
