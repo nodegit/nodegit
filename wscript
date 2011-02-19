@@ -15,7 +15,7 @@ def configure(conf):
   if not conf.check(lib='git2'):
     if not conf.check(lib='git2', libpath=['/usr/local/lib'], uselib_store='GIT2'):
       Popen('git submodule init vendor/libgit2', shell=True).wait()
-      Popen('git submodule init vendor/libgit2', shell=True).wait()
+      Popen('git submodule update vendor/libgit2', shell=True).wait()
       Popen('python vendor/libgit2/waf configure build-shared', shell=True).wait()
 
 def build(bld):
