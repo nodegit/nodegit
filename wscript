@@ -16,7 +16,8 @@ def configure(conf):
     if not conf.check(lib='git2', libpath=['/usr/local/lib'], uselib_store='GIT2'):
       Popen('git submodule init vendor/libgit2', shell=True).wait()
       Popen('git submodule update vendor/libgit2', shell=True).wait()
-      Popen('python vendor/libgit2/waf configure build-shared', shell=True).wait()
+      os.chdir('vendor/libgit2')
+      Popen('python waf configure build-shared', shell=True).wait()
 
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
