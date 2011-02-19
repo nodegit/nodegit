@@ -15,6 +15,7 @@ framework installed, you will also need git installed and accessible from your `
 
 ### Linux/Mac OS X/BSD Variants ###
 You can skip this step and node-libgit2 will automatically fetch and install a fresh copy of libgit2 for you.
+
 * Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
     [tim@thinkpad Projects]$ cd libgit2
     [tim@thinkpad libgit2]$ ./configure
