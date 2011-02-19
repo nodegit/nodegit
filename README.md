@@ -11,7 +11,7 @@ Building
 
 ### Dependancies ###
 To use node-libgit2 development tree, you will need to have the `libgit2` api in `/usr/local/lib` and the NodeJS
-framework installed, you will also need git installed and accessible from your PATH to fetch any vendor addons.
+framework installed, you will also need git installed and accessible from your `PATH` to fetch any vendor addons.
 
 ### Linux/Mac OS X/BSD Variants ###
 You can skip this step and node-libgit2 will automatically fetch and install a fresh copy of libgit2 for you.
