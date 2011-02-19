@@ -1,5 +1,6 @@
 import Options
 import os
+import subprocess
 from os import unlink, symlink, popen
 from os.path import exists 
 from logging import fatal
@@ -13,10 +14,9 @@ def configure(conf):
 
   if not conf.check(lib='git2'):
     if not conf.check(lib='git2', libpath=['/usr/local/lib'], uselib_store='GIT2'):
-      os.popen('git submodule init vendor/libgit2')
-      os.popen('git submodule update vendor/libgit2')
-      os.chdir('./vendor/libgit2')
-      os.popen('sudo python waf configure build-shared install')
+      Popen('git submodule init vendor/libgit2', shell=True, stdin=PIPE)
+      Popen('git submodule init vendor/libgit2', shell=True, stdin=PIPE)
+      Popen('python waf configure build-shared', shell=True, stdin=PIPE)
 
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
