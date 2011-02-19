@@ -17,18 +17,21 @@ framework installed, you will also need git installed and accessible from your `
 You can skip this step and node-libgit2 will automatically fetch and install a fresh copy of libgit2 for you.
 
 * Install libgit2 from [http://libgit2.github.com/](http://libgit2.github.com/) 
+
     [tim@thinkpad Projects]$ cd libgit2
     [tim@thinkpad libgit2]$ ./configure
     [tim@thinkpad libgit2]$ make 
     [tim@thinkpad libgit2]$ sudo make install
 
 * Install NodeJS from [http://nodejs.org/](http://nodejs.org/)
+
     [tim@thinkpad Projects]$ cd node-v0.4.0
     [tim@thinkpad node-v0.4.0]$ ./configure
     [tim@thinkpad node-v0.4.0]$ make 
     [tim@thinkpad node-v0.4.0]$ sudo make install
 
 * Install nodegit2 by running the `make` and `make install` commands.  (Future will be on NPM)
+
     [tim@thinkpad Projects]$ cd nodegit2
     [tim@thinkpad nodegit2]$ make
     [tim@thinkpad nodegit2]$ make install
@@ -38,6 +41,22 @@ You can skip this step and node-libgit2 will automatically fetch and install a f
 nodegit2 has been compiled and tested to work with the setup required to build and run NodeJS itself, instructions on compiling NodeJS
 on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows))
+
+Example API Usage
+-----------------
+
+### Creating and reading a repository ###
+
+    var git = require('git2');
+    
+    // Create a bare repository in the working directory
+    git.repo().init( '.git', true, function( err, path, is_bare ) {
+        // Read the current repository
+        git.repo( '.git', function( err, path ) {
+            // ...
+        });
+    });
+
 
 Unit testing
 ------------
