@@ -19,8 +19,8 @@ class Oid : public EventEmitter {
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
     int Mkstr(const char *str);
-    //void mkraw(git_oid *out, const unsigned char *raw)
-    //void fmt(char *str, const git_oid *oid)
+    void Mkraw(const unsigned char *raw);
+    char* Fmt();
     //void pathfmt(char *str, const git_oid *oid)
     //char* allocfmt(const git_oid *oid)
     //char* to_string(char *out, size_t n, const git_oid *oid)
@@ -32,6 +32,8 @@ class Oid : public EventEmitter {
     ~Oid() {}
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Mkstr(const Arguments& args);
+    static Handle<Value> Mkraw(const Arguments& args);
+    static Handle<Value> Fmt(const Arguments& args);
 
   private:
     git_oid oid;

@@ -141,7 +141,7 @@ Handle<Value> Repo::Init(const Arguments& args) {
   }
 
   if(args.Length() == 1 || !args[1]->IsBoolean()) {
-    return ThrowException(Exception::Error(String::New("is_bare is required and must be a String.")));
+    return ThrowException(Exception::Error(String::New("is_bare is required and must be a Boolean.")));
   }
 
   if(args.Length() == 2 || !args[2]->IsFunction()) {
@@ -185,7 +185,6 @@ int Repo::EIO_AfterInit(eio_req *req) {
   argv[0] = Number::Cast(*ar->err);
   argv[1] = String::Cast(*ar->path);
   argv[2] = *ar->is_bare;
-
 
   TryCatch try_catch;
 

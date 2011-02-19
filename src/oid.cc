@@ -21,12 +21,24 @@ void Oid::Initialize(Handle<Object> target) {
   constructor_template->SetClassName(String::NewSymbol("Oid"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkstr", Mkstr);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkraw", Mkraw);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "fmt", Fmt);
 
   target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
 
 int Oid::Mkstr(const char* id) {
   return git_oid_mkstr(&this->oid, id);
+}
+
+void Oid::Mkraw(const unsigned char *raw) {
+  git_oid_mkraw(&this->oid, raw);
+}
+
+char* Oid::Fmt() {
+  char* raw;
+  git_oid_fmt(raw, &this->oid);
+  return raw;
 }
 
 Handle<Value> Oid::New(const Arguments& args) {
@@ -50,6 +62,28 @@ Handle<Value> Oid::Mkstr(const Arguments& args) {
   String::Utf8Value id(Local<Value>::New(args[0]));
 
   return Local<Value>::New( Integer::New(oid->Mkstr(*id)) );
+}
+
+Handle<Value> Oid::Mkraw(const Arguments& args) {
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("Raw object id is required.")));
+  }
+
+  String::Utf8Value raw(Local<Value>::New(args[0]));
+  oid->Mkraw((const unsigned char*)*raw);
+  return Local<Value>::New(args.This());
+}
+
+Handle<Value> Oid::Fmt(const Arguments& args) {
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+
+  HandleScope scope;
+
+  return String::New(oid->Fmt());
 }
 
 Persistent<FunctionTemplate> Oid::constructor_template;

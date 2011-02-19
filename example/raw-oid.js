@@ -5,3 +5,6 @@ var oid = new git2.Oid();
 console.log( oid.mkstr('1810DFF58D8A660512D4832E740F692884338CCD') );
 // Invalid
 console.log( oid.mkstr('1838CCD') );
+
+// Test formatting
+console.log( oid.fmt() );

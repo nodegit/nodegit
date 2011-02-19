@@ -8,7 +8,7 @@ all:
 	node-waf configure build
 
 unittest:
-	$(NODEJS) ./test/index.js test
+	$(NODEJS) $(BASE)/test/index.js test
 
 clean:
 	rm -rf ./build

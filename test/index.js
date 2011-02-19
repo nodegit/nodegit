@@ -10,8 +10,8 @@ catch(e) {
     sys.puts( 'Cannot find nodeunit module.' );
     sys.puts( 'You can download submodules for this project by doing:' );
     sys.puts( '' );
-    sys.puts( '    git submodule init' );
-    sys.puts( '    git submodule update' );
+    sys.puts( '    git submodule init vendor/nodeunit' );
+    sys.puts( '    git submodule update vendor/nodeunit' );
     sys.puts( '' );
     process.exit();
 }
@@ -24,8 +24,8 @@ catch(e) {
     sys.puts( 'Cannot find rimraf module.' );
     sys.puts( 'You can download submodules for this project by doing:' );
     sys.puts( '' );
-    sys.puts( '    git submodule init' );
-    sys.puts( '    git submodule update' );
+    sys.puts( '    git submodule init vendor/rimraf' );
+    sys.puts( '    git submodule update vendor/rimraf' );
     sys.puts( '' );
     process.exit();
 }
