@@ -22,6 +22,6 @@ def configure(conf):
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'git2'
-  obj.rpath = '/usr/local/lib:'+os.getcwd()+'/vendor/libgit2/build/shared'
+  obj.rpath = '/usr/local/lib:./vendor/libgit2/build/shared'
   obj.source = './src/index.cc ./src/repo.cc ./src/oid.cc'
   obj.uselib = 'GIT2'
