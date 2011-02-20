@@ -55,11 +55,11 @@ Example API Usage
     var git = require('git2');
     
     // Create a bare repository in the working directory
-    git.repo().init( '.git', true, function( err, path, is_bare ) {
+    git.repo().init( '.git', true, function( err, path, is_bare, repo ) {
         // Read the current repository
-        git.repo( '.git', function( err, path ) {
+        git.repo( '.git', function( err, path, repo ) {
             // Read a commit
-            this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err ) {
+            this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, commit ) {
                 // ...
             });
         });

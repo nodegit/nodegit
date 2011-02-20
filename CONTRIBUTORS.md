@@ -1,5 +1,8 @@
 nodegit2 contributors (sorted alphabeticaly)
 ============================================
+* **[inimino](https://github.com/inimino)**
+
+  * JS API suggestions 
 
 * **[Tim Branyen](https://github.com/tbranyen)**
 
