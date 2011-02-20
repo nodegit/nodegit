@@ -47,23 +47,51 @@ Instructions on compiling `NodeJS` on a Windows platform can be found here:
 
 __ To use these bindings you will need to create a symbolic link (unless you installed via NPM) into `/usr/local/lib/node/` or wherever `NodeJS` is installed to the `nodegit2` path. __
 
-Example API Usage
+API Example Usage
 -----------------
 
-### Creating and reading a repository ###
+## Convenience API ##
+### Reading a repository and commit data ###
 
-    var git = require('git2');
+    var git = require('nodegit2');
     
-    // Create a bare repository in the working directory
-    git.repo().init( '.git', true, function( err, path, is_bare, repo ) {
-        // Read the current repository
-        git.repo( '.git', function( err, path, repo ) {
-            // Read a commit
-            this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, details, commit ) {
-                console.log( 'Message', details.message );
-                console.log( 'Author's name', details.author.name );
-                console.log( 'Author's email', details.author.email );
-            });
+    // Read the current repository
+    git.repo( '.git', function( err, path, repo ) {
+        // Read a commit
+        this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, details, commit ) {
+            console.log( 'Message', details.message );
+            console.log( 'Author name', details.author.name );
+            console.log( 'Author email', details.author.email );
+
+            // Memory cleanup is *not* required, but would be nice if you remembered :)
+            repo.free();
+        });
+    });
+
+## Raw API ##
+### Accomplishing the same thing as above ##
+
+    var git = require('nodegit2').git2;
+    
+    // Create instance of Repo constructor
+    var repo = new git2.Repo();
+    // Read the current repository
+    repo.open( '.git', function( err, path ) {
+        // Create object id and set hash
+        var oid = new git.Oid();
+        oid.mkstr( '5f2aa9407f7b3aeb531c621c3358953841ccfc98' );
+
+        // Create commit object
+        var commit = new git2.Commit();
+
+        // Lookup commit
+        commit.lookup( repo, oid, function( err, details ) {
+            console.log( 'Message', details.message );
+            console.log( 'Author name', details.author.name );
+            console.log( 'Author email', details.author.email );
+
+            // Memory cleanup is *not* required, but would be nice if you remembered :)
+            repo.free();
         });
     });
 
