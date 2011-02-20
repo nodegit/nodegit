@@ -17,6 +17,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
+class Repo;
 class Commit : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;

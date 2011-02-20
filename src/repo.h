@@ -24,7 +24,7 @@ class Repo : public EventEmitter {
     int Open(const char* path);
     void Free();
     int Init(const char* path, bool is_bare);
-    int LookupRef(git_reference* ref, const char* name);
+    int LookupRef(Ref* ref, char* name);
 
     // TODO: Implement these methods
     //int Open2(const char* path);

@@ -74,7 +74,7 @@ __ Accomplishing the same thing as above __
     var git = require('nodegit2').git2;
     
     // Create instance of Repo constructor
-    var repo = new git2.Repo();
+    var repo = new git.Repo();
     // Read the current repository
     repo.open( '.git', function( err, path ) {
         // Create object id and set hash
@@ -82,7 +82,7 @@ __ Accomplishing the same thing as above __
         oid.mkstr( '5f2aa9407f7b3aeb531c621c3358953841ccfc98' );
 
         // Create commit object
-        var commit = new git2.Commit();
+        var commit = new git.Commit();
 
         // Lookup commit
         commit.lookup( repo, oid, function( err, details ) {

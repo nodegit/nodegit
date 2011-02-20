@@ -12,6 +12,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "repo.h"
 #include "oid.h"
 #include "commit.h"
+#include "revwalk.h"
 
 using namespace node;
 using namespace v8;
@@ -23,4 +24,5 @@ extern "C" void init(Handle<Object> target) {
   Oid::Initialize(target);
   Repo::Initialize(target);
   Commit::Initialize(target);
+  RevWalk::Initialize(target);
 }

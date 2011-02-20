@@ -19,7 +19,7 @@ class Ref : public EventEmitter {
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
     git_reference* GetValue();
-    void SetValue(git_reference* ref);
+    void SetValue (git_reference* ref);
 
   protected:
     Ref() {}

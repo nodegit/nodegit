@@ -10,6 +10,9 @@ all:
 unittest:
 	$(NODEJS) $(BASE)/test/index.js test
 
+install:
+	node-waf install
+
 clean:
 	rm -rf ./build
 	rm -rf ./vendor/libgit2/build

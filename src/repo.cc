@@ -55,10 +55,8 @@ int Repo::Init(const char* path, bool is_bare) {
   return err;
 }
 
-int Repo::LookupRef(git_reference* ref, const char* name) {
-  int err = git_repository_lookup_ref(&ref, this->repo, name);
-
-  return err;
+int Repo::LookupRef(Ref* ref, char* name) {
+  return git_repository_lookup_ref(&ref->GetValue(), this->repo, name);
 }
 
 Handle<Value> Repo::New(const Arguments& args) {
@@ -224,15 +222,11 @@ Handle<Value> Repo::LookupRef(const Arguments& args) {
 
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Ref is required and must be an Object.")));
-  }
-
-  if(args.Length() == 1 || !args[1]->IsString()) {
+  if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("Name is required and must be a String.")));
   }
 
-  if(args.Length() == 2 || !args[2]->IsFunction()) {
+  if(args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
@@ -240,8 +234,7 @@ Handle<Value> Repo::LookupRef(const Arguments& args) {
 
   lookupref_request *ar = new lookupref_request();
   ar->repo = repo;
-  //git_reference* ref;
-  //ar->ref = ObjectWrap::Unwrap<Ref>(args[0]->ToObject());
+  ar->ref = new Ref();
   ar->name = Persistent<Value>::New(args[1]);
   ar->callback = Persistent<Function>::New(callback);
 
@@ -257,7 +250,7 @@ int Repo::EIO_LookupRef(eio_req *req) {
   lookupref_request *ar = static_cast<lookupref_request *>(req->data);
 
   String::Utf8Value name(ar->name);
-  ar->err = Persistent<Value>::New(Integer::New(ar->repo->LookupRef(ar->ref->GetValue(), *name)));
+  ar->err = Persistent<Value>::New(Integer::New(ar->repo->LookupRef(ar->ref, *name)));
 
   //if(Int32::Cast(*ar->err)->Value() == 0) {
   //  //ar->ref->SetValue(ref);
