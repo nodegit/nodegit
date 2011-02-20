@@ -21,6 +21,7 @@ class RevWalk : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
+    // Synchronous
     git_revwalk* GetValue();
     int Alloc (Repo *repo);
     //void 	git_revwalk_reset (git_revwalk *walker)

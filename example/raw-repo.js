@@ -6,8 +6,11 @@ var repo = new git2.Repo();
 repo.open('./.git', function(err, path) {
     console.log(err, path);
 
-    var ref = new git2.Reference();
-    repo.lookup_ref( ref, "HEAD", function( err ) {
-      console.log( err );
+    var ref = new git2.Ref();
+    repo.lookupRef( ref, "HEAD", function( err ) {
+      //console.log(err);
+      //var oid = new git2.Oid();
+      //ref.getOid(oid);
+      //console.log( oid.__proto__ );
     });
 });

@@ -21,10 +21,12 @@ class Repo : public EventEmitter {
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
     git_repository* GetValue();
+    // Asynchronous
     int Open(const char* path);
-    void Free();
     int Init(const char* path, bool is_bare);
     int LookupRef(git_reference** ref, const char* name);
+    // Synchronous
+    void Free();
 
     // TODO: Implement these methods
     //int Open2(const char* path);

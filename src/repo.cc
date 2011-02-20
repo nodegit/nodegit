@@ -27,7 +27,7 @@ void Repo::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", Open);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "init", Init);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup_ref", LookupRef);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookupRef", LookupRef);
 
   target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
 }

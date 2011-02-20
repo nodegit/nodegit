@@ -11,20 +11,26 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <git2.h>
 
+#include "oid.h"
+
 using namespace node;
 using namespace v8;
 
 class Reference : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
-    static void Initialize (Handle<v8::Object> target);
+    static void Initialize(Handle<v8::Object> target);
     git_reference* GetValue();
-    void SetValue (git_reference* ref);
+    // Synchronous
+    void SetValue(git_reference* ref);
+    const git_oid* GetOid();
 
   protected:
     Reference() {}
     ~Reference() {}
     static Handle<Value> New(const Arguments& args);
+
+    static Handle<Value> GetOid(const Arguments& args);
 
   private:
     git_reference *ref;

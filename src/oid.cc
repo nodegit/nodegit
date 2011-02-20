@@ -28,20 +28,25 @@ void Oid::Initialize(Handle<Object> target) {
 }
 
 git_oid* Oid::GetValue() {
-  return &this->oid;
+  return this->oid;
+}
+
+void Oid::SetValue(git_oid *oid) {
+  this->oid = oid;
 }
 
 int Oid::Mkstr(const char* id) {
-  return git_oid_mkstr(&this->oid, id);
+  return git_oid_mkstr(this->oid, id);
 }
 
 void Oid::Mkraw(const unsigned char *raw) {
-  git_oid_mkraw(&this->oid, raw);
+  git_oid_mkraw(this->oid, raw);
 }
 
 char* Oid::Fmt() {
-  char* raw;
-  git_oid_fmt(raw, &this->oid);
+  char raw;
+  git_oid_fmt(&raw, (const git_oid *)this->oid);
+
   return raw;
 }
 

@@ -19,6 +19,8 @@ class Oid : public EventEmitter {
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
     git_oid* GetValue();
+    void SetValue(git_oid* oid);
+    // Synchronous
     int Mkstr(const char *str);
     void Mkraw(const unsigned char *raw);
     char* Fmt();
@@ -37,7 +39,7 @@ class Oid : public EventEmitter {
     static Handle<Value> Fmt(const Arguments& args);
 
   private:
-    git_oid oid;
+    git_oid *oid;
 };
 
 #endif
