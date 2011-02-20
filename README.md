@@ -120,6 +120,7 @@ Release information
 ### v0.0.1: ###
     * 1:1 mapping of libgit2 read methods
     * An API that can be easily extended with convenience methods in JS
+    * An API that offers a familiar clean syntax that will make adoption and use much more likely
 
 ### v0.0.2: ###
     * Write capabilities

@@ -9,6 +9,8 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <git2.h>
 
 #include "repo.h"
+#include "ref.h"
+#include "commit.h"
 
 using namespace v8;
 using namespace node;
@@ -25,6 +27,7 @@ void Repo::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", Open);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "init", Init);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup_ref", LookupRef);
 
   target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
 }
@@ -48,6 +51,12 @@ int Repo::Init(const char* path, bool is_bare) {
   if(err == 0) {
     this->repo = *&repo_;
   }
+
+  return err;
+}
+
+int Repo::LookupRef(git_reference* ref, const char* name) {
+  int err = git_repository_lookup_ref(&ref, this->repo, name);
 
   return err;
 }
@@ -202,6 +211,82 @@ int Repo::EIO_AfterInit(eio_req *req) {
   ar->err.Dispose();
   ar->path.Dispose();
   ar->is_bare.Dispose();
+  ar->callback.Dispose();
+
+  delete ar;
+
+  return 0;
+}
+
+Handle<Value> Repo::LookupRef(const Arguments& args) {
+  Repo *repo = ObjectWrap::Unwrap<Repo>(args.This());
+  Local<Function> callback;
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Ref is required and must be an Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsString()) {
+    return ThrowException(Exception::Error(String::New("Name is required and must be a String.")));
+  }
+
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  callback = Local<Function>::Cast(args[2]);
+
+  lookupref_request *ar = new lookupref_request();
+  ar->repo = repo;
+  //git_reference* ref;
+  //ar->ref = ObjectWrap::Unwrap<Ref>(args[0]->ToObject());
+  ar->name = Persistent<Value>::New(args[1]);
+  ar->callback = Persistent<Function>::New(callback);
+
+  repo->Ref();
+
+  eio_custom(EIO_LookupRef, EIO_PRI_DEFAULT, EIO_AfterLookupRef, ar);
+  ev_ref(EV_DEFAULT_UC);
+
+  return Undefined();
+}
+
+int Repo::EIO_LookupRef(eio_req *req) {
+  lookupref_request *ar = static_cast<lookupref_request *>(req->data);
+
+  String::Utf8Value name(ar->name);
+  ar->err = Persistent<Value>::New(Integer::New(ar->repo->LookupRef(ar->ref->GetValue(), *name)));
+
+  //if(Int32::Cast(*ar->err)->Value() == 0) {
+  //  //ar->ref->SetValue(ref);
+  //}
+
+  return 0;
+}
+
+int Repo::EIO_AfterLookupRef(eio_req *req) {
+  HandleScope scope;
+
+  lookupref_request *ar = static_cast<lookupref_request *>(req->data);
+  ev_unref(EV_DEFAULT_UC);
+  ar->repo->Unref();
+
+  Local<Value> argv[2];
+  argv[0] = Number::Cast(*ar->err);
+  argv[1] = String::Cast(*ar->name);
+  //argv[2] = ref->Wrap(*ar->ref);
+
+  TryCatch try_catch;
+
+  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+
+  if(try_catch.HasCaught())
+    FatalException(try_catch);
+    
+  ar->err.Dispose();
+  ar->name.Dispose();
   ar->callback.Dispose();
 
   delete ar;

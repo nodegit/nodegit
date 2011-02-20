@@ -8,6 +8,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <git2.h>
 
+#include "ref.h"
 #include "repo.h"
 #include "oid.h"
 #include "commit.h"
@@ -18,7 +19,8 @@ using namespace v8;
 extern "C" void init(Handle<Object> target) {
   HandleScope scope;
 
-  Repo::Initialize(target);
+  Ref::Initialize(target);
   Oid::Initialize(target);
+  Repo::Initialize(target);
   Commit::Initialize(target);
 }

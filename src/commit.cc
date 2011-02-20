@@ -64,8 +64,9 @@ Handle<Value> Commit::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  lookup_request *ar = new lookup_request();
   callback = Local<Function>::Cast(args[2]);
+
+  lookup_request *ar = new lookup_request();
   ar->commit = commit;
   ar->repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
   ar->oid = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
