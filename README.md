@@ -87,9 +87,11 @@ Release information
 
 ### v0.0.2: ###
     * Write capabilities
+    * GitHub landing page
 
 ### v0.0.3: ###
     * Custom odb backend
+    * API coverage in GitHub Wiki
 
 Getting involved
 ----------------

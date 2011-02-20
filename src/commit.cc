@@ -44,17 +44,67 @@ Handle<Value> Commit::New(const Arguments& args) {
 
 Handle<Value> Commit::Lookup(const Arguments& args) {
   Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+  Local<Function> callback;
 
   HandleScope scope;
 
-  //if(args.Length() == 0 || !args[0]->IsString()) {
-   // return ThrowException(Exception::Error(String::New("Object id is required and must be a hex formatted String.")));
-  //}
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
 
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
+  if(args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
+  }
 
-  return Local<Value>::New( Integer::New(commit->Lookup(repo, oid)) );
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  lookup_request *ar = new lookup_request();
+  callback = Local<Function>::Cast(args[2]);
+  ar->commit = commit;
+  ar->repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  ar->oid = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
+  ar->callback = Persistent<Function>::New(callback);
+
+  commit->Ref();
+
+  eio_custom(EIO_Lookup, EIO_PRI_DEFAULT, EIO_AfterLookup, ar);
+  ev_ref(EV_DEFAULT_UC);
+
+  return Undefined();
 }
 
+int Commit::EIO_Lookup(eio_req *req) {
+  lookup_request *ar = static_cast<lookup_request *>(req->data);
+
+  ar->err = Persistent<Value>::New(Integer::New(ar->commit->Lookup(ar->repo, ar->oid)));
+
+  return 0;
+}
+
+int Commit::EIO_AfterLookup(eio_req *req) {
+  HandleScope scope;
+
+  lookup_request *ar = static_cast<lookup_request *>(req->data);
+  ev_unref(EV_DEFAULT_UC);
+  ar->commit->Unref();
+
+  Local<Value> argv[1];
+  argv[0] = Number::Cast(*ar->err);
+
+  TryCatch try_catch;
+
+  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+
+  if(try_catch.HasCaught())
+    FatalException(try_catch);
+    
+  ar->err.Dispose();
+  ar->callback.Dispose();
+
+  delete ar;
+
+  return 0;
+}
 Persistent<FunctionTemplate> Commit::constructor_template;

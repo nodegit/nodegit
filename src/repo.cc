@@ -72,14 +72,14 @@ Handle<Value> Repo::Open(const Arguments& args) {
   }
 
   if(args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback must be a Function.")));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   callback = Local<Function>::Cast(args[1]);
 
   open_request *ar = new open_request();
   ar->repo = repo;
-  ar->path = Persistent<Value>::New( args[0] );
+  ar->path = Persistent<Value>::New(args[0]);
   ar->callback = Persistent<Function>::New(callback);
 
   repo->Ref();
@@ -151,7 +151,7 @@ Handle<Value> Repo::Init(const Arguments& args) {
   }
 
   if(args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback must be a Function.")));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   callback = Local<Function>::Cast(args[2]);
@@ -175,7 +175,7 @@ int Repo::EIO_Init(eio_req *req) {
 
   String::Utf8Value path(ar->path);
   Local<Boolean> is_bare = ar->is_bare->ToBoolean();
-  ar->err = Persistent<Value>::New( Integer::New(ar->repo->Init(*path, *is_bare)) );
+  ar->err = Persistent<Value>::New(Integer::New(ar->repo->Init(*path, *is_bare)));
 
   return 0;
 }

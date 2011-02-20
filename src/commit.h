@@ -27,10 +27,21 @@ class Commit : public EventEmitter {
     Commit() {}
     ~Commit() {}
     static Handle<Value> New(const Arguments& args);
+
     static Handle<Value> Lookup(const Arguments& args);
+    static int EIO_Lookup(eio_req *req);
+    static int EIO_AfterLookup(eio_req *req);
 
   private:
     git_commit *commit;
+};
+
+struct lookup_request {
+  Commit *commit;
+  Repo *repo;
+  Oid *oid;
+  Persistent<Value> err;
+  Persistent<Function> callback;
 };
 
 #endif

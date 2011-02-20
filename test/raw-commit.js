@@ -1,6 +1,8 @@
 var git = require( 'nodegit2' ).git2,
     rimraf = require( '../vendor/rimraf');
 
+var testRepo = new git.Repo();
+
 // Helper functions
 var helper = {
   // Test if obj is a true function
@@ -37,28 +39,47 @@ exports.constructor = function( test ){
 
 // Oid::Mkstr
 exports.lookup = function( test ) {
-  var testCommit = new git.Commit();
+  var testOid = new git.Oid(),
+      testCommit = new git.Commit();
 
-  test.expect( 2 );
+  test.expect( 8 );
 
   // Test for function
   helper.testFunction( test.equals, testCommit.lookup, 'Commit::Lookup' );
 
-  // Test path argument existence
-//  helper.testException( test.ok, function() {
-//    testOid.mkstr();
-//  }, 'Throw an exception if no hex String' );
-// 
-//  // Test that both arguments result correctly
-//  helper.testException( test.ifError, function() {
-//    testOid.mkstr( "somestr" );
-//  }, 'No exception is thrown with proper arguments' );
-//
-//  // Test invalid hex id string
-//  test.equals( -2, testOid.mkstr( '1392DLFJIOS' ), 'Invalid hex id String' );
-//
-//  // Test valid hex id string
-//  test.equals( 0, testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' ), 'Valid hex id String' );
+  // Test repo argument existence
+  helper.testException( test.ok, function() {
+    testCommit.lookup();
+  }, 'Throw an exception if no repo' );
+ 
+  // Test oid argument existence
+  helper.testException( test.ok, function() {
+    testCommit.lookup( testRepo );
+  }, 'Throw an exception if no oid' );
 
-  test.done();
+  // Test callback argument existence
+  helper.testException( test.ok, function() {
+    testCommit.lookup( testRepo, testOid );
+  }, 'Throw an exception if no callback' );
+
+  // Test that both arguments result correctly
+  helper.testException( test.ifError, function() {
+    testCommit.lookup( testRepo, testOid, function() {} );
+  }, 'No exception is thrown with proper arguments' );
+
+  testRepo.open( './dummyrepo/.git', function( err, path ) {
+    // Test invalid commit
+    testOid.mkstr( '100644' );
+    testCommit.lookup( testRepo, testOid, function( err ) {
+      test.notEqual( 0, err, 'Not a valid commit');
+
+      // Test valid commit
+      testOid.mkstr( '978feacee2432e67051f2714ec7d28ad80e16908' );
+      testCommit.lookup( testRepo, testOid, function( err ) {
+        test.equals( 0, err, 'Valid commit');
+
+        test.done();
+      });
+    });
+  });
 };
