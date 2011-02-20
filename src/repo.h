@@ -18,6 +18,7 @@ class Repo : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
+    git_repository* GetValue();
     int Open(const char* path);
     void Free();
     int Init(const char* path, bool is_bare);

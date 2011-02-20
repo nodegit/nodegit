@@ -6,6 +6,8 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <node.h>
 #include <node_events.h>
 
+#include <git2.h>
+
 #include "repo.h"
 
 using namespace v8;
@@ -25,6 +27,10 @@ void Repo::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "init", Init);
 
   target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
+}
+
+git_repository* Repo::GetValue() {
+    return this->repo;
 }
 
 int Repo::Open(const char* path) {

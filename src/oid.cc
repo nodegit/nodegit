@@ -27,6 +27,10 @@ void Oid::Initialize(Handle<Object> target) {
   target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
 
+git_oid* Oid::GetValue() {
+  return &this->oid;
+}
+
 int Oid::Mkstr(const char* id) {
   return git_oid_mkstr(&this->oid, id);
 }

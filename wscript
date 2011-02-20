@@ -13,7 +13,7 @@ def configure(conf):
   conf.check_tool('node_addon')
 
   if not conf.check(lib='git2'):
-    if not conf.check(lib='git2', libpath=['/usr/local/lib','vendor/libgit2/build/shared'], uselib_store='GIT2'):
+    if not conf.check(lib='git2', libpath=['/usr/local/lib'], uselib_store='GIT2'):
       Popen('git submodule init vendor/libgit2', shell=True).wait()
       Popen('git submodule update vendor/libgit2', shell=True).wait()
       os.chdir('vendor/libgit2')
@@ -22,6 +22,6 @@ def configure(conf):
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'git2'
-  obj.rpath = '/usr/local/lib:vendor/libgit2/build/shared'
-  obj.source = 'src/index.cc src/repo.cc src/oid.cc'
+  obj.rpath = '/usr/local/lib'
+  obj.source = 'src/index.cc src/repo.cc src/oid.cc src/commit.cc'
   obj.uselib = 'GIT2'

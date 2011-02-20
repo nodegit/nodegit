@@ -27,38 +27,38 @@ exports.constructor = function( test ){
   test.expect( 3 );
 
   // Test for function
-  helper.testFunction( test.equals, git.Oid, 'Oid' );
+  helper.testFunction( test.equals, git.Commit, 'Commit' );
   
   // Ensure we get an instance of Oid
-  test.ok( new git.Oid() instanceof git.Oid, 'Invocation returns an instance of Oid' );
+  test.ok( new git.Commit() instanceof git.Commit, 'Invocation returns an instance of Commit' );
 
   test.done();
 };
 
 // Oid::Mkstr
-exports.mkstr = function( test ) {
-  var testOid = new git.Oid();
+exports.lookup = function( test ) {
+  var testCommit = new git.Commit();
 
-  test.expect( 6 );
+  test.expect( 2 );
 
   // Test for function
-  helper.testFunction( test.equals, testOid.mkstr, 'Oid::Mkstr' );
+  helper.testFunction( test.equals, testCommit.lookup, 'Commit::Lookup' );
 
   // Test path argument existence
-  helper.testException( test.ok, function() {
-    testOid.mkstr();
-  }, 'Throw an exception if no hex String' );
- 
-  // Test that both arguments result correctly
-  helper.testException( test.ifError, function() {
-    testOid.mkstr( "somestr" );
-  }, 'No exception is thrown with proper arguments' );
-
-  // Test invalid hex id string
-  test.equals( -2, testOid.mkstr( '1392DLFJIOS' ), 'Invalid hex id String' );
-
-  // Test valid hex id string
-  test.equals( 0, testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' ), 'Valid hex id String' );
+//  helper.testException( test.ok, function() {
+//    testOid.mkstr();
+//  }, 'Throw an exception if no hex String' );
+// 
+//  // Test that both arguments result correctly
+//  helper.testException( test.ifError, function() {
+//    testOid.mkstr( "somestr" );
+//  }, 'No exception is thrown with proper arguments' );
+//
+//  // Test invalid hex id string
+//  test.equals( -2, testOid.mkstr( '1392DLFJIOS' ), 'Invalid hex id String' );
+//
+//  // Test valid hex id string
+//  test.equals( 0, testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' ), 'Valid hex id String' );
 
   test.done();
 };

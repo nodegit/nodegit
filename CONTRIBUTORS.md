@@ -3,9 +3,7 @@ nodegit2 contributors (sorted alphabeticaly)
 
 * **[Tim Branyen](https://github.com/tbranyen)**
 
-  * Project creation
-  * Native code development
-  * Testing
+  * Project creator
 
 * **[Timothy J Fontaine](https://github.com/tjfontaine)**
 

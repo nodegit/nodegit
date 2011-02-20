@@ -1,21 +1,22 @@
 {
-  'name': 'nodegit2',
-  'description': 'NodeJS libgit2 asynchronous native bindings',
-  'version': '0.0.1',
-  'homepage': 'https://github.com/tbranyen/nodegit2',
-  'author': 'Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)',
-  'repository': {
-    'type': 'git',
-    'url': 'git://github.com/tbranyen/nodegit2.git'
+  "name": "nodegit2",
+  "description": "NodeJS libgit2 asynchronous native bindings",
+  "version": "0.0.1",
+  "homepage": "https://github.com/tbranyen/nodegit2",
+  "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tbranyen/nodegit2.git"
   },
-  'main': './lib/index.js',
-  'modules': {
-    'repo': './lib/repo'
+  "main": "./lib/index.js",
+  "modules": {
+    "repo": "./lib/repo",
+    "commit": "./lib/commit"
   },
-  'directories': {
-    'lib': './lib'
+  "directories": {
+    "lib": "./lib"
   },
-  'engines': {
-    'node': '*'
+  "engines": {
+    "node": "*"
   }
 }

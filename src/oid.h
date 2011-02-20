@@ -18,6 +18,7 @@ class Oid : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
+    git_oid* GetValue();
     int Mkstr(const char *str);
     void Mkraw(const unsigned char *raw);
     char* Fmt();
