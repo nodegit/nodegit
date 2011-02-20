@@ -59,8 +59,10 @@ Example API Usage
         // Read the current repository
         git.repo( '.git', function( err, path, repo ) {
             // Read a commit
-            this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, commit ) {
-                // ...
+            this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, details, commit ) {
+                console.log( 'Message', details.message );
+                console.log( 'Author's name', details.author.name );
+                console.log( 'Author's email', details.author.email );
             });
         });
     });

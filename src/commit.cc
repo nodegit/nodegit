@@ -29,6 +29,10 @@ void Commit::Initialize(Handle<Object> target) {
   target->Set(String::NewSymbol("Commit"), constructor_template->GetFunction());
 }
 
+git_commit* Commit::GetValue() {
+  return this->commit;
+}
+
 int Commit::Lookup(Repo *repo, Oid *oid) {
   return git_commit_lookup(&this->commit, repo->GetValue(), oid->GetValue());
 }
@@ -90,12 +94,41 @@ int Commit::EIO_AfterLookup(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->commit->Unref();
 
-  Local<Value> argv[1];
-  argv[0] = Number::Cast(*ar->err);
+  // Cache internal reference to commit
+  git_commit *commit = ar->commit->GetValue();
+
+  // Create commit details object
+  Local<Object> details_obj = Object::New();
+
+  // If there were no errors fetch information about the commit
+  if(Int32::Cast(*ar->err)->Value() == 0) {
+    // Create person object
+    const git_signature *author = git_commit_author(commit);
+    const git_signature *committer = git_commit_committer(commit);
+    
+    Local<Object> people_obj = Object::New();
+    // Author
+    Local<Object> author_obj = Object::New();
+    author_obj->Set(String::New("name"), String::New(author->name));
+    author_obj->Set(String::New("email"), String::New(author->email));
+    // Committer
+    Local<Object> committer_obj = Object::New();
+    committer_obj->Set(String::New("name"), String::New(committer->name));
+    committer_obj->Set(String::New("email"), String::New(committer->email));
+  
+    details_obj->Set(String::New("author"), author_obj);
+    details_obj->Set(String::New("committer"), committer_obj);
+    details_obj->Set(String::New("message"), String::New(git_commit_message(commit)));
+    details_obj->Set(String::New("short_message"), String::New(git_commit_message_short(commit)));
+  }
+
+  Local<Value> argv[2];
+  argv[0] = *ar->err;
+  argv[1] = details_obj;
 
   TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
 
   if(try_catch.HasCaught())
     FatalException(try_catch);

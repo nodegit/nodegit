@@ -66,6 +66,8 @@ exports.open = function( test ) {
       // Test path returned is correct
       test.equals( './.git', path, 'Path return matches sent' );
 
+      testRepo.free();
+
       test.done();
     });
   });

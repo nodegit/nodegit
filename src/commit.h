@@ -21,6 +21,7 @@ class Commit : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
+    git_commit* GetValue();
     int Lookup(Repo *repo, Oid *oid);
 
   protected:
