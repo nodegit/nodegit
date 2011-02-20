@@ -8,8 +8,8 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <git2.h>
 
+#include "reference.h"
 #include "repo.h"
-#include "ref.h"
 #include "commit.h"
 
 using namespace v8;
@@ -55,8 +55,8 @@ int Repo::Init(const char* path, bool is_bare) {
   return err;
 }
 
-int Repo::LookupRef(Ref* ref, char* name) {
-  return git_repository_lookup_ref(&ref->GetValue(), this->repo, name);
+int Repo::LookupRef(git_reference** ref, const char* name) {
+  return git_repository_lookup_ref(ref, this->repo, name);
 }
 
 Handle<Value> Repo::New(const Arguments& args) {
@@ -222,11 +222,15 @@ Handle<Value> Repo::LookupRef(const Arguments& args) {
 
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsString()) {
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Reference is required and must be a Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("Name is required and must be a String.")));
   }
 
-  if(args.Length() == 1 || !args[1]->IsFunction()) {
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
@@ -234,7 +238,7 @@ Handle<Value> Repo::LookupRef(const Arguments& args) {
 
   lookupref_request *ar = new lookupref_request();
   ar->repo = repo;
-  ar->ref = new Ref();
+  ar->ref = ObjectWrap::Unwrap<Reference>(args[0]->ToObject());
   ar->name = Persistent<Value>::New(args[1]);
   ar->callback = Persistent<Function>::New(callback);
 
@@ -250,11 +254,12 @@ int Repo::EIO_LookupRef(eio_req *req) {
   lookupref_request *ar = static_cast<lookupref_request *>(req->data);
 
   String::Utf8Value name(ar->name);
-  ar->err = Persistent<Value>::New(Integer::New(ar->repo->LookupRef(ar->ref, *name)));
+  git_reference **ref;
+  ar->err = Persistent<Value>::New(Integer::New(ar->repo->LookupRef(ref, *name)));
 
-  //if(Int32::Cast(*ar->err)->Value() == 0) {
-  //  //ar->ref->SetValue(ref);
-  //}
+  if(Int32::Cast(*ar->err)->Value() == 0) {
+    ar->ref->SetValue(*ref);
+  }
 
   return 0;
 }

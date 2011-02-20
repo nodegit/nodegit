@@ -14,7 +14,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
-class Ref : public EventEmitter {
+class Reference : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
@@ -22,8 +22,8 @@ class Ref : public EventEmitter {
     void SetValue (git_reference* ref);
 
   protected:
-    Ref() {}
-    ~Ref() {}
+    Reference() {}
+    ~Reference() {}
     static Handle<Value> New(const Arguments& args);
 
   private:

@@ -11,13 +11,13 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <git2.h>
 
+#include "reference.h"
 #include "repo.h"
 #include "oid.h"
 
 using namespace node;
 using namespace v8;
 
-class Repo;
 class Commit : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;

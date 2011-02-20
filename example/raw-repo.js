@@ -1,12 +1,13 @@
-var git2 = require('../build/default/git2');
+var git2 = require( 'nodegit2' ).git2;
 
 var repo = new git2.Repo();
 
-// Creating a git repo
-repo.init('./.git', true, function(err, path, is_bare) {
-    console.log("Is the repo created bare?", is_bare);
-    // Access existing repository
-    repo.open('./.git', function(err, path) {
-        console.log(err, path);
+// Access existing repository
+repo.open('./.git', function(err, path) {
+    console.log(err, path);
+
+    var ref = new git2.Reference();
+    repo.lookup_ref( ref, "HEAD", function( err ) {
+      console.log( err );
     });
 });

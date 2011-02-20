@@ -11,7 +11,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <git2.h>
 
-#include "ref.h"
+#include "reference.h"
 
 using namespace node;
 using namespace v8;
@@ -24,7 +24,7 @@ class Repo : public EventEmitter {
     int Open(const char* path);
     void Free();
     int Init(const char* path, bool is_bare);
-    int LookupRef(Ref* ref, char* name);
+    int LookupRef(git_reference** ref, const char* name);
 
     // TODO: Implement these methods
     //int Open2(const char* path);
@@ -74,7 +74,7 @@ struct init_request {
 
 struct lookupref_request {
   Repo *repo;
-  Ref *ref;
+  Reference *ref;
   Persistent<Value> err;
   Persistent<Value> name;
   Persistent<Function> callback;
