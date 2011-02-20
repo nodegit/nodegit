@@ -43,6 +43,10 @@ __ You can skip this step and `nodegit2` will automatically fetch and install a 
 Instructions on compiling `NodeJS` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
 
+### Important linking information ###
+
+__ To use these bindings you will need to create a symbolic link (unless you installed via NPM) into `/usr/local/lib/node/` or wherever `NodeJS` is installed to the `nodegit2` path. __
+
 Example API Usage
 -----------------
 
@@ -54,10 +58,12 @@ Example API Usage
     git.repo().init( '.git', true, function( err, path, is_bare ) {
         // Read the current repository
         git.repo( '.git', function( err, path ) {
-            // ...
+            // Read a commit
+            this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err ) {
+                // ...
+            });
         });
     });
-
 
 Running tests
 -------------
