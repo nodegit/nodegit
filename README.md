@@ -43,7 +43,7 @@ __ You can skip this step and `nodegit2` will automatically fetch and install a 
 Instructions on compiling `NodeJS` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
 
-### Important linking information ###
+### \*Important linking information\* ###
 
 __ To use these bindings you will need to create a symbolic link (unless you installed via NPM) into `/usr/local/lib/node/` or wherever `NodeJS` is installed to the `nodegit2` path. __
 
