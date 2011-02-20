@@ -88,6 +88,8 @@ exports.lookup = function( test ) {
           test.equals( 'initial commit', details.message.trim(), 'Details has correct message' );
         }
 
+        testRepo.free();
+
         test.done();
       });
     });

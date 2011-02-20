@@ -50,7 +50,7 @@ __ To use these bindings you will need to create a symbolic link (unless you ins
 API Example Usage
 -----------------
 
-## Convenience API ##
+### Convenience API ###
 ### Reading a repository and commit data ###
 
     var git = require('nodegit2');
@@ -68,7 +68,7 @@ API Example Usage
         });
     });
 
-## Raw API ##
+### Raw API ###
 ### Accomplishing the same thing as above ##
 
     var git = require('nodegit2').git2;

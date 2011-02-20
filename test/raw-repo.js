@@ -119,6 +119,9 @@ exports.init = function( test ) {
       testRepo.open( './test.git', function(err, path) {
         test.equals( 0, err, 'Valid repository created' );
         test.equals( true, is_bare, 'Returns valid is_bare value' );
+
+          testRepo.free();       
+
           // Cleanup, remove test repo directory
           rimraf( './test.git', function() {
             test.done();
