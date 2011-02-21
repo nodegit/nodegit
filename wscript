@@ -14,10 +14,13 @@ def configure(conf):
 
   if not conf.check(lib='git2'):
     if not conf.check(lib='git2', libpath=['/usr/local/lib'], uselib_store='GIT2'):
-      Popen('git submodule init vendor/libgit2', shell=True).wait()
-      Popen('git submodule update vendor/libgit2', shell=True).wait()
-      os.chdir('vendor/libgit2')
-      Popen('python waf configure build-shared install', shell=True).wait()
+      print 'libgit2 is required in the folder /usr/local/lib'
+      print ''
+      print 'Run the following commands to install:'
+      print 'git submodule init vendor/libgit2'
+      print 'git submodule update vendor/libgit2'
+      print 'vendor/libgit2'
+      print 'python waf configure build-shared install'
 
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
