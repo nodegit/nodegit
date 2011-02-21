@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "homepage": "https://github.com/tbranyen/nodegit2",
   "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
+  "main": "./lib/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/tbranyen/nodegit2.git"
