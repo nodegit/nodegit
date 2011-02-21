@@ -5,12 +5,18 @@ Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
 
 Currently under active development, `nodegit2` will provide asynchronous native bindings to the `libgit2` C API.
 
-Building
---------
+Building and installing
+-----------------------
 
 ### Dependancies ###
 To use `nodegit2`, you will need to have the `libgit2` shared library in `/usr/local/lib` and the `NodeJS`
 framework installed, you will also need `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
+
+### Using `NPM` ###
+
+The easiest way to get `nodegit2` \*Note: If you do not have write privileges to `/usr/local/lib` this will need to be run as superuser:
+
+    [tim@thinkpad Projects]$ npm install nodegit2
 
 ### Linux/Mac OS X/BSD Variants ###
 __ You can skip this step and `nodegit2` will automatically fetch and install a fresh copy of `libgit2` for you. __ 
@@ -31,11 +37,12 @@ __ You can skip this step and `nodegit2` will automatically fetch and install a 
     [tim@thinkpad node-v0.4.0]$ make 
     [tim@thinkpad node-v0.4.0]$ sudo make install
 
-#### Install `nodegit2` by cloning source from __GitHub__ and running the `make` and `make install` commands.  (Future will be on NPM) ####
+#### Install `nodegit2` by cloning source from __GitHub__ and running the `make` and `make install` commands. ####
+\* Remember you only need to run make as superuser if you want `nodegit2` to install `libgit2` for you. \*
 
     [tim@thinkpad Projects]$ git clone git@github.com:tbranyen/nodegit2.git
     [tim@thinkpad Projects]$ cd nodegit2
-    [tim@thinkpad nodegit2]$ make
+    [tim@thinkpad nodegit2]$ sudo make
     [tim@thinkpad nodegit2]$ make install
 
 ### Windows via Cygiwn ###
@@ -44,10 +51,6 @@ __ You can skip this step and `nodegit2` will automatically fetch and install a 
 
 Instructions on compiling `NodeJS` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
-
-### \*Important linking information\* ###
-
-__ To use these bindings you will need to create a symbolic link (unless you installed via NPM) into `/usr/local/lib/node/` or wherever `NodeJS` is installed to the `nodegit2` path. __
 
 API Example Usage
 -----------------
