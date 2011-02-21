@@ -39,7 +39,7 @@ class Oid : public EventEmitter {
     static Handle<Value> Fmt(const Arguments& args);
 
   private:
-    git_oid *oid;
+    git_oid oid;
 };
 
 #endif

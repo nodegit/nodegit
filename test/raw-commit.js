@@ -1,5 +1,5 @@
 var git = require( 'nodegit2' ).git2,
-    rimraf = require( '../vendor/rimraf');
+    rimraf = require( '../vendor/rimraf' );
 
 var testRepo = new git.Repo();
 
