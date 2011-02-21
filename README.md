@@ -11,6 +11,7 @@ Building and installing
 ### Dependancies ###
 To use `nodegit2`, you will need to have the `libgit2` shared library in `/usr/local/lib` and the `NodeJS`
 framework installed, you will also need `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
+__ You can skip this step and `nodegit2` will automatically fetch and install a fresh copy of `libgit2` for you. __ 
 
 ### Using NPM ###
 
@@ -19,9 +20,7 @@ The __ easiest __ way to get `nodegit2` \* Note: If you do not have write privil
     [tim@thinkpad Projects]$ npm install nodegit2
 
 ### Linux/Mac OS X/BSD Variants ###
-__ You can skip this step and `nodegit2` will automatically fetch and install a fresh copy of `libgit2` for you. __ 
-
-\*However! If you have `nodegit2` install `libgit2` for you, you must run `make` with a user that has priviledges to write to `/usr/local/lib`\*
+\*If you have `nodegit2` install `libgit2` for you, you must run `make` with a user that has priviledges to write to `/usr/local/lib`\*
 
 #### Install `libgit2` from [http://libgit2.github.com/](http://libgit2.github.com/) ####
 
