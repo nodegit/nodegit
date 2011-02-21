@@ -26,7 +26,7 @@ class Oid : public EventEmitter {
     char* Fmt();
     //void pathfmt(char *str, const git_oid *oid)
     //char* allocfmt(const git_oid *oid)
-    //char* to_string(char *out, size_t n, const git_oid *oid)
+    char* ToString(size_t length);
     //void cpy(git_oid *out, const git_oid *src)
     //int cmp(const git_oid *a, const git_oid *b)
 
@@ -37,6 +37,7 @@ class Oid : public EventEmitter {
     static Handle<Value> Mkstr(const Arguments& args);
     static Handle<Value> Mkraw(const Arguments& args);
     static Handle<Value> Fmt(const Arguments& args);
+    static Handle<Value> ToString(const Arguments& args);
 
   private:
     git_oid oid;
