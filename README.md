@@ -13,7 +13,9 @@ To use `nodegit2`, you will need to have the `libgit2` shared library in `/usr/l
 framework installed, you will also need `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 __ Windows Users: __ Compile through Cygwin, following the Unix instructions below.
+
 __ OS X Users: __ Install using `brew` or `macports`.
+
 __ Linux/Unix Users: __ Install from source or your favorite package manager.
 
 ### Using NPM ###
