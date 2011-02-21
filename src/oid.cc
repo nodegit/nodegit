@@ -23,6 +23,7 @@ void Oid::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkstr", Mkstr);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkraw", Mkraw);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "fmt", Fmt);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toString", ToString);
 
   target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
@@ -44,9 +45,17 @@ void Oid::Mkraw(const unsigned char *raw) {
 }
 
 char* Oid::Fmt() {
-  char* raw;
-  git_oid_fmt(raw, &this->oid);
-  return raw;
+  char* buffer;
+  git_oid_fmt(buffer, &this->oid);
+
+  return buffer;
+}
+
+char* Oid::ToString(size_t length) {
+  char* buffer;
+  git_oid_to_string(buffer, length, (const git_oid*)&this->oid);
+
+  return buffer;
 }
 
 Handle<Value> Oid::New(const Arguments& args) {
@@ -92,6 +101,18 @@ Handle<Value> Oid::Fmt(const Arguments& args) {
   HandleScope scope;
 
   return String::New(oid->Fmt());
+}
+
+Handle<Value> Oid::ToString(const Arguments& args) {
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+
+  HandleScope scope;
+  
+  if(args.Length() == 0 || !args[0]->IsNumber()) {
+    return ThrowException(Exception::Error(String::New("Length argument is required and must be a Number.")));
+  }
+
+  return String::New(oid->ToString((size_t)Local<Integer>::Cast(args[0])->Value()));
 }
 
 Persistent<FunctionTemplate> Oid::constructor_template;
