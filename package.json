@@ -4,21 +4,12 @@
   "version": "0.0.1",
   "homepage": "https://github.com/tbranyen/nodegit2",
   "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
-  "scripts": {
-    "preinstall": "node-waf configure",
-    "install": "node-waf build install"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/tbranyen/nodegit2.git"
   },
-  "main": "./lib/index.js",
   "modules": {
-    "repo": "./lib/repo",
-    "commit": "./lib/commit"
-  },
-  "directories": {
-    "lib": "./lib"
+    "index": "./lib/index"
   },
   "engines": {
     "node": "*"
