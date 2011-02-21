@@ -10,6 +10,8 @@ all:
 unittest:
 	$(NODEJS) $(BASE)/test/index.js test
 
+configure:
+
 install:
 	node-waf install
 
