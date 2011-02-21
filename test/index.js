@@ -32,10 +32,14 @@ catch(e) {
 
 process.chdir( './test' );
 reporter.run(
-  [ 
+  [
+    // Raw API
     'raw-repo.js',
     'raw-oid.js',
     'raw-commit.js',
+    'raw-error.js',
+
+    // Convenience API
     'convenience-repo.js'
   ]
 );
