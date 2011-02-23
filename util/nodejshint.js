@@ -1,4 +1,4 @@
-var JSHINT = require( '../vendor/jshint/jshint.js' ).JSHINT,
+var JSHINT = require( '../jshint.js' ).JSHINT,
     fs = require( 'fs' );
 
 var nodejshint = function() {
