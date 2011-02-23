@@ -9,8 +9,7 @@ Building and installing
 -----------------------
 
 ### Dependancies ###
-To use `nodegit2`, you will need to have the `libgit2` shared library in `/usr/local/lib` and the `NodeJS`
-framework installed, you will also need `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
+To run `nodegit2` you will need `NodeJS` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 __ Windows Users: __ Compile through Cygwin, following the Unix instructions below.
 
@@ -32,11 +31,6 @@ The __ easiest __ way to get `nodegit2`
     [tim@thinkpad node-v0.4.0]$ ./configure
     [tim@thinkpad node-v0.4.0]$ make 
     [tim@thinkpad node-v0.4.0]$ sudo make install
-
-#### Install `libgit2` from [http://libgit2.github.com/](http://libgit2.github.com/) ####
-
-    [tim@thinkpad Projects]$ cd libgit2
-    [tim@thinkpad libgit2]$ sudo python waf configure build-shared install
 
 #### Install `nodegit2` by cloning source from __GitHub__ and running the `make` and `make install` commands. ####
 \* Remember you only need to run make as superuser if you want `nodegit2` to install `libgit2` for you. \*
