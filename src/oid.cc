@@ -28,6 +28,11 @@ void Oid::Initialize(Handle<Object> target) {
   target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
 
+Handle<Value> Oid::WrapObj(Local<Object> obj) {
+  this->Wrap(obj);
+  return obj;
+}
+
 git_oid* Oid::GetValue() {
   return &this->oid;
 }

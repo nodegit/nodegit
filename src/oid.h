@@ -14,10 +14,11 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
-class Oid : public EventEmitter {
+class Oid : public ObjectWrap {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
+    Handle<Value> WrapObj(Local<Object> obj);
     git_oid* GetValue();
     void SetValue(git_oid* oid);
     // Synchronous
@@ -29,10 +30,10 @@ class Oid : public EventEmitter {
     char* ToString(size_t length);
     //void cpy(git_oid *out, const git_oid *src)
     //int cmp(const git_oid *a, const git_oid *b)
-
-  protected:
     Oid() {}
     ~Oid() {}
+
+  protected:
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Mkstr(const Arguments& args);
     static Handle<Value> Mkraw(const Arguments& args);

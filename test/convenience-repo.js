@@ -1,4 +1,4 @@
-var git = require( '../lib' ),
+var git = require( 'nodegit2' ),
     rimraf = require( '../vendor/rimraf'),
     fs = require( 'fs' );
 

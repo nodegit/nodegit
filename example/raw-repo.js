@@ -9,7 +9,7 @@ repo.open('./.git', function(err, path) {
     var ref = new git2.Ref();
     repo.lookupRef( ref, "HEAD", function( err ) {
       //console.log(err);
-      //var oid = new git2.Oid();
+      var oid = new git2.Oid();
       //ref.getOid(oid);
       //console.log( oid.__proto__ );
     });

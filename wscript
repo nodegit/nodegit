@@ -1,9 +1,6 @@
-import Options
-import os
-from subprocess import Popen
-from os import unlink, symlink, popen
-from os.path import exists 
-from logging import fatal
+import Options, Utils
+from os import system
+from os.path import exists, abspath
 
 def set_options(opt):
   opt.tool_options('compiler_cxx')
@@ -12,16 +9,19 @@ def configure(conf):
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
 
-  if not conf.check(lib='git2'):
-    if not conf.check(lib='git2', libpath=['vendor/libgit2/build/static'], uselib_store='GIT2'):
-      Popen('git submodule init vendor/libgit2', shell=True).wait()
-      Popen('git submodule update vendor/libgit2', shell=True).wait()
-      os.chdir('vendor/libgit2')
-      Popen('python waf configure build-static', shell=True).wait()
+  conf.env.append_value('LIBPATH_GIT2', abspath('vendor/libgit2/build/static/'))
+  conf.env.append_value('LIB_GIT2', 'git2')
+  conf.env.append_value('CPPPATH_GIT2', abspath('vendor/libgit2/build/static/'))
+
+    #Popen('git submodule init vendor/libgit2', shell=True).wait()
+    #Popen('git submodule update vendor/libgit2', shell=True).wait()
+    #os.chdir('vendor/libgit2')
+    #Popen('python waf configure build-static', shell=True).wait()
 
 def build(bld):
+  system('cd vendor/libgit2/; python waf configure build-static')
+
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
-  obj.target = 'git2'
-  obj.rpath = './libgit2'
+  obj.target = 'nodegit2'
   obj.source = 'src/base.cc src/error.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc'
   obj.uselib = 'GIT2'
