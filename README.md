@@ -33,7 +33,6 @@ The __ easiest __ way to get `nodegit2`
     [tim@thinkpad node-v0.4.0]$ sudo make install
 
 #### Install `nodegit2` by cloning source from __GitHub__ and running the `make` and `make install` commands. ####
-\* Remember you only need to run make as superuser if you want `nodegit2` to install `libgit2` for you. \*
 
     [tim@thinkpad Projects]$ git clone git@github.com:tbranyen/nodegit2.git
     [tim@thinkpad Projects]$ cd nodegit2
