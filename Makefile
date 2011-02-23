@@ -4,13 +4,10 @@ NODEJS = $(if $(shell test -f /usr/bin/nodejs && echo "true"),nodejs,node)
 BASE = .
 LIBPATH = /usr/local/lib:$(BASE)/vendor
 
-all:
+all: clean build lint
+
+build:
 	node-waf configure build
-
-unittest:
-	$(NODEJS) $(BASE)/test/index.js test
-
-configure:
 
 install:
 	node-waf install
@@ -18,3 +15,9 @@ install:
 clean:
 	rm -rf ./build
 	rm -rf ./vendor/libgit2/build
+
+unittest:
+	$(NODEJS) $(BASE)/test/index.js test
+
+lint:
+	node ./util/hint-check.js

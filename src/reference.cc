@@ -55,16 +55,21 @@ Handle<Value> Reference::GetOid(const Arguments& args) {
 
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
-  }
+//  if(args.Length() == 0 || !args[0]->IsObject()) {
+//    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
+//  }
+//
+//  callback = Local<Function>::Cast(args[2]);
 
-  callback = Local<Function>::Cast(args[2]);
+  //Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  //oid->SetValue((git_oid *)ref->GetOid());
+  //
+  const git_oid* oid = ref->GetOid();
+  Local<Object> obj;
 
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
-  oid->SetValue((git_oid *)ref->GetOid());
-
-  return Undefined();
+  Oid *t = new Oid();
+  t->SetValue((git_oid *)oid);
+  return t->WrapObj(obj);
 }
 
 Persistent<FunctionTemplate> Reference::constructor_template;
