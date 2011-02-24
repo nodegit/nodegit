@@ -128,13 +128,16 @@ You will most likely install `nodeunit` and `rimraf` via `npm` or make an alias 
 Release information
 -------------------
 
+__ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods)
+
 ### v0.0.1: ###
-    * 1:1 mapping of libgit2 read methods
+    * 1:1 mapping of core `libgit2` methods
     * An API that can be easily extended with convenience methods in JS
     * An API that offers a familiar clean syntax that will make adoption and use much more likely
 
 ### v0.0.2: ###
-    * Write capabilities
+    * More methods implemented
+    * Better test coverage
     * GitHub landing page
 
 ### v0.0.3: ###

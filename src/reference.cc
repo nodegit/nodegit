@@ -23,7 +23,7 @@ void Reference::Initialize(Handle<Object> target) {
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Ref"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "getOid", GetOid);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "oid", Oid);
 
   target->Set(String::NewSymbol("Ref"), constructor_template->GetFunction());
 }
@@ -36,7 +36,7 @@ void Reference::SetValue(git_reference *ref) {
   this->ref = ref;
 }
 
-const git_oid* Reference::GetOid() {
+const git_oid* Reference::Oid() {
   return git_reference_oid(this->ref);
 }
 
@@ -49,7 +49,7 @@ Handle<Value> Reference::New(const Arguments& args) {
   return args.This();
 }
 
-Handle<Value> Reference::GetOid(const Arguments& args) {
+Handle<Value> Reference::Oid(const Arguments& args) {
   Reference *ref = ObjectWrap::Unwrap<Reference>(args.This());
   Local<Function> callback;
 
@@ -62,9 +62,9 @@ Handle<Value> Reference::GetOid(const Arguments& args) {
 //  callback = Local<Function>::Cast(args[2]);
 
   //Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
-  //oid->SetValue((git_oid *)ref->GetOid());
+  //oid->SetValue((git_oid *)ref->Oid());
   //
-  const git_oid* oid = ref->GetOid();
+  const git_oid* oid = ref->Oid();
   Local<Object> obj;
 
   Oid *t = new Oid();
