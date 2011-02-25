@@ -67,9 +67,10 @@ Handle<Value> Reference::Oid(const Arguments& args) {
   const git_oid* oid = ref->Oid();
   Local<Object> obj;
 
-  Oid *t = new Oid();
-  t->SetValue((git_oid *)oid);
-  return t->WrapObj(obj);
+  //Oid *t = new Oid();
+  //t->SetValue((git_oid *)oid);
+  //return t->WrapObj(obj);
+  return callback;
 }
 
 Persistent<FunctionTemplate> Reference::constructor_template;
