@@ -29,6 +29,3 @@ def build(bld):
   obj.source = 'src/base.cc src/error.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc'
   obj.lib = 'git2'
   obj.rpath = 'vendor/libgit2/build/static/'
-
-def install(test):
-  print dir(test)
