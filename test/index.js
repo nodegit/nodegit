@@ -40,6 +40,6 @@ reporter.run(
     'raw-error.js',
 
     // Convenience API
-    'convenience-repo.js'
+    //'convenience-repo.js'
   ]
 );
