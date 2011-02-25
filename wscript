@@ -2,10 +2,17 @@ import Options, Utils
 from os import system
 from os.path import exists, abspath
 
+VERSION = '0.0.1'
+APPNAME = 'nodegit2'
+srcdir = '.'
+blddir = 'build'
+
 def set_options(opt):
+  opt.tool_options('gcc')
   opt.tool_options('compiler_cxx')
 
 def configure(conf):
+  conf.check_tool('gcc')
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
 
@@ -19,9 +26,11 @@ def configure(conf):
     #Popen('python waf configure build-static', shell=True).wait()
 
 def build(bld):
-  system('cd vendor/libgit2/; python waf configure build-static')
+  #libgit2 = bld.new_task_gen('wafadmin')
+  #libgit2.features = 'waf configure build-static'
+  #libgit2.target = 'libgit2'
 
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'nodegit2'
   obj.source = 'src/base.cc src/error.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc'
-  obj.uselib = 'GIT2'
+  #obj.uselib_local = 'libgit2'
