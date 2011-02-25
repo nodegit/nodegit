@@ -26,6 +26,7 @@ class Commit : public EventEmitter {
     int Lookup(Repo *repo, Oid *oid);
     // Synchronous
     git_commit* GetValue();
+    void SetValue(git_commit* commit);
 
   protected:
     Commit() {}

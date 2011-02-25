@@ -34,6 +34,10 @@ git_commit* Commit::GetValue() {
   return this->commit;
 }
 
+void Commit::SetValue(git_commit* commit) {
+  this->commit = commit;
+}
+
 int Commit::Lookup(Repo *repo, Oid *oid) {
   return git_commit_lookup(&this->commit, repo->GetValue(), oid->GetValue());
 }
