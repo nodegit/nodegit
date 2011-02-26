@@ -10,6 +10,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "reference.h"
 #include "error.h"
+#include "blob.h"
 #include "repo.h"
 #include "oid.h"
 #include "commit.h"
@@ -23,6 +24,7 @@ extern "C" void init(Handle<Object> target) {
 
   Reference::Initialize(target);
   Error::Initialize(target);
+  Blob::Initialize(target);
   Oid::Initialize(target);
   Repo::Initialize(target);
   Commit::Initialize(target);

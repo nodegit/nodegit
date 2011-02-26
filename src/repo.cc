@@ -36,6 +36,10 @@ git_repository* Repo::GetValue() {
     return this->repo;
 }
 
+void Repo::SetValue(git_repository* repo) {
+  this->repo = repo;
+}
+
 int Repo::Open(const char* path) {
   return git_repository_open(&this->repo, path);
 }

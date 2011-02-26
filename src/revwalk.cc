@@ -33,6 +33,10 @@ git_revwalk* RevWalk::GetValue() {
   return this->revwalk;
 }
 
+void RevWalk::SetValue(git_revwalk* revwalk) {
+  this->revwalk = revwalk;
+}
+
 int RevWalk::Alloc(Repo *repo) {
   return git_revwalk_new(&this->revwalk, repo->GetValue());
 }

@@ -23,6 +23,7 @@ class RevWalk : public EventEmitter {
     static void Initialize (Handle<v8::Object> target);
     // Synchronous
     git_revwalk* GetValue();
+    void SetValue(git_revwalk* revwalk);
     int Alloc (Repo *repo);
     //void 	git_revwalk_reset (git_revwalk *walker)
     //int 	git_revwalk_push (git_revwalk *walk, git_commit *commit)

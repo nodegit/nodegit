@@ -18,15 +18,19 @@ def configure(conf):
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
 
+  os.chdir('vendor/libgit2')
+  Popen('python waf configure', shell=True).wait()
+
   conf.env.append_value('LIBPATH_GIT2', abspath('build/shared'))
   conf.env.append_value('LIB_GIT2', 'git2')
 
 def build(bld):
-  os.chdir('vendor/libgit2')
-  Popen('python waf configure build-shared', shell=True).wait()
+  try: os.chdir('vendor/libgit2')
+  except: pass
+  Popen('python waf build-shared', shell=True).wait()
     
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'nodegit2'
-  obj.source = 'src/base.cc src/error.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc'
+  obj.source = 'src/base.cc src/blob.cc src/error.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc'
   obj.rpath = abspath('build/shared')
   obj.uselib = 'GIT2'

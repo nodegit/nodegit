@@ -47,8 +47,8 @@ Handle<Value> Blob::New(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  Repo *repo = ObjectWrapper::Unwrap<Repo>(args[0]);
-  int err = blob->New(repo);
+  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  int err = blob->New((git_repository *)repo);
     
   blob->Wrap(args.This());
 
