@@ -11,26 +11,11 @@ Building and installing
 ### Dependancies ###
 To run `nodegit2` you will need `NodeJS` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
-__ Windows Users: __ Compile through Cygwin, following the Unix instructions below.
+### The easiest way to get nodegit2 ###
 
-__ OS X Users: __ Install using `brew` or `macports`.
-
-__ Linux/Unix Users: __ Install from source or your favorite package manager.
-
-### Using NPM ###
-
-The __ easiest __ way to get `nodegit2`
-
-    [tim@thinkpad Projects]$ npm install nodegit2
+    [tim@thinkpad Projects]# npm install nodegit2
 
 ### Mac OS X/Linux/Unix ###
-
-#### Install `NodeJS` from [http://nodejs.org/](http://nodejs.org/) ####
-
-    [tim@thinkpad Projects]$ cd node-v0.4.0
-    [tim@thinkpad node-v0.4.0]$ ./configure
-    [tim@thinkpad node-v0.4.0]$ make 
-    [tim@thinkpad node-v0.4.0]$ sudo make install
 
 #### Install `nodegit2` by cloning source from __GitHub__ and running the `make` and `make install` commands. ####
 
@@ -113,8 +98,8 @@ __ Ensure the submodules `nodeunit` and `rimraf` are located in the `/vendor` su
 
 If they are not, `cd` into the `nodegit2` dir and run the following git commands to automatically fetch them:
     [tim@thinkpad Projects]$ cd nodegit2
-    [tim@thinkpad nodegit2]$ git submodule init
-    [tim@thinkpad nodegit2]$ git submodule update 
+    [tim@thinkpad nodegit2]$ git submodule init vendor/
+    [tim@thinkpad nodegit2]$ git submodule update vendor/
 
 Then simply run `make unittest` in the project root.
 
