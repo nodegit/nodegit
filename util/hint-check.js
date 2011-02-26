@@ -1,7 +1,9 @@
-var nodejshint = require( './nodejshint.js' ).test;
+var nodejshint = require( './nodejshint.js' ).test,
 
-nodejshint( [ 'lib/index.js', 'lib/ref.js', 'lib/repo.js', 'lib/error.js' ], function( failures ) {
-  if( !failures ) {
+files = [ 'lib/index.js', 'lib/ref.js', 'lib/repo.js', 'lib/error.js' ];
+
+nodejshint( files, function( failures ) {
+  if( !files.length ) {
     process.exit( 0 );
   } else {
     process.exit( 1 );

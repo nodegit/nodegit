@@ -1,16 +1,17 @@
 PACKAGE = libgit2
 NODEJS = $(if $(shell test -f /usr/bin/nodejs && echo "true"),nodejs,node)
+NODEBLD = node-waf
 
 BASE = .
 LIBPATH = /usr/local/lib:$(BASE)/vendor
 
-all: clean build lint
+all: buildbindings lint
 
-build:
-	node-waf configure build
+buildbindings:
+	$(NODEBLD) build
 
 install:
-	node-waf install
+	$(NODEBLD) install
 
 clean:
 	rm -rf ./build
