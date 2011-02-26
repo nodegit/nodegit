@@ -38,7 +38,7 @@ API Example Usage
 ### Convenience API ###
 __ Reading a repository and commit data: __
 
-    var git = require('nodegit2');
+    var git = require( 'nodegit2' );
     
     // Read the current repository
     git.repo( '.git', function( err, path, repo ) {
@@ -62,7 +62,7 @@ __ Reading a repository and commit data: __
 ### Raw API ###
 __ Accomplishing the same thing as above: __
 
-    var git = require('nodegit2').git2;
+    var git = require( 'nodegit2' ).git2;
     
     // Create instance of Repo constructor
     var repo = new git.Repo();
