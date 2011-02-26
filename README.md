@@ -114,10 +114,12 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
 ### v0.1: ###
     * Some useful methods implemented
     * Some unit tests
+    * Some documented source code
     * Useable build/code quality check tools
     * NodeJS application that can be configured/built/installed via source and NPM
     * An API that can be easily extended with convenience methods in JS
     * An API that offers a familiar clean syntax that will make adoption and use much more likely
+    * Open for public testing
 
 ### v0.2: ###
     * More methods implemented
@@ -126,23 +128,8 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
     * More API development
 
 ### v0.3: ###
-    * 
     * Custom odb backend
     * API coverage in GitHub Wiki
-
-### v0.4 ###
-
-### v0.5 ###
-
-### v0.6 ###
-
-### v0.7 ###
-
-### v0.8 ###
-
-### v0.9 ###
-
-### v1.0 ###
 
 Getting involved
 ----------------
