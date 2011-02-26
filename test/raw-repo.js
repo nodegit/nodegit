@@ -60,11 +60,11 @@ exports.open = function( test ) {
     test.equals( -8, err, 'Invalid repository error code' );
 
     // Test valid repository
-    testRepo.open( './.git', function( err, path ) {
+    testRepo.open( './dummyrepo/.git', function( err, path ) {
       test.equals( 0, err, 'Valid repository error code' );
 
       // Test path returned is correct
-      test.equals( './.git', path, 'Path return matches sent' );
+      test.equals( './dummyrepo/.git', path, 'Path return matches sent' );
 
       testRepo.free();
 

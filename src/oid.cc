@@ -37,7 +37,7 @@ git_oid* Oid::GetValue() {
   return &this->oid;
 }
 
-void Oid::SetValue(git_oid *oid) {
+void Oid::SetValue(git_oid* oid) {
   this->oid = *oid;
 }
 
@@ -45,22 +45,16 @@ int Oid::Mkstr(const char* id) {
   return git_oid_mkstr(&this->oid, id);
 }
 
-void Oid::Mkraw(const unsigned char *raw) {
+void Oid::Mkraw(const unsigned char* raw) {
   git_oid_mkraw(&this->oid, raw);
 }
 
-char* Oid::Fmt() {
-  char buffer[40];
-  git_oid_fmt(buffer, &this->oid);
-
-  return buffer;
+char* Oid::Fmt(char* buffer) {
+  git_oid_fmt(*&buffer, &this->oid);
 }
 
-char* Oid::ToString(int len) {
-  char buffer[len];
-  git_oid_to_string(*&buffer, sizeof(buffer), (const git_oid*)&this->oid);
-
-  return buffer;
+char* Oid::ToString(char* buffer, size_t bufferSize) {
+  git_oid_to_string(*&buffer, bufferSize, &this->oid);
 }
 
 Handle<Value> Oid::New(const Arguments& args) {
@@ -106,7 +100,9 @@ Handle<Value> Oid::Fmt(const Arguments& args) {
 
   HandleScope scope;
 
-  return String::New(oid->Fmt());
+  char buffer[40];
+  oid->Fmt(buffer);
+  return String::New(buffer);
 }
 
 Handle<Value> Oid::ToString(const Arguments& args) {
@@ -118,9 +114,9 @@ Handle<Value> Oid::ToString(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Length argument is required and must be a Number.")));
   }
 
-  int len = Local<Integer>::Cast(args[0])->Value();
-
-  return String::New(oid->ToString(len));
+  char buffer[Int32::Cast(*args[0])->Value()+1];
+  oid->ToString(buffer, sizeof(buffer));
+  return String::New(buffer);
 }
 
 Persistent<FunctionTemplate> Oid::constructor_template;

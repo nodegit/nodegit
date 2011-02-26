@@ -38,12 +38,12 @@ void Commit::SetValue(git_commit* commit) {
   this->commit = commit;
 }
 
-int Commit::New(git_repository *repo) {
+int Commit::New(git_repository* repo) {
   return git_commit_new(&this->commit, repo);
 }
 
-int Commit::Lookup(Repo *repo, Oid *oid) {
-  return git_commit_lookup(&this->commit, repo->GetValue(), oid->GetValue());
+int Commit::Lookup(git_repository* repo, git_oid* oid) {
+  return git_commit_lookup(&this->commit, repo, oid);
 }
 
 Handle<Value> Commit::New(const Arguments& args) {
@@ -100,7 +100,7 @@ Handle<Value> Commit::Lookup(const Arguments& args) {
 int Commit::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
-  ar->err = Persistent<Value>::New(Integer::New(ar->commit->Lookup(ar->repo, ar->oid)));
+  ar->err = Persistent<Value>::New(Integer::New(ar->commit->Lookup(ar->repo->GetValue(), ar->oid->GetValue())));
 
   return 0;
 }

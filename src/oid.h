@@ -22,12 +22,12 @@ class Oid : public ObjectWrap {
     git_oid* GetValue();
     void SetValue(git_oid* oid);
     // Synchronous
-    int Mkstr(const char *str);
-    void Mkraw(const unsigned char *raw);
-    char* Fmt();
+    int Mkstr(const char* str);
+    void Mkraw(const unsigned char* raw);
+    char* Fmt(char* buffer);
     //void pathfmt(char *str, const git_oid *oid)
     //char* allocfmt(const git_oid *oid)
-    char* ToString(int len);
+    char* ToString(char* buffer, size_t bufferSize);
     //void cpy(git_oid *out, const git_oid *src)
     //int cmp(const git_oid *a, const git_oid *b)
     Oid() {}

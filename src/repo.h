@@ -12,6 +12,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <git2.h>
 
 #include "reference.h"
+#include "obj.h"
 
 using namespace node;
 using namespace v8;
@@ -46,6 +47,10 @@ class Repo : public EventEmitter {
     static int EIO_Open(eio_req *req);
     static int EIO_AfterOpen(eio_req *req);
 
+    static Handle<Value> Lookup(const Arguments& args);
+    static int EIO_Lookup(eio_req *req);
+    static int EIO_AfterLookup(eio_req *req);
+
     static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Init(const Arguments& args);
@@ -58,29 +63,34 @@ class Repo : public EventEmitter {
 
   private:
     git_repository *repo;
-};
 
-struct open_request {
-  Repo *repo;
-  Persistent<Value> err;
-  Persistent<Value> path;
-  Persistent<Function> callback;
-};
+    struct open_request {
+      Repo *repo;
+      Persistent<Value> err;
+      Persistent<Value> path;
+      Persistent<Function> callback;
+    };
 
-struct init_request {
-  Repo *repo;
-  Persistent<Value> err;
-  Persistent<Value> path;
-  Persistent<Boolean> is_bare;
-  Persistent<Function> callback;
-};
+    struct lookup_request {
+      Repo *repo;
+      Persistent<Function> callback;
+    };
 
-struct lookupref_request {
-  Repo *repo;
-  Reference *ref;
-  Persistent<Value> err;
-  Persistent<Value> name;
-  Persistent<Function> callback;
+    struct init_request {
+      Repo *repo;
+      Persistent<Value> err;
+      Persistent<Value> path;
+      Persistent<Boolean> is_bare;
+      Persistent<Function> callback;
+    };
+
+    struct lookupref_request {
+      Repo *repo;
+      Reference *ref;
+      Persistent<Value> err;
+      Persistent<Value> name;
+      Persistent<Function> callback;
+    };
 };
 
 #endif

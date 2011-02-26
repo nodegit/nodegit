@@ -27,7 +27,7 @@ class Commit : public EventEmitter {
     git_commit* GetValue();
     void SetValue(git_commit* commit);
     // Asynchronous
-    int Lookup(Repo *repo, Oid *oid);
+    int Lookup(git_repository* repo, git_oid* oid);
 
   protected:
     Commit() {}
@@ -40,14 +40,15 @@ class Commit : public EventEmitter {
 
   private:
     git_commit *commit;
+
+    struct lookup_request {
+      Commit *commit;
+      Repo *repo;
+      Oid *oid;
+      Persistent<Value> err;
+      Persistent<Function> callback;
+    };
 };
 
-struct lookup_request {
-  Commit *commit;
-  Repo *repo;
-  Oid *oid;
-  Persistent<Value> err;
-  Persistent<Function> callback;
-};
 
 #endif
