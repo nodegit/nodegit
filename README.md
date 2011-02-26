@@ -43,12 +43,12 @@ __ Reading a repository and commit data: __
     // Read the current repository
     git.repo( '.git', function( err, path, repo ) {
         // If success will return 0, if an error message throw it as an error string.
-        if( !err ) throw err;
+        if( err ) { throw err; }
 
         // Read a commit
         this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, details, commit ) {
             // If success will return 0, if an error message throw it as an error string.
-            if( !err ) throw err;
+            if( err ) { throw err; }
 
             console.log( 'Message', details.message );
             console.log( 'Author name', details.author.name );
@@ -69,7 +69,7 @@ __ Accomplishing the same thing as above: __
     // Read the current repository
     repo.open( '.git', function( err, path ) {
         // If success will return 0, if an error message throw it as an error string.
-        if( !err ) throw err;
+        if( err ) { throw err };
 
         // Create object id and set hash
         var oid = new git.Oid();
@@ -81,7 +81,7 @@ __ Accomplishing the same thing as above: __
         // Lookup commit
         commit.lookup( repo, oid, function( err, details ) {
             // If success will return 0, if an error message throw it as an error string.
-            if( !err ) throw err;
+            if( err ) { throw err; }
 
             console.log( 'Message', details.message );
             console.log( 'Author name', details.author.name );
