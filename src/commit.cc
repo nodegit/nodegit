@@ -38,6 +38,10 @@ void Commit::SetValue(git_commit* commit) {
   this->commit = commit;
 }
 
+int Commit::New(git_repository *repo) {
+  return git_commit_new(&this->commit, repo);
+}
+
 int Commit::Lookup(Repo *repo, Oid *oid) {
   return git_commit_lookup(&this->commit, repo->GetValue(), oid->GetValue());
 }
@@ -46,6 +50,14 @@ Handle<Value> Commit::New(const Arguments& args) {
   HandleScope scope;
 
   Commit *commit = new Commit();
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
+
+  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  int err = commit->New((git_repository *)repo);
+
   commit->Wrap(args.This());
 
   return args.This();

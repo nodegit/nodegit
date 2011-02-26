@@ -3,13 +3,13 @@ NodeJS libgit2 bindings
 
 Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
 
-Currently under active development, `nodegit2` will provide asynchronous native bindings to the `libgit2` C API.
+Currently under active development, `nodegit2` provides asynchronous native bindings to the `libgit2` C API.
 
 Building and installing
 -----------------------
 
 ### Dependancies ###
-To run `nodegit2` you will need `NodeJS` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
+To run `nodegit2` you need `NodeJS` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 ### Easy install ###
 
@@ -26,7 +26,7 @@ To run `nodegit2` you will need `NodeJS` and to run unit tests you will need to 
 
 ### Windows via Cygiwn ###
 
-#### `nodegit2` has been compiled and tested to work with the setup required to build and run `NodeJS` itself ####
+#### `nodegit2` has been compiled and tested to work with the setup required to build and run `NodeJS` itself. ####
 
 Instructions on compiling `NodeJS` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))

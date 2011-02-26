@@ -22,11 +22,12 @@ class Commit : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
-    // Asynchronous
-    int Lookup(Repo *repo, Oid *oid);
     // Synchronous
+    int New(git_repository *repo);
     git_commit* GetValue();
     void SetValue(git_commit* commit);
+    // Asynchronous
+    int Lookup(Repo *repo, Oid *oid);
 
   protected:
     Commit() {}
