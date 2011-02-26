@@ -111,19 +111,38 @@ Release information
 
 __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods) __
 
-### v0.0.1: ###
-    * 1:1 mapping of core `libgit2` methods
+### v0.1: ###
+    * Some useful methods implemented
+    * Some unit tests
+    * Useable build/code quality check tools
+    * NodeJS application that can be configured/built/installed via source and NPM
     * An API that can be easily extended with convenience methods in JS
     * An API that offers a familiar clean syntax that will make adoption and use much more likely
 
-### v0.0.2: ###
+### v0.2: ###
     * More methods implemented
-    * Better test coverage
+    * More unit tests
     * GitHub landing page
+    * More API development
 
-### v0.0.3: ###
+### v0.3: ###
+    * 
     * Custom odb backend
     * API coverage in GitHub Wiki
+
+### v0.4 ###
+
+### v0.5 ###
+
+### v0.6 ###
+
+### v0.7 ###
+
+### v0.8 ###
+
+### v0.9 ###
+
+### v1.0 ###
 
 Getting involved
 ----------------
