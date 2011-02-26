@@ -103,6 +103,8 @@ If they are not, `cd` into the `nodegit2` dir and run the following `git` comman
     [tim@thinkpad nodegit2]$ git submodule init vendor/
     [tim@thinkpad nodegit2]$ git submodule update vendor/
 
+Then simply run `make unittest` in the project root.
+
 Release information
 -------------------
 
