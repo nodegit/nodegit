@@ -1,5 +1,3 @@
 build/
 build/*
-vendor/
-vendor/*
 .lock-wscript
