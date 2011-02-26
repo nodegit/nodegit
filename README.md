@@ -94,9 +94,9 @@ __ Accomplishing the same thing as above __
 Running tests
 -------------
 
-__ Ensure the submodules `nodeunit` and `rimraf` are located in the `/vendor` subdirectory. __
+__ Ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
 
-If they are not, `cd` into the `nodegit2` dir and run the following git commands to automatically fetch them:
+If they are not, `cd` into the `nodegit2` dir and run the following `git` commands to automatically fetch them:
     [tim@thinkpad Projects]$ cd nodegit2
     [tim@thinkpad nodegit2]$ git submodule init vendor/
     [tim@thinkpad nodegit2]$ git submodule update vendor/
@@ -108,7 +108,7 @@ Example of building `nodegit2` bindings and running tests:
     [tim@thinkpad nodegit2]$ make
     [tim@thinkpad nodegit2]$ make unittest 
 
-You will most likely install `nodeunit` and `rimraf` via `npm` or make an alias to the `nodeunit` binary in `/vendor`.
+You will most likely install `nodeunit` and `rimraf` via `npm` or make an alias to the `nodeunit` binary in `vendor/`.
 
 Release information
 -------------------
