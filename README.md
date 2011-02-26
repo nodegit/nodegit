@@ -22,7 +22,7 @@ To run `nodegit2` you need `NodeJS` and to run unit tests you will need to have 
     [tim@thinkpad Projects]$ git clone git@github.com:tbranyen/nodegit2.git
     [tim@thinkpad Projects]$ cd nodegit2
     [tim@thinkpad nodegit2]$ make
-    [tim@thinkpad nodegit2]$ make install
+    [tim@thinkpad nodegit2]# make install
 
 ### Windows via Cygiwn ###
 
