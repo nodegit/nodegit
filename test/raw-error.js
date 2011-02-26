@@ -1,5 +1,5 @@
-var git = require( 'nodegit2' ).git2,
-    rimraf = require( '../vendor/rimraf' );
+var git = require( '../' ).git2,
+    rimraf = require( '../vendor/rimraf' ) || require( 'rimraf' );
 
 // Helper functions
 var helper = {

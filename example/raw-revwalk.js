@@ -1,4 +1,4 @@
-var git2 = require( 'nodegit2' ).git2;
+var git2 = require( '../' ).git2;
 
 var repo = new git2.Repo();
 
