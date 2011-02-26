@@ -11,7 +11,7 @@ Building and installing
 ### Dependancies ###
 To run `nodegit2` you will need `NodeJS` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
-### The easiest way to get nodegit2 ###
+### Easy install ###
 
     [tim@thinkpad Projects]# npm install nodegit2
 
