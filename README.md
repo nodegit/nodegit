@@ -17,7 +17,7 @@ To run `nodegit2` you need `NodeJS` and to run unit tests you will need to have 
 
 ### Mac OS X/Linux/Unix ###
 
-#### Install `nodegit2` by cloning source from __GitHub__ and running the `make` and `make install` commands. ####
+#### Install `nodegit2` by cloning source from __GitHub__ and running the `make` and `make install` commands: ####
 
     [tim@thinkpad Projects]$ git clone git@github.com:tbranyen/nodegit2.git
     [tim@thinkpad Projects]$ cd nodegit2
@@ -94,21 +94,14 @@ __ Accomplishing the same thing as above __
 Running tests
 -------------
 
+__ `nodegit2` library code is written adhering to a modified `JSHint`. Run these tests with `make lint`. __
+
 __ Ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
 
 If they are not, `cd` into the `nodegit2` dir and run the following `git` commands to automatically fetch them:
     [tim@thinkpad Projects]$ cd nodegit2
     [tim@thinkpad nodegit2]$ git submodule init vendor/
     [tim@thinkpad nodegit2]$ git submodule update vendor/
-
-Then simply run `make unittest` in the project root.
-
-Example of building `nodegit2` bindings and running tests:
-    [tim@thinkpad Projects]$ cd nodegit2
-    [tim@thinkpad nodegit2]$ make
-    [tim@thinkpad nodegit2]$ make unittest 
-
-You will most likely install `nodeunit` and `rimraf` via `npm` or make an alias to the `nodeunit` binary in `vendor/`.
 
 Release information
 -------------------
