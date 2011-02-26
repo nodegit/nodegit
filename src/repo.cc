@@ -60,7 +60,7 @@ int Repo::Init(const char* path, bool is_bare) {
 }
 
 int Repo::LookupRef(git_reference** ref, const char* name) {
-  return git_repository_lookup_ref(ref, this->repo, name);
+  return git_repository_lookup_ref(ref, *&this->repo, name);
 }
 
 Handle<Value> Repo::New(const Arguments& args) {
@@ -243,7 +243,7 @@ Handle<Value> Repo::LookupRef(const Arguments& args) {
   lookupref_request *ar = new lookupref_request();
   ar->repo = repo;
   ar->ref = ObjectWrap::Unwrap<Reference>(args[0]->ToObject());
-  ar->name = Persistent<Value>::New(args[1]);
+  ar->name = Persistent<String>::New(args[1]->ToString());
   ar->callback = Persistent<Function>::New(callback);
 
   repo->Ref();
@@ -258,11 +258,13 @@ int Repo::EIO_LookupRef(eio_req *req) {
   lookupref_request *ar = static_cast<lookupref_request *>(req->data);
 
   String::Utf8Value name(ar->name);
-  git_reference **ref;
-  ar->err = Persistent<Value>::New(Integer::New(ar->repo->LookupRef(ref, *name)));
+  git_reference *ref;
+
+  int err = ar->repo->LookupRef((git_reference **)ref, *name);
+  ar->err = Persistent<Value>::New(Integer::New(err));
 
   if(Int32::Cast(*ar->err)->Value() == 0) {
-    ar->ref->SetValue(*ref);
+    ar->ref->SetValue(*&ref);
   }
 
   return 0;

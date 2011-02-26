@@ -42,7 +42,7 @@ int Reference::New(git_repository* repo) {
 }
 
 const git_oid* Reference::Oid() {
-  return git_reference_oid(this->ref);
+  return git_reference_oid(*&this->ref);
 }
 
 Handle<Value> Reference::New(const Arguments& args) {

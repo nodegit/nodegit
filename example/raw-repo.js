@@ -1,16 +1,17 @@
 var git2 = require( '../' ).git2;
 
-var repo = new git2.Repo();
+var repo = new git2.Repo(),
+    error = new git2.Error();
 
 // Access existing repository
 repo.open('./.git', function(err, path) {
     console.log(err, path);
 
-    var ref = new git2.Ref(repo);
-    repo.lookupRef( ref, "head", function( err ) {
-      console.log(err);
+    var master = new git2.Ref(repo);
+    repo.lookupRef( master, "refs/heads/master", function( err, ref ) {
+      console.log(err, ref);
       var oid = new git2.Oid();
-      ref.oid(oid);
-      console.log( oid.fmt() );
+      master.oid(oid);
+      console.log( oid.toString(40) );
     });
 });
