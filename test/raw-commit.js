@@ -32,7 +32,7 @@ exports.constructor = function( test ){
   helper.testFunction( test.equals, git.Commit, 'Commit' );
   
   // Ensure we get an instance of Oid
-  test.ok( new git.Commit() instanceof git.Commit, 'Invocation returns an instance of Commit' );
+  test.ok( new git.Commit(testRepo) instanceof git.Commit, 'Invocation returns an instance of Commit' );
 
   test.done();
 };
@@ -40,7 +40,7 @@ exports.constructor = function( test ){
 // Oid::Mkstr
 exports.lookup = function( test ) {
   var testOid = new git.Oid(),
-      testCommit = new git.Commit();
+      testCommit = new git.Commit(testRepo);
 
   testOid.mkstr( '978feacee2432e67051f2714ec7d28ad80e16908' );
 

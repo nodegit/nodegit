@@ -49,7 +49,7 @@ Handle<Value> Sig::New(const Arguments& args) {
 
 
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  int err = sig->New((git_repository *)repo);
+  sig->New((git_repository *)repo);
     
   sig->Wrap(args.This());
 

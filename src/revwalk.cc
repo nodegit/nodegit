@@ -24,7 +24,7 @@ void RevWalk::Initialize(Handle<Object> target) {
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("RevWalk"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "alloc", Alloc);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
 
   target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
 }
@@ -37,46 +37,43 @@ void RevWalk::SetValue(git_revwalk* revwalk) {
   this->revwalk = revwalk;
 }
 
-int RevWalk::Alloc(Repo *repo) {
+int RevWalk::New(Repo *repo) {
   return git_revwalk_new(&this->revwalk, repo->GetValue());
+}
+
+int RevWalk::Push(Commit *commit) {
+  return git_revwalk_push(*&this->revwalk, commit->GetValue());
 }
 
 Handle<Value> RevWalk::New(const Arguments& args) {
   HandleScope scope;
 
   RevWalk *revwalk = new RevWalk();
-  revwalk->Wrap(args.This());
-
-  return args.This();
-}
-
-Handle<Value> RevWalk::Alloc(const Arguments& args) {
-  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
-  Local<Function> callback;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  if(args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
+  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  revwalk->New(repo);
 
-  callback = Local<Function>::Cast(args[1]);
+  revwalk->Wrap(args.This());
 
-  int err = revwalk->Alloc(ObjectWrap::Unwrap<Repo>(args[0]->ToObject()));
-
-  Local<Value> argv[1];
-  argv[0] = Local<Value>::New(Integer::New(err));
-
-  TryCatch try_catch;
-
-  callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-  if(try_catch.HasCaught())
-    FatalException(try_catch);
-
-  return Undefined();
+  return args.This();
 }
 
+Handle<Value> RevWalk::Push(const Arguments& args) {
+  HandleScope scope;
+
+  RevWalk *revwalk = new RevWalk();
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));
+  }
+
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args[0]->ToObject());
+  int err = revwalk->Push(commit);
+
+  return Local<Value>::New(Integer::New(err));
+}
 Persistent<FunctionTemplate> RevWalk::constructor_template;

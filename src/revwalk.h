@@ -20,11 +20,12 @@ using namespace v8;
 class RevWalk : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
-    static void Initialize (Handle<v8::Object> target);
+    static void Initialize(Handle<v8::Object> target);
     // Synchronous
     git_revwalk* GetValue();
     void SetValue(git_revwalk* revwalk);
-    int Alloc (Repo *repo);
+    int New(Repo *repo);
+    int Push(Commit *commit);
     //void 	git_revwalk_reset (git_revwalk *walker)
     //int 	git_revwalk_push (git_revwalk *walk, git_commit *commit)
     //int 	git_revwalk_hide (git_revwalk *walk, git_commit *commit)
@@ -37,8 +38,7 @@ class RevWalk : public EventEmitter {
     RevWalk() {}
     ~RevWalk() {}
     static Handle<Value> New(const Arguments& args);
-
-    static Handle<Value> Alloc(const Arguments& args);
+    static Handle<Value> Push(const Arguments& args);
 
   private:
     git_revwalk *revwalk;

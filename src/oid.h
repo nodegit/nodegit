@@ -27,7 +27,7 @@ class Oid : public ObjectWrap {
     char* Fmt();
     //void pathfmt(char *str, const git_oid *oid)
     //char* allocfmt(const git_oid *oid)
-    char* ToString(size_t length);
+    char* ToString(int len);
     //void cpy(git_oid *out, const git_oid *src)
     //int cmp(const git_oid *a, const git_oid *b)
     Oid() {}

@@ -50,15 +50,15 @@ void Oid::Mkraw(const unsigned char *raw) {
 }
 
 char* Oid::Fmt() {
-  char* buffer;
+  char buffer[40];
   git_oid_fmt(buffer, &this->oid);
 
   return buffer;
 }
 
-char* Oid::ToString(size_t length) {
-  char* buffer;
-  git_oid_to_string(buffer, length, (const git_oid*)&this->oid);
+char* Oid::ToString(int len) {
+  char buffer[len];
+  git_oid_to_string(*&buffer, sizeof(buffer), (const git_oid*)&this->oid);
 
   return buffer;
 }
@@ -97,6 +97,7 @@ Handle<Value> Oid::Mkraw(const Arguments& args) {
 
   String::Utf8Value raw(Local<Value>::New(args[0]));
   oid->Mkraw((const unsigned char*)*raw);
+
   return Local<Value>::New(args.This());
 }
 
@@ -117,7 +118,9 @@ Handle<Value> Oid::ToString(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Length argument is required and must be a Number.")));
   }
 
-  return String::New(oid->ToString((size_t)Local<Integer>::Cast(args[0])->Value()));
+  int len = Local<Integer>::Cast(args[0])->Value();
+
+  return String::New(oid->ToString(len));
 }
 
 Persistent<FunctionTemplate> Oid::constructor_template;

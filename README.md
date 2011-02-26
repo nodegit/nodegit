@@ -36,7 +36,7 @@ API Example Usage
 -----------------
 
 ### Convenience API ###
-__ Reading a repository and commit data __
+__ Reading a repository and commit data: __
 
     var git = require('nodegit2');
     
@@ -60,7 +60,7 @@ __ Reading a repository and commit data __
     });
 
 ### Raw API ###
-__ Accomplishing the same thing as above __
+__ Accomplishing the same thing as above: __
 
     var git = require('nodegit2').git2;
     

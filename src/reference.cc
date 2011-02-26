@@ -55,7 +55,7 @@ Handle<Value> Reference::New(const Arguments& args) {
   }
 
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  int err = ref->New((git_repository *)repo);
+  ref->New((git_repository *)repo);
 
   ref->Wrap(args.This());
 

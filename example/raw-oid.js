@@ -8,4 +8,4 @@ console.log( oid.mkstr('1838CCD') );
 
 // Test formatting
 console.log( oid.mkstr('5f2aa9407f7b3aeb531c621c3358953841ccfc98') );
-console.log( oid.toString(40) );
+console.log( oid.fmt() );

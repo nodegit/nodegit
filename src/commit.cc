@@ -56,7 +56,7 @@ Handle<Value> Commit::New(const Arguments& args) {
   }
 
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  int err = commit->New((git_repository *)repo);
+  commit->New((git_repository *)repo);
 
   commit->Wrap(args.This());
 
