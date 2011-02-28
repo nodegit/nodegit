@@ -9,7 +9,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <git2.h>
 
 #include "repo.h"
-#include "blob.h"
+#include "sig.h"
 
 using namespace v8;
 using namespace node;
@@ -26,16 +26,20 @@ void Sig::Initialize (Handle<v8::Object> target) {
   target->Set(String::NewSymbol("Sig"), constructor_template->GetFunction());
 }
 
-git_blob* Sig::GetValue() {
-  return this->blob;
+git_signature* Sig::GetValue() {
+  return this->sig;
 }
 
-void Sig::SetValue(git_blob* blob) {
-  this->blob = blob;
+void Sig::SetValue(git_signature* sig) {
+  this->sig = sig;
 }
 
-int Sig::New(const char *name, const char *email, time_t time, int offset) {
-  return git_signature_new(name, email, time, offset);
+void Sig::New(const char *name, const char *email, time_t time, int offset) {
+  this->sig = git_signature_new(name, email, time, offset);
+}
+
+void Sig::Free() {
+  git_signature_free(this->sig);
 }
 
 Handle<Value> Sig::New(const Arguments& args) {
@@ -43,13 +47,12 @@ Handle<Value> Sig::New(const Arguments& args) {
 
   Sig *sig = new Sig();
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-  }
+  //if(args.Length() == 0 || !args[0]->IsObject()) {
+  //  return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  //}
 
-
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  sig->New((git_repository *)repo);
+  //Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  //sig->New((git_repository *)repo);
     
   sig->Wrap(args.This());
 

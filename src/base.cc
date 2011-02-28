@@ -9,6 +9,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <git2.h>
 
 #include "reference.h"
+#include "sig.h"
 #include "error.h"
 #include "blob.h"
 #include "repo.h"
@@ -21,6 +22,7 @@ extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
 
   Reference::Initialize(target);
+  Sig::Initialize(target);
   Error::Initialize(target);
   Blob::Initialize(target);
   Oid::Initialize(target);

@@ -21,18 +21,20 @@ class Sig : public EventEmitter {
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
     // Synchronous
-    int New(const char *name, const char *email, time_t time, int offset);
+    void New(const char *name, const char *email, time_t time, int offset);
     git_signature* GetValue();
     void SetValue(git_signature* Sig);
+    void Free();
 
   protected:
     Sig() {};
     ~Sig() {};
 
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> Free(const Arguments& args);
 
   private:
-    git_signature* Sig;
+    git_signature* sig;
 };
 
 #endif
