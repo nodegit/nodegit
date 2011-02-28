@@ -53,20 +53,20 @@ exports.constructor = function( test ){
 
 // Repo::Init
 exports.init = function( test ) {
-  test.expect( 7 );
+  test.expect( 5 );
 
   // Test for function
   helper.testFunction( test.equals, git.repo().init, 'Repo::Init' );
 
   // Test path argument existence
-  helper.testException( test.ok, function() {
-    git.repo().init();
-  }, 'Throw an exception if no path' );
+  //helper.testException( test.ok, function() {
+  //  git.repo().init();
+  //}, 'Throw an exception if no path' );
  
-  // Test is_bare argument existence
-  helper.testException( test.ok, function() {
-    git.repo().init( 'some/path' );
-  }, 'Throw an exception if no is_bare' );
+  //// Test is_bare argument existence
+  //helper.testException( test.ok, function() {
+  //  git.repo().init( 'some/path' );
+  //}, 'Throw an exception if no is_bare' );
 
   // Cleanup, remove test repo directory - if it exists
   rimraf( './test.git', function() {
@@ -74,13 +74,21 @@ exports.init = function( test ) {
     git.repo().init( './test.git', true, function( err, path, is_bare ) {
       test.equals( 0, err, 'Successfully created bare repository' );
       // Verify repo exists
-      git.repo('./test.git', function(err, path) {
+      git.repo('./test.git', function(err, path, repo) {
         test.equals( 0, err, 'Valid repository created' );
         test.equals( true, is_bare, 'Returns valid is_bare value' );
+
+        // Test repo branch lookup
+        console.log( repo, repo.__proto__ );
+        repo.branch( 'master', function( err ) {
+          console.log(err);
+          test.done();
+
           // Cleanup, remove test repo directory
           rimraf( './test.git', function() {
-            test.done();
+
           });
+        });
       });
     });
   });

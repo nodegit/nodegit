@@ -37,9 +37,12 @@ reporter.run(
     'raw-repo.js',
     'raw-oid.js',
     'raw-commit.js',
-    'raw-error.js'
+    'raw-error.js',
+    
+    // TODO:
+    //'raw-revwalk.js'
 
     // Convenience API
-    //'convenience-repo.js'
+    'convenience-repo.js'
   ]
 );
