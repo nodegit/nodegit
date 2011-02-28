@@ -70,11 +70,9 @@ Handle<Value> Reference::Oid(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
-  oid->SetValue( (git_oid *)ref->Oid() );
+  //Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  //oid->SetValue( (git_oid *)ref->Oid() );
 
   return Undefined();
 }
-
 Persistent<FunctionTemplate> Reference::constructor_template;

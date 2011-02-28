@@ -26,6 +26,7 @@ class RevWalk : public EventEmitter {
     void SetValue(git_revwalk* revwalk);
     int New(Repo *repo);
     int Push(Commit *commit);
+    int Next(Commit *commit);
     //void 	git_revwalk_reset (git_revwalk *walker)
     //int 	git_revwalk_push (git_revwalk *walk, git_commit *commit)
     //int 	git_revwalk_hide (git_revwalk *walk, git_commit *commit)
@@ -40,8 +41,19 @@ class RevWalk : public EventEmitter {
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Push(const Arguments& args);
 
+    static Handle<Value> Next(const Arguments& args);
+    static int EIO_Next(eio_req *req);
+    static int EIO_AfterNext(eio_req *req);
+
   private:
     git_revwalk *revwalk;
+
+    struct next_request {
+      RevWalk *revwalk;
+      Commit *commit;
+      Persistent<Value> err;
+      Persistent<Function> callback;
+    };
 };
 
 #endif

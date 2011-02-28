@@ -25,6 +25,7 @@ void RevWalk::Initialize(Handle<Object> target) {
   constructor_template->SetClassName(String::NewSymbol("RevWalk"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "next", Next);
 
   target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
 }
@@ -42,7 +43,11 @@ int RevWalk::New(Repo *repo) {
 }
 
 int RevWalk::Push(Commit *commit) {
-  return git_revwalk_push(*&this->revwalk, commit->GetValue());
+  return git_revwalk_push(this->revwalk, commit->GetValue());
+}
+
+int RevWalk::Next(Commit *commit) {
+  return git_revwalk_next((git_commit **)commit->GetValue(), this->revwalk);
 }
 
 Handle<Value> RevWalk::New(const Arguments& args) {
@@ -55,7 +60,7 @@ Handle<Value> RevWalk::New(const Arguments& args) {
   }
 
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  revwalk->New(repo);
+  int err = revwalk->New(repo);
 
   revwalk->Wrap(args.This());
 
@@ -75,5 +80,67 @@ Handle<Value> RevWalk::Push(const Arguments& args) {
   int err = revwalk->Push(commit);
 
   return Local<Value>::New(Integer::New(err));
+}
+
+Handle<Value> RevWalk::Next(const Arguments& args) {
+  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
+  Local<Function> callback;
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  callback = Local<Function>::Cast(args[1]);
+
+  next_request *ar = new next_request();
+  ar->revwalk = revwalk;
+  ar->commit = ObjectWrap::Unwrap<Commit>(args[0]->ToObject());
+  ar->callback = Persistent<Function>::New(callback);
+
+  revwalk->Ref();
+
+  eio_custom(EIO_Next, EIO_PRI_DEFAULT, EIO_AfterNext, ar);
+  ev_ref(EV_DEFAULT_UC);
+
+  return Undefined();
+}
+
+int RevWalk::EIO_Next(eio_req *req) {
+  next_request *ar = static_cast<next_request *>(req->data);
+
+  ar->err = Persistent<Value>::New(Integer::New(ar->revwalk->Next(ar->commit)));
+
+  return 0;
+}
+
+int RevWalk::EIO_AfterNext(eio_req *req) {
+  HandleScope scope;
+
+  next_request *ar = static_cast<next_request *>(req->data);
+  ev_unref(EV_DEFAULT_UC);
+  ar->revwalk->Unref();
+
+  Local<Value> argv[1];
+  argv[0] = *ar->err;
+
+  TryCatch try_catch;
+
+  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+
+  if(try_catch.HasCaught())
+    FatalException(try_catch);
+    
+  ar->err.Dispose();
+  ar->callback.Dispose();
+
+  delete ar;
+
+  return 0;
 }
 Persistent<FunctionTemplate> RevWalk::constructor_template;
