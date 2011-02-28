@@ -26,6 +26,7 @@ void RevWalk::Initialize(Handle<Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "next", Next);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
 
   target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
 }
@@ -48,6 +49,10 @@ int RevWalk::Push(Commit *commit) {
 
 int RevWalk::Next(Commit *commit) {
   return git_revwalk_next((git_commit **)commit->GetValue(), this->revwalk);
+}
+
+void RevWalk::Free() {
+  git_revwalk_free(this->revwalk);
 }
 
 Handle<Value> RevWalk::New(const Arguments& args) {
@@ -142,5 +147,15 @@ int RevWalk::EIO_AfterNext(eio_req *req) {
   delete ar;
 
   return 0;
+}
+
+Handle<Value> RevWalk::Free(const Arguments& args) {
+  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
+
+  HandleScope scope;
+
+  revwalk->Free();
+
+  return Undefined();
 }
 Persistent<FunctionTemplate> RevWalk::constructor_template;

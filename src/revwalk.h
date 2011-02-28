@@ -21,12 +21,14 @@ class RevWalk : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
-    // Synchronous
+
     git_revwalk* GetValue();
     void SetValue(git_revwalk* revwalk);
     int New(Repo *repo);
     int Push(Commit *commit);
     int Next(Commit *commit);
+    void Free();
+
     //void 	git_revwalk_reset (git_revwalk *walker)
     //int 	git_revwalk_push (git_revwalk *walk, git_commit *commit)
     //int 	git_revwalk_hide (git_revwalk *walk, git_commit *commit)
@@ -44,6 +46,8 @@ class RevWalk : public EventEmitter {
     static Handle<Value> Next(const Arguments& args);
     static int EIO_Next(eio_req *req);
     static int EIO_AfterNext(eio_req *req);
+
+    static Handle<Value> Free(const Arguments& args);
 
   private:
     git_revwalk *revwalk;

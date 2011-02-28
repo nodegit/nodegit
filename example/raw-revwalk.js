@@ -19,7 +19,9 @@ repo.open('.git', function(err, path) {
     var _commit = new git.Commit(repo);
     revwalk.next(_commit, function( err ) {
       console.log( error.strError(err) );
+      revwalk.free();
     });
+
   });
 
 
