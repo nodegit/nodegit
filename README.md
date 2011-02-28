@@ -111,7 +111,7 @@ Release information
 
 __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods) __
 
-### v0.1: ###
+### v0.0.1: ###
     * Some useful methods implemented
     * Some unit tests
     * Some documented source code
@@ -120,14 +120,15 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
     * An API that can be easily extended with convenience methods in JS
     * An API that offers a familiar clean syntax that will make adoption and use much more likely
     * Open for public testing
+    * Be able to open and read a repo and fetch all its commits and lookup specific commits and their associated metadata + reading blob rawcontent.
 
-### v0.2: ###
+### v0.0.2: ###
     * More methods implemented
     * More unit tests
     * GitHub landing page
     * More API development
 
-### v0.3: ###
+### v0.0.3: ###
     * Custom odb backend
     * API coverage in GitHub Wiki
 
