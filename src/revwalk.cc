@@ -11,6 +11,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "revwalk.h"
 #include "repo.h"
 #include "commit.h"
+#include <stdlib.h>
 
 using namespace v8;
 using namespace node;
