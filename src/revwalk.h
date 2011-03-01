@@ -26,7 +26,7 @@ class RevWalk : public EventEmitter {
     void SetValue(git_revwalk* revwalk);
     int New(Repo *repo);
     int Push(Commit *commit);
-    int Next(Commit *commit);
+    int Next(git_commit** commit);
     void Free();
 
     //void 	git_revwalk_reset (git_revwalk *walker)

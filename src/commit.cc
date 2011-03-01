@@ -26,6 +26,9 @@ void Commit::Initialize(Handle<Object> target) {
   constructor_template->SetClassName(String::NewSymbol("Commit"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "messageShort", MessageShort);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "message", Message);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "timeOffset", TimeOffset);
 
   target->Set(String::NewSymbol("Commit"), constructor_template->GetFunction());
 }
@@ -44,6 +47,18 @@ int Commit::New(git_repository* repo) {
 
 int Commit::Lookup(git_repository* repo, git_oid* oid) {
   return git_commit_lookup(&this->commit, repo, oid);
+}
+
+const char* Commit::MessageShort() {
+  return git_commit_message_short(this->commit);
+}
+
+const char* Commit::Message() {
+  return git_commit_message(this->commit);
+}
+
+int Commit::TimeOffset() {
+  return git_commit_time_offset(this->commit);
 }
 
 Handle<Value> Commit::New(const Arguments& args) {
@@ -157,5 +172,29 @@ int Commit::EIO_AfterLookup(eio_req *req) {
   delete ar;
 
   return 0;
+}
+
+Handle<Value> Commit::MessageShort(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+  
+  return String::New(commit->MessageShort());
+}
+
+Handle<Value> Commit::Message(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+  
+  return String::New(commit->Message());
+}
+
+Handle<Value> Commit::TimeOffset(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+  
+  return Integer::New(commit->TimeOffset());
 }
 Persistent<FunctionTemplate> Commit::constructor_template;

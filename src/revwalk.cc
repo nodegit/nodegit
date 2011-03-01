@@ -47,8 +47,8 @@ int RevWalk::Push(Commit *commit) {
   return git_revwalk_push(this->revwalk, commit->GetValue());
 }
 
-int RevWalk::Next(Commit *commit) {
-  return git_revwalk_next((git_commit**)commit->GetValue(), this->revwalk);
+int RevWalk::Next(git_commit **commit) {
+  return git_revwalk_next(commit, this->revwalk);
 }
 
 void RevWalk::Free() {
@@ -117,8 +117,9 @@ Handle<Value> RevWalk::Next(const Arguments& args) {
 
 int RevWalk::EIO_Next(eio_req *req) {
   next_request *ar = static_cast<next_request *>(req->data);
+  git_commit* ref = ar->commit->GetValue();
 
-  ar->err = Persistent<Value>::New(Integer::New(ar->revwalk->Next(ar->commit)));
+  ar->err = Persistent<Value>::New(Integer::New(ar->revwalk->Next(&ref)));
 
   return 0;
 }

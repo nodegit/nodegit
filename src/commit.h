@@ -22,21 +22,28 @@ class Commit : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
-    // Synchronous
-    int New(git_repository *repo);
+
     git_commit* GetValue();
     void SetValue(git_commit* commit);
-    // Asynchronous
+    int New(git_repository *repo);
     int Lookup(git_repository* repo, git_oid* oid);
+    const char* MessageShort();
+    const char* Message();
+    int TimeOffset();
 
   protected:
     Commit() {}
     ~Commit() {}
+
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
     static int EIO_Lookup(eio_req *req);
     static int EIO_AfterLookup(eio_req *req);
+
+    static Handle<Value> MessageShort(const Arguments& args);
+    static Handle<Value> Message(const Arguments& args);
+    static Handle<Value> TimeOffset(const Arguments& args);
 
   private:
     git_commit *commit;
