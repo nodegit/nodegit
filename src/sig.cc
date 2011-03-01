@@ -38,6 +38,10 @@ void Sig::New(const char *name, const char *email, time_t time, int offset) {
   this->sig = git_signature_new(name, email, time, offset);
 }
 
+git_signature* Sig::Dup() {
+  return git_signature_dup(this->sig);
+}
+
 void Sig::Free() {
   git_signature_free(this->sig);
 }
@@ -46,16 +50,32 @@ Handle<Value> Sig::New(const Arguments& args) {
   HandleScope scope;
 
   Sig *sig = new Sig();
-
-  //if(args.Length() == 0 || !args[0]->IsObject()) {
-  //  return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-  //}
-
-  //Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  //sig->New((git_repository *)repo);
     
   sig->Wrap(args.This());
 
   return args.This();
+}
+
+Handle<Value> Sig::Dup(const Arguments& args) {
+  HandleScope scope;
+
+  //Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
+  }
+
+  Sig* sig = ObjectWrap::Unwrap<Sig>(args[0]->ToObject());
+  sig->SetValue(sig->Dup());
+
+  return Undefined();
+}
+
+Handle<Value> Sig::Free(const Arguments& args) {
+  HandleScope scope;
+
+  Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
+  sig->Free();
+
+  return Undefined();
 }
 Persistent<FunctionTemplate> Sig::constructor_template;

@@ -3,16 +3,16 @@ var git = require( '../' ).git2;
 var repo = new git.Repo();
 
 // Access existing repository
-repo.open('/home/tim/Dropbox/Projects/libgit2/.git', function(err, path) {
-  var revwalk = new git.RevWalk(repo),
+repo.open( '/home/tim/Dropbox/Projects/dotfiles/.git', function( err, path ) {
+  var revwalk = new git.RevWalk( repo ),
       oid = new git.Oid(),
       error = new git.Error(),
-      master = new git.Ref(repo),
-      commit = new git.Commit(repo);
+      master = new git.Ref( repo ),
+      commit = new git.Commit( repo );
 
-  if( err ) { console.log(error.strError(err)); return; }
+  if( err ) { console.log( error.strError( err ) ); return; }
   
-  oid.mkstr('d4b5a4e23a5d6bece88cebb2a53de68eddb4ca68');
+  oid.mkstr( '3b6adb69dde2cf72ce0e5dd81f51e3d72f08db24' );
 
   //repo.lookupRef( master, "refs/heads/master", function( err, ref ) {
   //  if( err ) { return; }

@@ -24,6 +24,7 @@ class Sig : public EventEmitter {
     void New(const char *name, const char *email, time_t time, int offset);
     git_signature* GetValue();
     void SetValue(git_signature* Sig);
+    git_signature* Dup();
     void Free();
 
   protected:
@@ -31,6 +32,7 @@ class Sig : public EventEmitter {
     ~Sig() {};
 
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> Dup(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);
 
   private:

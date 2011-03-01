@@ -21,15 +21,16 @@ class Oid : public ObjectWrap {
     Handle<Value> WrapObj(Local<Object> obj);
     git_oid* GetValue();
     void SetValue(git_oid* oid);
-    // Synchronous
+
     int Mkstr(const char* str);
     void Mkraw(const unsigned char* raw);
     char* Fmt(char* buffer);
-    //void pathfmt(char *str, const git_oid *oid)
-    //char* allocfmt(const git_oid *oid)
+    void PathFmt(char *str);
+    char* AllocFmt();
     char* ToString(char* buffer, size_t bufferSize);
-    //void cpy(git_oid *out, const git_oid *src)
-    //int cmp(const git_oid *a, const git_oid *b)
+    void Cpy(git_oid* out);
+    int Cmp(const git_oid* a, const git_oid* b);
+
     Oid() {}
     ~Oid() {}
 
@@ -38,7 +39,11 @@ class Oid : public ObjectWrap {
     static Handle<Value> Mkstr(const Arguments& args);
     static Handle<Value> Mkraw(const Arguments& args);
     static Handle<Value> Fmt(const Arguments& args);
+    static Handle<Value> PathFmt(const Arguments& args);
+    static Handle<Value> AllocFmt(const Arguments& args);
     static Handle<Value> ToString(const Arguments& args);
+    static Handle<Value> Cpy(const Arguments& args);
+    static Handle<Value> Cmp(const Arguments& args);
 
   private:
     git_oid oid;

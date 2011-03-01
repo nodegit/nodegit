@@ -53,8 +53,24 @@ char* Oid::Fmt(char* buffer) {
   git_oid_fmt(*&buffer, &this->oid);
 }
 
+void Oid::PathFmt(char *str) {
+  git_oid_pathfmt(str, &this->oid);
+}
+
+char* Oid::AllocFmt() {
+  return git_oid_allocfmt(&this->oid);
+}
+
 char* Oid::ToString(char* buffer, size_t bufferSize) {
   git_oid_to_string(*&buffer, bufferSize, &this->oid);
+}
+
+void Oid::Cpy(git_oid* out) {
+  git_oid_cpy(out, &this->oid);
+}
+
+int Oid::Cmp(const git_oid* a, const git_oid* b) {
+  return git_oid_cmp(a, b);
 }
 
 Handle<Value> Oid::New(const Arguments& args) {
@@ -105,6 +121,24 @@ Handle<Value> Oid::Fmt(const Arguments& args) {
   return String::New(buffer);
 }
 
+Handle<Value> Oid::PathFmt(const Arguments& args) {
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+
+  HandleScope scope;
+
+  char buffer[41];
+  oid->PathFmt(buffer);
+  return String::New(buffer);
+}
+
+Handle<Value> Oid::AllocFmt(const Arguments& args) {
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+
+  HandleScope scope;
+
+  return String::New(oid->AllocFmt());
+}
+
 Handle<Value> Oid::ToString(const Arguments& args) {
   Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
 
@@ -119,4 +153,42 @@ Handle<Value> Oid::ToString(const Arguments& args) {
   return String::New(buffer);
 }
 
+Handle<Value> Oid::Cpy(const Arguments& args) {
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+
+  HandleScope scope;
+  
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid argument is required and must be a Object.")));
+  }
+
+  Oid *clone = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  
+  git_oid *out;
+  oid->Cpy(out);
+  clone->SetValue(out);
+
+  return Undefined();
+}
+
+Handle<Value> Oid::Cmp(const Arguments& args) {
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+
+  HandleScope scope;
+  
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid argument is required and must be a Object.")));
+  }
+  
+  if(args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid argument is required and must be a Object.")));
+  }
+
+  Oid *a = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  Oid *b = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
+
+  int cmp = oid->Cmp(a->GetValue(), b->GetValue());
+
+  return Integer::New(cmp);
+}
 Persistent<FunctionTemplate> Oid::constructor_template;
