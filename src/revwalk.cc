@@ -11,7 +11,6 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "revwalk.h"
 #include "repo.h"
 #include "commit.h"
-#include <stdlib.h>
 
 using namespace v8;
 using namespace node;
@@ -49,7 +48,7 @@ int RevWalk::Push(Commit *commit) {
 }
 
 int RevWalk::Next(Commit *commit) {
-  return git_revwalk_next((git_commit **)commit->GetValue(), this->revwalk);
+  return git_revwalk_next((git_commit**)commit->GetValue(), this->revwalk);
 }
 
 void RevWalk::Free() {
@@ -76,8 +75,7 @@ Handle<Value> RevWalk::New(const Arguments& args) {
 Handle<Value> RevWalk::Push(const Arguments& args) {
   HandleScope scope;
 
-  RevWalk *revwalk = new RevWalk();
-
+  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));
   }

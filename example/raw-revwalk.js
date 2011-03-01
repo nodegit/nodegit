@@ -10,18 +10,23 @@ repo.open('.git', function(err, path) {
       master = new git.Ref(repo),
       commit = new git.Commit(repo);
 
-  oid.mkstr('5f2aa9407f7b3aeb531c621c3358953841ccfc98')
+  oid.mkstr('75054b7130858db1c1cba13cf8a8febb26b14771')
 
   commit.lookup( repo, oid, function( err ) {
     console.log( error.strError( err ) );
     console.log( error.strError( revwalk.push( commit ) ) );
 
     var _commit = new git.Commit(repo);
-    revwalk.next(_commit, function( err ) {
-      console.log( error.strError(err) );
-      revwalk.free();
-    });
 
+    function test() {
+      revwalk.next(_commit, function( err ) {
+        if( err ) { return; }
+        console.log( _commit.__proto__ );
+        test();
+      });
+    }
+
+    test();
   });
 
 
