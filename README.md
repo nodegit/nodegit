@@ -1,4 +1,4 @@
-NodeJS libgit2 bindings
+Node.js libgit2 bindings
 =======================
 
 Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
@@ -9,7 +9,7 @@ Building and installing
 -----------------------
 
 ### Dependancies ###
-To run `nodegit2` you need `NodeJS` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
+To run `nodegit2` you need `Node.js` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 ### Easy install ###
 
@@ -27,9 +27,9 @@ To run `nodegit2` you need `NodeJS` and to run unit tests you will need to have 
 
 ### Windows via Cygiwn ###
 
-#### `nodegit2` has been compiled and tested to work with the setup required to build and run `NodeJS` itself. ####
+#### `nodegit2` has been compiled and tested to work with the setup required to build and run `Node.js` itself. ####
 
-Instructions on compiling `NodeJS` on a Windows platform can be found here:
+Instructions on compiling `Node.js` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
 
 API Example Usage
@@ -116,7 +116,7 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
     * Some unit tests
     * Some documented source code
     * Useable build/code quality check tools
-    * NodeJS application that can be configured/built/installed via source and NPM
+    * Node.js application that can be configured/built/installed via source and NPM
     * An API that can be easily extended with convenience methods in JS
     * An API that offers a familiar clean syntax that will make adoption and use much more likely
     * Open for public testing
