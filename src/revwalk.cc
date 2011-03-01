@@ -121,6 +121,8 @@ int RevWalk::EIO_Next(eio_req *req) {
 
   ar->err = Persistent<Value>::New(Integer::New(ar->revwalk->Next(&ref)));
 
+  ar->commit->SetValue(ref);
+
   return 0;
 }
 

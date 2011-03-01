@@ -3,52 +3,51 @@ var git = require( '../' ).git2;
 var repo = new git.Repo();
 
 // Access existing repository
-repo.open('.git', function(err, path) {
-  if( err ) { return; }
-  
+repo.open('/home/tim/Dropbox/Projects/libgit2/.git', function(err, path) {
   var revwalk = new git.RevWalk(repo),
       oid = new git.Oid(),
       error = new git.Error(),
       master = new git.Ref(repo),
       commit = new git.Commit(repo);
 
-  oid.mkstr('e6ac1ccb355be1075889413c0a24cf6beda6f747')
+  if( err ) { console.log(error.strError(err)); return; }
+  
+  oid.mkstr('d4b5a4e23a5d6bece88cebb2a53de68eddb4ca68');
 
   //repo.lookupRef( master, "refs/heads/master", function( err, ref ) {
   //  if( err ) { return; }
-
+  //
   //  var newOid = new git.Oid();
   //  master.oid(newOid);
   //  commit.lookup( repo, newOid, function( err ) {
+  //    if( err ) { console.log('Error', error.strError(err)); return; }
   //    console.log(newOid.toString(40));
   //    var _commit = new git.Commit(repo);
   //    function walk() {
   //      revwalk.next(_commit, function( err ) {
   //        if( err ) { console.log(error.strError(err));return; }
-  //        console.log( _commit.__proto__ );
+  //        console.log( _commit.messageShort() );
   //        walk();
   //      });
   //    }
-
+  //
   //    walk();
   //  });
-
+  //
   //  //var _commit = new git.Commit(repo);
-
+  //
   //});
 
   commit.lookup( repo, oid, function( err ) {
-    if( err ) { return; }
-    console.log( error.strError( err ) );
-    console.log( error.strError( revwalk.push( commit ) ) );
-    console.log( commit.timeOffset() );
+    if( err ) { console.log('Error', error.strError(err)); return; }
+    revwalk.push( commit );
 
     var _commit = new git.Commit(repo);
 
     function walk() {
       revwalk.next(_commit, function( err ) {
-        if( err ) { console.log(error.strError(err));return; }
-        console.log( _commit.timeOffset() );
+        if( err ) { return; }
+        console.log( _commit.messageShort() );
         walk();
       });
     }
@@ -62,6 +61,7 @@ repo.open('.git', function(err, path) {
   //  var newOid = new git.Oid();
   //  console.log(newOid.toString(40));
   //  commit.lookup( repo, newOid, function( err ) {
+  //    console.log( err );
   //    console.log('Test', this);
   //    console.log( error.strError( revwalk.push( this ) ) );
   //  });
