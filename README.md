@@ -25,7 +25,7 @@ To run `nodegit2` you need `Node.js` and to run unit tests you will need to have
     [tim@thinkpad nodegit2]$ make
     [tim@thinkpad nodegit2]$ sudo make install
 
-### Windows via Cygiwn ###
+### Windows via Cygwin ###
 
 #### `nodegit2` has been compiled and tested to work with the setup required to build and run `Node.js` itself. ####
 
