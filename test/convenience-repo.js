@@ -78,15 +78,9 @@ exports.init = function( test ) {
         test.equals( 0, err, 'Valid repository created' );
         test.equals( true, is_bare, 'Returns valid is_bare value' );
 
-        // Test repo branch lookup
-        repo.branch( 'master', function( err ) {
-          console.log(err);
+        // Cleanup, remove test repo directory
+        rimraf( './test.git', function() {
           test.done();
-
-          // Cleanup, remove test repo directory
-          rimraf( './test.git', function() {
-
-          });
         });
       });
     });

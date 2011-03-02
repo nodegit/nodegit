@@ -174,5 +174,5 @@ exports.lookupRef = function( test ) {
   //        });
   //    });
   //  });
-  //});
+  });
 };
