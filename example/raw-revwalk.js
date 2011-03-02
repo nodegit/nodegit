@@ -3,7 +3,7 @@ var git = require( '../' ).git2;
 var repo = new git.Repo();
 
 // Access existing repository
-repo.open( '/home/tim/Dropbox/Projects/dotfiles/.git', function( err, path ) {
+repo.open( '.git', function( err, path ) {
   var revwalk = new git.RevWalk( repo ),
       oid = new git.Oid(),
       error = new git.Error(),
@@ -12,7 +12,7 @@ repo.open( '/home/tim/Dropbox/Projects/dotfiles/.git', function( err, path ) {
 
   if( err ) { console.log( error.strError( err ) ); return; }
   
-  oid.mkstr( '3b6adb69dde2cf72ce0e5dd81f51e3d72f08db24' );
+  oid.mkstr( '7e1fad218e6c0b910c4780b0da111ed5a52dde79' );
 
   //repo.lookupRef( master, "refs/heads/master", function( err, ref ) {
   //  if( err ) { return; }
