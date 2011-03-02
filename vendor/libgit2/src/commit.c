@@ -41,6 +41,7 @@
 	git_oid_fmt(oid, &commit->object.id);\
 	printf("Oid: %s | In degree: %d | Time: %u\n", oid, commit->in_degree, commit->commit_time);\
 }
+message_short
 
 static void clear_parents(git_commit *commit)
 {

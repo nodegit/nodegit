@@ -157,7 +157,7 @@ exports.lookupRef = function( test ) {
   }, 'Throw an exception if no callback' );
 
   // Cleanup, remove test repo directory - if it exists
-  //rimraf( './test.git', function() {
+  rimraf( './test.git', function() {
   //  // Create bare repo and test for creation
   //  testRepo.init( './test.git', true, function( err, path, is_bare ) {
   //    test.equals( 0, err, 'Successfully created bare repository' );

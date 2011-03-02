@@ -79,7 +79,6 @@ exports.init = function( test ) {
         test.equals( true, is_bare, 'Returns valid is_bare value' );
 
         // Test repo branch lookup
-        console.log( repo, repo.__proto__ );
         repo.branch( 'master', function( err ) {
           console.log(err);
           test.done();

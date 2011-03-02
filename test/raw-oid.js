@@ -1,4 +1,4 @@
-var git = require( '../' ).git2,
+it = require( '../' ).git2,
     rimraf = require( '../vendor/rimraf' );
 
 // Helper functions
