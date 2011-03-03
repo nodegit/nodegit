@@ -15,9 +15,7 @@ git.repo( './dummyrepo/.git', function( err, path, repo ) {
     console.log( author.email );
   });
 
-  repo.head( 'master', function( err ) {
-
-    console.log( err );
-
+  repo.head( 'master', function( err, path, head ) {
+    git.commit( head ).author().name;
   });
 });
