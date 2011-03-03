@@ -339,13 +339,14 @@ int Repo::EIO_LookupRef(eio_req *req) {
   lookupref_request *ar = static_cast<lookupref_request *>(req->data);
 
   String::Utf8Value name(ar->name);
-  git_reference *ref;
+  git_reference* ref = ar->ref->GetValue();
+  git_reference** out = &ref;
 
-  int err = ar->repo->LookupRef((git_reference **)ref, *name);
+  int err = ar->repo->LookupRef(out, *name);
   ar->err = Persistent<Value>::New(Integer::New(err));
 
   if(Int32::Cast(*ar->err)->Value() == 0) {
-    ar->ref->SetValue(*&ref);
+    ar->ref->SetValue(*out);
   }
 
   return 0;
