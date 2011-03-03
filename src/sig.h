@@ -20,12 +20,14 @@ class Sig : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
-    // Synchronous
+
     void New(const char *name, const char *email, time_t time, int offset);
     git_signature* GetValue();
     void SetValue(git_signature* Sig);
     git_signature* Dup();
     void Free();
+
+    char* Name();
 
   protected:
     Sig() {};
@@ -35,8 +37,12 @@ class Sig : public EventEmitter {
     static Handle<Value> Dup(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);
 
+    static Handle<Value> Name(const Arguments& args);
+
   private:
     git_signature* sig;
+
+    char* name;
 };
 
 #endif

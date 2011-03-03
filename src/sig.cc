@@ -20,8 +20,15 @@ void Sig::Initialize (Handle<v8::Object> target) {
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
+  constructor_template->InstanceTemplate()->SetInternalFieldCount(3);
   constructor_template->SetClassName(String::NewSymbol("Sig"));
+
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "dup", Dup);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
+
+  // FIXME: This is a shitty way to accomplish fetching properties from the struct
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
+  //NODE_SET_PROTOTYPE_METHOD(constructor_template, "email", Email);
 
   target->Set(String::NewSymbol("Sig"), constructor_template->GetFunction());
 }
@@ -32,6 +39,7 @@ git_signature* Sig::GetValue() {
 
 void Sig::SetValue(git_signature* sig) {
   this->sig = sig;
+  this->name = sig->name;
 }
 
 void Sig::New(const char *name, const char *email, time_t time, int offset) {
@@ -46,11 +54,14 @@ void Sig::Free() {
   git_signature_free(this->sig);
 }
 
+char* Sig::Name() {
+  return this->name;
+}
+
 Handle<Value> Sig::New(const Arguments& args) {
   HandleScope scope;
 
   Sig *sig = new Sig();
-    
   sig->Wrap(args.This());
 
   return args.This();
@@ -77,5 +88,13 @@ Handle<Value> Sig::Free(const Arguments& args) {
   sig->Free();
 
   return Undefined();
+}
+
+Handle<Value> Sig::Name(const Arguments& args) {
+  HandleScope scope;
+
+  Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
+
+  return String::New(sig->Name());
 }
 Persistent<FunctionTemplate> Sig::constructor_template;

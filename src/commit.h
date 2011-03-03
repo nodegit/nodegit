@@ -30,6 +30,7 @@ class Commit : public EventEmitter {
     const char* MessageShort();
     const char* Message();
     int TimeOffset();
+    const git_signature* Author();
 
   protected:
     Commit() {}
@@ -44,6 +45,7 @@ class Commit : public EventEmitter {
     static Handle<Value> MessageShort(const Arguments& args);
     static Handle<Value> Message(const Arguments& args);
     static Handle<Value> TimeOffset(const Arguments& args);
+    static Handle<Value> Author(const Arguments& args);
 
   private:
     git_commit *commit;
