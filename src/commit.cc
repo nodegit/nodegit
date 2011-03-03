@@ -9,6 +9,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <git2.h>
 
 #include "reference.h"
+#include "sig.h"
 #include "repo.h"
 #include "oid.h"
 #include "commit.h"
@@ -29,6 +30,7 @@ void Commit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "messageShort", MessageShort);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "message", Message);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "timeOffset", TimeOffset);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "author", Author);
 
   target->Set(String::NewSymbol("Commit"), constructor_template->GetFunction());
 }
@@ -59,6 +61,10 @@ const char* Commit::Message() {
 
 int Commit::TimeOffset() {
   return git_commit_time_offset(this->commit);
+}
+
+const git_signature* Commit::Author() {
+  return git_commit_author(this->commit);
 }
 
 Handle<Value> Commit::New(const Arguments& args) {
@@ -127,41 +133,14 @@ int Commit::EIO_AfterLookup(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->commit->Unref();
 
-  // Cache internal reference to commit
   git_commit *commit = ar->commit->GetValue();
 
-  // Create commit details object
-  Local<Object> details_obj = Object::New();
-
-  // If there were no errors fetch information about the commit
-  if(Int32::Cast(*ar->err)->Value() == 0) {
-    // Create person object
-    const git_signature *author = git_commit_author(commit);
-    const git_signature *committer = git_commit_committer(commit);
-    
-    Local<Object> people_obj = Object::New();
-    // Author
-    Local<Object> author_obj = Object::New();
-    author_obj->Set(String::New("name"), String::New(author->name));
-    author_obj->Set(String::New("email"), String::New(author->email));
-    // Committer
-    Local<Object> committer_obj = Object::New();
-    committer_obj->Set(String::New("name"), String::New(committer->name));
-    committer_obj->Set(String::New("email"), String::New(committer->email));
-  
-    details_obj->Set(String::New("author"), author_obj);
-    details_obj->Set(String::New("committer"), committer_obj);
-    details_obj->Set(String::New("message"), String::New(git_commit_message(commit)));
-    details_obj->Set(String::New("short_message"), String::New(git_commit_message_short(commit)));
-  }
-
-  Local<Value> argv[2];
+  Local<Value> argv[1];
   argv[0] = *ar->err;
-  argv[1] = details_obj;
 
   TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
@@ -196,5 +175,21 @@ Handle<Value> Commit::TimeOffset(const Arguments& args) {
   HandleScope scope;
   
   return Integer::New(commit->TimeOffset());
+}
+
+Handle<Value> Commit::Author(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
+  }
+
+  Sig *sig = ObjectWrap::Unwrap<Sig>(args[0]->ToObject());
+
+  sig->SetValue(const_cast<git_signature *>(commit->Author()));
+  
+  return Undefined();
 }
 Persistent<FunctionTemplate> Commit::constructor_template;
