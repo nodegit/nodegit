@@ -28,11 +28,6 @@ void Oid::Initialize(Handle<Object> target) {
   target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
 
-Handle<Value> Oid::WrapObj(Local<Object> obj) {
-  this->Wrap(obj);
-  return obj;
-}
-
 git_oid* Oid::GetValue() {
   return &this->oid;
 }
@@ -53,7 +48,7 @@ char* Oid::Fmt(char* buffer) {
   git_oid_fmt(*&buffer, &this->oid);
 }
 
-void Oid::PathFmt(char *str) {
+void Oid::PathFmt(char* str) {
   git_oid_pathfmt(str, &this->oid);
 }
 

@@ -24,14 +24,14 @@ class Reference : public EventEmitter {
     // Synchronous
     int New(git_repository* repo);
     void SetValue(git_reference* ref);
-    const git_oid* Oid();
+    const git_oid* _Oid();
 
   protected:
     Reference() {}
     ~Reference() {}
     static Handle<Value> New(const Arguments& args);
 
-    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> _Oid(const Arguments& args);
 
   private:
     git_reference *ref;

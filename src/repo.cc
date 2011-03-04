@@ -119,13 +119,12 @@ int Repo::EIO_AfterOpen(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->repo->Unref();
 
-  Local<Value> argv[2];
+  Local<Value> argv[1];
   argv[0] = Number::Cast(*ar->err);
-  argv[1] = String::Cast(*ar->path);
 
   TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
@@ -281,12 +280,11 @@ int Repo::EIO_AfterInit(eio_req *req) {
 
   Local<Value> argv[3];
   argv[0] = Number::Cast(*ar->err);
-  argv[1] = String::Cast(*ar->path);
-  argv[2] = *ar->is_bare;
+  argv[1] = *ar->is_bare;
 
   TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 3, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
@@ -359,13 +357,12 @@ int Repo::EIO_AfterLookupRef(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->repo->Unref();
 
-  Local<Value> argv[2];
+  Local<Value> argv[1];
   argv[0] = Number::Cast(*ar->err);
-  argv[1] = String::Cast(*ar->name);
 
   TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
   if(try_catch.HasCaught())
     FatalException(try_catch);

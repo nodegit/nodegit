@@ -24,7 +24,7 @@ void Reference::Initialize(Handle<Object> target) {
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Ref"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "oid", Oid);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "oid", _Oid);
 
   target->Set(String::NewSymbol("Ref"), constructor_template->GetFunction());
 }
@@ -41,7 +41,7 @@ int Reference::New(git_repository* repo) {
   return git_reference_new(&this->ref, repo);
 }
 
-const git_oid* Reference::Oid() {
+const git_oid* Reference::_Oid() {
   return git_reference_oid(*&this->ref);
 }
 
@@ -62,7 +62,7 @@ Handle<Value> Reference::New(const Arguments& args) {
   return args.This();
 }
 
-Handle<Value> Reference::Oid(const Arguments& args) {
+Handle<Value> Reference::_Oid(const Arguments& args) {
   Reference *ref = ObjectWrap::Unwrap<Reference>(args.This());
   HandleScope scope;
 
@@ -70,8 +70,8 @@ Handle<Value> Reference::Oid(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  //Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
-  //oid->SetValue( (git_oid *)ref->Oid() );
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  oid->SetValue( const_cast<git_oid *>(ref->_Oid()) );
 
   return Undefined();
 }

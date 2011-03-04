@@ -11,7 +11,8 @@ Building and installing
 ### Dependancies ###
 To run `nodegit2` you need `Node.js` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
-### Easy install ###
+### Easy install (Recommended!) ###
+    This will install and configure everything you need to use `nodegit2`.
 
     [tim@thinkpad Projects]$ sudo npm install nodegit2
 
@@ -97,7 +98,7 @@ Running tests
 
 __ `nodegit2` library code is written adhering to a modified `JSHint`. Run these tests with `make lint`. __
 
-__ Ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
+__ To run unit tests ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
 
 If they are not, `cd` into the `nodegit2` dir and run the following `git` commands to automatically fetch them:
     [tim@thinkpad Projects]$ cd nodegit2

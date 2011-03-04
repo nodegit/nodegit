@@ -1,5 +1,9 @@
 nodegit2 contributors (sorted alphabeticaly)
 ============================================
+* **[Ben Alman](https://github.com/cowboy)**
+
+  * JS API suggestions
+
 * **[inimino](https://github.com/inimino)**
 
   * JS API suggestions 
