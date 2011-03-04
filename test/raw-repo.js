@@ -40,7 +40,7 @@ exports.constructor = function( test ){
 exports.open = function( test ) {
   var testRepo = new git.Repo();
 
-  test.expect( 7 );
+  test.expect( 6 );
 
   // Test for function
   helper.testFunction( test.equals, testRepo.open, 'Repo::Open' );
@@ -62,9 +62,6 @@ exports.open = function( test ) {
     // Test valid repository
     testRepo.open( './dummyrepo/.git', function( err, path ) {
       test.equals( 0, err, 'Valid repository error code' );
-
-      // Test path returned is correct
-      test.equals( './dummyrepo/.git', path, 'Path return matches sent' );
 
       testRepo.free();
 
@@ -90,7 +87,7 @@ exports.free = function( test ) {
 exports.init = function( test ) {
   var testRepo = new git.Repo();
 
-  test.expect( 8 );
+  test.expect( 7 );
 
   // Test for function
   helper.testFunction( test.equals, testRepo.init, 'Repo::Init' );
@@ -118,7 +115,6 @@ exports.init = function( test ) {
       // Verify repo exists
       testRepo.open( './test.git', function(err, path) {
         test.equals( 0, err, 'Valid repository created' );
-        test.equals( true, is_bare, 'Returns valid is_bare value' );
 
           testRepo.free();       
 

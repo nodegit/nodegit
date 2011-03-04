@@ -25,7 +25,7 @@ var helper = {
 
 // Repo
 exports.constructor = function( test ){
-  test.expect( 6 );
+  test.expect( 5 );
 
   // Test for function
   helper.testFunction( test.equals, git.repo, 'Repo' );
@@ -37,14 +37,12 @@ exports.constructor = function( test ){
 
   // Test invalid repository
   git.repo( '/etc/hosts', function( err, path ) {
+    console.log( "TEST", err );
     test.equals( 'The specified repository is invalid', err, 'Invalid repository error code' );
 
     // Test valid repository
-    git.repo( './.git', function( err, path ) {
+    git.repo( './dummyrepo/.git', function( err, path ) {
       test.equals( 0, err, 'Valid repository error code' );
-
-      // Test path returned is correct
-      test.equals( './.git', path, 'Path return matches sent' );
 
       test.done();
     });
@@ -53,7 +51,7 @@ exports.constructor = function( test ){
 
 // Repo::Init
 exports.init = function( test ) {
-  test.expect( 5 );
+  test.expect( 4 );
 
   // Test for function
   helper.testFunction( test.equals, git.repo().init, 'Repo::Init' );
@@ -76,7 +74,6 @@ exports.init = function( test ) {
       // Verify repo exists
       git.repo('./test.git', function(err, path, repo) {
         test.equals( 0, err, 'Valid repository created' );
-        test.equals( true, is_bare, 'Returns valid is_bare value' );
 
         // Cleanup, remove test repo directory
         rimraf( './test.git', function() {

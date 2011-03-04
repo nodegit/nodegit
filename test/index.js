@@ -40,9 +40,9 @@ reporter.run(
     'raw-error.js',
     
     // TODO:
-    //'raw-revwalk.js'
+    'raw-revwalk.js'
 
     // Convenience API
-    'convenience-repo.js'
+    //'convenience-repo.js'
   ]
 );

@@ -24,23 +24,25 @@ var helper = {
   }
 };
 
-// Oid
+// Commit
 exports.constructor = function( test ){
   test.expect( 3 );
 
   // Test for function
   helper.testFunction( test.equals, git.Commit, 'Commit' );
   
-  // Ensure we get an instance of Oid
-  test.ok( new git.Commit(testRepo) instanceof git.Commit, 'Invocation returns an instance of Commit' );
+  testRepo.open( './dummyrepo/.git', function( err, path ) {
+    // Ensure we get an instance of Commit
+    test.ok( new git.Commit( testRepo ) instanceof git.Commit, 'Invocation returns an instance of Commit' );
 
-  test.done();
+    test.done();
+  });
 };
 
-// Oid::Mkstr
+// Commit::Lookup
 exports.lookup = function( test ) {
   var testOid = new git.Oid(),
-      testCommit = new git.Commit(testRepo);
+      testCommit = new git.Commit( testRepo );
 
   testOid.mkstr( 'cb09e99e91d41705197e0fb60823fdc7df776691' );
 
@@ -76,7 +78,7 @@ exports.lookup = function( test ) {
       test.notEqual( 0, err, 'Not a valid commit' );
  
       // Test valid commit
-      testOid.mkstr( '978feacee2432e67051f2714ec7d28ad80e16908' );
+      testOid.mkstr( 'cb09e99e91d41705197e0fb60823fdc7df776691' );
       testCommit.lookup( testRepo, testOid, function( err, details ) {
         test.equals( 0, err, 'Valid commit');
 
