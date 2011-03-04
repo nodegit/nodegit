@@ -20,7 +20,7 @@ class Blob : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
-    // Synchronous
+
     int New(git_repository *repo);
     git_blob* GetValue();
     void SetValue(git_blob* blob);

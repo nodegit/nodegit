@@ -27,8 +27,10 @@ void Commit::Initialize(Handle<Object> target) {
   constructor_template->SetClassName(String::NewSymbol("Commit"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "messageShort", MessageShort);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "message", Message);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "time", Time);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "timeOffset", TimeOffset);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "author", Author);
 
@@ -43,12 +45,16 @@ void Commit::SetValue(git_commit* commit) {
   this->commit = commit;
 }
 
+int Commit::Lookup(git_repository* repo, git_oid* oid) {
+  return git_commit_lookup(&this->commit, repo, oid);
+}
+
 int Commit::New(git_repository* repo) {
   return git_commit_new(&this->commit, repo);
 }
 
-int Commit::Lookup(git_repository* repo, git_oid* oid) {
-  return git_commit_lookup(&this->commit, repo, oid);
+const git_oid* Commit::Id() {
+  return git_commit_id(this->commit);
 }
 
 const char* Commit::MessageShort() {
@@ -59,8 +65,16 @@ const char* Commit::Message() {
   return git_commit_message(this->commit);
 }
 
+time_t Commit::Time() {
+  return git_commit_time(this->commit);
+}
+
 int Commit::TimeOffset() {
   return git_commit_time_offset(this->commit);
+}
+
+const git_signature* Commit::Committer() {
+  return git_commit_author(this->commit);
 }
 
 const git_signature* Commit::Author() {
@@ -153,6 +167,22 @@ int Commit::EIO_AfterLookup(eio_req *req) {
   return 0;
 }
 
+Handle<Value> Commit::Id(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
+  }
+
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+
+  oid->SetValue(const_cast<git_oid *>(commit->Id()));
+  
+  return Undefined();
+}
+
 Handle<Value> Commit::MessageShort(const Arguments& args) {
   Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
 
@@ -169,12 +199,36 @@ Handle<Value> Commit::Message(const Arguments& args) {
   return String::New(commit->Message());
 }
 
+Handle<Value> Commit::Time(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+  
+  return Integer::New(commit->Time());
+}
+
 Handle<Value> Commit::TimeOffset(const Arguments& args) {
   Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
 
   HandleScope scope;
   
   return Integer::New(commit->TimeOffset());
+}
+
+Handle<Value> Commit::Committer(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
+  }
+
+  Sig *sig = ObjectWrap::Unwrap<Sig>(args[0]->ToObject());
+
+  sig->SetValue(const_cast<git_signature *>(commit->Committer()));
+  
+  return Undefined();
 }
 
 Handle<Value> Commit::Author(const Arguments& args) {

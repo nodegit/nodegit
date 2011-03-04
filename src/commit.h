@@ -25,11 +25,14 @@ class Commit : public EventEmitter {
 
     git_commit* GetValue();
     void SetValue(git_commit* commit);
-    int New(git_repository *repo);
     int Lookup(git_repository* repo, git_oid* oid);
+    int New(git_repository *repo);
+    const git_oid* Id();
     const char* MessageShort();
     const char* Message();
+    time_t Time();
     int TimeOffset();
+    const git_signature* Committer();
     const git_signature* Author();
 
   protected:
@@ -42,9 +45,12 @@ class Commit : public EventEmitter {
     static int EIO_Lookup(eio_req *req);
     static int EIO_AfterLookup(eio_req *req);
 
+    static Handle<Value> Id(const Arguments& args);
     static Handle<Value> MessageShort(const Arguments& args);
     static Handle<Value> Message(const Arguments& args);
+    static Handle<Value> Time(const Arguments& args);
     static Handle<Value> TimeOffset(const Arguments& args);
+    static Handle<Value> Committer(const Arguments& args);
     static Handle<Value> Author(const Arguments& args);
 
   private:
