@@ -19,8 +19,8 @@ To run `nodegit2` you need `Node.js` and to run unit tests you will need to have
 ### Mac OS X/Linux/Unix ###
 
 #### Install `nodegit2` by cloning source from __GitHub__ and running the `configure`, `make`, and `make install` commands: ####
-    \*Note: `nodegit2` assumes your library path exists at ~/.node_libraries.\*
-
+\*Note: `nodegit2` assumes your library path exists at ~/.node_libraries.\*
+    
     [tim@thinkpad Projects]$ git clone git://github.com/tbranyen/nodegit2.git
     [tim@thinkpad Projects]$ cd nodegit2
     [tim@thinkpad nodegit2]$ ./configure
