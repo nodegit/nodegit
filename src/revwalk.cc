@@ -65,7 +65,7 @@ Handle<Value> RevWalk::New(const Arguments& args) {
   }
 
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  int err = revwalk->New(repo);
+  revwalk->New(repo);
 
   revwalk->Wrap(args.This());
 

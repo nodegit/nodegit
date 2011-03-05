@@ -4,21 +4,32 @@ NODEBLD = node-waf
 
 BASE = .
 LIBPATH = /usr/local/lib:$(BASE)/vendor
+NODE_LIB_PATH = ~/.node_libraries
+INSTALL_PATH = $(NODE_LIB_PATH)/nodegit2
 
-all: buildbindings lint
+all: buildbindings
 
 buildbindings:
 	$(NODEBLD) build
 
 install:
-	$(NODEBLD) install
+	mkdir -p $(INSTALL_PATH)
+	mkdir -p $(INSTALL_PATH)/build/default
+	mkdir -p $(INSTALL_PATH)/lib
+
+	cp -f $(BASE)/build/default/nodegit2.node $(INSTALL_PATH)/build/default/nodegit2.node
+	cp -f $(BASE)/lib/* $(INSTALL_PATH)/lib/
+	cp -f $(BASE)/package.json $(INSTALL_PATH)/
+
+uninstall:
+	rm -rf $(INSTALL_PATH)
 
 clean:
-	rm -rf ./build
-	rm -rf ./vendor/libgit2/build
+	rm -rf $(BASE)/build
+	rm -rf $(BASE)/vendor/libgit2/build
 
 unittest:
 	$(NODEJS) $(BASE)/test/index.js test
 
 lint:
-	node ./util/hint-check.js
+	$(NODEJS) $(BASE)/util/hint-check.js
