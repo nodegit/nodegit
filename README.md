@@ -52,9 +52,9 @@ __ Reading a repository and commit data: __
             // If success err will be 0, else throw an error message.
             if( err ) { throw err; }
 
-            console.log( 'Message', details.message );
-            console.log( 'Author name', details.author.name );
-            console.log( 'Author email', details.author.email );
+            console.log( 'Message', commit.message );
+            console.log( 'Author name', commit.author.name );
+            console.log( 'Author email', commit.author.email );
 
             // Memory cleanup is *not* required, but would be nice if you remembered :)
             repo.free();
@@ -81,13 +81,13 @@ __ Accomplishing the same thing as above: __
         var commit = new git.Commit();
 
         // Lookup commit
-        commit.lookup( repo, oid, function( err, details ) {
+        commit.lookup( repo, oid, function( err, commit ) {
             // If success err will be 0, else throw an error message.
             if( err ) { throw err; }
 
-            console.log( 'Message', details.message );
-            console.log( 'Author name', details.author.name );
-            console.log( 'Author email', details.author.email );
+            console.log( 'Message', commit.message );
+            console.log( 'Author name', commit.author.name );
+            console.log( 'Author email', commit.author.email );
 
             // Memory cleanup is *not* required, but would be nice if you remembered :)
             repo.free();
