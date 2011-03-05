@@ -14,6 +14,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "reference.h"
 #include "repo.h"
 #include "oid.h"
+#include "tree.h"
 
 using namespace node;
 using namespace v8;
@@ -46,6 +47,7 @@ class Commit : public EventEmitter {
     int TimeOffset();
     const git_signature* Committer();
     const git_signature* Author();
+    const git_tree* Tree();
 
   protected:
     Commit() {}
@@ -65,17 +67,26 @@ class Commit : public EventEmitter {
     static Handle<Value> Committer(const Arguments& args);
     static Handle<Value> Author(const Arguments& args);
 
+    static Handle<Value> Tree(const Arguments& args);
+    static int EIO_Tree(eio_req* req);
+    static int EIO_AfterTree(eio_req* req);
+
   private:
     git_commit *commit;
 
     struct lookup_request {
-      Commit *commit;
-      Repo *repo;
-      Oid *oid;
+      Commit* commit;
+      Repo* repo;
+      Oid* oid;
       Persistent<Value> err;
       Persistent<Function> callback;
     };
-};
 
+    //struct tree_request {
+    //  Commit* commit;
+    //  Tree* tree;
+    //  Persistent<Function> callback;
+    //};
+};
 
 #endif

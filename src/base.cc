@@ -31,5 +31,5 @@ extern "C" void init(Handle<v8::Object> target) {
   Repo::Initialize(target);
   Commit::Initialize(target);
   RevWalk::Initialize(target);
-  Tree::Initialize(target);
+  GitTree::Initialize(target);
 }

@@ -2,8 +2,8 @@
 Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 */
 
-#ifndef TREE_H
-#define TREE_H
+#ifndef GITTREE_H
+#define GITTREE_H
 
 #include <v8.h>
 #include <node.h>
@@ -19,7 +19,7 @@ using namespace node;
 /**
  * Class wrapper for libgit2 git_tree
  */
-class Tree : public EventEmitter {
+class GitTree : public EventEmitter {
   public:
     /**
      * v8::FunctionTemplate used to create Node.js constructor
@@ -39,10 +39,10 @@ class Tree : public EventEmitter {
      * @param repo the repo to use when creating the tree.
      * @return 0 on success; error code otherwise
      */
-    int New(git_repository *repo);
+    int New(git_repository* repo);
 
     /**
-     * Accessor for Tree
+     * Accessor for GitTree
      *
      * @return the internal git_tree reference
      */
@@ -64,21 +64,28 @@ class Tree : public EventEmitter {
      *
      * @return 0 on success; error code otherwise
      */
-    int Lookup(git_tree **tree, git_repository *repo, const git_oid *id);
+    int Lookup(git_tree** tree, git_repository* repo, const git_oid* id);
+
+    /**
+     * Get number of entries in the looked up tree.
+     *
+     * @return number of entries
+     */
+    size_t EntryCount();
 
   protected:
     /**
      * Constructor
      */
-    Tree() {};
+    GitTree() {};
 
     /**
      * Deconstructor
      */
-    ~Tree() {};
+    ~GitTree() {};
 
     /**
-     * Creates a new instance of Tree to Node.js
+     * Creates a new instance of GitTree to Node.js
      *
      * @param args v8::Arguments function call arguments from Node.js
      *
@@ -86,11 +93,13 @@ class Tree : public EventEmitter {
      */
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> EntryCount(const Arguments& args);
+
   private:
     /**
      * Internal reference to git_tree object
      */
-    git_tree *tree;
+    git_tree* tree;
 };
 
 #endif

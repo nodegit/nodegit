@@ -14,7 +14,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
-void Tree::Initialize (Handle<v8::Object> target) {
+void GitTree::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
@@ -23,25 +23,31 @@ void Tree::Initialize (Handle<v8::Object> target) {
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Tree"));
 
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryCount", EntryCount);
+
   target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
 }
 
-git_tree* Tree::GetValue() {
+git_tree* GitTree::GetValue() {
   return this->tree;
 }
 
-void Tree::SetValue(git_tree* tree) {
+void GitTree::SetValue(git_tree* tree) {
   this->tree = tree;
 }
 
-int Tree::New(git_repository* repo) {
+int GitTree::New(git_repository* repo) {
   return git_tree_new(&this->tree, repo);
 }
 
-Handle<Value> Tree::New(const Arguments& args) {
+size_t GitTree::EntryCount() {
+  return git_tree_entrycount(this->tree);
+}
+
+Handle<Value> GitTree::New(const Arguments& args) {
   HandleScope scope;
 
-  Tree *tree = new Tree();
+  GitTree *tree = new GitTree();
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
@@ -54,4 +60,14 @@ Handle<Value> Tree::New(const Arguments& args) {
 
   return args.This();
 }
-Persistent<FunctionTemplate> Tree::constructor_template;
+
+Handle<Value> GitTree::EntryCount(const Arguments& args) {
+  HandleScope scope;
+
+  GitTree *tree = new GitTree();
+
+  int count = tree->EntryCount();
+    
+  return Local<Value>::New(Integer::New(count));
+}
+Persistent<FunctionTemplate> GitTree::constructor_template;

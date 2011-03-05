@@ -12,6 +12,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "sig.h"
 #include "repo.h"
 #include "oid.h"
+#include "tree.h"
 #include "commit.h"
 
 using namespace v8;
@@ -33,6 +34,7 @@ void Commit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "time", Time);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "timeOffset", TimeOffset);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "author", Author);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "tree", Tree);
 
   target->Set(String::NewSymbol("Commit"), constructor_template->GetFunction());
 }
@@ -79,6 +81,10 @@ const git_signature* Commit::Committer() {
 
 const git_signature* Commit::Author() {
   return git_commit_author(this->commit);
+}
+
+const git_tree* Commit::Tree() {
+  return git_commit_tree(this->commit);
 }
 
 Handle<Value> Commit::New(const Arguments& args) {
@@ -246,4 +252,78 @@ Handle<Value> Commit::Author(const Arguments& args) {
   
   return Undefined();
 }
+
+Handle<Value> Commit::Tree(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Tree is required and must be an Object.")));
+  }
+
+  GitTree* tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject());
+
+  tree->SetValue(const_cast<git_tree *>(commit->Tree()));
+
+  return Undefined();
+}
+//Handle<Value> Commit::Tree(const Arguments& args) {
+//  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+//  Local<Function> callback;
+//
+//  HandleScope scope;
+//
+//  if(args.Length() == 0 || !args[0]->IsObject()) {
+//    return ThrowException(Exception::Error(String::New("Tree is required and must be an Object.")));
+//  }
+//
+//  callback = Local<Function>::Cast(args[1]);
+//
+//  tree_request *ar = new tree_request();
+//  ar->commit = commit;
+//  ar->repo = ObjectWrap::Unwrap<Tree>(args[0]->ToObject());
+//  ar->callback = Persistent<Function>::New(callback);
+//
+//  commit->Ref();
+//
+//  eio_custom(EIO_Tree, EIO_PRI_DEFAULT, EIO_AfterTree, ar);
+//  ev_ref(EV_DEFAULT_UC);
+//
+//  return Undefined();
+//}
+//
+//int Commit::EIO_Tree(eio_req *req) {
+//  tree_request *ar = static_cast<tree_request *>(req->data);
+//
+//  git_tree *tree = ar->commit->Tree();
+//
+//  ar->tree->SetValue(tree);
+//
+//  return 0;
+//}
+//
+//int Commit::EIO_AfterTree(eio_req *req) {
+//  HandleScope scope;
+//
+//  tree_request *ar = static_cast<tree_request *>(req->data);
+//  ev_unref(EV_DEFAULT_UC);
+//  ar->commit->Unref();
+//
+//  Local<Value> argv[1];
+//
+//  TryCatch try_catch;
+//
+//  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+//
+//  if(try_catch.HasCaught())
+//    FatalException(try_catch);
+//    
+//  ar->err.Dispose();
+//  ar->callback.Dispose();
+//
+//  delete ar;
+//
+//  return 0;
+//}
 Persistent<FunctionTemplate> Commit::constructor_template;
