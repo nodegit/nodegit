@@ -46,7 +46,7 @@ exports.lookup = function( test ) {
 
   testOid.mkstr( 'cb09e99e91d41705197e0fb60823fdc7df776691' );
 
-  test.expect( 8 );
+  test.expect( 10 );
 
   // Test for function
   helper.testFunction( test.equals, testCommit.lookup, 'Commit::Lookup' );
@@ -71,23 +71,20 @@ exports.lookup = function( test ) {
     testCommit.lookup( testRepo, testOid, function() {} );
   }, 'No exception is thrown with proper arguments' );
 
-  testRepo.open( './dummyrepo/.git', function( err, path ) {
+  testRepo.open( '.git', function( err ) {
     // Test invalid commit
     testOid.mkstr( '100644' );
-    testCommit.lookup( testRepo, testOid, function( err, details ) {
+    testCommit.lookup( testRepo, testOid, function( err ) {
       test.notEqual( 0, err, 'Not a valid commit' );
  
       // Test valid commit
-      testOid.mkstr( 'cb09e99e91d41705197e0fb60823fdc7df776691' );
-      testCommit.lookup( testRepo, testOid, function( err, details ) {
+      testOid.mkstr( 'f69ef8903bd9bad466b66056dd083d646176e762' );
+      testCommit.lookup( testRepo, testOid, function( err ) {
         test.equals( 0, err, 'Valid commit');
 
-        //test.equals( 'object', typeof details, 'Details is an object' );
+        test.equals( 'object', typeof commit, 'Commit is an object' );
 
-        //test.equals( 'string', typeof details.message, 'Details message is a String' );
-        //if(details.message) {
-        //  test.equals( 'initial commit', details.message.trim(), 'Details has correct message' );
-        //}
+        test.equals( 'Started to clean up JS code, reorganized directories', testCommit.msg, 'Commit message is valid' );
 
         testRepo.free();
 

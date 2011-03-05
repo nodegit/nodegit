@@ -18,9 +18,21 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
+/**
+ * Class wrapper for libgit2 git_commit
+ */
 class Commit : public EventEmitter {
   public:
+    /**
+     * v8::FunctionTemplate used to create Node.js constructor
+     */
     static Persistent<FunctionTemplate> constructor_template;
+
+    /**
+     * Used to intialize the EventEmitter from Node.js
+     *
+     * @param target v8::Object the Node.js module object
+     */
     static void Initialize (Handle<v8::Object> target);
 
     git_commit* GetValue();
