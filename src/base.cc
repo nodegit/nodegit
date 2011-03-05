@@ -17,6 +17,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "obj.h"
 #include "commit.h"
 #include "revwalk.h"
+#include "tree.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
@@ -30,4 +31,5 @@ extern "C" void init(Handle<v8::Object> target) {
   Repo::Initialize(target);
   Commit::Initialize(target);
   RevWalk::Initialize(target);
+  Tree::Initialize(target);
 }

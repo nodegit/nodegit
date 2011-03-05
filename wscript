@@ -31,6 +31,6 @@ def build(bld):
     
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'nodegit2'
-  obj.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/obj.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc'
+  obj.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/obj.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc src/tree.cc'
   obj.rpath = abspath('build/shared')
   obj.uselib = 'GIT2'

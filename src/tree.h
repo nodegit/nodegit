@@ -2,8 +2,8 @@
 Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 */
 
-#ifndef BLOB_H
-#define BLOB_H
+#ifndef TREE_H
+#define TREE_H
 
 #include <v8.h>
 #include <node.h>
@@ -17,9 +17,9 @@ using namespace v8;
 using namespace node;
 
 /**
- * Class wrapper for libgit2 git_blob
+ * Class wrapper for libgit2 git_tree
  */
-class Blob : public EventEmitter {
+class Tree : public EventEmitter {
   public:
     /**
      * v8::FunctionTemplate used to create Node.js constructor
@@ -34,51 +34,51 @@ class Blob : public EventEmitter {
     static void Initialize(Handle<v8::Object> target);
 
     /**
-     * Creates new internal git_blob reference
+     * Creates new internal git_tree reference
      *
-     * @param repo the repo to use when creating the blob.
+     * @param repo the repo to use when creating the tree.
      * @return 0 on success; error code otherwise
      */
     int New(git_repository *repo);
 
     /**
-     * Accessor for Blob
+     * Accessor for Tree
      *
-     * @return the internal git_blob reference
+     * @return the internal git_tree reference
      */
-    git_blob* GetValue();
+    git_tree* GetValue();
 
     /**
      * Mutator for Object
      *
      * @param obj a git_object object
      */
-    void SetValue(git_blob* blob);
+    void SetValue(git_tree* tree);
 
     /**
-     * Lookup a blob object from a repository.
+     * Lookup a tree object from a repository.
      *
-     * @param blob pointer to the looked up blob
-     * @param repo the repo to use when locating the blob.
-     * @param id identity of the blob to locate.
+     * @param tree pointer to the looked up tree
+     * @param repo the repo to use when locating the tree.
+     * @param id identity of the tree to locate.
      *
      * @return 0 on success; error code otherwise
      */
-    int Lookup(git_blob **blob, git_repository *repo, const git_oid *id);
+    int Lookup(git_tree **tree, git_repository *repo, const git_oid *id);
 
   protected:
     /**
      * Constructor
      */
-    Blob() {};
+    Tree() {};
 
     /**
      * Deconstructor
      */
-    ~Blob() {};
+    ~Tree() {};
 
     /**
-     * Creates a new instance of Blob to Node.js
+     * Creates a new instance of Tree to Node.js
      *
      * @param args v8::Arguments function call arguments from Node.js
      *
@@ -88,9 +88,9 @@ class Blob : public EventEmitter {
 
   private:
     /**
-     * Internal reference to git_blob object
+     * Internal reference to git_tree object
      */
-    git_blob *blob;
+    git_tree *tree;
 };
 
 #endif
