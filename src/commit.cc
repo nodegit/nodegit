@@ -35,6 +35,7 @@ void Commit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "timeOffset", TimeOffset);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "author", Author);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "tree", Tree);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "parentCount", ParentCount);
 
   target->Set(String::NewSymbol("Commit"), constructor_template->GetFunction());
 }
@@ -85,6 +86,10 @@ const git_signature* Commit::Author() {
 
 const git_tree* Commit::Tree() {
   return git_commit_tree(this->commit);
+}
+
+unsigned int Commit::ParentCount() {
+  return git_commit_parentcount(this->commit);
 }
 
 Handle<Value> Commit::New(const Arguments& args) {
@@ -326,4 +331,14 @@ Handle<Value> Commit::Tree(const Arguments& args) {
 //
 //  return 0;
 //}
+
+Handle<Value> Commit::ParentCount(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+
+  unsigned int count = commit->ParentCount();
+
+  return Integer::New(count);
+}
 Persistent<FunctionTemplate> Commit::constructor_template;

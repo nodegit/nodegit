@@ -48,6 +48,7 @@ class Commit : public EventEmitter {
     const git_signature* Committer();
     const git_signature* Author();
     const git_tree* Tree();
+    unsigned int ParentCount();
 
   protected:
     Commit() {}
@@ -70,6 +71,8 @@ class Commit : public EventEmitter {
     static Handle<Value> Tree(const Arguments& args);
     static int EIO_Tree(eio_req* req);
     static int EIO_AfterTree(eio_req* req);
+
+    static Handle<Value> ParentCount(const Arguments& args);
 
   private:
     git_commit *commit;

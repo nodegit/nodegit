@@ -24,6 +24,8 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   constructor_template->SetClassName(String::NewSymbol("Tree"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryCount", EntryCount);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByIndex", EntryByIndex);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearEntries", ClearEntries);
 
   target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
@@ -45,9 +47,10 @@ size_t GitTree::EntryCount() {
   return git_tree_entrycount(&*this->tree);
 }
 
-//GitTree::Entry GitTree::EntryCount() {
-//  return git_tree_entrycount(this->tree);
-//}
+int GitTree::SortEntries() {
+  //return git_tree_sort_entries(this->tree);
+  return 0;
+}
 
 void GitTree::ClearEntries() {
   git_tree_clear_entries(this->tree);
@@ -82,14 +85,25 @@ Handle<Value> GitTree::EntryCount(const Arguments& args) {
   return Local<Value>::New(Integer::New(count));
 }
 
-//Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
-//  HandleScope scope;
-//
-//  GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
-//
-//    
-//  return Local<Value>::New(Integer::New(count));
-//}
+Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
+  HandleScope scope;
+
+  GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
+
+    
+  return Undefined();
+  //return Local<Value>::New(Integer::New(count));
+}
+
+Handle<Value> GitTree::SortEntries(const Arguments& args) {
+  HandleScope scope;
+
+  GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
+
+  int err = tree->SortEntries();
+  
+  return Integer::New(err);
+}
 
 Handle<Value> GitTree::ClearEntries(const Arguments& args) {
   HandleScope scope;

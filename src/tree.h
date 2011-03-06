@@ -80,6 +80,7 @@ class GitTree : public EventEmitter {
      */
     //GitTree::Entry EntryByIndex();
 
+    int SortEntries();
     void ClearEntries();
 
 
@@ -106,11 +107,13 @@ class GitTree : public EventEmitter {
 
     static Handle<Value> EntryCount(const Arguments& args);
     static Handle<Value> EntryByIndex(const Arguments& args);
+    static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);
 
     // Experimental
     class Entry : EventEmitter {
-      
+      private:
+        git_tree_entry* entry;
     };
 
   private:

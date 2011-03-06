@@ -12,13 +12,14 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <git2.h>
 
 #include "repo.h"
+#include "oid.h"
 
 using namespace node;
 
 /**
  * Class wrapper for libgit2 git_object
  */
-class Obj : public EventEmitter {
+class GitObject : public EventEmitter {
   public:
     /**
      * v8::FunctionTemplate used to create Node.js constructor
@@ -46,25 +47,33 @@ class Obj : public EventEmitter {
      */
     void SetValue(git_object* obj);
 
+    const git_oid* Id();
+
+    git_repository* Owner();
+    void Free();
+
   protected:
     /**
      * Constructor
      */
-    Obj() {};
+    GitObject() {};
 
     /**
      * Deconstructor
      */
-    ~Obj() {};
+    ~GitObject() {};
 
     /**
-     * Mutator for Object
+     * Mutator for GitObject
      *
      * @param args v8::Arguments function call arguments from Node.js
      *
      * @return v8::Object args.This()
      */
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> Id(const Arguments& args);
+    static Handle<Value> Owner(const Arguments& args);
+    static Handle<Value> Free(const Arguments& args);
 
   private:
     /**
