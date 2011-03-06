@@ -73,6 +73,17 @@ class GitTree : public EventEmitter {
      */
     size_t EntryCount();
 
+    /**
+     * Get entry by index in the looked up tree.
+     *
+     * @return git tree entry
+     */
+    //GitTree::Entry EntryByIndex();
+
+    void ClearEntries();
+
+
+
   protected:
     /**
      * Constructor
@@ -94,6 +105,13 @@ class GitTree : public EventEmitter {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> EntryCount(const Arguments& args);
+    static Handle<Value> EntryByIndex(const Arguments& args);
+    static Handle<Value> ClearEntries(const Arguments& args);
+
+    // Experimental
+    class Entry : EventEmitter {
+      
+    };
 
   private:
     /**
