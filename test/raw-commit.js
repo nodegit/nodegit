@@ -46,7 +46,7 @@ exports.lookup = function( test ) {
 
   testOid.mkstr( 'cb09e99e91d41705197e0fb60823fdc7df776691' );
 
-  test.expect( 10 );
+  test.expect( 9 );
 
   // Test for function
   helper.testFunction( test.equals, testCommit.lookup, 'Commit::Lookup' );
@@ -71,20 +71,19 @@ exports.lookup = function( test ) {
     testCommit.lookup( testRepo, testOid, function() {} );
   }, 'No exception is thrown with proper arguments' );
 
-  testRepo.open( '.git', function( err ) {
+  testRepo.open( '../.git', function( err ) {
+    console.log( new git.Error().strError( err ) );
     // Test invalid commit
     testOid.mkstr( '100644' );
     testCommit.lookup( testRepo, testOid, function( err ) {
       test.notEqual( 0, err, 'Not a valid commit' );
  
       // Test valid commit
-      testOid.mkstr( 'f69ef8903bd9bad466b66056dd083d646176e762' );
+      testOid.mkstr( '4ffa551cf6e8059d626ec9779cd21ff34c62de4c' );
       testCommit.lookup( testRepo, testOid, function( err ) {
         test.equals( 0, err, 'Valid commit');
 
-        test.equals( 'object', typeof commit, 'Commit is an object' );
-
-        test.equals( 'Started to clean up JS code, reorganized directories', testCommit.msg, 'Commit message is valid' );
+        test.equals( 'Fixed api examples', testCommit.msg, 'Commit message is valid' );
 
         testRepo.free();
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>  <html> <head>   <title>util.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="commit.html">                 commit.js               </a>                                           <a class="source" href="error.html">                 error.js               </a>                                           <a class="source" href="index.html">                 index.js               </a>                                           <a class="source" href="oid.html">                 oid.js               </a>                                           <a class="source" href="ref.html">                 ref.js               </a>                                           <a class="source" href="repo.html">                 repo.js               </a>                                           <a class="source" href="revwalk.html">                 revwalk.js               </a>                                           <a class="source" href="sig.html">                 sig.js               </a>                                           <a class="source" href="tree.html">                 tree.js               </a>                                           <a class="source" href="util.html">                 util.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               util.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">git</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span> <span class="s1">&#39;../&#39;</span> <span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">_Util</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">error</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="nx">self</span><span class="p">.</span><span class="nx">error</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">error</span><span class="p">(</span> <span class="nx">err</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">git</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span> <span class="nx">err</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="k">return</span> <span class="nx">self</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">util</span> <span class="o">=</span> <span class="nx">_Util</span><span class="p">;</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

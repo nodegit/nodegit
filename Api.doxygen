@@ -51,7 +51,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = doc
+OUTPUT_DIRECTORY       = docs/native
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -1025,7 +1025,7 @@ QHP_NAMESPACE          = org.doxygen.Project
 # Qt Help Project output. For more information please see 
 # http://doc.trolltech.com/qthelpproject.html#virtual-folders
 
-QHP_VIRTUAL_FOLDER     = doc
+QHP_VIRTUAL_FOLDER     = docs/native
 
 # If QHP_CUST_FILTER_NAME is set, it specifies the name of a custom filter to 
 # add. For more information please see 
