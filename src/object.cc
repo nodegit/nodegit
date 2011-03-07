@@ -25,8 +25,13 @@ void GitObject::Initialize (Handle<v8::Object> target) {
   constructor_template->SetClassName(String::NewSymbol("Object"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "owner", Owner);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toString", Type2String);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toType", String2Type);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "isLoose", TypeIsLoose);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "size", Size);
 
   constructor_template->Set(String::New("ANY"), Integer::New(-2));
   constructor_template->Set(String::New("BAD"), Integer::New(-1));
@@ -54,12 +59,32 @@ const git_oid* GitObject::Id() {
   return git_object_id(this->obj);
 }
 
+git_otype GitObject::Type() {
+  return git_object_type(this->obj);
+}
+
 git_repository* GitObject::Owner() {
   return git_object_owner(this->obj);
 }
 
 void GitObject::Free() {
   git_object_free(this->obj);
+}
+
+const char* GitObject::Type2String(git_otype type) {
+  return git_object_type2string(type);
+}
+
+git_otype GitObject::String2Type(const char* type) {
+  return git_object_string2type(type);
+}
+
+int GitObject::TypeIsLoose(git_otype type) {
+  return git_object_typeisloose(type);
+}
+
+size_t GitObject::Size(git_otype type) {
+  return git_object__size(type);
 }
 
 Handle<Value> GitObject::New(const Arguments& args) {
@@ -88,6 +113,14 @@ Handle<Value> GitObject::Id(const Arguments& args) {
   return Undefined();
 }
 
+Handle<Value> GitObject::Type(const Arguments& args) {
+  HandleScope scope;
+
+  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
+  
+  return Integer::New(obj->Type());
+}
+
 Handle<Value> GitObject::Owner(const Arguments& args) {
   HandleScope scope;
 
@@ -113,4 +146,78 @@ Handle<Value> GitObject::Free(const Arguments& args) {
 
   return Undefined();
 }
+
+Handle<Value> GitObject::Type2String(const Arguments& args) {
+  HandleScope scope;
+
+  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
+  
+  if(args.Length() == 0 || !args[0]->IsNumber()) {
+    return ThrowException(Exception::Error(String::New("Type is required and must be a Number.")));
+  }
+
+  git_otype type = (git_otype)args[0]->ToInteger()->Value();
+
+  return String::New(obj->Type2String(type));
+}
+
+Handle<Value> GitObject::String2Type(const Arguments& args) {
+  HandleScope scope;
+
+  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
+  
+  if(args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("Type is required and must be a String.")));
+  }
+
+  String::Utf8Value type(args[0]);
+
+  return Integer::New(obj->String2Type(*type));
+}
+
+Handle<Value> GitObject::TypeIsLoose(const Arguments& args) {
+  HandleScope scope;
+
+  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
+  
+  if(args.Length() == 0 || !args[0]->IsNumber()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
+
+  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+
+  repo->SetValue(obj->Owner());
+
+  return Undefined();
+}
+//Handle<Value> GitObject::Type2String(const Arguments& args) {
+//  HandleScope scope;
+//
+//  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
+//  
+//  if(args.Length() == 0 || !args[0]->IsObject()) {
+//    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+//  }
+//
+//  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+//
+//  repo->SetValue(obj->Owner());
+//
+//  return Undefined();
+//}
+//Handle<Value> GitObject::Type2String(const Arguments& args) {
+//  HandleScope scope;
+//
+//  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
+//  
+//  if(args.Length() == 0 || !args[0]->IsObject()) {
+//    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+//  }
+//
+//  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+//
+//  repo->SetValue(obj->Owner());
+//
+//  return Undefined();
+//}
 Persistent<FunctionTemplate> GitObject::constructor_template;

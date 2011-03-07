@@ -48,9 +48,14 @@ class GitObject : public EventEmitter {
     void SetValue(git_object* obj);
 
     const git_oid* Id();
+    git_otype Type();
 
     git_repository* Owner();
     void Free();
+    const char* Type2String(git_otype type);
+    git_otype String2Type(const char* type);
+    int TypeIsLoose(git_otype type);
+    size_t Size(git_otype type);
 
   protected:
     /**
@@ -72,8 +77,13 @@ class GitObject : public EventEmitter {
      */
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Id(const Arguments& args);
+    static Handle<Value> Type(const Arguments& args);
     static Handle<Value> Owner(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);
+    static Handle<Value> Type2String(const Arguments& args);
+    static Handle<Value> String2Type(const Arguments& args);
+    static Handle<Value> TypeIsLoose(const Arguments& args);
+    static Handle<Value> Size(const Arguments& args);
 
   private:
     /**
