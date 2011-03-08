@@ -7,6 +7,11 @@ INSTALL_PATH = $(NODE_LIB_PATH)/nodegit
 
 all: build_bindings
 
+update: clean config build_bindings uninstall install
+
+config:
+	@@$(BASE)/configure
+
 build_bindings:
 	@@$(NODE_BLD) build
 

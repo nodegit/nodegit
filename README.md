@@ -47,6 +47,20 @@ __ Reading a repository and commit data: __
         // If success err will be 0, else throw an error message.
         if( err ) { throw err; }
 
+        // Work within the master branch
+        repo.branch( 'master', function( err, branch ) {
+            // If success err will be 0, else throw an error message.
+            if( err ) { throw err; }
+
+            // Iterate over the revision history
+            branch.history.each( function( i, commit ) {
+                // Emulator git log 
+                console.log( 'Author:', commit.author().name, '<' + commit.author().email + '>' );
+                console.log( 'Date:', commit.time().toDateString() );
+                console.log( commit.message() );
+            });
+        });
+
         // Read a commit with a SHA1
         this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, commit ) {
             // If success err will be 0, else throw an error message.
