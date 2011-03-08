@@ -1,5 +1,3 @@
-build/
-build/*
 .lock-wscript
+build/
 vendor/
-vendor/*
