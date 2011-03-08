@@ -28,6 +28,8 @@ def build(bld):
   try: os.chdir('vendor/libgit2')
   except: pass
   Popen('python waf build-shared', shell=True).wait()
+
+  os.chdir('../../')
     
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'git'
