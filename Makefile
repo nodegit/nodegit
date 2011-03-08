@@ -3,7 +3,7 @@ NODE_BLD = node-waf
 NODE_LIB_PATH = ~/.node_libraries
 
 BASE = .
-INSTALL_PATH = $(NODE_LIB_PATH)/nodegit2
+INSTALL_PATH = $(NODE_LIB_PATH)/nodegit
 
 all: build_bindings
 
@@ -15,7 +15,7 @@ install:
 	@@mkdir -p $(INSTALL_PATH)/build/default
 	@@mkdir -p $(INSTALL_PATH)/lib
 
-	@@cp -f $(BASE)/build/default/nodegit2.node $(INSTALL_PATH)/build/default/nodegit2.node
+	@@cp -f $(BASE)/build/default/nodegit.node $(INSTALL_PATH)/build/default/nodegit.node
 	@@cp -f $(BASE)/lib/* $(INSTALL_PATH)/lib/
 	@@cp -f $(BASE)/package.json $(INSTALL_PATH)/
 

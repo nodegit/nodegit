@@ -3,33 +3,33 @@ Node.js libgit2 bindings
 
 Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
 
-Currently under active development, `nodegit2` provides asynchronous native bindings to the `libgit2` C API.
+Currently under active development, `nodegit` provides asynchronous native bindings to the `libgit2` C API.
 
 Building and installing
 -----------------------
 
 ### Dependancies ###
-To run `nodegit2` you need `Node.js` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
+To run `nodegit` you need `Node.js` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 ### Easy install (Recommended) ###
-This will install and configure everything you need to use `nodegit2`.
+This will install and configure everything you need to use `nodegit`.
 
-    [tim@thinkpad Projects]$ sudo npm install nodegit2
+    [tim@thinkpad Projects]$ sudo npm install nodegit
 
 ### Mac OS X/Linux/Unix ###
 
-#### Install `nodegit2` by cloning source from __GitHub__ and running the `configure`, `make`, and `make install` commands: ####
-\*Note: `nodegit2` assumes your library path exists at `~/.node_libraries`.\*
+#### Install `nodegit` by cloning source from __GitHub__ and running the `configure`, `make`, and `make install` commands: ####
+\*Note: `nodegit` assumes your library path exists at `~/.node_libraries`.\*
     
-    [tim@thinkpad Projects]$ git clone git://github.com/tbranyen/nodegit2.git
-    [tim@thinkpad Projects]$ cd nodegit2
-    [tim@thinkpad nodegit2]$ ./configure
-    [tim@thinkpad nodegit2]$ make
-    [tim@thinkpad nodegit2]$ make install
+    [tim@thinkpad Projects]$ git clone git://github.com/tbranyen/nodegit.git
+    [tim@thinkpad Projects]$ cd nodegit
+    [tim@thinkpad nodegit]$ ./configure
+    [tim@thinkpad nodegit]$ make
+    [tim@thinkpad nodegit]$ make install
 
 ### Windows via Cygwin ###
 
-#### `nodegit2` has been compiled and tested to work with the setup required to build and run `Node.js` itself. ####
+#### `nodegit` has been compiled and tested to work with the setup required to build and run `Node.js` itself. ####
 
 Instructions on compiling `Node.js` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
@@ -40,7 +40,7 @@ API Example Usage
 ### Convenience API ###
 __ Reading a repository and commit data: __
 
-    var git = require( 'nodegit2' );
+    var git = require( 'git' );
     
     // Read the current repository
     git.repo( '.git', function( err, path, repo ) {
@@ -64,7 +64,7 @@ __ Reading a repository and commit data: __
 ### Raw API ###
 __ Accomplishing the same thing as above: __
 
-    var git = require( 'nodegit2' ).git2;
+    var git = require( 'git' ).raw;
     
     // Create instance of Repo constructor
     var repo = new git.Repo();
@@ -97,14 +97,14 @@ __ Accomplishing the same thing as above: __
 Running tests
 -------------
 
-__ `nodegit2` library code is written adhering to a modified `JSHint`. Run these tests with `make lint`. __
+__ `nodegit` library code is written adhering to a modified `JSHint`. Run these tests with `make lint`. __
 
 __ To run unit tests ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
 
-If they are not, `cd` into the `nodegit2` dir and run the following `git` commands to automatically fetch them:
-    [tim@thinkpad Projects]$ cd nodegit2
-    [tim@thinkpad nodegit2]$ git submodule init vendor/
-    [tim@thinkpad nodegit2]$ git submodule update vendor/
+If they are not, `cd` into the `nodegit` dir and run the following `git` commands to automatically fetch them:
+    [tim@thinkpad Projects]$ cd nodegit
+    [tim@thinkpad nodegit]$ git submodule init vendor/
+    [tim@thinkpad nodegit]$ git submodule update vendor/
 
 Then simply run `make unittest` in the project root.
 

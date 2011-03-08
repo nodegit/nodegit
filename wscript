@@ -5,7 +5,7 @@ from os import system
 from os.path import exists, abspath
 
 VERSION = '0.0.1'
-APPNAME = 'nodegit2'
+APPNAME = 'nodegit'
 srcdir = '.'
 blddir = 'build'
 
@@ -30,7 +30,7 @@ def build(bld):
   Popen('python waf build-shared', shell=True).wait()
     
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
-  obj.target = 'nodegit2'
+  obj.target = 'git'
   obj.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/object.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc src/tree.cc'
   obj.rpath = abspath('build/shared')
   obj.uselib = 'GIT2'
