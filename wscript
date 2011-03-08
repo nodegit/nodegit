@@ -14,6 +14,9 @@ def set_options(opt):
   opt.tool_options('compiler_cxx')
 
 def configure(conf):
+  import preproc
+  preproc.go_absolute = True
+
   conf.check_tool('gcc')
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
@@ -31,8 +34,8 @@ def build(bld):
 
   os.chdir('../../')
     
-  obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
-  obj.target = 'git'
-  obj.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/object.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc src/tree.cc'
-  obj.rpath = abspath('build/shared')
-  obj.uselib = 'GIT2'
+  main = bld.new_task_gen('cxx', 'shlib', 'node_addon')
+  main.target = 'nodegit'
+  main.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/object.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc src/tree.cc'
+  main.rpath = abspath('vendor/libgit2/build/shared')
+  main.uselib = 'GIT2'

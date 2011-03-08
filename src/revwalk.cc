@@ -6,7 +6,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <node.h>
 #include <node_events.h>
 
-#include <git2.h>
+#include "../vendor/libgit2/src/git2.h"
 
 #include "revwalk.h"
 #include "repo.h"
@@ -28,7 +28,7 @@ void RevWalk::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "next", Next);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "repository", Free);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "repository", Repository);
 
   Local<Object> sort = Object::New();
 
@@ -73,6 +73,10 @@ int RevWalk::Next(git_commit **commit) {
 
 void RevWalk::Free() {
   git_revwalk_free(this->revwalk);
+}
+
+git_repository* RevWalk::Repository() {
+	return git_revwalk_repository(this->revwalk);
 }
 
 Handle<Value> RevWalk::New(const Arguments& args) {
