@@ -18,5 +18,9 @@
   },
   "engines": {
     "node": "*"
+  },
+  "scripts": {
+    "preinstall": "./configure",
+    "install": "make && make install"
   }
 }

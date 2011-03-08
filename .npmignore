@@ -1,0 +1,6 @@
+docs/
+example/
+test/
+util/
+vendor/nodeunit
+vendor/rimraf

@@ -33,20 +33,20 @@ void GitObject::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "typeIsLoose", TypeIsLoose);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "size", Size);
 
-  Local<Object> types = Object::New();
+  Local<Object> type = Object::New();
 
-  types->Set(String::New("ANY"), Integer::New(-2));
-  types->Set(String::New("BAD"), Integer::New(-1));
-  types->Set(String::New("_EXT1"), Integer::New(0));
-  types->Set(String::New("COMMIT"), Integer::New(1));
-  types->Set(String::New("TREE"), Integer::New(2));
-  types->Set(String::New("BLOB"), Integer::New(3));
-  types->Set(String::New("TAG"), Integer::New(4));
-  types->Set(String::New("_EXT2"), Integer::New(5));
-  types->Set(String::New("OFS_DELTA"), Integer::New(6));
-  types->Set(String::New("REF_DELTA"), Integer::New(7));
+  type->Set(String::New("ANY"), Integer::New(-2));
+  type->Set(String::New("BAD"), Integer::New(-1));
+  type->Set(String::New("_EXT1"), Integer::New(0));
+  type->Set(String::New("COMMIT"), Integer::New(1));
+  type->Set(String::New("TREE"), Integer::New(2));
+  type->Set(String::New("BLOB"), Integer::New(3));
+  type->Set(String::New("TAG"), Integer::New(4));
+  type->Set(String::New("_EXT2"), Integer::New(5));
+  type->Set(String::New("OFS_DELTA"), Integer::New(6));
+  type->Set(String::New("REF_DELTA"), Integer::New(7));
 
-  constructor_template->Set(String::New("types"), types);
+  constructor_template->Set(String::New("type"), type);
 
   target->Set(String::NewSymbol("Object"), constructor_template->GetFunction());
 }

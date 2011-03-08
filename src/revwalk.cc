@@ -30,14 +30,14 @@ void RevWalk::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "repository", Free);
 
-  Local<Object> types = Object::New();
+  Local<Object> sort = Object::New();
 
-  types->Set(String::New("NONE"), Integer::New(0));
-  types->Set(String::New("TOPOLOGICAL"), Integer::New(1));
-  types->Set(String::New("TIME"), Integer::New(2));
-  types->Set(String::New("REVERSE"), Integer::New(4));
+  sort->Set(String::New("NONE"), Integer::New(0));
+  sort->Set(String::New("TOPOLOGICAL"), Integer::New(1));
+  sort->Set(String::New("TIME"), Integer::New(2));
+  sort->Set(String::New("REVERSE"), Integer::New(4));
 
-  constructor_template->Set(String::New("types"), types);
+  constructor_template->Set(String::New("sort"), sort);
 
   target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
 }
