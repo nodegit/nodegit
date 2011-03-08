@@ -21,11 +21,11 @@ This will install and configure everything you need to use `nodegit`.
 #### Install `nodegit` by cloning source from __GitHub__ and running the `configure`, `make`, and `make install` commands: ####
 \*Note: `nodegit` assumes your library path exists at `~/.node_libraries`.\*
     
-    [tim@thinkpad Projects]$ git clone git://github.com/tbranyen/nodegit.git
-    [tim@thinkpad Projects]$ cd nodegit
-    [tim@thinkpad nodegit]$ ./configure
-    [tim@thinkpad nodegit]$ make
-    [tim@thinkpad nodegit]$ make install
+    $ git clone git://github.com/tbranyen/nodegit.git
+    $ cd nodegit
+    $ ./configure
+    $ make
+    $ make install
 
 ### Windows via Cygwin ###
 
