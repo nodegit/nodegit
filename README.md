@@ -14,7 +14,7 @@ To run `nodegit` you need `Node.js` and to run unit tests you will need to have 
 ### Easy install (Recommended) ###
 This will install and configure everything you need to use `nodegit`.
 
-    [tim@thinkpad Projects]$ sudo npm install nodegit
+    $ sudo npm install nodegit
 
 ### Mac OS X/Linux/Unix ###
 
@@ -102,9 +102,9 @@ __ `nodegit` library code is written adhering to a modified `JSHint`. Run these 
 __ To run unit tests ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
 
 If they are not, `cd` into the `nodegit` dir and run the following `git` commands to automatically fetch them:
-    [tim@thinkpad Projects]$ cd nodegit
-    [tim@thinkpad nodegit]$ git submodule init vendor/
-    [tim@thinkpad nodegit]$ git submodule update vendor/
+    $ cd nodegit
+    $ git submodule init vendor/
+    $ git submodule update vendor/
 
 Then simply run `make unittest` in the project root.
 
