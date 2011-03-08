@@ -24,9 +24,20 @@ void RevWalk::Initialize(Handle<Object> target) {
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("RevWalk"));
 
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "reset", Reset);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "next", Next);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "repository", Free);
+
+  Local<Object> types = Object::New();
+
+  types->Set(String::New("NONE"), Integer::New(0));
+  types->Set(String::New("TOPOLOGICAL"), Integer::New(1));
+  types->Set(String::New("TIME"), Integer::New(2));
+  types->Set(String::New("REVERSE"), Integer::New(4));
+
+  constructor_template->Set(String::New("types"), types);
 
   target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
 }
@@ -43,9 +54,18 @@ int RevWalk::New(Repo *repo) {
   return git_revwalk_new(&this->revwalk, repo->GetValue());
 }
 
+void RevWalk::Reset() {
+  git_revwalk_reset(this->revwalk);
+}
+
 int RevWalk::Push(Commit *commit) {
   return git_revwalk_push(this->revwalk, commit->GetValue());
 }
+
+// Not for 0.0.1
+//int RevWalk::Hide() {
+//  git_revwalk_hide(this->revwalk);
+//}
 
 int RevWalk::Next(git_commit **commit) {
   return git_revwalk_next(commit, this->revwalk);
@@ -70,6 +90,16 @@ Handle<Value> RevWalk::New(const Arguments& args) {
   revwalk->Wrap(args.This());
 
   return args.This();
+}
+
+Handle<Value> RevWalk::Reset(const Arguments& args) {
+  HandleScope scope;
+
+  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
+
+  revwalk->Reset();
+
+  return Undefined();
 }
 
 Handle<Value> RevWalk::Push(const Arguments& args) {
@@ -157,6 +187,21 @@ Handle<Value> RevWalk::Free(const Arguments& args) {
   HandleScope scope;
 
   revwalk->Free();
+
+  return Undefined();
+}
+
+Handle<Value> RevWalk::Repository(const Arguments& args) {
+  HandleScope scope;
+
+  RevWalk *revwalk = new RevWalk();
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
+
+  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  repo->SetValue(revwalk->Repository());
 
   return Undefined();
 }

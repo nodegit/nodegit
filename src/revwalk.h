@@ -25,29 +25,29 @@ class RevWalk : public EventEmitter {
     git_revwalk* GetValue();
     void SetValue(git_revwalk* revwalk);
     int New(Repo *repo);
+    void Reset();
     int Push(Commit *commit);
+    int Hide();
     int Next(git_commit** commit);
+    int Sorting(int sort);
     void Free();
-
-    //void 	git_revwalk_reset (git_revwalk *walker)
-    //int 	git_revwalk_push (git_revwalk *walk, git_commit *commit)
-    //int 	git_revwalk_hide (git_revwalk *walk, git_commit *commit)
-    //int 	git_revwalk_next (git_commit **commit, git_revwalk *walk)
-    //int 	git_revwalk_sorting (git_revwalk *walk, unsigned int sort_mode)
-    //void 	git_revwalk_free (git_revwalk *walk)
-    //git_repository * 	git_revwalk_repository (git_revwalk *walk)
+    git_repository* Repository();
 
   protected:
     RevWalk() {}
     ~RevWalk() {}
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> Reset(const Arguments& args);
     static Handle<Value> Push(const Arguments& args);
+    static Handle<Value> Hide(const Arguments& args);
 
     static Handle<Value> Next(const Arguments& args);
     static int EIO_Next(eio_req *req);
     static int EIO_AfterNext(eio_req *req);
 
+    static Handle<Value> Sorting(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);
+    static Handle<Value> Repository(const Arguments& args);
 
   private:
     git_revwalk *revwalk;

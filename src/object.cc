@@ -28,9 +28,9 @@ void GitObject::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "owner", Owner);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toString", Type2String);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toType", String2Type);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "isLoose", TypeIsLoose);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "type2String", Type2String);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "string2Type", String2Type);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "typeIsLoose", TypeIsLoose);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "size", Size);
 
   Local<Object> types = Object::New();
