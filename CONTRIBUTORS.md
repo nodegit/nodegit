@@ -8,6 +8,10 @@ nodegit2 contributors (sorted alphabeticaly)
 
   * JS API suggestions 
 
+* **[Rick Waldron](https://github.com/rwldrn)**
+
+  * JS API suggestions
+
 * **[Tim Branyen](https://github.com/tbranyen)**
 
   * Project creator
