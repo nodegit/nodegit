@@ -181,43 +181,26 @@ Handle<Value> GitObject::TypeIsLoose(const Arguments& args) {
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
   
   if(args.Length() == 0 || !args[0]->IsNumber()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+    return ThrowException(Exception::Error(String::New("Type is required and must be a Number.")));
   }
 
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  git_otype type = (git_otype)args[0]->ToInteger()->Value();
 
-  repo->SetValue(obj->Owner());
-
-  return Undefined();
+  return Integer::New(obj->TypeIsLoose(type));
 }
-//Handle<Value> GitObject::Type2String(const Arguments& args) {
-//  HandleScope scope;
-//
-//  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-//  
-//  if(args.Length() == 0 || !args[0]->IsObject()) {
-//    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-//  }
-//
-//  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-//
-//  repo->SetValue(obj->Owner());
-//
-//  return Undefined();
-//}
-//Handle<Value> GitObject::Type2String(const Arguments& args) {
-//  HandleScope scope;
-//
-//  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-//  
-//  if(args.Length() == 0 || !args[0]->IsObject()) {
-//    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-//  }
-//
-//  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-//
-//  repo->SetValue(obj->Owner());
-//
-//  return Undefined();
-//}
+
+Handle<Value> GitObject::Size(const Arguments& args) {
+  HandleScope scope;
+
+  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
+  
+  if(args.Length() == 0 || !args[0]->IsNumber()) {
+    return ThrowException(Exception::Error(String::New("Type is required and must be a Number.")));
+  }
+
+  git_otype type = (git_otype)args[0]->ToInteger()->Value();
+
+  return Integer::New(obj->Size(type));
+}
+
 Persistent<FunctionTemplate> GitObject::constructor_template;

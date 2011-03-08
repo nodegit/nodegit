@@ -36,6 +36,7 @@ void Commit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "author", Author);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "tree", Tree);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "parentCount", ParentCount);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "parent", Parent);
 
   target->Set(String::NewSymbol("Commit"), constructor_template->GetFunction());
 }
@@ -90,6 +91,10 @@ const git_tree* Commit::Tree() {
 
 unsigned int Commit::ParentCount() {
   return git_commit_parentcount(this->commit);
+}
+
+git_commit* Commit::Parent(int pos) {
+  return git_commit_parent(this->commit, pos);
 }
 
 Handle<Value> Commit::New(const Arguments& args) {
@@ -340,5 +345,26 @@ Handle<Value> Commit::ParentCount(const Arguments& args) {
   unsigned int count = commit->ParentCount();
 
   return Integer::New(count);
+}
+
+Handle<Value> Commit::Parent(const Arguments& args) {
+  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
+
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsNumber()) {
+    return ThrowException(Exception::Error(String::New("Position is required and must be a Number.")));
+  }
+
+  Commit* out = ObjectWrap::Unwrap<Commit>(args[0]->ToObject());
+  int index = args[1]->ToInteger()->Value();
+
+  out->SetValue(commit->Parent(index));
+
+  return Undefined();
 }
 Persistent<FunctionTemplate> Commit::constructor_template;

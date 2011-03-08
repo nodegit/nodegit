@@ -65,6 +65,7 @@ class Blob : public EventEmitter {
      * @return 0 on success; error code otherwise
      */
     int Lookup(git_blob **blob, git_repository *repo, const git_oid *id);
+    const char* RawContent();
 
   protected:
     /**
@@ -85,6 +86,7 @@ class Blob : public EventEmitter {
      * @return v8::Object args.This()
      */
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> RawContent(const Arguments& args);
 
   private:
     /**
