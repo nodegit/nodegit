@@ -64,8 +64,9 @@ class Blob : public EventEmitter {
      *
      * @return 0 on success; error code otherwise
      */
-    int Lookup(git_blob **blob, git_repository *repo, const git_oid *id);
+    int Lookup(git_repository *repo, const git_oid *id);
     const char* RawContent();
+    int RawSize();
 
   protected:
     /**
@@ -86,13 +87,27 @@ class Blob : public EventEmitter {
      * @return v8::Object args.This()
      */
     static Handle<Value> New(const Arguments& args);
+
+    static Handle<Value> Lookup(const Arguments& args);
+    static int EIO_Lookup(eio_req *req);
+    static int EIO_AfterLookup(eio_req *req);
+
     static Handle<Value> RawContent(const Arguments& args);
+    static Handle<Value> RawSize(const Arguments& args);
 
   private:
     /**
      * Internal reference to git_blob object
      */
     git_blob *blob;
+
+    struct lookup_request {
+      Blob *blob;
+      Repo *repo;
+      Oid *oid;
+      Persistent<Value> err;
+      Persistent<Function> callback;
+    };
 };
 
 #endif
