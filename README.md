@@ -43,8 +43,8 @@ __ Reading a repository and commit data: __
     var git = require( 'nodegit' );
     
     // Read the current repository
-    git.repo( '.git', function( err, path, repo ) {
-        // If success will return 0, if an error message throw it as an error string.
+    git.repo( '.git', function( err, repo ) {
+        // If success err will be 0, else throw an error message.
         if( err ) { throw err; }
 
         // Read a commit with a SHA1
@@ -53,8 +53,8 @@ __ Reading a repository and commit data: __
             if( err ) { throw err; }
 
             console.log( 'Message', commit.message );
-            console.log( 'Author name', commit.author.name );
-            console.log( 'Author email', commit.author.email );
+            console.log( 'Author name', commit.author().name );
+            console.log( 'Author email', commit.author().email );
 
             // Memory cleanup is *not* required, but would be nice if you remembered :)
             repo.free();
@@ -69,7 +69,7 @@ __ Accomplishing the same thing as above: __
     // Create instance of Repo constructor
     var repo = new git.Repo();
     // Read the current repository
-    repo.open( '.git', function( err, path ) {
+    repo.open( '.git', function( err ) {
         // If success will return 0, if an error message throw it as an error string.
         if( err ) { throw err };
 
@@ -86,8 +86,8 @@ __ Accomplishing the same thing as above: __
             if( err ) { throw err; }
 
             console.log( 'Message', commit.message );
-            console.log( 'Author name', commit.author.name );
-            console.log( 'Author email', commit.author.email );
+            console.log( 'Author name', commit.author().name );
+            console.log( 'Author email', commit.author().email );
 
             // Memory cleanup is *not* required, but would be nice if you remembered :)
             repo.free();
