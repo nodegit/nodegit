@@ -1,78 +1,131 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset='utf-8'>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  
+    <title>tbranyen/nodegit @ GitHub</title>
+    
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/ir_black.css">
+  </head>
 
-  <title>tbranyen/nodegit @ GitHub</title>
+  <body>
+    <!-- Fork Me -->
+    <a href="http://github.com/tbranyen/nodegit">
+      <img class="forkme" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub">
+    </a>
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #2e2e2e;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #d1d1d1; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #d1d1d1; }
-    h3 { text-align: center; color: #d1d1d1; }
-    a { color: #d1d1d1; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
-</head>
+    <div id="container">
 
-<body>
-  <a href="http://github.com/tbranyen/nodegit"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+      <!-- Download helpers -->
+      <section class="download">
+        <a href="http://github.com/tbranyen/nodegit/zipball/master">
+          <img src="http://github.com/images/modules/download/zip.png"></a>
+        <a href="http://github.com/tbranyen/nodegit/tarball/master">
+          <img src="http://github.com/images/modules/download/tar.png"></a>
+      </section>
 
-  <div id="container">
+      <!-- Branding -->
+      <section class="branding">
+        <a href="http://github.com/tbranyen/nodegit">nodegit</a>
+        <span class="small">by <a href="http://github.com/tbranyen">tbranyen</a></span>
+      </section>
 
-    <div class="download">
-      <a href="http://github.com/tbranyen/nodegit/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/tbranyen/nodegit/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+      <div class="description">
+        <span class="command">Version 0.0.1</span> Node.js libgit2 asynchronous native bindings
+      </div>
+
+      <p>A collection of non-blocking Node.js libgit2 bindings, raw api, convenience api, unit tests, documentation and accomodations to make contributing easier.</p>
+      
+      <h2>dependencies</h2>
+      <p>
+        <ul>
+          <li><a href="http://nodejs.org/" target="_blank">Node.js v0.4.2 or latest</a></li>
+          <li><a href="http://git-scm.com/" target="_blank">Git</a> <em>( if you want to unit test )</em></li>
+        </ul>
+      </p>
+
+      <h2>install</h2>
+      <p>
+        <pre class="command">sudo npm install nodegit</pre>
+      </p>
+
+      <h2>use</h2>
+      <p>
+        <pre><code>
+  // Load in the module
+  var git = require( 'nodegit' );
+
+  // Open a repository for reading
+  git.repo( '.git', function( err, repo ) {
+      // Success is always 0, failure is always an error string
+      if( err ) { throw err; }
+      // Use the master branch
+      repo.branch( 'master', function( err, branch ) {
+          if( err ) { throw err; }
+          // Iterate over the revision history
+          branch.history.each( function( i, commit ) {
+              // Print out `git log` emulation
+              console.log( 'commit ' + commit.sha );
+              console.log( commit.author.name + '<' + commit.author.email + '>' );
+              console.log( commit.time.toLocaleString() + ' ' + commit.timeOffset );
+              console.log( '\n' );
+              console.log( commit.message );
+          });
+      });
+  });
+          </code>
+        </pre>
+      </p>
+
+
+      <h2>download</h2>
+      <p>
+        You can download this project in either
+        <a href="http://github.com/tbranyen/nodegit/zipball/master">zip</a> or
+        <a href="http://github.com/tbranyen/nodegit/tarball/master">tar</a> formats.
+      </p>
+
+      <p>
+        You can also clone the project with <a href="http://git-scm.com">Git</a> by running:
+        <pre class="command">$ git clone git://github.com/tbranyen/nodegit</pre>
+      </p>
+
     </div>
 
-    <h1><a href="http://github.com/tbranyen/nodegit">nodegit</a>
-      <span class="small">by <a href="http://github.com/tbranyen">tbranyen</a></span></h1>
-
-    <div class="description">
-      NodeJS libgit2 asynchronous native bindings
-    </div>
-
-    <p>A collection of non-blocking Node.js libgit2 bindings, which includes a full raw api and a convenience api.</p><h2>Dependencies</h2>
-    <p>Node.js v0.4.2 or latest
-    Git</p>
-
-    <h2>Install</h2>
-    <p>sudo npm install nodegit</p>
-
-    <h2>Contact</h2>
-    <p>Tim Branyen (tim@tabdeveloper.com)</p>
-
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/tbranyen/nodegit/zipball/master">zip</a> or
-      <a href="http://github.com/tbranyen/nodegit/tarball/master">tar</a> formats.
-    </p>
-
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/tbranyen/nodegit</pre>
-    </p>
-
-  </div>
-
-</body>
+    <script src="js/highlight.pack.js"></script>
+    <script>
+      hljs.tabReplace = '    ';
+      hljs.initHighlightingOnLoad();
+    </script>
+  </body>
 </html>
+
+<!--
+  ____ ____ ____ ____ ____ ____ ____ 
+  ||N |||O |||D |||E |||. |||J |||S ||
+  ||__|||__|||__|||__|||__|||__|||__||
+  |/__\|/__\|/__\|/__\|/__\|/__\|/__\|
+
+   ____ 
+  ||+ ||
+  ||__||
+  |/__\|
+
+   ____ ____ ____ ____ ____ ____ ____ 
+  ||L |||I |||B |||G |||I |||T |||2 ||
+  ||__|||__|||__|||__|||__|||__|||__||
+  |/__\|/__\|/__\|/__\|/__\|/__\|/__\|
+
+   ____ 
+  ||= ||
+  ||__||
+  |/__\|
+
+   ____ ____ ____ ____ ____ ____ ____ 
+  ||O |||W |||N |||Z |||O |||N |||E ||
+  ||__|||__|||__|||__|||__|||__|||__||
+  |/__\|/__\|/__\|/__\|/__\|/__\|/__\|
+
+-->

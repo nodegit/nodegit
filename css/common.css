@@ -1,0 +1,47 @@
+body {
+  font-family: Georgia, sans-serif;
+}
+.forkme {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+
+a {
+  color: #333;
+}
+
+a:hover {
+  color: #636363;
+}
+
+pre {
+  margin: 0;
+}
+
+#container {
+  width: 700px;
+  margin: 0 auto;
+}
+
+  #container .download img {
+    width: 90px;
+    border: 0;
+    float: right;
+  }
+
+  #container .branding > a {
+    font-size: 400%;
+  }
+
+  #container .branding .small {
+    padding-left: 10px;
+    font-size: 200%;
+  }
+
+#container .command {
+  padding: 10px;
+  background-color: #333;
+  color: #FFE;
+}
