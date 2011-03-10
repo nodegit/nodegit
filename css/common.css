@@ -1,6 +1,7 @@
 body {
   font-family: Georgia, sans-serif;
 }
+
 .forkme {
   position: absolute;
   top: 0;
@@ -42,6 +43,12 @@ pre {
 
 #container .command {
   padding: 10px;
+  background-color: #333;
+  color: #FFE;
+}
+
+#container .version {
+  padding: 5px;
   background-color: #333;
   color: #FFE;
 }
