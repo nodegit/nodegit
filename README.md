@@ -65,6 +65,7 @@ API Example Usage
             branch.history.each( function( i, commit ) {
 
                 // Print out `git log` emulation
+                console.log( 'commit ' + commit.sha );
                 console.log( commit.author.name + '<' + commit.author.email + '>' );
                 console.log( commit.time );
                 console.log( '\n' );
@@ -129,19 +130,26 @@ API Example Usage
                     var revisionCommit = new git.Commit( repo );
 
                     revwalk.next( revisionCommit, function( err ) {
-                        // Finish recursion once no more revision items are left
+                        // Finish recursion once no more revision commits are left
                         if( err ) { return; }
+
+                        // Create instance of Oid for sha
+                        var oid = new git.Oid();
+
+                        // Set oid to the revision commit
+                        revisionCommit.id( oid );
 
                         // Create instance of Sig for author
                         var author = new git.Sig();
 
-                        // Set the author to the commit author
+                        // Set the author to the revision commit author
                         revisionCommit.author( author );
 
                         // Convert timestamp to milliseconds and set new Date object
                         var time = new Date( revisionCommit.time() * 1000 );
 
                         // Print out `git log` emulation
+                        console.log( oid.toString( 40 ) );
                         console.log( author.name() + '<' + author.email() + '>' );
                         console.log( time );
                         console.log( '\n' );

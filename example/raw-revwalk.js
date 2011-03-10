@@ -1,9 +1,10 @@
-var git = require( '../' ).git2;
+var git = require( '../' ).raw,
+    path = require( 'path' );
 
 var repo = new git.Repo();
 
 // Access existing repository
-repo.open( '.git', function( err, path ) {
+repo.open( path.resolve( '../.git' ), function( err ) {
   var revwalk = new git.RevWalk( repo ),
       oid = new git.Oid(),
       error = new git.Error(),
@@ -12,31 +13,7 @@ repo.open( '.git', function( err, path ) {
 
   if( err ) { console.log( error.strError( err ) ); return; }
   
-  oid.mkstr( '7e1fad218e6c0b910c4780b0da111ed5a52dde79' );
-
-  //repo.lookupRef( master, "refs/heads/master", function( err, ref ) {
-  //  if( err ) { return; }
-  //
-  //  var newOid = new git.Oid();
-  //  master.oid(newOid);
-  //  commit.lookup( repo, newOid, function( err ) {
-  //    if( err ) { console.log('Error', error.strError(err)); return; }
-  //    console.log(newOid.toString(40));
-  //    var _commit = new git.Commit(repo);
-  //    function walk() {
-  //      revwalk.next(_commit, function( err ) {
-  //        if( err ) { console.log(error.strError(err));return; }
-  //        console.log( _commit.messageShort() );
-  //        walk();
-  //      });
-  //    }
-  //
-  //    walk();
-  //  });
-  //
-  //  //var _commit = new git.Commit(repo);
-  //
-  //});
+  oid.mkstr( '2a900f56b6dc6cc285b4d25b2407d9a3dfe76002' );
 
   commit.lookup( repo, oid, function( err ) {
     if( err ) { console.log('Error', error.strError(err)); return; }
@@ -54,16 +31,4 @@ repo.open( '.git', function( err, path ) {
 
     walk();
   });
-
-
-  //repo.lookupRef( master, "refs/heads/master", function( err, ref ) {
-  //  if( err ) { console.log(error.strError(err)); return; }
-  //  var newOid = new git.Oid();
-  //  console.log(newOid.toString(40));
-  //  commit.lookup( repo, newOid, function( err ) {
-  //    console.log( err );
-  //    console.log('Test', this);
-  //    console.log( error.strError( revwalk.push( this ) ) );
-  //  });
-  //});
 });

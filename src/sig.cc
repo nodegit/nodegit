@@ -26,9 +26,9 @@ void Sig::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "dup", Dup);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
 
-  // FIXME: This is a shitty way to accomplish fetching properties from the struct
+  // FIXME: This is an irresponsible way to accomplish fetching properties from the struct
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
-  //NODE_SET_PROTOTYPE_METHOD(constructor_template, "email", Email);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "email", Email);
 
   target->Set(String::NewSymbol("Sig"), constructor_template->GetFunction());
 }
@@ -40,6 +40,7 @@ git_signature* Sig::GetValue() {
 void Sig::SetValue(git_signature* sig) {
   this->sig = sig;
   this->name = sig->name;
+  this->email = sig->email;
 }
 
 void Sig::New(const char *name, const char *email, time_t time, int offset) {
@@ -58,6 +59,10 @@ char* Sig::Name() {
   return this->name;
 }
 
+char* Sig::Email() {
+  return this->email;
+}
+
 Handle<Value> Sig::New(const Arguments& args) {
   HandleScope scope;
 
@@ -70,7 +75,6 @@ Handle<Value> Sig::New(const Arguments& args) {
 Handle<Value> Sig::Dup(const Arguments& args) {
   HandleScope scope;
 
-  //Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
   }
@@ -96,5 +100,13 @@ Handle<Value> Sig::Name(const Arguments& args) {
   Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
 
   return String::New(sig->Name());
+}
+
+Handle<Value> Sig::Email(const Arguments& args) {
+  HandleScope scope;
+
+  Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
+
+  return String::New(sig->Email());
 }
 Persistent<FunctionTemplate> Sig::constructor_template;

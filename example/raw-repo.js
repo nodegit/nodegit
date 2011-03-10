@@ -1,12 +1,12 @@
-var git2 = require( '../' ).git2;
+var git2 = require( '../' ).raw,
+    path = require( 'path' );
+
 
 var repo = new git2.Repo(),
     error = new git2.Error();
 
 // Access existing repository
-repo.open('.git', function(err, path) {
-    console.log( error.strError(err), path);
-
+repo.open( path.resolve( '../.git' ), function( err ) {
     var master = new git2.Ref(repo);
     repo.lookupRef( master, 'refs/heads/master', function( err, ref ) {
       console.log(err, master);

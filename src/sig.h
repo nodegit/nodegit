@@ -28,6 +28,7 @@ class Sig : public EventEmitter {
     void Free();
 
     char* Name();
+    char* Email();
 
   protected:
     Sig() {};
@@ -38,11 +39,13 @@ class Sig : public EventEmitter {
     static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> Email(const Arguments& args);
 
   private:
     git_signature* sig;
 
     char* name;
+    char* email;
 };
 
 #endif

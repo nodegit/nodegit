@@ -1,4 +1,4 @@
-var git2 = require( '../' ).git2;
+var git2 = require( '../' ).raw;
 
 var oid = new git2.Oid();
 // Valid

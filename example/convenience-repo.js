@@ -1,17 +1,19 @@
-var git = require( '../' );
-
-git.repo( require('path').normalize('../.git'), function( err, repo ) {
+// Load in the module
+var git = require( 'nodegit' );
+// Open a repository for reading
+git.repo( '../.git', function( err, repo ) {
+  // Success is always 0, failure is always an error string
   if( err ) { throw err; }
- 
-  // Read a commit when you know the sha1
-  repo.commit( 'd29b7fecf71d0ef4887071ac18dc87f40c2fd4e1', function( err, commit ) {
-    console.log( commit.tree() );
-  });
-
-  // Read a commit when you know the name
-  repo.head( 'master', function( err, head ) {
-    git.commit( repo.repo ).lookup( head.oid().oid, function( err, commit ) {
-      console.log( commit.tree().length );
+  // Use the master branch
+  repo.branch( 'master', function( err, branch ) {
+    if( err ) { throw err; }
+    // Iterate over the revision history
+    branch.history.each( function( i, commit ) {
+      // Print out `git log` emulation
+      console.log( 'commit ' + commit.sha );
+      console.log( commit.author.name + ' <' + commit.author.email + '>' );
+      console.log( commit.time );
+      console.log( commit.message );
     });
   });
 });

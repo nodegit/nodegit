@@ -1,4 +1,4 @@
-var git2 = require( '../lib' ).git2;
+var git2 = require( '../lib' ).raw;
 
 var error = new git2.Error();
 // Valid
