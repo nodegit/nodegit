@@ -1,4 +1,4 @@
-var git = require( '../' ).git2,
+var git = require( '../' ).raw,
     rimraf = require( '../vendor/rimraf' ) || require( 'rimraf' );
 
 var testRepo = new git.Repo();

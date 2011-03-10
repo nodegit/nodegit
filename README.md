@@ -46,7 +46,7 @@ Instructions on compiling `Node.js` on a Windows platform can be found here:
 API Example Usage
 -----------------
 
-### git log emulation ###
+### Git Log Emulation ###
 
 #### Convenience API ####
 
@@ -142,7 +142,7 @@ API Example Usage
                         var time = new Date( revisionCommit.time() * 1000 );
 
                         // Print out `git log` emulation
-                        console.log( author.name + '<' + author.email + '>' );
+                        console.log( author.name() + '<' + author.email() + '>' );
                         console.log( time );
                         console.log( '\n' );
                         console.log( revisionCommit.message() );

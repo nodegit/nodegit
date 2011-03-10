@@ -1,5 +1,6 @@
-var git = require( '../' ).git2,
+var git = require( '../' ).raw,
     rimraf = require( '../vendor/rimraf' ) || require( 'rimraf' ),
+    path = require( 'path' ),
     fs = require( 'fs' );
 
 // Helper functions
@@ -60,10 +61,10 @@ exports.open = function( test ) {
     test.equals( -8, err, 'Invalid repository error code' );
 
     // Test valid repository
-    testRepo.open( './dummyrepo/.git', function( err, path ) {
+    testRepo.open( path.resolve( '../.git' ), function( err, path ) {
       test.equals( 0, err, 'Valid repository error code' );
 
-      testRepo.free();
+//      testRepo.free();
 
       test.done();
     });
