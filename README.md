@@ -3,7 +3,7 @@ Node.js libgit2 bindings
 
 Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
 
-Currently under active development, `nodegit` provides asynchronous native bindings to the `libgit2` C API.
+Currently under active development (and seeking contributors), `nodegit` provides asynchronous native bindings to the `libgit2` C API.
 
 Building and installing
 -----------------------
@@ -19,13 +19,22 @@ This will install and configure everything you need to use `nodegit`.
 ### Mac OS X/Linux/Unix ###
 
 #### Install `nodegit` by cloning source from __GitHub__ and running the `configure`, `make`, and `make install` commands: ####
-\*Note: `nodegit` assumes your library path exists at `~/.node_libraries`.\*
+\*Note: `nodegit` assumes your library path exists at `~/.node_libraries` you can change this by specifying a new path\*
     
     $ git clone git://github.com/tbranyen/nodegit.git
     $ cd nodegit
+
     $ ./configure
     $ make
     $ make install
+    
+    $ make install NODE_LIB_PATH=/path/to/your/libraries
+
+\*Updating to a new version\*
+
+    $ make update
+
+    $ make update NODE_LIB_PATH=/path/to/your/libraries
 
 ### Windows via Cygwin ###
 
@@ -37,81 +46,123 @@ Instructions on compiling `Node.js` on a Windows platform can be found here:
 API Example Usage
 -----------------
 
-### Convenience API ###
-__ Reading a repository and commit data: __
+### git log emulation ###
+
+#### Convenience API ####
 
     var git = require( 'nodegit' );
     
-    // Read the current repository
+    // Read a repository
     git.repo( '.git', function( err, repo ) {
-        // If success err will be 0, else throw an error message.
+        // Success is always 0, failure is always an error string
         if( err ) { throw err; }
 
-        // Work within the master branch
+        // Use the master branch
         repo.branch( 'master', function( err, branch ) {
-            // If success err will be 0, else throw an error message.
             if( err ) { throw err; }
 
             // Iterate over the revision history
             branch.history.each( function( i, commit ) {
-                // Emulator git log 
-                console.log( 'Author:', commit.author().name, '<' + commit.author().email + '>' );
-                console.log( 'Date:', commit.time().toDateString() );
-                console.log( commit.message() );
+
+                // Print out `git log` emulation
+                console.log( commit.author.name + '<' + commit.author.email + '>' );
+                console.log( commit.time );
+                console.log( '\n' );
+                console.log( commit.message );
+                console.log( '\n' );
             });
         });
 
-        // Read a commit with a SHA1
-        this.commit( '5f2aa9407f7b3aeb531c621c3358953841ccfc98', function( err, commit ) {
-            // If success err will be 0, else throw an error message.
-            if( err ) { throw err; }
-
-            console.log( 'Message', commit.message );
-            console.log( 'Author name', commit.author().name );
-            console.log( 'Author email', commit.author().email );
-
-            // Memory cleanup is *not* required, but would be nice if you remembered :)
-            repo.free();
-        });
+        // Memory cleanup
+        repo.free();
     });
 
-### Raw API ###
-__ Accomplishing the same thing as above: __
+#### Raw API ####
 
     var git = require( 'nodegit' ).raw;
     
     // Create instance of Repo constructor
     var repo = new git.Repo();
-    // Read the current repository
+
+    // Read a repository
     repo.open( '.git', function( err ) {
-        // If success will return 0, if an error message throw it as an error string.
-        if( err ) { throw err };
+        // Err is an integer, success is 0, use strError for string representation
+        if( err ) {
+            var error = new git.Error();
+            throw error.strError( err );
+        }
 
-        // Create object id and set hash
-        var oid = new git.Oid();
-        oid.mkstr( '5f2aa9407f7b3aeb531c621c3358953841ccfc98' );
+        // Create instance of Ref constructor with this repository
+        var ref = new git.Ref( repo );
+        
+        // Find the master branch
+        repo.lookupRef( ref, '/refs/heads/master', function( err ) {
+            if( err ) {
+              var error = new git.Error();
+              throw error.strError( err );
+            }
 
-        // Create commit object
-        var commit = new git.Commit();
+            // Create instance of Commit constructor with this repository
+            var commit = new git.Commit( repo ),
+                // Create instance of Oid constructor
+                oid = new git.Oid();
 
-        // Lookup commit
-        commit.lookup( repo, oid, function( err, commit ) {
-            // If success err will be 0, else throw an error message.
-            if( err ) { throw err; }
+            // Set the oid constructor internal reference to this branch reference
+            ref.oid( oid );
 
-            console.log( 'Message', commit.message );
-            console.log( 'Author name', commit.author().name );
-            console.log( 'Author email', commit.author().email );
+            // Lookup the commit for this oid
+            commit.lookup( oid, function() {
+                if( err ) {
+                  var error = new git.Error();
+                  throw error.strError( err );
+                }
 
-            // Memory cleanup is *not* required, but would be nice if you remembered :)
-            repo.free();
+                // Create instance of RevWalk constructor with this repository
+                var revwalk = new git.RevWalk( repo );
+
+                // Push the commit as the start to walk
+                revwalk.push( commit );
+
+                // Recursive walk
+                function walk() {
+                    // Each revision walk iteration yields a commit
+                    var revisionCommit = new git.Commit( repo );
+
+                    revwalk.next( revisionCommit, function( err ) {
+                        // Finish recursion once no more revision items are left
+                        if( err ) { return; }
+
+                        // Create instance of Sig for author
+                        var author = new git.Sig();
+
+                        // Set the author to the commit author
+                        revisionCommit.author( author );
+
+                        // Convert timestamp to milliseconds and set new Date object
+                        var time = new Date( revisionCommit.time() * 1000 );
+
+                        // Print out `git log` emulation
+                        console.log( author.name + '<' + author.email + '>' );
+                        console.log( time );
+                        console.log( '\n' );
+                        console.log( revisionCommit.message() );
+                        console.log( '\n' );
+
+                        // Recurse!
+                        walk();
+                    });
+                }
+
+                // Initiate recursion
+                walk():
+            });
         });
     });
 
 Running tests
 -------------
 
-__ `nodegit` library code is written adhering to a modified `JSHint`. Run these tests with `make lint`. __
+__ `nodegit` library code is written adhering to a modified `JSHint`. Run these checks with `make lint` in the project root. __
 
 __ To run unit tests ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
 
@@ -141,7 +192,7 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
 ### v0.0.2: ###
     * More methods implemented
     * More unit tests
-    * GitHub landing page
+    * GitHub landing page (already done)
     * More API development
 
 ### v0.0.3: ###
@@ -152,3 +203,5 @@ Getting involved
 ----------------
 
 If you find this project of interest, please document all issues and fork if you feel you can provide a patch.  Testing is of huge importance; by simply running the unit tests on your system and reporting issues you can contribute!
+
+__ Before submitting a pull request, please ensure both unit tests and lint checks pass. __
