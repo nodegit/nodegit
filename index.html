@@ -41,7 +41,7 @@
       <h2>dependencies</h2>
       <p>
         <ul>
-          <li><a href="http://nodejs.org/" target="_blank">Node.js v0.4.2 or latest</a></li>
+          <li><a href="http://nodejs.org/" target="_blank">Node.js 0.4.2 or latest</a></li>
           <li><a href="http://git-scm.com/" target="_blank">Git</a> <em>( if you want to unit test )</em></li>
         </ul>
       </p>
@@ -53,6 +53,7 @@
 
       <h2>use</h2>
       <p>
+        <em>emulate `git log`</em>
         <pre><code>
   // Load in the module
   var git = require( 'nodegit' );
@@ -69,9 +70,10 @@
               // Print out `git log` emulation
               console.log( 'commit ' + commit.sha );
               console.log( commit.author.name + '<' + commit.author.email + '>' );
-              console.log( commit.time.toLocaleString() + ' ' + commit.timeOffset );
+              console.log( commit.time );
               console.log( '\n' );
               console.log( commit.message );
+              console.log( '\n' );
           });
       });
   });
