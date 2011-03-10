@@ -57,11 +57,11 @@ exports.open = function( test ) {
   }, 'Throw an exception if no callback' );
 
   // Test invalid repository
-  testRepo.open( '/etc/hosts', function( err, path ) {
+  testRepo.open( '/etc/hosts', function( err ) {
     test.equals( -8, err, 'Invalid repository error code' );
 
     // Test valid repository
-    testRepo.open( path.resolve( '../.git' ), function( err, path ) {
+    testRepo.open( path.resolve( '../.git' ), function( err ) {
       test.equals( 0, err, 'Valid repository error code' );
 
 //      testRepo.free();

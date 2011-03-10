@@ -40,7 +40,7 @@ exports.constructor = function( test ){
     test.equals( 'The specified repository is invalid', err, 'Invalid repository error code' );
 
     // Test valid repository
-    git.repo( './dummyrepo/.git', function( err, path ) {
+    git.repo( '../.git', function( err, path ) {
       test.equals( 0, err, 'Valid repository error code' );
 
       test.done();
@@ -54,16 +54,6 @@ exports.init = function( test ) {
 
   // Test for function
   helper.testFunction( test.equals, git.repo().init, 'Repo::Init' );
-
-  // Test path argument existence
-  //helper.testException( test.ok, function() {
-  //  git.repo().init();
-  //}, 'Throw an exception if no path' );
- 
-  //// Test is_bare argument existence
-  //helper.testException( test.ok, function() {
-  //  git.repo().init( 'some/path' );
-  //}, 'Throw an exception if no is_bare' );
 
   // Cleanup, remove test repo directory - if it exists
   rimraf( './test.git', function() {
