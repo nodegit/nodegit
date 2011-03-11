@@ -76,14 +76,14 @@ class GitTree : public EventEmitter {
     /**
      * Get entry by index in the looked up tree.
      *
+     * @param idx index of the entry
+     *
      * @return git tree entry
      */
-    //GitTree::Entry EntryByIndex();
+    GitTree::Entry EntryByIndex(int idx);
 
     int SortEntries();
     void ClearEntries();
-
-
 
   protected:
     /**
@@ -112,6 +112,29 @@ class GitTree : public EventEmitter {
 
     // Experimental
     class Entry : EventEmitter {
+      public:
+        static Persistent<FunctionTemplate> constructor_template;
+
+        void GitTree::Initialize (Handle<v8::Object> target) {
+          HandleScope scope;
+
+          Local<FunctionTemplate> t = FunctionTemplate::New(New);
+          
+          constructor_template = Persistent<FunctionTemplate>::New(t);
+          constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
+          constructor_template->SetClassName(String::NewSymbol("Tree"));
+
+          NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryCount", EntryCount);
+          NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByIndex", EntryByIndex);
+          NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
+          NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearEntries", ClearEntries);
+
+          target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
+        }
+
+        void SetValue(git_tree_entry* entry) {
+          this->entry = entry;
+        }
       private:
         git_tree_entry* entry;
     };

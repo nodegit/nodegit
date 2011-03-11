@@ -153,7 +153,7 @@ int RevWalk::EIO_Next(eio_req *req) {
   next_request *ar = static_cast<next_request *>(req->data);
   git_commit* ref = ar->commit->GetValue();
 
-  ar->err = Persistent<Value>::New(Integer::New(ar->revwalk->Next(&ref)));
+  ar->err = ar->revwalk->Next(&ref);
 
   ar->commit->SetValue(ref);
 
@@ -168,7 +168,7 @@ int RevWalk::EIO_AfterNext(eio_req *req) {
   ar->revwalk->Unref();
 
   Local<Value> argv[1];
-  argv[0] = *ar->err;
+  argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;
 
@@ -177,7 +177,6 @@ int RevWalk::EIO_AfterNext(eio_req *req) {
   if(try_catch.HasCaught())
     FatalException(try_catch);
     
-  ar->err.Dispose();
   ar->callback.Dispose();
 
   delete ar;

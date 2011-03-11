@@ -105,7 +105,7 @@ class Blob : public EventEmitter {
       Blob *blob;
       Repo *repo;
       Oid *oid;
-      Persistent<Value> err;
+      int err;
       Persistent<Function> callback;
     };
 };

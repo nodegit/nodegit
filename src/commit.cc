@@ -151,7 +151,7 @@ Handle<Value> Commit::Lookup(const Arguments& args) {
 int Commit::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
-  ar->err = Persistent<Value>::New(Integer::New(ar->commit->Lookup(ar->repo->GetValue(), ar->oid->GetValue())));
+  ar->err = ar->commit->Lookup(ar->repo->GetValue(), ar->oid->GetValue());
 
   return 0;
 }
@@ -166,7 +166,7 @@ int Commit::EIO_AfterLookup(eio_req *req) {
   git_commit *commit = ar->commit->GetValue();
 
   Local<Value> argv[1];
-  argv[0] = *ar->err;
+  argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;
 
@@ -175,7 +175,6 @@ int Commit::EIO_AfterLookup(eio_req *req) {
   if(try_catch.HasCaught())
     FatalException(try_catch);
     
-  ar->err.Dispose();
   ar->callback.Dispose();
 
   delete ar;

@@ -116,8 +116,7 @@ Handle<Value> Blob::Lookup(const Arguments& args) {
 int Blob::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
-  int err = ar->blob->Lookup(ar->repo->GetValue(), ar->oid->GetValue());
-  ar->err = Persistent<Value>::New(Integer::New(err));
+  ar->err = ar->blob->Lookup(ar->repo->GetValue(), ar->oid->GetValue());
 
   return 0;
 }
@@ -130,7 +129,7 @@ int Blob::EIO_AfterLookup(eio_req *req) {
   ar->blob->Unref();
 
   Local<Value> argv[1];
-  argv[0] = Number::Cast(*ar->err);
+  argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;
 
@@ -139,7 +138,6 @@ int Blob::EIO_AfterLookup(eio_req *req) {
   if(try_catch.HasCaught())
     FatalException(try_catch);
     
-  ar->err.Dispose();
   ar->callback.Dispose();
 
   delete ar;

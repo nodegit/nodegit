@@ -5,6 +5,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <v8.h>
 #include <node.h>
 #include <node_events.h>
+#include <string>
 
 #include "../vendor/libgit2/src/git2.h"
 
@@ -92,7 +93,10 @@ Handle<Value> Repo::Open(const Arguments& args) {
 
   open_request *ar = new open_request();
   ar->repo = repo;
-  ar->path = Persistent<Value>::New(args[0]);
+
+  String::Utf8Value path(args[0]);
+  ar->path = *path;
+
   ar->callback = Persistent<Function>::New(callback);
 
   repo->Ref();
@@ -106,8 +110,7 @@ Handle<Value> Repo::Open(const Arguments& args) {
 int Repo::EIO_Open(eio_req *req) {
   open_request *ar = static_cast<open_request *>(req->data);
 
-  String::Utf8Value path(ar->path);
-  ar->err = Persistent<Value>::New( Integer::New(ar->repo->Open(*path)) );
+  ar->err = ar->repo->Open(ar->path.c_str());
 
   return 0;
 }
@@ -120,7 +123,7 @@ int Repo::EIO_AfterOpen(eio_req *req) {
   ar->repo->Unref();
 
   Local<Value> argv[1];
-  argv[0] = Number::Cast(*ar->err);
+  argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;
 
@@ -129,8 +132,6 @@ int Repo::EIO_AfterOpen(eio_req *req) {
   if(try_catch.HasCaught())
     FatalException(try_catch);
     
-  ar->err.Dispose();
-  ar->path.Dispose();
   ar->callback.Dispose();
 
   delete ar;
@@ -248,8 +249,11 @@ Handle<Value> Repo::Init(const Arguments& args) {
 
   init_request *ar = new init_request();
   ar->repo = repo;
-  ar->path = Persistent<Value>::New( args[0] );
-  ar->is_bare = Persistent<Boolean>::New( args[1]->ToBoolean() );
+
+  String::Utf8Value path(args[0]);
+  ar->path = *path;
+
+  ar->is_bare = args[1]->ToBoolean()->Value();
   ar->callback = Persistent<Function>::New(callback);
 
   repo->Ref();
@@ -263,9 +267,7 @@ Handle<Value> Repo::Init(const Arguments& args) {
 int Repo::EIO_Init(eio_req *req) {
   init_request *ar = static_cast<init_request *>(req->data);
 
-  String::Utf8Value path(ar->path);
-  Local<Boolean> is_bare = ar->is_bare->ToBoolean();
-  ar->err = Persistent<Value>::New(Integer::New(ar->repo->Init(*path, *is_bare)));
+  ar->err = ar->repo->Init(ar->path.c_str(), ar->is_bare);
 
   return 0;
 }
@@ -277,20 +279,16 @@ int Repo::EIO_AfterInit(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->repo->Unref();
 
-  Local<Value> argv[3];
-  argv[0] = Number::Cast(*ar->err);
-  argv[1] = *ar->is_bare;
+  Local<Value> argv[2];
+  argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
     
-  ar->err.Dispose();
-  ar->path.Dispose();
-  ar->is_bare.Dispose();
   ar->callback.Dispose();
 
   delete ar;
@@ -321,7 +319,10 @@ Handle<Value> Repo::LookupRef(const Arguments& args) {
   lookupref_request *ar = new lookupref_request();
   ar->repo = repo;
   ar->ref = ObjectWrap::Unwrap<Reference>(args[0]->ToObject());
-  ar->name = Persistent<String>::New(args[1]->ToString());
+
+  String::Utf8Value name(args[1]);
+  ar->name = *name;
+
   ar->callback = Persistent<Function>::New(callback);
 
   repo->Ref();
@@ -335,14 +336,12 @@ Handle<Value> Repo::LookupRef(const Arguments& args) {
 int Repo::EIO_LookupRef(eio_req *req) {
   lookupref_request *ar = static_cast<lookupref_request *>(req->data);
 
-  String::Utf8Value name(ar->name);
   git_reference* ref = ar->ref->GetValue();
   git_reference** out = &ref;
 
-  int err = ar->repo->LookupRef(out, *name);
-  ar->err = Persistent<Value>::New(Integer::New(err));
+  ar->err = ar->repo->LookupRef(out, ar->name.c_str());
 
-  if(Int32::Cast(*ar->err)->Value() == 0) {
+  if(ar->err == 0) {
     ar->ref->SetValue(*out);
   }
 
@@ -357,7 +356,7 @@ int Repo::EIO_AfterLookupRef(eio_req *req) {
   ar->repo->Unref();
 
   Local<Value> argv[1];
-  argv[0] = Number::Cast(*ar->err);
+  argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;
 
@@ -366,8 +365,6 @@ int Repo::EIO_AfterLookupRef(eio_req *req) {
   if(try_catch.HasCaught())
     FatalException(try_catch);
     
-  ar->err.Dispose();
-  ar->name.Dispose();
   ar->callback.Dispose();
 
   delete ar;

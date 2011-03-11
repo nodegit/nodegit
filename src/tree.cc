@@ -44,7 +44,15 @@ int GitTree::New(git_repository* repo) {
 }
 
 size_t GitTree::EntryCount() {
-  return git_tree_entrycount(&*this->tree);
+  return git_tree_entrycount(this->tree);
+}
+
+GitTree::Entry GitTree::EntryByIndex(int idx) {
+  GitTree::Entry entry;
+
+  entry->SetValue(git_tree_entry_byindex(this->tree, idx));
+
+  return entry;
 }
 
 int GitTree::SortEntries() {

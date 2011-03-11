@@ -55,7 +55,7 @@ class RevWalk : public EventEmitter {
     struct next_request {
       RevWalk *revwalk;
       Commit *commit;
-      Persistent<Value> err;
+      int err;
       Persistent<Function> callback;
     };
 };

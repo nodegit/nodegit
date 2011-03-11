@@ -83,7 +83,7 @@ class Commit : public EventEmitter {
       Commit* commit;
       Repo* repo;
       Oid* oid;
-      Persistent<Value> err;
+      int err;
       Persistent<Function> callback;
     };
 
