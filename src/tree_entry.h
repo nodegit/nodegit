@@ -32,7 +32,7 @@ class GitTreeEntry : EventEmitter {
      *
      * @param target v8::Object the Node.js module object
      */
-    static void Initialize();
+    static void Initialize(Handle<v8::Object> target);
 
     /**
      * Accessor for GitTreeEntry
@@ -47,9 +47,11 @@ class GitTreeEntry : EventEmitter {
      * @param obj a git_tree_entry object
      */
     void SetValue(git_tree_entry* tree);
+    const char* Name();
 
   protected:
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> Name(const Arguments& args);
 
   private:
     git_tree_entry* entry;

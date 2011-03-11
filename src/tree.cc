@@ -29,8 +29,6 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearEntries", ClearEntries);
 
-  constructor_template->Set(String::NewSymbol("TreeEntry"), GitTreeEntry::constructor_template->GetFunction());
-
   target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
 }
 
