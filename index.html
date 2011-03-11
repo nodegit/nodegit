@@ -33,15 +33,16 @@
       </section>
 
       <div class="description">
-        <span class="version">Version 0.0.1</span> Node.js libgit2 asynchronous native bindings
+        <span class="version">Version 0.0.2</span> Node.js libgit2 asynchronous native bindings
       </div>
 
       <p>A collection of non-blocking Node.js libgit2 bindings, raw api, convenience api, unit tests, documentation and accomodations to make contributing easier.</p>
       
-      <h2>dependencies</h2>
+      <h2>require</h2>
       <p>
         <ul>
           <li><a href="http://nodejs.org/" target="_blank">Node.js 0.4.2 or latest</a></li>
+          <li><a href="http://npmjs.org/" target="_blank">NPM</a> <em>( if you want the premiere install experience )</em></li>
           <li><a href="http://git-scm.com/" target="_blank">Git</a> <em>( if you want to unit test )</em></li>
         </ul>
       </p>
@@ -52,8 +53,7 @@
       </p>
 
       <h2>use</h2>
-      <p>
-        <em>emulate `git log`</em>
+        <p><em>emulate `git log`</em></p>
         <pre><code>
   // Load in the module
   var git = require( 'nodegit' );
@@ -78,7 +78,27 @@
   });
           </code>
         </pre>
-      </p>
+
+        <p><em>view commit tree and blob information</em></p>
+        <pre><code>
+  // Load in the module
+  var git = require( 'nodegit' );
+  // Open a repository for reading
+  git.repo( '.git', function( err, repo ) {
+      // Success is always 0, failure is always an error string
+      if( err ) { throw err; }
+      // Use the master branch
+      repo.branch( 'master', function( err, branch ) {
+          if( err ) { throw err; }
+          // Iterate over the revision history
+          branch.tree().each( function( i, entry ) {
+            console.log( entry.name );
+            console.log( entry.content );
+          });
+      });
+  });
+          </code>
+        </pre>
 
 
       <h2>download</h2>

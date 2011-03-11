@@ -41,6 +41,16 @@ pre {
     font-size: 200%;
   }
 
+    #container .branding .small a {
+      text-decoration: none;
+    }
+
+#container .command, #container code {
+  -moz-box-shadow: 0px 0px 14px #CCC;
+  -webkit-box-shadow: 0px 0px 14px #CCC;
+  box-shadow: 0px 0px 14px #CCC;
+}
+
 #container .command {
   padding: 10px;
   background-color: #333;
