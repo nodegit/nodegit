@@ -12,6 +12,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "../vendor/libgit2/src/git2.h"
 
 #include "repo.h"
+#include "tree_entry.h"
 
 using namespace v8;
 using namespace node;
@@ -49,9 +50,9 @@ class GitTree : public EventEmitter {
     git_tree* GetValue();
 
     /**
-     * Mutator for Object
+     * Mutator for GitTree
      *
-     * @param obj a git_object object
+     * @param obj a git_tree object
      */
     void SetValue(git_tree* tree);
 
@@ -80,7 +81,7 @@ class GitTree : public EventEmitter {
      *
      * @return git tree entry
      */
-    GitTree::Entry EntryByIndex(int idx);
+    git_tree_entry* EntryByIndex(int idx);
 
     int SortEntries();
     void ClearEntries();
@@ -109,35 +110,6 @@ class GitTree : public EventEmitter {
     static Handle<Value> EntryByIndex(const Arguments& args);
     static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);
-
-    // Experimental
-    class Entry : EventEmitter {
-      public:
-        static Persistent<FunctionTemplate> constructor_template;
-
-        void GitTree::Initialize (Handle<v8::Object> target) {
-          HandleScope scope;
-
-          Local<FunctionTemplate> t = FunctionTemplate::New(New);
-          
-          constructor_template = Persistent<FunctionTemplate>::New(t);
-          constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-          constructor_template->SetClassName(String::NewSymbol("Tree"));
-
-          NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryCount", EntryCount);
-          NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByIndex", EntryByIndex);
-          NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
-          NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearEntries", ClearEntries);
-
-          target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
-        }
-
-        void SetValue(git_tree_entry* entry) {
-          this->entry = entry;
-        }
-      private:
-        git_tree_entry* entry;
-    };
 
   private:
     /**

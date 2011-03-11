@@ -18,6 +18,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "commit.h"
 #include "revwalk.h"
 #include "tree.h"
+#include "tree_entry.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
@@ -32,4 +33,5 @@ extern "C" void init(Handle<v8::Object> target) {
   Commit::Initialize(target);
   RevWalk::Initialize(target);
   GitTree::Initialize(target);
+  GitTreeEntry::Initialize();
 }

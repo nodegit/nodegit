@@ -10,6 +10,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "repo.h"
 #include "tree.h"
+#include "tree_entry.h"
 
 using namespace v8;
 using namespace node;
@@ -27,6 +28,8 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByIndex", EntryByIndex);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearEntries", ClearEntries);
+
+  constructor_template->Set(String::NewSymbol("TreeEntry"), GitTreeEntry::constructor_template->GetFunction());
 
   target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
 }
@@ -47,12 +50,8 @@ size_t GitTree::EntryCount() {
   return git_tree_entrycount(this->tree);
 }
 
-GitTree::Entry GitTree::EntryByIndex(int idx) {
-  GitTree::Entry entry;
-
-  entry->SetValue(git_tree_entry_byindex(this->tree, idx));
-
-  return entry;
+git_tree_entry* GitTree::EntryByIndex(int idx) {
+  return git_tree_entry_byindex(this->tree, idx);
 }
 
 int GitTree::SortEntries() {
@@ -98,9 +97,21 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
 
   GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
 
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("TreeEntry is required and must be a Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Index is required and must be a Number.")));
+  }
+
+  GitTreeEntry* entry = ObjectWrap::Unwrap<GitTreeEntry>(args[0]->ToObject());
+
+  int index = args[1]->ToInteger()->Value();
+
+  entry->SetValue(tree->EntryByIndex(index));
     
   return Undefined();
-  //return Local<Value>::New(Integer::New(count));
 }
 
 Handle<Value> GitTree::SortEntries(const Arguments& args) {
