@@ -1,6 +1,12 @@
 body {
   font-family: Georgia, sans-serif;
 }
+  body .boston {
+    padding: 20px;
+    position: relative;
+    left: 50%;
+    margin-left: -120px;
+  }
 
 .forkme {
   position: absolute;
