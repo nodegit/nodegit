@@ -99,7 +99,7 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("TreeEntry is required and must be a Object.")));
   }
 
-  if(args.Length() == 1 || !args[1]->IsObject()) {
+  if(args.Length() == 1 || !args[1]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Index is required and must be a Number.")));
   }
 

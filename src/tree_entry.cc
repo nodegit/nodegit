@@ -35,6 +35,9 @@ const char* GitTreeEntry::Name() {
   return git_tree_entry_name(this->entry);
 }
 
+int GitTreeEntry::ToObject(git_object** object, git_tree_entry* entry) {
+  return git_tree_entry_2object(object, entry);
+}
 
 Handle<Value> GitTreeEntry::New(const Arguments& args) {
   HandleScope scope;
