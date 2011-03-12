@@ -13,6 +13,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "repo.h"
 #include "tree.h"
+#include "object.h"
 
 using namespace v8;
 using namespace node;
@@ -48,10 +49,12 @@ class GitTreeEntry : EventEmitter {
      */
     void SetValue(git_tree_entry* tree);
     const char* Name();
+    int ToObject(git_object** obj);
 
   protected:
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> ToObject(const Arguments& args);
 
   private:
     git_tree_entry* entry;

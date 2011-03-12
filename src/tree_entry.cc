@@ -10,6 +10,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "repo.h"
 #include "tree.h"
+#include "object.h"
 #include "tree_entry.h"
 
 using namespace v8;
@@ -23,6 +24,7 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   constructor_template->SetClassName(String::NewSymbol("TreeEntry"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toObject", ToObject);
 
   target->Set(String::NewSymbol("TreeEntry"), constructor_template->GetFunction());
 }
@@ -35,8 +37,8 @@ const char* GitTreeEntry::Name() {
   return git_tree_entry_name(this->entry);
 }
 
-int GitTreeEntry::ToObject(git_object** object, git_tree_entry* entry) {
-  return git_tree_entry_2object(object, entry);
+int GitTreeEntry::ToObject(git_object** obj) {
+  return git_tree_entry_2object(obj, entry);
 }
 
 Handle<Value> GitTreeEntry::New(const Arguments& args) {
@@ -55,5 +57,23 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
   GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
 
   return String::New(entry->Name());
+}
+
+Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
+  HandleScope scope;
+
+  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Object is required and must be an Object.")));
+  }
+
+  GitObject*obj = ObjectWrap::Unwrap<GitObject>(args[0]->ToObject());
+
+  git_object* out;
+  entry->ToObject(&out);
+  obj->SetValue(out);
+  
+  return Undefined();
 }
 Persistent<FunctionTemplate> GitTreeEntry::constructor_template;

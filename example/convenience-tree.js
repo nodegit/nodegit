@@ -9,6 +9,7 @@ git.repo( '../.git', function( err, repo ) {
     branch.tree().each( function( i, entry ) {
 
       console.log( entry.name );
+      console.log( entry.content );
 
     });
   });
