@@ -14,7 +14,7 @@
 PROJECT(libgit2 C)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-FILE(STRINGS "src/git2.h" GIT2_HEADER REGEX "^#define LIBGIT2_VERSION \"[^\"]*\"$")
+FILE(STRINGS "include/git2.h" GIT2_HEADER REGEX "^#define LIBGIT2_VERSION \"[^\"]*\"$")
 
 STRING(REGEX REPLACE "^.*LIBGIT2_VERSION \"([0-9]+).*$" "\\1" LIBGIT2_VERSION_MAJOR "${GIT2_HEADER}")
 STRING(REGEX REPLACE "^.*LIBGIT2_VERSION \"[0-9]+\\.([0-9]+).*$" "\\1" LIBGIT2_VERSION_MINOR  "${GIT2_HEADER}")
@@ -33,13 +33,24 @@ ELSEIF ()
     SET(SHA1_TYPE "builtin" CACHE STRING "Which SHA1 implementation to use: builtin, ppc")
 ENDIF ()
 
-# Try to find SQLite3 to compile the SQLite backend
-IF (NOT WIN32)
-	INCLUDE(FindPkgConfig)
+INCLUDE(FindPkgConfig)
+
+# Show SQLite3 settings in GUI (if they won't be found out)
+SET(SQLITE3_INCLUDE_DIRS "" CACHE PATH "SQLite include directory")
+SET(SQLITE3_LIBRARIES "" CACHE FILEPATH "SQLite library")
+
+# Are SQLite3 variables already set up? (poor Windows/no pkg-config/no sqlite3.pc)
+IF (SQLITE3_INCLUDE_DIRS AND SQLITE3_LIBRARIES)
+	SET(SQLITE3_FOUND 1)
+ENDIF ()
+
+# Try to find SQLite3 via pkg-config
+IF (PKG_CONFIG_FOUND AND NOT SQLITE3_FOUND)
 	pkg_check_modules(SQLITE3 sqlite3)
 ENDIF ()
 
-IF (SQLITE3_LIBRARIES AND SQLITE3_INCLUDE_DIRS)
+# Compile SQLite backend if SQLite3 is available
+IF (SQLITE3_FOUND)
 	ADD_DEFINITIONS(-DGIT2_SQLITE_BACKEND)
 	INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIRS})
 ENDIF ()
@@ -62,7 +73,7 @@ ENDIF ()
 FILE(GLOB SRC src/*.c src/backends/*.c)
 FILE(GLOB SRC_SHA1 src/block-sha1/*.c)
 FILE(GLOB SRC_PLAT src/unix/*.c)
-FILE(GLOB SRC_H src/git/*.h)
+FILE(GLOB SRC_H include/git2/*.h)
 
 # On Windows use specific platform sources
 IF (WIN32 AND NOT CYGWIN)
@@ -96,8 +107,8 @@ INSTALL(TARGETS git2
     LIBRARY DESTINATION ${INSTALL_LIB}
     ARCHIVE DESTINATION ${INSTALL_LIB}
 )
-INSTALL(DIRECTORY src/git2 DESTINATION ${INSTALL_INC} )
-INSTALL(FILES src/git2.h DESTINATION ${INSTALL_INC} )
+INSTALL(DIRECTORY include/git2 DESTINATION ${INSTALL_INC} )
+INSTALL(FILES include/git2.h DESTINATION ${INSTALL_INC} )
 
 # Tests
 IF (BUILD_TESTS)

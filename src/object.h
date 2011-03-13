@@ -9,7 +9,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <node.h>
 #include <node_events.h>
 
-#include "../vendor/libgit2/src/git2.h"
+#include "../vendor/libgit2/include/git2.h"
 
 #include "repo.h"
 #include "oid.h"
@@ -51,7 +51,6 @@ class GitObject : public EventEmitter {
     git_otype Type();
 
     git_repository* Owner();
-    void Free();
     const char* Type2String(git_otype type);
     git_otype String2Type(const char* type);
     int TypeIsLoose(git_otype type);
@@ -79,7 +78,6 @@ class GitObject : public EventEmitter {
     static Handle<Value> Id(const Arguments& args);
     static Handle<Value> Type(const Arguments& args);
     static Handle<Value> Owner(const Arguments& args);
-    static Handle<Value> Free(const Arguments& args);
     static Handle<Value> Type2String(const Arguments& args);
     static Handle<Value> String2Type(const Arguments& args);
     static Handle<Value> TypeIsLoose(const Arguments& args);

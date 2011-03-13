@@ -528,7 +528,7 @@ static int write_obj(gitfo_buf *buf, git_oid *id, loose_backend *backend)
 	gitfo_close(fd);
 	gitfo_chmod(temp, 0444);
 
-	if (gitfo_move_file(temp, file) < 0) {
+	if (gitfo_mv(temp, file) < 0) {
 		gitfo_unlink(temp);
 		return GIT_EOSERR;
 	}
@@ -652,8 +652,6 @@ int git_odb_backend_loose(git_odb_backend **backend_out, const char *objects_dir
 	backend->parent.write = &loose_backend__write;
 	backend->parent.exists = &loose_backend__exists;
 	backend->parent.free = &loose_backend__free;
-
-	backend->parent.priority = 2; /* higher than packfiles */
 
 	*backend_out = (git_odb_backend *)backend;
 	return GIT_SUCCESS;

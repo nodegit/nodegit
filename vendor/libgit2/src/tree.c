@@ -40,30 +40,12 @@ int entry_search_cmp(const void *key, const void *array_member)
 	return strcmp(filename, entry->filename);
 }
 
-static int cache_name_compare(const char *name1, int len1, int isdir1,
-                              const char *name2, int len2, int isdir2)
-{
-	int len = len1 < len2 ? len1 : len2;
-	int cmp;
-
-	cmp = memcmp(name1, name2, len);
-	if (cmp)
-		return cmp;
-	if (len1 < len2)
-		return ((!isdir1 && !isdir2) ? -1 :
-                        (isdir1 ? '/' - name2[len1] : name2[len1] - '/'));
-	if (len1 > len2)
-		return ((!isdir1 && !isdir2) ? 1 :
-                        (isdir2 ? name1[len2] - '/' : '/' - name1[len2]));
-	return 0;
-}
-
 int entry_sort_cmp(const void *a, const void *b)
 {
 	const git_tree_entry *entry_a = *(const git_tree_entry **)(a);
 	const git_tree_entry *entry_b = *(const git_tree_entry **)(b);
 
-	return cache_name_compare(entry_a->filename, strlen(entry_a->filename),
+	return gitfo_cmp_path(entry_a->filename, strlen(entry_a->filename),
                                   entry_a->attr & 040000,
                                   entry_b->filename, strlen(entry_b->filename),
                                   entry_b->attr & 040000);
@@ -85,9 +67,7 @@ void git_tree_clear_entries(git_tree *tree)
 	}
 
 	git_vector_clear(&tree->entries);
-
 	tree->object.modified = 1;
-	tree->sorted = 1;
 }
 
 
@@ -101,15 +81,11 @@ git_tree *git_tree__new(void)
 
 	memset(tree, 0x0, sizeof(struct git_tree));
 
-	if (git_vector_init(&tree->entries, 
-				DEFAULT_TREE_SIZE,
-				entry_sort_cmp,
-				entry_search_cmp) < GIT_SUCCESS) {
+	if (git_vector_init(&tree->entries, DEFAULT_TREE_SIZE, entry_sort_cmp) < GIT_SUCCESS) {
 		free(tree);
 		return NULL;
 	}
 
-	tree->sorted = 1;
 	return tree;
 }
 
@@ -171,7 +147,12 @@ const git_oid *git_tree_entry_id(git_tree_entry *entry)
 int git_tree_entry_2object(git_object **object_out, git_tree_entry *entry)
 {
 	assert(entry && object_out);
-	return git_repository_lookup(object_out, entry->owner->object.repo, &entry->oid, GIT_OBJ_ANY);
+	return git_object_lookup(object_out, entry->owner->object.repo, &entry->oid, GIT_OBJ_ANY);
+}
+
+static void sort_entries(git_tree *tree)
+{
+	git_vector_sort(&tree->entries);
 }
 
 git_tree_entry *git_tree_entry_byname(git_tree *tree, const char *filename)
@@ -180,10 +161,9 @@ git_tree_entry *git_tree_entry_byname(git_tree *tree, const char *filename)
 
 	assert(tree && filename);
 
-	if (!tree->sorted)
-		git_tree_sort_entries(tree);
+	sort_entries(tree);
 
-	idx = git_vector_search(&tree->entries, filename);
+	idx = git_vector_bsearch2(&tree->entries, entry_search_cmp, filename);
 	if (idx == GIT_ENOTFOUND)
 		return NULL;
 
@@ -194,8 +174,7 @@ git_tree_entry *git_tree_entry_byindex(git_tree *tree, int idx)
 {
 	assert(tree);
 
-	if (!tree->sorted)
-		git_tree_sort_entries(tree);
+	sort_entries(tree);
 
 	return git_vector_get(&tree->entries, (unsigned int)idx);
 }
@@ -206,7 +185,7 @@ size_t git_tree_entrycount(git_tree *tree)
 	return tree->entries.length;
 }
 
-int git_tree_add_entry_unsorted(git_tree_entry **entry_out, git_tree *tree, const git_oid *id, const char *filename, int attributes)
+int git_tree_add_entry(git_tree_entry **entry_out, git_tree *tree, const git_oid *id, const char *filename, int attributes)
 {
 	git_tree_entry *entry;
 
@@ -229,24 +208,7 @@ int git_tree_add_entry_unsorted(git_tree_entry **entry_out, git_tree *tree, cons
 		*entry_out = entry;
 
 	tree->object.modified = 1;
-	tree->sorted = 0;
 	return GIT_SUCCESS;
-}
-
-int git_tree_add_entry(git_tree_entry **entry_out, git_tree *tree, const git_oid *id, const char *filename, int attributes)
-{
-        int result = git_tree_add_entry_unsorted(entry_out, tree, id, filename, attributes);
-        if (result == GIT_SUCCESS)
-			git_tree_sort_entries(tree);
-
-        return result;
-}
-
-int git_tree_sort_entries(git_tree *tree)
-{
-        git_vector_sort(&tree->entries);
-		tree->sorted = 1;
-        return GIT_SUCCESS;
 }
 
 int git_tree_remove_entry_byindex(git_tree *tree, int idx)
@@ -255,8 +217,7 @@ int git_tree_remove_entry_byindex(git_tree *tree, int idx)
 
 	assert(tree);
 
-	if (!tree->sorted)
-		git_tree_sort_entries(tree);
+	sort_entries(tree);
 
 	remove_ptr = git_vector_get(&tree->entries, (unsigned int)idx);
 	if (remove_ptr == NULL)
@@ -276,10 +237,9 @@ int git_tree_remove_entry_byname(git_tree *tree, const char *filename)
 
 	assert(tree && filename);
 
-	if (!tree->sorted)
-		git_tree_sort_entries(tree);
+	sort_entries(tree);
 
-	idx = git_vector_search(&tree->entries, filename);
+	idx = git_vector_bsearch2(&tree->entries, entry_search_cmp, filename);
 	if (idx == GIT_ENOTFOUND)
 		return GIT_ENOTFOUND;
 
@@ -296,8 +256,7 @@ int git_tree__writeback(git_tree *tree, git_odb_source *src)
 	if (tree->entries.length == 0)
 		return GIT_EMISSINGOBJDATA;
 
-	if (!tree->sorted)
-		git_tree_sort_entries(tree);
+	sort_entries(tree);
 
 	for (i = 0; i < tree->entries.length; ++i) {
 		git_tree_entry *entry;

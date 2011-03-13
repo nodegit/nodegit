@@ -68,7 +68,13 @@ extern git_off_t gitfo_size(git_file fd);
 
 extern int gitfo_read_file(gitfo_buf *obj, const char *path);
 extern void gitfo_free_buf(gitfo_buf *obj);
-extern int gitfo_move_file(char *from, char *to);
+
+/* Move (rename) a file; this operation is atomic */
+extern int gitfo_mv(const char *from, const char *to);
+
+/* Move a file (forced); this will create the destination
+ * path if it doesn't exist */
+extern int gitfo_mv_force(const char *from, const char *to);
 
 #define gitfo_stat(p,b) stat(p, b)
 #define gitfo_fstat(f,b) fstat(f, b)
@@ -130,6 +136,10 @@ extern gitfo_cache *gitfo_enable_caching(git_file fd, size_t cache_size);
 extern int gitfo_write_cached(gitfo_cache *ioc, void *buf, size_t len);
 extern int gitfo_flush_cached(gitfo_cache *ioc);
 extern int gitfo_close_cached(gitfo_cache *ioc);
+
+
+extern int gitfo_cmp_path(const char *name1, int len1, int isdir1,
+		const char *name2, int len2, int isdir2);
 
 /**
  * Clean up a provided absolute or relative directory path.

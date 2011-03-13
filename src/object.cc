@@ -6,7 +6,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <node.h>
 #include <node_events.h>
 
-#include "../vendor/libgit2/src/git2.h"
+#include "../vendor/libgit2/include/git2.h"
 
 #include "object.h"
 #include "repo.h"
@@ -27,7 +27,6 @@ void GitObject::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "owner", Owner);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "type2String", Type2String);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "string2Type", String2Type);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "typeIsLoose", TypeIsLoose);
@@ -69,10 +68,6 @@ git_otype GitObject::Type() {
 
 git_repository* GitObject::Owner() {
   return git_object_owner(this->obj);
-}
-
-void GitObject::Free() {
-  git_object_free(this->obj);
 }
 
 const char* GitObject::Type2String(git_otype type) {
@@ -137,16 +132,6 @@ Handle<Value> GitObject::Owner(const Arguments& args) {
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
 
   repo->SetValue(obj->Owner());
-
-  return Undefined();
-}
-
-Handle<Value> GitObject::Free(const Arguments& args) {
-  HandleScope scope;
-
-  GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-
-  obj->Free();
 
   return Undefined();
 }
