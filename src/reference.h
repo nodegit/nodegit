@@ -21,7 +21,6 @@ class Reference : public EventEmitter {
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
     git_reference* GetValue();
-    int New(git_repository* repo);
     void SetValue(git_reference* ref);
     const git_oid* _Oid();
 

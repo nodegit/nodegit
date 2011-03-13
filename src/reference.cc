@@ -37,10 +37,6 @@ void Reference::SetValue(git_reference *ref) {
   this->ref = ref;
 }
 
-int Reference::New(git_repository* repo) {
-  return git_reference_new(&this->ref, repo);
-}
-
 const git_oid* Reference::_Oid() {
   return git_reference_oid(*&this->ref);
 }
@@ -49,13 +45,6 @@ Handle<Value> Reference::New(const Arguments& args) {
   HandleScope scope;
 
   Reference *ref = new Reference();
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-  }
-
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  ref->New((git_repository *)repo);
 
   ref->Wrap(args.This());
 
