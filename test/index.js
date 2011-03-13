@@ -38,6 +38,7 @@ reporter.run(
     'raw-oid.js',
     'raw-commit.js',
     'raw-error.js',
+    'raw-ref.js',
     
     // TODO:
     //'raw-revwalk.js',

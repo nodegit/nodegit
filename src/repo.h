@@ -12,7 +12,6 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "reference.h"
 #include "object.h"
 
 using namespace node;
@@ -27,7 +26,6 @@ class Repo : public EventEmitter {
     // Asynchronous
     int Open(const char* path);
     int Init(const char* path, bool is_bare);
-    int LookupRef(git_reference** ref, const char* name);
     // Synchronous
     void Free();
 
@@ -58,10 +56,6 @@ class Repo : public EventEmitter {
     static int EIO_Init(eio_req* req);
     static int EIO_AfterInit(eio_req* req);
 
-    static Handle<Value> LookupRef(const Arguments& args);
-    static int EIO_LookupRef(eio_req* req);
-    static int EIO_AfterLookupRef(eio_req* req);
-
   private:
     git_repository* repo;
 
@@ -82,14 +76,6 @@ class Repo : public EventEmitter {
       int err;
       std::string path;
       bool is_bare;
-      Persistent<Function> callback;
-    };
-
-    struct lookupref_request {
-      Repo* repo;
-      Reference* ref;
-      int err;
-      std::string name;
       Persistent<Function> callback;
     };
 };

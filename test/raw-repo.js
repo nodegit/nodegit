@@ -58,7 +58,7 @@ exports.open = function( test ) {
 
   // Test invalid repository
   testRepo.open( '/etc/hosts', function( err ) {
-    test.equals( -8, err, 'Invalid repository error code' );
+    test.equals( -3, err, 'Invalid repository error code' );
 
     // Test valid repository
     testRepo.open( path.resolve( '../.git' ), function( err ) {
@@ -125,51 +125,5 @@ exports.init = function( test ) {
           });
       });
     });
-  });
-};
-
-// Repo::LookupRef
-exports.lookupRef = function( test ) {
-  var testRepo = new git.Repo(),
-      master = new git.Ref(testRepo);
-
-  test.expect( 5 );
-
-  // Test for function
-  helper.testFunction( test.equals, testRepo.lookupRef, 'Repo::LookupRef' );
-
-  // Test ref argument existence
-  helper.testException( test.ok, function() {
-    testRepo.lookupRef();
-  }, 'Throw an exception if no reference' );
- 
-  // Test name argument existence
-  helper.testException( test.ok, function() {
-    testRepo.lookupRef( master );
-  }, 'Throw an exception if no name' );
-
-  // Test callback argument existence
-  helper.testException( test.ok, function() {
-    testRepo.lookupRef( master, 'refs/heads/master' );
-  }, 'Throw an exception if no callback' );
-
-  // Cleanup, remove test repo directory - if it exists
-  rimraf( './test.git', function() {
-  //  // Create bare repo and test for creation
-  //  testRepo.init( './test.git', true, function( err, path, is_bare ) {
-  //    test.equals( 0, err, 'Successfully created bare repository' );
-  //    // Verify repo exists
-  //    testRepo.open( './test.git', function(err, path) {
-  //      test.equals( 0, err, 'Valid repository created' );
-  //      test.equals( true, is_bare, 'Returns valid is_bare value' );
-
-  //        testRepo.free();       
-
-  //        // Cleanup, remove test repo directory
-  //        rimraf( './test.git', function() {
-            test.done();
-  //        });
-  //    });
-  //  });
   });
 };

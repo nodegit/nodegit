@@ -8,9 +8,11 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <v8.h>
 #include <node.h>
 #include <node_events.h>
+#include <string>
 
 #include "../vendor/libgit2/include/git2.h"
 
+#include "repo.h"
 #include "oid.h"
 
 using namespace node;
@@ -22,6 +24,7 @@ class Reference : public EventEmitter {
     static void Initialize(Handle<v8::Object> target);
     git_reference* GetValue();
     void SetValue(git_reference* ref);
+    int Lookup(git_repository* repo, const char* name);
     const git_oid* _Oid();
 
   protected:
@@ -29,10 +32,22 @@ class Reference : public EventEmitter {
     ~Reference() {}
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> Lookup(const Arguments& args);
+    static int EIO_Lookup(eio_req* req);
+    static int EIO_AfterLookup(eio_req* req);
+
     static Handle<Value> _Oid(const Arguments& args);
 
   private:
     git_reference *ref;
+
+    struct lookup_request {
+      Reference* ref;
+      Repo* repo;
+      int err;
+      std::string name;
+      Persistent<Function> callback;
+    };
 };
 
 #endif
