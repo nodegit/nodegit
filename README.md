@@ -195,17 +195,16 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
     * An API that can be easily extended with convenience methods in JS
     * An API that offers a familiar clean syntax that will make adoption and use much more likely
     * Open for public testing
-    * Be able to open and read a repo and fetch all its commits and lookup specific commits and their associated metadata + reading blob rawcontent.
+    * GitHub landing page
+    * Repo, Oid, Commit, Error, Ref, and RevWalk support
+    * Built on libgit2 version 0.3.0
 
 ### v0.0.2: ###
     * More methods implemented
     * More unit tests
-    * GitHub landing page (already done)
     * More API development
-
-### v0.0.3: ###
-    * Custom odb backend
-    * API coverage in GitHub Wiki
+    * Tree and Blob support
+    * Updated libgit2 to version 0.8.0
 
 Getting involved
 ----------------
