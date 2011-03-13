@@ -73,7 +73,6 @@ exports.lookup = function( test ) {
   }, 'No exception is thrown with proper arguments' );
 
   testRepo.open( path.resolve( '../.git' ), function( err ) {
-    console.log( new git.Error().strError( err ) );
     // Test invalid commit
     testOid.mkstr( '100644' );
     testCommit.lookup( testRepo, testOid, function( err ) {

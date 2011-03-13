@@ -5,7 +5,7 @@ require.paths.unshift( '../vendor' );
 try {
   var reporter = require( '../vendor/nodeunit' ).reporters.default;
 }
-catch(e) {
+catch( e ) {
   var sys = require( 'sys' );
   sys.puts( 'Cannot find nodeunit module.' );
   sys.puts( 'You can download submodules for this project by doing:' );
@@ -34,16 +34,34 @@ process.chdir( './test' );
 reporter.run(
   [
     // Raw API
-    'raw-repo.js',
-    'raw-oid.js',
+    'raw-blob.js',
     'raw-commit.js',
     'raw-error.js',
+    'raw-obj.js',
+    'raw-oid.js',
     'raw-ref.js',
+    'raw-repo.js',
+    'raw-revwalk.js',
+    // Revwalk
+    // Sig
+    // Tree
+    // Tree Entry
+    // Util
     
     // TODO:
     //'raw-revwalk.js',
 
     // Convenience API
     'convenience-repo.js'
+    // Blob
+    // Commit
+    // Error
+    // Obj
+    // Oid
+    // Ref
+    // RevWalk
+    // Sig
+    // Tree
+    // TreeEntry
   ]
 );

@@ -35,7 +35,7 @@ clean:
 	@@rm -rf $(BASE)/vendor/libgit2/build
 
 unittest:
-	$(NODE_JS) $(BASE)/test/index.js test
+	@@$(NODE_JS) $(BASE)/test/index.js test
 
 lint:
-	$(NODE_JS) $(BASE)/util/hint-check.js
+	@@$(NODE_JS) $(BASE)/util/hint-check.js

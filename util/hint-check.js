@@ -19,7 +19,8 @@ files = [
 nodejshint( files, function( failures ) {
   if( !files.length ) {
     process.exit( 0 );
-  } else {
+  }
+  else {
     process.exit( 1 );
   }
 });

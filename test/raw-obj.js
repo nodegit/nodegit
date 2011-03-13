@@ -1,7 +1,5 @@
 var git = require( '../' ).raw,
-    rimraf = require( '../vendor/rimraf' ) || require( 'rimraf' );
-
-var testRepo = new git.Repo();
+    rimraf = require( '../vendor/rimraf' );
 
 // Helper functions
 var helper = {
@@ -24,17 +22,17 @@ var helper = {
   }
 };
 
-// RevWalk
+var repo = new git.Repo();
+
+// Obj
 exports.constructor = function( test ){
   test.expect( 3 );
 
   // Test for function
-  helper.testFunction( test.equals, git.RevWalk, 'RevWalk' );
-  
-  // Ensure we get an instance of Oid
-  testRepo.open( './dummyrepo/.git', function( err, path ) {
-    test.ok( new git.RevWalk( testRepo ) instanceof git.RevWalk, 'Invocation returns an instance of RevWalk' );
+  helper.testFunction( test.equals, git.Object, 'GitObject' );
 
-    test.done();
-  });
+  // Ensure we get an instance of Obj
+  test.ok( new git.Object() instanceof git.Object, 'Invocation returns an instance of GitObject' );
+
+  test.done();
 };

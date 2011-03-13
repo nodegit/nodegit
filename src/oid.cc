@@ -25,7 +25,11 @@ void Oid::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkstr", Mkstr);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkraw", Mkraw);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "fmt", Fmt);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "pathFmt", PathFmt);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "allocFmt", AllocFmt);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "toString", ToString);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "cpy", Cpy);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "cmp", Cmp);
 
   target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
@@ -47,7 +51,7 @@ void Oid::Mkraw(const unsigned char* raw) {
 }
 
 char* Oid::Fmt(char* buffer) {
-  git_oid_fmt(*&buffer, &this->oid);
+  git_oid_fmt(buffer, &this->oid);
 }
 
 void Oid::PathFmt(char* str) {
@@ -113,7 +117,7 @@ Handle<Value> Oid::Fmt(const Arguments& args) {
 
   HandleScope scope;
 
-  char buffer[40];
+  char buffer[32];
   oid->Fmt(buffer);
   return String::New(buffer);
 }

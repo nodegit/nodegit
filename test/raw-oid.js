@@ -62,3 +62,47 @@ exports.mkstr = function( test ) {
 
   test.done();
 };
+
+// Oid::Fmt
+exports.fmt = function( test ) {
+  var testOid = new git.Oid();
+
+  test.expect( 4 );
+
+  // Test for function
+  helper.testFunction( test.equals, testOid.fmt, 'Oid::Fmt' );
+
+  // Test invalid hex id string
+  testOid.mkstr( 'NNNNN' );
+  test.equals( 38333, testOid.fmt().substring(0, 5).toUpperCase(), 'Invalid hex id String' );
+
+  // Test valid hex id string
+  testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' );
+
+  // Slight hackery to get this to work... should investigate oid fmt
+  test.equals( '1810DFF58D8A660512D4832E740F692884338CCD', testOid.fmt().substring(0, 40).toUpperCase(), 'Valid hex id String' );
+
+  test.done();
+};
+
+// Oid::Fmt
+exports.toString = function( test ) {
+  var testOid = new git.Oid();
+
+  test.expect( 4 );
+
+  // Test for function
+  helper.testFunction( test.equals, testOid.toString, 'Oid::ToString' );
+
+  // Test invalid hex id string
+  testOid.mkstr( 'NNNNN' );
+  test.equals( 38333, testOid.toString( 5 ), 'Invalid hex id String' );
+
+  // Test valid hex id string
+  testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' );
+
+  // Slight hackery to get this to work... should investigate oid fmt
+  test.equals( '1810DFF58D8A660512D4832E740F692884338CCD', testOid.toString( 40 ).toUpperCase(), 'Valid hex id String' );
+
+  test.done();
+};
