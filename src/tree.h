@@ -83,6 +83,8 @@ class GitTree : public EventEmitter {
      */
     git_tree_entry* EntryByIndex(int idx);
 
+    git_tree_entry* EntryByName(const char* name);
+
     int SortEntries();
     void ClearEntries();
 
@@ -108,6 +110,7 @@ class GitTree : public EventEmitter {
 
     static Handle<Value> EntryCount(const Arguments& args);
     static Handle<Value> EntryByIndex(const Arguments& args);
+    static Handle<Value> EntryByName(const Arguments& args);
     static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);
 
