@@ -74,7 +74,7 @@ Handle<Value> Blob::New(const Arguments& args) {
 Handle<Value> Blob::RawContent(const Arguments& args) {
   HandleScope scope;
 
-  Blob *blob = new Blob();
+  Blob *blob = ObjectWrap::Unwrap<Blob>(args.This());
 
   return String::New(blob->RawContent());
 }
