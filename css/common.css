@@ -1,0 +1,70 @@
+body {
+  font-family: Georgia, sans-serif;
+}
+  body .boston {
+    padding: 20px;
+    position: relative;
+    left: 50%;
+    margin-left: -120px;
+  }
+
+.forkme {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+
+a {
+  color: #333;
+}
+
+a:hover {
+  color: #636363;
+}
+
+pre {
+  margin: 0;
+}
+
+#container {
+  width: 700px;
+  margin: 0 auto;
+}
+
+  #container .download img {
+    width: 90px;
+    border: 0;
+    float: right;
+  }
+
+  #container .branding > a {
+    font-size: 400%;
+  }
+
+  #container .branding .small {
+    padding-left: 10px;
+    font-size: 200%;
+  }
+
+    #container .branding .small a {
+      text-decoration: none;
+    }
+
+#container .command, #container code {
+  -moz-box-shadow: 0px 0px 14px #CCC;
+  -webkit-box-shadow: 0px 0px 14px #CCC;
+  box-shadow: 0px 0px 14px #CCC;
+}
+
+#container .command {
+  padding: 10px;
+  background-color: #333;
+  color: #FFE;
+}
+
+#container .version {
+  padding: 5px;
+  background-color: #333;
+  color: #FFE;
+}
