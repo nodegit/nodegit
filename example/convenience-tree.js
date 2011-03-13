@@ -8,12 +8,8 @@ git.repo( '../.git', function( err, repo ) {
 
     branch.tree().each( function( i, entry ) {
       console.log( entry.name );
-
       console.log( entry.contents );
 
-      var blob = git.blob( repo.repo );
-      entry.entry.toObject( blob.blob );
-      console.log( blob.blob.rawContent() );
     });
   });
 });

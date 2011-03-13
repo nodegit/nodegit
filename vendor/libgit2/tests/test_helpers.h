@@ -29,10 +29,16 @@
 #include "test_lib.h"
 #include <git2.h>
 
-#define ODB_FOLDER			(TEST_RESOURCES "/testrepo.git/objects/")
-#define REPOSITORY_FOLDER	(TEST_RESOURCES "/testrepo.git/")
-#define TEST_INDEX_PATH		(TEST_RESOURCES "/testrepo.git/index")
-#define TEST_INDEX2_PATH	(TEST_RESOURCES "/gitgit.index")
+#define TEST_REPOSITORY_NAME	"testrepo.git"
+#define REPOSITORY_FOLDER		TEST_RESOURCES "/" TEST_REPOSITORY_NAME "/"
+#define ODB_FOLDER				(REPOSITORY_FOLDER "objects/")
+#define TEST_INDEX_PATH			(REPOSITORY_FOLDER "index")
+#define TEST_INDEX2_PATH		(TEST_RESOURCES "/gitgit.index")
+#define TEST_INDEXBIG_PATH		(TEST_RESOURCES "/big.index")
+
+#define TEMP_FOLDER				"./"
+#define TEMP_REPO_FOLDER		TEMP_FOLDER TEST_REPOSITORY_NAME "/"
+#define TEMP_REPO_FOLDER_NS		TEMP_FOLDER TEST_REPOSITORY_NAME
 
 typedef struct object_data {
     unsigned char *bytes;  /* (compressed) bytes stored in object store */
@@ -54,6 +60,14 @@ extern int remove_object_files(const char *odb_dir, object_data *d);
 extern int cmp_objects(git_rawobj *o, object_data *d);
 
 extern int remove_loose_object(const char *odb_dir, git_object *object);
+
+extern int cmp_files(const char *a, const char *b);
+extern int copy_file(const char *source, const char *dest);
+extern int rmdir_recurs(const char *directory_path);
+extern int copydir_recurs(const char *source_directory_path, const char *destination_directory_path);
+
+extern int open_temp_repo(git_repository **repo, const char *path);
+extern void close_temp_repo(git_repository *repo);
 
 #endif
 /* INCLUDE_test_helpers_h__ */

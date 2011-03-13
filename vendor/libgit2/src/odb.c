@@ -33,6 +33,19 @@
 
 #include "git2/odb_backend.h"
 
+#define GIT_ALTERNATES_FILE "info/alternates"
+
+/* TODO: is this correct? */
+#define GIT_LOOSE_PRIORITY 2
+#define GIT_PACKED_PRIORITY 1
+
+typedef struct
+{
+	git_odb_backend *backend;
+	int priority;
+	int is_alternate;
+} backend_internal;
+
 static int format_object_header(char *hdr, size_t n, git_rawobj *obj)
 {
 	const char *type_str = git_object_type2string(obj->type);
@@ -134,10 +147,13 @@ int git_odb__inflate_buffer(void *in, size_t inlen, void *out, size_t outlen)
 
 int backend_sort_cmp(const void *a, const void *b)
 {
-	const git_odb_backend *backend_a = *(const git_odb_backend **)(a);
-	const git_odb_backend *backend_b = *(const git_odb_backend **)(b);
+	const backend_internal *backend_a = *(const backend_internal **)(a);
+	const backend_internal *backend_b = *(const backend_internal **)(b);
 
-	return (backend_b->priority - backend_a->priority);
+	if (backend_a->is_alternate == backend_b->is_alternate)
+		return (backend_b->priority - backend_a->priority);
+
+	return backend_a->is_alternate ? 1 : -1;
 }
 
 int git_odb_new(git_odb **out)
@@ -146,7 +162,7 @@ int git_odb_new(git_odb **out)
 	if (!db)
 		return GIT_ENOMEM;
 
-	if (git_vector_init(&db->backends, 4, backend_sort_cmp, NULL) < 0) {
+	if (git_vector_init(&db->backends, 4, backend_sort_cmp) < 0) {
 		free(db);
 		return GIT_ENOMEM;
 	}
@@ -155,48 +171,114 @@ int git_odb_new(git_odb **out)
 	return GIT_SUCCESS;
 }
 
-int git_odb_add_backend(git_odb *odb, git_odb_backend *backend)
+static int add_backend_internal(git_odb *odb, git_odb_backend *backend, int priority, int is_alternate)
 {
+	backend_internal *internal;
+
 	assert(odb && backend);
 
 	if (backend->odb != NULL && backend->odb != odb)
 		return GIT_EBUSY;
 
-	backend->odb = odb;
-
-	if (git_vector_insert(&odb->backends, backend) < 0)
+	internal = git__malloc(sizeof(backend_internal));
+	if (internal == NULL)
 		return GIT_ENOMEM;
 
+	internal->backend = backend;
+	internal->priority = priority;
+	internal->is_alternate = is_alternate;
+
+	if (git_vector_insert(&odb->backends, internal) < 0) {
+		free(internal);
+		return GIT_ENOMEM;
+	}
+
 	git_vector_sort(&odb->backends);
+	internal->backend->odb = odb;
 	return GIT_SUCCESS;
 }
 
+int git_odb_add_backend(git_odb *odb, git_odb_backend *backend, int priority)
+{
+	return add_backend_internal(odb, backend, priority, 0);
+}
+
+int git_odb_add_alternate(git_odb *odb, git_odb_backend *backend, int priority)
+{
+	return add_backend_internal(odb, backend, priority, 1);
+}
+
+static int add_default_backends(git_odb *db, const char *objects_dir, int as_alternates)
+{
+	git_odb_backend *loose, *packed;
+	int error;
+
+	/* add the loose object backend */
+	error = git_odb_backend_loose(&loose, objects_dir);
+	if (error < GIT_SUCCESS)
+		return error;
+
+	error = add_backend_internal(db, loose, GIT_LOOSE_PRIORITY, as_alternates);
+	if (error < GIT_SUCCESS)
+		return error;
+
+	/* add the packed file backend */
+	error = git_odb_backend_pack(&packed, objects_dir);
+	if (error < GIT_SUCCESS)
+		return error;
+
+	error = add_backend_internal(db, packed, GIT_PACKED_PRIORITY, as_alternates);
+	if (error < GIT_SUCCESS)
+		return error;
+
+	return GIT_SUCCESS;
+}
+
+static int load_alternates(git_odb *odb, const char *objects_dir)
+{
+	char alternates_path[GIT_PATH_MAX];
+	char alternate[GIT_PATH_MAX];
+	char *buffer;
+
+	gitfo_buf alternates_buf = GITFO_BUF_INIT;
+	int error;
+
+	git__joinpath(alternates_path, objects_dir, GIT_ALTERNATES_FILE);
+
+	if (gitfo_exists(alternates_path) < GIT_SUCCESS)
+		return GIT_SUCCESS;
+
+	if (gitfo_read_file(&alternates_buf, alternates_path) < GIT_SUCCESS)
+		return GIT_EOSERR;
+
+	buffer = (char *)alternates_buf.data;
+	error = GIT_SUCCESS;
+
+	/* add each alternate as a new backend; one alternate per line */
+	while ((error == GIT_SUCCESS) && (buffer = git__strtok(alternate, buffer, "\r\n")) != NULL)
+		error = add_default_backends(odb, alternate, 1);
+
+	gitfo_free_buf(&alternates_buf);
+	return error;
+}
 
 int git_odb_open(git_odb **out, const char *objects_dir)
 {
 	git_odb *db;
-	git_odb_backend *loose, *packed;
 	int error;
+
+	assert(out && objects_dir);
+
+	*out = NULL;
 
 	if ((error = git_odb_new(&db)) < 0)
 		return error;
 
-	/* add the loose object backend */
-	if (git_odb_backend_loose(&loose, objects_dir) == 0) {
-		error = git_odb_add_backend(db, loose);
-		if (error < 0)
-			goto cleanup;
-	}
+	if ((error = add_default_backends(db, objects_dir, 0)) < GIT_SUCCESS)
+		goto cleanup;
 
-	/* add the packed file backend */
-	if (git_odb_backend_pack(&packed, objects_dir) == 0) {
-		error = git_odb_add_backend(db, packed);
-		if (error < 0)
-			goto cleanup;
-	}
-
-	/* TODO: add altenernates as new backends;
-	 * how elevant is that? very elegant. */
+	if ((error = load_alternates(db, objects_dir)) < GIT_SUCCESS)
+		goto cleanup;
 
 	*out = db;
 	return GIT_SUCCESS;
@@ -214,10 +296,13 @@ void git_odb_close(git_odb *db)
 		return;
 
 	for (i = 0; i < db->backends.length; ++i) {
-		git_odb_backend *b = git_vector_get(&db->backends, i);
+		backend_internal *internal = git_vector_get(&db->backends, i);
+		git_odb_backend *backend = internal->backend;
 
-		if (b->free) b->free(b);
-		else free(b);
+		if (backend->free) backend->free(backend);
+		else free(backend);
+
+		free(internal);
 	}
 
 	git_vector_free(&db->backends);
@@ -232,7 +317,8 @@ int git_odb_exists(git_odb *db, const git_oid *id)
 	assert(db && id);
 
 	for (i = 0; i < db->backends.length && !found; ++i) {
-		git_odb_backend *b = git_vector_get(&db->backends, i);
+		backend_internal *internal = git_vector_get(&db->backends, i);
+		git_odb_backend *b = internal->backend;
 
 		if (b->exists != NULL)
 			found = b->exists(b, id);
@@ -249,7 +335,8 @@ int git_odb_read_header(git_rawobj *out, git_odb *db, const git_oid *id)
 	assert(out && db && id);
 
 	for (i = 0; i < db->backends.length && error < 0; ++i) {
-		git_odb_backend *b = git_vector_get(&db->backends, i);
+		backend_internal *internal = git_vector_get(&db->backends, i);
+		git_odb_backend *b = internal->backend;
 
 		if (b->read_header != NULL)
 			error = b->read_header(out, b, id);
@@ -275,7 +362,8 @@ int git_odb_read(git_rawobj *out, git_odb *db, const git_oid *id)
 	assert(out && db && id);
 
 	for (i = 0; i < db->backends.length && error < 0; ++i) {
-		git_odb_backend *b = git_vector_get(&db->backends, i);
+		backend_internal *internal = git_vector_get(&db->backends, i);
+		git_odb_backend *b = internal->backend;
 
 		if (b->read != NULL)
 			error = b->read(out, b, id);
@@ -292,7 +380,12 @@ int git_odb_write(git_oid *id, git_odb *db, git_rawobj *obj)
 	assert(obj && db && id);
 
 	for (i = 0; i < db->backends.length && error < 0; ++i) {
-		git_odb_backend *b = git_vector_get(&db->backends, i);
+		backend_internal *internal = git_vector_get(&db->backends, i);
+		git_odb_backend *b = internal->backend;
+
+		/* we don't write in alternates! */
+		if (internal->is_alternate)
+			continue;
 
 		if (b->write != NULL)
 			error = b->write(id, b, obj);

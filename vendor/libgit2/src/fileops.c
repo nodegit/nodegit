@@ -142,8 +142,17 @@ void gitfo_free_buf(gitfo_buf *obj)
 	obj->data = NULL;
 }
 
-int gitfo_move_file(char *from, char *to)
+int gitfo_mv(const char *from, const char *to)
 {
+#ifdef GIT_WIN32
+	/*
+	 * Win32 POSIX compilance my ass. If the destination
+	 * file exists, the `rename` call fails. This is as
+	 * close as it gets with the Win32 API.
+	 */
+	return MoveFileEx(from, to, MOVEFILE_REPLACE_EXISTING) ? GIT_SUCCESS : GIT_EOSERR;
+#else
+	/* Don't even try this on Win32 */
 	if (!link(from, to)) {
 		gitfo_unlink(from);
 		return GIT_SUCCESS;
@@ -153,6 +162,30 @@ int gitfo_move_file(char *from, char *to)
 		return GIT_SUCCESS;
 
 	return GIT_EOSERR;
+#endif
+}
+
+int gitfo_mv_force(const char *from, const char *to)
+{
+	const int mode = 0755; /* or 0777 ? */
+	int error = GIT_SUCCESS;
+	char target_folder_path[GIT_PATH_MAX];
+
+	error = git__dirname_r(target_folder_path, sizeof(target_folder_path), to);
+	if (error < GIT_SUCCESS)
+		return error;
+
+	/* Does the containing folder exist? */
+	if (gitfo_isdir(target_folder_path)) {
+		git__joinpath(target_folder_path, target_folder_path, ""); /* Ensure there's a trailing slash */
+
+		/* Let's create the tree structure */
+		error = gitfo_mkdir_recurs(target_folder_path, mode);
+		if (error < GIT_SUCCESS)
+			return error;
+	}
+
+	return gitfo_mv(from, to);
 }
 
 int gitfo_map_ro(git_map *out, git_file fd, git_off_t begin, size_t len)
@@ -483,3 +516,22 @@ int gitfo_prettify_file_path(char *buffer_out, const char *path)
 
 	return GIT_SUCCESS;
 }
+
+int gitfo_cmp_path(const char *name1, int len1, int isdir1,
+		const char *name2, int len2, int isdir2)
+{
+	int len = len1 < len2 ? len1 : len2;
+	int cmp;
+
+	cmp = memcmp(name1, name2, len);
+	if (cmp)
+		return cmp;
+	if (len1 < len2)
+		return ((!isdir1 && !isdir2) ? -1 :
+                        (isdir1 ? '/' - name2[len1] : name2[len1] - '/'));
+	if (len1 > len2)
+		return ((!isdir1 && !isdir2) ? 1 :
+                        (isdir2 ? name1[len2] - '/' : '/' - name1[len2]));
+	return 0;
+}
+

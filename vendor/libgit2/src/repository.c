@@ -35,13 +35,8 @@
 
 #include "refs.h"
 
-#define GIT_DIR ".git/"
-#define GIT_OBJECTS_DIR "objects/"
 #define GIT_OBJECTS_INFO_DIR GIT_OBJECTS_DIR "info/"
 #define GIT_OBJECTS_PACK_DIR GIT_OBJECTS_DIR "pack/"
-
-#define GIT_INDEX_FILE "index"
-#define GIT_HEAD_FILE "HEAD"
 
 #define GIT_BRANCH_MASTER "master"
 
@@ -58,27 +53,15 @@ typedef struct {
  * Callbacks for the ODB cache, implemented
  * as a hash table
  */
-uint32_t object_table_hash(const void *key)
+uint32_t object_table_hash(const void *key, int hash_id)
 {
 	uint32_t r;
 	git_oid *id;
 
 	id = (git_oid *)key;
-	memcpy(&r, id->id, sizeof(r));
+	memcpy(&r, id->id + (hash_id * sizeof(uint32_t)), sizeof(r));
 	return r;
 }
-
-int object_table_hashkey(void *object, const void *key)
-{
-	git_object *obj;
-	git_oid *oid;
-
-	obj = (git_object *)object;
-	oid = (git_oid *)key;
-
-	return (git_oid_cmp(oid, &obj->id) == 0);
-}
-
 
 /*
  * Git repository open methods
@@ -89,7 +72,8 @@ static int assign_repository_DIRs(git_repository *repo,
 		const char *git_dir,
 		const char *git_object_directory,
 		const char *git_index_file,
-		const char *git_work_tree)
+		const char *git_work_tree,
+		int is_repo_being_created)
 {
 	char path_aux[GIT_PATH_MAX];
 	size_t git_dir_path_len;
@@ -104,110 +88,101 @@ static int assign_repository_DIRs(git_repository *repo,
 	if (error < GIT_SUCCESS)
 		return error;
 
-	if (gitfo_isdir(path_aux) < GIT_SUCCESS)
-		return GIT_ENOTFOUND;
-	
 	git_dir_path_len = strlen(path_aux);
 
 	/* store GIT_DIR */
 	repo->path_repository = git__strdup(path_aux);
+	if (repo->path_repository == NULL)
+		return GIT_ENOMEM;
 
-	/* store GIT_OBJECT_DIRECTORY */
+	/* path to GIT_OBJECT_DIRECTORY */
 	if (git_object_directory == NULL)
-		strcpy(repo->path_repository + git_dir_path_len, GIT_OBJECTS_DIR);
+		git__joinpath(path_aux, repo->path_repository, GIT_OBJECTS_DIR);
 	else {
 		error = gitfo_prettify_dir_path(path_aux, git_object_directory);
 		if (error < GIT_SUCCESS)
 			return error;
 	}
 
+	/* Ensure GIT_OBJECT_DIRECTORY exists */
 	if (gitfo_isdir(path_aux) < GIT_SUCCESS)
 		return GIT_ENOTFOUND;
 
+	/* Store GIT_OBJECT_DIRECTORY */
 	repo->path_odb = git__strdup(path_aux);
+	if (repo->path_odb == NULL)
+		return GIT_ENOMEM;
 
-
-	/* store GIT_INDEX_FILE */
-	if (git_index_file == NULL)
-		strcpy(repo->path_repository + git_dir_path_len, GIT_INDEX_FILE);
-	else {
-		error = gitfo_prettify_file_path(path_aux, git_index_file);
-		if (error < GIT_SUCCESS)
-			return error;
+	if (!is_repo_being_created) {
+		/* Ensure HEAD file exists */
+		git__joinpath(path_aux, repo->path_repository, GIT_HEAD_FILE);
+		if (gitfo_exists(path_aux) < 0)
+			return GIT_ENOTAREPO;
 	}
 
-	if (gitfo_exists(path_aux) < 0)
-		return GIT_ENOTFOUND;
-
-	repo->path_index = git__strdup(path_aux);
-
-
-	/* store GIT_WORK_TREE */
+	/* path to GIT_WORK_TREE */
 	if (git_work_tree == NULL)
 		repo->is_bare = 1;
 	else {
 		error = gitfo_prettify_dir_path(path_aux, git_work_tree);
 		if (error < GIT_SUCCESS)
 			return error;
+
+		/* Store GIT_WORK_TREE */
 		repo->path_workdir = git__strdup(path_aux);
+		if (repo->path_workdir == NULL)
+			return GIT_ENOMEM;
+
+		/* Path to GIT_INDEX_FILE */
+		if (git_index_file == NULL)
+			git__joinpath(path_aux, repo->path_repository, GIT_INDEX_FILE);
+		else {
+			error = gitfo_prettify_file_path(path_aux, git_index_file);
+			if (error < GIT_SUCCESS)
+				return error;
+		}
+
+		if (!is_repo_being_created) {
+			/* Ensure GIT_INDEX_FILE exists */
+			if (gitfo_exists(path_aux) < 0)
+				return GIT_ENOTAREPO;
+		}
+
+		/* store GIT_INDEX_FILE */
+		repo->path_index = git__strdup(path_aux);
+		if (repo->path_index == NULL)
+			return GIT_ENOMEM;
 	}
 	
 	return GIT_SUCCESS;
 }
 
-static int guess_repository_DIRs(git_repository *repo, const char *repository_path)
+static int guess_repository_DIRs(git_repository *repo, const char *repository_path, int is_repo_being_created)
 {
-	char path_aux[GIT_PATH_MAX];
-	const char *topdir;
+	char path_odb[GIT_PATH_MAX] = "\0", path_index[GIT_PATH_MAX] = "\0", path_work_tree[GIT_PATH_MAX] = "\0";
+	char dir_name[MAX_GITDIR_TREE_STRUCTURE_PATH_LENGTH];
 
-	int path_len;
 	int error = GIT_SUCCESS;
 
-	error = gitfo_prettify_dir_path(path_aux, repository_path);
-	if (error < GIT_SUCCESS)
-		return error;
+	/* Path to objects database */
+	git__joinpath(path_odb, repository_path, GIT_OBJECTS_DIR);
 
-	if (gitfo_isdir(path_aux) < GIT_SUCCESS)
-		return GIT_ENOTAREPO;
-
-	path_len = strlen(path_aux);
-
-	repo->path_repository = git__strdup(path_aux);
-
-	/* objects database */
-	strcpy(path_aux + path_len, GIT_OBJECTS_DIR);
-	if (gitfo_isdir(path_aux) < GIT_SUCCESS)
-		return GIT_ENOTAREPO;
-	repo->path_odb = git__strdup(path_aux);
-
-	/* HEAD file */
-	strcpy(path_aux + path_len, GIT_HEAD_FILE);
-	if (gitfo_exists(path_aux) < 0)
-		return GIT_ENOTAREPO;
-
-	path_aux[path_len] = 0;
-
-	if ((topdir = git__topdir(path_aux)) == NULL)
+	/* Git directory name */
+	if (git__basename_r(dir_name, sizeof(dir_name), repository_path) < 0)
 		return GIT_EINVALIDPATH;
 
-	if (strcmp(topdir, GIT_DIR) == 0) {
-		repo->is_bare = 0;
+	if (strcmp(dir_name, DOT_GIT) == 0) {
+		
+		/* Path to index file */
+		git__joinpath(path_index, repository_path, GIT_INDEX_FILE);
 
-		/* index file */
-		strcpy(path_aux + path_len, GIT_INDEX_FILE);
-		repo->path_index = git__strdup(path_aux);
-
-		/* working dir */
-		repo->path_workdir = git__dirname(path_aux);
-		if (repo->path_workdir == NULL)
+		/* Path to working dir */
+		if (git__dirname_r(path_work_tree, sizeof(path_work_tree), repository_path) < 0)
 			return GIT_EINVALIDPATH;
-
-	} else {
-		repo->is_bare = 1;
-		repo->path_workdir = NULL;
 	}
 
-	return GIT_SUCCESS;
+	error = assign_repository_DIRs(repo, repository_path, path_odb, !*path_index ? NULL : path_index, !*path_work_tree ? NULL : path_work_tree, is_repo_being_created);
+	return error;
 }
 
 static git_repository *repository_alloc()
@@ -221,15 +196,22 @@ static git_repository *repository_alloc()
 	repo->objects = git_hashtable_alloc(
 			OBJECT_TABLE_SIZE, 
 			object_table_hash,
-			object_table_hashkey);
+			(git_hash_keyeq_ptr)git_oid_cmp);
 
-	if (repo->objects == NULL) {
+	if (repo->objects == NULL) { 
 		free(repo);
 		return NULL;
 	}
 
 	if (git_repository__refcache_init(&repo->references) < GIT_SUCCESS) {
 		git_hashtable_free(repo->objects);
+		free(repo);
+		return NULL;
+	}
+
+	if (git_vector_init(&repo->memory_objects, 16, NULL) < GIT_SUCCESS) {
+		git_hashtable_free(repo->objects);
+		git_repository__refcache_free(&repo->references);
 		free(repo);
 		return NULL;
 	}
@@ -264,7 +246,8 @@ int git_repository_open3(git_repository **repo_out,
 			git_dir, 
 			NULL,
 			git_index_file,
-			git_work_tree);
+			git_work_tree,
+			0);
 
 	if (error < GIT_SUCCESS)
 		goto cleanup;
@@ -299,8 +282,36 @@ int git_repository_open2(git_repository **repo_out,
 			git_dir, 
 			git_object_directory,
 			git_index_file,
-			git_work_tree);
+			git_work_tree,
+			0);
 
+	if (error < GIT_SUCCESS)
+		goto cleanup;
+
+	error = init_odb(repo);
+	if (error < GIT_SUCCESS)
+		goto cleanup;
+
+	*repo_out = repo;
+	return GIT_SUCCESS;
+
+cleanup:
+	git_repository_free(repo);
+	return error;
+}
+
+static int repository_open_internal(git_repository **repo_out, const char *path, int is_repo_being_created)
+{
+	git_repository *repo;
+	int error = GIT_SUCCESS;
+
+	assert(repo_out && path);
+
+	repo = repository_alloc();
+	if (repo == NULL)
+		return GIT_ENOMEM;
+
+	error = guess_repository_DIRs(repo, path, is_repo_being_created);
 	if (error < GIT_SUCCESS)
 		goto cleanup;
 
@@ -318,51 +329,20 @@ cleanup:
 
 int git_repository_open(git_repository **repo_out, const char *path)
 {
-	git_repository *repo;
-	int error = GIT_SUCCESS;
-
-	assert(repo_out && path);
-
-	repo = repository_alloc();
-	if (repo == NULL)
-		return GIT_ENOMEM;
-
-	error = guess_repository_DIRs(repo, path);
-	if (error < GIT_SUCCESS)
-		goto cleanup;
-
-	error = init_odb(repo);
-	if (error < GIT_SUCCESS)
-		goto cleanup;
-
-	*repo_out = repo;
-	return GIT_SUCCESS;
-
-cleanup:
-	git_repository_free(repo);
-	return error;
+	return repository_open_internal(repo_out, path, 0);
 }
 
-void git_repository_free(git_repository *repo)
+static void repository_free(git_repository *repo)
 {
-	git_hashtable_iterator it;
-	git_object *object;
-
-	if (repo == NULL)
-		return;
+	assert(repo);
 
 	free(repo->path_workdir);
 	free(repo->path_index);
 	free(repo->path_repository);
 	free(repo->path_odb);
 
-	git_hashtable_iterator_init(repo->objects, &it);
-
-	while ((object = (git_object *)
-				git_hashtable_iterator_next(&it)) != NULL)
-		git_object_free(object);
-
 	git_hashtable_free(repo->objects);
+	git_vector_free(&repo->memory_objects);
 
 	git_repository__refcache_free(&repo->references);
 
@@ -373,6 +353,57 @@ void git_repository_free(git_repository *repo)
 		git_index_free(repo->index);
 
 	free(repo);
+}
+
+void git_repository_free__no_gc(git_repository *repo)
+{
+	git_object *object;
+	const void *_unused;
+	unsigned int i;
+
+	if (repo == NULL)
+		return;
+
+	GIT_HASHTABLE_FOREACH(repo->objects, _unused, object,
+		object->repo = NULL;
+		object->refcount = 0;
+	);
+
+	for (i = 0; i < repo->memory_objects.length; ++i) {
+		object = git_vector_get(&repo->memory_objects, i);
+		object->repo = NULL;
+		object->refcount = 0;
+	}
+
+	repository_free(repo);
+}
+
+void git_repository_free(git_repository *repo)
+{
+	git_object *object;
+	const void *_unused;
+	unsigned int i;
+
+	if (repo == NULL)
+		return;
+
+	/* Increment the refcount of all the objects in the repository
+	 * to prevent freeing dependencies */
+	GIT_HASHTABLE_FOREACH(repo->objects, _unused, object,
+		GIT_OBJECT_INCREF(object);
+	);
+
+	/* force free all the objects */
+	GIT_HASHTABLE_FOREACH(repo->objects, _unused, object,
+		git_object__free(object);
+	);
+
+	for (i = 0; i < repo->memory_objects.length; ++i) {
+		object = git_vector_get(&repo->memory_objects, i);
+		git_object__free(object);
+	}
+
+	repository_free(repo);
 }
 
 int git_repository_index(git_index **index_out, git_repository *repo)
@@ -399,125 +430,6 @@ git_odb *git_repository_database(git_repository *repo)
 	return repo->db;
 }
 
-static int create_object(git_object **object_out, git_otype type)
-{
-	git_object *object = NULL;
-
-	assert(object_out);
-
-	*object_out = NULL;
-
-	switch (type) {
-	case GIT_OBJ_COMMIT:
-	case GIT_OBJ_TAG:
-	case GIT_OBJ_BLOB:
-		object = git__malloc(git_object__size(type));
-		if (object == NULL)
-			return GIT_ENOMEM;
-		memset(object, 0x0, git_object__size(type));
-		break;
-		
-	case GIT_OBJ_TREE:
-		object = (git_object *)git_tree__new();
-		if (object == NULL)
-			return GIT_ENOMEM;
-		break;
-
-	default:
-		return GIT_EINVALIDTYPE;
-	}
-
-	*object_out = object;
-	return GIT_SUCCESS;
-}
-
-int git_repository_newobject(git_object **object_out, git_repository *repo, git_otype type)
-{
-	git_object *object = NULL;
-	int error;
-
-	assert(object_out && repo);
-
-	if ((error = create_object(&object, type)) < GIT_SUCCESS)
-		return error;
-
-	object->repo = repo;
-	object->in_memory = 1;
-	object->modified = 1;
-
-	object->source.raw.type = type;
-
-	*object_out = object;
-	return GIT_SUCCESS;
-}
-
-int git_repository_lookup(git_object **object_out, git_repository *repo, const git_oid *id, git_otype type)
-{
-	git_object *object = NULL;
-	git_rawobj obj_file;
-	int error = GIT_SUCCESS;
-
-	assert(repo && object_out && id);
-
-	object = git_hashtable_lookup(repo->objects, id);
-	if (object != NULL) {
-		*object_out = object;
-		return GIT_SUCCESS;
-	}
-
-	error = git_odb_read(&obj_file, repo->db, id);
-	if (error < GIT_SUCCESS)
-		return error;
-
-	if (type != GIT_OBJ_ANY && type != obj_file.type) {
-		git_rawobj_close(&obj_file);
-		return GIT_EINVALIDTYPE;
-	}
-
-	type = obj_file.type;
-
-	if ((error = create_object(&object, type)) < GIT_SUCCESS)
-		return error;
-
-	/* Initialize parent object */
-	git_oid_cpy(&object->id, id);
-	object->repo = repo;
-	memcpy(&object->source.raw, &obj_file, sizeof(git_rawobj));
-	object->source.open = 1;
-
-	switch (type) {
-	case GIT_OBJ_COMMIT:
-		error = git_commit__parse((git_commit *)object);
-		break;
-
-	case GIT_OBJ_TREE:
-		error = git_tree__parse((git_tree *)object);
-		break;
-
-	case GIT_OBJ_TAG:
-		error = git_tag__parse((git_tag *)object);
-		break;
-
-	case GIT_OBJ_BLOB:
-		error = git_blob__parse((git_blob *)object);
-		break;
-
-	default:
-		break;
-	}
-
-	if (error < GIT_SUCCESS) {
-		git_object_free(object);
-		return error;
-	}
-
-	git_object__source_close(object);
-	git_hashtable_insert(repo->objects, &object->id, object);
-
-	*object_out = object;
-	return GIT_SUCCESS;
-}
-
 static int repo_init_reinit(repo_init *results)
 {
 	/* TODO: reinit the repository */
@@ -525,21 +437,18 @@ static int repo_init_reinit(repo_init *results)
 	return GIT_SUCCESS;
 }
 
-static int repo_init_createhead(const char *head_path)
+static int repo_init_createhead(git_repository *repo)
 {
-	git_file fd;
-	int error = GIT_SUCCESS;
-	char head_symlink[50];
+	git_reference *head_reference;
+	return  git_reference_create_symbolic(&head_reference, repo, GIT_HEAD_FILE, GIT_REFS_HEADS_MASTER_FILE);
+}
 
-	sprintf(head_symlink, "%s %s%s\n", GIT_SYMREF, GIT_REFS_HEADS_DIR, GIT_BRANCH_MASTER);
-	
-	if ((fd = gitfo_creat(head_path, S_IREAD | S_IWRITE)) < GIT_SUCCESS)
-		return GIT_ERROR;
+static int repo_init_check_head_existence(char * repository_path)
+{
+	char temp_path[GIT_PATH_MAX];
 
-	error = gitfo_write(fd, (void*)head_symlink, strlen(head_symlink));
-
-	gitfo_close(fd);
-	return error;
+	git__joinpath(temp_path, repository_path, GIT_HEAD_FILE);
+	return gitfo_exists(temp_path);
 }
 
 static int repo_init_structure(repo_init *results)
@@ -547,41 +456,28 @@ static int repo_init_structure(repo_init *results)
 	const int mode = 0755; /* or 0777 ? */
 
 	char temp_path[GIT_PATH_MAX];
-	int path_len;
 	char *git_dir = results->path_repository;
 
 	if (gitfo_mkdir_recurs(git_dir, mode))
 		return GIT_ERROR;
 
-	path_len = strlen(git_dir);
-	strcpy(temp_path, git_dir);
-
-	/* Does HEAD file already exist ? */
-	strcpy(temp_path + path_len, GIT_HEAD_FILE);
-
-	if (gitfo_exists(temp_path) == GIT_SUCCESS)
-		return repo_init_reinit(results);
-
-	if (repo_init_createhead(temp_path) < GIT_SUCCESS)
-		return GIT_ERROR;
-
 	/* Creates the '/objects/info/' directory */
-	strcpy(temp_path + path_len, GIT_OBJECTS_INFO_DIR);
-	if (gitfo_mkdir_recurs(temp_path, mode))
+	git__joinpath(temp_path, git_dir, GIT_OBJECTS_INFO_DIR);
+	if (gitfo_mkdir_recurs(temp_path, mode) < GIT_SUCCESS)
 		return GIT_ERROR;
 
 	/* Creates the '/objects/pack/' directory */
-	strcpy(temp_path + path_len, GIT_OBJECTS_PACK_DIR);
+	git__joinpath(temp_path, git_dir, GIT_OBJECTS_PACK_DIR);
 	if (gitfo_mkdir(temp_path, mode))
 		return GIT_ERROR;
 
 	/* Creates the '/refs/heads/' directory */
-	strcpy(temp_path + path_len, GIT_REFS_HEADS_DIR);
+	git__joinpath(temp_path, git_dir, GIT_REFS_HEADS_DIR);
 	if (gitfo_mkdir_recurs(temp_path, mode))
 		return GIT_ERROR;
 
 	/* Creates the '/refs/tags/' directory */
-	strcpy(temp_path + path_len, GIT_REFS_TAGS_DIR);
+	git__joinpath(temp_path, git_dir, GIT_REFS_TAGS_DIR);
 	if (gitfo_mkdir(temp_path, mode))
 		return GIT_ERROR;
 
@@ -593,24 +489,19 @@ static int repo_init_structure(repo_init *results)
 static int repo_init_find_dir(repo_init *results, const char* path)
 {
 	char temp_path[GIT_PATH_MAX];
-	int path_len;
 	int error = GIT_SUCCESS;
 
 	error = gitfo_prettify_dir_path(temp_path, path);
 	if (error < GIT_SUCCESS)
 		return error;
 
-	path_len = strlen(temp_path);
-
 	if (!results->is_bare) {
-		strcpy(temp_path + path_len - 1, GIT_DIR);
-		path_len = path_len + strlen(GIT_DIR) - 1; /* Skip the leading slash from the constant */
+		git__joinpath(temp_path, temp_path, GIT_DIR);
 	}
 
-	if (path_len >= GIT_PATH_MAX - MAX_GITDIR_TREE_STRUCTURE_PATH_LENGTH)
-		return GIT_ENOTAREPO;
-
 	results->path_repository = git__strdup(temp_path);
+	if (results->path_repository == NULL)
+		return GIT_ENOMEM;
 
 	return GIT_SUCCESS;
 }
@@ -629,11 +520,20 @@ int git_repository_init(git_repository **repo_out, const char *path, unsigned is
 	if (error < GIT_SUCCESS)
 		goto cleanup;
 
+	if (!repo_init_check_head_existence(results.path_repository))
+		return repo_init_reinit(&results);
+
 	error = repo_init_structure(&results);
 	if (error < GIT_SUCCESS)
 		goto cleanup;
 
-	error = git_repository_open(repo_out, results.path_repository);
+	error = repository_open_internal(repo_out, results.path_repository, 1);
+	if (error < GIT_SUCCESS)
+		goto cleanup;
+
+	assert((*repo_out)->is_bare == is_bare);
+
+	error = repo_init_createhead(*repo_out);
 
 cleanup:
 	free(results.path_repository);

@@ -28,27 +28,22 @@
 #include "revwalk.h"
 #include "hashtable.h"
 
-uint32_t git_revwalk__commit_hash(const void *key)
+uint32_t git_revwalk__commit_hash(const void *key, int hash_id)
 {
 	uint32_t r;
 	git_commit *commit;
 
 	commit = (git_commit *)key;
-	memcpy(&r, commit->object.id.id, sizeof(r));
+	memcpy(&r, commit->object.id.id + (hash_id * sizeof(uint32_t)), sizeof(r));
 	return r;
 }
 
-int git_revwalk__commit_haskey(void *object, const void *key)
+int git_revwalk__commit_keycmp(const void *key_a, const void *key_b)
 {
-	git_revwalk_commit *walk_commit;
-	git_commit *commit_object;
-
-	walk_commit = (git_revwalk_commit *)object;
-	commit_object = (git_commit *)key;
-
-	return (walk_commit->commit_object == commit_object);
+	git_commit *a = (git_commit *)key_a;
+	git_commit *b = (git_commit *)key_b;
+	return git_oid_cmp(&a->object.id, &b->object.id);
 }
-
 
 int git_revwalk_new(git_revwalk **revwalk_out, git_repository *repo)
 {
@@ -62,7 +57,7 @@ int git_revwalk_new(git_revwalk **revwalk_out, git_repository *repo)
 
 	walk->commits = git_hashtable_alloc(64,
 			git_revwalk__commit_hash,
-			git_revwalk__commit_haskey);
+			git_revwalk__commit_keycmp);
 
 	if (walk->commits == NULL) {
 		free(walk);
@@ -119,6 +114,7 @@ static git_revwalk_commit *commit_to_walkcommit(git_revwalk *walk, git_commit *c
 	memset(commit, 0x0, sizeof(git_revwalk_commit));
 
 	commit->commit_object = commit_object;
+	GIT_OBJECT_INCREF(commit_object);
 
 	git_hashtable_insert(walk->commits, commit_object, commit);
 
@@ -234,6 +230,7 @@ int git_revwalk_next(git_commit **commit, git_revwalk *walk)
 	while ((next = walk->next(&walk->iterator)) != NULL) {
 		if (!next->uninteresting) {
 			*commit = next->commit_object;
+			GIT_OBJECT_INCREF(*commit);
 			return GIT_SUCCESS;
 		}
 	}
@@ -245,18 +242,16 @@ int git_revwalk_next(git_commit **commit, git_revwalk *walk)
 
 void git_revwalk_reset(git_revwalk *walk)
 {
-	git_hashtable_iterator it;
+	const void *_unused;
 	git_revwalk_commit *commit;
 
 	assert(walk);
 
-	git_hashtable_iterator_init(walk->commits, &it);
-
-	while ((commit = (git_revwalk_commit *)
-				git_hashtable_iterator_next(&it)) != NULL) {
+	GIT_HASHTABLE_FOREACH(walk->commits, _unused, commit, {
+		git_object_close((git_object *)commit->commit_object);
 		git_revwalk_list_clear(&commit->parents);
 		free(commit);
-	}
+	});
 
 	git_hashtable_clear(walk->commits);
 	git_revwalk_list_clear(&walk->iterator);
@@ -329,6 +324,8 @@ git_revwalk_commit *git_revwalk_list_pop_back(git_revwalk_list *list)
 	list->tail = list->tail->prev;
 	if (list->tail == NULL)
 		list->head = NULL;
+	else
+		list->tail->next = NULL;
 
 	commit = node->walk_commit;
 	free(node);
@@ -350,6 +347,8 @@ git_revwalk_commit *git_revwalk_list_pop_front(git_revwalk_list *list)
 	list->head = list->head->next;
 	if (list->head == NULL)
 		list->tail = NULL;
+	else
+		list->head->prev = NULL;
 
 	commit = node->walk_commit;
 	free(node);

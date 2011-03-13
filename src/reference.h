@@ -9,7 +9,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <node.h>
 #include <node_events.h>
 
-#include "../vendor/libgit2/src/git2.h"
+#include "../vendor/libgit2/include/git2.h"
 
 #include "oid.h"
 
