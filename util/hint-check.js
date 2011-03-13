@@ -1,6 +1,20 @@
 var nodejshint = require( './nodejshint.js' ).test,
 
-files = [ 'lib/index.js', 'lib/ref.js', 'lib/repo.js', 'lib/error.js', 'lib/revwalk.js', 'lib/commit.js', 'lib/util.js', 'lib/oid.js', 'lib/sig.js' ];
+files = [
+  'lib/blob.js',
+  'lib/commit.js',
+  'lib/error.js',
+  'lib/index.js',
+  'lib/obj.js',
+  'lib/oid.js',
+  'lib/ref.js',
+  'lib/repo.js',
+  'lib/revwalk.js',
+  'lib/sig.js',
+  'lib/tree.js',
+  'lib/tree_entry.js',
+  'lib/util.js'
+];
 
 nodejshint( files, function( failures ) {
   if( !files.length ) {
