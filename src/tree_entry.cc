@@ -9,8 +9,10 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "../vendor/libgit2/src/git2.h"
 
 #include "repo.h"
+#include "blob.h"
 #include "tree.h"
 #include "object.h"
+#include "oid.h"
 #include "tree_entry.h"
 
 using namespace v8;
@@ -37,8 +39,12 @@ const char* GitTreeEntry::Name() {
   return git_tree_entry_name(this->entry);
 }
 
+const git_oid* GitTreeEntry::Id() {
+  return git_tree_entry_id(this->entry);
+}
+
 int GitTreeEntry::ToObject(git_object** obj) {
-  return git_tree_entry_2object(obj, entry);
+  return git_tree_entry_2object(obj, this->entry);
 }
 
 Handle<Value> GitTreeEntry::New(const Arguments& args) {
@@ -59,20 +65,36 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
   return String::New(entry->Name());
 }
 
+Handle<Value> GitTreeEntry::Id(const Arguments& args) {
+  HandleScope scope;
+
+  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
+  }
+
+  Oid* oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+
+  oid->SetValue(const_cast<git_oid *>(entry->Id()));
+  
+  return Undefined();
+}
+
 Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
   HandleScope scope;
 
   GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Object is required and must be an Object.")));
+    return ThrowException(Exception::Error(String::New("Blob is required and must be an Object.")));
   }
 
-  GitObject*obj = ObjectWrap::Unwrap<GitObject>(args[0]->ToObject());
+  Blob* blob = ObjectWrap::Unwrap<Blob>(args[0]->ToObject());
 
   git_object* out;
   entry->ToObject(&out);
-  obj->SetValue(out);
+  blob->SetValue((git_blob *)out);
   
   return Undefined();
 }

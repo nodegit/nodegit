@@ -26,6 +26,7 @@ void GitTree::Initialize (Handle<v8::Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryCount", EntryCount);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByIndex", EntryByIndex);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByName", EntryByName);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearEntries", ClearEntries);
 
@@ -50,6 +51,10 @@ size_t GitTree::EntryCount() {
 
 git_tree_entry* GitTree::EntryByIndex(int idx) {
   return git_tree_entry_byindex(this->tree, idx);
+}
+
+git_tree_entry* GitTree::EntryByName(const char* name) {
+  return git_tree_entry_byname(this->tree, name);
 }
 
 int GitTree::SortEntries() {
@@ -108,6 +113,30 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   int index = args[1]->ToInteger()->Value();
 
   entry->SetValue(tree->EntryByIndex(index));
+    
+  return Undefined();
+}
+
+Handle<Value> GitTree::EntryByName(const Arguments& args) {
+  HandleScope scope;
+
+  GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("TreeEntry is required and must be a Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsString()) {
+    return ThrowException(Exception::Error(String::New("Name is required and must be a String.")));
+  }
+
+  GitTreeEntry* entry = ObjectWrap::Unwrap<GitTreeEntry>(args[0]->ToObject());
+
+  int index = args[1]->ToInteger()->Value();
+
+  String::Utf8Value name(args[1]->ToString());
+
+  entry->SetValue(tree->EntryByName(*name));
     
   return Undefined();
 }
