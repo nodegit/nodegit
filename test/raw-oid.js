@@ -74,7 +74,7 @@ exports.fmt = function( test ) {
 
   // Test invalid hex id string
   testOid.mkstr( 'NNNNN' );
-  test.equals( 38333, testOid.fmt().substring(0, 5).toUpperCase(), 'Invalid hex id String' );
+  test.equals( '00000', testOid.fmt().substring(0, 5).toUpperCase(), 'Invalid hex id String' );
 
   // Test valid hex id string
   testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' );
@@ -96,7 +96,7 @@ exports.toString = function( test ) {
 
   // Test invalid hex id string
   testOid.mkstr( 'NNNNN' );
-  test.equals( 38333, testOid.toString( 5 ), 'Invalid hex id String' );
+  test.equals( '00000', testOid.toString( 5 ), 'Invalid hex id String' );
 
   // Test valid hex id string
   testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' );

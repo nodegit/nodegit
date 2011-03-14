@@ -37,7 +37,7 @@ exports.constructor = function( test ){
 
   // Test invalid repository
   git.repo( '/etc/hosts', function( err, path ) {
-    test.equals( 'Object does not exist in the scope searched.', err, 'Invalid repository error code' );
+    test.equals( 'The specified repository is invalid', err, 'Invalid repository error code' );
 
     // Test valid repository
     git.repo( '../.git', function( err, path ) {
