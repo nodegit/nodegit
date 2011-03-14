@@ -1,8 +1,0 @@
-argv = ['waf', 'configure']
-environ = {'_': '/usr/bin/python', 'SSH_AUTH_SOCK': '/tmp/launch-7qUexP/Listeners', 'VERSIONER_PYTHON_PREFER_32_BIT': 'no', 'TERM_PROGRAM_VERSION': '273', 'SHELL': '/bin/bash', 'LOGNAME': 'timbranyen', 'USER': 'timbranyen', 'HOME': '/Users/timbranyen', 'PATH': '/usr/local/mysql-5.1.48-osx10.6-x86_64/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/X11/bin', 'DISPLAY': '/tmp/launch-7UXtiF/org.x:0', 'MAKEFLAGS': '', 'TERM_PROGRAM': 'Apple_Terminal', 'LANG': 'en_US.UTF-8', 'TERM': 'xterm-color', 'Apple_PubSub_Socket_Render': '/tmp/launch-m9ROAk/Render', 'VERSIONER_PYTHON_VERSION': '2.6', 'SHLVL': '3', '__CF_USER_TEXT_ENCODING': '0x1F5:0:0', 'MAKELEVEL': '1', 'PWD': '/Users/timbranyen/Projects/nodegit/vendor/libgit2', 'TMPDIR': '/var/folders/0j/0jwileIVGx44xbVHEc8nvk+++TI/-Tmp-/', 'MFLAGS': '', 'COMMAND_MODE': 'unix2003'}
-files = ['/Users/timbranyen/Projects/nodegit/vendor/libgit2/wscript']
-hash = -8574636053425009178
-options = {'files': '', 'use_sqlite': True, 'sha1': 'builtin', 'jobs': 4, 'verbose': 0, 'nocache': False, 'progress_bar': 0, 'top': '', 'destdir': '', 'keep': False, 'zones': '', 'debug': False, 'prefix': '/usr/local/', 'download': False, 'msvc': None, 'force': False, 'arch': 'x86', 'targets': '', 'check_c_compiler': 'gcc', 'out': ''}
-out_dir = '/Users/timbranyen/Projects/nodegit/vendor/libgit2/build'
-run_dir = '/Users/timbranyen/Projects/nodegit/vendor/libgit2'
-top_dir = '/Users/timbranyen/Projects/nodegit/vendor/libgit2'
