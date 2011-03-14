@@ -73,9 +73,6 @@ API Example Usage
                 console.log( '\n' );
             });
         });
-
-        // Memory cleanup
-        repo.free();
     });
 
 #### Raw API ####
@@ -186,6 +183,13 @@ Release information
 
 __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods) __
 
+### v0.0.2: ###
+    * More methods implemented
+    * More unit tests
+    * More API development
+    * Tree and Blob support
+    * Updated libgit2 to version 0.8.0
+
 ### v0.0.1: ###
     * Some useful methods implemented
     * Some unit tests
@@ -198,13 +202,6 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
     * GitHub landing page
     * Repo, Oid, Commit, Error, Ref, and RevWalk support
     * Built on libgit2 version 0.3.0
-
-### v0.0.2: ###
-    * More methods implemented
-    * More unit tests
-    * More API development
-    * Tree and Blob support
-    * Updated libgit2 to version 0.8.0
 
 Getting involved
 ----------------
