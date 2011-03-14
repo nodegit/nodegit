@@ -100,8 +100,6 @@ exports.toString = function( test ) {
 
   // Test valid hex id string
   testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' );
-
-  // Slight hackery to get this to work... should investigate oid fmt
   test.equals( '1810DFF58D8A660512D4832E740F692884338CCD', testOid.toString( 40 ).toUpperCase(), 'Valid hex id String' );
 
   test.done();
