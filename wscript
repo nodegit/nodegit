@@ -4,7 +4,7 @@ import os
 from os import system
 from os.path import exists, abspath
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 APPNAME = 'nodegit'
 srcdir = '.'
 blddir = 'build'
