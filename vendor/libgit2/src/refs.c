@@ -235,6 +235,24 @@ static int loose_read(gitfo_buf *file_content, const char *name, const char *rep
 	return error;
 }
 
+static git_rtype loose_guess_rtype(const char *full_path)
+{
+	gitfo_buf ref_file = GITFO_BUF_INIT;
+	git_rtype type;
+
+	type = GIT_REF_INVALID;
+
+	if (gitfo_read_file(&ref_file, full_path) == GIT_SUCCESS) {
+		if (git__prefixcmp((const char *)(ref_file.data), GIT_SYMREF) == 0)
+			type = GIT_REF_SYMBOLIC;
+		else
+			type = GIT_REF_OID;
+	}
+
+	gitfo_free_buf(&ref_file);
+	return type;
+}
+
 static int loose_lookup(
 		git_reference **ref_out, 
 		git_repository *repo, 
@@ -291,7 +309,7 @@ static int loose_write(git_reference *ref)
 
 	git__joinpath(ref_path, ref->owner->path_repository, ref->name);
 
-	if ((error = git_filebuf_open(&file, ref_path, 0)) < GIT_SUCCESS)
+	if ((error = git_filebuf_open(&file, ref_path, GIT_FILEBUF_FORCE)) < GIT_SUCCESS)
 		return error;
 
 	if (ref->type & GIT_REF_OID) {
@@ -405,7 +423,7 @@ static int packed_parse_oid(
 		const char **buffer_out,
 		const char *buffer_end)
 {
-	reference_oid *ref;
+	reference_oid *ref = NULL;
 
 	const char *buffer = *buffer_out;
 	const char *refname_begin, *refname_end;
@@ -531,6 +549,31 @@ cleanup:
 	return error;
 }
 
+
+
+
+struct dirent_list_data {
+	git_vector ref_list;
+	size_t repo_path_len;
+	unsigned int list_flags;
+};
+
+static int _dirent_loose_listall(void *_data, char *full_path)
+{
+	struct dirent_list_data *data = (struct dirent_list_data *)_data;
+	char *file_path;
+
+	if (gitfo_isdir(full_path) == GIT_SUCCESS)
+		return gitfo_dirent(full_path, GIT_PATH_MAX, _dirent_loose_listall, _data);
+
+	if ((data->list_flags & loose_guess_rtype(full_path)) == 0)
+		return GIT_SUCCESS; /* we are filtering out this reference */
+
+	file_path = full_path + data->repo_path_len;
+
+	return git_vector_insert(&data->ref_list, git__strdup(file_path));
+}
+
 static int _dirent_loose_load(void *data, char *full_path)
 {
 	git_repository *repository = (git_repository *)data;
@@ -638,7 +681,6 @@ static int packed_write_ref(reference_oid *ref, git_filebuf *file)
 static int packed_find_peel(reference_oid *ref)
 {
 	git_tag *tag;
-	const git_object *peeled_target;
 	int error;
 
 	if (ref->ref.type & GIT_REF_HAS_PEEL)
@@ -663,11 +705,7 @@ static int packed_find_peel(reference_oid *ref)
 	/*
 	 * Find the object pointed at by this tag
 	 */
-	peeled_target = git_tag_target(tag);
-	if (peeled_target == NULL)
-		return GIT_EOBJCORRUPTED;
-
-	git_oid_cpy(&ref->peel_target, git_object_id(peeled_target));
+	git_oid_cpy(&ref->peel_target, git_tag_target_oid(tag));
 	ref->ref.type |= GIT_REF_HAS_PEEL;
 
 	/* 
@@ -1292,6 +1330,45 @@ int git_reference_packall(git_repository *repo)
 	return packed_write(repo);
 }
 
+int git_reference_listall(git_strarray *array, git_repository *repo, unsigned int list_flags)
+{
+	int error;
+	struct dirent_list_data data;
+	char refs_path[GIT_PATH_MAX];
+
+	array->strings = NULL;
+	array->count = 0;
+
+	git_vector_init(&data.ref_list, 8, NULL);
+	data.repo_path_len = strlen(repo->path_repository);
+	data.list_flags = list_flags;
+
+	git__joinpath(refs_path, repo->path_repository, GIT_REFS_DIR);
+	error = gitfo_dirent(refs_path, GIT_PATH_MAX, _dirent_loose_listall, &data);
+
+	if (error < GIT_SUCCESS) {
+		git_vector_free(&data.ref_list);
+		return error;
+	}
+
+	if (list_flags & GIT_REF_PACKED) {
+		const char *ref_name;
+		void *_unused;
+
+		if ((error = packed_load(repo)) < GIT_SUCCESS) {
+			git_vector_free(&data.ref_list);
+			return error;
+		}
+
+		GIT_HASHTABLE_FOREACH(repo->references.packfile, ref_name, _unused,
+			git_vector_insert(&data.ref_list, git__strdup(ref_name));
+		);
+	}
+
+	array->strings = (char **)data.ref_list.contents;
+	array->count = data.ref_list.length;
+	return GIT_SUCCESS;
+}
 
 
 

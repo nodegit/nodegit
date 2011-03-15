@@ -261,7 +261,7 @@ int git_object_new(git_object **object_out, git_repository *repo, git_otype type
 
 	object->source.raw.type = type;
 
-	object->refcount++;
+	object->lru = ++repo->lru_counter;
 	*object_out = object;
 	return GIT_SUCCESS;
 }
@@ -277,7 +277,8 @@ int git_object_lookup(git_object **object_out, git_repository *repo, const git_o
 	object = git_hashtable_lookup(repo->objects, id);
 	if (object != NULL) {
 		*object_out = object;
-		GIT_OBJECT_INCREF(object);
+		object->lru = ++repo->lru_counter;
+		object->can_free = 0;
 		return GIT_SUCCESS;
 	}
 
@@ -330,7 +331,7 @@ int git_object_lookup(git_object **object_out, git_repository *repo, const git_o
 	git_object__source_close(object);
 	git_hashtable_insert(repo->objects, &object->id, object);
 
-	GIT_OBJECT_INCREF(object);
+	object->lru = ++repo->lru_counter;
 	*object_out = object;
 	return GIT_SUCCESS;
 }
@@ -384,15 +385,6 @@ void git_object__free(git_object *object)
 
 	git_object__source_close(object);
 
-	if (object->repo != NULL) {
-		if (object->in_memory) {
-			int idx = git_vector_search(&object->repo->memory_objects, object);
-			git_vector_remove(&object->repo->memory_objects, idx);
-		} else {
-			git_hashtable_remove(object->repo->objects, &object->id);
-		}
-	}
-
 	switch (object->source.raw.type) {
 	case GIT_OBJ_COMMIT:
 		git_commit__free((git_commit *)object);
@@ -421,8 +413,13 @@ void git_object_close(git_object *object)
 	if (object == NULL)
 		return;
 
-	if (--object->refcount <= 0)
+	if (object->in_memory) {
+		int idx = git_vector_search(&object->repo->memory_objects, object);
+		git_vector_remove(&object->repo->memory_objects, idx);
 		git_object__free(object);
+	} else {
+		object->can_free = 1;
+	}
 }
 
 const git_oid *git_object_id(const git_object *obj)

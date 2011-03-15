@@ -5,6 +5,7 @@
 #include "git2/oid.h"
 #include "git2/odb.h"
 #include "git2/repository.h"
+#include "git2/object.h"
 
 #include "hashtable.h"
 #include "index.h"
@@ -26,8 +27,8 @@ struct git_object {
 	git_oid id;
 	git_repository *repo;
 	git_odb_source source;
-	unsigned short refcount;
-	short in_memory:1, modified:1;
+	unsigned int lru;
+	unsigned char in_memory, modified, can_free, _pad;
 };
 
 struct git_repository {
@@ -45,6 +46,7 @@ struct git_repository {
 	char *path_workdir;
 
 	unsigned is_bare:1;
+	unsigned int lru_counter;
 };
 
 int git_object__source_open(git_object *object);
@@ -59,13 +61,5 @@ int git__source_write(git_odb_source *source, const void *bytes, size_t len);
 
 int git__parse_oid(git_oid *oid, char **buffer_out, const char *buffer_end, const char *header);
 int git__write_oid(git_odb_source *src, const char *header, const git_oid *oid);
-
-#define GIT_OBJECT_INCREF(ob) git_object__incref((git_object *)(ob))
-
-GIT_INLINE(void) git_object__incref(struct git_object *object)
-{
-	if (object)
-		object->refcount++;
-}
 
 #endif
