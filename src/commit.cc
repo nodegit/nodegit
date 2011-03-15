@@ -85,16 +85,16 @@ const git_signature* Commit::Author() {
   return git_commit_author(this->commit);
 }
 
-const git_tree* Commit::Tree() {
-  return git_commit_tree(this->commit);
+int Commit::Tree(git_tree** tree) {
+  return git_commit_tree(tree, this->commit);
 }
 
 unsigned int Commit::ParentCount() {
   return git_commit_parentcount(this->commit);
 }
 
-git_commit* Commit::Parent(int pos) {
-  return git_commit_parent(this->commit, pos);
+int Commit::Parent(git_commit** commit, int pos) {
+  return git_commit_parent(commit, this->commit, pos);
 }
 
 Handle<Value> Commit::New(const Arguments& args) {
@@ -271,11 +271,13 @@ Handle<Value> Commit::Tree(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Tree is required and must be an Object.")));
   }
 
+  git_tree* in;
   GitTree* tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject());
 
-  tree->SetValue(const_cast<git_tree *>(commit->Tree()));
+  int err = commit->Tree(&in);
+  tree->SetValue(in);
 
-  return Undefined();
+  return Integer::New(err);
 }
 //Handle<Value> Commit::Tree(const Arguments& args) {
 //  Commit *commit = ObjectWrap::Unwrap<Commit>(args.This());
@@ -360,10 +362,12 @@ Handle<Value> Commit::Parent(const Arguments& args) {
   }
 
   Commit* out = ObjectWrap::Unwrap<Commit>(args[0]->ToObject());
+  git_commit* in;
   int index = args[1]->ToInteger()->Value();
 
-  out->SetValue(commit->Parent(index));
+  int err = commit->Parent(&in, index);
+  out->SetValue(in);
 
-  return Undefined();
+  return Integer::New(err);
 }
 Persistent<FunctionTemplate> Commit::constructor_template;

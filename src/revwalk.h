@@ -24,11 +24,11 @@ class RevWalk : public EventEmitter {
 
     git_revwalk* GetValue();
     void SetValue(git_revwalk* revwalk);
-    int New(Repo *repo);
+    int New(Repo* repo);
     void Reset();
-    int Push(Commit *commit);
+    int Push(git_oid* oid);
     int Hide();
-    int Next(git_commit** commit);
+    int Next(git_oid* oid);
     int Sorting(int sort);
     void Free();
     git_repository* Repository();
@@ -42,19 +42,19 @@ class RevWalk : public EventEmitter {
     static Handle<Value> Hide(const Arguments& args);
 
     static Handle<Value> Next(const Arguments& args);
-    static int EIO_Next(eio_req *req);
-    static int EIO_AfterNext(eio_req *req);
+    static int EIO_Next(eio_req* req);
+    static int EIO_AfterNext(eio_req* req);
 
     static Handle<Value> Sorting(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);
     static Handle<Value> Repository(const Arguments& args);
 
   private:
-    git_revwalk *revwalk;
+    git_revwalk* revwalk;
 
     struct next_request {
-      RevWalk *revwalk;
-      Commit *commit;
+      RevWalk* revwalk;
+      Oid* oid;
       int err;
       Persistent<Function> callback;
     };

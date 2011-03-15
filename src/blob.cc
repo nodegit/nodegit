@@ -47,7 +47,8 @@ int Blob::Lookup(git_repository *repo, const git_oid *id) {
 }
 
 const char* Blob::RawContent() {
-  return git_blob_rawcontent(this->blob);
+  //return git_blob_rawcontent(this->blob);
+  return "";
 }
 
 int Blob::RawSize() {

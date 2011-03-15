@@ -47,9 +47,9 @@ class Commit : public EventEmitter {
     int TimeOffset();
     const git_signature* Committer();
     const git_signature* Author();
-    const git_tree* Tree();
+    int Tree(git_tree** tree);
     unsigned int ParentCount();
-    git_commit* Parent(int pos);
+    int Parent(git_commit** commit, int pos);
 
   protected:
     Commit() {}

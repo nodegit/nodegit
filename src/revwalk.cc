@@ -58,8 +58,8 @@ void RevWalk::Reset() {
   git_revwalk_reset(this->revwalk);
 }
 
-int RevWalk::Push(Commit *commit) {
-  return git_revwalk_push(this->revwalk, commit->GetValue());
+int RevWalk::Push(git_oid* oid) {
+  return git_revwalk_push(this->revwalk, oid);
 }
 
 // Not for 0.0.1
@@ -67,8 +67,8 @@ int RevWalk::Push(Commit *commit) {
 //  git_revwalk_hide(this->revwalk);
 //}
 
-int RevWalk::Next(git_commit **commit) {
-  return git_revwalk_next(commit, this->revwalk);
+int RevWalk::Next(git_oid *oid) {
+  return git_revwalk_next(oid, this->revwalk);
 }
 
 void RevWalk::Free() {
@@ -111,13 +111,13 @@ Handle<Value> RevWalk::Push(const Arguments& args) {
 
   RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  Commit *commit = ObjectWrap::Unwrap<Commit>(args[0]->ToObject());
-  int err = revwalk->Push(commit);
+  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  int err = revwalk->Push(oid->GetValue());
 
-  return Local<Value>::New(Integer::New(err));
+  return Integer::New(err);
 }
 
 Handle<Value> RevWalk::Next(const Arguments& args) {
@@ -127,7 +127,7 @@ Handle<Value> RevWalk::Next(const Arguments& args) {
   HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
   if(args.Length() == 1 || !args[1]->IsFunction()) {
@@ -138,7 +138,7 @@ Handle<Value> RevWalk::Next(const Arguments& args) {
 
   next_request *ar = new next_request();
   ar->revwalk = revwalk;
-  ar->commit = ObjectWrap::Unwrap<Commit>(args[0]->ToObject());
+  ar->oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
   ar->callback = Persistent<Function>::New(callback);
 
   revwalk->Ref();
@@ -151,11 +151,10 @@ Handle<Value> RevWalk::Next(const Arguments& args) {
 
 int RevWalk::EIO_Next(eio_req *req) {
   next_request *ar = static_cast<next_request *>(req->data);
-  git_commit* ref = ar->commit->GetValue();
+  git_oid* oid = ar->oid->GetValue();
 
-  ar->err = ar->revwalk->Next(&ref);
-
-  ar->commit->SetValue(ref);
+  ar->err = ar->revwalk->Next(oid);
+  ar->oid->SetValue(oid);
 
   return 0;
 }
