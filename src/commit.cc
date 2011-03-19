@@ -2,6 +2,7 @@
 Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 */
 
+#include <string.h>
 #include <v8.h>
 #include <node.h>
 #include <node_events.h>
@@ -49,12 +50,23 @@ void Commit::SetValue(git_commit* commit) {
   this->commit = commit;
 }
 
-int Commit::Lookup(git_repository* repo, git_oid* oid) {
-  return git_commit_lookup(&this->commit, repo, oid);
+int Commit::Lookup(git_oid* oid) {
+  git_commit* commit;
+
+  //this->oid = oid;
+
+  //int err = git_commit_lookup(&commit, this->repo, oid);
+
+  //this->commit = commit;
+
+  //return err;
+  return 0;
 }
 
 int Commit::New(git_repository* repo) {
-  return git_commit_new(&this->commit, repo);
+  this->repo = repo;
+
+  return git_commit_new(&this->commit, this->repo);
 }
 
 const git_oid* Commit::Id() {
@@ -107,8 +119,8 @@ Handle<Value> Commit::New(const Arguments& args) {
   }
 
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  commit->New((git_repository *)repo);
 
+  commit->New(repo->GetValue());
   commit->Wrap(args.This());
 
   return args.This();
@@ -121,23 +133,14 @@ Handle<Value> Commit::Lookup(const Arguments& args) {
   HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-  }
-
-  if(args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  if(args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  callback = Local<Function>::Cast(args[2]);
+  callback = Local<Function>::Cast(args[1]);
 
   lookup_request *ar = new lookup_request();
   ar->commit = commit;
-  ar->repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  ar->oid = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
+  ar->oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
   ar->callback = Persistent<Function>::New(callback);
 
   commit->Ref();
@@ -151,7 +154,7 @@ Handle<Value> Commit::Lookup(const Arguments& args) {
 int Commit::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
-  ar->err = ar->commit->Lookup(ar->repo->GetValue(), ar->oid->GetValue());
+  ar->err = ar->commit->Lookup(ar->oid->GetValue());
 
   return 0;
 }
@@ -163,9 +166,7 @@ int Commit::EIO_AfterLookup(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->commit->Unref();
 
-  git_commit *commit = ar->commit->GetValue();
-
-  Local<Value> argv[1];
+  Local<Value> argv[0];
   argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;

@@ -38,8 +38,8 @@ class Commit : public EventEmitter {
 
     git_commit* GetValue();
     void SetValue(git_commit* commit);
-    int Lookup(git_repository* repo, git_oid* oid);
-    int New(git_repository *repo);
+    int Lookup(git_oid* oid);
+    int New(git_repository* repo);
     const git_oid* Id();
     const char* MessageShort();
     const char* Message();
@@ -77,11 +77,12 @@ class Commit : public EventEmitter {
     static Handle<Value> Parent(const Arguments& args);
 
   private:
-    git_commit *commit;
+    git_commit* commit;
+    git_repository* repo;
+    git_oid* oid;
 
     struct lookup_request {
       Commit* commit;
-      Repo* repo;
       Oid* oid;
       int err;
       Persistent<Function> callback;

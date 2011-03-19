@@ -94,7 +94,7 @@ Handle<Value> Oid::Mkstr(const Arguments& args) {
 
   String::Utf8Value id(Local<Value>::New(args[0]));
 
-  return Local<Value>::New( Integer::New(oid->Mkstr(*id)) );
+  return Integer::New(oid->Mkstr(*id));
 }
 
 Handle<Value> Oid::Mkraw(const Arguments& args) {
