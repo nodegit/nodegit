@@ -24,7 +24,7 @@ class RevWalk : public EventEmitter {
 
     git_revwalk* GetValue();
     void SetValue(git_revwalk* revwalk);
-    int New(Repo* repo);
+    int New(git_repository* repo);
     void Reset();
     int Push(git_oid* oid);
     int Hide();
@@ -51,6 +51,7 @@ class RevWalk : public EventEmitter {
 
   private:
     git_revwalk* revwalk;
+    git_repository* repo;
 
     struct next_request {
       RevWalk* revwalk;

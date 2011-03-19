@@ -50,8 +50,10 @@ void RevWalk::SetValue(git_revwalk* revwalk) {
   this->revwalk = revwalk;
 }
 
-int RevWalk::New(Repo *repo) {
-  return git_revwalk_new(&this->revwalk, repo->GetValue());
+int RevWalk::New(git_repository* repo) {
+  this->repo = repo;
+
+  return git_revwalk_new(&this->revwalk, this->repo);
 }
 
 void RevWalk::Reset() {
@@ -89,7 +91,7 @@ Handle<Value> RevWalk::New(const Arguments& args) {
   }
 
   Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  revwalk->New(repo);
+  revwalk->New(repo->GetValue());
 
   revwalk->Wrap(args.This());
 

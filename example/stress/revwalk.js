@@ -1,26 +1,6 @@
 var git = require( '../../' ).raw;
 
-//* Stress test basic commit
-  setInterval(function() {
-    for(var i=0; i<10000; i++) {
-      (function() {
-
-        var start = new Date;
-
-        var repo = new git.Repo();
-        repo.open( '/home/tim/git/nodegit/.git', function() {
-          var commit = new git.Commit( repo );
-
-          //console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
-        });
-
-      })();
-    }
-  }, 0);
-//*/
-
-
-//* Stress test repo open
+//* Stress test revision walking
   setInterval(function() {
     for(var i=0; i<10000; i++) {
 
@@ -34,7 +14,19 @@ var git = require( '../../' ).raw;
 
           var commit = new git.Commit( repo );
           commit.lookup( oid, function( err ) {
-            //console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
+            var revwalk = new git.RevWalk( repo );
+            revwalk.push( commit );
+
+            function walk() {
+              var oid = new git.Oid();
+              revwalk.next( oid, function( err ) {
+                if( !err ) {
+                  walk();
+                }
+              });
+            }
+
+            walk();
           } );
         });
 

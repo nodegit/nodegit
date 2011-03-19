@@ -136,6 +136,10 @@ Handle<Value> Commit::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
+  if(args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
   callback = Local<Function>::Cast(args[1]);
 
   lookup_request *ar = new lookup_request();
