@@ -10,7 +10,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "reference.h"
 #include "sig.h"
-#include "error.h"
+#include "../include/error.h"
 #include "../include/blob.h"
 #include "repo.h"
 #include "oid.h"
@@ -25,12 +25,12 @@ extern "C" void init(Handle<v8::Object> target) {
 
   Reference::Initialize(target);
   Sig::Initialize(target);
-  Error::Initialize(target);
+  GitError::Initialize(target);
   GitBlob::Initialize(target);
   Oid::Initialize(target);
   GitObject::Initialize(target);
   Repo::Initialize(target);
-  Commit::Initialize(target);
+  GitCommit::Initialize(target);
   RevWalk::Initialize(target);
   GitTree::Initialize(target);
   GitTreeEntry::Initialize(target);

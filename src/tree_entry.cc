@@ -9,7 +9,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "../vendor/libgit2/include/git2.h"
 
 #include "repo.h"
-#include "blob.h"
+#include "../include/blob.h"
 #include "tree.h"
 #include "object.h"
 #include "oid.h"

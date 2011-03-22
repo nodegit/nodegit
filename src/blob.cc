@@ -40,11 +40,11 @@ namespace {
     this->blob = blob;
   }
 
-  int GitBlob::Lookup(git_repository *repo, const git_oid *id) {
+  int GitBlob::Lookup(git_repository* repo, const git_oid* id) {
     return git_blob_lookup(&this->blob, repo, id);
   }
 
-  const char* GitBlob::RawContent() {
+  const void* GitBlob::RawContent() {
     return git_blob_rawcontent(this->blob);
   }
 
@@ -55,7 +55,7 @@ namespace {
   Handle<Value> GitBlob::New(const Arguments& args) {
     HandleScope scope;
 
-    GitBlob *blob = new GitBlob();
+    GitBlob* blob = new GitBlob();
     blob->Wrap(args.This());
 
     return args.This();
@@ -64,13 +64,13 @@ namespace {
   Handle<Value> GitBlob::RawContent(const Arguments& args) {
     HandleScope scope;
 
-    GitBlob *blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+    GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-    return String::New(blob->RawContent());
+    return String::New((const char*)blob->RawContent());
   }
 
   Handle<Value> GitBlob::Lookup(const Arguments& args) {
-    GitBlob *blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+    GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
     Local<Function> callback;
 
     HandleScope scope;
@@ -89,7 +89,7 @@ namespace {
 
     callback = Local<Function>::Cast(args[3]);
 
-    lookup_request *ar = new lookup_request();
+    lookup_request* ar = new lookup_request();
     ar->blob = blob;
     ar->repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
     ar->oid = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
@@ -103,18 +103,18 @@ namespace {
     return Undefined();
   }
 
-  int GitBlob::EIO_Lookup(eio_req *req) {
-    lookup_request *ar = static_cast<lookup_request *>(req->data);
+  int GitBlob::EIO_Lookup(eio_req* req) {
+    lookup_request* ar = static_cast<lookup_request* >(req->data);
 
     ar->err = ar->blob->Lookup(ar->repo->GetValue(), ar->oid->GetValue());
 
     return 0;
   }
 
-  int GitBlob::EIO_AfterLookup(eio_req *req) {
+  int GitBlob::EIO_AfterLookup(eio_req* req) {
     HandleScope scope;
 
-    lookup_request *ar = static_cast<lookup_request *>(req->data);
+    lookup_request* ar = static_cast<lookup_request* >(req->data);
     ev_unref(EV_DEFAULT_UC);
     ar->blob->Unref();
 
@@ -138,9 +138,10 @@ namespace {
   Handle<Value> GitBlob::RawSize(const Arguments& args) {
     HandleScope scope;
 
-    GitBlob *blob = new GitBlob();
+    GitBlob* blob = new GitBlob();
 
     return Integer::New(blob->RawSize());
   }
+
   Persistent<FunctionTemplate> GitBlob::constructor_template;
 }

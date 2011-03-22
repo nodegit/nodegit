@@ -19,18 +19,18 @@ using namespace node;
 namespace {
   /**
    * Class: GitBlob
-   * Wrapper for libgit2 git_blob.
+   *   Wrapper for libgit2 git_blob.
    */
   class GitBlob : public ObjectWrap {
     public:
       /**
        * Variable: constructor_template
-       * Used to create Node.js constructor.
+       *   Used to create Node.js constructor.
        */
       static v8::Persistent<v8::FunctionTemplate> constructor_template;
       /**
        * Function: Initialize
-       * Used to intialize the EventEmitter from Node.js
+       *   Used to intialize the EventEmitter from Node.js
        *
        * Parameters:
        *   target - v8::Object the Node.js global module object
@@ -50,7 +50,7 @@ namespace {
       void SetValue(git_blob* blob);
       /**
        * Function: Lookup
-       * Lookup a blob object from a repository.
+       *   Lookup a blob object from a repository.
        *
        * Parameters:
        *   repo the repo to use when locating the blob.
@@ -62,15 +62,15 @@ namespace {
       int Lookup(git_repository* repo, const git_oid *id);
       /**
        * Function: RawContent
-       * Get a read-only buffer with the raw content of a blob.
+       *   Get a read-only buffer with the raw content of a blob.
        *
        * Returns:
        *   raw content buffer; NULL if the blob has no contents
        */
-      const char* RawContent();
+      const void* RawContent();
       /**
        * Function: RawSize
-       * Lookup a blob object from a repository.
+       *   Lookup a blob object from a repository.
        *
        * Returns:
        *   size in bytes
@@ -150,15 +150,15 @@ namespace {
     private:
       /**
        * Variable: blob
-       * Internal reference to git_blob object
+       *   Internal reference to git_blob object
        */
       git_blob* blob;
 
       /**
        * Struct: lookup_request
-       * Contains references to the current blob, repo, and oid for a
-       * commit lookup, also contains references to an error code post
-       * lookup, and a callback function to execute.
+       *   Contains references to the current blob, repo, and oid for a
+       *   commit lookup, also contains references to an error code post
+       *   lookup, and a callback function to execute.
        */
       struct lookup_request {
         GitBlob* blob;
