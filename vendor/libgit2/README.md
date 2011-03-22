@@ -34,18 +34,16 @@ libgit2 is already very usable.
 Building libgit2 - External dependencies
 ========================================
 
-The following libraries are required to manually build the libgit2 library:
+libgit2 builds cleanly on most platforms without any external dependencies.
+Under Unix-like systems, like Linux, *BSD and Mac OS X, libgit2 expects `pthreads` to be available;
+they should be installed by default on all systems. Under Windows, libgit2 uses the native Windows API
+for threading.
 
-* zlib 1.2+ <http://www.zlib.net/>
-
-When building in Windows using MSVC, make sure you compile ZLib using the MSVC solution that ships in its source distribution.
-Alternatively, you may download precompiled binaries from: <http://www.winimage.com/zLibDll/>
+Additionally, he following libraries may be used as replacement for built-in functionality:
 
 * LibSSL **(optional)** <http://www.openssl.org/>
 
 libgit2 can be built using the SHA1 implementation of LibSSL-Crypto, instead of the built-in custom implementations. Performance wise, they are quite similar.
-
-* pthreads-w32 **(required on MinGW)** <http://sourceware.org/pthreads-win32/>
 
 Building libgit2 - Using waf
 ======================
@@ -128,6 +126,7 @@ Here are the bindings to libgit2 that are currently available:
 * luagit2 (Lua bindings) <https://github.com/libgit2/luagit2>
 * GitForDelphi (Delphi bindings) <https://github.com/libgit2/GitForDelphi>
 * node-gitteh (Node.js bindings) <https://github.com/libgit2/node-gitteh>
+* nodegit (Node.js bindings) <https://github.com/tbranyen/nodegit>
 * libqgit2 (C++ QT bindings) <https://projects.kde.org/projects/playground/libs/libqgit2/>
 * Geef (Erlang bindings) <https://github.com/schacon/geef>
 

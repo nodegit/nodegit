@@ -25,9 +25,11 @@
 
 #include "common.h"
 #include "commit.h"
-#include "revwalk.h"
+#include "odb.h"
 #include "hashtable.h"
 #include "pqueue.h"
+
+#include "git2/revwalk.h"
 
 typedef struct commit_object {
 	git_oid oid;
@@ -52,7 +54,6 @@ struct git_revwalk {
 	git_repository *repo;
 
 	git_hashtable *commits;
-	git_vector pending;
 
 	commit_list *iterator_topo;
 	commit_list *iterator_rand;
@@ -78,13 +79,17 @@ commit_list *commit_list_insert(commit_object *item, commit_list **list_p)
 	return new_list;
 }
 
-void commit_list_free(commit_list *list)
+void commit_list_free(commit_list **list_p)
 {
+	commit_list *list = *list_p;
+
 	while (list) {
 		commit_list *temp = list;
 		list = temp->next;
 		free(temp);
 	}
+
+	*list_p = NULL;
 }
 
 commit_object *commit_list_pop(commit_list **stack)
@@ -155,71 +160,6 @@ static commit_object **alloc_parents(commit_object *commit, size_t n_parents)
 	return git__malloc(n_parents * sizeof(commit_object *));
 }
 
-int git_revwalk_new(git_revwalk **revwalk_out, git_repository *repo)
-{
-	git_revwalk *walk;
-
-	walk = git__malloc(sizeof(git_revwalk));
-	if (walk == NULL)
-		return GIT_ENOMEM;
-
-	memset(walk, 0x0, sizeof(git_revwalk));
-
-	walk->commits = git_hashtable_alloc(64,
-			object_table_hash,
-			(git_hash_keyeq_ptr)git_oid_cmp);
-
-	if (walk->commits == NULL) {
-		free(walk);
-		return GIT_ENOMEM;
-	}
-
-	git_vector_init(&walk->pending, 8, NULL);
-	git_vector_init(&walk->memory_alloc, 8, NULL);
-	alloc_chunk(walk);
-
-	walk->repo = repo;
-
-	*revwalk_out = walk;
-	return GIT_SUCCESS;
-}
-
-void git_revwalk_free(git_revwalk *walk)
-{
-	unsigned int i;
-
-	if (walk == NULL)
-		return;
-
-	git_revwalk_reset(walk);
-	git_hashtable_free(walk->commits);
-	git_vector_free(&walk->pending);
-
-	for (i = 0; i < walk->memory_alloc.length; ++i) {
-		free(git_vector_get(&walk->memory_alloc, i));
-	}
-
-	git_vector_free(&walk->memory_alloc);
-	free(walk);
-}
-
-git_repository *git_revwalk_repository(git_revwalk *walk)
-{
-	assert(walk);
-	return walk->repo;
-}
-
-int git_revwalk_sorting(git_revwalk *walk, unsigned int sort_mode)
-{
-	assert(walk);
-
-	if (walk->walking)
-		return GIT_EBUSY;
-
-	walk->sorting = sort_mode;
-	git_revwalk_reset(walk);
-	return GIT_SUCCESS;
-}
 
 static commit_object *commit_lookup(git_revwalk *walk, const git_oid *oid)
 {
@@ -297,22 +237,22 @@ static int commit_quick_parse(git_revwalk *walk, commit_object *commit, git_rawo
 
 static int commit_parse(git_revwalk *walk, commit_object *commit)
 {
-	git_rawobj data;
+	git_odb_object *obj;
 	int error;
 
 	if (commit->parsed)
 		return GIT_SUCCESS;
 
-	if ((error = git_odb_read(&data, walk->repo->db, &commit->oid)) < GIT_SUCCESS)
+	if ((error = git_odb_read(&obj, walk->repo->db, &commit->oid)) < GIT_SUCCESS)
 		return error;
 
-	if (data.type != GIT_OBJ_COMMIT) {
-		git_rawobj_close(&data);
+	if (obj->raw.type != GIT_OBJ_COMMIT) {
+		git_odb_object_close(obj);
 		return GIT_EOBJTYPE;
 	}
 
-	error = commit_quick_parse(walk, commit, &data);
-	git_rawobj_close(&data);
+	error = commit_quick_parse(walk, commit, &obj->raw);
+	git_odb_object_close(obj);
 	return error;
 }
 
@@ -366,10 +306,9 @@ static int push_commit(git_revwalk *walk, const git_oid *oid, int uninteresting)
 	if (commit == NULL)
 		return GIT_ENOTFOUND;
 
-	if (uninteresting)
-		mark_uninteresting(commit);
+	commit->uninteresting = uninteresting;
 
-	return git_vector_insert(&walk->pending, commit);
+	return process_commit(walk, commit);
 }
 
 int git_revwalk_push(git_revwalk *walk, const git_oid *oid)
@@ -468,31 +407,11 @@ static int revwalk_next_reverse(commit_object **object_out, git_revwalk *walk)
 
 static int prepare_walk(git_revwalk *walk)
 {
-	unsigned int i;
 	int error;
-
-	if (walk->sorting & GIT_SORT_TIME) {
-		if ((error = git_pqueue_init(&walk->iterator_time, 32, commit_time_cmp)) < GIT_SUCCESS)
-			return error;
-
-		walk->get_next = &revwalk_next_timesort;
-		walk->enqueue = &revwalk_enqueue_timesort;
-	} else {
-		walk->get_next = &revwalk_next_unsorted;
-		walk->enqueue = &revwalk_enqueue_unsorted;
-	}
-
-	for (i = 0; i < walk->pending.length; ++i) {
-		commit_object *commit = walk->pending.contents[i];
-		if ((error = process_commit(walk, commit)) < GIT_SUCCESS) {
-			return error;
-		}
-	}
+	commit_object *next;
 
 	if (walk->sorting & GIT_SORT_TOPOLOGICAL) {
-		commit_object *next;
 		unsigned short i;
-		int error;
 
 		while ((error = walk->get_next(&next, walk)) == GIT_SUCCESS) {
 			for (i = 0; i < next->out_degree; ++i) {
@@ -510,8 +429,6 @@ static int prepare_walk(git_revwalk *walk)
 	}
 
 	if (walk->sorting & GIT_SORT_REVERSE) {
-		commit_object *next;
-		int error;
 
 		while ((error = walk->get_next(&next, walk)) == GIT_SUCCESS)
 			commit_list_insert(next, &walk->iterator_reverse);
@@ -527,6 +444,83 @@ static int prepare_walk(git_revwalk *walk)
 }
 
 
+
+
+
+int git_revwalk_new(git_revwalk **revwalk_out, git_repository *repo)
+{
+	git_revwalk *walk;
+
+	walk = git__malloc(sizeof(git_revwalk));
+	if (walk == NULL)
+		return GIT_ENOMEM;
+
+	memset(walk, 0x0, sizeof(git_revwalk));
+
+	walk->commits = git_hashtable_alloc(64,
+			object_table_hash,
+			(git_hash_keyeq_ptr)git_oid_cmp);
+
+	if (walk->commits == NULL) {
+		free(walk);
+		return GIT_ENOMEM;
+	}
+
+	git_pqueue_init(&walk->iterator_time, 8, commit_time_cmp);
+	git_vector_init(&walk->memory_alloc, 8, NULL);
+	alloc_chunk(walk);
+
+	walk->get_next = &revwalk_next_unsorted;
+	walk->enqueue = &revwalk_enqueue_unsorted;
+
+	walk->repo = repo;
+
+	*revwalk_out = walk;
+	return GIT_SUCCESS;
+}
+
+void git_revwalk_free(git_revwalk *walk)
+{
+	unsigned int i;
+
+	if (walk == NULL)
+		return;
+
+	git_revwalk_reset(walk);
+	git_hashtable_free(walk->commits);
+	git_pqueue_free(&walk->iterator_time);
+
+	for (i = 0; i < walk->memory_alloc.length; ++i)
+		free(git_vector_get(&walk->memory_alloc, i));
+
+	git_vector_free(&walk->memory_alloc);
+	free(walk);
+}
+
+git_repository *git_revwalk_repository(git_revwalk *walk)
+{
+	assert(walk);
+	return walk->repo;
+}
+
+void git_revwalk_sorting(git_revwalk *walk, unsigned int sort_mode)
+{
+	assert(walk);
+
+	if (walk->walking)
+		git_revwalk_reset(walk);
+
+	walk->sorting = sort_mode;
+
+	if (walk->sorting & GIT_SORT_TIME) {
+		walk->get_next = &revwalk_next_timesort;
+		walk->enqueue = &revwalk_enqueue_timesort;
+	} else {
+		walk->get_next = &revwalk_next_unsorted;
+		walk->enqueue = &revwalk_enqueue_unsorted;
+	}
+}
+
 int git_revwalk_next(git_oid *oid, git_revwalk *walk)
 {
 	int error;
@@ -540,8 +534,11 @@ int git_revwalk_next(git_oid *oid, git_revwalk *walk)
 	}
 
 	error = walk->get_next(&next, walk);
-	if (error < GIT_SUCCESS)
+	if (error < GIT_SUCCESS) {
+		if (error == GIT_EREVWALKOVER)
+			git_revwalk_reset(walk);
 		return error;
+	}
 
 	git_oid_cpy(oid, &next->oid);
 	return GIT_SUCCESS;
@@ -560,10 +557,10 @@ void git_revwalk_reset(git_revwalk *walk)
 		commit->topo_delay = 0;
 	);
 
-	git_pqueue_free(&walk->iterator_time);
-	commit_list_free(walk->iterator_topo);
-	commit_list_free(walk->iterator_rand);
-	commit_list_free(walk->iterator_reverse);
+	git_pqueue_clear(&walk->iterator_time);
+	commit_list_free(&walk->iterator_topo);
+	commit_list_free(&walk->iterator_rand);
+	commit_list_free(&walk->iterator_reverse);
 	walk->walking = 0;
 }
 

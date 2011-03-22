@@ -158,6 +158,9 @@
 /** The state of the reference is not valid */
 #define GIT_EINVALIDREFSTATE (GIT_ERROR - 21)
 
+/** This feature has not been implemented yet */
+#define GIT_ENOTIMPLEMENTED (GIT_ERROR - 22)
+
 GIT_BEGIN_DECL
 
 typedef struct {
@@ -165,14 +168,7 @@ typedef struct {
 	size_t count;
 } git_strarray;
 
-GIT_INLINE(void) git_strarray_free(git_strarray *array)
-{
-	size_t i;
-	for (i = 0; i < array->count; ++i)
-		free(array->strings[i]);
-
-	free(array->strings);
-}
+GIT_EXTERN(void) git_strarray_free(git_strarray *array);
 
 /** @} */
 GIT_END_DECL
