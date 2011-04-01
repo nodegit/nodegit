@@ -184,6 +184,17 @@ If they are not, `cd` into the `nodegit` dir and run the following `git` command
 
 Then simply run `make test` in the project root.
 
+Generating documentation
+------------------------
+
+__ `nodegit` native and library code is documented to be built with `Natural Docs`. __
+
+To create the documentation, `cd` into the `nodegit` dir and run the following:
+    $ cd nodegit
+    $ make doc
+
+The documentation will then generate in the `doc/` subfolder as HTML.
+
 Release information
 -------------------
 
