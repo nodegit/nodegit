@@ -44,7 +44,8 @@ const git_oid* GitTreeEntry::Id() {
 }
 
 int GitTreeEntry::ToObject(git_object** obj) {
-  return git_tree_entry_2object(obj, this->entry);
+  //TODO: Implement correct arguments
+  //return git_tree_entry_2object(obj, this->entry);
 }
 
 Handle<Value> GitTreeEntry::New(const Arguments& args) {
@@ -90,7 +91,7 @@ Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Blob is required and must be an Object.")));
   }
 
-  Blob* blob = ObjectWrap::Unwrap<Blob>(args[0]->ToObject());
+  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args[0]->ToObject());
 
   git_object* out;
   entry->ToObject(&out);

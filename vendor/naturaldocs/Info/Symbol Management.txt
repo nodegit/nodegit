@@ -1,0 +1,59 @@
+
+    Architecture: Symbol Management
+
+####################################################################################
+
+    This is the architecture and code path for symbol management.  This is almost exclusively managed by <NaturalDocs::SymbolTable>, but it's complicated enough that I want a plain-English walk through of the code paths anyway.
+
+    An important thing to remember is that each section below is simplified initially and then expanded upon in later sections as more facets of the code are introduced.  You will not get the whole story of what a function does by reading just one section.
+
+
+
+    Topic: Symbol Storage
+    _______________________________________________________________________________________________________
+
+    Symbols are indexed primarily by their <SymbolString>, which is the normalized, pre-parsed series of identifiers that make it up.  A symbol can have any number of definitions, including none, but can only have one definition per file.  If a symbol is defined more than once in a file, only the first definition is counted.  Stored for each definition is the <TopicType>, summary, and prototype.
+
+    Each symbol that has a definition has one designated as the global definition.  This is the one linked to by other files, unless that file happens to have its own definition which then takes precedence.  Which definition is chosen is rather arbitrary at this point; probably the first one that got defined.  Similarly, if the global definition is deleted, which one is chosen to replace it is completely arbitrary.
+
+    Each symbol also stores a list of references to it.  Note that references can be interpreted as multiple symbols, and each of those symbols will store a link back to the reference.  In other words, every reference a symbol stores is one that _can_ be interpreted as that symbol, but that is not necessarily the interpretation the reference actually uses.  A reference could have a better interpretation it uses instead.
+
+    For example, suppose there are two functions, MyFunction() and MyClass.MyFunction().  The reference text "MyFunction()" appearing in MyClass can be interpreted as either MyClass.MyFunction(), or if that doesn't exist, the global MyFunction().  Both the symbols for MyFunction() and MyClass.MyFunction() will store that it's referenced by the link, even though the class scoped one serves as the actual definition.
+
+    This is also the reason a symbol can exist that has no definitions: it has references.  We want symbols to be created in the table for each reference interpretation, even if it doesn't exist.  These are called potential symbols.  The reason is so we know whether a new symbol definition fulfills an existing reference, since it may be a better interpretation for the reference than what is currently used.
+
+
+
+    Topic: Reference Storage
+    _______________________________________________________________________________________________________
+
+    References are indexed primarily by their <ReferenceString>, which is actually an elaborate data structure packed into a string.  It includes a <SymbolString> of the text that appears in the link and a bunch of other data that determines the rules by which the link can be resolved.  For example, it includes the scope it appears in and any "using" statements in effect, which are alternate possible scopes.  It includes the type of link it is (text links, the ones you explicitly put in comments, aren't the only kind) and resolving flags which encode the language-specific rules of non-text links.  But the bottom line is the <ReferenceString> encodes everything that influences how it may be resolved, so if two links come up with the same rules, they're considered two definitions of the same reference.  This is the understanding of the word "reference" that will used in this document.
+
+    Like symbols, each reference stores a list of definitions.  However, it only stores the name as all the other relevant information is encoded in the <ReferenceString> itself.  Unlike a symbol, which can be linked to the same no matter what kind of definitions it has, references that are in any way different might be interpreted differently and so need their own distinct entries in the symbol table.
+
+    References also store a list of interpretations.  Every possible interpretation of the reference is stored and given a numeric score.  The higher the score, the better it suits the reference.  In the MyFunction() example from before, MyClass.MyFunction() would have a higher score than just MyFunction() because the local scope should win.  Each interpretation has a unique score, there are no duplicates.
+
+    So the symbol and reference data structures are complimentary.  Each symbol has a list of every reference that might be interpreted as it, and every reference has a list of each symbol that it could be interpreted as.  Again, objects are created for potential symbols (those with references but no definitions) so that this structure always remains intact.
+
+    The interpretation with the highest score which actually exists is deemed the current interpretation of the reference.  Unlike symbols where the next global definition is arbitrary, the succession of reference interpretations is very controlled and predictable.
+
+
+    Topic: Change Detection
+    _______________________________________________________________________________________________________
+
+    Change management is handled a couple of ways.  First, there is a secondary file index in <NaturalDocs::SymbolTable> that stores which symbols and references are stored in each file.  It doesn't have any information other than a list of <SymbolStrings> and <ReferenceStrings> since they can be used in the main structures to look up the details.  If a file is deleted, the symbol table can then prune any definitions that should no longer be in the table.
+
+    Another way deals with how the information parsing stage works.  Files parsed for information just have their symbols and references added to the table regardless of whether this was the first time it was ever parsed or if it had been parsed before.  If it had been parsed before, all the information from the previous parse should be in the symbol table and file indexes already.  If a new symbol or reference is defined, that's fine, it's added to the table normally.  However, if a symbol is redefined it's ignored because only the first definition matters.  Also, this won't detect things that disappear.
+
+    Enter watched files.  <NaturalDocs::Parser> tells <NaturalDocs::SymbolTable> to designate a file as watched before it starts parsing it, and then says to analyze the changes when it's done.  The watched file is a second index of all the symbols and references that were defined since the watch started, including the specific details on the symbol definitions.  When the analysis is done, it compares the list of symbols and references to the one in the main file index.  Any that appear in the main file index but not the watched one are deleted because they didn't show up the second time around.  Any symbol definitions that are different in the watched file than the main file are changed to the former, since the first definition that appeared the second time around was different than the original.
+
+
+    Topic: Change Management
+    _______________________________________________________________________________________________________
+
+    When a symbol's global definition changes, either because it switches to another file or because the details of the current file's definition changed (prototype, summary, etc.) it goes through all the references that can be interpreted as that symbol, finds the ones that use it as their current definition, and marks all the files that define them for rebuilding.  The links in their output files have to be changed to the new definition or at least have their tooltips updated.
+
+    When a symbol's last definition is deleted, it goes through all the references that can be interpreted as that symbol, finds the ones that use it as their current definition, and has them reinterpreted to the definition with the next highest score.  The files that define them are also marked for rebuilding.
+
+    When a potential symbol's first definition is found, it goes through all the references that can be interpreted as it and sees if it can serve as a higher scored interpretation than the current one.  If so, the interpretations are changed and all the files that define them are marked for rebuilding.
+

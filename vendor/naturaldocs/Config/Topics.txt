@@ -1,0 +1,382 @@
+Format: 1.51
+
+# This is the main Natural Docs topics file.  If you change anything here, it
+# will apply to EVERY PROJECT you use Natural Docs on.  If you'd like to
+# change something for just one project, edit the Topics.txt in its project
+# directory instead.
+
+
+#-------------------------------------------------------------------------------
+# SYNTAX:
+#
+# Topic Type: [name]
+#    Creates a new topic type.  Each type gets its own index and behavior
+#    settings.  Its name can have letters, numbers, spaces, and these
+#    charaters: - / . '
+#
+#    The Enumeration type is special.  It's indexed with Types but its members
+#    are indexed with Constants according to the rules in Languages.txt.
+#
+# Plural: [name]
+#    Sets the plural name of the topic type, if different.
+#
+# Keywords:
+#    [keyword]
+#    [keyword], [plural keyword]
+#    ...
+#    Defines a list of keywords for the topic type.  They may only contain
+#    letters, numbers, and spaces and are not case sensitive.  Plural keywords
+#    are used for list topics.
+#
+# Index: [yes|no]
+#    Whether the topics get their own index.  Defaults to yes.  Everything is
+#    included in the general index regardless of this setting.
+#
+# Scope: [normal|start|end|always global]
+#    How the topics affects scope.  Defaults to normal.
+#    normal        - Topics stay within the current scope.
+#    start         - Topics start a new scope for all the topics beneath it,
+#                    like class topics.
+#    end           - Topics reset the scope back to global for all the topics
+#                    beneath it.
+#    always global - Topics are defined as global, but do not change the scope
+#                    for any other topics.
+#
+# Class Hierarchy: [yes|no]
+#    Whether the topics are part of the class hierarchy.  Defaults to no.
+#
+# Page Title If First: [yes|no]
+#    Whether the topic's title becomes the page title if it's the first one in
+#    a file.  Defaults to no.
+#
+# Break Lists: [yes|no]
+#    Whether list topics should be broken into individual topics in the output.
+#    Defaults to no.
+#
+# Can Group With: [type], [type], ...
+#    Defines a list of topic types that this one can possibly be grouped with.
+#    Defaults to none.
+#-------------------------------------------------------------------------------
+
+# The following topics MUST be defined in this file:
+#
+#    Generic, Class, Interface, Section, File, Group, Function, Variable,
+#    Property, Type, Constant, Enumeration, Event, Delegate
+
+# If you add something that you think would be useful to other developers
+# and should be included in Natural Docs by default, please e-mail it to
+# topics [at] naturaldocs [dot] org.
+
+
+Topic Type: Generic
+
+   Index: No
+   Keywords:
+      topic, topics
+      about, list
+
+
+Topic Type: Class
+
+   Plural: Classes
+   Scope: Start
+   Class Hierarchy: Yes
+   Page Title If First: Yes
+   Can Group With: Interfaces
+
+   Keywords:
+      class, classes
+      structure, structures
+      struct, structs
+      package, packages
+      namespace, namespaces
+
+
+Topic Type: Interface
+
+   Plural: Interfaces
+   Scope: Start
+   Class Hierarchy: Yes
+   Page Title If First: Yes
+   Can Group With: Classes
+
+   Keywords:
+      interface, interfaces
+
+
+Topic Type: Section
+
+   Plural: Sections
+   Index: No
+   Scope: End
+   Page Title If First: Yes
+
+   Keywords:
+      section
+      title
+
+
+Topic Type: File
+
+   Plural: Files
+   Scope: Always global
+   Page Title If First: Yes
+
+   Keywords:
+      file, files
+      program, programs
+      script, scripts
+      document, documents
+      doc, docs
+      header, headers
+
+
+Topic Type: Group
+
+   Plural: Groups
+   Index: No
+
+   Keywords:
+      group
+
+
+Topic Type: Function
+
+   Plural: Functions
+   Break Lists: Yes
+   Can Group With: Properties
+
+   Keywords:
+      function, functions
+      func, funcs
+      procedure, procedures
+      proc, procs
+      routine, routines
+      subroutine, subroutines
+      sub, subs
+      method, methods
+      callback, callbacks
+      constructor, constructors
+      destructor, destructors
+      operator, operators
+
+
+Topic Type: Variable
+
+   Plural: Variables
+   Can Group With: Types, Constants, Macros, Enumerations
+
+   Keywords:
+      variable, variables
+      var, vars
+      integer, integers
+      int, ints
+      uint, uints
+      long, longs
+      ulong, ulongs
+      short, shorts
+      ushort, ushorts
+      byte, bytes
+      ubyte, ubytes
+      sbyte, sbytes
+      float, floats
+      double, doubles
+      real, reals
+      decimal, decimals
+      scalar, scalars
+      array, arrays
+      arrayref, arrayrefs
+      hash, hashes
+      hashref, hashrefs
+      bool, bools
+      boolean, booleans
+      flag, flags
+      bit, bits
+      bitfield, bitfields
+      field, fields
+      pointer, pointers
+      ptr, ptrs
+      reference, references
+      ref, refs
+      object, objects
+      obj, objs
+      character, characters
+      wcharacter, wcharacters
+      char, chars
+      wchar, wchars
+      string, strings
+      wstring, wstrings
+      str, strs
+      wstr, wstrs
+      handle, handles
+
+
+Topic Type: Property
+
+   Plural: Properties
+   Can Group With: Functions
+
+   Keywords:
+      property, properties
+      prop, props
+
+
+Topic Type: Type
+
+   Plural: Types
+   Can Group With: Variables, Constants, Macros, Enumerations
+
+   Keywords:
+      type, types
+      typedef, typedefs
+
+
+Topic Type: Constant
+
+   Plural: Constants
+   Can Group With: Variables, Types, Macros, Enumerations
+
+   Keywords:
+      constant, constants
+      const, consts
+
+
+Topic Type: Enumeration
+
+   Plural: Enumerations
+   Index: No
+   Can Group With: Variables, Types, Macros, Constants
+
+   Keywords:
+      enum, enums
+      enumeration, enumerations
+
+
+Topic Type: Event
+
+   Plural: Events
+   Keywords:
+      event, events
+
+
+Topic Type: Delegate
+
+   Plural: Delegates
+   Keywords:
+      delegate, delegates
+
+
+Topic Type: Macro
+
+   Plural: Macros
+   Can Group With: Variables, Types, Constants
+
+   Keywords:
+      define, defines
+      def, defs
+      macro, macros
+
+
+Topic Type: Database
+
+   Plural: Databases
+   Page Title If First: Yes
+
+   Keywords:
+      database, databases
+      db, dbs
+
+
+Topic Type: Database Table
+
+   Plural: Database Tables
+   Scope: Start
+   Page Title If First: Yes
+
+   Keywords:
+      table, tables
+      database table, database tables
+      databasetable, databasetables
+      db table, db tables
+      dbtable, dbtables
+
+
+Topic Type: Database View
+
+   Plural: Database Views
+   Scope: Start
+   Page Title If First: Yes
+
+   Keywords:
+      view, views
+      database view, database views
+      databaseview, databaseviews
+      db view, db views
+      dbview, dbviews
+
+
+Topic Type: Database Index
+
+   Plural: Database Indexes
+   Keywords:
+      index, indexes
+      index, indices
+      database index, database indexes
+      database index, database indices
+      databaseindex, databaseindexes
+      databaseindex, databaseindices
+      db index, db indexes
+      db index, db indices
+      dbindex, dbindexes
+      dbindex, dbindices
+      key, keys
+      database key, database keys
+      databasekey, databasekeys
+      db key, db keys
+      dbkey, dbkeys
+      primary key, primary keys
+      primarykey, primarykeys
+      database primary key, database primary keys
+      databaseprimarykey, databaseprimarykeys
+      db primary key, db primary keys
+      dbprimarykey, dbprimarykeys
+
+
+Topic Type: Database Cursor
+
+   Plural: Database Cursors
+   Keywords:
+      cursor, cursors
+      database cursor, database cursors
+      databasecursor, databasecursors
+      db cursor, db cursors
+      dbcursor, dbcursors
+
+
+Topic Type: Database Trigger
+
+   Plural: Database Triggers
+   Keywords:
+      trigger, triggers
+      database trigger, database triggers
+      databasetrigger, databasetriggers
+      db trigger, db triggers
+      dbtrigger, dbtriggers
+
+
+Topic Type: Cookie
+
+   Plural: Cookies
+   Scope: Always global
+
+   Keywords:
+      cookie, cookies
+
+
+Topic Type: Build Target
+
+   Plural: Build Targets
+   Keywords:
+      target, targets
+      build target, build targets
+      buildtarget, buildtargets

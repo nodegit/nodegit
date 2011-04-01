@@ -1,0 +1,367 @@
+#!/usr/bin/perl
+
+=begin nd
+
+    Script: NaturalDocs
+    ___________________________________________________________________________
+
+    Version 1.51
+
+    Copyright © 2003-2010 Greg Valure
+
+    http://www.naturaldocs.org
+
+	Natural Docs is licensed under version 3 of the GNU Affero General Public License (AGPL).  Refer to the <License> for the
+	complete details.
+
+
+    Topic: Code Conventions
+
+        - Every package function is called with an arrow operator.  It's needed for inheritance in some places, and consistency
+         when it's not.
+
+        - No constant will ever be zero or undef.  Those are reserved so any piece of code can allow a "none of the above" option
+         and not worry about conflicts with an existing value.
+
+        - Existence hashes are hashes where the value doesn't matter.  It acts more as a set, where the existence of the key is
+         the significant part.
+
+
+    Topic: File Format Conventions
+
+        - All integers appear in big-endian format.  So a UInt16 should be handled with a 'n' in pack and unpack, not with a 'S'.
+
+        - AString16's are a big-endian UInt16 followed by that many ASCII characters.  A null-terminator is not stored.
+
+        - If a higher-level type is described in a file format, that means the loading and saving format is handled by that package.
+         For example, if you see <SymbolString> in the format, that means <NaturalDocs::SymbolString->ToBinaryFile()> and
+         <NaturalDocs::SymbolString->FromBinaryFile()> are used to manipulate it, and the underlying format should be treated
+         as opaque.
+
+=cut
+
+
+use strict;
+use integer;
+
+use 5.008;  # When :encoding modifiers were allowed with file access.
+
+use English '-no_match_vars';
+
+use FindBin;
+use lib "$FindBin::RealBin/Modules";
+
+sub INIT
+    {
+    # This function is just here so that when I start the debugger, it doesn't open a new file.  Normally it would jump to an INIT
+    # function in some other file since that's the first piece of code to execute.
+    };
+
+
+use NaturalDocs::Constants;
+use NaturalDocs::Version;
+use NaturalDocs::File;
+use NaturalDocs::Error;
+
+use NaturalDocs::LineReader;
+use NaturalDocs::ConfigFile;
+use NaturalDocs::BinaryFile;
+use NaturalDocs::StatusMessage;
+use NaturalDocs::SymbolString;
+use NaturalDocs::ReferenceString;
+use NaturalDocs::NDMarkup;
+
+use NaturalDocs::Settings;
+use NaturalDocs::Topics;
+use NaturalDocs::Languages;
+use NaturalDocs::Project;
+use NaturalDocs::Menu;
+use NaturalDocs::SymbolTable;
+use NaturalDocs::ClassHierarchy;
+use NaturalDocs::SourceDB;
+use NaturalDocs::ImageReferenceTable;
+use NaturalDocs::Parser;
+use NaturalDocs::Builder;
+
+
+
+###############################################################################
+#
+#   Group: Basic Types
+#
+#   Types used throughout the program.  As Perl is a weakly-typed language unless you box things into objects, these types are
+#   for documentation purposes and are not enforced.
+#
+#
+#   Type: FileName
+#
+#   A string representing the absolute, platform-dependent path to a file.  Relative file paths are no longer in use anywhere in the
+#   program.  All path manipulation should be done through <NaturalDocs::File>.
+#
+#
+#   Type: VersionInt
+#
+#   A comparable integer representing a version number.  Converting them to and from text and binary should be handled by
+#   <NaturalDocs::Version>.
+#
+#
+#   Type: SymbolString
+#
+#   A scalar which encodes a normalized array of identifier strings representing a full or partially-resolved symbol.  All symbols
+#   must be retrieved from plain text via <NaturalDocs::SymbolString->FromText()> so that the separation and normalization is
+#   always consistent.  SymbolStrings are comparable via string compare functions and are sortable.
+#
+#
+#   Type: ReferenceString
+#
+#   All the information about a reference that makes it unique encoded into a string.  This includes the <SymbolString> of the
+#   reference, the scope <SymbolString> it appears in, the scope <SymbolStrings> it has access to via "using", and the
+#   <ReferenceType>.  This is done because if any of those parameters change, it needs to be treated as a completely separate
+#   reference.
+#
+
+
+
+###############################################################################
+# Group: Support Functions
+# General functions that are used throughout the program, and that don't really fit anywhere else.
+
+
+#
+#   Function: StringCompare
+#
+#   Compares two strings so that the result is good for proper sorting.  A proper sort orders the characters as
+#   follows:
+#
+#   - End of string.
+#   - Whitespace.  Line break-tab-space.
+#   - Symbols, which is anything not included in the other entries.
+#   - Numbers, 0-9.
+#   - Letters, case insensitive except to break ties.
+#
+#   If you use cmp instead of this function, the result would go by ASCII/Unicode values which would place certain symbols
+#   between letters and numbers instead of having them all grouped together.  Also, you would have to choose between case
+#   sensitivity or complete case insensitivity, in which ties are broken arbitrarily.
+#
+#   Returns:
+#
+#   Like cmp, it returns zero if A and B are equal, a positive value if A is greater than B, and a negative value if A is less than B.
+#
+sub StringCompare #(a, b)
+    {
+    my ($a, $b) = @_;
+
+    if (!defined $a)
+        {
+        if (!defined $b)
+            {  return 0;  }
+        else
+            {  return -1;  };
+        }
+    elsif (!defined $b)
+        {
+        return 1;
+        };
+
+    my $translatedA = lc($a);
+    my $translatedB = lc($b);
+
+    $translatedA =~ tr/\n\r\t 0-9a-z/\x01\x02\x03\x04\xDB-\xFE/;
+    $translatedB =~ tr/\n\r\t 0-9a-z/\x01\x02\x03\x04\xDB-\xFE/;
+
+    my $result = $translatedA cmp $translatedB;
+
+    if ($result == 0)
+        {
+        # Break the tie by comparing their case.  Lowercase before uppercase.
+
+        # If statement just to keep everything theoretically kosher, even though in practice we don't need this.
+        if (ord('A') > ord('a'))
+            {  return ($a cmp $b);  }
+        else
+            {  return ($b cmp $a);  };
+        }
+    else
+        {  return $result;  };
+    };
+
+
+#
+#   Function: ShortenToMatchStrings
+#
+#   Compares two arrayrefs and shortens the first array to only contain shared entries.  Assumes all entries are strings.
+#
+#   Parameters:
+#
+#       sharedArrayRef - The arrayref that will be shortened to only contain common elements.
+#       compareArrayRef - The arrayref to match.
+#
+sub ShortenToMatchStrings #(sharedArrayRef, compareArrayRef)
+    {
+    my ($sharedArrayRef, $compareArrayRef) = @_;
+
+    my $index = 0;
+
+    while ($index < scalar @$sharedArrayRef && $index < scalar @$compareArrayRef &&
+             $sharedArrayRef->[$index] eq $compareArrayRef->[$index])
+        {  $index++;  };
+
+    if ($index < scalar @$sharedArrayRef)
+        {  splice(@$sharedArrayRef, $index);  };
+    };
+
+
+#
+#   Function: FindFirstSymbol
+#
+#   Searches a string for a number of symbols to see which appears first.
+#
+#   Parameters:
+#
+#       string - The string to search.
+#       symbols - An arrayref of symbols to look for.
+#       index - The index to start at, if any.
+#
+#   Returns:
+#
+#       The array ( index, symbol ).
+#
+#       index - The index the first symbol appears at, or -1 if none appear.
+#       symbol - The symbol that appeared, or undef if none.
+#
+sub FindFirstSymbol #(string, symbols, index)
+    {
+    my ($string, $symbols, $index) = @_;
+
+    if (!defined $index)
+        {  $index = 0;  };
+
+    my $lowestIndex = -1;
+    my $lowestSymbol;
+
+    foreach my $symbol (@$symbols)
+        {
+        my $testIndex = index($string, $symbol, $index);
+
+        if ($testIndex != -1 && ($lowestIndex == -1 || $testIndex < $lowestIndex))
+            {
+            $lowestIndex = $testIndex;
+            $lowestSymbol = $symbol;
+            };
+        };
+
+    return ($lowestIndex, $lowestSymbol);
+    };
+
+
+
+
+###############################################################################
+#
+#   Main Code
+#
+#   The order in which functions are called here is critically important.  Read the "Usage and Dependencies" sections of all the
+#   packages before even thinking about rearranging these.
+#
+
+
+eval {
+
+    # Check that our required packages are okay.
+
+    NaturalDocs::File->CheckCompatibility();
+
+
+    # Almost everything requires Settings to be initialized.
+
+    NaturalDocs::Settings->Load();
+
+
+    NaturalDocs::Project->LoadConfigFileInfo();
+
+    NaturalDocs::Topics->Load();
+    NaturalDocs::Languages->Load();
+
+
+    # Migrate from the old file names that were used prior to 1.14.
+
+    NaturalDocs::Project->MigrateOldFiles();
+
+
+    if (!NaturalDocs::Settings->IsQuiet())
+        {  print "Finding files and detecting changes...\n";  };
+
+    NaturalDocs::Project->LoadSourceFileInfo();
+    NaturalDocs::Project->LoadImageFileInfo();
+
+    # Register SourceDB extensions.  Order is important.
+    NaturalDocs::ImageReferenceTable->Register();
+
+    NaturalDocs::SymbolTable->Load();
+    NaturalDocs::ClassHierarchy->Load();
+    NaturalDocs::SourceDB->Load();
+
+    NaturalDocs::SymbolTable->Purge();
+    NaturalDocs::ClassHierarchy->Purge();
+    NaturalDocs::SourceDB->PurgeDeletedSourceFiles();
+
+
+    # Parse any supported files that have changed.
+
+    my $filesToParse = NaturalDocs::Project->FilesToParse();
+    my $amount = scalar keys %$filesToParse;
+
+    if ($amount > 0)
+        {
+        NaturalDocs::StatusMessage->Start('Parsing ' . $amount . ' file' . ($amount > 1 ? 's' : '') . '...', $amount);
+
+        foreach my $file (keys %$filesToParse)
+            {
+            NaturalDocs::Parser->ParseForInformation($file);
+            NaturalDocs::StatusMessage->CompletedItem();
+            };
+        };
+
+
+    # The symbol table is now fully resolved, so we can reduce its memory footprint.
+
+    NaturalDocs::SymbolTable->PurgeResolvingInfo();
+
+
+    # Load and update the menu file.  We need to do this after parsing so when it is updated, it will detect files where the
+    # default menu title has changed and files that have added or deleted Natural Docs content.
+
+    NaturalDocs::Menu->LoadAndUpdate();
+
+
+    # Build any files that need it.  This needs to be run regardless of whether there are any files to build.  It will handle its own
+    # output messages.
+
+    NaturalDocs::Builder->Run();
+
+
+    # Write the changes back to disk.
+
+    NaturalDocs::Menu->Save();
+    NaturalDocs::Project->SaveImageFileInfo();
+    NaturalDocs::Project->SaveSourceFileInfo();
+    NaturalDocs::SymbolTable->Save();
+    NaturalDocs::ClassHierarchy->Save();
+    NaturalDocs::SourceDB->Save();
+    NaturalDocs::Settings->Save();
+    NaturalDocs::Topics->Save();
+    NaturalDocs::Languages->Save();
+
+    # Must be done last.
+    NaturalDocs::Project->SaveConfigFileInfo();
+
+    if (!NaturalDocs::Settings->IsQuiet())
+        {  print "Done.\n";  };
+
+};
+
+if ($EVAL_ERROR)  # Oops.
+    {
+    NaturalDocs::Error->HandleDeath();
+    };
+

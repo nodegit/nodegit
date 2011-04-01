@@ -5,14 +5,16 @@ NODE_LIB_PATH = ~/.node_libraries
 BASE = .
 INSTALL_PATH = $(NODE_LIB_PATH)/nodegit
 
-all: build_bindings
+NATURAL_DOCS_PATH = $(BASE)/vendor/naturaldocs/
 
-update: clean config build_bindings uninstall install
+all: build
+
+update: clean config build uninstall install
 
 config:
 	@@$(BASE)/configure
 
-build_bindings:
+build:
 	@@$(NODE_BLD) build
 
 install:
@@ -34,8 +36,13 @@ clean:
 	@@rm -rf $(BASE)/build
 	@@rm -rf $(BASE)/vendor/libgit2/build
 
-unittest:
+test:
 	@@$(NODE_JS) $(BASE)/test/index.js test
 
 lint:
 	@@$(NODE_JS) $(BASE)/util/hint-check.js
+
+doc:
+	@@$(NATURAL_DOCS_PATH)/NaturalDocs -i $(BASE)/include -o HTML $(BASE)/docs -p $(BASE) -s $(BASE)/Theme
+
+.PHONY: test build

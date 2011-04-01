@@ -28,7 +28,6 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByIndex", EntryByIndex);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByName", EntryByName);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearEntries", ClearEntries);
 
   target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
 }
@@ -39,10 +38,6 @@ git_tree* GitTree::GetValue() {
 
 void GitTree::SetValue(git_tree* tree) {
   this->tree = tree;
-}
-
-int GitTree::New(git_repository* repo) {
-  return git_tree_new(&this->tree, repo);
 }
 
 size_t GitTree::EntryCount() {
@@ -62,25 +57,12 @@ int GitTree::SortEntries() {
   return 0;
 }
 
-void GitTree::ClearEntries() {
-  git_tree_clear_entries(this->tree);
-}
-
 Handle<Value> GitTree::New(const Arguments& args) {
   HandleScope scope;
 
   GitTree *tree = new GitTree();
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-  }
-
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  int err = tree->New((git_repository *)repo);
-    
   tree->Wrap(args.This());
-
-  args.This()->Set(String::New("error"), Integer::New(err));
 
   return args.This();
 }

@@ -1,0 +1,181 @@
+
+
+<html><head><title>Documenting Your Code - Walkthrough - Natural Docs</title><link rel=stylesheet type="text/css" href="../styles.css"><link rel=stylesheet type="text/css" href="../examples.css"><script language=JavaScript src="../javascript/PNGHandling.js"></script><script language=JavaScript src="../javascript/BrowserStyles.js"></script><script language=JavaScript src="../example/NaturalDocs.js"></script></head><body marginwidth=0 marginheight=0 leftmargin=0 topmargin=0><script language=JavaScript><!--
+OpeningBrowserTags();// --></script>
+
+<!-- saved from url=(0026)http://www.naturaldocs.org -->
+
+<table width=100% border=0 cellspacing=0 cellpadding=0 class=PageTable float=center><tr><td colspan=3 class=Header><table width=100% border=0 cellspacing=0 cellpadding=0><tr><td><img src="../images/header/leftside.png" width=30 height=75><a href="../index.html"><img src="../images/header/logo.png" width=524 height=75 alt="Natural Docs"></a></td><td align=right><img src="../images/header/rightside.png" width=30 height=75></td></tr></table></td></tr><tr><td><img src="../images/header/overleftmargin.png" width=10 height=6></td><td class=SideMenuTop><img src="../images/header/overmenu.png" width=14 height=6></td><td class=BodyTop><img src="../images/header/overbody.png" width=24 height=6></td></tr><tr><td></td><td class=SideMenu nowrap><div class=SideMenuSection><div class=SideMenuTitle><img src="../images/menu/about.png" width=52 height=13 alt="About"></div><div class=SideMenuBody><a href="../languages.html" class=SideMenuEntry>Language Support</a><a href="../output.html" class=SideMenuEntry>Output Formats</a></div></div><div class=SideMenuSection><div class=SideMenuTitle><img src="../images/menu/using.png" width=45 height=13 alt="Using"></div><div class=SideMenuBody><a href="../documenting.html" class=SideMenuEntry id=SelectedSideMenuEntry>Documenting<br>Your Code</a><a href="../keywords.html" class=SideMenuEntry>Keywords</a><a href="../running.html" class=SideMenuEntry>Running</a><a href="../troubleshooting.html" class=SideMenuEntry>Troubleshooting</a></div></div><div class=SideMenuSection><div class=SideMenuTitle><img src="../images/menu/customizing.png" width=96 height=13 alt="Customizing"></div><div class=SideMenuBody><a href="../menu.html" class=SideMenuEntry>Organizing the Menu</a><a href="../styles.html" class=SideMenuEntry>CSS Styles</a><a href="../customizingtopics.html" class=SideMenuEntry>Topics and Keywords</a><a href="../customizinglanguages.html" class=SideMenuEntry>Languages, Indexes,<br>and Prototypes</a></div></div><div class=SideMenuSection><div class=SideMenuTitle><img src="../images/menu/community.png" width=86 height=13 alt="Community"></div><div class=SideMenuBody><a href="http://www.naturaldocs.org/" class=SideMenuEntry>Web Site</a><a href="http://www.naturaldocs.org/mailinglist.html" class=SideMenuEntry>Mailing Lists</a><a href="http://www.naturaldocs.org/messageboards.html" class=SideMenuEntry>Message Boards</a><a href="http://www.naturaldocs.org/bugs.html" class=SideMenuEntry>Bugs and<br>Feature Requests</a></div></div></td><td class=Body width=100%><div class=PageTitle>Documenting Your Code</div><div class=TOC><a href="#OurFirstFunction">Our First Function</a> &middot; <a href="#ClassesAndScope">Classes and Scope</a> &middot; <a href="#MoreFormatting">More Formatting</a><br><a href="#MoreOnLinking">More on Linking</a> &middot; <a href="#ExtraDocumentation">Extra Documentation</a> &middot; <a href="#AbbreviatedSyntax">Abbreviated Syntax</a></div><div class=Topic><a name="OurFirstFunction"></a><div class=TopicTitle>Our First Function</div><p>So you downloaded Natural Docs, you <a href="../running.html">figured out the command line</a>, and now it&rsquo;s time to start documenting your code.&nbsp; Natural Docs tries to make this very straightforward and painless, so let&rsquo;s just dive right in:</p><pre class=Example>/*
+   Function: Multiply
+   Multiplies two integers and returns the result.
+*/
+int Multiply (int x, int y)
+   {  return x * y;  };
+</pre><p>That&rsquo;s all you need.&nbsp; Run Natural Docs and here&rsquo;s what appears in your output:</p><div class=NDContent><div class=CFunction><div class=CTopic><h3 class=CTitle><a name="Multiply"></a>Multiply</h3><div class=CBody><table border=0 cellspacing=0 cellpadding=0 class=Prototype><tr><td><table border=0 cellspacing=0 cellpadding=0><tr><td class=PBeforeParameters>int Multiply (</td><td class=PType>int&nbsp;</td><td class=PParameter>x,</td><td></td></tr><tr><td></td><td class=PType>int&nbsp;</td><td class=PParameter>y</td><td class=PAfterParameters>)</td></tr></table></td></tr></table><p class=CParagraph>Multiplies two integers and returns the result.</p></div></div></div></div><p>Okay, so that&rsquo;s all you need, but probably not all you want.&nbsp; After all, you&rsquo;ve got some real functions to document, not little one-liners.&nbsp; Here&rsquo;s something more elaborate:</p><pre class=Example>/*
+   Function: Multiply
+
+   Multiplies two integers.
+
+   Parameters:
+
+      x - The first integer.
+      y - The second integer.
+
+   Returns:
+
+      The two integers multiplied together.
+
+   See Also:
+
+      &lt;Divide&gt;
+*/
+int Multiply (int x, int y)
+   {  return x * y;  };
+</pre><div class=NDContent><div class=CFunction><div class=CTopic><h3 class=CTitle><a name="Example_Class.Multiply"></a>Multiply</h3><div class=CBody><table border=0 cellspacing=0 cellpadding=0 class=Prototype><tr><td><table border=0 cellspacing=0 cellpadding=0><tr><td class=PBeforeParameters>int Multiply (</td><td class=PType>int&nbsp;</td><td class=PParameter>x,</td><td></td></tr><tr><td></td><td class=PType>int&nbsp;</td><td class=PParameter>y</td><td class=PAfterParameters>)</td></tr></table></td></tr></table><p class=CParagraph>Multiplies two integers.</p><h4 class=CHeading>Parameters</h4><table border=0 cellspacing=0 cellpadding=0 class=CDescriptionList><tr><td class=CDLEntry>x</td><td class=CDLDescription>The first integer.</td></tr><tr><td class=CDLEntry>y</td><td class=CDLDescription>The second integer.</td></tr></table><h4 class=CHeading>Returns</h4><p class=CParagraph>The two integers multiplied together.</p><h4 class=CHeading>See Also</h4><p class=CParagraph><a href="#Example_Class.Divide" class=LFunction id=link116 onMouseOver="ShowTip(event, 'ttDivide', 'link116')" onMouseOut="HideTip('ttDivide')">Divide</a></p></div></div></div></div><div class=CToolTip id="ttAdd"><div class=CFunction><table border=0 cellspacing=0 cellpadding=0 class=Prototype><tr><td><table border=0 cellspacing=0 cellpadding=0><tr><td class=PBeforeParameters>int Add (</td><td class=PType>int&nbsp;</td><td class=PParameter>x,</td><td></td></tr><tr><td></td><td class=PType>int&nbsp;</td><td class=PParameter>y</td><td class=PAfterParameters>)</td></tr></table></td></tr></table>Adds two integers.</div></div><div class=CToolTip id="ttSubtract"><div class=CFunction><table border=0 cellspacing=0 cellpadding=0 class=Prototype><tr><td><table border=0 cellspacing=0 cellpadding=0><tr><td class=PBeforeParameters>int Subtract (</td><td class=PType>int&nbsp;</td><td class=PParameter>x,</td><td></td></tr><tr><td></td><td class=PType>int&nbsp;</td><td class=PParameter>y</td><td class=PAfterParameters>)</td></tr></table></td></tr></table>Subtracts two integers.</div></div><div class=CToolTip id="ttMultiply"><div class=CFunction><table border=0 cellspacing=0 cellpadding=0 class=Prototype><tr><td><table border=0 cellspacing=0 cellpadding=0><tr><td class=PBeforeParameters>int Multiply (</td><td class=PType>int&nbsp;</td><td class=PParameter>x,</td><td></td></tr><tr><td></td><td class=PType>int&nbsp;</td><td class=PParameter>y</td><td class=PAfterParameters>)</td></tr></table></td></tr></table>Multiplies two integers.</div></div><div class=CToolTip id="ttDivide"><div class=CFunction><table border=0 cellspacing=0 cellpadding=0 class=Prototype><tr><td><table border=0 cellspacing=0 cellpadding=0><tr><td class=PBeforeParameters>int Divide (</td><td class=PType>int&nbsp;</td><td class=PParameter>x,</td><td></td></tr><tr><td></td><td class=PType>int&nbsp;</td><td class=PParameter>y</td><td class=PAfterParameters>)</td></tr></table></td></tr></table>Divides two integers.</div></div><div class=CToolTip id="ttIsEqual"><div class=CFunction><table border=0 cellspacing=0 cellpadding=0 class=Prototype><tr><td><table border=0 cellspacing=0 cellpadding=0><tr><td class=PBeforeParameters>bool IsEqual (</td><td class=PType>int&nbsp;</td><td class=PParameter>x,</td><td></td></tr><tr><td></td><td class=PType>int&nbsp;</td><td class=PParameter>y</td><td class=PAfterParameters>)</td></tr></table></td></tr></table>Returns whether two integers are equal.</div></div><p>Still not too scary, huh?&nbsp; Notice the comments are just as readable as the output.&nbsp; No tags littered about, and the structure is very natural.&nbsp; You probably get it just by looking at it, but let&rsquo;s go through the details anyway.</p><pre class=Example>Function: Multiply
+</pre><p>Every one of these comments you write (called <i>topics</i>) are going to start with a <i>topic line</i> in the format <code>&ldquo;keyword: title&rdquo;</code>.&nbsp; There are <a href="../keywords.html">a lot of keywords</a>, but they&rsquo;re exactly what you&rsquo;d expect: Function, Class, Variable, etc.&nbsp; There are also a lot of synonyms so instead of Function you could use Func, Procedure, Proc, Method, Constructor, etc.&nbsp; It&rsquo;s designed so you can just use whatever it is you&rsquo;re describing without memorizing anything.&nbsp; You can glance over <a href="../keywords.html">the keyword list</a> but you shouldn&rsquo;t have to consult it very often.</p></p><p>The other part of the topic line is the title.&nbsp; It should match whatever it is you&rsquo;re documenting, in this case the function name Multiply.&nbsp; Natural Docs is case sensitive even if your programming language isn&rsquo;t, so make sure you match it closely or you might not get the prototype in your output, which is the little gray box.&nbsp; You don&rsquo;t need to include the parameters in the title.&nbsp; In fact, it&rsquo;s better if you don&rsquo;t.</p></p><pre class=Example>Parameters:
+
+Returns:
+
+See Also:
+</pre><p>You can also define <a href="reference.html#Headings">headings</a> by skipping a line and ending the text with a colon.&nbsp; If you&rsquo;re used to other documentation systems you may think there&rsquo;s only a handful of headings to choose from, but any text formatted this way will become one.&nbsp; If you want a heading called Dependencies you can go right ahead and add it.</p><pre class=Example>x - The first integer.
+y - The second integer.
+</pre><p>This is what&rsquo;s called a <a href="reference.html#DefinitionLists">definition list.</a>&nbsp; You can use more than one line to finish the definition, as it won&rsquo;t stop until you skip a line.</p><pre class=Example>x - The first integer.
+y - The second integer with a long description.
+    This is still part of the description.
+
+This is a new paragraph because we skipped a line.
+</pre><p>Indentation doesn&rsquo;t matter either, so even if the second description line wasn&rsquo;t indented to match the first, it would still be considered part of it.</p><pre class=Example>&lt;Divide&gt;
+</pre><p>This is how we link in Natural Docs, with angle brackets.&nbsp; There will be a lot more to say about this later, but for now I&rsquo;ll just show you something cool.&nbsp; Hover over it in the output below:</p><div class=NDContent><div class=CTopic><div class=CBody><p class=CParagraph><a href="#Example_Class.Divide" class=LFunction id=link116 onMouseOver="ShowTip(event, 'ttDivide', 'link216')" onMouseOut="HideTip('ttDivide')">Divide</a></p></div></div></div><p>You get that <i>everywhere</i> in your generated documentation.</p></div><div class=Topic><a name="ClassesAndScope"></a><div class=TopicTitle>Classes and Scope</div><p>So that&rsquo;s good for our one function of questionable usefulness, but what if we have a whole class of questionable usefulness?&nbsp; We can document the class and it&rsquo;s members the same way we documented the individual function, with a Natural Docs comment right above each element.&nbsp; We&rsquo;ll go back to short descriptions to keep the example manageable.</p><pre class=Example>/*
+   Class: Counter
+   A class that manages an incrementing counter.
+*/
+class Counter
+   {
+   public:
+
+      /*
+         Constructor: Counter
+         Initializes the object.
+      */
+      Counter()
+         {  value = 0;  };
+
+      /*
+         Function: Value
+         Returns the value of the counter.
+      */
+      int Value()
+         {  return value;  };
+
+      /*
+         Function: Increment
+         Adds one to the counter.
+      */
+      void Increment()
+         {  value++;  };
+
+   protected:
+
+      /*
+         Variable: value
+         The counter's value.
+      */
+      int value;
+   };
+</pre><p>Everything&rsquo;s the same, we just substituted Class and Variable for the Function keyword when it was appropriate.&nbsp; We also used Constructor, but we could have just as easily used Function there too.&nbsp; They&rsquo;re both keywords for the same thing so it doesn&rsquo;t matter.</p><a name="Scope"></a><div class="SubTopic">Scope</div><p>Like the source code itself, Natural Docs topics have <a href="reference.html#Scope">scope.</a>&nbsp; Value and Increment are seen as part of class Counter, just like they are in the code.&nbsp; Why is this important?&nbsp; Linking.&nbsp; Linking from one topic to another has similar rules to how one function can call another.&nbsp; Since Value is in the same class as Increment, it&rsquo;s topic can link to it with just <code>&lt;Increment&gt;</code>.&nbsp; However, linking to Increment from a different class would require <code>&lt;Counter.Increment&gt;</code> instead.&nbsp; You can actually use any of the three most common class/member notations: <code>&lt;Counter.Increment&gt;</code>, <code>&lt;Counter::Increment&gt;</code>, and <code>&lt;Counter-&gt;Increment&gt;</code>.</p><p>If your programming language has <a href="../languages.html">full language support</a>, the scope is determined by the code and applied automatically.&nbsp; However, if you only have <a href="../languages.html">basic language support</a> it follows these rules:</p><ul><li>Any topic that appears under a Class topic (or anything that says <a href="../keywords.html">Starts Scope</a>) is part of that class.</li><li>Any topic that appears under a Section topic (or anything that says <a href="../keywords.html">Ends Scope</a>) is global again.</li><li>Any File topic (or anything that says <a href="../keywords.html">Always Global</a>) is global no matter what and doesn&rsquo;t affect any other topics.</li><p></ul></p><p>Chances are you would have written the same thing even if you didn&rsquo;t know this and it would have just worked.&nbsp; You usually won&rsquo;t need to think about them at all.&nbsp; However, it&rsquo;s still good to be aware of them in case something doesn&rsquo;t behave the way you expected it to.</p><p>You actually know enough to go start documenting now.&nbsp; I know Mr. ScrollBar says there&rsquo;s more on this page you can learn, but if you want to skip out early, you can.&nbsp; Really.&nbsp; I don&rsquo;t mind.</p></div><div class=Topic><a name="MoreFormatting"></a><div class=TopicTitle>More Formatting</div><p>Okay then.&nbsp; On we go.</p><a name="ParagraphsBoldAndUnderline"></a><div class="SubTopic">Paragraphs, Bold, and Underline</div><p>The syntax for these three is exactly what you would expect it to be.</p><pre class=Example>*Bold text*
+
+_Underlined text_
+
+Paragraphs are broken by skipping lines.  So the two
+lines above each have their own paragraph, but these
+three lines are all part of the same one.
+</pre><div class=NDContent><div class=CBody><div class=CFunction><div class=CTopic><p><b>Bold text</b></p><p><u>Underlined text</u></p><p>Paragraphs are broken by skipping lines.&nbsp; So the two lines above each have their own paragraph, but these three lines are all part of the same one.</p></div></div></div></div><p>When underlining multiple words, you can use an underscore for each space or only put them at the edges like we did above.&nbsp; Both ways will work.</p><a name="BulletLists"></a><div class="SubTopic">Bullet Lists</div><p>You can add <a href="reference.html#BulletLists">bullet lists</a> by starting a line with a dash, an asterisk, an o, or a plus.&nbsp; Like definition lists, bullets can span multiple lines and indentation doesn&rsquo;t matter.&nbsp; To end a bullet you have to skip a line before doing something else.</p><pre class=Example>- Bullet one.
+- Bullet two.
+  Bullet two continued.
+- Bullet three.
+
+Some text after the bullet list.
+</pre><div class=NDContent><div class=CFunction><div class=CTopic><div class=CBody><ul class=CBulletList><li>Bullet one.</li><li>Bullet two.&nbsp; Bullet two continued.</li><li>Bullet three.</li></ul><p class=CParagraph>Some text after the bullet list.</p></div></div></div></div><a name="CodeAndTextDiagrams"></a><div class="SubTopic">Code and Text Diagrams</div><p>You can add <a href="reference.html#CodeAndTextDiagrams">example code or text diagrams</a> by starting each line with <code>&gt;</code>, <code>|</code>, or <code>:</code>.</p><pre class=Example>&gt; a = b + c;
+&gt; b++;
+</pre><div class=NDContent><div class=CFunction><div class=CTopic><div class=CBody><pre class=CCode>a = b + c;<br>b++;</pre></div></div></div></div><p>If you have a long stretch, you can use <code>(start code)</code> and <code>(end)</code> instead.</p><pre class=Example>(start code)
+
+if (x == 0) {
+   DoSomething();
+}
+
+return x;
+
+(end)
+</pre><div class=NDContent><div class=CFunction><div class=CTopic><div class=CBody><pre class=CCode>if (x == 0) {<br>   DoSomething();<br>}<br><br>return x;</pre></div></div></div></div><p>You can also use <code>example</code>, <code>diagram</code>, or <code>table</code> instead of <code>code</code>.&nbsp; Just use whatever&rsquo;s appropriate.</p><p>As I mentioned before, we don&rsquo;t want you to worry about memorizing minor details, so in that spirit it will also accept <code>begin</code> for <code>start</code> and <code>finish</code> or <code>done</code> for <code>end</code>.&nbsp; You can also write <code>(end code)</code> instead of just <code>(end)</code>.</p><p>Syntax highlighting will be applied to <code>(start code)</code> sections by default.&nbsp; If you&rsquo;d like to also apply it to <code>&gt;</code>, <code>:</code>, and <code>|</code> lines or turn it off completely, use the <a href="../running.html"><code>-hl</code> command line option</a>.</p><a name="Images"></a><div class="SubTopic">Images</div><p>You can include images in your documentation by writing &ldquo;<code>(see filename)</code>&rdquo;.&nbsp; If you put it alone on a line it will be embedded in place, or if you put it in a paragraph it will appear after it using the file name as a caption.</p><pre class=Example>This is the first paragraph.
+
+(see logo.gif)
+
+This is the second paragraph (see logo.gif)  This
+is more of the second paragraph.
+</pre><div class=NDContent><div class=CFunction><div class=CTopic><div class=CBody><p class=CParagraph>This is the first paragraph.</p><img src="../images/logo.gif" width="268" height="61"><p class=CParagraph>This is the second paragraph <a href="#Image1" class=CImageLink>(see logo)</a>&nbsp; This is more of the second paragraph.</p><div class=CImage><a name="Image1"></a><div class=CImageCaption>logo</div><img src="../images/logo.gif" width="268" height="61"></div></div></div></div></div><p>The image file names are relative to the source file the comment appears in, so if your file is C:\Project\SourceFile.cpp and your image is C:\Project\Images\Logo.gif, you would write <code>(see Images/Logo.gif)</code>.&nbsp; However, you can also specify image directories in <a href="../running.html#CommandLine">the command line with <code>-img</code></a>, so if all your source files are in C:\Project\Source and all your images are in C:\Project\Images, you can put &ldquo;<code>-img C:\Project\Images</code>&rdquo; on the command line and just use <code>(see logo.gif)</code> again.</p></div><div class=Topic><a name="MoreOnLinking"></a><div class=TopicTitle>More on Linking</div><p>Yes, there&rsquo;s still more to linking.&nbsp; You can link to URLs and e-mail addresses, but in this case the angle brackets are optional.</p><pre class=Example>Visit &lt;http://www.website.com&gt; or send messages to
+email@address.com.
+</pre><div class=NDContent><div class=CFunction><div class=CTopic><div class=CBody><p class=CParagraph>Visit <a href="#" onClick="return false;" class=LURL>http://www.website.com</a> or send messages to <a href="#" onclick="location.href='mai' + 'lto:' + 'em' + 'ail' + '@' + 'addre' + 'ss.com'; return false;" class="LEMail">em<span style="display: none;">.nosp@m.</span>ail<span>@</span>addre<span style="display: none;">.nosp@m.</span>ss.com</a>.</p></div></div></div></div><p>You can create named links by putting the text, &ldquo;at&rdquo;, and then the address in the angle brackets.&nbsp; This format lets it read naturally in a sentence.</p><pre class=Example>Visit &lt;the website at http://www.website.com&gt; or &lt;e-mail me at email@address.com&gt;.
+</pre><div class=NDContent><div class=CFunction><div class=CTopic><div class=CBody><p class=CParagraph>Visit <a href="#" onClick="return false;" class=LURL>the website</a> or <a href="#" onclick="location.href='mai' + 'lto:' + 'em' + 'ail' + '@' + 'addre' + 'ss.com'; return false;" class="LEMail">e-mail me</a>.</p></div></div></div></div><p>E-mail addresses are protected from spam crawlers.&nbsp; They look and act like regular links (try it above) but you can see the actual HTML that&rsquo;s generated for them <a href="reference.html#URLsAndEMail">here</a>.</p><p>As for regular links, to help them fit into sentences easily you can actually include plurals and possessives inside the angle brackets.&nbsp; In other words, you don&rsquo;t have to use awkward syntax like <code>&lt;Object&gt;s</code>, although that&rsquo;s supported as well.&nbsp; You can simply write <code>&lt;Objects&gt;</code> and it will link to the symbol <code>Object</code> just fine.&nbsp; It can handle any plural and/or possessive form you can throw at it.&nbsp; I&rsquo;m not kidding: <code>Foxes</code>, <code>Fox&rsquo;s</code>, <code>Foxes&rsquo;</code>, <code>Children</code>, <code>Mice</code>, <code>Alumni</code>, <code>Indices</code>, <code>Amoebae</code>, <code>Teeth</code>, just try to trip it up.</p></div><div class=Topic><a name="ExtraDocumentation"></a><div class=TopicTitle>Extra Documentation</div><p>Sometimes you want to include documentation that doesn&rsquo;t correspond directly to a code element.&nbsp; Maybe you want to include license information or architecture notes.&nbsp; There are two ways to do this.</p><a name="FreestandingTopics"></a><div class="SubTopic">Freestanding Topics</div><p>Just because most of the things you write will directly correspond to an element of your source code doesn&rsquo;t mean they have to.&nbsp; You can pick any of <a href="../keywords.html">the available keywords</a> and create a freestanding comment with it.&nbsp; For example:</p><pre class=Example>/*
+   Class: Counter
+   A class that manages an incrementing counter.
+*/
+class Counter
+   {
+   public:
+
+      /*
+         About: License
+         This file is licensed under the GPL.
+      */
+
+      /*
+         Constructor: Counter
+         Initializes the object.
+      */
+      Counter()
+         {  value = 0;  };
+   ...
+</pre><p>The extra license topic will be added to the output just like the functions.</p><div class=NDContent><div class=CFunction><div class=CTopic><h3 class=CTitle>License</h3><div class=CBody><p class=CParagraph>This file is licensed under the GPL.</p></div></div></div></div><p>Remember that because of <a href="#Scope">scope</a>, the License topic will actually be considered part of Counter the way it&rsquo;s listed above.&nbsp; You&rsquo;d link to it from outside Counter with <code>&lt;Counter.License&gt;</code>.&nbsp; That idea may take some getting used to, but if an extra topic only applies to one class that&rsquo;s actually the most appropriate way to do it.&nbsp; In this case it&rsquo;s a license, so if it applies to the entire project instead you could put the comment above the class to make it global, just like moving a function there would.</p><a name="TextFiles"></a><div class="SubTopic">Text Files</div><p>You can also add additional documentation with text files.&nbsp; If you put a file with a .txt extension in your source tree and start it with a topic line, it&rsquo;s contents will be treated the same as if it were in a comment in your source code.&nbsp; That means you can define multiple topics within it, you can link between them and topics in your source code, and you can use all available formatting options.</p><pre class=Example>Title: License
+
+This file is licensed under the GPL.
+
+I can link to &lt;Counter&gt; and &lt;Counter.Increment&gt;, and
+the documentation in that class can even link back
+with &lt;License&gt;.
+
+
+About: Second Topic
+
+I can create a *second* topic in here too, complete
+with formatting.
+</pre><p>The thing some people forget though is that you <b>must</b> start it with a topic line, like &ldquo;<code>Title: License</code>&rdquo; above.&nbsp; This is how Natural Docs tells it apart from regular text files.</p></div><div class=Topic><a name="AbbreviatedSyntax"></a><div class=TopicTitle>Abbreviated Syntax</div><p>Here&rsquo;s another useful thing you may want to know about.&nbsp; Suppose you have a lot of little things to document, like constants.&nbsp; Writing a separate topic for each one can be very tedious, no matter how much you compress it:</p><pre class=Example>// Constant: COUNTER_NORMAL
+// Causes the counter to increment normally.
+#define COUNTER_NORMAL 0
+
+// Constant: COUNTER_ODD
+// Causes the counter to only increment in odd numbers.
+#define COUNTER_ODD 1
+
+// Constant: COUNTER_EVEN
+// Causes the counter to only increment in even numbers.
+#define COUNTER_EVEN 2
+</pre><p>One thing you may have noticed in the <a href="../keywords.html">keyword list</a> is that they almost all have plural forms.&nbsp; These are used to create what are called <a href="reference.html#ListTopics">list topics.</a>&nbsp; You define a topic using a plural keyword, and then anything appearing in a <a href="reference.html#DefinitionLists">definition list</a> within it creates a linkable symbol as if they each had their own topic.&nbsp; For example:</p><pre class=Example>/*
+   Constants: Counter Modes
+
+   COUNTER_NORMAL - Causes the counter to increment normally.
+   COUNTER_ODD    - Causes the counter to only increment in odd numbers.
+   COUNTER_EVEN   - Causes the counter to only increment in even numbers.
+*/
+#define COUNTER_NORMAL 0
+#define COUNTER_ODD 1
+#define COUNTER_EVEN 2
+</pre><p>I would now be able to write <code>&lt;COUNTER_ODD&gt;</code> and have it work the same as it would with the first example.</p><p>Using the enum or enumeration keyword is special because it automatically behaves in a similar manner.&nbsp; This allows both the enum and its values to be documented in the same place.</p><pre class=Example>/*
+   Enum: CounterMode
+
+   NORMAL - Causes the counter to increment normally.
+   ODD    - Causes the counter to only increment in odd numbers.
+   EVEN   - Causes the counter to only increment in even numbers.
+*/
+enum CounterMode { NORMAL, ODD, EVEN };
+</pre><p>That&rsquo;s it, you&rsquo;re done with this walkthrough.&nbsp; You should know enough now to make very good use of Natural Docs.&nbsp; If you still want to know more, you can look in <a href="reference.html">the reference</a> for some of the smaller details we may have skipped over.&nbsp; Also, look at the Customizing pages on this web site for even more you can do.</p></div></td></tr><tr><td></td><td class=SideMenuBottom><table width=100% border=0 cellspacing=0 cellpadding=0><tr><td class=SideMenuBottomLeft><img src="../images/menu/bottomleft.png" width=18 height=19></td><td class=SideMenuBottomRight><img src="../images/menu/bottomright.png" width=18 height=19></td></tr></table></td><td class=BodyBottom>Copyright &copy; 2003-2010 Greg Valure</td></tr></table><script language=JavaScript><!--
+ClosingBrowserTags();// --></script></body></html>

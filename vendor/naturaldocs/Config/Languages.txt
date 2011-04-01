@@ -1,0 +1,286 @@
+Format: 1.51
+
+# This is the main Natural Docs languages file.  If you change anything here,
+# it will apply to EVERY PROJECT you use Natural Docs on.  If you'd like to
+# change something for just one project, edit the Languages.txt in its project
+# directory instead.
+
+
+#-------------------------------------------------------------------------------
+# SYNTAX:
+#
+# Unlike other Natural Docs configuration files, in this file all comments
+# MUST be alone on a line.  Some languages deal with the # character, so you
+# cannot put comments on the same line as content.
+#
+# Also, all lists are separated with spaces, not commas, again because some
+# languages may need to use them.
+#
+# Language: [name]
+#    Defines a new language.  Its name can use any characters.
+#
+#    The language Shebang Script is special.  It's entry is only used for
+#    extensions, and files with those extensions have their shebang (#!) lines
+#    read to determine the real language of the file.  Extensionless files are
+#    always treated this way.
+#
+#    The language Text File is also special.  It's treated as one big comment
+#    so you can put Natural Docs content in them without special symbols.  Also,
+#    if you don't specify a package separator, ignored prefixes, or enum value
+#    behavior, it will copy those settings from the language that is used most
+#    in the source tree.
+#
+# Extensions: [extension] [extension] ...
+#    Defines the file extensions of the language's source files.  You can use *
+#    to mean any undefined extension.
+#
+# Shebang Strings: [string] [string] ...
+#    Defines a list of strings that can appear in the shebang (#!) line to
+#    designate that it's part of the language.
+#
+# Ignore Prefixes in Index: [prefix] [prefix] ...
+# Ignore [Topic Type] Prefixes in Index: [prefix] [prefix] ...
+#    Specifies prefixes that should be ignored when sorting symbols in an
+#    index.  Can be specified in general or for a specific topic type.
+#
+#------------------------------------------------------------------------------
+# For basic language support only:
+#
+# Line Comments: [symbol] [symbol] ...
+#    Defines a space-separated list of symbols that are used for line comments,
+#    if any.
+#
+# Block Comments: [opening sym] [closing sym] [opening sym] [closing sym] ...
+#    Defines a space-separated list of symbol pairs that are used for block
+#    comments, if any.
+#
+# Package Separator: [symbol]
+#    Defines the default package separator symbol.  The default is a dot.
+#
+# [Topic Type] Prototype Enders: [symbol] [symbol] ...
+#    When defined, Natural Docs will attempt to get a prototype from the code
+#    immediately following the topic type.  It stops when it reaches one of
+#    these symbols.  Use \n for line breaks.
+#
+# Line Extender: [symbol]
+#    Defines the symbol that allows a prototype to span multiple lines if
+#    normally a line break would end it.
+#
+# Enum Values: [global|under type|under parent]
+#    Defines how enum values are referenced.  The default is global.
+#    global       - Values are always global, referenced as 'value'.
+#    under type   - Values are under the enum type, referenced as
+#               'package.enum.value'.
+#    under parent - Values are under the enum's parent, referenced as
+#               'package.value'.
+#
+# Perl Package: [perl package]
+#    Specifies the Perl package used to fine-tune the language behavior in ways
+#    too complex to do in this file.
+#
+#------------------------------------------------------------------------------
+# For full language support only:
+#
+# Full Language Support: [perl package]
+#    Specifies the Perl package that has the parsing routines necessary for full
+#    language support.
+#
+#-------------------------------------------------------------------------------
+
+# The following languages MUST be defined in this file:
+#
+#    Text File, Shebang Script
+
+# If you add a language that you think would be useful to other developers
+# and should be included in Natural Docs by default, please e-mail it to
+# languages [at] naturaldocs [dot] org.
+
+
+Language: Text File
+
+   Extension: txt
+
+
+Language: Shebang Script
+
+   Extension: cgi
+
+
+Language: C/C++
+
+   Extensions: c cpp h hpp cxx hxx
+   Ignore Function Prefix in Index: ~
+   Line Comment: //
+   Block Comment: /* */
+   Package Separator: ::
+   Enum Values: Under parent
+   Class Prototype Enders: ; {
+   Function Prototype Enders: ; {
+   Variable Prototype Enders: ; =
+
+
+Language: C#
+
+   Extension: cs
+   Ignore Prefix in Index: @
+   Full Language Support: NaturalDocs::Languages::CSharp
+
+
+Language: Java
+
+   Extension: java
+   Line Comment: //
+   Block Comment: /* */
+   Enum Values: Under type
+   Function Prototype Ender: {
+   Variable Prototype Enders: ; =
+
+
+Language: JavaScript
+
+   Extension: js
+   Line Comment: //
+   Block Comment: /* */
+   Enum Values: Under type
+   Function Prototype Ender: {
+   Variable Prototype Enders: ; = , }
+
+
+Language: Perl
+
+   Extensions: pl pm
+   Shebang String: perl
+   Ignore Variable Prefixes in Index: $ @ % *
+   Full Language Support: NaturalDocs::Languages::Perl
+
+
+Language: Python
+
+   Extension: py
+   Shebang String: python
+   Line Comment: #
+   Function Prototype Ender: :
+   Variable Prototype Ender: =
+   Line Extender: \
+
+
+Language: PHP
+
+   Extensions: inc php php3 php4 phtml
+   Shebang String: php
+   Ignore Variable Prefix in Index: $
+   Line Comments: // #
+   Block Comment: /* */
+   Function Prototype Enders: ; {
+   Variable Prototype Enders: ; =
+
+
+Language: SQL
+
+   Extension: sql
+   Line Comment: --
+   Block Comment: /* */
+   Enum Values: Global
+   Function Prototype Enders: , ; ) as As AS is Is IS
+   Variable Prototype Enders: , ; ) := default Default DEFAULT
+   Database Index Prototype Enders: , ; )
+   Database Trigger Prototype Enders: begin Begin BEGIN as As AS
+   Perl Package: NaturalDocs::Languages::PLSQL
+
+
+Language: Visual Basic
+
+   Extensions: vb vbs bas cls frm
+   Line Comment: '
+   Enum Values: Under type
+   Function Prototype Ender: \n
+   Variable Prototype Enders: \n =
+   Line Extender: _
+
+
+Language: Pascal
+
+   Extension: pas
+   Line Comment: //
+   Block Comments: { } (* *)
+   Function Prototype Ender: ;
+   Variable Prototype Enders: ; =
+   Perl Package: NaturalDocs::Languages::Pascal
+
+
+Language: Assembly
+
+   Extension: asm
+   Line Comment: ;
+   Variable Prototype Ender: \n
+   Line Extender: \
+
+
+Language: Ada
+
+   Extensions: ada ads adb
+   Line Comment: --
+   Function Prototype Enders: ; is Is IS
+   Variable Prototype Enders: ; :=
+   Perl Package: NaturalDocs::Languages::Ada
+
+
+Language: Tcl
+
+   Extensions: tcl exp
+   Shebang Strings: tclsh wish expect
+   Line Comment: #
+   Package Separator: ::
+   Function Prototype Enders: ; {
+   Variable Prototype Enders: ; \n
+   Line Extender: \
+   Perl Package: NaturalDocs::Languages::Tcl
+
+
+Language: Ruby
+
+   Extension: rb
+   Shebang String: ruby
+   Ignore Variable Prefixes in Index: $ @ @@
+   Line Comment: #
+   Enum Values: Under parent
+   Function Prototype Enders: ; \n
+   Variable Prototype Enders: ; \n =
+   Line Extender: \
+
+
+Language: Makefile
+
+   Extensions: mk mak make
+   Line Comment: #
+
+
+Language: ActionScript
+
+   Extensions: as mxml
+   Full Language Support: NaturalDocs::Languages::ActionScript
+
+
+Language: ColdFusion
+
+   Extensions: cfm cfml cfc
+   Line Comment: //
+   Block Comments: <!--- ---> /* */
+   Function Prototype Enders: { <
+
+
+Language: R
+
+   Extension: r
+   Line Comment: #
+   Function Prototype Enders: { ;
+   Variable Prototype Enders: <- = ; \n
+
+
+Language: Fortran
+
+   Extensions: f90 f95 f03
+   Line Comment: !
+   Function Prototype Ender: \n
+   Variable Prototype Enders: \n = =>
+   Line Extender: &

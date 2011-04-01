@@ -16,10 +16,12 @@ This will install and configure everything you need to use `nodegit`.
 
     $ sudo npm install nodegit
 
+    $ sudo npm update nodegit
+
 ### Mac OS X/Linux/Unix ###
 
 #### Install `nodegit` by cloning source from __GitHub__ and running the `configure`, `make`, and `make install` commands: ####
-\*Note: `nodegit` assumes your library path exists at `~/.node_libraries` you can change this by specifying a new path\*
+\*Note: `nodegit` assumes your library path exists at `~/.node_libraries` you can change this by specifying a new lib path\*
     
     $ git clone git://github.com/tbranyen/nodegit.git
     $ cd nodegit
@@ -62,8 +64,9 @@ API Example Usage
             if( err ) { throw err; }
 
             // Iterate over the revision history
-            branch.history.each( function( i, commit ) {
-
+            var history = branch.history();
+            
+            history.on( 'commit', function( err, commit ) {
                 // Print out `git log` emulation
                 console.log( 'commit ' + commit.sha );
                 console.log( commit.author.name + '<' + commit.author.email + '>' );
@@ -71,6 +74,10 @@ API Example Usage
                 console.log( '\n' );
                 console.log( commit.message );
                 console.log( '\n' );
+            });
+
+            history.on( 'end', function( err ) {
+
             });
         });
     });
@@ -173,15 +180,21 @@ __ To run unit tests ensure the submodules `nodeunit` and `rimraf` are located i
 
 If they are not, `cd` into the `nodegit` dir and run the following `git` commands to automatically fetch them:
     $ cd nodegit
-    $ git submodule init vendor/
-    $ git submodule update vendor/
+    $ git submodule update --init
 
-Then simply run `make unittest` in the project root.
+Then simply run `make test` in the project root.
 
 Release information
 -------------------
 
 __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods) __
+
+### v0.0.3: ###
+    * Fully documented native source code
+    * Reworked convenience API to make development significantly easier
+    * More unit tests
+    * Blob write support
+    * Updated libgit2 to version 0.11.0
 
 ### v0.0.2: ###
     * More methods implemented

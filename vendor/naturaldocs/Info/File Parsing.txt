@@ -1,0 +1,83 @@
+
+    Architecture: File Parsing
+
+####################################################################################
+
+    This is the architecture and code path for general file parsing.  We pick it up at <NaturalDocs::Parser->Parse()> because we're not interested in how the files are gathered and their languages determined for the purposes of this document.  We are just interested in the process each individual file goes through when it's decided that it should be parsed.
+
+
+
+    Stage: Preparation and Differentiation
+    _______________________________________________________________________________________________________
+
+    <NaturalDocs::Parser->Parse()> can be called from one of two places, <NaturalDocs::Parser->ParseForInformation()> and <NaturalDocs::Parser->ParseForBuild()>, which correspond to the parsing and building phases of Natural Docs.  There is no noteworthy work done in either of them before they call Parse().
+
+
+    Stage: Basic File Processing
+    _______________________________________________________________________________________________________
+
+    The nitty-gritty file handling is no longer done in <NaturalDocs::Parser> itself due to the introduction of full language support in 1.3, as it required two completely different code paths for full and basic language support.  Instead it's handled in NaturalDocs::Languages::Base->ParseFile(), which is really a virtual function that leads to <NaturalDocs::Languages::Simple->ParseFile()> for basic language support or a version appearing in a package derived from <NaturalDocs::Languages::Advanced> for full language support.
+
+    The mechinations of how these functions work is for another document, but their responsibility is to feed all comments Natural Docs should be interested in back to the parser via <NaturalDocs::Parser->OnComment()>.
+
+
+    Stage: Comment Processing
+    _______________________________________________________________________________________________________
+
+    <NaturalDocs::Parser->OnComment()> receives the comment sans comment symbols, since that's language specific.  All comment symbols are replaced by spaces in the text instead of removed so any indentation is properly preserved.  Also passed is whether it's a JavaDoc styled comment, as that varies by language as well.
+
+    OnComment() runs what it receives through <NaturalDocs::Parser->CleanComment()> which normalizes the text by removing comment boxes and horizontal lines, expanding tabs, etc.
+
+
+    Stage: Comment Type Determination
+    _______________________________________________________________________________________________________
+
+    OnComment() sends the comment to <NaturalDocs::Parser::Native->IsMine()> to test if it's definitely Natural Docs content, such as by starting with a recognized header line.  If so, it sends it to <NaturalDocs::Parser::Native->ParseComment()>.
+
+    If not, OnComment() sends the comment to <NaturalDocs::Parser::JavaDoc->IsMine()> to test if it's definitely JavaDoc content, such as by having JavaDoc tags.  If so, it sends it to <NaturalDocs::Parser::JavaDoc->ParseComment()>.
+
+    If not, the content is ambiguous.  If it's a JavaDoc-styled comment it goes to <NaturalDocs::Parser::Native->ParseComment()>  to be treated as a headerless Natural Docs comment.  It is ignored otherwise, which lets normal comments slip through.  Note that it's only ambiguous if neither parser claims it; there's no test to see if they both do.  Instead Natural Docs always wins.
+
+    We will not go into the JavaDoc code path for the purposes of this document.  It simply converts the JavaDoc comment into <NDMarkup> as best it can, which will never be perfectly, and adds a <NaturalDocs::Parser::ParsedTopic> to the list for that file.  Each of those ParsedTopics will be headerless as indicated by having an undefined <NaturalDocs::Parser::ParsedTopic->Title()>.
+
+
+    Stage: Native Comment Parsing
+    _______________________________________________________________________________________________________
+
+    At this point, parsing is handed off to <NaturalDocs::Parser::Native->ParseComment()>.  It searches for header lines within the comment and divides the content into individual topics.  It also detects (start code) and (end) sections so that anything that would normally be interpreted as a header line can appear there without breaking the topic.
+
+    The content between the header lines is sent to <NaturalDocs::Parser::Native->FormatBody()> which handles all the block level formatting such as paragraphs, bullet lists, and code sections.  That function in turn calls <NaturalDocs::Parser::Native->RichFormatTextBlock()> on certain snippets of the text to handle all inline formatting, such as bold, underline, and links, both explicit and automatic.
+
+    <NaturalDocs::Parser::Native->ParseComment()> then has the body in <NDMarkup> so it makes a <NaturalDocs::Parser::ParsedTopic> to add to the list.  It keeps track of the scoping via topic scoping, regardless of whether we're using full or basic language support.  Headerless topics are given normal scope regardless of whether they might be classes or other scoped types.
+
+
+    Group: Post Processing
+    _______________________________________________________________________________________________________
+
+    After all the comments have been parsed into ParsedTopics and execution has been returned to <NaturalDocs::Parser->Parse()>, it's time for some after the fact cleanup.  Some things are done like breaking topic lists, determining the menu title, and adding automatic group headings that we won't get into here.  There are two processes that are very relevant though.
+
+
+    Stage: Repairing Packages
+    _______________________________________________________________________________________________________
+
+    If the file we parsed had full language support, the <NaturalDocs::Languages::Advanced> parser would have done more than just generate various OnComment() calls.  It would also return a scope record, as represented by <NaturalDocs::Languages::Advanced::ScopeChange> objects, and a second set of ParsedTopics it extracted purely from the code, which we'll refer to as autotopics.  The scope record shows, purely from the source, what scope each line of code appears in.  This is then combined with the topic scoping to update ParsedTopics that come from the comments in the function <NaturalDocs::Parser->RepairPackages()>.
+
+    If a comment topic changes the scope, that's honored until the next autotopic or scope change from the code.  This allows someone to document a class that doesn't appear in the code purely with topic scoping without throwing off anything else.  Any other comment topics have their scope changed to the current scope no matter how it's arrived at.  This allows someone to manually document a function without manually documenting the class and still have it appear under that class.  The scope record will change the scope to part of that class even if topic scoping did not.  Essentially the previous topic scoping is thrown out, which I guess is something that can be improved.
+
+    None of this affects the autotopics, as they are known to have the correct scoping since they are gleaned from the code with a dedicated parser.  Wouldn't there be duplication of manually documented code elements, which would appear both in the autotopics and in the comment topics?  Yes.  That brings us to our next stage, which is...
+
+
+    Stage: Merging Auto Topics
+    _______________________________________________________________________________________________________
+
+    As mentioned above, ParseFile() also returns a set of ParsedTopics gleaned from the code called autotopics.  The function <NaturalDocs::Parser->MergeAutoTopics()> merges this list with the comment topics.
+
+    The list is basically merged by line number.  Since named topics should appear directly above the thing that they're documenting, topics are tested that way and combined into one if they match.  The description and title of the comment topic is merged with the prototype of the autotopic.  JavaDoc styled comments are also merged in this function, as they should appear directly above the code element they're documenting.  Any headerless topics that don't, either by appearing past the last autotopic or above another comment topic, are discarded.
+
+
+    Stage: Conclusion
+    _______________________________________________________________________________________________________
+
+    Thus ends all processing by <NaturalDocs::Parser->Parse()>.  The file is now a single list of <NaturalDocs::Parser::ParsedTopics> with all the body content in <NDMarkup>.  If we were using <NaturalDocs::Parser->ParseForBuild()>, that's pretty much it and it's ready to be converted into the output format.  If we were using <NaturalDocs::Parser->ParseForInformation()> though, the resulting file is scanned for all relevant information to feed into other packages such as <NaturalDocs::SymbolTable>.
+
+    Note that no prototype processing was done in this process, only the possible tranferring of prototypes from one ParsedTopic to another when merging autotopics with comment topics.  Obtaining prototypes and formatting them is handled by <NaturalDocs::Languages::Simple> and <NaturalDocs::Languages::Advanced> derived packages.

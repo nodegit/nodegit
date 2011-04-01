@@ -22,5 +22,8 @@
   "scripts": {
     "preinstall": "./configure",
     "install": "make"
+  },
+  "dependencies": { 
+    "diff": "1.0.0"
   }
 }

@@ -20,80 +20,78 @@
 using namespace node;
 using namespace v8;
 
-namespace {
-  /**
-   * Class wrapper for libgit2 git_commit
-   */
-  class GitCommit : public EventEmitter {
-    public:
-      /**
-       * v8::FunctionTemplate used to create Node.js constructor
-       */
-      static Persistent<FunctionTemplate> constructor_template;
+/**
+ * Class wrapper for libgit2 git_commit
+ */
+class GitCommit : public EventEmitter {
+  public:
+    /**
+     * v8::FunctionTemplate used to create Node.js constructor
+     */
+    static Persistent<FunctionTemplate> constructor_template;
 
-      /**
-       * Used to intialize the EventEmitter from Node.js
-       *
-       * @param target v8::Object the Node.js module object
-       */
-      static void Initialize (Handle<v8::Object> target);
+    /**
+     * Used to intialize the EventEmitter from Node.js
+     *
+     * @param target v8::Object the Node.js module object
+     */
+    static void Initialize (Handle<v8::Object> target);
 
-      git_commit* GetValue();
-      void SetValue(git_commit* commit);
-      int Lookup(git_oid* oid);
-      const git_oid* Id();
-      const char* MessageShort();
-      const char* Message();
-      time_t Time();
-      int TimeOffset();
-      const git_signature* Committer();
-      const git_signature* Author();
-      int Tree(git_tree** tree);
-      unsigned int ParentCount();
-      int Parent(git_commit** commit, int pos);
+    git_commit* GetValue();
+    void SetValue(git_commit* commit);
+    int Lookup(git_oid* oid);
+    const git_oid* Id();
+    const char* MessageShort();
+    const char* Message();
+    time_t Time();
+    int TimeOffset();
+    const git_signature* Committer();
+    const git_signature* Author();
+    int Tree(git_tree** tree);
+    unsigned int ParentCount();
+    int Parent(git_commit** commit, int pos);
 
-    protected:
-      GitCommit() {}
-      ~GitCommit() {}
+  protected:
+    GitCommit() {}
+    ~GitCommit() {}
 
-      static Handle<Value> New(const Arguments& args);
+    static Handle<Value> New(const Arguments& args);
 
-      static Handle<Value> Lookup(const Arguments& args);
-      static int EIO_Lookup(eio_req *req);
-      static int EIO_AfterLookup(eio_req *req);
+    static Handle<Value> Lookup(const Arguments& args);
+    static int EIO_Lookup(eio_req *req);
+    static int EIO_AfterLookup(eio_req *req);
 
-      static Handle<Value> Id(const Arguments& args);
-      static Handle<Value> MessageShort(const Arguments& args);
-      static Handle<Value> Message(const Arguments& args);
-      static Handle<Value> Time(const Arguments& args);
-      static Handle<Value> TimeOffset(const Arguments& args);
-      static Handle<Value> Committer(const Arguments& args);
-      static Handle<Value> Author(const Arguments& args);
+    static Handle<Value> Id(const Arguments& args);
+    static Handle<Value> MessageShort(const Arguments& args);
+    static Handle<Value> Message(const Arguments& args);
+    static Handle<Value> Time(const Arguments& args);
+    static Handle<Value> TimeOffset(const Arguments& args);
+    static Handle<Value> Committer(const Arguments& args);
+    static Handle<Value> Author(const Arguments& args);
 
-      static Handle<Value> Tree(const Arguments& args);
-      static int EIO_Tree(eio_req* req);
-      static int EIO_AfterTree(eio_req* req);
+    static Handle<Value> Tree(const Arguments& args);
+    static int EIO_Tree(eio_req* req);
+    static int EIO_AfterTree(eio_req* req);
 
-      static Handle<Value> ParentCount(const Arguments& args);
-      static Handle<Value> Parent(const Arguments& args);
+    static Handle<Value> ParentCount(const Arguments& args);
+    static Handle<Value> Parent(const Arguments& args);
 
-    private:
-      git_commit* commit;
-      git_repository* repo;
-      git_oid* oid;
+  private:
+    git_commit* commit;
+    git_repository* repo;
+    git_oid* oid;
 
-      struct lookup_request {
-        GitCommit* commit;
-        Oid* oid;
-        int err;
-        Persistent<Function> callback;
-      };
+    struct lookup_request {
+      GitCommit* commit;
+      Oid* oid;
+      int err;
+      Persistent<Function> callback;
+    };
 
-      //struct tree_request {
-      //  GitCommit* commit;
-      //  Tree* tree;
-      //  Persistent<Function> callback;
-      //};
-  };
-}
+    //struct tree_request {
+    //  GitCommit* commit;
+    //  Tree* tree;
+    //  Persistent<Function> callback;
+    //};
+};
 #endif

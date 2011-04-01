@@ -1,0 +1,947 @@
+
+   Architecture: CSS Structure
+_______________________________________________________________________________
+
+It's important to understand the internal HTML file structure and styles in order to design your own CSS style for Natural Docs.  If
+you're content with the default styles, there's no need to read this document.
+
+Topic: Diagram Conventions
+
+    The diagrams are designed for clarity.  In the actual HTML, you'd obviously see "<table class=CDescriptionList></table>"
+    instead of "<table CDescriptionList></table CDescriptionList>".
+
+    - A tag with just a style, for example "CTitle", means an unspecified element with that class.  Style with .CTitle.
+    - A tag that includes a #, for example "#Menu", means an unspecified element with that ID.  Style with #Menu.
+    - A tag that includes a HTML element as well, for example "table CDescriptionList", means it will always be that element.  You
+      can style with either .CDescriptionList or table.CDescriptionList.
+    - A tag that has multiple classes or has an "and" in it, for example "CType and CTopic", means that both styles will apply to the
+      same element.  You can style it with .CType.CTopic, noting that the space between them must be omitted.
+    - A tag that has an "or" in it, for example "#Content or #Index", is just shorthand for either of those elements.  The diagram
+      applies to both of them but only one will actually appear at a time in the output.
+    - A tag or style with a question mark means that tag or style will only be there in certain situations.
+
+
+Topic: Page Structure
+_______________________________________________________________________________
+
+    The body tag is used to distinguish between the types of pages.
+
+    Unframed Content/Index Page:
+
+        (start diagram)
+
+        <body ContentPage or IndexPage)>
+            [browser styles]
+
+            <#Content or #Index>
+                Content or Index
+            </#Content or #Index>
+
+            <#Menu>
+                Menu
+            </#Menu>
+
+            <#Footer>
+                Footer
+            </#Footer>
+
+            [/browser styles]
+        </body ContentPage or IndexPage)>
+
+        (end diagram)
+
+
+    Unframed Search Results Popup Page:
+
+        (start diagram)
+
+        <body PopupSearchResultsPage>
+            [browser styles]
+
+            <#Index>
+                Index
+            </#Index>
+
+            [browser styles]
+        </body PopupSearchResultsPage>
+
+        (end diagram)
+
+
+    Framed Menu Page:
+
+        (start diagram)
+
+        <body FramedMenuPage>
+            [browser styles]
+
+            <#Menu>
+                Menu
+            </#Menu>
+
+            <#Footer>
+                Footer
+            </#Footer>
+
+            [browser styles]
+        </body FramedMenuPage>
+
+        (end diagram)
+
+
+    Framed Content/Index/SearchResults Page:
+
+        (start diagram)
+
+        <body FramedContentPage or FramedIndexPage or FramedSearchResultsPage>
+            [browser styles]
+
+            <#Content or #Index>
+                Content or Index
+            </#Content or #Index>
+
+            [browser styles]
+        </body FramedContentPage or FramedIndexPage or FramedSearchResultsPage>
+
+        (end diagram)
+
+
+Styles: Page Styles
+
+    ContentPage - An unframed content page.
+    IndexPage - An unframed index page.
+    PopupSearchResultsPage - A search results page for use in a popup iframe.
+
+    FramedContentPage - A framed content page.
+    FramedIndexPage - A framed index page.
+    FramedSearchResultsPage - A framed search results page.
+
+    #Footer - The page footer.  Will be in a framed menu page or on its own in a non-framed page.
+
+    See Also:
+
+        - <#Content>
+        - <#Menu>
+        - <#Index>
+        - <#Footer>
+
+
+
+
+Styles: Browser Styles
+_______________________________________________________________________________
+
+
+    Natural Docs pages include JavaScript to detect which browser the user is running and apply styles so that you can work
+    around browser quirks right in the CSS file.
+
+    The browser type and version styles will be applied immediately after the body tag.  However, neither are guaranteed to be
+    there; the user may have JavaScript turned off or be using a browser that isn't detected.  These styles should only be used to
+    correct minor flaws and should not be heavily relied on.
+
+    >   <body>
+    >       <browser type>?
+    >           <browser version>?
+    >
+    >           Page Content
+    >
+    >           <browser version>?
+    >       <browser type>?
+    >   </body>
+
+    For example, if a <CTopic>'s style is giving you problems in Internet Explorer 6, override it with .IE6 .CTopic.  If a <MTitle>'s
+    style gives you a problem in Opera 7 but only in frames, override it with .Framed.Opera7 .MTitle.
+
+    Browser Types:
+
+        If the browser is not one of the types below, neither this nor the browser version will be present.  There's the possibility that
+        some obscure browser will appear as one of the others by spoofing, but the most prominent of these, Opera, Konqueror, and
+        Safari, are taken care of.
+
+        IE - Internet Explorer
+        Firefox - Firefox and anything else based on the Gecko rendering engine.
+        Opera - Opera
+        Safari - Safari
+        Konqueror - Konqueror and anything else based on the KHTML rendering engine except Safari.
+
+    Browser Versions:
+
+        If the browser is not one of the versions below, this style will not be present.  The browser type still may be.
+
+        IE6 - Internet Explorer 6.x.
+        IE7 - Internet Explorer 7.x.
+
+        Firefox1 - Firefox 1.0.x and anything else based on Gecko 1.7.x.
+        Firefox15 - Firefox 1.5.x and anything else based on Gecko 1.8.0.x.
+        Firefox2 - Firefox 2.0.x and anything else based on Gecko 1.8.1.x.
+
+        Opera7 - Opera 7.x.
+        Opera8 - Opera 8.x.
+        Opera9 - Opera 9.x.
+
+        Safari2 - Safari 2.x.
+        Safari3 - Safari 3.x.
+
+    Notes:
+
+        Why not apply them to the body tag itself?  The JavaScript is easy enough and everything supports multiple classes, right?
+        Because IE 6 doesn't support multiple selectors so I wouldn't be able to combine browser and page styles.
+        .Opera.ContentPage will apply to all ContentPages in IE because it treats it as if only the last class is there.
+
+
+
+
+Topic: Content Structure
+_______________________________________________________________________________
+
+
+    All the topics of a given file is contained in a <#Content>.  All other content styles are prefixed with a C.
+
+    Surrounding each piece of content is a <CTopic> and its type; for example, CFunction for a function.  Inside that are the
+    <CTitle> and if necessary, <CBody>.  Inside <CBody> are analogues to all the top-level <NDMarkup> tags: <h1>, <p>, etc.
+
+    In addition to the top-level <NDMarkup> tags, you also have prototypes, class hierarchies, and summaries which are
+    described in their own sections.
+
+    (start diagram)
+
+    <#Content>
+
+        <CType (CFunction, CVariable, etc.)>
+            <CTopic and #MainTopic?>
+
+                <CTitle>
+                    Topic title
+                </CTitle>
+
+                <CBody>
+
+                    [Class Hierarchy]
+
+                    [Prototype]
+
+                    <CHeading>
+                        Heading
+                    <CHeading>
+
+                    <p>
+                        Paragraph
+                    </p>
+
+                    <pre>
+                        Code or text diagram
+                    </pre>
+
+                    <ul>
+                        <li>
+                            Bullet item
+                        </li>
+                    </ul>
+
+                    <CImageCaption>?
+                        Caption
+                    </CImageCaption>?
+                    <img>
+
+                    <a CImageLink>
+                        text
+                    </a CImageLink>
+
+                    <table CDescriptionList>
+                        <tr>
+                            <td CDLEntry>
+                                Entry
+                            </td CDLEntry>
+                            <td CDLDescription>
+                                Description
+                            </td CDLDescription>
+                        </tr>
+                    </table CDescriptionList>
+
+                    [Summary]
+
+               </CBody>
+
+           </CTopic and #MainTopic?>
+       </CType (CFunction, CVariable, etc.)>
+
+    </#Content>
+
+    (end diagram)
+
+    Take advantange of the CSS inheritance model.  For example, you can style all titles via .CTitle, and you can style
+    specific titles with .CType .CTitle.
+
+
+Styles: Content Styles
+
+    #Content - Parent element containing all topics.
+
+    CTopic - An individual topic.
+
+    CTitle - The title of a topic.
+    CBody - The body of a topic.  May not exist.
+    CHeading - Surrounds a heading.
+    CImageCaption - Surrounds an image caption.
+    CImageLink - Surrounds a link to an image.
+
+    CDescriptionList - A description list, which is the type of list you're reading right now.  Is implemented with a table.
+    CDLEntry - A description list entry, which is the left side.
+    CDLDescription - A description list description, which is the right side.
+
+    #MainTopic - The ID given to the main topic, which is the first in the file.  It is applied to the <CTopic>.
+
+    CType - A placeholder for all type-specific styles.  The actual styles will be C followed by the alphanumeric-only topic type name.
+                So the CType of a "PL/SQL Function" topic will actually be CPLSQLFunction.
+
+
+
+
+Topic: Menu Structure
+_______________________________________________________________________________
+
+
+    Everything is enclosed in a <#Menu>.  All other menu styles are prefixed with an M.
+
+    The title is an <MTitle> and will always be at the beginning of the menu if it exists.  If a subtitle exists as well, it will appear
+    as an <MSubTitle> inside <MTitle>.  Subtitles aren't allowed without titles.  Most other entries in the menu are contained in
+    <MEntries>.  Here's the diagram:
+
+    (start diagram)
+
+    <#Menu>
+
+        <MTitle>
+            Menu title
+
+            <MSubTitle>
+                Menu sub title
+            </MSubTitle>
+
+        </MTitle>
+
+        <MEntry>
+            <MFile (and #MSelected?)>
+                <a href>File</a href>
+            </MFile>
+        </MEntry>
+
+        <MEntry>
+            <MIndex (and #MSelected?)>
+                <a href>File</a href>
+            </MIndex>
+        </MEntry>
+
+        <MEntry>
+            <MText>
+                Text
+            </MText>
+        </MEntry>
+
+        <MEntry>
+            <MLink>
+                <a href>Link</a href>
+            </MLink>
+        </MEntry>
+
+        <MEntry>
+            <MGroup>
+                <a href>Group</a href>
+                <MGroupContent>
+
+                    (MEntries)
+
+                </MGroupContent>
+           </MGroup>
+        </MEntry>
+
+        <#MSearchPanel and MSearchPanelActive/Inactive>
+            <input #MSeachField>
+            <select #MSearchType>
+                <option #MSearchEverything>
+                <option>
+                <option>
+            </select #MSearchType>
+        </#MSearchPanel and MSearchPanelActive/Inactive>
+
+    </#Menu>
+
+    (if in unframed HTML)
+    <#MSearchResultsWindow>
+
+        <iframe #MSearchResults>
+        </iframe #MSearchResults>
+
+        <a #MSearchResultsWindowClose>
+
+    </#MSearchResultsWindow>
+
+    (end)
+
+    The <MFile> or <MIndex> entry that's currently selected will have the <#MSelected> ID, so you can reference it in CSS via
+    .MFile#MSelected.
+
+    The search panel is has its own ID, <#MSearchPanel>, but also has one of the classes <MSearchPanelActive> or
+    <MSearchPanelInactive> depending on whether any of the controls are selected or the results window is open.
+    <#MSearchResultsWindow> is separate because it may be floating.
+
+
+Styles: Menu Styles
+
+    #Menu - Parent element containing the entire menu.
+
+    MTitle - The title of the menu.
+    MSubTitle - The subtitle of the menu.  Will appear within <MTitle>.
+
+    MFile - A file entry.
+    MGroup - A group entry.
+    MGroupContent - A container for a <MGroup's> content.
+    MText - A plain text entry.
+    MLink - An external link entry.
+    MIndex - An index entry.
+
+    #MSelected - The ID of the currently selected <MFile> or <MIndex>.
+
+    MType - <MFile>, <MGroup>, <MText>, <MLink>, or <MIndex>.
+
+    #MSearchPanel - Contains all the search controls.
+    MSearchPanelActive - Applied to <#MSearchPanel> when any of the controls are selected or the results window is open.
+    MSearchPanelInactive - Applied to <#MSearchPanel> when not in use.
+
+    #MSearchField - The text input field of the search panel.
+    #MSearchType - The drop down type selector of the search panel.
+    #MSearchEverything - The <#MSearchType> option for the Everything index.
+
+    #MSearchResultsWindow - Contains all the search results elements.
+    #MSearchResults - Contains the iframe that will hold the results.
+    #MSearchRseultsWindowClose - The link to manually close the search results window.
+
+
+
+
+Topic: Class Hierarchy Structure
+_______________________________________________________________________________
+
+
+    Everything is contained in a single <ClassHierarchy>.  Each entry is surrounded by its type, such as <CHParent>, and the
+    generic <CHEntry>.  Depending on the context, entries may be surrounded by one or more <CHIndents>.
+
+    (start diagram)
+
+    <ClassHierarchy>
+
+        <CHIndent>?
+
+            <CHType>
+                <CHEntry>
+
+                    <a href>?
+                        Entry
+                    </a href>
+
+                </CHEntry>
+            </CHType>
+
+        </CHIndent>?
+
+    </ClassHierarchy>
+
+    (end diagram)
+
+
+Styles: Class Hierarchy Styles
+
+    ClassHierarchy - The topmost style containing everything.
+
+    CHEntry - A generic class entry.
+
+    CHParent - The style for a parent class.
+    CHCurrent - The style for the current class, which is the one the hierarchy is generated for.
+    CHChild - The style for a child class.
+    CHChildNote - The style for when a child is added that just shows how many other children were omitted.
+
+    CHIndent - A style used to indent a level.
+
+    CHType - <CHParent>, <CHCurrent>, <CHChild>, or <CHChildNote>.
+
+
+
+
+Topic: Summary Structure
+_______________________________________________________________________________
+
+
+    Everything is enclosed in a single <Summary>.  All the other summary styles are prefixed with an S.
+
+    <STitle> holds the actual word "Summary" and <SBorder> and <STable> hold the content.  <SBorder> exists because different
+    browsers apply table padding attributes in different ways.  <STable> exists as a class to separate the main table from any other
+    tables that may be necessary.  Here's a diagram:
+
+    >   <Summary>
+    >
+    >       <STitle>
+    >           Title
+    >       </STitle>
+    >
+    >       <SBorder>
+    >           <table STable>
+    >               ...
+    >           </table STable>
+    >       </SBorder>
+    >
+    >   </Summary>
+
+    On to the table content.
+
+    >   <tr SType and SEntry (and SIndent#?) (and SMarked?)>
+    >       <td SEntry>
+    >
+    >           <a href>Entry</a href>
+    >
+    >       </td SEntry>
+    >       <td SDescription>
+    >
+    >           Description
+    >
+    >       </td SDescription>
+    >   </tr SType and SEntry (and SIndent#?) (and SMarked?)>
+
+    <SIndent#> exist to allow indenting.  They're necessary because implementing it as nested tables, while structurally cleaner,
+    won't allow the desciptions to line up on the right throughout the entire summary.  <SMarked> will be applied on almost every
+    other row to allow for tinting to improve readability.
+
+    Use the power of CSS's inheritance rules to specify styles.  For example, to set the style of a group entry, apply it to
+    .SGroup .SEntry.  However, you could also apply a style to both the group's entry and description by applying the
+    style to .SGroup td.  Or, you could apply a style to all the entries by applying it to .SEntry.  And so on.
+
+
+Styles: Summary Styles
+
+    Summary - The topmost style containing the entire summary.
+
+    STitle - Contains the summary title, which is the part that actually says "Summary".
+
+    SBorder - Surrounds <STable>, since some browsers can't do table padding right.  A hack, I know.
+    STable - The actual summary table.  This class separates it from other layout tables that may appear.
+
+    SMarked - A class applied to rows that should have a slightly different color than the rest of the rows to make them easier to
+                    read.
+
+    SEntry - The entry (left) side of the table.
+    SDescription - The description (right) side of the table.
+
+    SIndent# - Surrounding entries and descriptions that are part of a group and need to be indented.  Actual styles will be
+                     SIndent1, SIndent2, etc.
+
+    SType - A placeholder for all topic-specific styles.  The actual styles will be S followed by the alphanumeric-only topic type name.
+                So the SType of a "PL/SQL Function" topic will actually be SPLSQLFunction.
+
+
+
+
+Topic: Prototype Structure
+_______________________________________________________________________________
+
+
+    Everything is enclosed in a <Prototype>.  All other styles are prefixed with a P.
+
+    Parameter Type First Style:
+
+        For prototypes such as
+        > void Function (unsigned int* a, int b = 0)
+        where the types come first.
+
+        (start diagram)
+
+        <table Prototype>
+
+            <td PBeforeParameters>
+                "void Function ("
+            </td PBeforeParameters>
+
+            <td PTypePrefix>
+                "unsigned"
+            </td PTypePrefix>
+
+            <td PType>
+                "int"
+            </td PType>
+
+            <td PParameterPrefix>
+                "*"
+            </td PParameterPrefix>
+
+            <td PParameter>
+                "a", "b"
+            </td PParameter>
+
+            <td PDefaultValuePrefix>
+                "="
+            </td PDefaultValuePrefix>
+
+            <td PDefaultValue>
+                "0"
+            </td PDefaultValue>
+
+            (repeated as necessary)
+
+            <td PAfterParameters>
+                ")"
+            </td PAfterParameters>
+
+        </table Prototype>
+
+        (end diagram)
+
+
+    Parameter Name First Style:
+
+        For prototypes such as
+        > function Function (a, b: int; c: int := 0)
+        where the parameters come first.
+
+        (start diagram)
+
+        <table Prototype>
+
+            <td PBeforeParameters>
+                "function Function ("
+            </td PBeforeParameters>
+
+            <td PParameter>
+                "a,", "b:", "c:"
+            </td PParameter>
+
+            <td PType>
+                "int"
+            </td PType>
+
+            <td PDefaultValuePrefix>
+                ":="
+            </td PDefaultValuePrefix>
+
+            <td PDefaultValue>
+                "0"
+            </td PDefaultValue>
+
+            (repeated as necessary)
+
+            <td PAfterParameters>
+                ")"
+            </td PAfterParameters>
+
+        </table Prototype>
+
+        (end diagram)
+
+
+    Note that any section may not exist.  For example, there will be no <PTypePrefix> cells generated if none of the parameters
+    have it.
+
+
+Styles: Prototype Styles
+
+    Prototype - The style encompassing the entire prototype.
+
+    PBeforeParameters - The part of the prototype that comes before the parameters.
+    PAfterParameters - The part of the prototype that comes after the parameters.
+
+    PType - The parameter type.
+    PTypePrefix - The prefix of a parameter type.
+    PParameter - The parameter name.
+    PParameterPrefix - The prefix of a parameter name.
+    PDefaultValue - The default value expression for a parameter.
+    PDefaultValuePrefix - The prefix of the default value expression.
+
+
+
+
+Topic: Link Structure
+_______________________________________________________________________________
+
+
+    All links to symbols have a type style prefixed with L.  The only exceptions are summary entries; summary descriptions use
+    them as well.
+
+    >   <a LType>
+    >       Link
+    >   </a LType>
+
+    You can use this to make links to different symbols appear in different styles.  For example, making .LClass bold will make all
+    links to classes bold, except when appearing in summary entries.  You can combine this with other styles to be even more
+    specific.  For example, you can apply a style to function links appearing in summary descriptions with .SDescription .LFunction.
+
+Styles: Link Styles
+
+    LType - A placeholder for all topic-specific styles.  The actual styles will be L followed by the alphanumeric-only topic type name.
+                So the LType of a "PL/SQL Function" topic will actually be LPLSQLFunction.
+
+
+
+Topic: Index Structure
+_______________________________________________________________________________
+
+
+    Everything is enclosed in an <#Index>.  Combine with <Framed> and <Unframed> to distinguish between output formats.  All
+    other index styles are prefixed with an I.
+
+    (start diagram)
+
+    <#Index>
+
+        <IPageTitle>
+            Page Title
+        </IPageTitle>
+
+        <INavigationBar>
+            A - <a href>B</a href> - C ...
+        </INavigationBar>
+
+        <table>
+
+            <IHeading>
+                Heading (A, B, etc.)
+            </IHeading>
+
+            <td ISymbolPrefix>
+                Prefix, if any
+            </td ISymbolPrefix>
+
+            <td IEntry>
+                Entry
+            </td IEntry>
+
+            ...
+
+        </table>
+
+    </#Index>
+
+    (end diagram)
+
+    Every index entry, including headings, are rows in a table.  The first column of a non-heading are <ISymbolPrefixes> so that
+    the non-prefix portions align correctly.  The other column are <IEntries>, of which there are multiple formats, described below.
+
+    (start diagram)
+
+    <a href ISymbol>
+        Symbol
+    </a href ISymbol>,
+    <IParent>
+        Class
+    </IParent>
+
+    <ISymbol>
+        Symbol
+    </ISymbol>
+    <ISubIndex>
+        <a href IParent>
+            Class
+        </a href IParent>
+        ...
+    </ISubIndex>
+
+    <ISymbol>
+        Symbol
+    </ISymbol>
+    <ISubIndex>
+        <IParent>
+            Class
+        </IParent>
+        <ISubIndex>
+            <a href IFile>
+                File
+            </a href IFile>
+            ...
+        </ISubIndex>
+        ...
+    </ISubIndex>
+
+    (end diagram)
+
+    Each part of the entry is surrounded by its type, which may or may not be a link.  If an entry has more than one defining class
+    or file,  they're broken out into <ISubIndexes>.
+
+    It's called <IParent> instead of <IClass> because class entries are <ISymbols>.  <IParents> are only used when the symbol
+    has a class.  If the symbol _is_ a class, the symbol is global.
+
+
+Styles: Index Styles
+
+    #Index - Parent element for the entire index.
+
+    IPageTitle - The page title.
+    INavigationBar - The navigation bar.
+
+    IHeading - An index heading, such as the letter for the group.
+
+    IEntry - An entry in the index.
+    ISymbolPrefix - The stripped prefix of the entry.
+    ISymbol - The entry symbol.
+    IParent - The entry parent class.  If the entry _is_ a class, this isn't defined because classes are global and don't have parent
+                  classes.  This is why it's called IParent instead of IClass; hopefully it's less confusing.
+    IFile - The file the entry is defined in.
+
+    ISubIndex - The surrounding block if an entry needs to be broken out into a sub-index.
+
+    #IFirstHeading - The ID of the first <IHeading> to appear in the file.
+
+    #IFirstSymbolPrefix - The ID for the first <ISymbolPrefix> to appear under an <IHeading>.
+    #ILastSymbolPrefix - The ID for the last <ISymbolPrefix> to appear under an <IHeading>.
+    #IOnlySymbolPrefix - The ID if there is only one <ISymbolPrefix> for an <IHeading>.
+
+
+
+Topic: Search Results Structure
+_______________________________________________________________________________
+
+
+    The search results use virtually the same structure and styles as the indexes, except that <#SearchResults> replaces
+    <#Index>, there's a new <SRResult> style, and there are a few additional <SRStatus> blocks.
+
+    Visibility:
+
+        Visibility is *very* important to making the search work correctly.  JavaScript will handle most of it, but your CSS needs to
+        abide by these rules.
+
+        - <SRStatus> sections are visible by default.
+        - <SRResult> sections are *not* visible by default.  They must use display: none.
+        - <ISubIndex> should be display: none when under <#SearchResults>.
+
+
+Styles: Search Results Styles
+
+    #SearchResults - Parent element for the entire page.
+    SRStatus - Status message.  Must be visible by default.
+    SRResult - A result.  All you need to do for this class is set it to display: none.  Nothing else should be set on it.
+
+
+
+
+Topic: Tool Tip Structure
+_______________________________________________________________________________
+
+
+    Tool tips may appear anywhere in the page, mainly because it's assumed that they will use position: absolute and
+    visibility: hidden.
+
+    The entire tool tip is found in a <CToolTip> style, with a CType style inside it.  CTypes are normally outside their elements, but
+    that would cause it to be partially visible in this case.  We need <CToolTip> to be the outermost style so its visibility and
+    position can be manipulated in JavaScript.
+
+    Inside there's a <CPrototype> and/or the description text.  The description text has no special surrounding tags.
+
+    >   <CToolTip>
+    >
+    >       <CPrototype>
+    >           Prototype
+    >       </CPrototype>
+    >
+    >       Summary text
+    >
+    >   </CToolTip>
+
+Styles: Tool Tip Styles
+
+    CToolTip - Surrounds the entire tool tip.  This *must* have position: absolute and visibility: hidden for the tool tip mechanism
+                    to work.
+
+    See also <CPrototype>.
+
+
+Styles: Miscellaneous Styles
+
+    blockquote - This HTML element should surround anything that needs to be scrolled if it's too wide, like prototypes and text
+                       diagrams.  It's not a style because this makes it much easier to do the JavaScript necessary to get this working
+                       in IE.
+
+
+Group: History
+
+Topic: Revisions
+_______________________________________________________________________________
+
+
+    How the page structure has changed throughout the various releases.
+
+    1.4:
+
+        - Replaced UnframedPage with <ContentPage> and <IndexPage>.
+        - Added <#Menu>, <#Content>, <#Footer>, and <#Index>.  They were previously shown in the diagrams as classes but did
+          not actually appear in the generated output.
+        - Removed MenuSection, ContentSection, and IndexSection.  Use things like ".ContentPage #Menu" instead.
+        - Removed tables from the unframed <Page Structure>.  Use CSS to position the elements instead.
+        - <#MainTopic> is applied to <CTopic> instead of <CType>.
+        - IE4, IE5, Opera5, Opera6, Netscape, and Netscape4 browser styles have been removed.  <IE7>, <Opera8>,
+          and <Opera9> have been added.  Gecko has been replaced by <Firefox>, <Firefox1>, <Firefox15>, and <Firefox2>.
+          KHTML has been replaced by <Safari>, <Safari2>, <Safari3>, and <Konqueror>.
+        - Removed redundant CParagraph, CCode, and CBulletList classes.  Use <CBody> with p, pre, and ul instead.
+        - Added <CImageCaption> and <CImageLink>.
+        - Added <#MSearchPanel>, <#MSearchResultsWindow>, and all related styles.
+        - Added <Search Results Structure>, <Search Results Styles>, and <FramedSearchResultsPage>.
+        - Removed SEntrySize.  Apply the width to <SEntry> and <SDescription> instead.
+        - <SType>, <SEntry>, and <SIndent#> were moved from the td and divs into the tr.
+        - Removed HB style.  Now using wbr tag.
+
+    1.33:
+
+        - Added <PDefaultValuePrefix>.
+
+    1.32:
+
+        - <blockquotes> now surround elements that should scroll if they're too wide for the page.
+
+    1.3:
+
+        - Removed CPrototype.  See the replacement <Prototype Structure> and <Prototype Styles>.
+        - Removed SInGroup, SInClass, and SInSection in favor of more general <SIndent#>.
+        - <CTypes>, <STypes>, and <LTypes> are now completely determined by <Topics.txt> configuration files.
+        - <CTypes>, <STypes>, and <LTypes> no longer have separate list types.  A CFunctionList is now just a CFunction.
+        - Indexes are now done with tables.
+        - ISection was removed.
+        - <IEntries> are only used for the entry cell, not for each entry in an <ISubIndex>.
+        - Added <ISymbolPrefix>, related IDs, and <#IFirstHeading>.
+        - Merged <CType> and <CTopic> into the same element.  Must now be styled with .CType.CTopic (no space) while all
+          sub-elements will still be .CType .CElement (with space.)
+
+    1.21:
+
+        - Added <TOPIC_PROPERTY> and TOPIC_PROPERTY_LIST styles, so they get corresponding <CTypes>, <STypes>, and
+          <LTypes>.
+
+    1.2:
+
+        - Added <Class Hierarchy Styles> since 1.2 added class hierarchies.
+
+    1.16:
+
+        - Changed the first topic from having a CMain type to having a normal type with a <#MainTopic> ID.
+
+    1.1:
+
+        - Added <Tool Tip Styles>.
+        - Renamed HiddenBreak to <HB>.
+        - Added <TOPIC_CONSTANT>, TOPIC_CONSTANT_LIST, <TOPIC_TYPE>, and TOPIC_TYPE_LIST types, so they get
+          corresponding <CTypes>, <STypes>, and <LTypes>.
+
+    1.0:
+
+        - The <CType> tags now appear arround the <CTopic> tags instead of vice versa.
+        - Added a <CBody> tag to surround non-<CTitle> elements.
+        - <SMarked> now appears in tr's instead of td's, where it belonged in the first place.
+
+    0.95:
+
+        - Added <Browser Styles>.
+        - Redid <Page Structure>, replacing generic styles like Menu with page type styles like UnframedPage/MenuSection and
+          FramedMenuPage.
+
+    0.91:
+
+        - Added <LURL> and <LEMail> link styles, since 0.91 added URL and e-mail links.
+        - Added <ISection> style, which is better than <IHeading> floating on its own.
+
+    0.9:
+
+        - Added <Index Styles>, since 0.9 added indexes.
+

@@ -1,0 +1,90 @@
+@import URL(example/Default.css);
+
+
+.NDContent {
+    color: #000000; background-color: #FFFFFF;
+    padding: 15px 0;
+    border-style: solid;
+    border-width: 1px 3px 3px 1px;
+    border-color: #c0c0c0 #808080 #808080 #c0c0c0;
+    margin: 1em 5ex;
+    -moz-border-radius: 12px;
+    }
+
+    .NDContent p,
+    .NDContent li,
+    .NDContent td,
+    .NDMenu td,
+    .NDSummary td,
+    .NDIndex td {
+        font-size: 10pt;
+        line-height: normal;
+        }
+    .NDContent .CTopic {
+        padding-bottom: 0;
+        }
+    .Prototype td {
+        font: 10pt Courier New, monospace;
+        }
+    .NDIndex .IHeading {
+        font-size: 16pt;
+        }
+
+
+.NDMenu {
+    font: 9pt Verdana, Arial, sans-serif;
+    color: #000000; background-color: #E8E8E8;
+    width: 27ex;
+    padding: 10px 0;
+    border-style: solid;
+    border-width: 1px 3px 3px 1px;
+    border-color: #808080 #606060 #606060 #808080;
+    margin: 1em 0 1em 5ex;
+    -moz-border-radius: 12px;
+    }
+
+
+.NDFooter {
+    font: 8pt Verdana, Arial, sans-serif;
+    color: #909090; background-color: #E8E8E8;
+    border-style: solid;
+    border-width: 1px 3px 3px 1px;
+    border-color: #808080 #606060 #606060 #808080;
+    margin: 1em 0 1em 5ex;
+    -moz-border-radius: 12px;
+    }
+.NDFooter td {
+	font-size: 8pt;
+    padding: 0 2ex;
+	}
+
+    .NDFooter a:link,
+    .NDFooter a:hover,
+    .NDFooter a:visited { color: #909090 }
+    .NDFooter a:active { color: #A00000 }
+
+
+.NDSummary {
+    padding: 15px;
+    border-style: solid;
+    border-width: 1px 3px 3px 1px;
+    border-color: #c0c0c0 #808080 #808080 #c0c0c0;
+    margin: 1em 5ex;
+    -moz-border-radius: 12px;
+    }
+
+    .NDSummary .Summary {
+        margin-top: 0;
+        }
+
+
+.NDIndex {
+    color: #000000; background-color: #FFFFFF;
+    padding: 15px;
+    border-style: solid;
+    border-width: 1px 3px 3px 1px;
+    border-color: #c0c0c0 #808080 #808080 #c0c0c0;
+    margin: 1em 5ex;
+    -moz-border-radius: 12px;
+    }
+

@@ -54,6 +54,23 @@ GIT_INLINE(int) git_commit_lookup(git_commit **commit, git_repository *repo, con
 }
 
 /**
+ * Close an open commit
+ *
+ * This is a wrapper around git_object_close()
+ *
+ * IMPORTANT:
+ * It *is* necessary to call this method when you stop
+ * using a commit. Failure to do so will cause a memory leak.
+ *
+ * @param commit the commit to close
+ */
+
+GIT_INLINE(void) git_commit_close(git_commit *commit)
+{
+	git_object_close((git_object *) commit);
+}
+
+/**
  * Get the id of a commit.
  *
  * @param commit a previously loaded commit.
@@ -83,7 +100,7 @@ GIT_EXTERN(const char *) git_commit_message(git_commit *commit);
  * @param commit a previously loaded commit.
  * @return the time of a commit
  */
-GIT_EXTERN(time_t) git_commit_time(git_commit *commit);
+GIT_EXTERN(git_time_t) git_commit_time(git_commit *commit);
 
 /**
  * Get the commit timezone offset (i.e. committer's preferred timezone) of a commit.

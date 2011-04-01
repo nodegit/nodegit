@@ -109,6 +109,26 @@ static void free_odb_object(void *o)
 	}
 }
 
+const git_oid *git_odb_object_id(git_odb_object *object)
+{
+	return &object->cached.oid;
+}
+
+const void *git_odb_object_data(git_odb_object *object)
+{
+	return object->raw.data;
+}
+
+size_t git_odb_object_size(git_odb_object *object)
+{
+	return object->raw.len;
+}
+
+git_otype git_odb_object_type(git_odb_object *object)
+{
+	return object->raw.type;
+}
+
 void git_odb_object_close(git_odb_object *object)
 {
 	git_cached_obj_decref((git_cached_obj *)object, &free_odb_object);
@@ -390,6 +410,41 @@ int git_odb_read(git_odb_object **out, git_odb *db, const git_oid *id)
 
 	if (error == GIT_SUCCESS) {
 		*out = git_cache_try_store(&db->cache, new_odb_object(id, &raw));
+	}
+
+	return error;
+}
+
+int git_odb_write(git_oid *oid, git_odb *db, const void *data, size_t len, git_otype type)
+{
+	unsigned int i;
+	int error = GIT_ERROR;
+
+	assert(oid && db);
+
+	for (i = 0; i < db->backends.length && error < 0; ++i) {
+		backend_internal *internal = git_vector_get(&db->backends, i);
+		git_odb_backend *b = internal->backend;
+
+		/* we don't write in alternates! */
+		if (internal->is_alternate)
+			continue;
+
+		if (b->write != NULL)
+			error = b->write(oid, b, data, len, type);
+	}
+
+	/* if no backends were able to write the object directly, we try a streaming
+	 * write to the backends; just write the whole object into the stream in one
+	 * push */
+	if (error < GIT_SUCCESS) {
+		git_odb_stream *stream;
+
+		if ((error = git_odb_open_wstream(&stream, db, len, type)) == GIT_SUCCESS) {
+			stream->write(stream, data, len);
+			error = stream->finalize_write(oid, stream);
+			stream->free(stream);
+		}
 	}
 
 	return error;

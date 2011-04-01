@@ -33,29 +33,18 @@ class GitTree : public EventEmitter {
      * @param target v8::Object the Node.js module object
      */
     static void Initialize(Handle<v8::Object> target);
-
-    /**
-     * Creates new internal git_tree reference
-     *
-     * @param repo the repo to use when creating the tree.
-     * @return 0 on success; error code otherwise
-     */
-    int New(git_repository* repo);
-
     /**
      * Accessor for GitTree
      *
      * @return the internal git_tree reference
      */
     git_tree* GetValue();
-
     /**
      * Mutator for GitTree
      *
      * @param obj a git_tree object
      */
     void SetValue(git_tree* tree);
-
     /**
      * Lookup a tree object from a repository.
      *
@@ -66,14 +55,12 @@ class GitTree : public EventEmitter {
      * @return 0 on success; error code otherwise
      */
     int Lookup(git_tree** tree, git_repository* repo, const git_oid* id);
-
     /**
      * Get number of entries in the looked up tree.
      *
      * @return number of entries
      */
     size_t EntryCount();
-
     /**
      * Get entry by index in the looked up tree.
      *
@@ -93,12 +80,10 @@ class GitTree : public EventEmitter {
      * Constructor
      */
     GitTree() {};
-
     /**
      * Deconstructor
      */
     ~GitTree() {};
-
     /**
      * Creates a new instance of GitTree to Node.js
      *
