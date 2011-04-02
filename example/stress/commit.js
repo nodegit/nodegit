@@ -11,7 +11,7 @@ var git = require( '../../' ).raw;
         repo.open( '/home/tim/git/nodegit/.git', function() {
           var commit = new git.Commit( repo );
 
-          //console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
+          console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
         });
 
       })();
@@ -34,8 +34,8 @@ var git = require( '../../' ).raw;
 
           var commit = new git.Commit( repo );
           commit.lookup( oid, function( err ) {
-            //console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
-          } );
+            console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
+          });
         });
 
       })();
