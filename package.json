@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "NodeJS libgit2 asynchronous native bindings",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/tbranyen/nodegit",
   "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
   "main": "./lib/index.js",
@@ -22,8 +22,5 @@
   "scripts": {
     "preinstall": "./configure",
     "install": "make"
-  },
-  "dependencies": { 
-    "diff": "1.0.0"
   }
 }

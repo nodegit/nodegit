@@ -42,4 +42,5 @@ def build(bld):
   main = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   main.target = 'nodegit'
   main.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/object.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc src/tree.cc src/tree_entry.cc'
+  main.rpath = abspath('vendor/libgit2/build/shared')
   main.uselib = 'GIT2'
