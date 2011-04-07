@@ -134,12 +134,12 @@ Handle<Value> GitTree::SortEntries(const Arguments& args) {
 }
 
 Handle<Value> GitTree::ClearEntries(const Arguments& args) {
-  HandleScope scope;
+  //HandleScope scope;
 
-  GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
+  //GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
 
-  tree->ClearEntries();
-    
+  //tree->ClearEntries();
+  //  
   return Undefined();
 }
 Persistent<FunctionTemplate> GitTree::constructor_template;

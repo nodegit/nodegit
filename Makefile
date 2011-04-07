@@ -33,8 +33,8 @@ uninstall:
 	@@echo "Uninstalled from $(INSTALL_PATH)"
 
 clean:
-	@@rm -rf $(BASE)/build
-	@@rm -rf $(BASE)/vendor/libgit2/build
+	@@rm -rf $(BASE)/build/
+	@@rm -rf $(BASE)/vendor/libgit2/build/
 
 test:
 	@@$(NODE_JS) $(BASE)/test/index.js test
