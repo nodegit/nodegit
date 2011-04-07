@@ -10,8 +10,7 @@ catch( e ) {
   sys.puts( 'Cannot find nodeunit module.' );
   sys.puts( 'You can download submodules for this project by doing:' );
   sys.puts( '' );
-  sys.puts( '    git submodule init vendor/nodeunit' );
-  sys.puts( '    git submodule update vendor/nodeunit' );
+  sys.puts( '    git submodule update --init' );
   sys.puts( '' );
   process.exit();
 }

@@ -40,7 +40,7 @@ This will install and configure everything you need to use `nodegit`.
 
 ### Windows via Cygwin ###
 
-#### `nodegit` has a build issue under Windows that current makes it impossible to use. ####
+#### `nodegit` has been compiled and tested to work with teh setup required to build and run `Node.js` itself. ####
 
 Instructions on compiling `Node.js` on a Windows platform can be found here:
 [https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
@@ -206,6 +206,7 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
     * More unit tests
     * Blob write support
     * Updated libgit2 to version 0.11.0
+    * Windows Cygwin support! *albiet hacky*
 
 ### v0.0.2: ###
     * More methods implemented
