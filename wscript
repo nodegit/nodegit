@@ -1,6 +1,6 @@
 import Options, Utils
 from subprocess import Popen
-import os
+import os, shutil, platform
 from os import system
 from os.path import exists, abspath
 
@@ -33,9 +33,13 @@ def build(bld):
   Popen('python waf build-shared', shell=True).wait()
 
   os.chdir('../../')
-    
+
+  # Copy the DLLs into the build/shared if Windows/Cygwin
+  if 'CYGWIN' in platform.system():
+    shutil.copy('build/shared/cyggit2-0.dll', '../../build/default/cyggit2-0.dll')
+    shutil.copy('build/shared/libgit2.dll.a', '../../build/default/libgit2.dll.a')
+ 
   main = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   main.target = 'nodegit'
   main.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/object.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc src/tree.cc src/tree_entry.cc'
-  main.rpath = abspath('vendor/libgit2/build/shared')
   main.uselib = 'GIT2'

@@ -6,6 +6,7 @@
 #include <v8.h>
 #include <node.h>
 #include <node_events.h>
+#include <node_buffer.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
