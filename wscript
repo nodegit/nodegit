@@ -32,11 +32,6 @@ def build(bld):
   except: pass
   Popen('python waf build-shared', shell=True).wait()
 
-  # Copy the DLLs into the build/shared if Windows/Cygwin
-  if 'CYGWIN' in platform.system():
-    shutil.copy('build/shared/cyggit2-0.dll', '../../build/default/cyggit2-0.dll')
-    shutil.copy('build/shared/libgit2.dll.a', '../../build/default/libgit2.dll.a')
-
   os.chdir('../../')
 
   main = bld.new_task_gen('cxx', 'shlib', 'node_addon')
