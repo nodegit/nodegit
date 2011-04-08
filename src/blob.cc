@@ -99,7 +99,7 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   eio_custom(EIO_Lookup, EIO_PRI_DEFAULT, EIO_AfterLookup, ar);
   ev_ref(EV_DEFAULT_UC);
 
-  return Undefined();
+  return scope.Close(Undefined());
 }
 
 int GitBlob::EIO_Lookup(eio_req* req) {
@@ -135,8 +135,6 @@ int GitBlob::EIO_AfterLookup(eio_req* req) {
 }
 
 Handle<Value> GitBlob::RawContent(const Arguments& args) {
-  HandleScope scope;
-
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
   return String::New((const char*)blob->RawContent());
@@ -145,15 +143,11 @@ Handle<Value> GitBlob::RawContent(const Arguments& args) {
 Handle<Value> GitBlob::RawSize(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  HandleScope scope;
-
   return Integer::New(blob->RawSize());
 }
 
 Handle<Value> GitBlob::Close(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-
-  HandleScope scope;
 
   blob->Close();
 
@@ -163,8 +157,6 @@ Handle<Value> GitBlob::Close(const Arguments& args) {
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  HandleScope scope;
-
   blob->Close();
 
   return Undefined();
@@ -172,8 +164,6 @@ Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
 
 Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-
-  HandleScope scope;
 
   return Undefined();
 }
