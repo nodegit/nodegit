@@ -68,14 +68,6 @@ Handle<Value> GitBlob::New(const Arguments& args) {
   return args.This();
 }
 
-Handle<Value> GitBlob::RawContent(const Arguments& args) {
-  HandleScope scope;
-
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-
-  return String::New((const char*)blob->RawContent());
-}
-
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
   Local<Function> callback;
@@ -90,11 +82,11 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be a Object.")));
   }
 
-  if(args.Length() == 3 || !args[3]->IsFunction()) {
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  callback = Local<Function>::Cast(args[3]);
+  callback = Local<Function>::Cast(args[2]);
 
   lookup_request* ar = new lookup_request();
   ar->blob = blob;
@@ -140,6 +132,14 @@ int GitBlob::EIO_AfterLookup(eio_req* req) {
   delete ar;
 
   return 0;
+}
+
+Handle<Value> GitBlob::RawContent(const Arguments& args) {
+  HandleScope scope;
+
+  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+
+  return String::New((const char*)blob->RawContent());
 }
 
 Handle<Value> GitBlob::RawSize(const Arguments& args) {

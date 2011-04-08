@@ -32,7 +32,7 @@ exports.constructor = function( test ){
   helper.testFunction( test.equals, git.Blob, 'Blob' );
 
   // Ensure we get an instance of Blob
-  test.ok( new git.Blob( testRepo ) instanceof git.Blob, 'Invocation returns an instance of Blob' );
+  test.ok( new git.Blob() instanceof git.Blob, 'Invocation returns an instance of Blob' );
 
   test.done();
 };
@@ -40,9 +40,9 @@ exports.constructor = function( test ){
 // Blob::Lookup
 exports.lookup = function( test ) {
   var testOid = new git.Oid(),
-      testBlob = new git.Blob( testRepo );
+      testBlob = new git.Blob();
 
-  test.expect( 3 );
+  test.expect( 5 );
 
   // Test for function
   helper.testFunction( test.equals, testBlob.lookup, 'Blob::Lookup' );
@@ -51,17 +51,88 @@ exports.lookup = function( test ) {
   helper.testException( test.ok, function() {
     testBlob.lookup();
   }, 'Throw an exception if no repo Object' );
+
+  // Test Oid argument existence
+  helper.testException( test.ok, function() {
+    testBlob.lookup( testRepo );
+  }, 'Throw an exception if no oid Object' );
+
+  // Test Callback argument existence
+  helper.testException( test.ok, function() {
+    testBlob.lookup( testRepo, testOid );
+  }, 'Throw an exception if no callback Object' );
+
+  // Test invalid oid lookup
+  //testBlob.lookup( testRepo, testOid, function( err ) {
+  //  
+  //  console.log( err );
+
+  //});
  
-  // Test that both arguments result correctly
-  //helper.testException( test.ifError, function() {
-  //  testOid.mkstr( "somestr" );
-  //}, 'No exception is thrown with proper arguments' );
+  test.done();
+};
 
-  // Test invalid hex id string
-  //test.equals( -2, testOid.mkstr( '1392DLFJIOS' ), 'Invalid hex id String' );
+// Blob::RawContent
+exports.rawContent = function( test ) {
+  var testOid = new git.Oid(),
+      testBlob = new git.Blob();
 
-  // Test valid hex id string
-  //test.equals( 0, testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' ), 'Valid hex id String' );
+  test.expect( 2 );
 
+  // Test for function
+  helper.testFunction( test.equals, testBlob.rawContent, 'Blob::RawContent' );
+ 
+  test.done();
+};
+
+// Blob::RawSize
+exports.rawSize = function( test ) {
+  var testOid = new git.Oid(),
+      testBlob = new git.Blob();
+
+  test.expect( 2 );
+
+  // Test for function
+  helper.testFunction( test.equals, testBlob.rawSize, 'Blob::RawSize' );
+ 
+  test.done();
+};
+
+// Blob::Close
+exports.close = function( test ) {
+  var testOid = new git.Oid(),
+      testBlob = new git.Blob();
+
+  test.expect( 2 );
+
+  // Test for function
+  helper.testFunction( test.equals, testBlob.close, 'Blob::Close' );
+ 
+  test.done();
+};
+
+// Blob::CreateFromFile
+exports.createFromFile = function( test ) {
+  var testOid = new git.Oid(),
+      testBlob = new git.Blob();
+
+  test.expect( 2 );
+
+  // Test for function
+  helper.testFunction( test.equals, testBlob.createFromFile, 'Blob::Close' );
+ 
+  test.done();
+};
+
+// Blob::CreateFromBuffer
+exports.createFromBuffer = function( test ) {
+  var testOid = new git.Oid(),
+      testBlob = new git.Blob();
+
+  test.expect( 2 );
+
+  // Test for function
+  helper.testFunction( test.equals, testBlob.createFromBuffer, 'Blob::CreateFromBuffer' );
+ 
   test.done();
 };
