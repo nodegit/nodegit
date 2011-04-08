@@ -17,7 +17,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
-class RevWalk : public EventEmitter {
+class GitRevWalk : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
@@ -34,8 +34,8 @@ class RevWalk : public EventEmitter {
     git_repository* Repository();
 
   protected:
-    RevWalk() {}
-    ~RevWalk() {}
+    GitRevWalk() {}
+    ~GitRevWalk() {}
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Reset(const Arguments& args);
     static Handle<Value> Push(const Arguments& args);
@@ -54,8 +54,8 @@ class RevWalk : public EventEmitter {
     git_repository* repo;
 
     struct next_request {
-      RevWalk* revwalk;
-      Oid* oid;
+      GitRevWalk* revwalk;
+      GitOid* oid;
       int err;
       Persistent<Function> callback;
     };

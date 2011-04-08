@@ -83,7 +83,7 @@ class GitCommit : public EventEmitter {
 
     struct lookup_request {
       GitCommit* commit;
-      Oid* oid;
+      GitOid* oid;
       int err;
       Persistent<Function> callback;
     };

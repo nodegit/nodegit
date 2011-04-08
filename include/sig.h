@@ -2,8 +2,8 @@
 Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 */
 
-#ifndef Sig_H
-#define Sig_H
+#ifndef GitSig_H
+#define GitSig_H
 
 #include <v8.h>
 #include <node.h>
@@ -16,14 +16,14 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
-class Sig : public EventEmitter {
+class GitSig : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
 
     void New(const char *name, const char *email, time_t time, int offset);
     git_signature* GetValue();
-    void SetValue(git_signature* Sig);
+    void SetValue(git_signature* GitSig);
     git_signature* Dup();
     void Free();
 
@@ -31,8 +31,8 @@ class Sig : public EventEmitter {
     char* Email();
 
   protected:
-    Sig() {};
-    ~Sig() {};
+    GitSig() {};
+    ~GitSig() {};
 
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Dup(const Arguments& args);

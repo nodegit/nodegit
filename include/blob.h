@@ -215,8 +215,8 @@ class GitBlob : public ObjectWrap {
      */
     struct lookup_request {
       GitBlob* blob;
-      Repo* repo;
-      Oid* oid;
+      GitRepo* repo;
+      GitOid* oid;
       int err;
       v8::Persistent<v8::Function> callback;
     };

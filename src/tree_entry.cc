@@ -75,7 +75,7 @@ Handle<Value> GitTreeEntry::Id(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  Oid* oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
   oid->SetValue(const_cast<git_oid *>(entry->Id()));
   

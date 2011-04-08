@@ -105,7 +105,7 @@ Handle<Value> GitObject::Id(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
   oid->SetValue(const_cast<git_oid *>(obj->Id()));
 
@@ -129,7 +129,7 @@ Handle<Value> GitObject::Owner(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
 
   repo->SetValue(obj->Owner());
 

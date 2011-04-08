@@ -23,15 +23,15 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
 
-  Reference::Initialize(target);
-  Sig::Initialize(target);
+  GitReference::Initialize(target);
+  GitSig::Initialize(target);
   GitError::Initialize(target);
   GitBlob::Initialize(target);
-  Oid::Initialize(target);
+  GitOid::Initialize(target);
   GitObject::Initialize(target);
-  Repo::Initialize(target);
+  GitRepo::Initialize(target);
   GitCommit::Initialize(target);
-  RevWalk::Initialize(target);
+  GitRevWalk::Initialize(target);
   GitTree::Initialize(target);
   GitTreeEntry::Initialize(target);
 }

@@ -16,40 +16,40 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
-void Repo::Initialize(Handle<Object> target) {
+void GitRepo::Initialize(Handle<Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Repo"));
+  constructor_template->SetClassName(String::NewSymbol("GitRepo"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", Open);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "init", Init);
 
-  target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("GitRepo"), constructor_template->GetFunction());
 }
 
-git_repository* Repo::GetValue() {
+git_repository* GitRepo::GetValue() {
     return this->repo;
 }
 
-void Repo::SetValue(git_repository* repo) {
+void GitRepo::SetValue(git_repository* repo) {
   this->repo = repo;
 }
 
-int Repo::Open(const char* path) {
+int GitRepo::Open(const char* path) {
   return git_repository_open(&this->repo, path);
 }
 
-void Repo::Free() {
+void GitRepo::Free() {
   git_repository_free(this->repo);
 }
 
-int Repo::Init(const char* path, bool is_bare) {
+int GitRepo::Init(const char* path, bool is_bare) {
   git_repository* repo_;
   int err = git_repository_init(&repo_, path, is_bare);
 
@@ -60,17 +60,17 @@ int Repo::Init(const char* path, bool is_bare) {
   return err;
 }
 
-Handle<Value> Repo::New(const Arguments& args) {
+Handle<Value> GitRepo::New(const Arguments& args) {
   HandleScope scope;
 
-  Repo *repo = new Repo();
+  GitRepo *repo = new GitRepo();
   repo->Wrap(args.This());
 
   return args.This();
 }
 
-Handle<Value> Repo::Open(const Arguments& args) {
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args.This());
+Handle<Value> GitRepo::Open(const Arguments& args) {
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
   Local<Function> callback;
 
   HandleScope scope;
@@ -101,7 +101,7 @@ Handle<Value> Repo::Open(const Arguments& args) {
   return Undefined();
 }
 
-int Repo::EIO_Open(eio_req *req) {
+int GitRepo::EIO_Open(eio_req *req) {
   open_request *ar = static_cast<open_request *>(req->data);
 
   ar->err = ar->repo->Open(ar->path.c_str());
@@ -109,7 +109,7 @@ int Repo::EIO_Open(eio_req *req) {
   return 0;
 }
 
-int Repo::EIO_AfterOpen(eio_req *req) {
+int GitRepo::EIO_AfterOpen(eio_req *req) {
   HandleScope scope;
 
   open_request *ar = static_cast<open_request *>(req->data);
@@ -133,8 +133,8 @@ int Repo::EIO_AfterOpen(eio_req *req) {
   return 0;
 }
 
-Handle<Value> Repo::Lookup(const Arguments& args) {
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args.This());
+Handle<Value> GitRepo::Lookup(const Arguments& args) {
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
   Local<Function> callback;
 
   HandleScope scope;
@@ -144,7 +144,7 @@ Handle<Value> Repo::Lookup(const Arguments& args) {
   }
 
   if(args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be a Object.")));
+    return ThrowException(Exception::Error(String::New("GitRepo is required and must be a Object.")));
   }
 
   if(args.Length() == 2 || !args[2]->IsObject()) {
@@ -169,7 +169,7 @@ Handle<Value> Repo::Lookup(const Arguments& args) {
   return Undefined();
 }
 
-int Repo::EIO_Lookup(eio_req *req) {
+int GitRepo::EIO_Lookup(eio_req *req) {
   //lookup_request *ar = static_cast<lookup_request *>(req->data);
   //
   //String::Utf8Value name(ar->name);
@@ -185,7 +185,7 @@ int Repo::EIO_Lookup(eio_req *req) {
   //return 0;
 }
 
-int Repo::EIO_AfterLookup(eio_req *req) {
+int GitRepo::EIO_AfterLookup(eio_req *req) {
   //HandleScope scope;
 
   //lookup_request *ar = static_cast<lookupref_request *>(req->data);
@@ -211,8 +211,8 @@ int Repo::EIO_AfterLookup(eio_req *req) {
   //return 0;
 }
 
-Handle<Value> Repo::Free(const Arguments& args) {
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args.This());
+Handle<Value> GitRepo::Free(const Arguments& args) {
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
 
   HandleScope scope;
 
@@ -221,8 +221,8 @@ Handle<Value> Repo::Free(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Repo::Init(const Arguments& args) {
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args.This());
+Handle<Value> GitRepo::Init(const Arguments& args) {
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
   Local<Function> callback;
 
   HandleScope scope;
@@ -258,7 +258,7 @@ Handle<Value> Repo::Init(const Arguments& args) {
   return Undefined();
 }
 
-int Repo::EIO_Init(eio_req *req) {
+int GitRepo::EIO_Init(eio_req *req) {
   init_request *ar = static_cast<init_request *>(req->data);
 
   ar->err = ar->repo->Init(ar->path.c_str(), ar->is_bare);
@@ -266,7 +266,7 @@ int Repo::EIO_Init(eio_req *req) {
   return 0;
 }
 
-int Repo::EIO_AfterInit(eio_req *req) {
+int GitRepo::EIO_AfterInit(eio_req *req) {
   HandleScope scope;
 
   init_request *ar = static_cast<init_request *>(req->data);
@@ -289,4 +289,4 @@ int Repo::EIO_AfterInit(eio_req *req) {
 
   return 0;
 }
-Persistent<FunctionTemplate> Repo::constructor_template;
+Persistent<FunctionTemplate> GitRepo::constructor_template;

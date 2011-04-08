@@ -16,7 +16,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
-void Reference::Initialize(Handle<Object> target) {
+void GitReference::Initialize(Handle<Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
@@ -25,40 +25,40 @@ void Reference::Initialize(Handle<Object> target) {
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Ref"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "oid", _Oid);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
 
   target->Set(String::NewSymbol("Ref"), constructor_template->GetFunction());
 }
 
-git_reference* Reference::GetValue() {
+git_reference* GitReference::GetValue() {
   return this->ref;
 }
 
-void Reference::SetValue(git_reference *ref) {
+void GitReference::SetValue(git_reference *ref) {
   this->ref = ref;
 }
 
-int Reference::Lookup(git_repository* repo, const char* name) {
+int GitReference::Lookup(git_repository* repo, const char* name) {
   return git_reference_lookup(&this->ref, repo, name);
 }
 
-const git_oid* Reference::_Oid() {
+const git_oid* GitReference::Oid() {
   return git_reference_oid(*&this->ref);
 }
 
-Handle<Value> Reference::New(const Arguments& args) {
+Handle<Value> GitReference::New(const Arguments& args) {
   HandleScope scope;
 
-  Reference *ref = new Reference();
+  GitReference *ref = new GitReference();
 
   ref->Wrap(args.This());
 
   return args.This();
 }
 
-Handle<Value> Reference::Lookup(const Arguments& args) {
-  Reference *ref = ObjectWrap::Unwrap<Reference>(args.This());
+Handle<Value> GitReference::Lookup(const Arguments& args) {
+  GitReference *ref = ObjectWrap::Unwrap<GitReference>(args.This());
   Local<Function> callback;
 
   HandleScope scope;
@@ -79,7 +79,7 @@ Handle<Value> Reference::Lookup(const Arguments& args) {
 
   lookup_request *ar = new lookup_request();
   ar->ref = ref;
-  ar->repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  ar->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
 
   String::Utf8Value name(args[1]);
   ar->name = *name;
@@ -94,7 +94,7 @@ Handle<Value> Reference::Lookup(const Arguments& args) {
   return Undefined();
 }
 
-int Reference::EIO_Lookup(eio_req *req) {
+int GitReference::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
   git_repository* repo = ar->repo->GetValue();
@@ -104,7 +104,7 @@ int Reference::EIO_Lookup(eio_req *req) {
   return 0;
 }
 
-int Reference::EIO_AfterLookup(eio_req *req) {
+int GitReference::EIO_AfterLookup(eio_req *req) {
   HandleScope scope;
 
   lookup_request *ar = static_cast<lookup_request *>(req->data);
@@ -128,17 +128,17 @@ int Reference::EIO_AfterLookup(eio_req *req) {
   return 0;
 }
 
-Handle<Value> Reference::_Oid(const Arguments& args) {
-  Reference *ref = ObjectWrap::Unwrap<Reference>(args.This());
+Handle<Value> GitReference::Oid(const Arguments& args) {
+  GitReference *ref = ObjectWrap::Unwrap<GitReference>(args.This());
   HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
-  oid->SetValue( const_cast<git_oid *>(ref->_Oid()) );
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
+  oid->SetValue( const_cast<git_oid *>(ref->Oid()) );
 
   return Undefined();
 }
-Persistent<FunctionTemplate> Reference::constructor_template;
+Persistent<FunctionTemplate> GitReference::constructor_template;

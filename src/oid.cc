@@ -13,14 +13,14 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
-void Oid::Initialize(Handle<Object> target) {
+void GitOid::Initialize(Handle<Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Oid"));
+  constructor_template->SetClassName(String::NewSymbol("GitOid"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkstr", Mkstr);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkraw", Mkraw);
@@ -31,60 +31,60 @@ void Oid::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "cpy", Cpy);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "cmp", Cmp);
 
-  target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("GitOid"), constructor_template->GetFunction());
 }
 
-git_oid* Oid::GetValue() {
+git_oid* GitOid::GetValue() {
   return &this->oid;
 }
 
-void Oid::SetValue(git_oid* oid) {
+void GitOid::SetValue(git_oid* oid) {
   this->oid = *oid;
 }
 
-int Oid::Mkstr(const char* id) {
+int GitOid::Mkstr(const char* id) {
   return git_oid_mkstr(&this->oid, id);
 }
 
-void Oid::Mkraw(const unsigned char* raw) {
+void GitOid::Mkraw(const unsigned char* raw) {
   git_oid_mkraw(&this->oid, raw);
 }
 
-char* Oid::Fmt(char* buffer) {
+char* GitOid::Fmt(char* buffer) {
   git_oid_fmt(buffer, &this->oid);
 }
 
-void Oid::PathFmt(char* str) {
+void GitOid::PathFmt(char* str) {
   git_oid_pathfmt(str, &this->oid);
 }
 
-char* Oid::AllocFmt() {
+char* GitOid::AllocFmt() {
   return git_oid_allocfmt(&this->oid);
 }
 
-char* Oid::ToString(char* buffer, size_t bufferSize) {
+char* GitOid::ToString(char* buffer, size_t bufferSize) {
   git_oid_to_string(*&buffer, bufferSize, &this->oid);
 }
 
-void Oid::Cpy(git_oid* out) {
+void GitOid::Cpy(git_oid* out) {
   git_oid_cpy(out, &this->oid);
 }
 
-int Oid::Cmp(const git_oid* a, const git_oid* b) {
+int GitOid::Cmp(const git_oid* a, const git_oid* b) {
   return git_oid_cmp(a, b);
 }
 
-Handle<Value> Oid::New(const Arguments& args) {
+Handle<Value> GitOid::New(const Arguments& args) {
   HandleScope scope;
 
-  Oid *oid = new Oid();
+  GitOid *oid = new GitOid();
   oid->Wrap(args.This());
 
   return args.This();
 }
 
-Handle<Value> Oid::Mkstr(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::Mkstr(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
 
@@ -97,8 +97,8 @@ Handle<Value> Oid::Mkstr(const Arguments& args) {
   return Integer::New(oid->Mkstr(*id));
 }
 
-Handle<Value> Oid::Mkraw(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::Mkraw(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
 
@@ -112,8 +112,8 @@ Handle<Value> Oid::Mkraw(const Arguments& args) {
   return Local<Value>::New(args.This());
 }
 
-Handle<Value> Oid::Fmt(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::Fmt(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
 
@@ -122,8 +122,8 @@ Handle<Value> Oid::Fmt(const Arguments& args) {
   return String::New(buffer);
 }
 
-Handle<Value> Oid::PathFmt(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::PathFmt(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
 
@@ -132,16 +132,16 @@ Handle<Value> Oid::PathFmt(const Arguments& args) {
   return String::New(buffer);
 }
 
-Handle<Value> Oid::AllocFmt(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::AllocFmt(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
 
   return String::New(oid->AllocFmt());
 }
 
-Handle<Value> Oid::ToString(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::ToString(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
   
@@ -154,16 +154,16 @@ Handle<Value> Oid::ToString(const Arguments& args) {
   return String::New(buffer);
 }
 
-Handle<Value> Oid::Cpy(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::Cpy(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
   
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid argument is required and must be a Object.")));
+    return ThrowException(Exception::Error(String::New("GitOid argument is required and must be a Object.")));
   }
 
-  Oid *clone = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  GitOid *clone = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
   
   git_oid *out;
   oid->Cpy(out);
@@ -172,24 +172,24 @@ Handle<Value> Oid::Cpy(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Oid::Cmp(const Arguments& args) {
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args.This());
+Handle<Value> GitOid::Cmp(const Arguments& args) {
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
   
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid argument is required and must be a Object.")));
+    return ThrowException(Exception::Error(String::New("GitOid argument is required and must be a Object.")));
   }
   
   if(args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid argument is required and must be a Object.")));
+    return ThrowException(Exception::Error(String::New("GitOid argument is required and must be a Object.")));
   }
 
-  Oid *a = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
-  Oid *b = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
+  GitOid *a = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
+  GitOid *b = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
 
   int cmp = oid->Cmp(a->GetValue(), b->GetValue());
 
   return Integer::New(cmp);
 }
-Persistent<FunctionTemplate> Oid::constructor_template;
+Persistent<FunctionTemplate> GitOid::constructor_template;

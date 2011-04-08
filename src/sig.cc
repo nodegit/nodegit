@@ -14,14 +14,14 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
-void Sig::Initialize (Handle<v8::Object> target) {
+void GitSig::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(3);
-  constructor_template->SetClassName(String::NewSymbol("Sig"));
+  constructor_template->SetClassName(String::NewSymbol("GitSig"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "dup", Dup);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
@@ -30,83 +30,83 @@ void Sig::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "email", Email);
 
-  target->Set(String::NewSymbol("Sig"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("GitSig"), constructor_template->GetFunction());
 }
 
-git_signature* Sig::GetValue() {
+git_signature* GitSig::GetValue() {
   return this->sig;
 }
 
-void Sig::SetValue(git_signature* sig) {
+void GitSig::SetValue(git_signature* sig) {
   this->sig = sig;
   this->name = sig->name;
   this->email = sig->email;
 }
 
-void Sig::New(const char *name, const char *email, time_t time, int offset) {
+void GitSig::New(const char *name, const char *email, time_t time, int offset) {
   this->sig = git_signature_new(name, email, time, offset);
 }
 
-git_signature* Sig::Dup() {
+git_signature* GitSig::Dup() {
   return git_signature_dup(this->sig);
 }
 
-void Sig::Free() {
+void GitSig::Free() {
   git_signature_free(this->sig);
 }
 
-char* Sig::Name() {
+char* GitSig::Name() {
   return this->name;
 }
 
-char* Sig::Email() {
+char* GitSig::Email() {
   return this->email;
 }
 
-Handle<Value> Sig::New(const Arguments& args) {
+Handle<Value> GitSig::New(const Arguments& args) {
   HandleScope scope;
 
-  Sig *sig = new Sig();
+  GitSig *sig = new GitSig();
   sig->Wrap(args.This());
 
   return args.This();
 }
 
-Handle<Value> Sig::Dup(const Arguments& args) {
+Handle<Value> GitSig::Dup(const Arguments& args) {
   HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
+    return ThrowException(Exception::Error(String::New("GitSignature is required and must be an Object.")));
   }
 
-  Sig* sig = ObjectWrap::Unwrap<Sig>(args[0]->ToObject());
+  GitSig* sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
   sig->SetValue(sig->Dup());
 
   return Undefined();
 }
 
-Handle<Value> Sig::Free(const Arguments& args) {
+Handle<Value> GitSig::Free(const Arguments& args) {
   HandleScope scope;
 
-  Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
+  GitSig *sig = ObjectWrap::Unwrap<GitSig>(args.This());
   sig->Free();
 
   return Undefined();
 }
 
-Handle<Value> Sig::Name(const Arguments& args) {
+Handle<Value> GitSig::Name(const Arguments& args) {
   HandleScope scope;
 
-  Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
+  GitSig *sig = ObjectWrap::Unwrap<GitSig>(args.This());
 
   return String::New(sig->Name());
 }
 
-Handle<Value> Sig::Email(const Arguments& args) {
+Handle<Value> GitSig::Email(const Arguments& args) {
   HandleScope scope;
 
-  Sig *sig = ObjectWrap::Unwrap<Sig>(args.This());
+  GitSig *sig = ObjectWrap::Unwrap<GitSig>(args.This());
 
   return String::New(sig->Email());
 }
-Persistent<FunctionTemplate> Sig::constructor_template;
+Persistent<FunctionTemplate> GitSig::constructor_template;

@@ -14,7 +14,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
-class Oid : public EventEmitter {
+class GitOid : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
@@ -31,8 +31,8 @@ class Oid : public EventEmitter {
     void Cpy(git_oid* out);
     int Cmp(const git_oid* a, const git_oid* b);
 
-    Oid() {}
-    ~Oid() {}
+    GitOid() {}
+    ~GitOid() {}
 
   protected:
     static Handle<Value> New(const Arguments& args);

@@ -131,7 +131,7 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 
   lookup_request *ar = new lookup_request();
   ar->commit = commit;
-  ar->oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  ar->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
   ar->callback = Persistent<Function>::New(callback);
 
   commit->Ref();
@@ -183,7 +183,7 @@ Handle<Value> GitCommit::Id(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
   oid->SetValue(const_cast<git_oid *>(commit->Id()));
   
@@ -231,7 +231,7 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
   }
 
-  Sig *sig = ObjectWrap::Unwrap<Sig>(args[0]->ToObject());
+  GitSig *sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
 
   sig->SetValue(const_cast<git_signature *>(commit->Committer()));
   
@@ -247,7 +247,7 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
   }
 
-  Sig *sig = ObjectWrap::Unwrap<Sig>(args[0]->ToObject());
+  GitSig *sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
 
   sig->SetValue(const_cast<git_signature *>(commit->Author()));
   

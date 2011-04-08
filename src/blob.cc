@@ -90,8 +90,8 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 
   lookup_request* ar = new lookup_request();
   ar->blob = blob;
-  ar->repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
-  ar->oid = ObjectWrap::Unwrap<Oid>(args[1]->ToObject());
+  ar->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
+  ar->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
   ar->callback = Persistent<Function>::New(callback);
 
   blob->Ref();

@@ -15,14 +15,14 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
-void RevWalk::Initialize(Handle<Object> target) {
+void GitRevWalk::Initialize(Handle<Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("RevWalk"));
+  constructor_template->SetClassName(String::NewSymbol("GitRevWalk"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "reset", Reset);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
@@ -39,58 +39,58 @@ void RevWalk::Initialize(Handle<Object> target) {
 
   constructor_template->Set(String::New("sort"), sort);
 
-  target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("GitRevWalk"), constructor_template->GetFunction());
 }
 
-git_revwalk* RevWalk::GetValue() {
+git_revwalk* GitRevWalk::GetValue() {
   return this->revwalk;
 }
 
-void RevWalk::SetValue(git_revwalk* revwalk) {
+void GitRevWalk::SetValue(git_revwalk* revwalk) {
   this->revwalk = revwalk;
 }
 
-int RevWalk::New(git_repository* repo) {
+int GitRevWalk::New(git_repository* repo) {
   this->repo = repo;
 
   return git_revwalk_new(&this->revwalk, this->repo);
 }
 
-void RevWalk::Reset() {
+void GitRevWalk::Reset() {
   git_revwalk_reset(this->revwalk);
 }
 
-int RevWalk::Push(git_oid* oid) {
+int GitRevWalk::Push(git_oid* oid) {
   return git_revwalk_push(this->revwalk, oid);
 }
 
 // Not for 0.0.1
-//int RevWalk::Hide() {
+//int GitRevWalk::Hide() {
 //  git_revwalk_hide(this->revwalk);
 //}
 
-int RevWalk::Next(git_oid *oid) {
+int GitRevWalk::Next(git_oid *oid) {
   return git_revwalk_next(oid, this->revwalk);
 }
 
-void RevWalk::Free() {
+void GitRevWalk::Free() {
   git_revwalk_free(this->revwalk);
 }
 
-git_repository* RevWalk::Repository() {
+git_repository* GitRevWalk::Repository() {
 	return git_revwalk_repository(this->revwalk);
 }
 
-Handle<Value> RevWalk::New(const Arguments& args) {
+Handle<Value> GitRevWalk::New(const Arguments& args) {
   HandleScope scope;
 
-  RevWalk *revwalk = new RevWalk();
+  GitRevWalk *revwalk = new GitRevWalk();
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
   revwalk->New(repo->GetValue());
 
   revwalk->Wrap(args.This());
@@ -98,32 +98,32 @@ Handle<Value> RevWalk::New(const Arguments& args) {
   return args.This();
 }
 
-Handle<Value> RevWalk::Reset(const Arguments& args) {
+Handle<Value> GitRevWalk::Reset(const Arguments& args) {
   HandleScope scope;
 
-  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
+  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
 
   revwalk->Reset();
 
   return Undefined();
 }
 
-Handle<Value> RevWalk::Push(const Arguments& args) {
+Handle<Value> GitRevWalk::Push(const Arguments& args) {
   HandleScope scope;
 
-  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
+  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  Oid *oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
   int err = revwalk->Push(oid->GetValue());
 
   return Integer::New(err);
 }
 
-Handle<Value> RevWalk::Next(const Arguments& args) {
-  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
+Handle<Value> GitRevWalk::Next(const Arguments& args) {
+  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
   Local<Function> callback;
 
   HandleScope scope;
@@ -140,7 +140,7 @@ Handle<Value> RevWalk::Next(const Arguments& args) {
 
   next_request *ar = new next_request();
   ar->revwalk = revwalk;
-  ar->oid = ObjectWrap::Unwrap<Oid>(args[0]->ToObject());
+  ar->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
   ar->callback = Persistent<Function>::New(callback);
 
   revwalk->Ref();
@@ -151,7 +151,7 @@ Handle<Value> RevWalk::Next(const Arguments& args) {
   return Undefined();
 }
 
-int RevWalk::EIO_Next(eio_req *req) {
+int GitRevWalk::EIO_Next(eio_req *req) {
   next_request *ar = static_cast<next_request *>(req->data);
   git_oid* oid = ar->oid->GetValue();
 
@@ -161,7 +161,7 @@ int RevWalk::EIO_Next(eio_req *req) {
   return 0;
 }
 
-int RevWalk::EIO_AfterNext(eio_req *req) {
+int GitRevWalk::EIO_AfterNext(eio_req *req) {
   HandleScope scope;
 
   next_request *ar = static_cast<next_request *>(req->data);
@@ -185,8 +185,8 @@ int RevWalk::EIO_AfterNext(eio_req *req) {
   return 0;
 }
 
-Handle<Value> RevWalk::Free(const Arguments& args) {
-  RevWalk *revwalk = ObjectWrap::Unwrap<RevWalk>(args.This());
+Handle<Value> GitRevWalk::Free(const Arguments& args) {
+  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
 
   HandleScope scope;
 
@@ -195,18 +195,18 @@ Handle<Value> RevWalk::Free(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> RevWalk::Repository(const Arguments& args) {
+Handle<Value> GitRevWalk::Repository(const Arguments& args) {
   HandleScope scope;
 
-  RevWalk *revwalk = new RevWalk();
+  GitRevWalk *revwalk = new GitRevWalk();
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  Repo *repo = ObjectWrap::Unwrap<Repo>(args[0]->ToObject());
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
   repo->SetValue(revwalk->Repository());
 
   return Undefined();
 }
-Persistent<FunctionTemplate> RevWalk::constructor_template;
+Persistent<FunctionTemplate> GitRevWalk::constructor_template;

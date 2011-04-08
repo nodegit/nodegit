@@ -17,7 +17,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
-class Repo : public EventEmitter {
+class GitRepo : public EventEmitter {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
@@ -38,8 +38,8 @@ class Repo : public EventEmitter {
     //int NewObject(git_object **obj, Otype type);
 
   protected:
-    Repo() {}
-    ~Repo() {}
+    GitRepo() {}
+    ~GitRepo() {}
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Open(const Arguments& args);
@@ -60,19 +60,19 @@ class Repo : public EventEmitter {
     git_repository* repo;
 
     struct open_request {
-      Repo* repo;
+      GitRepo* repo;
       int err;
       std::string path;
       Persistent<Function> callback;
     };
 
     struct lookup_request {
-      Repo* repo;
+      GitRepo* repo;
       Persistent<Function> callback;
     };
 
     struct init_request {
-      Repo* repo;
+      GitRepo* repo;
       int err;
       std::string path;
       bool is_bare;
