@@ -75,10 +75,6 @@ API Example Usage
                 console.log( commit.message );
                 console.log( '\n' );
             });
-
-            history.on( 'end', function( err ) {
-
-            });
         });
     });
 
@@ -202,6 +198,7 @@ __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http
 
 ### v0.0.3: ###
     * Fully documented native source code
+    * Updated convenience api code
     * More unit tests
     * Updated libgit2 to version 0.11.0
     * Windows Cygwin support! *albeit hacky*
