@@ -1,4 +1,4 @@
 .lock-wscript
-build/
-doc/
-!doc/Theme.css
+./build/
+./doc
+!./doc/Theme.css
