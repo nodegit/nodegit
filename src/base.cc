@@ -8,17 +8,17 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "reference.h"
-#include "sig.h"
+#include "../include/reference.h"
+#include "../include/sig.h"
 #include "../include/error.h"
 #include "../include/blob.h"
-#include "repo.h"
-#include "oid.h"
-#include "object.h"
-#include "commit.h"
-#include "revwalk.h"
-#include "tree.h"
-#include "tree_entry.h"
+#include "../include/repo.h"
+#include "../include/oid.h"
+#include "../include/object.h"
+#include "../include/commit.h"
+#include "../include/revwalk.h"
+#include "../include/tree.h"
+#include "../include/tree_entry.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;

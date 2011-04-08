@@ -8,7 +8,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "oid.h"
+#include "../include/oid.h"
 
 using namespace v8;
 using namespace node;

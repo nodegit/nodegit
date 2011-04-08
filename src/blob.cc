@@ -10,7 +10,7 @@
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "repo.h"
+#include "../include/repo.h"
 #include "../include/blob.h"
 
 using namespace v8;

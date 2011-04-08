@@ -9,9 +9,9 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "repo.h"
-#include "reference.h"
-#include "oid.h"
+#include "../include/repo.h"
+#include "../include/reference.h"
+#include "../include/oid.h"
 
 using namespace v8;
 using namespace node;

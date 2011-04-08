@@ -12,7 +12,7 @@
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "../src/repo.h"
+#include "repo.h"
 
 using namespace node;
 

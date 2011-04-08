@@ -10,12 +10,12 @@
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "reference.h"
-#include "sig.h"
-#include "repo.h"
-#include "oid.h"
-#include "tree.h"
-#include "commit.h"
+#include "../include/reference.h"
+#include "../include/sig.h"
+#include "../include/repo.h"
+#include "../include/oid.h"
+#include "../include/tree.h"
+#include "../include/commit.h"
 
 using namespace v8;
 using namespace node;

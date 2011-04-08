@@ -8,12 +8,12 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include "../vendor/libgit2/include/git2.h"
 
-#include "repo.h"
+#include "../include/repo.h"
 #include "../include/blob.h"
-#include "tree.h"
-#include "object.h"
-#include "oid.h"
-#include "tree_entry.h"
+#include "../include/tree.h"
+#include "../include/object.h"
+#include "../include/oid.h"
+#include "../include/tree_entry.h"
 
 using namespace v8;
 using namespace node;
