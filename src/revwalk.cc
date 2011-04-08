@@ -22,7 +22,7 @@ void GitRevWalk::Initialize(Handle<Object> target) {
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("GitRevWalk"));
+  constructor_template->SetClassName(String::NewSymbol("RevWalk"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "reset", Reset);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
@@ -39,7 +39,7 @@ void GitRevWalk::Initialize(Handle<Object> target) {
 
   constructor_template->Set(String::New("sort"), sort);
 
-  target->Set(String::NewSymbol("GitRevWalk"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
 }
 
 git_revwalk* GitRevWalk::GetValue() {

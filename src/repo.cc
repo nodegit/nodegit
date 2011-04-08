@@ -23,14 +23,14 @@ void GitRepo::Initialize(Handle<Object> target) {
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("GitRepo"));
+  constructor_template->SetClassName(String::NewSymbol("Repo"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", Open);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "init", Init);
 
-  target->Set(String::NewSymbol("GitRepo"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
 }
 
 git_repository* GitRepo::GetValue() {

@@ -21,7 +21,7 @@ void GitSig::Initialize (Handle<v8::Object> target) {
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(3);
-  constructor_template->SetClassName(String::NewSymbol("GitSig"));
+  constructor_template->SetClassName(String::NewSymbol("Sig"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "dup", Dup);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
@@ -30,7 +30,7 @@ void GitSig::Initialize (Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "email", Email);
 
-  target->Set(String::NewSymbol("GitSig"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("Sig"), constructor_template->GetFunction());
 }
 
 git_signature* GitSig::GetValue() {

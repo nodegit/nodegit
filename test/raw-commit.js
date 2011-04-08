@@ -2,6 +2,7 @@ var git = require( '../' ).raw,
     rimraf = require( '../vendor/rimraf' ) || require( 'rimraf' ),
     path = require( 'path' );
 
+console.log(git);
 var testRepo = new git.Repo();
 
 // Helper functions

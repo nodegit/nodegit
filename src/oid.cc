@@ -20,7 +20,7 @@ void GitOid::Initialize(Handle<Object> target) {
   
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("GitOid"));
+  constructor_template->SetClassName(String::NewSymbol("Oid"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkstr", Mkstr);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkraw", Mkraw);
@@ -31,7 +31,7 @@ void GitOid::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "cpy", Cpy);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "cmp", Cmp);
 
-  target->Set(String::NewSymbol("GitOid"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
 
 git_oid* GitOid::GetValue() {
