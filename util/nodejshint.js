@@ -14,10 +14,10 @@ var nodejshint = function() {
 
         if( pass = JSHINT( data.toString() ), pass ) {
           counter++;
-          console.log( '[32m✔ Passed '+ file +'[0m' );
+          console.log( '[32m✔ Passed [0m'+ file );
         }
         else {
-          console.log( '[31mx Failed '+ file +'[0m' );
+          console.log( '[31mx Failed [0m'+ file );
           JSHINT.errors.forEach( function( err ) {
             
             if( err ) {

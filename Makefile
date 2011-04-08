@@ -43,6 +43,6 @@ lint:
 	@@$(NODE_JS) $(BASE)/util/hint-check.js
 
 doc:
-	@@$(NATURAL_DOCS_PATH)/NaturalDocs -i $(BASE)/include -o HTML $(BASE)/doc -p $(BASE)/doc -s $(BASE)/../Theme
+	@@$(NATURAL_DOCS_PATH)/NaturalDocs -i $(BASE)/include -o HTML $(BASE)/doc -p $(BASE)/doc -s Theme
 
 .PHONY: test build doc

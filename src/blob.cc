@@ -65,7 +65,7 @@ Handle<Value> GitBlob::New(const Arguments& args) {
   GitBlob* blob = new GitBlob();
   blob->Wrap(args.This());
 
-  return args.This();
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
