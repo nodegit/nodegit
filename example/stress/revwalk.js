@@ -13,7 +13,7 @@ var git = require( '../../' ).raw;
           oid.mkstr( 'cb76e3c030ab29db332aff3b297dc39451a84762' );
 
           var commit = new git.Commit( repo );
-          commit.lookup( oid, function( err ) {
+          commit.lookup( repo, oid, function( err ) {
             var revwalk = new git.RevWalk( repo );
             revwalk.push( commit );
 

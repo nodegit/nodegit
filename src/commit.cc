@@ -55,8 +55,7 @@ void GitCommit::SetValue(git_commit* commit) {
 int GitCommit::Lookup(git_repository* repo, git_oid* oid) {
   git_commit* commit;
 
-  git_oid test;
-  int err = git_commit_lookup(&commit, repo, &test);
+  int err = git_commit_lookup(&commit, repo, oid);
 
   return err;
 }

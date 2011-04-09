@@ -47,7 +47,7 @@ exports.lookup = function( test ) {
 
   testOid.mkstr( 'cb09e99e91d41705197e0fb60823fdc7df776691' );
 
-  test.expect( 7 );
+  test.expect( 8 );
 
   // Test for function
   helper.testFunction( test.equals, testCommit.lookup, 'Commit::Lookup' );
@@ -76,14 +76,14 @@ exports.lookup = function( test ) {
     // Test invalid commit
     testOid.mkstr( '100644' );
     testCommit.lookup( testRepo, testOid, function( err ) {
-      //test.notEqual( 0, err, 'Not a valid commit' );
+      test.notEqual( 0, err, 'Not a valid commit' );
  
       // Test valid commit
-      testOid.mkstr( '3b7670f327dc1ca66e040f0c09cc4c3f1428eb49' );
+      testOid.mkstr( 'cb76e3c030ab29db332aff3b297dc39451a84762' );
       testCommit.lookup( testRepo, testOid, function( err ) {
         test.equals( 0, err, 'Valid commit');
 
-        //test.equals( 'Fixed path issues', testCommit.messageShort(), 'Commit message is valid' );
+        //test.equals( 'Updated gitignore and raw-commit test', testCommit.messageShort(), 'Commit message is valid' );
 
         test.done();
       });
