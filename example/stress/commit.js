@@ -9,7 +9,7 @@ var git = require( '../../' ).raw;
 
         var repo = new git.Repo();
         repo.open( '/home/tim/git/nodegit/.git', function() {
-          var commit = new git.Commit( repo );
+          var commit = new git.Commit();
 
           console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
         });
@@ -18,7 +18,6 @@ var git = require( '../../' ).raw;
     }
   }, 0);
 //*/
-
 
 //* Stress test repo open
   setInterval(function() {
@@ -32,8 +31,8 @@ var git = require( '../../' ).raw;
           var oid = new git.Oid();
           oid.mkstr( 'cb76e3c030ab29db332aff3b297dc39451a84762' );
 
-          var commit = new git.Commit( repo );
-          commit.lookup( oid, function( err ) {
+          var commit = new git.Commit();
+          commit.lookup( repo, oid, function( err ) {
             console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
           });
         });

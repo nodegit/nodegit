@@ -30,6 +30,7 @@ void GitCommit::Initialize(Handle<Object> target) {
   constructor_template->SetClassName(String::NewSymbol("Commit"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "close", Close);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "messageShort", MessageShort);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "message", Message);
@@ -51,17 +52,17 @@ void GitCommit::SetValue(git_commit* commit) {
   this->commit = commit;
 }
 
-int GitCommit::Lookup(git_oid* oid) {
+int GitCommit::Lookup(git_repository* repo, git_oid* oid) {
   git_commit* commit;
 
-  //this->oid = oid;
+  git_oid test;
+  int err = git_commit_lookup(&commit, repo, &test);
 
-  //int err = git_commit_lookup(&commit, this->repo, oid);
+  return err;
+}
 
-  //this->commit = commit;
-
-  //return err;
-  return 0;
+void GitCommit::Close() {
+  git_commit_close(this->commit);
 }
 
 const git_oid* GitCommit::Id() {
@@ -108,30 +109,36 @@ Handle<Value> GitCommit::New(const Arguments& args) {
   HandleScope scope;
 
   GitCommit *commit = new GitCommit();
+
   commit->Wrap(args.This());
 
-  return args.This();
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
+  HandleScope scope;
+
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   Local<Function> callback;
 
-  HandleScope scope;
-
   if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
-  if(args.Length() == 1 || !args[1]->IsFunction()) {
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  callback = Local<Function>::Cast(args[1]);
+  callback = Local<Function>::Cast(args[2]);
 
   lookup_request *ar = new lookup_request();
   ar->commit = commit;
-  ar->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
+  ar->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
+  ar->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
   ar->callback = Persistent<Function>::New(callback);
 
   commit->Ref();
@@ -145,7 +152,8 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 int GitCommit::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
-  ar->err = ar->commit->Lookup(ar->oid->GetValue());
+  git_oid oid = ar->oid->GetValue();
+  ar->err = ar->commit->Lookup(ar->repo->GetValue(), &oid);
 
   return 0;
 }
@@ -157,7 +165,7 @@ int GitCommit::EIO_AfterLookup(eio_req *req) {
   ev_unref(EV_DEFAULT_UC);
   ar->commit->Unref();
 
-  Local<Value> argv[0];
+  Handle<Value> argv[1];
   argv[0] = Integer::New(ar->err);
 
   TryCatch try_catch;
@@ -174,6 +182,15 @@ int GitCommit::EIO_AfterLookup(eio_req *req) {
   return 0;
 }
 
+Handle<Value> GitCommit::Close(const Arguments& args) {
+  HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
+  commit->Close();
+  
+  return Undefined();
+}
+
 Handle<Value> GitCommit::Id(const Arguments& args) {
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
@@ -185,7 +202,7 @@ Handle<Value> GitCommit::Id(const Arguments& args) {
 
   GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
-  oid->SetValue(const_cast<git_oid *>(commit->Id()));
+  oid->SetValue(*const_cast<git_oid *>(commit->Id()));
   
   return Undefined();
 }
@@ -271,64 +288,6 @@ Handle<Value> GitCommit::Tree(const Arguments& args) {
 
   return Integer::New(err);
 }
-//Handle<Value> GitCommit::Tree(const Arguments& args) {
-//  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-//  Local<Function> callback;
-//
-//  HandleScope scope;
-//
-//  if(args.Length() == 0 || !args[0]->IsObject()) {
-//    return ThrowException(Exception::Error(String::New("Tree is required and must be an Object.")));
-//  }
-//
-//  callback = Local<Function>::Cast(args[1]);
-//
-//  tree_request *ar = new tree_request();
-//  ar->commit = commit;
-//  ar->repo = ObjectWrap::Unwrap<Tree>(args[0]->ToObject());
-//  ar->callback = Persistent<Function>::New(callback);
-//
-//  commit->Ref();
-//
-//  eio_custom(EIO_Tree, EIO_PRI_DEFAULT, EIO_AfterTree, ar);
-//  ev_ref(EV_DEFAULT_UC);
-//
-//  return Undefined();
-//}
-//
-//int GitCommit::EIO_Tree(eio_req *req) {
-//  tree_request *ar = static_cast<tree_request *>(req->data);
-//
-//  git_tree *tree = ar->commit->Tree();
-//
-//  ar->tree->SetValue(tree);
-//
-//  return 0;
-//}
-//
-//int GitCommit::EIO_AfterTree(eio_req *req) {
-//  HandleScope scope;
-//
-//  tree_request *ar = static_cast<tree_request *>(req->data);
-//  ev_unref(EV_DEFAULT_UC);
-//  ar->commit->Unref();
-//
-//  Local<Value> argv[1];
-//
-//  TryCatch try_catch;
-//
-//  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-//
-//  if(try_catch.HasCaught())
-//    FatalException(try_catch);
-//    
-//  ar->err.Dispose();
-//  ar->callback.Dispose();
-//
-//  delete ar;
-//
-//  return 0;
-//}
 
 Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());

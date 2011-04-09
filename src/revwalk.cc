@@ -117,7 +117,9 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
   }
 
   GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  int err = revwalk->Push(oid->GetValue());
+  
+  git_oid tmp = oid->GetValue();
+  int err = revwalk->Push(&tmp);
 
   return Integer::New(err);
 }
@@ -153,9 +155,9 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
 
 int GitRevWalk::EIO_Next(eio_req *req) {
   next_request *ar = static_cast<next_request *>(req->data);
-  git_oid* oid = ar->oid->GetValue();
+  git_oid oid = ar->oid->GetValue();
 
-  ar->err = ar->revwalk->Next(oid);
+  ar->err = ar->revwalk->Next(&oid);
   ar->oid->SetValue(oid);
 
   return 0;

@@ -105,7 +105,7 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 int GitBlob::EIO_Lookup(eio_req* req) {
   lookup_request* ar = static_cast<lookup_request* >(req->data);
 
-  ar->err = ar->blob->Lookup(ar->repo->GetValue(), ar->oid->GetValue());
+  ar->err = ar->blob->Lookup(ar->repo->GetValue(), &ar->oid->GetValue());
 
   return 0;
 }

@@ -34,12 +34,12 @@ void GitOid::Initialize(Handle<Object> target) {
   target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
 }
 
-git_oid* GitOid::GetValue() {
-  return &this->oid;
+git_oid GitOid::GetValue() {
+  return this->oid;
 }
 
-void GitOid::SetValue(git_oid* oid) {
-  this->oid = *oid;
+void GitOid::SetValue(git_oid oid) {
+  this->oid = oid;
 }
 
 int GitOid::Mkstr(const char* id) {
@@ -63,7 +63,7 @@ char* GitOid::AllocFmt() {
 }
 
 char* GitOid::ToString(char* buffer, size_t bufferSize) {
-  git_oid_to_string(*&buffer, bufferSize, &this->oid);
+  git_oid_to_string(buffer, bufferSize, &this->oid);
 }
 
 void GitOid::Cpy(git_oid* out) {
@@ -77,28 +77,28 @@ int GitOid::Cmp(const git_oid* a, const git_oid* b) {
 Handle<Value> GitOid::New(const Arguments& args) {
   HandleScope scope;
 
-  GitOid *oid = new GitOid();
+  GitOid* oid = new GitOid();
   oid->Wrap(args.This());
 
-  return args.This();
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitOid::Mkstr(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
+
+  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("Object id is required and must be a hex formatted String.")));
   }
 
-  String::Utf8Value id(Local<Value>::New(args[0]));
+  String::Utf8Value id(args[0]);
 
-  return Integer::New(oid->Mkstr(*id));
+  return scope.Close(Integer::New(oid->Mkstr(*id)));
 }
 
 Handle<Value> GitOid::Mkraw(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
+  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   HandleScope scope;
 
@@ -155,9 +155,9 @@ Handle<Value> GitOid::ToString(const Arguments& args) {
 }
 
 Handle<Value> GitOid::Cpy(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
+
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
   
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("GitOid argument is required and must be a Object.")));
@@ -167,15 +167,15 @@ Handle<Value> GitOid::Cpy(const Arguments& args) {
   
   git_oid *out;
   oid->Cpy(out);
-  clone->SetValue(out);
+  clone->SetValue(*out);
 
   return Undefined();
 }
 
 Handle<Value> GitOid::Cmp(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
+
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
   
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("GitOid argument is required and must be a Object.")));
@@ -185,10 +185,11 @@ Handle<Value> GitOid::Cmp(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("GitOid argument is required and must be a Object.")));
   }
 
-  GitOid *a = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  GitOid *b = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
+  GitOid* a = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
+  GitOid* b = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
 
-  int cmp = oid->Cmp(a->GetValue(), b->GetValue());
+  //int cmp = oid->Cmp(&a->GetValue(), &b->GetValue());
+  int cmp = 0;
 
   return Integer::New(cmp);
 }

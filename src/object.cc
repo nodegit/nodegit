@@ -107,7 +107,7 @@ Handle<Value> GitObject::Id(const Arguments& args) {
 
   GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
-  oid->SetValue(const_cast<git_oid *>(obj->Id()));
+  oid->SetValue(*const_cast<git_oid *>(obj->Id()));
 
   return Undefined();
 }

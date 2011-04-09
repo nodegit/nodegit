@@ -137,7 +137,7 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
   }
 
   GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  oid->SetValue( const_cast<git_oid *>(ref->Oid()) );
+  oid->SetValue(*const_cast<git_oid *>(ref->Oid()));
 
   return Undefined();
 }

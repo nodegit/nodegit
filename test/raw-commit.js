@@ -43,18 +43,23 @@ exports.constructor = function( test ){
 // Commit::Lookup
 exports.lookup = function( test ) {
   var testOid = new git.Oid(),
-      testCommit = new git.Commit( testRepo );
+      testCommit = new git.Commit();
 
   testOid.mkstr( 'cb09e99e91d41705197e0fb60823fdc7df776691' );
 
-  test.expect( 6 );
+  test.expect( 7 );
 
   // Test for function
   helper.testFunction( test.equals, testCommit.lookup, 'Commit::Lookup' );
 
+  // Test repo argument existence
+  helper.testException( test.ok, function() {
+    testCommit.lookup();
+  }, 'Throw an exception if no repo' );
+
   // Test oid argument existence
   helper.testException( test.ok, function() {
-    testCommit.lookup( );
+    testCommit.lookup( testRepo );
   }, 'Throw an exception if no oid' );
 
   // Test callback argument existence
@@ -62,20 +67,20 @@ exports.lookup = function( test ) {
     testCommit.lookup( testOid );
   }, 'Throw an exception if no callback' );
 
-  // Test that both arguments result correctly
+  // Test that all arguments result correctly
   helper.testException( test.ifError, function() {
-    testCommit.lookup( testOid, function() {} );
+    testCommit.lookup( testRepo, testOid, function() {} );
   }, 'No exception is thrown with proper arguments' );
 
   testRepo.open( path.resolve( '../.git' ), function() {
     // Test invalid commit
     testOid.mkstr( '100644' );
-    testCommit.lookup( testOid, function( err ) {
+    testCommit.lookup( testRepo, testOid, function( err ) {
       //test.notEqual( 0, err, 'Not a valid commit' );
  
       // Test valid commit
       testOid.mkstr( '3b7670f327dc1ca66e040f0c09cc4c3f1428eb49' );
-      testCommit.lookup( testOid, function( err ) {
+      testCommit.lookup( testRepo, testOid, function( err ) {
         test.equals( 0, err, 'Valid commit');
 
         //test.equals( 'Fixed path issues', testCommit.messageShort(), 'Commit message is valid' );

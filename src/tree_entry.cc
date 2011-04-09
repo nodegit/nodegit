@@ -77,7 +77,7 @@ Handle<Value> GitTreeEntry::Id(const Arguments& args) {
 
   GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
-  oid->SetValue(const_cast<git_oid *>(entry->Id()));
+  oid->SetValue(*const_cast<git_oid *>(entry->Id()));
   
   return Undefined();
 }

@@ -39,7 +39,8 @@ class GitCommit : public EventEmitter {
 
     git_commit* GetValue();
     void SetValue(git_commit* commit);
-    int Lookup(git_oid* oid);
+    int Lookup(git_repository* repo, git_oid* oid);
+    void Close();
     const git_oid* Id();
     const char* MessageShort();
     const char* Message();
@@ -61,6 +62,7 @@ class GitCommit : public EventEmitter {
     static int EIO_Lookup(eio_req *req);
     static int EIO_AfterLookup(eio_req *req);
 
+    static Handle<Value> Close(const Arguments& args);
     static Handle<Value> Id(const Arguments& args);
     static Handle<Value> MessageShort(const Arguments& args);
     static Handle<Value> Message(const Arguments& args);
@@ -78,11 +80,11 @@ class GitCommit : public EventEmitter {
 
   private:
     git_commit* commit;
-    git_repository* repo;
     git_oid* oid;
 
     struct lookup_request {
       GitCommit* commit;
+      GitRepo* repo;
       GitOid* oid;
       int err;
       Persistent<Function> callback;
