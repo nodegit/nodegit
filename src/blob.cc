@@ -7,6 +7,7 @@
 #include <node.h>
 #include <node_events.h>
 #include <node_buffer.h>
+#include <string.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -105,7 +106,8 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 int GitBlob::EIO_Lookup(eio_req* req) {
   lookup_request* ar = static_cast<lookup_request* >(req->data);
 
-  ar->err = ar->blob->Lookup(ar->repo->GetValue(), &ar->oid->GetValue());
+  git_oid oid = ar->oid->GetValue();
+  ar->err = ar->blob->Lookup(ar->repo->GetValue(), &oid);
 
   return 0;
 }
@@ -137,7 +139,10 @@ int GitBlob::EIO_AfterLookup(eio_req* req) {
 Handle<Value> GitBlob::RawContent(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  return String::New((const char*)blob->RawContent());
+  int rawSize = blob->RawSize();
+  const char* buffer = (const char *)const_cast<void *>(blob->RawContent());
+
+  return Buffer::New(const_cast<char *>(buffer), rawSize)->handle_;
 }
 
 Handle<Value> GitBlob::RawSize(const Arguments& args) {

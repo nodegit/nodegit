@@ -74,13 +74,33 @@ exports.lookup = function( test ) {
 
 // Blob::RawContent
 exports.rawContent = function( test ) {
-  var testOid = new git.Oid(),
-      testBlob = new git.Blob();
+  var testOid = new git.Oid()
+    , testBlob = new git.Blob()
+    , testCommit = new git.Commit();
 
   test.expect( 2 );
 
   // Test for function
   helper.testFunction( test.equals, testBlob.rawContent, 'Blob::RawContent' );
+
+  testRepo.open( path.resolve( '../.git' ), function() {
+    testOid.mkstr( '59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5' );
+
+    commit.lookup( repo, oid, function( err ) {
+      var tree = new git.Tree( repo ),
+          entry = new git.TreeEntry(),
+          blob = new git.Blob( repo );
+
+      if( !commit.tree( tree ) && tree.entryCount() > 1 ) {
+        tree.entryByIndex( entry, 1 );
+        entry.toObject( repo, blob );
+
+        console.log( entry.name() + ':' );
+        console.log( blob.rawSize() );
+        console.dir( blob.rawContent() );
+      }
+    });
+  });
  
   test.done();
 };

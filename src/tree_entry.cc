@@ -43,9 +43,8 @@ const git_oid* GitTreeEntry::Id() {
   return git_tree_entry_id(this->entry);
 }
 
-int GitTreeEntry::ToObject(git_object** obj) {
-  //TODO: Implement correct arguments
-  //return git_tree_entry_2object(obj, this->entry);
+int GitTreeEntry::ToObject(git_repository* repo, git_object** obj) {
+  return git_tree_entry_2object(obj, repo, this->entry);
 }
 
 Handle<Value> GitTreeEntry::New(const Arguments& args) {
@@ -88,13 +87,18 @@ Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
   GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Blob is required and must be an Object.")));
   }
 
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args[0]->ToObject());
+  GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
+  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args[1]->ToObject());
 
   git_object* out;
-  entry->ToObject(&out);
+  entry->ToObject(repo->GetValue(), &out);
   blob->SetValue((git_blob *)out);
   
   return Undefined();
