@@ -1,5 +1,6 @@
-var git = require( '../' ).raw,
-    rimraf = require( '../vendor/rimraf' );
+var git = require( '../' ).raw
+  , path = require( 'path' )
+  , rimraf = require( '../vendor/rimraf' );
 
 var testRepo = new git.Repo();
 
@@ -86,18 +87,18 @@ exports.rawContent = function( test ) {
   testRepo.open( path.resolve( '../.git' ), function() {
     testOid.mkstr( '59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5' );
 
-    commit.lookup( repo, oid, function( err ) {
-      var tree = new git.Tree( repo ),
+    testCommit.lookup( testRepo, testOid, function( err ) {
+      var tree = new git.Tree( testRepo ),
           entry = new git.TreeEntry(),
-          blob = new git.Blob( repo );
+          blob = new git.Blob( testRepo );
 
-      if( !commit.tree( tree ) && tree.entryCount() > 1 ) {
+      if( !testCommit.tree( tree ) && tree.entryCount() > 1 ) {
         tree.entryByIndex( entry, 1 );
-        entry.toObject( repo, blob );
+        entry.toObject( testRepo, blob );
 
-        console.log( entry.name() + ':' );
-        console.log( blob.rawSize() );
-        console.dir( blob.rawContent() );
+        //console.log( entry.name() + ':' );
+        //console.log( blob.rawSize() );
+        //console.dir( blob.rawContent() );
       }
     });
   });

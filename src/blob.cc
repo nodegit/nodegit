@@ -76,11 +76,11 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be a Object.")));
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
   if(args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be a Object.")));
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
 
   if(args.Length() == 2 || !args[2]->IsFunction()) {
@@ -139,10 +139,15 @@ int GitBlob::EIO_AfterLookup(eio_req* req) {
 Handle<Value> GitBlob::RawContent(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  int rawSize = blob->RawSize();
-  const char* buffer = (const char *)const_cast<void *>(blob->RawContent());
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Buffer is required and must be an Object.")));
+  }
 
-  return Buffer::New(const_cast<char *>(buffer), rawSize)->handle_;
+  int rawSize = blob->RawSize();
+  const char* contents = (const char *)const_cast<void *>(blob->RawContent());
+
+  Buffer* buffer = Buffer::New(const_cast<char *>(contents), rawSize);
+  return buffer->handle_;
 }
 
 Handle<Value> GitBlob::RawSize(const Arguments& args) {

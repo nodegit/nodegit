@@ -18,7 +18,7 @@ repo.open( path.resolve( '../.git' ), function() {
 
       console.log( entry.name() + ':' );
       console.log( blob.rawSize() );
-      console.log( blob.rawContent().toString() );
+      console.log( blob.rawContent() );
     }
   });
 });
