@@ -1,4 +1,4 @@
-var git = require( 'nodegit' );
+var git = require( '../' );
 
 git.repo( '../.git', function( err, repo ) {
   if( err ) { throw err; }

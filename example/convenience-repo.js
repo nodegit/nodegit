@@ -1,5 +1,5 @@
 // Load in the module
-var git = require( 'nodegit' );
+var git = require( '../' );
 // Open a repository for reading
 git.repo( '../.git', function( err, repo ) {
   // Success is always 0, failure is always an error string

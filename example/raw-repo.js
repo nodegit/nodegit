@@ -1,16 +1,16 @@
-var git2 = require( '../' ).raw,
+var git = require( '../' ).raw,
     path = require( 'path' );
 
 
-var repo = new git2.Repo(),
-    error = new git2.Error();
+var repo = new git.Repo(),
+    error = new git.Error();
 
 // Access existing repository
 repo.open( path.resolve( '../.git' ), function( err ) {
-    var master = new git2.Ref(repo);
+    var master = new git.Ref(repo);
     repo.lookupRef( master, 'refs/heads/master', function( err, ref ) {
       console.log(err, master);
-      var oid = new git2.Oid();
+      var oid = new git.Oid();
       master.oid(oid);
       console.log( oid.toString(40) );
     });

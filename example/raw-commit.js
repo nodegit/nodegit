@@ -1,4 +1,4 @@
-var git = require( '../lib' ).raw
+var git = require( '../' ).raw
   , path = require( 'path' );
 
 var repo = new git.Repo();

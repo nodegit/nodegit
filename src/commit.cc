@@ -53,9 +53,7 @@ void GitCommit::SetValue(git_commit* commit) {
 }
 
 int GitCommit::Lookup(git_repository* repo, git_oid* oid) {
-  git_commit* commit;
-
-  int err = git_commit_lookup(&commit, repo, oid);
+  int err = git_commit_lookup(&this->commit, repo, oid);
 
   return err;
 }
@@ -191,9 +189,9 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
 }
 
 Handle<Value> GitCommit::Id(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
@@ -207,41 +205,41 @@ Handle<Value> GitCommit::Id(const Arguments& args) {
 }
 
 Handle<Value> GitCommit::MessageShort(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
   
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
+
   return String::New(commit->MessageShort());
 }
 
 Handle<Value> GitCommit::Message(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
   
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
+
   return String::New(commit->Message());
 }
 
 Handle<Value> GitCommit::Time(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
   
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
+
   return Integer::New(commit->Time());
 }
 
 Handle<Value> GitCommit::TimeOffset(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   
   return Integer::New(commit->TimeOffset());
 }
 
 Handle<Value> GitCommit::Committer(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
@@ -255,9 +253,9 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
 }
 
 Handle<Value> GitCommit::Author(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
@@ -271,27 +269,27 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
 }
 
 Handle<Value> GitCommit::Tree(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Tree is required and must be an Object.")));
   }
 
-  git_tree* in;
-  GitTree* tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject());
+  GitTree* g_tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject());
 
-  int err = commit->Tree(&in);
-  tree->SetValue(in);
+  git_tree* tree;
+  int err = commit->Tree(&tree);
+  g_tree->SetValue(tree);
 
-  return Integer::New(err);
+  return scope.Close(Integer::New(err));
 }
 
 Handle<Value> GitCommit::ParentCount(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   unsigned int count = commit->ParentCount();
 
@@ -299,9 +297,9 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
 }
 
 Handle<Value> GitCommit::Parent(const Arguments& args) {
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
   HandleScope scope;
+
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));

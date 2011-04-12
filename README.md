@@ -197,7 +197,7 @@ Release information
 __ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods) __
 
 ### v0.0.3: ###
-    * Fully documented native source code
+    * More documented native source code
     * Updated convenience api code
     * More unit tests
     * Updated libgit2 to version 0.11.0

@@ -51,7 +51,7 @@ class GitTreeEntry : EventEmitter {
     void SetValue(git_tree_entry* tree);
     const char* Name();
     const git_oid* Id();
-    int ToObject(git_object** obj);
+    int ToObject(git_repository* repo, git_object** obj);
 
   protected:
     static Handle<Value> New(const Arguments& args);
