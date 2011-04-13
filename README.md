@@ -43,7 +43,7 @@ This will install and configure everything you need to use `nodegit`.
 #### `nodegit` has been compiled and tested to work with the setup required to build and run `Node.js` itself. ####
 
 Instructions on compiling `Node.js` on a Windows platform can be found here:
-[https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows\))
+[https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29)
 
 API Example Usage
 -----------------
