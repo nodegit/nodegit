@@ -20,7 +20,7 @@ This will install and configure everything you need to use `nodegit`.
 
 ### Mac OS X/Linux/Unix ###
 
-#### Install `nodegit` by cloning source from __GitHub__ and running the `configure`, `make`, and `make install` commands: ####
+#### Install `nodegit` by cloning source from GitHub and running the `configure`, `make`, and `make install` commands: ####
 \*Note: `nodegit` assumes your library path exists at `~/.node_libraries` you can change this by specifying a new lib path\*
     
     $ git clone git://github.com/tbranyen/nodegit.git
@@ -170,9 +170,9 @@ API Example Usage
 Running tests
 -------------
 
-__ `nodegit` library code is written adhering to a modified `JSHint`. Run these checks with `make lint` in the project root. __
+__`nodegit` library code is written adhering to a modified `JSHint`. Run these checks with `make lint` in the project root.__
 
-__ To run unit tests ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory. __
+__To run unit tests ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory.__
 
 If they are not, `cd` into the `nodegit` dir and run the following `git` commands to automatically fetch them:
     $ cd nodegit
@@ -183,7 +183,7 @@ Then simply run `make test` in the project root.
 Generating documentation
 ------------------------
 
-__ `nodegit` native and library code is documented to be built with `Natural Docs`. __
+__`nodegit` native and library code is documented to be built with `Natural Docs`.__
 
 To create the documentation, `cd` into the `nodegit` dir and run the following:
     $ cd nodegit
@@ -194,7 +194,7 @@ The documentation will then generate in the `doc/` subfolder as HTML.
 Release information
 -------------------
 
-__ Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods) __
+__Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods)__
 
 ### v0.0.3: ###
     * More documented native source code
@@ -228,4 +228,4 @@ Getting involved
 
 If you find this project of interest, please document all issues and fork if you feel you can provide a patch.  Testing is of huge importance; by simply running the unit tests on your system and reporting issues you can contribute!
 
-__ Before submitting a pull request, please ensure both unit tests and lint checks pass. __
+__Before submitting a pull request, please ensure both unit tests and lint checks pass.__
