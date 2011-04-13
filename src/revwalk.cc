@@ -125,7 +125,7 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
 }
 
 Handle<Value> GitRevWalk::Next(const Arguments& args) {
-  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
+  GitRevWalk* revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
   Local<Function> callback;
 
   HandleScope scope;
@@ -140,7 +140,7 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
 
   callback = Local<Function>::Cast(args[1]);
 
-  next_request *ar = new next_request();
+  next_request* ar = new next_request();
   ar->revwalk = revwalk;
   ar->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
   ar->callback = Persistent<Function>::New(callback);

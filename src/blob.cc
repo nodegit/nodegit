@@ -139,9 +139,9 @@ int GitBlob::EIO_AfterLookup(eio_req* req) {
 Handle<Value> GitBlob::RawContent(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Buffer is required and must be an Object.")));
-  }
+  //if(args.Length() == 0 || !args[0]->IsObject()) {
+  //  return ThrowException(Exception::Error(String::New("Buffer is required and must be an Object.")));
+  //}
 
   int rawSize = blob->RawSize();
   const char* contents = (const char *)const_cast<void *>(blob->RawContent());

@@ -8,7 +8,23 @@ git.repo( '../.git', function( err, repo ) {
 
     var history = commit.history();
     history.on( 'commit', function() {
-      console.log(arguments);
+      //console.log(arguments);
+    });
+
+    history.on( 'end', function( commits ) {
+      // Read first commit tree
+      var tree = commits[0].tree();
+
+      // Synchronous
+      tree.walk(function( i, entry ) {
+        console.log( entry.content );
+        return false;
+      });
+
+      // Asynchronous - not yet implemented
+      //tree.walk().on( 'entry', function( err, i, entry ) {
+      //  console.log( entry );
+      //});
     });
   });
 

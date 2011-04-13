@@ -12,7 +12,7 @@ var nodejshint = function() {
       fs.readFile( file, function( err, data ) {
         if (err) { throw err; }
 
-        if( pass = JSHINT( data.toString() ), pass ) {
+        if( pass = JSHINT( data.toString() ), pass, { laxbreak: true } ) {
           counter++;
           console.log( '[32m✔ Passed [0m'+ file );
         }
