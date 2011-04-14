@@ -50,12 +50,14 @@ class GitTreeEntry : EventEmitter {
      */
     void SetValue(git_tree_entry* tree);
     const char* Name();
+    int Attributes();
     const git_oid* Id();
     int ToObject(git_repository* repo, git_object** obj);
 
   protected:
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> Attributes(const Arguments& args);
     static Handle<Value> Id(const Arguments& args);
     static Handle<Value> ToObject(const Arguments& args);
 

@@ -26,6 +26,7 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   constructor_template->SetClassName(String::NewSymbol("TreeEntry"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "attributes", Attributes);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "toObject", ToObject);
 
   target->Set(String::NewSymbol("TreeEntry"), constructor_template->GetFunction());
@@ -37,6 +38,10 @@ void GitTreeEntry::SetValue(git_tree_entry* entry) {
 
 const char* GitTreeEntry::Name() {
   return git_tree_entry_name(this->entry);
+}
+
+int GitTreeEntry::Attributes() {
+  return git_tree_entry_attributes(this->entry);
 }
 
 const git_oid* GitTreeEntry::Id() {
@@ -63,6 +68,14 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
   GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
 
   return String::New(entry->Name());
+}
+
+Handle<Value> GitTreeEntry::Attributes(const Arguments& args) {
+  HandleScope scope;
+
+  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+
+  return Number::New(entry->Attributes());
 }
 
 Handle<Value> GitTreeEntry::Id(const Arguments& args) {
