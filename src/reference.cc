@@ -44,7 +44,7 @@ int GitReference::Lookup(git_repository* repo, const char* name) {
 }
 
 const git_oid* GitReference::Oid() {
-  return git_reference_oid(*&this->ref);
+  return git_reference_oid(this->ref);
 }
 
 Handle<Value> GitReference::New(const Arguments& args) {
@@ -137,7 +137,8 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
   }
 
   GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  oid->SetValue(*const_cast<git_oid *>(ref->Oid()));
+  git_oid* in = const_cast<git_oid *>(ref->Oid());
+  oid->SetValue(*in);
 
   return Undefined();
 }
