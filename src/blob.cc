@@ -5,7 +5,6 @@
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 #include <node_buffer.h>
 #include <string.h>
 
@@ -60,20 +59,28 @@ void GitBlob::Close() {
   git_blob_close(this->blob);
 }
 
+int CreateFromFile(git_oid* oid, git_repository* repo, const char* path) {
+  return git_blob_create_fromfile(oid, repo, path);
+}
+
+int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len) {
+  return git_blob_create_frombuffer(oid, repo, buffer, len);
+}
+
 Handle<Value> GitBlob::New(const Arguments& args) {
   HandleScope scope;
 
   GitBlob* blob = new GitBlob();
   blob->Wrap(args.This());
 
-  return scope.Close(args.This());
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
+  HandleScope scope;
+
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
   Local<Function> callback;
-
-  HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
@@ -100,7 +107,7 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   eio_custom(EIO_Lookup, EIO_PRI_DEFAULT, EIO_AfterLookup, ar);
   ev_ref(EV_DEFAULT_UC);
 
-  return scope.Close(Undefined());
+  return scope.Close( Undefined() );
 }
 
 int GitBlob::EIO_Lookup(eio_req* req) {
@@ -137,41 +144,89 @@ int GitBlob::EIO_AfterLookup(eio_req* req) {
 }
 
 Handle<Value> GitBlob::RawContent(const Arguments& args) {
+  HandleScope scope;
+
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
   int rawSize = blob->RawSize();
   const char* contents = (const char *)const_cast<void *>(blob->RawContent());
 
   Buffer* buffer = Buffer::New(const_cast<char *>(contents), strlen(contents));
-  return buffer->handle_;
+
+  return scope.Close( buffer->handle_ );
 }
 
 Handle<Value> GitBlob::RawSize(const Arguments& args) {
+  HandleScope scope;
+
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  return Integer::New(blob->RawSize());
+  return scope.Close( Integer::New(blob->RawSize()) );
 }
 
 Handle<Value> GitBlob::Close(const Arguments& args) {
+  HandleScope scope;
+
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
   blob->Close();
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
+  HandleScope scope;
+
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  blob->Close();
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
+  }
 
-  return Undefined();
+  if(args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
+
+  if(args.Length() == 2 || !args[2]->IsString()) {
+    return ThrowException(Exception::Error(String::New("Path is required and must be an String.")));
+  }
+
+  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
+  GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject());
+
+  String::Utf8Value path(args[2]);
+
+  git_oid tmp_oid = oid->GetValue();
+  int err = blob->CreateFromFile(&tmp_oid, repo->GetValue(), *path);
+
+  return scope.Close( Integer::New(err) );
 }
 
 Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
+  HandleScope scope;
+
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
-  return Undefined();
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  }
+
+  if(args.Length() == 2 || !args[2]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Buffer is required and must be an Object.")));
+  }
+
+  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
+  GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject());
+
+  git_oid tmp_oid = oid->GetValue();
+  const char* tmp_buffer = buffer->Value();
+  int err = blob->CreateFromBuffer(&tmp_oid, repo->GetValue(), , );
+
+  return scope.Close( Integer::New(err) );
 }
 
 Persistent<FunctionTemplate> GitBlob::constructor_template;

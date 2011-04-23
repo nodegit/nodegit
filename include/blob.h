@@ -8,7 +8,6 @@
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -98,7 +97,7 @@ class GitBlob : public ObjectWrap {
      *   Returns:
      *     0 on success, error code otherwise
      */
-    int CreateFromFile(git_oid* oid, git_repository* repo, const void* buffer, size_t len);
+    int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len);
 
   protected:
     /**
