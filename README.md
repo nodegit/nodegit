@@ -16,6 +16,8 @@ This will install and configure everything you need to use `nodegit`.
 
     $ sudo npm install nodegit
 
+To update an existing installation, run
+
     $ sudo npm update nodegit
 
 ### Mac OS X/Linux/Unix ###
