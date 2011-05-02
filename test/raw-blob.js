@@ -44,7 +44,7 @@ exports.lookup = function( test ) {
     , testRef = new git.Ref( testRepo )
     , testBlob = new git.Blob();
 
-  test.expect( 6 );
+  test.expect( 5 );
 
   // Test for function
   helper.testFunction( test.equals, testBlob.lookup, 'Blob::Lookup' );
@@ -66,11 +66,6 @@ exports.lookup = function( test ) {
 
   testRepo.open( path.resolve( '../.git' ), function() {
 
-    testRef.lookup( testRepo, 'LICENSE', function( err ) {
-      test.equals( new git.Error().strError( err ), 0, 'Valid reference lookup' );
-      test.done();
-    });
-    
     //testOid.mkstr( '59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5' );
 
     //testCommit.lookup( testRepo, testOid, function( err ) {
@@ -87,6 +82,7 @@ exports.lookup = function( test ) {
     //    //console.dir( blob.rawContent() );
     //  }
     //});
+    test.done();
  
   });
 };
