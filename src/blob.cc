@@ -215,16 +215,19 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  if(args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Buffer is required and must be an Object.")));
+  if(args.Length() == 2 || !Buffer::HasInstance(args[2])) {
+    return ThrowException(Exception::Error(String::New("Buffer is required and must be a Buffer.")));
   }
 
   GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
   GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject());
+  Local<Object> buffer = args[2]->ToObject();
+
+  const void* data = Buffer::Data(buffer);
+  size_t length = Buffer::Length(buffer);
 
   git_oid tmp_oid = oid->GetValue();
-  const char* tmp_buffer = buffer->Value();
-  int err = blob->CreateFromBuffer(&tmp_oid, repo->GetValue(), , );
+  int err = blob->CreateFromBuffer(&tmp_oid, repo->GetValue(), data, length);
 
   return scope.Close( Integer::New(err) );
 }

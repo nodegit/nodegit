@@ -16,7 +16,7 @@ This will install and configure everything you need to use `nodegit`.
 
     $ sudo npm install nodegit
 
-and to update nodegit:
+... and to update `nodegit`
 
     $ sudo npm update nodegit
 
