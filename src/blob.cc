@@ -120,8 +120,6 @@ int GitBlob::EIO_Lookup(eio_req* req) {
 }
 
 int GitBlob::EIO_AfterLookup(eio_req* req) {
-  HandleScope scope;
-
   lookup_request* ar = static_cast<lookup_request* >(req->data);
   ev_unref(EV_DEFAULT_UC);
   ar->blob->Unref();
