@@ -68,7 +68,8 @@ API Example Usage
             // Iterate over the revision history
             var history = branch.history();
             
-            history.on( 'commit', function( err, commit ) {
+            // Commit event is emitted with index 0,n... and commit object
+            history.on( 'commit', function( idx, commit ) {
                 // Print out `git log` emulation
                 console.log( 'commit ' + commit.sha );
                 console.log( commit.author.name + '<' + commit.author.email + '>' );
