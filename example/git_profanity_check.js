@@ -7,7 +7,7 @@
 // vim: ft=javascript
 var git = require( 'nodegit' );
 
-var curses = [ 'fuck', 'shit', 'bitch', 'ass' ]
+var curses = [ 'add', 'swears', 'here' ]
   , path = './.git'
   , branch = 'master'
   , wordExp = /\b\w+\b/g;
