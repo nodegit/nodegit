@@ -6,10 +6,9 @@ git.repo( '../.git', function( err, repo ) {
   repo.branch( 'master', function( err, branch ) {
     if( err ) { throw err; }
 
-    branch.tree().each( function( i, entry ) {
+    branch.tree().walk( function( idx, entry ) {
       console.log( entry.name );
-      console.log( entry.contents );
-
+      console.log( entry.content );
     });
   });
 });

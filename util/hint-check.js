@@ -6,7 +6,7 @@ files = [
   'lib/commit.js',
   'lib/error.js',
   'lib/index.js',
-  'lib/obj.js',
+  'lib/object.js',
   'lib/oid.js',
   'lib/ref.js',
   'lib/repo.js',

@@ -104,16 +104,18 @@ Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
   }
 
   if(args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Blob is required and must be an Object.")));
+    return ThrowException(Exception::Error(String::New("Object is required and must be an Object.")));
   }
 
   GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args[1]->ToObject());
+  GitObject* object = ObjectWrap::Unwrap<GitObject(args[1]->ToObject());
 
   git_object* out;
   entry->ToObject(repo->GetValue(), &out);
-  blob->SetValue((git_blob *)out);
+
+  GitObject->SetValue(out);
   
-  return Undefined();
+  return scope.Close(;
 }
 Persistent<FunctionTemplate> GitTreeEntry::constructor_template;
+
