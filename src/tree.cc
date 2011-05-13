@@ -45,11 +45,11 @@ size_t GitTree::EntryCount() {
 }
 
 git_tree_entry* GitTree::EntryByIndex(int idx) {
-  return git_tree_entry_byindex(this->tree, idx);
+  return const_cast<git_tree_entry*>(git_tree_entry_byindex(this->tree, idx));
 }
 
 git_tree_entry* GitTree::EntryByName(const char* name) {
-  return git_tree_entry_byname(this->tree, name);
+  return const_cast<git_tree_entry*>(git_tree_entry_byname(this->tree, name));
 }
 
 int GitTree::SortEntries() {

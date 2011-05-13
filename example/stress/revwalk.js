@@ -15,7 +15,7 @@ var git = require( 'nodegit' );
             //console.log( 'Branch opened' );
 
             this.history().on( 'commit', function( i, commit ) {
-              console.log( commit.id.toString(40) );
+              //console.log( commit.id.toString(40) );
             });
 
           });

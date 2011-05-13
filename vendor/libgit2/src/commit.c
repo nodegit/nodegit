@@ -224,9 +224,18 @@ int git_commit_create(
 		if (error < GIT_SUCCESS)
 			return error;
 
-		if (git_reference_type(head) == GIT_REF_SYMBOLIC) {
-			if ((error = git_reference_resolve(&head, head)) < GIT_SUCCESS)
+		error = git_reference_resolve(&head, head);
+		if (error < GIT_SUCCESS) {
+			if (error != GIT_ENOTFOUND)
 				return error;
+		/*
+		 * The target of the reference was not found. This can happen
+		 * just after a repository has been initialized (the master
+		 * branch doesn't exist yet, as it doesn't have anything to
+		 * point to) or after an orphan checkout, so if the target
+		 * branch doesn't exist yet, create it and return.
+		 */
+			return git_reference_create_oid_f(&head, repo, git_reference_target(head), oid);
 		}
 
 		error = git_reference_set_oid(head, oid);
@@ -235,9 +244,9 @@ int git_commit_create(
 	return error;
 }
 
-int commit_parse_buffer(git_commit *commit, void *data, size_t len)
+int commit_parse_buffer(git_commit *commit, const void *data, size_t len)
 {
-	char *buffer = (char *)data;
+	const char *buffer = (char *)data;
 	const char *buffer_end = (char *)data + len;
 
 	git_oid parent_oid;
@@ -277,7 +286,7 @@ int commit_parse_buffer(git_commit *commit, void *data, size_t len)
 
 	if (buffer < buffer_end) {
 		const char *line_end;
-		size_t message_len = buffer_end - buffer;
+		size_t message_len;
 
 		/* Long message */
 		message_len = buffer_end - buffer;
@@ -318,6 +327,7 @@ GIT_COMMIT_GETTER(const char *, message_short, commit->message_short)
 GIT_COMMIT_GETTER(git_time_t, time, commit->committer->when.time)
 GIT_COMMIT_GETTER(int, time_offset, commit->committer->when.offset)
 GIT_COMMIT_GETTER(unsigned int, parentcount, commit->parent_oids.length)
+GIT_COMMIT_GETTER(const git_oid *, tree_oid, &commit->tree_oid);
 
 
 int git_commit_tree(git_tree **tree_out, git_commit *commit)
@@ -338,4 +348,9 @@ int git_commit_parent(git_commit **parent, git_commit *commit, unsigned int n)
 	return git_commit_lookup(parent, commit->object.repo, parent_oid);
 }
 
+const git_oid *git_commit_parent_oid(git_commit *commit, unsigned int n)
+{
+	assert(commit);
 
+	return git_vector_get(&commit->parent_oids, n);
+}

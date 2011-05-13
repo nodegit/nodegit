@@ -1,10 +1,11 @@
+from __future__ import with_statement
 from waflib.Context import Context
 from waflib.Build import BuildContext, CleanContext, \
         InstallContext, UninstallContext
 
 # Unix flags
-CFLAGS_UNIX = ["-O2", "-Wall", "-Wextra"]
-CFLAGS_UNIX_DBG = ['-g']
+CFLAGS_UNIX = ["-O2", "-Wall", "-Wextra", "-fPIC"]
+CFLAGS_UNIX_DBG = ['-g', '-O0']
 
 # Windows MSVC flags
 CFLAGS_WIN32_COMMON = ['/TC', '/W4', '/WX', '/nologo', '/Zi']
@@ -16,7 +17,7 @@ CFLAGS_WIN32_L = ['/RELEASE']  # used for /both/ debug and release builds.
                                # sets the module's checksum in the header.
 CFLAGS_WIN32_L_DBG = ['/DEBUG']
 
-ALL_LIBS = ['crypto', 'pthread', 'sqlite3']
+ALL_LIBS = ['crypto', 'pthread', 'sqlite3', 'hiredis']
 
 def options(opt):
     opt.load('compiler_c')
@@ -30,7 +31,9 @@ PPC optimized version (ppc) or the SHA1 functions from OpenSSL (openssl)")
     opt.add_option('--arch', action='store', default='x86',
         help='Select target architecture (ia64, x64, x86, x86_amd64, x86_ia64)')
     opt.add_option('--with-sqlite', action='store_true', default=False,
-        dest='use_sqlite', help='Disable sqlite support')
+        dest='use_sqlite', help='Enable sqlite support')
+    opt.add_option('--with-hiredis', action='store_true', default=False,
+        dest='use_hiredis', help='Enable redis support using hiredis')
     opt.add_option('--threadsafe', action='store_true', default=False,
         help='Make libgit2 thread-safe (requires pthreads)')
 
@@ -62,6 +65,9 @@ def configure(conf):
     else:
         conf.env.PLATFORM = 'unix'
 
+    if conf.env.DEST_OS == 'sunos':
+        conf.env.DEFINES += ['NO_VIZ']
+
     if conf.options.threadsafe:
         if conf.env.PLATFORM == 'unix':
             conf.check_cc(lib='pthread', uselib_store='pthread')
@@ -71,6 +77,12 @@ def configure(conf):
     if conf.options.use_sqlite and conf.check_cc(
         lib='sqlite3', uselib_store='sqlite3', install_path=None, mandatory=False):
         conf.env.DEFINES += ['GIT2_SQLITE_BACKEND']
+
+    # check for hiredis
+    if conf.options.use_hiredis and conf.check_cc(
+        lib='hiredis', uselib_store='hiredis', install_path=None, mandatory=False):
+        conf.env.DEFINES += ['GIT2_HIREDIS_BACKEND']
+
 
     if conf.options.sha1 not in ['openssl', 'ppc', 'builtin']:
         conf.fatal('Invalid SHA1 option')

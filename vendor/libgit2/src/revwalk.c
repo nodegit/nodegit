@@ -191,6 +191,7 @@ static int commit_quick_parse(git_revwalk *walk, commit_object *commit, git_rawo
 	unsigned char *parents_start;
 
 	int i, parents = 0;
+	long commit_time;
 
 	buffer += STRLEN("tree ") + GIT_OID_HEXSZ + 1;
 
@@ -227,10 +228,10 @@ static int commit_quick_parse(git_revwalk *walk, commit_object *commit, git_rawo
 	if (buffer == NULL)
 		return GIT_EOBJCORRUPTED;
 
-	commit->time = strtol((char *)buffer + 2, NULL, 10);
-	if (commit->time == 0)
+	if (git__strtol32(&commit_time, (char *)buffer + 2, NULL, 10) < GIT_SUCCESS)
 		return GIT_EOBJCORRUPTED;
 
+	commit->time = (time_t)commit_time;
 	commit->parsed = 1;
 	return GIT_SUCCESS;
 }
@@ -482,7 +483,7 @@ int git_revwalk_new(git_revwalk **revwalk_out, git_repository *repo)
 void git_revwalk_free(git_revwalk *walk)
 {
 	unsigned int i;
-	const void *_unused;
+	const void *GIT_UNUSED(_unused);
 	commit_object *commit;
 
 	if (walk == NULL)
@@ -557,7 +558,7 @@ int git_revwalk_next(git_oid *oid, git_revwalk *walk)
 
 void git_revwalk_reset(git_revwalk *walk)
 {
-	const void *_unused;
+	const void *GIT_UNUSED(_unused);
 	commit_object *commit;
 
 	assert(walk);

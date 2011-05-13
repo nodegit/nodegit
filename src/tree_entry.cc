@@ -97,25 +97,25 @@ Handle<Value> GitTreeEntry::Id(const Arguments& args) {
 Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
   HandleScope scope;
 
-  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+  //GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-  }
+  //if(args.Length() == 0 || !args[0]->IsObject()) {
+  //  return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  //}
 
-  if(args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Object is required and must be an Object.")));
-  }
+  //if(args.Length() == 1 || !args[1]->IsObject()) {
+  //  return ThrowException(Exception::Error(String::New("Object is required and must be an Object.")));
+  //}
 
-  GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
-  GitObject* object = ObjectWrap::Unwrap<GitObject(args[1]->ToObject());
+  //GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
+  //GitObject* object = ObjectWrap::Unwrap<GitObject(args[1]->ToObject());
 
-  git_object* out;
-  entry->ToObject(repo->GetValue(), &out);
+  //git_object* out;
+  //entry->ToObject(repo->GetValue(), &out);
 
-  GitObject->SetValue(out);
-  
-  return scope.Close(;
+  //GitObject->SetValue(out);
+  //
+  return scope.Close(Undefined());
 }
 Persistent<FunctionTemplate> GitTreeEntry::constructor_template;
 
