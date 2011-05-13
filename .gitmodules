@@ -7,3 +7,6 @@
 [submodule "vendor/libgit2"]
 	path = vendor/libgit2
 	url = git://github.com/libgit2/libgit2.git
+[submodule "example/stress/jquery"]
+	path = example/stress/jquery
+	url = https://github.com/jquery/jquery.git

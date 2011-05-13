@@ -10,7 +10,8 @@ var git = require( 'nodegit' );
 var curses = [ 'add', 'swears', 'here' ]
   , path = './.git'
   , branch = 'master'
-  , wordExp = /\b\w+\b/g;
+  , reCurse = new RegExp('\\b(?:' + curses.join('|') + ')\\b', 'gi');
+
 
 // Set git path
 if ( process.argv.length < 3 ) {
@@ -44,17 +45,10 @@ git.repo( path, function( err, repo ) {
     var history = branch.history();
     history.on( 'commit', function( idx, commit ) {
       // Check commit messages first
-      curses.forEach(function( curse ) {
-        var messageWords = commit.message.match( wordExp );
-
-        messageWords.forEach(function( word ) {
-          if ( word == curse ) {
-            console.log( 'Curse detected in commit', commit.sha, 'message' ); 
-
-            return;
-          }
-        });
-      });
+      if ( reCurse.test(commit.message) ) {
+        console.log( 'Curse detected in commit', commit.sha, 'message' ); 
+        return;
+      }
     });
   });
 });

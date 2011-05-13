@@ -8,10 +8,10 @@ var git = require( '../../' ).raw;
         var start = new Date;
 
         var repo = new git.Repo();
-        repo.open( '/home/tim/git/nodegit/.git', function() {
+        repo.open( 'jquery/.git', function() {
           var commit = new git.Commit();
 
-          console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
+          //console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
         });
 
       })();
@@ -27,13 +27,13 @@ var git = require( '../../' ).raw;
         var start = new Date;
 
         var repo = new git.Repo();
-        repo.open( '/home/tim/git/nodegit/.git', function() {
+        repo.open( 'jquery/.git', function() {
           var oid = new git.Oid();
-          oid.mkstr( 'cb76e3c030ab29db332aff3b297dc39451a84762' );
+          oid.mkstr( 'cf702496ee28830f3488ed3f1c3940cfbb2dfa8f' );
 
           var commit = new git.Commit();
           commit.lookup( repo, oid, function( err ) {
-            console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
+            //console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
           });
         });
 

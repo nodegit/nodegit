@@ -31,25 +31,21 @@ process.chdir( './test' );
 reporter.run(
   [
     // Raw API
-    'raw-blob.js',
-    'raw-commit.js',
-    'raw-error.js',
-    'raw-obj.js',
-    'raw-oid.js',
-    'raw-ref.js',
-    'raw-repo.js',
-    'raw-revwalk.js',
-    // Revwalk
+    'raw-blob.js'
+  , 'raw-commit.js'
+  , 'raw-error.js'
+  , 'raw-object.js'
+  , 'raw-oid.js'
+  , 'raw-reference.js'
+  , 'raw-repo.js'
+  , 'raw-revwalk.js'
     // Sig
     // Tree
     // Tree Entry
     // Util
     
-    // TODO:
-    //'raw-revwalk.js',
-
     // Convenience API
-    'convenience-repo.js'
+  , 'convenience-repo.js'
     // Blob
     // Commit
     // Error

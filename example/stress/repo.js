@@ -23,7 +23,7 @@ var git = require( 'nodegit' ).raw;
       (function() {
         var start = new Date;
         var repo = new git.Repo();
-        repo.open( '/home/tim/git/nodegit/.git', function() {
+        repo.open( 'jquery/.git', function() {
         
           //console.log( 'Time taken: ' + (+new Date-start) + 'ms' );
         });
