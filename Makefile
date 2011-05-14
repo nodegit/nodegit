@@ -17,6 +17,9 @@ config:
 build:
 	@@$(NODE_BLD) build
 
+debug:
+	@@$(NODE_BLD) debug
+
 install:
 	@@mkdir -p $(INSTALL_PATH)
 	@@mkdir -p $(INSTALL_PATH)/build/default

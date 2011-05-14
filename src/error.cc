@@ -38,13 +38,13 @@ Handle<Value> GitError::New(const Arguments& args) {
   GitError *error = new GitError();
   error->Wrap(args.This());
 
-  return args.This();
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitError::StrError(const Arguments& args) {
-  GitError* error = ObjectWrap::Unwrap<GitError>(args.This());
-
   HandleScope scope;
+
+  GitError* error = ObjectWrap::Unwrap<GitError>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Error is required and must be a Number.")));
@@ -52,7 +52,7 @@ Handle<Value> GitError::StrError(const Arguments& args) {
 
   Local<Integer> err = Local<Integer>::Cast(args[0]);
 
-  return String::New(error->StrError(err->Value()));
+  return scope.Close( String::New(error->StrError(err->Value())) );
 }
 
 Persistent<FunctionTemplate> GitError::constructor_template;

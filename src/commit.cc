@@ -143,7 +143,7 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   eio_custom(EIO_Lookup, EIO_PRI_DEFAULT, EIO_AfterLookup, ar);
   ev_ref(EV_DEFAULT_UC);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 int GitCommit::EIO_Lookup(eio_req *req) {
@@ -185,7 +185,7 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   commit->Close();
   
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitCommit::Id(const Arguments& args) {
@@ -201,7 +201,7 @@ Handle<Value> GitCommit::Id(const Arguments& args) {
 
   oid->SetValue(*const_cast<git_oid *>(commit->Id()));
   
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitCommit::MessageShort(const Arguments& args) {
@@ -209,7 +209,7 @@ Handle<Value> GitCommit::MessageShort(const Arguments& args) {
   
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
-  return String::New(commit->MessageShort());
+  return scope.Close( String::New(commit->MessageShort()) );
 }
 
 Handle<Value> GitCommit::Message(const Arguments& args) {
@@ -217,7 +217,7 @@ Handle<Value> GitCommit::Message(const Arguments& args) {
   
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
-  return String::New(commit->Message());
+  return scope.Close( String::New(commit->Message()) );
 }
 
 Handle<Value> GitCommit::Time(const Arguments& args) {
@@ -225,7 +225,7 @@ Handle<Value> GitCommit::Time(const Arguments& args) {
   
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
-  return Integer::New(commit->Time());
+  return scope.Close( Integer::New(commit->Time()) );
 }
 
 Handle<Value> GitCommit::TimeOffset(const Arguments& args) {
@@ -233,7 +233,7 @@ Handle<Value> GitCommit::TimeOffset(const Arguments& args) {
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   
-  return Integer::New(commit->TimeOffset());
+  return scope.Close( Integer::New(commit->TimeOffset()) );
 }
 
 Handle<Value> GitCommit::Committer(const Arguments& args) {
@@ -249,7 +249,7 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
 
   sig->SetValue(const_cast<git_signature *>(commit->Committer()));
   
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitCommit::Author(const Arguments& args) {
@@ -265,7 +265,7 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
 
   sig->SetValue(const_cast<git_signature *>(commit->Author()));
   
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitCommit::Tree(const Arguments& args) {
@@ -283,7 +283,7 @@ Handle<Value> GitCommit::Tree(const Arguments& args) {
   int err = commit->Tree(&tree);
   g_tree->SetValue(tree);
 
-  return scope.Close(Integer::New(err));
+  return scope.Close( Integer::New(err) );
 }
 
 Handle<Value> GitCommit::ParentCount(const Arguments& args) {
@@ -293,7 +293,7 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
 
   unsigned int count = commit->ParentCount();
 
-  return Integer::New(count);
+  return scope.Close( Integer::New(count) );
 }
 
 Handle<Value> GitCommit::Parent(const Arguments& args) {
@@ -316,7 +316,7 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
   int err = commit->Parent(&in, index);
   out->SetValue(in);
 
-  return Integer::New(err);
+  return scope.Close( Integer::New(err) );
 }
 
 Persistent<FunctionTemplate> GitCommit::constructor_template;

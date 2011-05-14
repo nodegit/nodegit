@@ -24,7 +24,7 @@ class GitOid : public EventEmitter {
 
     int Mkstr(const char* str);
     void Mkraw(const unsigned char* raw);
-    char* Fmt(char* buffer);
+    void Fmt(char* buffer);
     void PathFmt(char *str);
     char* AllocFmt();
     char* ToString(char* buffer, size_t bufferSize);

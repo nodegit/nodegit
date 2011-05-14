@@ -69,7 +69,7 @@ Handle<Value> GitSig::New(const Arguments& args) {
   GitSig *sig = new GitSig();
   sig->Wrap(args.This());
 
-  return args.This();
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitSig::Dup(const Arguments& args) {
@@ -82,7 +82,7 @@ Handle<Value> GitSig::Dup(const Arguments& args) {
   GitSig* sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
   sig->SetValue(sig->Dup());
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitSig::Free(const Arguments& args) {
@@ -91,7 +91,7 @@ Handle<Value> GitSig::Free(const Arguments& args) {
   GitSig *sig = ObjectWrap::Unwrap<GitSig>(args.This());
   sig->Free();
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitSig::Name(const Arguments& args) {
@@ -99,7 +99,7 @@ Handle<Value> GitSig::Name(const Arguments& args) {
 
   GitSig *sig = ObjectWrap::Unwrap<GitSig>(args.This());
 
-  return String::New(sig->Name());
+  return scope.Close( String::New(sig->Name()) );
 }
 
 Handle<Value> GitSig::Email(const Arguments& args) {
@@ -107,6 +107,6 @@ Handle<Value> GitSig::Email(const Arguments& args) {
 
   GitSig *sig = ObjectWrap::Unwrap<GitSig>(args.This());
 
-  return String::New(sig->Email());
+  return scope.Close( String::New(sig->Email()) );
 }
 Persistent<FunctionTemplate> GitSig::constructor_template;

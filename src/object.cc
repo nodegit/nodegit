@@ -93,7 +93,7 @@ Handle<Value> GitObject::New(const Arguments& args) {
 
   obj->Wrap(args.This());
 
-  return args.This();
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitObject::Id(const Arguments& args) {
@@ -109,7 +109,7 @@ Handle<Value> GitObject::Id(const Arguments& args) {
 
   oid->SetValue(*const_cast<git_oid *>(obj->Id()));
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitObject::Type(const Arguments& args) {
@@ -117,7 +117,7 @@ Handle<Value> GitObject::Type(const Arguments& args) {
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
   
-  return Integer::New(obj->Type());
+  return scope.Close( Integer::New(obj->Type()) );
 }
 
 Handle<Value> GitObject::Owner(const Arguments& args) {
@@ -133,7 +133,7 @@ Handle<Value> GitObject::Owner(const Arguments& args) {
 
   repo->SetValue(obj->Owner());
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitObject::Type2String(const Arguments& args) {
@@ -147,7 +147,7 @@ Handle<Value> GitObject::Type2String(const Arguments& args) {
 
   git_otype type = (git_otype)args[0]->ToInteger()->Value();
 
-  return String::New(obj->Type2String(type));
+  return scope.Close( String::New(obj->Type2String(type)) );
 }
 
 Handle<Value> GitObject::String2Type(const Arguments& args) {
@@ -161,7 +161,7 @@ Handle<Value> GitObject::String2Type(const Arguments& args) {
 
   String::Utf8Value type(args[0]);
 
-  return Integer::New(obj->String2Type(*type));
+  return scope.Close( Integer::New(obj->String2Type(*type)) );
 }
 
 Handle<Value> GitObject::TypeIsLoose(const Arguments& args) {
@@ -175,7 +175,7 @@ Handle<Value> GitObject::TypeIsLoose(const Arguments& args) {
 
   git_otype type = (git_otype)args[0]->ToInteger()->Value();
 
-  return Integer::New(obj->TypeIsLoose(type));
+  return scope.Close( Integer::New(obj->TypeIsLoose(type)) );
 }
 
 Handle<Value> GitObject::Size(const Arguments& args) {
@@ -189,7 +189,7 @@ Handle<Value> GitObject::Size(const Arguments& args) {
 
   git_otype type = (git_otype)args[0]->ToInteger()->Value();
 
-  return Integer::New(obj->Size(type));
+  return scope.Close( Integer::New(obj->Size(type)) );
 }
 
 Persistent<FunctionTemplate> GitObject::constructor_template;

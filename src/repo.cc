@@ -66,14 +66,14 @@ Handle<Value> GitRepo::New(const Arguments& args) {
   GitRepo *repo = new GitRepo();
   repo->Wrap(args.This());
 
-  return args.This();
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitRepo::Open(const Arguments& args) {
+  HandleScope scope;
+
   GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
   Local<Function> callback;
-
-  HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("Path is required and must be a String.")));
@@ -98,7 +98,7 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   eio_custom(EIO_Open, EIO_PRI_DEFAULT, EIO_AfterOpen, ar);
   ev_ref(EV_DEFAULT_UC);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 int GitRepo::EIO_Open(eio_req *req) {
@@ -134,10 +134,10 @@ int GitRepo::EIO_AfterOpen(eio_req *req) {
 }
 
 Handle<Value> GitRepo::Lookup(const Arguments& args) {
+  HandleScope scope;
+
   GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
   Local<Function> callback;
-
-  HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Object is required and must be a Object.")));
@@ -166,7 +166,7 @@ Handle<Value> GitRepo::Lookup(const Arguments& args) {
   //eio_custom(EIO_LookupRef, EIO_PRI_DEFAULT, EIO_AfterLookupRef, ar);
   //ev_ref(EV_DEFAULT_UC);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 int GitRepo::EIO_Lookup(eio_req *req) {
@@ -212,20 +212,20 @@ int GitRepo::EIO_AfterLookup(eio_req *req) {
 }
 
 Handle<Value> GitRepo::Free(const Arguments& args) {
-  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
-
   HandleScope scope;
+
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
 
   repo->Free();
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitRepo::Init(const Arguments& args) {
+  HandleScope scope;
+
   GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
   Local<Function> callback;
-
-  HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("path is required and must be a String.")));
@@ -255,7 +255,7 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   eio_custom(EIO_Init, EIO_PRI_DEFAULT, EIO_AfterInit, ar);
   ev_ref(EV_DEFAULT_UC);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 int GitRepo::EIO_Init(eio_req *req) {

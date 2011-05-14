@@ -95,7 +95,7 @@ Handle<Value> GitRevWalk::New(const Arguments& args) {
 
   revwalk->Wrap(args.This());
 
-  return args.This();
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitRevWalk::Reset(const Arguments& args) {
@@ -105,7 +105,7 @@ Handle<Value> GitRevWalk::Reset(const Arguments& args) {
 
   revwalk->Reset();
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitRevWalk::Push(const Arguments& args) {
@@ -121,14 +121,14 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
   git_oid tmp = oid->GetValue();
   int err = revwalk->Push(&tmp);
 
-  return Integer::New(err);
+  return scope.Close( Integer::New(err) );
 }
 
 Handle<Value> GitRevWalk::Next(const Arguments& args) {
+  HandleScope scope;
+
   GitRevWalk* revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
   Local<Function> callback;
-
-  HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
@@ -150,7 +150,7 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
   eio_custom(EIO_Next, EIO_PRI_DEFAULT, EIO_AfterNext, ar);
   ev_ref(EV_DEFAULT_UC);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 int GitRevWalk::EIO_Next(eio_req *req) {
@@ -188,13 +188,13 @@ int GitRevWalk::EIO_AfterNext(eio_req *req) {
 }
 
 Handle<Value> GitRevWalk::Free(const Arguments& args) {
-  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
-
   HandleScope scope;
+
+  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
 
   revwalk->Free();
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitRevWalk::Repository(const Arguments& args) {
@@ -209,6 +209,6 @@ Handle<Value> GitRevWalk::Repository(const Arguments& args) {
   GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
   repo->SetValue(revwalk->Repository());
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 Persistent<FunctionTemplate> GitRevWalk::constructor_template;

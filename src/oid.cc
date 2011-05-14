@@ -50,7 +50,7 @@ void GitOid::Mkraw(const unsigned char* raw) {
   git_oid_mkraw(&this->oid, raw);
 }
 
-char* GitOid::Fmt(char* buffer) {
+void GitOid::Fmt(char* buffer) {
   git_oid_fmt(buffer, &this->oid);
 }
 
@@ -98,52 +98,54 @@ Handle<Value> GitOid::Mkstr(const Arguments& args) {
 }
 
 Handle<Value> GitOid::Mkraw(const Arguments& args) {
-  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
+
+  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("Raw object id is required.")));
   }
 
-  String::Utf8Value raw(Local<Value>::New(args[0]));
+  String::Utf8Value raw(args[0]);
   oid->Mkraw((const unsigned char*)*raw);
 
-  return Local<Value>::New(args.This());
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitOid::Fmt(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
 
-  char buffer[32];
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
+
+  char buffer[40];
   oid->Fmt(buffer);
-  return String::New(buffer);
+
+  return scope.Close( String::New(buffer) );
 }
 
 Handle<Value> GitOid::PathFmt(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
+
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
 
   char buffer[41];
   oid->PathFmt(buffer);
-  return String::New(buffer);
+
+  return scope.Close( String::New(buffer) );
 }
 
 Handle<Value> GitOid::AllocFmt(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
 
-  return String::New(oid->AllocFmt());
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
+
+  return scope.Close( String::New(oid->AllocFmt()) );
 }
 
 Handle<Value> GitOid::ToString(const Arguments& args) {
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
-
   HandleScope scope;
+
+  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args.This());
   
   if(args.Length() == 0 || !args[0]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Length argument is required and must be a Number.")));
@@ -151,7 +153,8 @@ Handle<Value> GitOid::ToString(const Arguments& args) {
 
   char buffer[Int32::Cast(*args[0])->Value()+1];
   oid->ToString(buffer, sizeof(buffer));
-  return String::New(buffer);
+
+  return scope.Close( String::New(buffer) );
 }
 
 Handle<Value> GitOid::Cpy(const Arguments& args) {
@@ -169,7 +172,7 @@ Handle<Value> GitOid::Cpy(const Arguments& args) {
   oid->Cpy(out);
   clone->SetValue(*out);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitOid::Cmp(const Arguments& args) {
@@ -191,6 +194,6 @@ Handle<Value> GitOid::Cmp(const Arguments& args) {
   //int cmp = oid->Cmp(&a->GetValue(), &b->GetValue());
   int cmp = 0;
 
-  return Integer::New(cmp);
+  return scope.Close( Integer::New(cmp) );
 }
 Persistent<FunctionTemplate> GitOid::constructor_template;

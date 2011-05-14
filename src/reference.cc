@@ -58,10 +58,10 @@ Handle<Value> GitReference::New(const Arguments& args) {
 }
 
 Handle<Value> GitReference::Lookup(const Arguments& args) {
+  HandleScope scope;
+
   GitReference *ref = ObjectWrap::Unwrap<GitReference>(args.This());
   Local<Function> callback;
-
-  HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be a Object.")));
@@ -91,7 +91,7 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
   eio_custom(EIO_Lookup, EIO_PRI_DEFAULT, EIO_AfterLookup, ar);
   ev_ref(EV_DEFAULT_UC);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 int GitReference::EIO_Lookup(eio_req *req) {
@@ -129,8 +129,9 @@ int GitReference::EIO_AfterLookup(eio_req *req) {
 }
 
 Handle<Value> GitReference::Oid(const Arguments& args) {
-  GitReference *ref = ObjectWrap::Unwrap<GitReference>(args.This());
   HandleScope scope;
+
+  GitReference *ref = ObjectWrap::Unwrap<GitReference>(args.This());
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
@@ -140,6 +141,6 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
   git_oid* in = const_cast<git_oid *>(ref->Oid());
   oid->SetValue(*in);
 
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 Persistent<FunctionTemplate> GitReference::constructor_template;

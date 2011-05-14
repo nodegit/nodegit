@@ -64,7 +64,7 @@ Handle<Value> GitTree::New(const Arguments& args) {
 
   tree->Wrap(args.This());
 
-  return args.This();
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitTree::EntryCount(const Arguments& args) {
@@ -74,7 +74,7 @@ Handle<Value> GitTree::EntryCount(const Arguments& args) {
 
   int count = tree->EntryCount();
     
-  return Local<Value>::New(Integer::New(count));
+  return scope.Close( Integer::New(count) );
 }
 
 Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
@@ -96,7 +96,7 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
 
   entry->SetValue(tree->EntryByIndex(index));
     
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitTree::EntryByName(const Arguments& args) {
@@ -120,7 +120,7 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
 
   entry->SetValue(tree->EntryByName(*name));
     
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitTree::SortEntries(const Arguments& args) {
@@ -130,16 +130,16 @@ Handle<Value> GitTree::SortEntries(const Arguments& args) {
 
   int err = tree->SortEntries();
   
-  return Integer::New(err);
+  return scope.Close( Integer::New(err) );
 }
 
 Handle<Value> GitTree::ClearEntries(const Arguments& args) {
-  //HandleScope scope;
+  HandleScope scope;
 
   //GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
 
   //tree->ClearEntries();
-  //  
-  return Undefined();
+
+  return scope.Close( Undefined() );
 }
 Persistent<FunctionTemplate> GitTree::constructor_template;

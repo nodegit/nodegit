@@ -59,7 +59,7 @@ Handle<Value> GitTreeEntry::New(const Arguments& args) {
 
   entry->Wrap(args.This());
 
-  return args.This();
+  return scope.Close( args.This() );
 }
 
 Handle<Value> GitTreeEntry::Name(const Arguments& args) {
@@ -67,7 +67,7 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
 
   GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
 
-  return String::New(entry->Name());
+  return scope.Close( String::New(entry->Name()) );
 }
 
 Handle<Value> GitTreeEntry::Attributes(const Arguments& args) {
@@ -75,7 +75,7 @@ Handle<Value> GitTreeEntry::Attributes(const Arguments& args) {
 
   GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
 
-  return Number::New(entry->Attributes());
+  return scope.Close( Number::New(entry->Attributes()) );
 }
 
 Handle<Value> GitTreeEntry::Id(const Arguments& args) {
@@ -91,7 +91,7 @@ Handle<Value> GitTreeEntry::Id(const Arguments& args) {
 
   oid->SetValue(*const_cast<git_oid *>(entry->Id()));
   
-  return Undefined();
+  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
@@ -115,7 +115,7 @@ Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
 
   //GitObject->SetValue(out);
   //
-  return scope.Close(Undefined());
+  return scope.Close( Undefined() );
 }
 Persistent<FunctionTemplate> GitTreeEntry::constructor_template;
 
