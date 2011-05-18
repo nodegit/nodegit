@@ -10,6 +10,7 @@
 
 #include "../vendor/libgit2/include/git2.h"
 
+#include "../include/utils.h"
 #include "../include/repo.h"
 #include "../include/blob.h"
 
@@ -149,9 +150,13 @@ Handle<Value> GitBlob::RawContent(const Arguments& args) {
   int rawSize = blob->RawSize();
   const char* contents = (const char *)const_cast<void *>(blob->RawContent());
 
-  Buffer* buffer = Buffer::New(const_cast<char *>(contents), strlen(contents));
+  int bufferLength = strlen(contents);
+  Buffer* buffer = Buffer::New(const_cast<char *>(contents), bufferLength);
+     
+  Local<Object> fastBuffer;
+  MAKE_FAST_BUFFER(buffer, fastBuffer);
 
-  return scope.Close( buffer->handle_ );
+  return scope.Close( fastBuffer );
 }
 
 Handle<Value> GitBlob::RawSize(const Arguments& args) {
