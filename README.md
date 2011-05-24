@@ -14,7 +14,9 @@ To run `nodegit` you need `Node.js` and to run unit tests you will need to have 
 ### Easy install (Recommended) ###
 This will install and configure everything you need to use `nodegit`.
 
-    $ sudo npm install nodegit
+```` bash
+$ sudo npm install nodegit
+````
 
 To update an existing installation, run
 
@@ -54,121 +56,125 @@ API Example Usage
 
 #### Convenience API ####
 
-    var git = require( 'nodegit' );
-    
-    // Read a repository
-    git.repo( '.git', function( err, repo ) {
-        // Success is always 0, failure is always an error string
+```` javascript
+var git = require( 'nodegit' );
+
+// Read a repository
+git.repo( '.git', function( err, repo ) {
+    // Success is always 0, failure is always an error string
+    if( err ) { throw err; }
+
+    // Use the master branch
+    repo.branch( 'master', function( err, branch ) {
         if( err ) { throw err; }
 
-        // Use the master branch
-        repo.branch( 'master', function( err, branch ) {
-            if( err ) { throw err; }
-
-            // Iterate over the revision history
-            var history = branch.history();
-            
-            // Commit event is emitted with index 0,n... and commit object
-            history.on( 'commit', function( idx, commit ) {
-                // Print out `git log` emulation
-                console.log( 'commit ' + commit.sha );
-                console.log( commit.author.name + '<' + commit.author.email + '>' );
-                console.log( commit.time );
-                console.log( '\n' );
-                console.log( commit.message );
-                console.log( '\n' );
-            });
+        // Iterate over the revision history
+        var history = branch.history();
+        
+        // Commit event is emitted with index 0,n... and commit object
+        history.on( 'commit', function( idx, commit ) {
+            // Print out `git log` emulation
+            console.log( 'commit ' + commit.sha );
+            console.log( commit.author.name + '<' + commit.author.email + '>' );
+            console.log( commit.time );
+            console.log( '\n' );
+            console.log( commit.message );
+            console.log( '\n' );
         });
     });
+});
+````
 
 #### Raw API ####
 
-    var git = require( 'nodegit' ).raw;
-    
-    // Create instance of Repo constructor
-    var repo = new git.Repo();
+```` javascript
+var git = require( 'nodegit' ).raw;
 
-    // Read a repository
-    repo.open( '.git', function( err ) {
-        // Err is an integer, success is 0, use strError for string representation
+// Create instance of Repo constructor
+var repo = new git.Repo();
+
+// Read a repository
+repo.open( '.git', function( err ) {
+    // Err is an integer, success is 0, use strError for string representation
+    if( err ) {
+        var error = new git.Error();
+        throw error.strError( err );
+    }
+
+    // Create instance of Ref constructor with this repository
+    var ref = new git.Ref( repo );
+    
+    // Find the master branch
+    repo.lookupRef( ref, '/refs/heads/master', function( err ) {
         if( err ) {
-            var error = new git.Error();
-            throw error.strError( err );
+          var error = new git.Error();
+          throw error.strError( err );
         }
 
-        // Create instance of Ref constructor with this repository
-        var ref = new git.Ref( repo );
-        
-        // Find the master branch
-        repo.lookupRef( ref, '/refs/heads/master', function( err ) {
+        // Create instance of Commit constructor with this repository
+        var commit = new git.Commit( repo ),
+            // Create instance of Oid constructor
+            oid = new git.Oid();
+
+        // Set the oid constructor internal reference to this branch reference
+        ref.oid( oid );
+
+        // Lookup the commit for this oid
+        commit.lookup( oid, function() {
             if( err ) {
               var error = new git.Error();
               throw error.strError( err );
             }
 
-            // Create instance of Commit constructor with this repository
-            var commit = new git.Commit( repo ),
-                // Create instance of Oid constructor
-                oid = new git.Oid();
+            // Create instance of RevWalk constructor with this repository
+            var revwalk = new git.RevWalk( repo );
 
-            // Set the oid constructor internal reference to this branch reference
-            ref.oid( oid );
+            // Push the commit as the start to walk
+            revwalk.push( commit );
 
-            // Lookup the commit for this oid
-            commit.lookup( oid, function() {
-                if( err ) {
-                  var error = new git.Error();
-                  throw error.strError( err );
-                }
+            // Recursive walk
+            function walk() {
+                // Each revision walk iteration yields a commit
+                var revisionCommit = new git.Commit( repo );
 
-                // Create instance of RevWalk constructor with this repository
-                var revwalk = new git.RevWalk( repo );
+                revwalk.next( revisionCommit, function( err ) {
+                    // Finish recursion once no more revision commits are left
+                    if( err ) { return; }
 
-                // Push the commit as the start to walk
-                revwalk.push( commit );
+                    // Create instance of Oid for sha
+                    var oid = new git.Oid();
 
-                // Recursive walk
-                function walk() {
-                    // Each revision walk iteration yields a commit
-                    var revisionCommit = new git.Commit( repo );
+                    // Set oid to the revision commit
+                    revisionCommit.id( oid );
 
-                    revwalk.next( revisionCommit, function( err ) {
-                        // Finish recursion once no more revision commits are left
-                        if( err ) { return; }
+                    // Create instance of Sig for author
+                    var author = new git.Sig();
 
-                        // Create instance of Oid for sha
-                        var oid = new git.Oid();
+                    // Set the author to the revision commit author
+                    revisionCommit.author( author );
 
-                        // Set oid to the revision commit
-                        revisionCommit.id( oid );
+                    // Convert timestamp to milliseconds and set new Date object
+                    var time = new Date( revisionCommit.time() * 1000 );
 
-                        // Create instance of Sig for author
-                        var author = new git.Sig();
+                    // Print out `git log` emulation
+                    console.log( oid.toString( 40 ) );
+                    console.log( author.name() + '<' + author.email() + '>' );
+                    console.log( time );
+                    console.log( '\n' );
+                    console.log( revisionCommit.message() );
+                    console.log( '\n' );
 
-                        // Set the author to the revision commit author
-                        revisionCommit.author( author );
+                    // Recurse!
+                    walk();
+                });
+            }
 
-                        // Convert timestamp to milliseconds and set new Date object
-                        var time = new Date( revisionCommit.time() * 1000 );
-
-                        // Print out `git log` emulation
-                        console.log( oid.toString( 40 ) );
-                        console.log( author.name() + '<' + author.email() + '>' );
-                        console.log( time );
-                        console.log( '\n' );
-                        console.log( revisionCommit.message() );
-                        console.log( '\n' );
-
-                        // Recurse!
-                        walk();
-                    });
-                }
-
-                // Initiate recursion
-                walk():
-            });
+            // Initiate recursion
+            walk():
         });
     });
+});
+````
 
 Running tests
 -------------
