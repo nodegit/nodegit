@@ -20,27 +20,33 @@ $ sudo npm install nodegit
 
 To update an existing installation, run
 
-    $ sudo npm update nodegit
+```` bash
+$ sudo npm update nodegit
+````
 
 ### Mac OS X/Linux/Unix ###
 
 #### Install `nodegit` by cloning source from GitHub and running the `configure`, `make`, and `make install` commands: ####
 \*Note: `nodegit` assumes your library path exists at `~/.node_libraries` you can change this by specifying a new lib path\*
     
-    $ git clone git://github.com/tbranyen/nodegit.git
-    $ cd nodegit
+```` bash
+$ git clone git://github.com/tbranyen/nodegit.git
+$ cd nodegit
 
-    $ ./configure
-    $ make
-    $ make install
-    
-    $ make install NODE_LIB_PATH=/path/to/your/libraries
+$ ./configure
+$ make
+$ make install
+
+$ make install NODE_LIB_PATH=/path/to/your/libraries
+````
 
 \*Updating to a new version\*
 
-    $ make update
+```` bash
+$ make update
 
-    $ make update NODE_LIB_PATH=/path/to/your/libraries
+$ make update NODE_LIB_PATH=/path/to/your/libraries
+````
 
 ### Windows via Cygwin ###
 
