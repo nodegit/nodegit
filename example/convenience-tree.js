@@ -6,9 +6,19 @@ git.repo( '../.git', function( err, repo ) {
   repo.branch( 'master', function( err, branch ) {
     if( err ) { throw err; }
 
-    branch.tree().walk( function( idx, entry ) {
-      console.log( entry.name );
-      console.log( entry.content );
+    branch.tree().walk().on('entry', function( idx, entry ) {
+      //console.log(entry.entry);
+      console.log( entry.name, entry.attributes );
+      //console.log( entry.content );
     });
+
+    //branch.tree().entry('example/raw-blob.js', function( entry ) {
+    //  if( entry ) {
+    //    console.log(entry.name);
+    //  }
+    //  else {
+    //    console.log('not found');
+    //  }
+    //});
   });
 });

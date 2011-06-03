@@ -106,14 +106,14 @@ exports.rawContent = function( test ) {
           entry = new git.TreeEntry(),
           blob = new git.Blob( testRepo );
 
-      if( !testCommit.tree( tree ) && tree.entryCount() > 1 ) {
-        tree.entryByIndex( entry, 1 );
-        entry.toObject( testRepo, blob );
+      //if( !testCommit.tree( tree ) && tree.entryCount() > 1 ) {
+      //  tree.entryByIndex( entry, 1 );
+      //  entry.toObject( testRepo, blob );
 
-        //console.log( entry.name() + ':' );
-        //console.log( blob.rawSize() );
-        //console.dir( blob.rawContent() );
-      }
+      //  //console.log( entry.name() + ':' );
+      //  //console.log( blob.rawSize() );
+      //  //console.dir( blob.rawContent() );
+      //}
     });
   });
  

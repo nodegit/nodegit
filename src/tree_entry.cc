@@ -27,9 +27,14 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "attributes", Attributes);
+  NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "toObject", ToObject);
 
   target->Set(String::NewSymbol("TreeEntry"), constructor_template->GetFunction());
+}
+
+git_tree_entry* GitTreeEntry::GetValue() {
+  return this->entry;
 }
 
 void GitTreeEntry::SetValue(git_tree_entry* entry) {

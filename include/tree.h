@@ -8,6 +8,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <v8.h>
 #include <node.h>
 #include <node_events.h>
+#include <string>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -48,13 +49,12 @@ class GitTree : public EventEmitter {
     /**
      * Lookup a tree object from a repository.
      *
-     * @param tree pointer to the looked up tree
      * @param repo the repo to use when locating the tree.
      * @param id identity of the tree to locate.
      *
      * @return 0 on success; error code otherwise
      */
-    int Lookup(git_tree** tree, git_repository* repo, const git_oid* id);
+    int Lookup(git_repository* repo, const git_oid* id);
     /**
      * Get number of entries in the looked up tree.
      *
@@ -93,9 +93,16 @@ class GitTree : public EventEmitter {
      */
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> Lookup(const Arguments& args);
+    static int EIO_Lookup(eio_req *req);
+    static int EIO_AfterLookup(eio_req *req);
     static Handle<Value> EntryCount(const Arguments& args);
     static Handle<Value> EntryByIndex(const Arguments& args);
+    static int EIO_EntryByIndex(eio_req *req);
+    static int EIO_AfterEntryByIndex(eio_req *req);
     static Handle<Value> EntryByName(const Arguments& args);
+    static int EIO_EntryByName(eio_req *req);
+    static int EIO_AfterEntryByName(eio_req *req);
     static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);
 
@@ -104,6 +111,34 @@ class GitTree : public EventEmitter {
      * Internal reference to git_tree object
      */
     git_tree* tree;
+    /**
+     * Structure to handle async lookups
+     */
+    struct lookup_request {
+      GitTree* tree;
+      GitRepo* repo;
+      GitOid* oid;
+      int err;
+      Persistent<Function> callback;
+    };
+    /**
+     * Structure to handle async entryByIndex
+     */
+    struct entryindex_request {
+      GitTree* tree;
+      GitTreeEntry* entry;
+      int idx;
+      Persistent<Function> callback;
+    };
+    /**
+     * Structure to handle async entryByName
+     */
+    struct entryname_request {
+      GitTree* tree;
+      GitTreeEntry* entry;
+      std::string name;
+      Persistent<Function> callback;
+    };
 };
 
 #endif
