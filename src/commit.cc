@@ -169,8 +169,9 @@ int GitCommit::EIO_AfterLookup(eio_req *req) {
 
   ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
-  if(try_catch.HasCaught())
+  if(try_catch.HasCaught()) {
     FatalException(try_catch);
+  }
     
   ar->callback.Dispose();
 
