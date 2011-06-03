@@ -148,10 +148,10 @@ Handle<Value> GitBlob::RawContent(const Arguments& args) {
   GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
 
   int rawSize = blob->RawSize();
-  const char* contents = (const char *)const_cast<void *>(blob->RawContent());
+  std::string contents = (const char *)const_cast<void *>(blob->RawContent());
 
-  int bufferLength = strlen(contents);
-  Buffer* buffer = Buffer::New(const_cast<char *>(contents), bufferLength);
+  int bufferLength = contents.size();
+  Buffer* buffer = Buffer::New(const_cast<char *>(contents.c_str()), bufferLength);
      
   Local<Object> fastBuffer;
   MAKE_FAST_BUFFER(buffer, fastBuffer);
