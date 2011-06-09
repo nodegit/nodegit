@@ -61,6 +61,9 @@ void GitRevWalk::Reset() {
 }
 
 int GitRevWalk::Push(git_oid* oid) {
+  // Test
+  git_revwalk_sorting(this->revwalk, GIT_SORT_TIME | GIT_SORT_REVERSE);
+
   return git_revwalk_push(this->revwalk, oid);
 }
 
