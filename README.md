@@ -15,13 +15,7 @@ To run `nodegit` you need `Node.js` and to run unit tests you will need to have 
 This will install and configure everything you need to use `nodegit`.
 
 ```` bash
-$ sudo npm install nodegit
-````
-
-To update an existing installation, run
-
-```` bash
-$ sudo npm update nodegit
+$ npm install nodegit
 ````
 
 ### Mac OS X/Linux/Unix ###
