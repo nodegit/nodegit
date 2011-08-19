@@ -4,7 +4,7 @@ var git = require( 'nodegit' );
 
 //* Stress test revision walking
   //setInterval(function() {
-    for(var i=0; i<10000; i++) {
+//    for(var i=0; i<10000; i++) {
 
       (function() {
 
@@ -13,7 +13,7 @@ var git = require( 'nodegit' );
 
           this.branch( 'master', function() {
             this.history().on( 'commit', function( i, commit ) {
-              //console.log( commit.id.toString(40) );
+              console.log( commit.id.toString(40) );
             });
           });
         });
@@ -53,6 +53,6 @@ var git = require( 'nodegit' );
 
       })();
 
-    }
+//    }
   //}, 0);
 //*/
