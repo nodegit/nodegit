@@ -24,6 +24,30 @@ void GitError::Initialize (Handle<v8::Object> target) {
   constructor_template->SetClassName(String::NewSymbol("Error"));
 
   NODE_SET_PROTOTYPE_METHOD(constructor_template, "strError", StrError);
+  NODE_DEFINE_CONSTANT(constructor_template, GIT_SUCCESS);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_ERROR);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_ENOTOID);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_ENOTFOUND);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_ENOMEM);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EOSERR);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EOBJTYPE);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EOBJCORRUPTED);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_ENOTAREPO);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EINVALIDTYPE);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EMISSINGOBJDATA);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EPACKCORRUPTED);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EFLOCKFAIL);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EZLIB);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EBUSY);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EBAREINDEX);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EINVALIDREFNAME);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EREFCORRUPTED);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_ETOONESTEDSYMREF);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EPACKEDREFSCORRUPTED);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EINVALIDPATH);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EREVWALKOVER);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_EINVALIDREFSTATE);
+	NODE_DEFINE_CONSTANT(constructor_template, GIT_ENOTIMPLEMENTED);
 
   target->Set(String::NewSymbol("Error"), constructor_template->GetFunction());
 }
