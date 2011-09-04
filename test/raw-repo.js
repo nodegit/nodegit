@@ -58,7 +58,7 @@ exports.open = function( test ) {
 
   // Test invalid repository
   testRepo.open( '/etc/hosts', function( err ) {
-    test.equals( -8, err, 'Invalid repository error code' );
+    test.equals( -7, err, 'Invalid repository error code' );
 
     // Test valid repository
     testRepo.open( path.resolve( '../.git' ), function( err ) {
