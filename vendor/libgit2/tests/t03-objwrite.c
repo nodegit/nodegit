@@ -31,7 +31,7 @@ static char *odb_dir = "test-objects";
 
 static int make_odb_dir(void)
 {
-	if (gitfo_mkdir(odb_dir, 0755) < 0) {
+	if (p_mkdir(odb_dir, 0755) < 0) {
 		int err = errno;
 		fprintf(stderr, "can't make directory \"%s\"", odb_dir);
 		if (err == EEXIST)
@@ -44,9 +44,9 @@ static int make_odb_dir(void)
 
 static int check_object_files(object_data *d)
 {
-	if (gitfo_exists(d->dir) < 0)
+	if (git_futils_exists(d->dir) < 0)
 		return -1;
-	if (gitfo_exists(d->file) < 0)
+	if (git_futils_exists(d->file) < 0)
 		return -1;
 	return 0;
 }
@@ -64,16 +64,16 @@ static int cmp_objects(git_rawobj *o1, git_rawobj *o2)
 
 static int remove_object_files(object_data *d)
 {
-	if (gitfo_unlink(d->file) < 0) {
+	if (p_unlink(d->file) < 0) {
 		fprintf(stderr, "can't delete object file \"%s\"\n", d->file);
 		return -1;
 	}
-	if ((gitfo_rmdir(d->dir) < 0) && (errno != ENOTEMPTY)) {
+	if ((p_rmdir(d->dir) < 0) && (errno != ENOTEMPTY)) {
 		fprintf(stderr, "can't remove directory \"%s\"\n", d->dir);
 		return -1;
 	}
 
-	if (gitfo_rmdir(odb_dir) < 0) {
+	if (p_rmdir(odb_dir) < 0) {
 		fprintf(stderr, "can't remove directory \"%s\"\n", odb_dir);
 		return -1;
 	}
@@ -104,7 +104,7 @@ BEGIN_TEST(write0, "write loose commit object")
 
     must_pass(make_odb_dir());
     must_pass(git_odb_open(&db, odb_dir));
-    must_pass(git_oid_mkstr(&id1, commit.id));
+    must_pass(git_oid_fromstr(&id1, commit.id));
 
     must_pass(streaming_write(&id2, db, &commit_obj));
     must_be_true(git_oid_cmp(&id1, &id2) == 0);
@@ -125,7 +125,7 @@ BEGIN_TEST(write1, "write loose tree object")
 
     must_pass(make_odb_dir());
     must_pass(git_odb_open(&db, odb_dir));
-    must_pass(git_oid_mkstr(&id1, tree.id));
+    must_pass(git_oid_fromstr(&id1, tree.id));
 
     must_pass(streaming_write(&id2, db, &tree_obj));
     must_be_true(git_oid_cmp(&id1, &id2) == 0);
@@ -146,7 +146,7 @@ BEGIN_TEST(write2, "write loose tag object")
 
     must_pass(make_odb_dir());
     must_pass(git_odb_open(&db, odb_dir));
-    must_pass(git_oid_mkstr(&id1, tag.id));
+    must_pass(git_oid_fromstr(&id1, tag.id));
 
     must_pass(streaming_write(&id2, db, &tag_obj));
     must_be_true(git_oid_cmp(&id1, &id2) == 0);
@@ -167,7 +167,7 @@ BEGIN_TEST(write3, "write zero-length object")
 
     must_pass(make_odb_dir());
     must_pass(git_odb_open(&db, odb_dir));
-    must_pass(git_oid_mkstr(&id1, zero.id));
+    must_pass(git_oid_fromstr(&id1, zero.id));
 
     must_pass(streaming_write(&id2, db, &zero_obj));
     must_be_true(git_oid_cmp(&id1, &id2) == 0);
@@ -188,7 +188,7 @@ BEGIN_TEST(write4, "write one-byte long object")
 
     must_pass(make_odb_dir());
     must_pass(git_odb_open(&db, odb_dir));
-    must_pass(git_oid_mkstr(&id1, one.id));
+    must_pass(git_oid_fromstr(&id1, one.id));
 
     must_pass(streaming_write(&id2, db, &one_obj));
     must_be_true(git_oid_cmp(&id1, &id2) == 0);
@@ -209,7 +209,7 @@ BEGIN_TEST(write5, "write two-byte long object")
 
     must_pass(make_odb_dir());
     must_pass(git_odb_open(&db, odb_dir));
-    must_pass(git_oid_mkstr(&id1, two.id));
+    must_pass(git_oid_fromstr(&id1, two.id));
 
     must_pass(streaming_write(&id2, db, &two_obj));
     must_be_true(git_oid_cmp(&id1, &id2) == 0);
@@ -230,7 +230,7 @@ BEGIN_TEST(write6, "write an object which is several bytes long")
 
     must_pass(make_odb_dir());
     must_pass(git_odb_open(&db, odb_dir));
-    must_pass(git_oid_mkstr(&id1, some.id));
+    must_pass(git_oid_fromstr(&id1, some.id));
 
     must_pass(streaming_write(&id2, db, &some_obj));
     must_be_true(git_oid_cmp(&id1, &id2) == 0);

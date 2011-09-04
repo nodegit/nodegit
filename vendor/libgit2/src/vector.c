@@ -61,7 +61,7 @@ int git_vector_init(git_vector *v, unsigned int initial_size, git_vector_cmp cmp
 
 	v->_alloc_size = initial_size;
 	v->_cmp = cmp;
-	
+
 	v->length = 0;
 	v->sorted = 1;
 
@@ -94,7 +94,7 @@ void git_vector_sort(git_vector *v)
 	if (v->sorted || v->_cmp == NULL)
 		return;
 
-	qsort(v->contents, v->length, sizeof(void *), v->_cmp);
+	git__tsort(v->contents, v->length, v->_cmp);
 	v->sorted = 1;
 }
 
@@ -106,15 +106,15 @@ int git_vector_bsearch2(git_vector *v, git_vector_cmp key_lookup, const void *ke
 
 	/* need comparison function to sort the vector */
 	if (v->_cmp == NULL)
-		return GIT_ENOTFOUND;
+		return git__throw(GIT_ENOTFOUND, "Can't sort vector. No comparison function set");
 
 	git_vector_sort(v);
 
-	find = bsearch(key, v->contents, v->length, sizeof(void *), key_lookup);
+	find = git__bsearch(key, v->contents, v->length, key_lookup);
 	if (find != NULL)
 		return (int)(find - v->contents);
 
-	return GIT_ENOTFOUND;
+	return git__throw(GIT_ENOTFOUND, "Can't find element");
 }
 
 int git_vector_search2(git_vector *v, git_vector_cmp key_lookup, const void *key)
@@ -128,7 +128,7 @@ int git_vector_search2(git_vector *v, git_vector_cmp key_lookup, const void *key
 			return i;
 	}
 
-	return GIT_ENOTFOUND;
+	return git__throw(GIT_ENOTFOUND, "Can't find element");
 }
 
 static int strict_comparison(const void *a, const void *b)
@@ -143,9 +143,6 @@ int git_vector_search(git_vector *v, const void *entry)
 
 int git_vector_bsearch(git_vector *v, const void *key)
 {
-	if (v->_cmp == NULL)
-		return GIT_ENOTFOUND;
-
 	return git_vector_bsearch2(v, v->_cmp, key);
 }
 
@@ -156,13 +153,33 @@ int git_vector_remove(git_vector *v, unsigned int idx)
 	assert(v);
 
 	if (idx >= v->length || v->length == 0)
-		return GIT_ENOTFOUND;
+		return git__throw(GIT_ENOTFOUND, "Can't remove element. Index out of bounds");
 
 	for (i = idx; i < v->length - 1; ++i)
 		v->contents[i] = v->contents[i + 1];
 
 	v->length--;
 	return GIT_SUCCESS;
+}
+
+void git_vector_uniq(git_vector *v)
+{
+	git_vector_cmp cmp;
+	unsigned int i, j;
+
+	if (v->length <= 1)
+		return;
+
+	git_vector_sort(v);
+	cmp = v->_cmp ? v->_cmp : strict_comparison;
+
+	for (i = 0, j = 1 ; j < v->length; ++j)
+		if (!cmp(v->contents[i], v->contents[j]))
+			v->contents[i] = v->contents[j];
+		else
+			v->contents[++i] = v->contents[j];
+
+	v->length -= j - i - 1;
 }
 
 void git_vector_clear(git_vector *v)

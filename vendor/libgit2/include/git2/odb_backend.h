@@ -49,6 +49,19 @@ struct git_odb_backend {
 			struct git_odb_backend *,
 			const git_oid *);
 
+	/* To find a unique object given a prefix
+	 * of its oid.
+	 * The oid given must be so that the
+	 * remaining (GIT_OID_HEXSZ - len)*4 bits
+	 * are 0s.
+	 */
+	int (* read_prefix)(
+			git_oid *,
+			void **, size_t *, git_otype *,
+			struct git_odb_backend *,
+			const git_oid *,
+			unsigned int);
+
 	int (* read_header)(
 			size_t *, git_otype *,
 			struct git_odb_backend *,
@@ -97,10 +110,8 @@ typedef enum {
 	GIT_STREAM_RW = (GIT_STREAM_RDONLY | GIT_STREAM_WRONLY),
 } git_odb_streammode;
 
-
 GIT_EXTERN(int) git_odb_backend_pack(git_odb_backend **backend_out, const char *objects_dir);
 GIT_EXTERN(int) git_odb_backend_loose(git_odb_backend **backend_out, const char *objects_dir);
-GIT_EXTERN(int) git_odb_backend_sqlite(git_odb_backend **backend_out, const char *sqlite_db);
 
 GIT_END_DECL
 

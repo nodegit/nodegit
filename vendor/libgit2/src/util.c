@@ -1,8 +1,20 @@
-#define GIT__NO_HIDE_MALLOC
+#include <git2.h>
 #include "common.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <ctype.h>
+#include "posix.h"
+
+#ifdef _MSC_VER
+# include <Shlwapi.h>
+#endif
+
+void git_libgit2_version(int *major, int *minor, int *rev)
+{
+	*major = LIBGIT2_VER_MAJOR;
+	*minor = LIBGIT2_VER_MINOR;
+	*rev = LIBGIT2_VER_REVISION;
+}
 
 void git_strarray_free(git_strarray *array)
 {
@@ -11,6 +23,21 @@ void git_strarray_free(git_strarray *array)
 		free(array->strings[i]);
 
 	free(array->strings);
+}
+
+int git__fnmatch(const char *pattern, const char *name, int flags)
+{
+	int ret;
+
+	ret = p_fnmatch(pattern, name, flags);
+	switch (ret) {
+	case 0:
+		return GIT_SUCCESS;
+	case FNM_NOMATCH:
+		return GIT_ENOMATCH;
+	default:
+		return git__throw(GIT_EOSERR, "Error trying to match path");
+	}
 }
 
 int git__strtol32(long *result, const char *nptr, const char **endptr, int base)
@@ -79,29 +106,30 @@ int git__strtol32(long *result, const char *nptr, const char **endptr, int base)
 
 Return:
 	if (ndig == 0)
-		return GIT_ENOTNUM;
+		return git__throw(GIT_ENOTNUM, "Failed to convert string to long. Not a number");
 
 	if (endptr)
 		*endptr = p;
 
 	if (ovfl)
-		return GIT_EOVERFLOW;
+		return git__throw(GIT_EOVERFLOW, "Failed to convert string to long. Overflow error");
 
 	*result = neg ? -n : n;
 	return GIT_SUCCESS;
 }
 
-int git__fmt(char *buf, size_t buf_sz, const char *fmt, ...)
+void git__strntolower(char *str, int len)
 {
-	va_list va;
-	int r;
+	int i;
 
-	va_start(va, fmt);
-	r = vsnprintf(buf, buf_sz, fmt, va);
-	va_end(va);
-	if (r < 0 || ((size_t) r) >= buf_sz)
-		return GIT_ERROR;
-	return r;
+	for (i = 0; i < len; ++i) {
+		str[i] = (char) tolower(str[i]);
+	}
+}
+
+void git__strtolower(char *str)
+{
+	git__strntolower(str, strlen(str));
 }
 
 int git__prefixcmp(const char *str, const char *prefix)
@@ -124,226 +152,29 @@ int git__suffixcmp(const char *str, const char *suffix)
 	return strcmp(str + (a - b), suffix);
 }
 
-/*
- * Based on the Android implementation, BSD licensed.
- * Check http://android.git.kernel.org/
- */
-int git__basename_r(char *buffer, size_t bufflen, const char *path)
+char *git__strtok(char **end, const char *sep)
 {
-	const char *endp, *startp;
-	int len, result;
+	char *ptr = *end;
 
-	/* Empty or NULL string gets treated as "." */
-	if (path == NULL || *path == '\0') {
-		startp  = ".";
-		len     = 1;
-		goto Exit;
+	while (*ptr && strchr(sep, *ptr))
+		++ptr;
+
+	if (*ptr) {
+		char *start = ptr;
+		*end = start + 1;
+
+		while (**end && !strchr(sep, **end))
+			++*end;
+
+		if (**end) {
+			**end = '\0';
+			++*end;
+		}
+
+		return start;
 	}
 
-	/* Strip trailing slashes */
-	endp = path + strlen(path) - 1;
-	while (endp > path && *endp == '/')
-		endp--;
-
-	/* All slashes becomes "/" */
-	if (endp == path && *endp == '/') {
-		startp = "/";
-		len    = 1;
-		goto Exit;
-	}
-
-	/* Find the start of the base */
-	startp = endp;
-	while (startp > path && *(startp - 1) != '/')
-		startp--;
-
-	len = endp - startp +1;
-
-Exit:
-	result = len;
-	if (buffer == NULL) {
-		return result;
-	}
-	if (len > (int)bufflen-1) {
-		len    = (int)bufflen-1;
-		result = GIT_ENOMEM;
-	}
-
-	if (len >= 0) {
-		memmove(buffer, startp, len);
-		buffer[len] = 0;
-	}
-	return result;
-}
-
-/*
- * Based on the Android implementation, BSD licensed.
- * Check http://android.git.kernel.org/
- */
-int git__dirname_r(char *buffer, size_t bufflen, const char *path)
-{
-    const char *endp;
-    int result, len;
-
-    /* Empty or NULL string gets treated as "." */
-    if (path == NULL || *path == '\0') {
-        path = ".";
-        len  = 1;
-        goto Exit;
-    }
-
-    /* Strip trailing slashes */
-    endp = path + strlen(path) - 1;
-    while (endp > path && *endp == '/')
-        endp--;
-
-    /* Find the start of the dir */
-    while (endp > path && *endp != '/')
-        endp--;
-
-    /* Either the dir is "/" or there are no slashes */
-    if (endp == path) {
-        path = (*endp == '/') ? "/" : ".";
-        len  = 1;
-        goto Exit;
-    }
-
-    do {
-        endp--;
-    } while (endp > path && *endp == '/');
-
-    len = endp - path +1;
-
-Exit:
-    result = len;
-    if (len+1 > GIT_PATH_MAX) {
-        return GIT_ENOMEM;
-    }
-    if (buffer == NULL)
-        return result;
-
-    if (len > (int)bufflen-1) {
-        len    = (int)bufflen-1;
-        result = GIT_ENOMEM;
-    }
-
-    if (len >= 0) {
-        memmove(buffer, path, len);
-        buffer[len] = 0;
-    }
-    return result;
-}
-
-
-char *git__dirname(const char *path)
-{
-    char *dname = NULL;
-    int len;
-
-	len = (path ? strlen(path) : 0) + 2;
-	dname = (char *)git__malloc(len);
-	if (dname == NULL)
-		return NULL;
-
-    if (git__dirname_r(dname, len, path) < GIT_SUCCESS) {
-		free(dname);
-		return NULL;
-	}
-
-    return dname;
-}
-
-char *git__basename(const char *path)
-{
-    char *bname = NULL;
-    int len;
-
-	len = (path ? strlen(path) : 0) + 2;
-	bname = (char *)git__malloc(len);
-	if (bname == NULL)
-		return NULL;
-
-    if (git__basename_r(bname, len, path) < GIT_SUCCESS) {
-		free(bname);
-		return NULL;
-	}
-
-    return bname;
-}
-
-
-const char *git__topdir(const char *path)
-{
-	size_t len;
-	int i;
-
-	assert(path);
-	len = strlen(path);
-
-	if (!len || path[len - 1] != '/')
-		return NULL;
-
-	for (i = len - 2; i >= 0; --i)
-		if (path[i] == '/')
-			break;
-
-	return &path[i + 1];
-}
-
-void git__joinpath_n(char *buffer_out, int count, ...)
-{
-	va_list ap;
-	int i;
-	char *buffer_start = buffer_out;
-
-	va_start(ap, count);
-	for (i = 0; i < count; ++i) {
-		const char *path;
-		int len;
-
-		path = va_arg(ap, const char *);
-
-		assert((i == 0) || path != buffer_start);
-
-		if (i > 0 && *path == '/' && buffer_out > buffer_start && buffer_out[-1] == '/')
-			path++;
-
-		if (!*path)
-			continue;
-
-		len = strlen(path);
-		memmove(buffer_out, path, len);
-		buffer_out = buffer_out + len;
-
-		if (i < count - 1 && buffer_out[-1] != '/')
-			*buffer_out++ = '/';
-	}
-	va_end(ap);
-
-	*buffer_out = '\0';
-}
-
-static char *strtok_raw(char *output, char *src, char *delimit, int keep)
-{
-	while (*src && strchr(delimit, *src) == NULL)
-		*output++ = *src++;
-
-	*output = 0;
-
-	if (keep)
-		return src;
-	else
-		return *src ? src+1 : src;
-}
-
-char *git__strtok(char *output, char *src, char *delimit)
-{
-	return strtok_raw(output, src, delimit, 0);
-}
-
-char *git__strtok_keep(char *output, char *src, char *delimit)
-{
-	return strtok_raw(output, src, delimit, 1);
+	return NULL;
 }
 
 void git__hexdump(const char *buffer, size_t len)
@@ -403,17 +234,17 @@ uint32_t git__hash(const void *key, int len, unsigned int seed)
 	while(len >= 4) {
 		uint32_t k = *(uint32_t *)data;
 
-		k *= m; 
-		k ^= k >> r; 
-		k *= m; 
-		
-		h *= m; 
+		k *= m;
+		k ^= k >> r;
+		k *= m;
+
+		h *= m;
 		h ^= k;
 
 		data += 4;
 		len -= 4;
 	}
-	
+
 	switch(len) {
 	case 3: h ^= data[2] << 16;
 	case 2: h ^= data[1] << 8;
@@ -426,7 +257,7 @@ uint32_t git__hash(const void *key, int len, unsigned int seed)
 	h ^= h >> 15;
 
 	return h;
-} 
+}
 #else
 /*
 	Cross-platform version of Murmurhash3
@@ -484,5 +315,43 @@ uint32_t git__hash(const void *key, int len, uint32_t seed)
 	h1 ^= h1 >> 16;
 
 	return h1;
-} 
+}
 #endif
+
+/**
+ * A modified `bsearch` from the BSD glibc.
+ *
+ * Copyright (c) 1990 Regents of the University of California.
+ * All rights reserved.
+ */
+void **git__bsearch(const void *key, void **base, size_t nmemb, int (*compar)(const void *, const void *))
+{
+        int lim, cmp;
+        void **p;
+
+        for (lim = nmemb; lim != 0; lim >>= 1) {
+                p = base + (lim >> 1);
+                cmp = (*compar)(key, *p);
+                if (cmp > 0) {  /* key > p: move right */
+                        base = p + 1;
+                        lim--;
+                } else if (cmp == 0) {
+                        return (void **)p;
+                } /* else move left */
+        }
+        return NULL;
+}
+
+/**
+ * A strcmp wrapper
+ * 
+ * We don't want direct pointers to the CRT on Windows, we may
+ * get stdcall conflicts.
+ */
+int git__strcmp_cb(const void *a, const void *b)
+{
+	const char *stra = (const char *)a;
+	const char *strb = (const char *)b;
+
+	return strcmp(stra, strb);
+}

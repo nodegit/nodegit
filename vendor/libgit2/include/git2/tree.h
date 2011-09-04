@@ -53,6 +53,23 @@ GIT_INLINE(int) git_tree_lookup(git_tree **tree, git_repository *repo, const git
 }
 
 /**
+ * Lookup a tree object from the repository,
+ * given a prefix of its identifier (short id).
+ *
+ * @see git_object_lookup_prefix
+ *
+ * @param tree pointer to the looked up tree
+ * @param repo the repo to use when locating the tree.
+ * @param id identity of the tree to locate.
+ * @param len the length of the short identifier
+ * @return 0 on success; error code otherwise
+ */
+GIT_INLINE(int) git_tree_lookup_prefix(git_tree **tree, git_repository *repo, const git_oid *id, unsigned int len)
+{
+	return git_object_lookup_prefix((git_object **)tree, repo, id, len, GIT_OBJ_TREE);
+}
+
+/**
  * Close an open tree
  *
  * This is a wrapper around git_object_close()
@@ -84,7 +101,7 @@ GIT_EXTERN(const git_oid *) git_tree_id(git_tree *tree);
  * @param tree a previously loaded tree.
  * @return the number of entries in the tree
  */
-GIT_EXTERN(size_t) git_tree_entrycount(git_tree *tree);
+GIT_EXTERN(unsigned int) git_tree_entrycount(git_tree *tree);
 
 /**
  * Lookup a tree entry by its filename
@@ -102,7 +119,7 @@ GIT_EXTERN(const git_tree_entry *) git_tree_entry_byname(git_tree *tree, const c
  * @param idx the position in the entry list
  * @return the tree entry; NULL if not found
  */
-GIT_EXTERN(const git_tree_entry *) git_tree_entry_byindex(git_tree *tree, int idx);
+GIT_EXTERN(const git_tree_entry *) git_tree_entry_byindex(git_tree *tree, unsigned int idx);
 
 /**
  * Get the UNIX file attributes of a tree entry
@@ -127,6 +144,14 @@ GIT_EXTERN(const char *) git_tree_entry_name(const git_tree_entry *entry);
  * @return the oid of the object
  */
 GIT_EXTERN(const git_oid *) git_tree_entry_id(const git_tree_entry *entry);
+
+/**
+ * Get the type of the object pointed by the entry
+ *
+ * @param entry a tree entry
+ * @return the type of the pointed object
+ */
+GIT_EXTERN(git_otype) git_tree_entry_type(const git_tree_entry *entry);
 
 /**
  * Convert a tree entry to the git_object it points too.
@@ -165,7 +190,7 @@ GIT_EXTERN(int) git_tree_create_fromindex(git_oid *oid, git_index *index);
  *
  * If the `source` parameter is not NULL, the tree builder
  * will be initialized with the entries of the given tree.
- * 
+ *
  * If the `source` parameter is NULL, the tree builder will
  * have no entries and will have to be filled manually.
  *

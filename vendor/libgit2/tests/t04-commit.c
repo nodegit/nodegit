@@ -117,14 +117,14 @@ BEGIN_TEST(parse0, "parse the OID line in a commit")
 	const char *ptr = string;\
 	const char *ptr_original = ptr;\
 	size_t len = strlen(ptr);\
-	must_pass(git__parse_oid(&oid, &ptr, ptr + len, header));\
+	must_pass(git_oid__parse(&oid, &ptr, ptr + len, header));\
 	must_be_true(ptr == ptr_original + len);\
 }
 
 #define TEST_OID_FAIL(string, header) { \
 	const char *ptr = string;\
 	size_t len = strlen(ptr);\
-	must_fail(git__parse_oid(&oid, &ptr, ptr + len, header));\
+	must_fail(git_oid__parse(&oid, &ptr, ptr + len, header));\
 }
 
 	TEST_OID_PASS("parent 05452d6349abcd67aa396dfb28660d765d8b2a36\n", "parent ");
@@ -157,7 +157,7 @@ BEGIN_TEST(parse1, "parse the signature line in a commit")
 	const char *ptr = _string; \
 	size_t len = strlen(_string);\
 	git_signature person = {NULL, NULL, {0, 0}}; \
-	must_pass(git_signature__parse(&person, &ptr, ptr + len, _header));\
+	must_pass(git_signature__parse(&person, &ptr, ptr + len, _header, '\n'));\
 	must_be_true(strcmp(_name, person.name) == 0);\
 	must_be_true(strcmp(_email, person.email) == 0);\
 	must_be_true(_time == person.when.time);\
@@ -169,7 +169,7 @@ BEGIN_TEST(parse1, "parse the signature line in a commit")
 	const char *ptr = _string; \
 	size_t len = strlen(_string);\
 	git_signature person = {NULL, NULL, {0, 0}}; \
-	must_fail(git_signature__parse(&person, &ptr, ptr + len, _header));\
+	must_fail(git_signature__parse(&person, &ptr, ptr + len, _header, '\n'));\
 	free(person.name); free(person.email);\
 }
 
@@ -241,12 +241,179 @@ BEGIN_TEST(parse1, "parse the signature line in a commit")
 		123456,
 		-60);
 
-	TEST_SIGNATURE_FAIL(
+	/* Parse a signature without an author field */
+	TEST_SIGNATURE_PASS(
+		"committer <tanoku@gmail.com> 123456 -0100 \n",
+		"committer ",
+		"",
+		"tanoku@gmail.com",
+		123456,
+		-60);
+
+	/* Parse a signature without an author field */
+	TEST_SIGNATURE_PASS(
+		"committer  <tanoku@gmail.com> 123456 -0100 \n",
+		"committer ",
+		"",
+		"tanoku@gmail.com",
+		123456,
+		-60);
+
+	/* Parse a signature with an empty author field */
+	TEST_SIGNATURE_PASS(
+		"committer   <tanoku@gmail.com> 123456 -0100 \n",
+		"committer ",
+		"",
+		"tanoku@gmail.com",
+		123456,
+		-60);
+
+	/* Parse a signature with an empty email field */
+	TEST_SIGNATURE_PASS(
+		"committer Vicent Marti <> 123456 -0100 \n",
+		"committer ",
+		"Vicent Marti",
+		"",
+		123456,
+		-60);
+
+	/* Parse a signature with an empty email field */
+	TEST_SIGNATURE_PASS(
+		"committer Vicent Marti < > 123456 -0100 \n",
+		"committer ",
+		"Vicent Marti",
+		"",
+		123456,
+		-60);
+
+	/* Parse a signature with empty name and email */
+	TEST_SIGNATURE_PASS(
+		"committer <> 123456 -0100 \n",
+		"committer ",
+		"",
+		"",
+		123456,
+		-60);
+
+	/* Parse a signature with empty name and email */
+	TEST_SIGNATURE_PASS(
+		"committer  <> 123456 -0100 \n",
+		"committer ",
+		"",
+		"",
+		123456,
+		-60);
+
+	/* Parse a signature with empty name and email */
+	TEST_SIGNATURE_PASS(
+		"committer  < > 123456 -0100 \n",
+		"committer ",
+		"",
+		"",
+		123456,
+		-60);
+
+	/* Parse an obviously invalid signature */
+	TEST_SIGNATURE_PASS(
+		"committer foo<@bar> 123456 -0100 \n",
+		"committer ",
+		"foo",
+		"@bar",
+		123456,
+		-60);
+
+	/* Parse an obviously invalid signature */
+	TEST_SIGNATURE_PASS(
+		"committer    foo<@bar>123456 -0100 \n",
+		"committer ",
+		"foo",
+		"@bar",
+		123456,
+		-60);
+
+	/* Parse an obviously invalid signature */
+	TEST_SIGNATURE_PASS(
+		"committer <>\n",
+		"committer ",
+		"",
+		"",
+		0,
+		0);
+
+	TEST_SIGNATURE_PASS(
 		"committer Vicent Marti <tanoku@gmail.com> 123456 -1500 \n",
-		"committer ");
+		"committer ",
+		"Vicent Marti",
+		"tanoku@gmail.com",
+		0,
+		0);
+
+	TEST_SIGNATURE_PASS(
+		"committer Vicent Marti <tanoku@gmail.com> 123456 +0163 \n",
+		"committer ",
+		"Vicent Marti",
+		"tanoku@gmail.com",
+		0,
+		0);
+
+	TEST_SIGNATURE_PASS(
+		"author Vicent Marti <tanoku@gmail.com> notime \n",
+		"author ",
+		"Vicent Marti",
+		"tanoku@gmail.com",
+		0,
+		0);
+
+	TEST_SIGNATURE_PASS(
+		"author Vicent Marti <tanoku@gmail.com> 123456 notimezone \n",
+		"author ",
+		"Vicent Marti",
+		"tanoku@gmail.com",
+		0,
+		0);
+
+	TEST_SIGNATURE_PASS(
+		"author Vicent Marti <tanoku@gmail.com> notime +0100\n",
+		"author ",
+		"Vicent Marti",
+		"tanoku@gmail.com",
+		0,
+		0);
+
+	TEST_SIGNATURE_PASS(
+		"author Vicent Marti <tanoku@gmail.com>\n",
+		"author ",
+		"Vicent Marti",
+		"tanoku@gmail.com",
+		0,
+		0);
+
+	TEST_SIGNATURE_PASS(
+		"author A U Thor <author@example.com>,  C O. Miter <comiter@example.com> 1234567890 -0700\n",
+		"author ",
+		"A U Thor",
+		"author@example.com",
+		1234567890,
+		-420);
+
+	TEST_SIGNATURE_PASS(
+		"author A U Thor <author@example.com> and others 1234567890 -0700\n",
+		"author ",
+		"A U Thor",
+		"author@example.com",
+		1234567890,
+		-420);
+
+	TEST_SIGNATURE_PASS(
+		"author A U Thor <author@example.com> and others 1234567890\n",
+		"author ",
+		"A U Thor",
+		"author@example.com",
+		1234567890,
+		0);
 
 	TEST_SIGNATURE_FAIL(
-		"committer Vicent Marti <tanoku@gmail.com> 123456 +0163 \n",
+		"committer Vicent Marti tanoku@gmail.com> 123456 -0100 \n",
 		"committer ");
 
 	TEST_SIGNATURE_FAIL(
@@ -266,12 +433,8 @@ BEGIN_TEST(parse1, "parse the signature line in a commit")
 		"author ");
 
 	TEST_SIGNATURE_FAIL(
-		"author Vicent Marti <tanoku@gmail.com> notime \n",
-		"author ");
-
-	TEST_SIGNATURE_FAIL(
-		"author Vicent Marti <tanoku@gmail.com>\n",
-		"author ");
+		"committer Vicent Marti ><\n",
+		"committer ");
 
 	TEST_SIGNATURE_FAIL(
 		"author ",
@@ -282,8 +445,61 @@ BEGIN_TEST(parse1, "parse the signature line in a commit")
 
 END_TEST
 
+static int try_build_signature(const char *name, const char *email, git_time_t time, int offset)
+{
+	git_signature *sign;
+	int error = GIT_SUCCESS;
+
+	if ((error =  git_signature_new(&sign, name, email, time, offset)) < GIT_SUCCESS)
+		return error;
+
+	git_signature_free((git_signature *)sign);
+
+	return error;
+}
+
+BEGIN_TEST(signature0, "creating a signature trims leading and trailing spaces")
+	git_signature *sign;
+	must_pass(git_signature_new(&sign, "  nulltoken ", "   emeric.fermas@gmail.com     ", 1234567890, 60));
+	must_be_true(strcmp(sign->name, "nulltoken") == 0);
+	must_be_true(strcmp(sign->email, "emeric.fermas@gmail.com") == 0);
+	git_signature_free((git_signature *)sign);
+END_TEST
+
+BEGIN_TEST(signature1, "can not create a signature with empty name or email")
+	must_pass(try_build_signature("nulltoken", "emeric.fermas@gmail.com", 1234567890, 60));
+
+	must_fail(try_build_signature("", "emeric.fermas@gmail.com", 1234567890, 60));
+	must_fail(try_build_signature("   ", "emeric.fermas@gmail.com", 1234567890, 60));
+	must_fail(try_build_signature("nulltoken", "", 1234567890, 60));
+	must_fail(try_build_signature("nulltoken", "  ", 1234567890, 60));
+END_TEST
+
+BEGIN_TEST(signature2, "creating a one character signature")
+	git_signature *sign;
+	must_pass(git_signature_new(&sign, "x", "foo@bar.baz", 1234567890, 60));
+	must_be_true(strcmp(sign->name, "x") == 0);
+	must_be_true(strcmp(sign->email, "foo@bar.baz") == 0);
+	git_signature_free((git_signature *)sign);
+END_TEST
+
+BEGIN_TEST(signature3, "creating a two character signature")
+	git_signature *sign;
+	must_pass(git_signature_new(&sign, "xx", "x@y.z", 1234567890, 60));
+	must_be_true(strcmp(sign->name, "xx") == 0);
+	must_be_true(strcmp(sign->email, "x@y.z") == 0);
+	git_signature_free((git_signature *)sign);
+END_TEST
+
+BEGIN_TEST(signature4, "creating a zero character signature")
+	git_signature *sign;
+	must_fail(git_signature_new(&sign, "", "x@y.z", 1234567890, 60));
+	must_be_true(sign == NULL);
+END_TEST
+
+
 /* External declaration for testing the buffer parsing method */
-int commit_parse_buffer(git_commit *commit, void *data, size_t len, unsigned int parse_flags);
+int commit_parse_buffer(git_commit *commit, void *data, size_t len);
 
 BEGIN_TEST(parse2, "parse a whole commit buffer")
 	const int broken_commit_count = sizeof(test_commits_broken) / sizeof(*test_commits_broken);
@@ -303,8 +519,7 @@ BEGIN_TEST(parse2, "parse a whole commit buffer")
 		must_fail(commit_parse_buffer(
 					commit,
 					test_commits_broken[i],
-					strlen(test_commits_broken[i]),
-					0x1)
+					strlen(test_commits_broken[i]))
 				);
 
 		git_commit__free(commit);
@@ -320,8 +535,7 @@ BEGIN_TEST(parse2, "parse a whole commit buffer")
 		must_pass(commit_parse_buffer(
 					commit,
 					test_commits_working[i],
-					strlen(test_commits_working[i]),
-					0x0)
+					strlen(test_commits_working[i]))
 				);
 
 		git_commit__free(commit);
@@ -333,8 +547,7 @@ BEGIN_TEST(parse2, "parse a whole commit buffer")
 		must_pass(commit_parse_buffer(
 					commit,
 					test_commits_working[i],
-					strlen(test_commits_working[i]),
-					0x1)
+					strlen(test_commits_working[i]))
 				);
 
 		git_commit__free(commit);
@@ -359,23 +572,22 @@ BEGIN_TEST(details0, "query the details on a parsed commit")
 	git_repository *repo;
 
 	must_pass(git_repository_open(&repo, REPOSITORY_FOLDER));
-	
+
 	for (i = 0; i < commit_count; ++i) {
 		git_oid id;
 		git_commit *commit;
 
 		const git_signature *author, *committer;
-		const char *message, *message_short;
+		const char *message;
 		git_time_t commit_time;
 		unsigned int parents, p;
 		git_commit *parent = NULL, *old_parent = NULL;
 
-		git_oid_mkstr(&id, commit_ids[i]);
+		git_oid_fromstr(&id, commit_ids[i]);
 
 		must_pass(git_commit_lookup(&commit, repo, &id));
 
 		message = git_commit_message(commit);
-		message_short = git_commit_message_short(commit);
 		author = git_commit_author(commit);
 		committer = git_commit_committer(commit);
 		commit_time = git_commit_time(commit);
@@ -386,7 +598,6 @@ BEGIN_TEST(details0, "query the details on a parsed commit")
 		must_be_true(strcmp(committer->name, "Scott Chacon") == 0);
 		must_be_true(strcmp(committer->email, "schacon@gmail.com") == 0);
 		must_be_true(strchr(message, '\n') != NULL);
-		must_be_true(strchr(message_short, '\n') == NULL);
 		must_be_true(commit_time > 0);
 		must_be_true(parents <= 2);
 		for (p = 0;p < parents;p++) {
@@ -415,26 +626,26 @@ This is a commit created in memory and it will be written back to disk\n"
 
 static const char *tree_oid = "1810dff58d8a660512d4832e740f692884338ccd";
 
-
 BEGIN_TEST(write0, "write a new commit object from memory to disk")
 	git_repository *repo;
 	git_commit *commit;
 	git_oid tree_id, parent_id, commit_id;
-	const git_signature *author, *committer;
-	/* char hex_oid[41]; */
+	git_signature *author, *committer;
+	const git_signature *author1, *committer1;
+	git_commit *parent;
+	git_tree *tree;
 
 	must_pass(git_repository_open(&repo, REPOSITORY_FOLDER));
 
+	git_oid_fromstr(&tree_id, tree_oid);
+	must_pass(git_tree_lookup(&tree, repo, &tree_id));
 
-	git_oid_mkstr(&tree_id, tree_oid);
-	git_oid_mkstr(&parent_id, commit_ids[4]);
+	git_oid_fromstr(&parent_id, commit_ids[4]);
+	must_pass(git_commit_lookup(&parent, repo, &parent_id));
 
 	/* create signatures */
-	committer = git_signature_new(COMMITTER_NAME, COMMITTER_EMAIL, 123456789, 60);
-	must_be_true(committer != NULL);
-
-	author = git_signature_new(COMMITTER_NAME, COMMITTER_EMAIL, 987654321, 90);
-	must_be_true(author != NULL);
+	must_pass(git_signature_new(&committer, COMMITTER_NAME, COMMITTER_EMAIL, 123456789, 60));
+	must_pass(git_signature_new(&author, COMMITTER_NAME, COMMITTER_EMAIL, 987654321, 90));
 
 	must_pass(git_commit_create_v(
 		&commit_id, /* out id */
@@ -442,29 +653,33 @@ BEGIN_TEST(write0, "write a new commit object from memory to disk")
 		NULL, /* do not update the HEAD */
 		author,
 		committer,
+		NULL,
 		COMMIT_MESSAGE,
-		&tree_id,
-		1, &parent_id));
+		tree,
+		1, parent));
 
-	git_signature_free((git_signature *)committer);
-	git_signature_free((git_signature *)author);
+	git_object_close((git_object *)parent);
+	git_object_close((git_object *)tree);
+
+	git_signature_free(committer);
+	git_signature_free(author);
 
 	must_pass(git_commit_lookup(&commit, repo, &commit_id));
 
 	/* Check attributes were set correctly */
-	author = git_commit_author(commit);
-	must_be_true(author != NULL);
-	must_be_true(strcmp(author->name, COMMITTER_NAME) == 0);
-	must_be_true(strcmp(author->email, COMMITTER_EMAIL) == 0);
-	must_be_true(author->when.time == 987654321);
-	must_be_true(author->when.offset == 90);
+	author1 = git_commit_author(commit);
+	must_be_true(author1 != NULL);
+	must_be_true(strcmp(author1->name, COMMITTER_NAME) == 0);
+	must_be_true(strcmp(author1->email, COMMITTER_EMAIL) == 0);
+	must_be_true(author1->when.time == 987654321);
+	must_be_true(author1->when.offset == 90);
 
-	committer = git_commit_committer(commit);
-	must_be_true(committer != NULL);
-	must_be_true(strcmp(committer->name, COMMITTER_NAME) == 0);
-	must_be_true(strcmp(committer->email, COMMITTER_EMAIL) == 0);
-	must_be_true(committer->when.time == 123456789);
-	must_be_true(committer->when.offset == 60);
+	committer1 = git_commit_committer(commit);
+	must_be_true(committer1 != NULL);
+	must_be_true(strcmp(committer1->name, COMMITTER_NAME) == 0);
+	must_be_true(strcmp(committer1->email, COMMITTER_EMAIL) == 0);
+	must_be_true(committer1->when.time == 123456789);
+	must_be_true(committer1->when.offset == 60);
 
 	must_be_true(strcmp(git_commit_message(commit), COMMIT_MESSAGE) == 0);
 
@@ -482,21 +697,20 @@ BEGIN_TEST(root0, "create a root commit")
 	git_commit *commit;
 	git_oid tree_id, commit_id;
 	const git_oid *branch_oid;
-	const git_signature *author, *committer;
+	git_signature *author, *committer;
 	const char *branch_name = "refs/heads/root-commit-branch";
 	git_reference *head, *branch;
 	char *head_old;
+	git_tree *tree;
 
 	must_pass(git_repository_open(&repo, REPOSITORY_FOLDER));
 
-	git_oid_mkstr(&tree_id, tree_oid);
+	git_oid_fromstr(&tree_id, tree_oid);
+	must_pass(git_tree_lookup(&tree, repo, &tree_id));
 
 	/* create signatures */
-	committer = git_signature_new(COMMITTER_NAME, COMMITTER_EMAIL, 123456789, 60);
-	must_be_true(committer != NULL);
-
-	author = git_signature_new(COMMITTER_NAME, COMMITTER_EMAIL, 987654321, 90);
-	must_be_true(author != NULL);
+	must_pass(git_signature_new(&committer, COMMITTER_NAME, COMMITTER_EMAIL, 123456789, 60));
+	must_pass(git_signature_new(&author, COMMITTER_NAME, COMMITTER_EMAIL, 987654321, 90));
 
 	/* First we need to update HEAD so it points to our non-existant branch */
 	must_pass(git_reference_lookup(&head, repo, "HEAD"));
@@ -512,12 +726,14 @@ BEGIN_TEST(root0, "create a root commit")
 		"HEAD",
 		author,
 		committer,
+		NULL,
 		ROOT_COMMIT_MESSAGE,
-		&tree_id,
+		tree,
 		0));
 
-	git_signature_free((git_signature *)committer);
-	git_signature_free((git_signature *)author);
+	git_object_close((git_object *)tree);
+	git_signature_free(committer);
+	git_signature_free(author);
 
 	/*
 	 * The fact that creating a commit works has already been
@@ -548,7 +764,12 @@ BEGIN_SUITE(commit)
 	ADD_TEST(details0);
 
 	ADD_TEST(write0);
-	//ADD_TEST(write1);
 
 	ADD_TEST(root0);
+
+	ADD_TEST(signature0);
+	ADD_TEST(signature1);
+	ADD_TEST(signature2);
+	ADD_TEST(signature3);
+	ADD_TEST(signature4);
 END_SUITE

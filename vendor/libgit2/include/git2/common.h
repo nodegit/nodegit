@@ -76,6 +76,10 @@
 # define GIT_FORMAT_PRINTF(a,b) /* empty */
 #endif
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define GIT_WIN32 1
+#endif
+
 /**
  * @file git2/common.h
  * @brief Git common platform definitions
@@ -86,12 +90,38 @@
 
 GIT_BEGIN_DECL
 
+/**
+ * The separator used in path list strings (ie like in the PATH
+ * environment variable). A semi-colon ";" is used on Windows, and
+ * a colon ":" for all other systems.
+ */
+#ifdef GIT_WIN32
+#define GIT_PATH_LIST_SEPARATOR ';'
+#else
+#define GIT_PATH_LIST_SEPARATOR ':'
+#endif
+
+/**
+ * The maximum length of a git valid git path.
+ */
+#define GIT_PATH_MAX 4096
+
 typedef struct {
 	char **strings;
 	size_t count;
 } git_strarray;
 
 GIT_EXTERN(void) git_strarray_free(git_strarray *array);
+
+/**
+ * Return the version of the libgit2 library
+ * being currently used.
+ *
+ * @param major Store the major version number
+ * @param minor Store the minor version number
+ * @param rev Store the revision (patch) number
+ */
+GIT_EXTERN(void) git_libgit2_version(int *major, int *minor, int *rev);
 
 /** @} */
 GIT_END_DECL

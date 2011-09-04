@@ -94,23 +94,23 @@ static void node_swap_with(git_hashtable_node *self, git_hashtable_node *other)
 }
 
 static int node_insert(git_hashtable *self, git_hashtable_node *new_node)
-{	
+{
 	int iteration, hash_id;
 
-	for (iteration = 0; iteration < MAX_LOOPS; iteration++) { 
+	for (iteration = 0; iteration < MAX_LOOPS; iteration++) {
 		for (hash_id = 0; hash_id < GIT_HASHTABLE_HASHES; ++hash_id) {
 			git_hashtable_node *node;
 			node = node_with_hash(self, new_node->key, hash_id);
 			node_swap_with(new_node, node);
 			if(new_node->key == 0x0){
 				self->key_count++;
-				return GIT_SUCCESS; 
+				return GIT_SUCCESS;
 			}
 		}
 	}
 
-	if (self->is_resizing) 
-		return GIT_EBUSY;
+	if (self->is_resizing)
+		return git__throw(GIT_EBUSY, "Failed to insert node. Hashtable is currently resizing");
 
 	resize_to(self, self->size * 2);
 	git_hashtable_insert(self, new_node->key, new_node->value);
@@ -130,7 +130,7 @@ static int insert_nodes(git_hashtable *self, git_hashtable_node *old_nodes, size
 	return GIT_SUCCESS;
 }
 
-git_hashtable *git_hashtable_alloc(size_t min_size, 
+git_hashtable *git_hashtable_alloc(size_t min_size,
 		git_hash_ptr hash,
 		git_hash_keyeq_ptr key_eq)
 {
@@ -248,7 +248,7 @@ int git_hashtable_remove(git_hashtable *self, const void *key)
 		}
 	}
 
-	return GIT_ENOTFOUND;
+	return git__throw(GIT_ENOTFOUND, "Entry not found in hash table");
 }
 
 int git_hashtable_merge(git_hashtable *self, git_hashtable *other)

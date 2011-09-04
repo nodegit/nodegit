@@ -11,6 +11,7 @@
 #include "index.h"
 #include "cache.h"
 #include "refs.h"
+#include "buffer.h"
 
 #define DOT_GIT ".git"
 #define GIT_DIR DOT_GIT "/"
@@ -25,7 +26,6 @@ struct git_object {
 
 struct git_repository {
 	git_odb *db;
-	git_index *index;
 
 	git_cache objects;
 	git_refcache references;
@@ -43,7 +43,7 @@ struct git_repository {
  * export */
 void git_object__free(void *object);
 
-int git__parse_oid(git_oid *oid, const char **buffer_out, const char *buffer_end, const char *header);
-int git__write_oid(git_odb_stream *src, const char *header, const git_oid *oid);
+int git_oid__parse(git_oid *oid, const char **buffer_out, const char *buffer_end, const char *header);
+void git_oid__writebuf(git_buf *buf, const char *header, const git_oid *oid);
 
 #endif

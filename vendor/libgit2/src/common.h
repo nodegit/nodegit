@@ -1,13 +1,7 @@
 #ifndef INCLUDE_common_h__
 #define INCLUDE_common_h__
 
-/** Force 64 bit off_t size on POSIX. */
-#define _FILE_OFFSET_BITS 64
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#define GIT_WIN32 1
-#endif
-
+#include "git2/common.h"
 #include "git2/thread-utils.h"
 #include "cc-compat.h"
 
@@ -29,8 +23,8 @@
 # include <io.h>
 # include <direct.h>
 # include <windows.h>
-# include "msvc-compat.h"
-# include "mingw-compat.h"
+# include "win32/msvc-compat.h"
+# include "win32/mingw-compat.h"
 # ifdef GIT_THREADS
 #  include "win32/pthread.h"
 #endif
@@ -41,22 +35,24 @@ typedef SSIZE_T ssize_t;
 
 #else
 # include <unistd.h>
-# include <arpa/inet.h>
 
 # ifdef GIT_THREADS
 #  include <pthread.h>
 # endif
 #endif
 
-#include "git2/common.h"
 #include "git2/types.h"
 #include "git2/errors.h"
 #include "thread-utils.h"
 #include "bswap.h"
 
-#define GIT_PATH_MAX 4096
-extern int git__throw(int error, const char *, ...) GIT_FORMAT_PRINTF(2, 3);
-extern int git__rethrow(int error, const char *, ...) GIT_FORMAT_PRINTF(2, 3);
+extern void git___throw(const char *, ...) GIT_FORMAT_PRINTF(1, 2);
+#define git__throw(error, ...) \
+	(git___throw(__VA_ARGS__), error)
+
+extern void git___rethrow(const char *, ...) GIT_FORMAT_PRINTF(1, 2);
+#define git__rethrow(error, ...) \
+	(git___rethrow(__VA_ARGS__), error)
 
 #include "util.h"
 

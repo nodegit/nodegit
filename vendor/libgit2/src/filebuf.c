@@ -32,41 +32,39 @@ static const size_t WRITE_BUFFER_SIZE = (4096 * 2);
 
 static int lock_file(git_filebuf *file, int flags)
 {
-	if (gitfo_exists(file->path_lock) == 0) {
+	if (git_futils_exists(file->path_lock) == 0) {
 		if (flags & GIT_FILEBUF_FORCE)
-			gitfo_unlink(file->path_lock);
+			p_unlink(file->path_lock);
 		else
-			return GIT_EOSERR;
+			return git__throw(GIT_EOSERR, "Failed to lock file");
 	}
 
 	/* create path to the file buffer is required */
 	if (flags & GIT_FILEBUF_FORCE) {
-		file->fd = gitfo_creat_force(file->path_lock, 0644);
+		file->fd = git_futils_creat_locked_withpath(file->path_lock, 0644);
 	} else {
-		file->fd = gitfo_creat(file->path_lock, 0644);
+		file->fd = git_futils_creat_locked(file->path_lock, 0644);
 	}
 
 	if (file->fd < 0)
-		return GIT_EOSERR;
+		return git__throw(GIT_EOSERR, "Failed to create lock");
 
-	/* TODO: do a flock() in the descriptor file_lock */
-
-	if ((flags & GIT_FILEBUF_APPEND) && gitfo_exists(file->path_original) == 0) {
+	if ((flags & GIT_FILEBUF_APPEND) && git_futils_exists(file->path_original) == 0) {
 		git_file source;
 		char buffer[2048];
 		size_t read_bytes;
 
-		source = gitfo_open(file->path_original, O_RDONLY);
+		source = p_open(file->path_original, O_RDONLY);
 		if (source < 0)
-			return GIT_EOSERR;
+			return git__throw(GIT_EOSERR, "Failed to lock file. Could not open %s", file->path_original);
 
-		while ((read_bytes = gitfo_read(source, buffer, 2048)) > 0) {
-			gitfo_write(file->fd, buffer, read_bytes);
+		while ((read_bytes = p_read(source, buffer, 2048)) > 0) {
+			p_write(file->fd, buffer, read_bytes);
 			if (file->digest)
 				git_hash_update(file->digest, buffer, read_bytes);
 		}
 
-		gitfo_close(source);
+		p_close(source);
 	}
 
 	return GIT_SUCCESS;
@@ -75,10 +73,10 @@ static int lock_file(git_filebuf *file, int flags)
 void git_filebuf_cleanup(git_filebuf *file)
 {
 	if (file->fd >= 0)
-		gitfo_close(file->fd);
+		p_close(file->fd);
 
-	if (file->path_lock && gitfo_exists(file->path_lock) == GIT_SUCCESS)
-		gitfo_unlink(file->path_lock);
+	if (file->fd >= 0 && file->path_lock && git_futils_exists(file->path_lock) == GIT_SUCCESS)
+		p_unlink(file->path_lock);
 
 	if (file->digest)
 		git_hash_free_ctx(file->digest);
@@ -99,12 +97,12 @@ GIT_INLINE(int) flush_buffer(git_filebuf *file)
 	return result;
 }
 
-static int write_normal(git_filebuf *file, const void *source, size_t len)
+static int write_normal(git_filebuf *file, void *source, size_t len)
 {
 	int result = 0;
 
 	if (len > 0) {
-		result = gitfo_write(file->fd, (void *)source, len);
+		result = p_write(file->fd, (void *)source, len);
 		if (file->digest)
 			git_hash_update(file->digest, source, len);
 	}
@@ -112,7 +110,7 @@ static int write_normal(git_filebuf *file, const void *source, size_t len)
 	return result;
 }
 
-static int write_deflate(git_filebuf *file, const void *source, size_t len)
+static int write_deflate(git_filebuf *file, void *source, size_t len)
 {
 	int result = Z_OK;
 	z_stream *zs = &file->zs;
@@ -132,8 +130,8 @@ static int write_deflate(git_filebuf *file, const void *source, size_t len)
 
             have = file->buf_size - zs->avail_out;
 
-			if (gitfo_write(file->fd, file->z_buf, have) < GIT_SUCCESS)
-				return GIT_EOSERR;
+			if (p_write(file->fd, file->z_buf, have) < GIT_SUCCESS)
+				return git__throw(GIT_EOSERR, "Failed to write to file");
 
         } while (zs->avail_out == 0);
 
@@ -179,7 +177,7 @@ int git_filebuf_open(git_filebuf *file, const char *path, int flags)
 
 		/* Initialize the ZLib stream */
 		if (deflateInit(&file->zs, Z_BEST_SPEED) != Z_OK) {
-			error = GIT_EZLIB;
+			error = git__throw(GIT_EZLIB, "Failed to initialize zlib");
 			goto cleanup;
 		}
 
@@ -202,7 +200,7 @@ int git_filebuf_open(git_filebuf *file, const char *path, int flags)
 		char tmp_path[GIT_PATH_MAX];
 
 		/* Open the file as temporary for locking */
-		file->fd = gitfo_mktemp(tmp_path, path); 
+		file->fd = git_futils_mktmp(tmp_path, path);
 		if (file->fd < 0) {
 			error = GIT_EOSERR;
 			goto cleanup;
@@ -245,18 +243,17 @@ int git_filebuf_open(git_filebuf *file, const char *path, int flags)
 
 cleanup:
 	git_filebuf_cleanup(file);
-	return error;
+	return git__rethrow(error, "Failed to open file buffer for '%s'", path);
 }
 
 int git_filebuf_hash(git_oid *oid, git_filebuf *file)
 {
 	int error;
 
-	if (file->digest == NULL)
-		return GIT_ERROR;
+	assert(oid && file && file->digest);
 
 	if ((error = flush_buffer(file)) < GIT_SUCCESS)
-		return error;
+		return git__rethrow(error, "Failed to get hash for file");
 
 	git_hash_final(oid, file->digest);
 	git_hash_free_ctx(file->digest);
@@ -279,22 +276,23 @@ int git_filebuf_commit(git_filebuf *file)
 {
 	int error;
 
-	/* tmp file cannot be commited */
-	if (file->path_original == NULL)
-		return GIT_EOSERR;
+	/* temporary files cannot be committed */
+	assert(file && file->path_original);
 
 	file->flush_mode = Z_FINISH;
 	if ((error = flush_buffer(file)) < GIT_SUCCESS)
 		goto cleanup;
 
-	gitfo_close(file->fd);
+	p_close(file->fd);
 	file->fd = -1;
 
-	error = gitfo_mv(file->path_lock, file->path_original);
+	error = git_futils_mv_atomic(file->path_lock, file->path_original);
 
 cleanup:
 	git_filebuf_cleanup(file);
-	return error;
+	if (error < GIT_SUCCESS)
+		return git__rethrow(error, "Failed to commit locked file from buffer");
+	return GIT_SUCCESS;
 }
 
 GIT_INLINE(void) add_to_cache(git_filebuf *file, const void *buf, size_t len)
@@ -317,23 +315,13 @@ int git_filebuf_write(git_filebuf *file, const void *buff, size_t len)
 			return GIT_SUCCESS;
 		}
 
-		/* flush the cache if it doesn't fit */
-		if (file->buf_pos > 0) {
-			add_to_cache(file, buf, space_left);
+		add_to_cache(file, buf, space_left);
 
-			if ((error = flush_buffer(file)) < GIT_SUCCESS)
-				return error;
+		if ((error = flush_buffer(file)) < GIT_SUCCESS)
+			return git__rethrow(error, "Failed to write to buffer");
 
-			len -= space_left;
-			buf += space_left;
-		}
-
-		/* write too-large chunks immediately */
-		if (len > file->buf_size) {
-			error = file->write(file, buf, len);
-			if (error < GIT_SUCCESS)
-				return error;
-		}
+		len -= space_left;
+		buf += space_left;
 	}
 }
 
@@ -349,7 +337,7 @@ int git_filebuf_reserve(git_filebuf *file, void **buffer, size_t len)
 
 	if (space_left <= len) {
 		if ((error = flush_buffer(file)) < GIT_SUCCESS)
-			return error;
+			return git__rethrow(error, "Failed to reserve buffer");
 	}
 
 	*buffer = (file->buffer + file->buf_pos);
@@ -361,24 +349,48 @@ int git_filebuf_reserve(git_filebuf *file, void **buffer, size_t len)
 int git_filebuf_printf(git_filebuf *file, const char *format, ...)
 {
 	va_list arglist;
-	size_t space_left = file->buf_size - file->buf_pos;
+	size_t space_left;
 	int len, error;
+	char *tmp_buffer;
+
+	space_left = file->buf_size - file->buf_pos;
+
+	do {
+		va_start(arglist, format);
+		len = p_vsnprintf((char *)file->buffer + file->buf_pos, space_left, format, arglist);
+		va_end(arglist);
+
+		if (len < 0)
+			return git__throw(GIT_EOSERR, "Failed to format string");
+
+		if ((size_t)len + 1 <= space_left) {
+			file->buf_pos += len;
+			return GIT_SUCCESS;
+		}
+
+		if ((error = flush_buffer(file)) < GIT_SUCCESS)
+			return git__rethrow(error, "Failed to output to buffer");
+
+		space_left = file->buf_size - file->buf_pos;
+
+	} while ((size_t)len + 1 <= space_left);
+
+	tmp_buffer = git__malloc(len + 1);
+	if (!tmp_buffer)
+		return GIT_ENOMEM;
 
 	va_start(arglist, format);
+	len = p_vsnprintf(tmp_buffer, len + 1, format, arglist);
+	va_end(arglist);
 
-	len = vsnprintf((char *)file->buffer + file->buf_pos, space_left, format, arglist);
-
-	if (len < 0 || (size_t)len >= space_left) {
-		if ((error = flush_buffer(file)) < GIT_SUCCESS)
-			return error;
-
-		len = vsnprintf((char *)file->buffer + file->buf_pos, space_left, format, arglist);
-		if (len < 0 || (size_t)len > file->buf_size)
-			return GIT_ENOMEM;
+	if (len < 0) {
+		free(tmp_buffer);
+		return git__throw(GIT_EOSERR, "Failed to format string");
 	}
 
-	file->buf_pos += len;
-	return GIT_SUCCESS;
+	error = git_filebuf_write(file, tmp_buffer, len);
+	free(tmp_buffer);
 
+	return error;
 }
 

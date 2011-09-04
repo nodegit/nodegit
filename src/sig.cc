@@ -44,7 +44,8 @@ void GitSig::SetValue(git_signature* sig) {
 }
 
 void GitSig::New(const char *name, const char *email, time_t time, int offset) {
-  this->sig = git_signature_new(name, email, time, offset);
+  git_signature_new(&this->sig, name, email, time, offset);
+  //this->sig = git_signature_new(name, email, time, offset);
 }
 
 git_signature* GitSig::Dup() {

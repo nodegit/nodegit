@@ -67,7 +67,8 @@ const git_oid* GitCommit::Id() {
 }
 
 const char* GitCommit::MessageShort() {
-  return git_commit_message_short(this->commit);
+  return "";
+  //return git_commit_message_short(this->commit);
 }
 
 const char* GitCommit::Message() {
