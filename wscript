@@ -1,10 +1,11 @@
 import Options, Utils
-from subprocess import Popen
 import os, shutil, platform
-from os import system
 from os.path import exists, abspath
+from subprocess import Popen
 
+# Ensure version is updated with each new release.
 VERSION = '0.0.6'
+# These constants shouldn't change, probably.
 APPNAME = 'nodegit'
 srcdir = '.'
 blddir = 'build'
@@ -21,11 +22,10 @@ def configure(conf):
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
 
-  os.chdir('vendor/libgit2')
+  # Build libgit2, create necessary folders
+  os.mkdir('vendor/libgit2/build')
+  os.chdir('vendor/libgit2/build')
 
-  # Change this later...
-  Popen('mkdir build', shell=True).wait()
-  os.chdir('build')
   Popen('cmake -DBUILD_TESTS=OFF -DTHREADSAFE=ON .. ', shell=True).wait()
 
   conf.env.append_value('LIBPATH_GIT2', abspath('.'))
@@ -34,12 +34,27 @@ def configure(conf):
 def build(bld):
   try: os.chdir('vendor/libgit2/build')
   except: pass
+
   Popen('cmake --build .', shell=True).wait()
 
   os.chdir('../../')
 
   main = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   main.target = 'nodegit'
-  main.source = 'src/base.cc src/sig.cc src/blob.cc src/error.cc src/object.cc src/reference.cc src/repo.cc src/commit.cc src/oid.cc src/revwalk.cc src/tree.cc src/tree_entry.cc'
+  main.source = '''
+    src/base.cc
+    src/sig.cc
+    src/blob.cc
+    src/error.cc
+    src/object.cc
+    src/reference.cc
+    src/repo.cc
+    src/commit.cc
+    src/oid.cc
+    src/revwalk.cc
+    src/tree.cc
+    src/tree_entry.cc
+    '''
   main.rpath = '$ORIGIN/../../vendor/libgit2/build'
   main.uselib = 'GIT2'
+
