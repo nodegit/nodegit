@@ -55,6 +55,8 @@ def build(bld):
     src/tree.cc
     src/tree_entry.cc
     '''
+
+  main.includes = './vendor/libgit2/include'
   main.rpath = '$ORIGIN/../../vendor/libgit2/build'
   main.uselib = 'GIT2'
 
