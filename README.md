@@ -205,6 +205,11 @@ Release information
 
 __Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods)__
 
+### v0.0.5: ###
+    * Added in fast Buffer support.
+    * Blob raw write supported added, no convenience methods yet...
+    * Updated libgit2 to version 0.12.0
+
 ### v0.0.4: ###
     * Many fixes!
     * Blob raw write supported added, no convenience methods yet...
