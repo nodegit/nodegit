@@ -56,7 +56,45 @@ GIT_BEGIN_DECL
  * @param type the type of the object
  * @return a reference to the object
  */
-GIT_EXTERN(int) git_object_lookup(git_object **object, git_repository *repo, const git_oid *id, git_otype type);
+GIT_EXTERN(int) git_object_lookup(
+		git_object **object,
+		git_repository *repo,
+		const git_oid *id,
+		git_otype type);
+
+/**
+ * Lookup a reference to one of the objects in a repostory,
+ * given a prefix of its identifier (short id).
+ *
+ * The object obtained will be so that its identifier
+ * matches the first 'len' hexadecimal characters
+ * (packets of 4 bits) of the given 'id'.
+ * 'len' must be at least GIT_OID_MINPREFIXLEN, and
+ * long enough to identify a unique object matching
+ * the prefix; otherwise the method will fail.
+ *
+ * The generated reference is owned by the repository and
+ * should be closed with the `git_object_close` method
+ * instead of free'd manually.
+ *
+ * The 'type' parameter must match the type of the object
+ * in the odb; the method will fail otherwise.
+ * The special value 'GIT_OBJ_ANY' may be passed to let
+ * the method guess the object's type.
+ *
+ * @param object_out pointer where to store the looked-up object
+ * @param repo the repository to look up the object
+ * @param id a short identifier for the object
+ * @param len the length of the short identifier
+ * @param type the type of the object
+ * @return 0 on success; error code otherwise
+ */
+GIT_EXTERN(int) git_object_lookup_prefix(
+		git_object **object_out,
+		git_repository *repo,
+		const git_oid *id,
+		unsigned int len,
+		git_otype type);
 
 /**
  * Get the id (SHA1) of a repository object
@@ -76,6 +114,12 @@ GIT_EXTERN(git_otype) git_object_type(const git_object *obj);
 
 /**
  * Get the repository that owns this object
+ *
+ * Freeing or calling `git_repository_close` on the
+ * returned pointer will invalidate the actual object.
+ *
+ * Any other operation may be run on the repository without
+ * affecting the object.
  *
  * @param obj the object
  * @return the repository who owns this object

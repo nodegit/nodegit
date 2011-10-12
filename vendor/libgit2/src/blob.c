@@ -62,51 +62,68 @@ int git_blob_create_frombuffer(git_oid *oid, git_repository *repo, const void *b
 	git_odb_stream *stream;
 
 	if ((error = git_odb_open_wstream(&stream, repo->db, len, GIT_OBJ_BLOB)) < GIT_SUCCESS)
-		return error;
+		return git__rethrow(error, "Failed to create blob");
 
-	stream->write(stream, buffer, len);
+	if ((error = stream->write(stream, buffer, len)) < GIT_SUCCESS) {
+		stream->free(stream);
+		return error;
+	}
 
 	error = stream->finalize_write(oid, stream);
 	stream->free(stream);
 
-	return error;
+	if (error < GIT_SUCCESS)
+		return git__rethrow(error, "Failed to create blob");
+
+	return GIT_SUCCESS;
 }
 
 int git_blob_create_fromfile(git_oid *oid, git_repository *repo, const char *path)
 {
-	int error, fd;
+	int error, islnk;
+	int fd = 0;
 	char full_path[GIT_PATH_MAX];
 	char buffer[2048];
 	git_off_t size;
 	git_odb_stream *stream;
+	struct stat st;
 
 	if (repo->path_workdir == NULL)
-		return GIT_ENOTFOUND;
+		return git__throw(GIT_ENOTFOUND, "Failed to create blob. (No working directory found)");
 
-	git__joinpath(full_path, repo->path_workdir, path);
+	git_path_join(full_path, repo->path_workdir, path);
 
-	if ((fd = gitfo_open(full_path, O_RDONLY)) < 0)
-		return GIT_ENOTFOUND;
-
-	if ((size = gitfo_size(fd)) < 0 || !git__is_sizet(size)) {
-		gitfo_close(fd);
-		return GIT_EOSERR;
+	error = p_lstat(full_path, &st);
+	if (error < 0) {
+		return git__throw(GIT_EOSERR, "Failed to stat blob. %s", strerror(errno));
 	}
 
+	islnk = S_ISLNK(st.st_mode);
+	size = st.st_size;
+
+	if (!islnk)
+		if ((fd = p_open(full_path, O_RDONLY)) < 0)
+			return git__throw(GIT_ENOTFOUND, "Failed to create blob. Could not open '%s'", full_path);
+
 	if ((error = git_odb_open_wstream(&stream, repo->db, (size_t)size, GIT_OBJ_BLOB)) < GIT_SUCCESS) {
-		gitfo_close(fd);
-		return error;
+		if (!islnk)
+			p_close(fd);
+		return git__rethrow(error, "Failed to create blob");
 	}
 
 	while (size > 0) {
 		ssize_t read_len;
 
-		read_len = read(fd, buffer, sizeof(buffer));
+		if (!islnk)
+			read_len = p_read(fd, buffer, sizeof(buffer));
+		else
+			read_len = p_readlink(full_path, buffer, sizeof(buffer));
 
 		if (read_len < 0) {
-			gitfo_close(fd);
+			if (!islnk)
+				p_close(fd);
 			stream->free(stream);
-			return GIT_EOSERR;
+			return git__throw(GIT_EOSERR, "Failed to create blob. Can't read full file");
 		}
 
 		stream->write(stream, buffer, read_len);
@@ -115,8 +132,9 @@ int git_blob_create_fromfile(git_oid *oid, git_repository *repo, const char *pat
 
 	error = stream->finalize_write(oid, stream);
 	stream->free(stream);
-	gitfo_close(fd);
+	if (!islnk)
+		p_close(fd);
 
-	return error;
+	return error == GIT_SUCCESS ? GIT_SUCCESS : git__rethrow(error, "Failed to create blob");
 }
 

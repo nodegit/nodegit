@@ -40,10 +40,12 @@ DECLARE_SUITE(hashtable);
 DECLARE_SUITE(tag);
 DECLARE_SUITE(tree);
 DECLARE_SUITE(refs);
-DECLARE_SUITE(sqlite);
-DECLARE_SUITE(hiredis);
 DECLARE_SUITE(repository);
 DECLARE_SUITE(threads);
+DECLARE_SUITE(config);
+DECLARE_SUITE(remotes);
+DECLARE_SUITE(buffers);
+DECLARE_SUITE(status);
 
 static libgit2_suite suite_methods[]= {
 	SUITE_NAME(core),
@@ -57,15 +59,22 @@ static libgit2_suite suite_methods[]= {
 	SUITE_NAME(tag),
 	SUITE_NAME(tree),
 	SUITE_NAME(refs),
-	SUITE_NAME(sqlite),
 	SUITE_NAME(repository),
 	SUITE_NAME(threads),
-	SUITE_NAME(hiredis)
+	SUITE_NAME(config),
+	SUITE_NAME(remotes),
+	SUITE_NAME(buffers),
+	SUITE_NAME(status),
 };
 
 #define GIT_SUITE_COUNT (ARRAY_SIZE(suite_methods))
 
-int main(int GIT_UNUSED(argc), char *GIT_UNUSED(argv[]))
+#ifdef GIT_WIN32
+int __cdecl
+#else
+int
+#endif
+main(int GIT_UNUSED(argc), char *GIT_UNUSED(argv[]))
 {
 	unsigned int i, failures;
 

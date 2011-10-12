@@ -25,6 +25,8 @@
 #ifndef INCLUDE_git_types_h__
 #define INCLUDE_git_types_h__
 
+#include "common.h"
+
 /**
  * @file git2/types.h
  * @brief libgit2 base & compatibility types
@@ -59,9 +61,14 @@ typedef __time64_t  git_time_t;
 typedef off64_t git_off_t;
 typedef __time64_t git_time_t;
 
+#elif defined(__HAIKU__)
+
+typedef __haiku_std_int64 git_off_t;
+typedef __haiku_std_int64 git_time_t;
+
 #else  /* POSIX */
 
-/* 
+/*
  * Note: Can't use off_t since if a client program includes <sys/types.h>
  * before us (directly or indirectly), they'll get 32 bit off_t in their client
  * app, even though /we/ define _FILE_OFFSET_BITS=64.
@@ -130,6 +137,18 @@ typedef struct git_treebuilder git_treebuilder;
 /** Memory representation of an index file. */
 typedef struct git_index git_index;
 
+/** Memory representation of a set of config files */
+typedef struct git_config git_config;
+
+/** Interface to access a configuration file */
+typedef struct git_config_file git_config_file;
+
+/** Representation of a reference log entry */
+typedef struct git_reflog_entry git_reflog_entry;
+
+/** Representation of a reference log */
+typedef struct git_reflog git_reflog;
+
 /** Time in a signature */
 typedef struct git_time {
 	git_time_t time; /** time in seconds from epoch */
@@ -155,6 +174,18 @@ typedef enum {
 	GIT_REF_HAS_PEEL = 8,
 	GIT_REF_LISTALL = GIT_REF_OID|GIT_REF_SYMBOLIC|GIT_REF_PACKED,
 } git_rtype;
+
+
+typedef struct git_refspec git_refspec;
+typedef struct git_remote git_remote;
+
+/** A transport to use */
+typedef struct git_transport git_transport;
+
+typedef int (*git_transport_cb)(git_transport **transport);
+
+typedef struct git_remote_head git_remote_head;
+typedef struct git_headarray git_headarray;
 
 /** @} */
 GIT_END_DECL

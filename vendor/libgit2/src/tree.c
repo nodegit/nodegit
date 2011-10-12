@@ -34,32 +34,51 @@
 #define MAX_FILEMODE_BYTES 6
 
 static int valid_attributes(const int attributes) {
-	return attributes >= 0 && attributes <= MAX_FILEMODE; 
+	return attributes >= 0 && attributes <= MAX_FILEMODE;
 }
+
+struct tree_key_search {
+	const char *filename;
+	size_t filename_len;
+};
 
 int entry_search_cmp(const void *key, const void *array_member)
 {
-	const char *filename = (const char *)key;
-	const git_tree_entry *entry = *(const git_tree_entry **)(array_member);
+	const struct tree_key_search *ksearch = key;
+	const git_tree_entry *entry = array_member;
 
-	return strcmp(filename, entry->filename);
-}
+	int result =
+		git_futils_cmp_path(
+			ksearch->filename, ksearch->filename_len, entry->attr & 040000,
+			entry->filename, entry->filename_len, entry->attr & 040000);
 
-#if 0
-static int valid_attributes(const int attributes) {
-	return attributes >= 0 && attributes <= MAX_FILEMODE; 
+	return result ? result : ((int)ksearch->filename_len - (int)entry->filename_len);
 }
-#endif
 
 int entry_sort_cmp(const void *a, const void *b)
 {
-	const git_tree_entry *entry_a = *(const git_tree_entry **)(a);
-	const git_tree_entry *entry_b = *(const git_tree_entry **)(b);
+	const git_tree_entry *entry_a = (const git_tree_entry *)(a);
+	const git_tree_entry *entry_b = (const git_tree_entry *)(b);
 
-	return gitfo_cmp_path(entry_a->filename, strlen(entry_a->filename),
-                                  entry_a->attr & 040000,
-                                  entry_b->filename, strlen(entry_b->filename),
-                                  entry_b->attr & 040000);
+	return git_futils_cmp_path(
+		entry_a->filename, entry_a->filename_len, entry_a->attr & 040000,
+		entry_b->filename, entry_b->filename_len, entry_b->attr & 040000);
+}
+
+static int build_ksearch(struct tree_key_search *ksearch, const char *path)
+{
+	size_t len = strlen(path);
+
+	if (len && path[len - 1] == '/')
+		len--;
+
+	if (len == 0 || memchr(path, '/', len) != NULL)
+		return GIT_ERROR;
+
+	ksearch->filename = path;
+	ksearch->filename_len = len;
+
+	return GIT_SUCCESS;
 }
 
 void git_tree__free(git_tree *tree)
@@ -100,6 +119,18 @@ const git_oid *git_tree_entry_id(const git_tree_entry *entry)
 	return &entry->oid;
 }
 
+git_otype git_tree_entry_type(const git_tree_entry *entry)
+{
+	assert(entry);
+
+	if (S_ISGITLINK(entry->attr))
+		return GIT_OBJ_COMMIT;
+	else if (S_ISDIR(entry->attr))
+		return GIT_OBJ_TREE;
+	else
+		return GIT_OBJ_BLOB;
+}
+
 int git_tree_entry_2object(git_object **object_out, git_repository *repo, const git_tree_entry *entry)
 {
 	assert(entry && object_out);
@@ -109,23 +140,27 @@ int git_tree_entry_2object(git_object **object_out, git_repository *repo, const 
 const git_tree_entry *git_tree_entry_byname(git_tree *tree, const char *filename)
 {
 	int idx;
+	struct tree_key_search ksearch;
 
 	assert(tree && filename);
 
-	idx = git_vector_bsearch2(&tree->entries, entry_search_cmp, filename);
+	if (build_ksearch(&ksearch, filename) < GIT_SUCCESS)
+		return NULL;
+
+	idx = git_vector_bsearch2(&tree->entries, entry_search_cmp, &ksearch);
 	if (idx == GIT_ENOTFOUND)
 		return NULL;
 
 	return git_vector_get(&tree->entries, idx);
 }
 
-const git_tree_entry *git_tree_entry_byindex(git_tree *tree, int idx)
+const git_tree_entry *git_tree_entry_byindex(git_tree *tree, unsigned int idx)
 {
 	assert(tree);
-	return git_vector_get(&tree->entries, (unsigned int)idx);
+	return git_vector_get(&tree->entries, idx);
 }
 
-size_t git_tree_entrycount(git_tree *tree)
+unsigned int git_tree_entrycount(git_tree *tree)
 {
 	assert(tree);
 	return tree->entries.length;
@@ -151,15 +186,15 @@ static int tree_parse_buffer(git_tree *tree, const char *buffer, const char *buf
 			return GIT_ENOMEM;
 
 		if (git__strtol32((long *)&entry->attr, buffer, &buffer, 8) < GIT_SUCCESS)
-			return GIT_EOBJCORRUPTED;
+			return git__throw(GIT_EOBJCORRUPTED, "Failed to parse tree. Can't parse attributes");
 
 		if (*buffer++ != ' ') {
-			error = GIT_EOBJCORRUPTED;
+			error = git__throw(GIT_EOBJCORRUPTED, "Failed to parse tree. Object it corrupted");
 			break;
 		}
 
 		if (memchr(buffer, 0, buffer_end - buffer) == NULL) {
-			error = GIT_EOBJCORRUPTED;
+			error = git__throw(GIT_EOBJCORRUPTED, "Failed to parse tree. Object it corrupted");
 			break;
 		}
 
@@ -171,11 +206,11 @@ static int tree_parse_buffer(git_tree *tree, const char *buffer, const char *buf
 
 		buffer++;
 
-		git_oid_mkraw(&entry->oid, (const unsigned char *)buffer);
+		git_oid_fromraw(&entry->oid, (const unsigned char *)buffer);
 		buffer += GIT_OID_RAWSZ;
 	}
 
-	return error;
+	return error == GIT_SUCCESS ? GIT_SUCCESS : git__rethrow(error, "Failed to parse buffer");
 }
 
 int git_tree__parse(git_tree *tree, git_odb_object *obj)
@@ -203,9 +238,9 @@ static int write_index(git_oid *oid, git_index *index, const char *base, int bas
 	buffer = git__malloc(size);
 	if (buffer == NULL)
 		return GIT_ENOMEM;
-		
+
 	offset = 0;
-	
+
 	for (nr = entry_no; nr < maxentries; ++nr) {
 		git_index_entry *entry = git_index_get(index, nr);
 
@@ -215,11 +250,11 @@ static int write_index(git_oid *oid, git_index *index, const char *base, int bas
 		unsigned int write_mode;
 		git_oid subtree_oid;
 		git_oid *write_oid;
-		
+
 		/* Did we hit the end of the directory? Return how many we wrote */
 		if (baselen >= pathlen || memcmp(base, pathname, baselen) != 0)
 			break;
-		
+
 		/* Do we have _further_ subdirectories? */
 		filename = pathname + baselen;
 		dirname = strchr(filename, '/');
@@ -242,9 +277,9 @@ static int write_index(git_oid *oid, git_index *index, const char *base, int bas
 				free(buffer);
 				return subdir_written;
 			}
-			
+
 			nr = subdir_written - 1;
-			
+
 			/* Now we need to write out the directory entry into this tree.. */
 			pathlen = dirname - pathname;
 			write_oid = &subtree_oid;
@@ -255,18 +290,18 @@ static int write_index(git_oid *oid, git_index *index, const char *base, int bas
 		if (offset + entrylen + 32 > size) {
 			size = alloc_nr(offset + entrylen + 32);
 			buffer = git__realloc(buffer, size);
-			
+
 			if (buffer == NULL)
 				return GIT_ENOMEM;
 		}
 
 		offset += write_index_entry(buffer + offset, write_mode, filename, entrylen, write_oid);
 	}
-	
+
 	error = git_odb_write(oid, index->repository->db, buffer, offset, GIT_OBJ_TREE);
 	free(buffer);
 
-	return (error == GIT_SUCCESS) ? nr : error;
+	return (error == GIT_SUCCESS) ? nr : git__rethrow(error, "Failed to write index");
 }
 
 int git_tree_create_fromindex(git_oid *oid, git_index *index)
@@ -274,10 +309,10 @@ int git_tree_create_fromindex(git_oid *oid, git_index *index)
 	int error;
 
 	if (index->repository == NULL)
-		return GIT_EBAREINDEX;
+		return git__throw(GIT_EBAREINDEX, "Failed to create tree. The index file is not backed up by an existing repository");
 
 	error = write_index(oid, index, "", 0, 0, git_index_entrycount(index));
-	return (error < GIT_SUCCESS) ? error : GIT_SUCCESS;
+	return (error < GIT_SUCCESS) ? git__rethrow(error, "Failed to create tree") : GIT_SUCCESS;
 }
 
 static void sort_entries(git_treebuilder *bld)
@@ -288,7 +323,7 @@ static void sort_entries(git_treebuilder *bld)
 int git_treebuilder_create(git_treebuilder **builder_p, const git_tree *source)
 {
 	git_treebuilder *bld;
-	size_t i, source_entries = DEFAULT_TREE_SIZE;
+	unsigned int i, source_entries = DEFAULT_TREE_SIZE;
 
 	assert(builder_p);
 
@@ -339,13 +374,17 @@ int git_treebuilder_insert(git_tree_entry **entry_out, git_treebuilder *bld, con
 {
 	git_tree_entry *entry;
 	int pos;
+	struct tree_key_search ksearch;
 
 	assert(bld && id && filename);
 
 	if (!valid_attributes(attributes))
-		return GIT_ERROR;
+		return git__throw(GIT_ERROR, "Failed to insert entry. Invalid attributes");
 
-	if ((pos = git_vector_bsearch2(&bld->entries, entry_search_cmp, filename)) != GIT_ENOTFOUND) {
+	if (build_ksearch(&ksearch, filename) < GIT_SUCCESS)
+		return git__throw(GIT_ERROR, "Failed to insert entry. Invalid filename '%s'", filename);
+
+	if ((pos = git_vector_bsearch2(&bld->entries, entry_search_cmp, &ksearch)) != GIT_ENOTFOUND) {
 		entry = git_vector_get(&bld->entries, pos);
 		if (entry->removed) {
 			entry->removed = 0;
@@ -376,15 +415,18 @@ int git_treebuilder_insert(git_tree_entry **entry_out, git_treebuilder *bld, con
 	return GIT_SUCCESS;
 }
 
-const git_tree_entry *git_treebuilder_get(git_treebuilder *bld, const char *filename)
+static git_tree_entry *treebuilder_get(git_treebuilder *bld, const char *filename)
 {
 	int idx;
 	git_tree_entry *entry;
+	struct tree_key_search ksearch;
 
 	assert(bld && filename);
 
-	sort_entries(bld);
-	idx = git_vector_bsearch2(&bld->entries, entry_search_cmp, filename);
+	if (build_ksearch(&ksearch, filename) < GIT_SUCCESS)
+		return NULL;
+
+	idx = git_vector_bsearch2(&bld->entries, entry_search_cmp, &ksearch);
 	if (idx == GIT_ENOTFOUND)
 		return NULL;
 
@@ -395,12 +437,17 @@ const git_tree_entry *git_treebuilder_get(git_treebuilder *bld, const char *file
 	return entry;
 }
 
+const git_tree_entry *git_treebuilder_get(git_treebuilder *bld, const char *filename)
+{
+	return treebuilder_get(bld, filename);
+}
+
 int git_treebuilder_remove(git_treebuilder *bld, const char *filename)
 {
-	git_tree_entry *remove_ptr = (git_tree_entry *)git_treebuilder_get(bld, filename);
+	git_tree_entry *remove_ptr = treebuilder_get(bld, filename);
 
 	if (remove_ptr == NULL || remove_ptr->removed)
-		return GIT_ENOTFOUND;
+		return git__throw(GIT_ENOTFOUND, "Failed to remove entry. File isn't in the tree");
 
 	remove_ptr->removed = 1;
 	bld->entry_count--;
@@ -409,51 +456,42 @@ int git_treebuilder_remove(git_treebuilder *bld, const char *filename)
 
 int git_treebuilder_write(git_oid *oid, git_repository *repo, git_treebuilder *bld)
 {
-	size_t i, size = 0;
-	char filemode[MAX_FILEMODE_BYTES + 1 + 1];
-	git_odb_stream *stream;
+	unsigned int i;
 	int error;
+	git_buf tree = GIT_BUF_INIT;
 
 	assert(bld);
 
 	sort_entries(bld);
 
+	/* Grow the buffer beforehand to an estimated size */
+	git_buf_grow(&tree, bld->entries.length * 72);
+
 	for (i = 0; i < bld->entries.length; ++i) {
 		git_tree_entry *entry = bld->entries.contents[i];
 
 		if (entry->removed)
 			continue;
 
-		snprintf(filemode, sizeof(filemode), "%o ", entry->attr);
-		size += strlen(filemode);
-		size += entry->filename_len + 1;
-		size += GIT_OID_RAWSZ;
+		git_buf_printf(&tree, "%o ", entry->attr);
+		git_buf_put(&tree, entry->filename, entry->filename_len + 1);
+		git_buf_put(&tree, (char *)entry->oid.id, GIT_OID_RAWSZ);
 	}
 
-	if ((error = git_odb_open_wstream(&stream, git_repository_database(repo), size, GIT_OBJ_TREE)) < GIT_SUCCESS)
-		return error;
+	if (git_buf_oom(&tree)) {
+		git_buf_free(&tree);
+		return git__throw(GIT_ENOMEM, "Not enough memory to build the tree data");
+	}
 
-	for (i = 0; i < bld->entries.length; ++i) {
-		git_tree_entry *entry = bld->entries.contents[i];
+	error = git_odb_write(oid, git_repository_database(repo), tree.ptr, tree.size, GIT_OBJ_TREE);
+	git_buf_free(&tree);
 
-		if (entry->removed)
-			continue;
-
-		snprintf(filemode, sizeof(filemode), "%o ", entry->attr);
-		stream->write(stream, filemode, strlen(filemode));
-		stream->write(stream, entry->filename, entry->filename_len + 1);
-		stream->write(stream, (char *)entry->oid.id, GIT_OID_RAWSZ);
-	} 
-
-	error = stream->finalize_write(oid, stream);
-	stream->free(stream);
-
-	return error;
+	return error == GIT_SUCCESS ? GIT_SUCCESS : git__rethrow(error, "Failed to write tree");
 }
 
 void git_treebuilder_filter(git_treebuilder *bld, int (*filter)(const git_tree_entry *, void *), void *payload)
 {
-	size_t i;
+	unsigned int i;
 
 	assert(bld && filter);
 
@@ -466,7 +504,7 @@ void git_treebuilder_filter(git_treebuilder *bld, int (*filter)(const git_tree_e
 
 void git_treebuilder_clear(git_treebuilder *bld)
 {
-	size_t i;
+	unsigned int i;
 	assert(bld);
 
 	for (i = 0; i < bld->entries.length; ++i) {

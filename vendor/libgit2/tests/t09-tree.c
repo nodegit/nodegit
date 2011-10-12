@@ -71,7 +71,7 @@ BEGIN_TEST(read0, "acces randomly the entries on a loaded tree")
 
 	must_pass(git_repository_open(&repo, REPOSITORY_FOLDER));
 
-	git_oid_mkstr(&id, tree_oid);
+	git_oid_fromstr(&id, tree_oid);
 
 	must_pass(git_tree_lookup(&tree, repo, &id));
 
@@ -81,7 +81,7 @@ BEGIN_TEST(read0, "acces randomly the entries on a loaded tree")
 	must_be_true(git_tree_entry_byindex(tree, 0) != NULL);
 	must_be_true(git_tree_entry_byindex(tree, 2) != NULL);
 	must_be_true(git_tree_entry_byindex(tree, 3) == NULL);
-	must_be_true(git_tree_entry_byindex(tree, -1) == NULL);
+	must_be_true(git_tree_entry_byindex(tree, (unsigned int)-1) == NULL);
 
 	git_tree_close(tree);
 	git_repository_free(repo);
@@ -96,7 +96,7 @@ BEGIN_TEST(read1, "read a tree from the repository")
 
 	must_pass(git_repository_open(&repo, REPOSITORY_FOLDER));
 
-	git_oid_mkstr(&id, tree_oid);
+	git_oid_fromstr(&id, tree_oid);
 
 	must_pass(git_tree_lookup(&tree, repo, &id));
 
@@ -104,9 +104,11 @@ BEGIN_TEST(read1, "read a tree from the repository")
 
 	/* GH-86: git_object_lookup() should also check the type if the object comes from the cache */
 	must_be_true(git_object_lookup(&obj, repo, &id, GIT_OBJ_TREE) == 0);
+	must_be_true(obj != NULL);
 	git_object_close(obj);
+	obj = NULL;
 	must_be_true(git_object_lookup(&obj, repo, &id, GIT_OBJ_BLOB) == GIT_EINVALIDTYPE);
-	git_object_close(obj);
+	must_be_true(obj == NULL);
 
 	entry = git_tree_entry_byname(tree, "README");
 	must_be_true(entry != NULL);
@@ -114,6 +116,7 @@ BEGIN_TEST(read1, "read a tree from the repository")
 	must_be_true(strcmp(git_tree_entry_name(entry), "README") == 0);
 
 	must_pass(git_tree_entry_2object(&obj, repo, entry));
+	must_be_true(obj != NULL);
 
 	git_object_close(obj);
 	git_tree_close(tree);
@@ -143,13 +146,18 @@ BEGIN_TEST(write2, "write a tree from a memory")
 	git_oid id, bid, rid, id2;
 
 	must_pass(open_temp_repo(&repo, REPOSITORY_FOLDER));
-	git_oid_mkstr(&id, first_tree);
-	git_oid_mkstr(&id2, second_tree);
-	git_oid_mkstr(&bid, blob_oid);
+	git_oid_fromstr(&id, first_tree);
+	git_oid_fromstr(&id2, second_tree);
+	git_oid_fromstr(&bid, blob_oid);
 
 	//create a second tree from first tree using `git_treebuilder_insert` on REPOSITORY_FOLDER.
 	must_pass(git_tree_lookup(&tree, repo, &id));
 	must_pass(git_treebuilder_create(&builder, tree));
+
+	must_fail(git_treebuilder_insert(NULL, builder, "", &bid, 0100644));
+	must_fail(git_treebuilder_insert(NULL, builder, "/", &bid, 0100644));
+	must_fail(git_treebuilder_insert(NULL, builder, "folder/new.txt", &bid, 0100644));
+
 	must_pass(git_treebuilder_insert(NULL,builder,"new.txt",&bid,0100644));
 	must_pass(git_treebuilder_write(&rid,repo,builder));
 
@@ -168,10 +176,10 @@ BEGIN_TEST(write3, "write a hierarchical tree from a memory")
 	git_oid id_hiearar;
 
 	must_pass(open_temp_repo(&repo, REPOSITORY_FOLDER));
-	git_oid_mkstr(&id, first_tree);
-	git_oid_mkstr(&id2, second_tree);
-	git_oid_mkstr(&id3, third_tree);
-	git_oid_mkstr(&bid, blob_oid);
+	git_oid_fromstr(&id, first_tree);
+	git_oid_fromstr(&id2, second_tree);
+	git_oid_fromstr(&id3, third_tree);
+	git_oid_fromstr(&bid, blob_oid);
 
 	//create subtree
 	must_pass(git_treebuilder_create(&builder, NULL));

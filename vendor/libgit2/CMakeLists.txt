@@ -4,7 +4,7 @@
 # > mkdir build && cd build
 # > cmake .. [-DSETTINGS=VALUE]
 # > cmake --build .
-# 
+#
 # Testing:
 # > ctest -V
 #
@@ -22,37 +22,19 @@ STRING(REGEX REPLACE "^.*LIBGIT2_VERSION \"[0-9]+\\.[0-9]+\\.([0-9]+).*$" "\\1" 
 SET(LIBGIT2_VERSION_STRING "${LIBGIT2_VERSION_MAJOR}.${LIBGIT2_VERSION_MINOR}.${LIBGIT2_VERSION_REV}")
 
 # Find required dependencies
-INCLUDE_DIRECTORIES(deps/zlib src include)
+INCLUDE_DIRECTORIES(src include)
+IF (NOT WIN32)
+	FIND_PACKAGE(ZLIB)
+ENDIF()
 
-# Try finding openssl
-FIND_PACKAGE(OpenSSL)
-IF (OPENSSL_CRYPTO_LIBRARIES)
-    SET(SHA1_TYPE "openssl" CACHE STRING "Which SHA1 implementation to use: builtin, ppc, openssl")
-ELSEIF ()
-    SET(SHA1_TYPE "builtin" CACHE STRING "Which SHA1 implementation to use: builtin, ppc")
-ENDIF ()
-
-INCLUDE(FindPkgConfig)
-
-# Show SQLite3 settings in GUI (if they won't be found out)
-SET(SQLITE3_INCLUDE_DIRS "" CACHE PATH "SQLite include directory")
-SET(SQLITE3_LIBRARIES "" CACHE FILEPATH "SQLite library")
-
-# Are SQLite3 variables already set up? (poor Windows/no pkg-config/no sqlite3.pc)
-IF (SQLITE3_INCLUDE_DIRS AND SQLITE3_LIBRARIES)
-	SET(SQLITE3_FOUND 1)
-ENDIF ()
-
-# Try to find SQLite3 via pkg-config
-IF (PKG_CONFIG_FOUND AND NOT SQLITE3_FOUND)
-	pkg_check_modules(SQLITE3 sqlite3)
-ENDIF ()
-
-# Compile SQLite backend if SQLite3 is available
-IF (SQLITE3_FOUND)
-	ADD_DEFINITIONS(-DGIT2_SQLITE_BACKEND)
-	INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIRS})
-ENDIF ()
+IF (ZLIB_FOUND)
+	INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+	LINK_LIBRARIES(${ZLIB_LIBRARIES})
+ELSE (ZLIB_FOUND)
+	INCLUDE_DIRECTORIES(deps/zlib)
+	ADD_DEFINITIONS(-DNO_VIZ -DSTDC -DNO_GZIP)
+	FILE(GLOB SRC_ZLIB deps/zlib/*.c)
+ENDIF()
 
 # Installation paths
 SET(INSTALL_BIN bin CACHE PATH "Where to install binaries to.")
@@ -63,10 +45,27 @@ SET(INSTALL_INC include CACHE PATH "Where to install headers to.")
 OPTION (BUILD_SHARED_LIBS "Build Shared Library (OFF for Static)" ON)
 OPTION (BUILD_TESTS "Build Tests" ON)
 OPTION (THREADSAFE "Build libgit2 as threadsafe" OFF)
+OPTION (STDCALL "Buildl libgit2 with the __stdcall convention (Windows)" ON)
 
-# Build Release by default
+# Platform specific compilation flags
+IF (MSVC)
+	SET(CMAKE_C_FLAGS "/W4 /WX /nologo /Zi")
+	IF (STDCALL)
+	  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Gz")
+	ENDIF ()
+	# TODO: bring back /RTC1 /RTCc
+	SET(CMAKE_C_FLAGS_DEBUG "/Od /DEBUG /MTd")
+	SET(CMAKE_C_FLAGS_RELEASE "/MT /O2")
+ELSE ()
+	SET(CMAKE_C_FLAGS "-O2 -g -Wall -Wextra")
+	IF (NOT MINGW) # MinGW always does PIC and complains if we tell it to
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+	ENDIF ()
+ENDIF()
+
+# Build Debug by default
 IF (NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+	SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 ENDIF ()
 
 IF (THREADSAFE)
@@ -77,57 +76,59 @@ IF (THREADSAFE)
 	ADD_DEFINITIONS(-DGIT_THREADS)
 ENDIF()
 
+ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+
 # Collect sourcefiles
-FILE(GLOB SRC src/*.c src/backends/*.c)
-FILE(GLOB SRC_ZLIB deps/zlib/*.c)
-FILE(GLOB SRC_SHA1 src/block-sha1/*.c)
-FILE(GLOB SRC_PLAT src/unix/*.c)
 FILE(GLOB SRC_H include/git2/*.h)
 
 # On Windows use specific platform sources
 IF (WIN32 AND NOT CYGWIN)
     ADD_DEFINITIONS(-DWIN32 -D_DEBUG -D_LIB)
-    FILE(GLOB SRC_PLAT src/win32/*.c)
-ENDIF ()
-
-# Specify sha1 implementation
-IF (SHA1_TYPE STREQUAL "ppc")
-    ADD_DEFINITIONS(-DPPC_SHA1)
-    FILE(GLOB SRC_SHA1 src/ppc/*.c)
-ELSEIF (SHA1_TYPE STREQUAL "openssl")
-    ADD_DEFINITIONS(-DOPENSSL_SHA1)
-    SET (SRC_SHA1)
-    INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR})
-    SET (LIB_SHA1 ${OPENSSL_CRYPTO_LIBRARIES})
+	FILE(GLOB SRC src/*.c src/win32/*.c)
+ELSE()
+	FILE(GLOB SRC src/*.c src/unix/*.c)
 ENDIF ()
 
 # Compile and link libgit2
-ADD_LIBRARY(git2 ${SRC} ${SRC_PLAT} ${SRC_SHA1} ${SRC_ZLIB})
-TARGET_LINK_LIBRARIES(git2 ${LIB_SHA1} ${CMAKE_THREAD_LIBS_INIT} ${SQLITE3_LIBRARIES})
+ADD_LIBRARY(git2 ${SRC} ${SRC_ZLIB})
+
+IF (WIN32)
+	TARGET_LINK_LIBRARIES(git2 ws2_32)
+ELSEIF (CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)")
+	TARGET_LINK_LIBRARIES(git2 socket nsl)
+ENDIF ()
+
+TARGET_LINK_LIBRARIES(git2 ${CMAKE_THREAD_LIBS_INIT})
 SET_TARGET_PROPERTIES(git2 PROPERTIES VERSION ${LIBGIT2_VERSION_STRING})
 SET_TARGET_PROPERTIES(git2 PROPERTIES SOVERSION ${LIBGIT2_VERSION_MAJOR})
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/libgit2.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libgit2.pc @ONLY)
 
 # Install
-INSTALL(TARGETS git2 
+INSTALL(TARGETS git2
     RUNTIME DESTINATION ${INSTALL_BIN}
     LIBRARY DESTINATION ${INSTALL_LIB}
     ARCHIVE DESTINATION ${INSTALL_LIB}
 )
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libgit2.pc DESTINATION ${INSTALL_LIB}/pkgconfig )
 INSTALL(DIRECTORY include/git2 DESTINATION ${INSTALL_INC} )
 INSTALL(FILES include/git2.h DESTINATION ${INSTALL_INC} )
 
 # Tests
 IF (BUILD_TESTS)
-    SET(TEST_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tests/resources" CACHE PATH "Path to test resources.")
+	SET(TEST_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tests/resources" CACHE PATH "Path to test resources.")
     ADD_DEFINITIONS(-DTEST_RESOURCES=\"${TEST_RESOURCES}\")
-    
-    ENABLE_TESTING()
-    INCLUDE_DIRECTORIES(tests)
 
+    INCLUDE_DIRECTORIES(tests)
 	FILE(GLOB SRC_TEST tests/t??-*.c)
 
-	ADD_EXECUTABLE(libgit2_test tests/test_main.c tests/test_lib.c tests/test_helpers.c ${SRC} ${SRC_PLAT} ${SRC_SHA1} ${SRC_TEST} ${SRC_ZLIB})
-	TARGET_LINK_LIBRARIES(libgit2_test ${LIB_SHA1} ${CMAKE_THREAD_LIBS_INIT} ${SQLITE3_LIBRARIES})
+	ADD_EXECUTABLE(libgit2_test tests/test_main.c tests/test_lib.c tests/test_helpers.c ${SRC} ${SRC_TEST} ${SRC_ZLIB})
+	TARGET_LINK_LIBRARIES(libgit2_test ${CMAKE_THREAD_LIBS_INIT})
+	IF (WIN32)
+		TARGET_LINK_LIBRARIES(libgit2_test ws2_32)
+	ELSEIF (CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)")
+		TARGET_LINK_LIBRARIES(libgit2_test socket nsl)
+	ENDIF ()
 
+	ENABLE_TESTING()
 	ADD_TEST(libgit2_test libgit2_test)
 ENDIF ()

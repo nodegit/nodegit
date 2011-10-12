@@ -43,11 +43,11 @@ void GitOid::SetValue(git_oid oid) {
 }
 
 int GitOid::Mkstr(const char* id) {
-  return git_oid_mkstr(&this->oid, id);
+  return git_oid_fromstr(&this->oid, id);
 }
 
 void GitOid::Mkraw(const unsigned char* raw) {
-  git_oid_mkraw(&this->oid, raw);
+  git_oid_fromraw(&this->oid, raw);
 }
 
 void GitOid::Fmt(char* buffer) {

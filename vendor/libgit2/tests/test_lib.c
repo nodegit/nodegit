@@ -15,6 +15,7 @@ struct git_test {
 	char *message;
 	char *failed_pos;
 	char *description;
+	char *error_message;
 
 	git_testfunc function;
 	unsigned failed:1, ran:1;
@@ -34,6 +35,7 @@ static void test_free(git_test *t)
 		free(t->description);
 		free(t->failed_pos);
 		free(t->message);
+		free(t->error_message);
 		free(t);
 	}
 }
@@ -55,14 +57,8 @@ static git_test *create_test(git_testfunc function)
 {
 	git_test *t = DO_ALLOC(git_test);
 
-	t->name = NULL;
-	t->failed = 0;
-	t->ran = 0;
-	t->description = NULL;
-	t->message = NULL;
-	t->failed_pos = NULL;
+	memset(t, 0x0, sizeof(git_test));
 	t->function = function;
-	t->jump = NULL;
 
 	return t;
 }
@@ -81,12 +77,16 @@ void git_test__init(git_test *t, const char *name, const char *description)
 static void fail_test(git_test *tc, const char *file, int line, const char *message)
 {
 	char buf[1024];
+	const char *last_error = git_lasterror();
 
 	snprintf(buf, 1024, "%s:%d", file, line);
 
 	tc->failed = 1;
 	tc->message = strdup(message);
 	tc->failed_pos = strdup(buf);
+
+	if (last_error)
+		tc->error_message = strdup(last_error);
 
 	if (tc->jump != 0)
 		longjmp(*(tc->jump), 0);
@@ -100,6 +100,12 @@ void git_test__fail(git_test *tc, const char *file, int line, const char *messag
 void git_test__assert(git_test *tc, const char *file, int line, const char *message, int condition)
 {
 	if (condition == 0)
+		fail_test(tc, file, line, message);
+}
+
+void git_test__assert_pass(git_test *tc, const char *file, int line, const char *message, int ret_value)
+{
+	if (ret_value < 0)
 		fail_test(tc, file, line, message);
 }
 
@@ -157,6 +163,8 @@ static void print_details(git_testsuite *ts)
 				failCount++;
 				printf("  %d) \"%s\" [test %s @ %s]\n\t%s\n",
 					failCount, tc->description, tc->name, tc->failed_pos, tc->message);
+				if (tc->error_message)
+					printf("\tError: %s\n", tc->error_message);
 			}
 		}
 	}
@@ -177,6 +185,8 @@ int git_testsuite_run(git_testsuite *ts)
 			putchar('F');
 		} else
 			putchar('.');
+
+		fflush(stdout);
 	}
 	printf("\n  ");
 	print_details(ts);

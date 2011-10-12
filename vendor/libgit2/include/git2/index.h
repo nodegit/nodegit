@@ -101,31 +101,32 @@ typedef struct git_index_entry {
 	char *path;
 } git_index_entry;
 
+/** Representation of an unmerged file entry in the index. */
+typedef struct git_index_entry_unmerged {
+	unsigned int mode[3];
+	git_oid oid[3];
+	char *path;
+} git_index_entry_unmerged;
 
 /**
- * Create a new Git index object as a memory representation
+ * Create a new bare Git index object as a memory representation
  * of the Git index file in 'index_path', without a repository
  * to back it.
  *
- * Since there is no ODB behind this index, any Index methods
- * which rely on the ODB (e.g. index_add) will fail with the
- * GIT_EBAREINDEX error code.
+ * Since there is no ODB or working directory behind this index,
+ * any Index methods which rely on these (e.g. index_add) will
+ * fail with the GIT_EBAREINDEX error code.
+ *
+ * If you need to access the index of an actual repository,
+ * use the `git_repository_index` wrapper.
+ *
+ * The index must be freed once it's no longer in use.
  *
  * @param index the pointer for the new index
  * @param index_path the path to the index file in disk
  * @return 0 on success; error code otherwise
  */
-GIT_EXTERN(int) git_index_open_bare(git_index **index, const char *index_path);
-
-/**
- * Open the Index inside the git repository pointed
- * by 'repo'.
- *
- * @param index the pointer for the new index
- * @param repo the git repo which owns the index
- * @return 0 on success; error code otherwise
- */
-GIT_EXTERN(int) git_index_open_inrepo(git_index **index, git_repository *repo);
+GIT_EXTERN(int) git_index_open(git_index **index, const char *index_path);
 
 /**
  * Clear the contents (all the entries) of an index object.
@@ -170,6 +171,13 @@ GIT_EXTERN(int) git_index_write(git_index *index);
  * @return an index >= 0 if found, -1 otherwise
  */
 GIT_EXTERN(int) git_index_find(git_index *index, const char *path);
+
+/**
+ * Remove all entries with equal path except last added
+ *
+ * @param index an existing index object
+ */
+GIT_EXTERN(void) git_index_uniq(git_index *index);
 
 /**
  * Add or update an index entry from a file in disk
@@ -250,11 +258,13 @@ GIT_EXTERN(int) git_index_remove(git_index *index, int position);
  * This entry can be modified, and the changes will be written
  * back to disk on the next write() call.
  *
+ * The entry should not be freed by the caller.
+ *
  * @param index an existing index object
  * @param n the position of the entry
  * @return a pointer to the entry; NULL if out of bounds
  */
-GIT_EXTERN(git_index_entry *) git_index_get(git_index *index, int n);
+GIT_EXTERN(git_index_entry *) git_index_get(git_index *index, unsigned int n);
 
 /**
  * Get the count of entries currently in the index
@@ -264,6 +274,50 @@ GIT_EXTERN(git_index_entry *) git_index_get(git_index *index, int n);
  */
 GIT_EXTERN(unsigned int) git_index_entrycount(git_index *index);
 
+/**
+ * Get the count of unmerged entries currently in the index
+ *
+ * @param index an existing index object
+ * @return integer of count of current unmerged entries
+ */
+GIT_EXTERN(unsigned int) git_index_entrycount_unmerged(git_index *index);
+
+/**
+ * Get an unmerged entry from the index.
+ *
+ * The returned entry is read-only and should not be modified
+ * of freed by the caller.
+ *
+ * @param index an existing index object
+ * @param path path to search
+ * @return the unmerged entry; NULL if not found
+ */
+GIT_EXTERN(const git_index_entry_unmerged *) git_index_get_unmerged_bypath(git_index *index, const char *path);
+
+/**
+ * Get an unmerged entry from the index.
+ *
+ * The returned entry is read-only and should not be modified
+ * of freed by the caller.
+ *
+ * @param index an existing index object
+ * @param n the position of the entry
+ * @return a pointer to the unmerged entry; NULL if out of bounds
+ */
+GIT_EXTERN(const git_index_entry_unmerged *) git_index_get_unmerged_byindex(git_index *index, unsigned int n);
+
+/**
+ * Return the stage number from a git index entry
+ *
+ * This entry is calculated from the entrie's flag
+ * attribute like this:
+ *
+ *	(entry->flags & GIT_IDXENTRY_STAGEMASK) >> GIT_IDXENTRY_STAGESHIFT
+ *
+ * @param entry The entry
+ * @returns the stage number
+ */
+GIT_EXTERN(int) git_index_entry_stage(const git_index_entry *entry);
 
 /** @} */
 GIT_END_DECL

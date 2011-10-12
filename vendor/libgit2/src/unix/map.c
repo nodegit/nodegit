@@ -1,10 +1,12 @@
+#include <git2/common.h>
+
+#ifndef GIT_WIN32
 
 #include "map.h"
 #include <sys/mman.h>
 #include <errno.h>
 
-
-int git__mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t offset)
+int p_mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t offset)
 {
 	int mprot = 0;
 	int mflag = 0;
@@ -13,7 +15,7 @@ int git__mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t o
 
 	if ((out == NULL) || (len == 0)) {
 		errno = EINVAL;
-		return GIT_ERROR;
+		return git__throw(GIT_ERROR, "Failed to mmap. No map or zero length");
 	}
 
 	out->data = NULL;
@@ -25,7 +27,7 @@ int git__mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t o
 		mprot = PROT_READ;
 	else {
 		errno = EINVAL;
-		return GIT_ERROR;
+		return git__throw(GIT_ERROR, "Failed to mmap. Invalid protection parameters");
 	}
 
 	if ((flags & GIT_MAP_TYPE) == GIT_MAP_SHARED)
@@ -35,27 +37,28 @@ int git__mmap(git_map *out, size_t len, int prot, int flags, int fd, git_off_t o
 
 	if (flags & GIT_MAP_FIXED) {
 		errno = EINVAL;
-		return GIT_ERROR;
+		return git__throw(GIT_ERROR, "Failed to mmap. FIXED not set");
 	}
 
 	out->data = mmap(NULL, len, mprot, mflag, fd, offset);
 	if (!out->data || out->data == MAP_FAILED)
-		return GIT_EOSERR;
+		return git__throw(GIT_EOSERR, "Failed to mmap. Could not write data");
 	out->len = len;
 
 	return GIT_SUCCESS;
 }
 
-int git__munmap(git_map *map)
+int p_munmap(git_map *map)
 {
 	assert(map != NULL);
 
 	if (!map)
-		return GIT_ERROR;
+		return git__throw(GIT_ERROR, "Failed to munmap. Map does not exist");
 
 	munmap(map->data, map->len);
 
 	return GIT_SUCCESS;
 }
 
+#endif
 

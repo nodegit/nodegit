@@ -24,9 +24,11 @@ install:
 	@@mkdir -p $(INSTALL_PATH)
 	@@mkdir -p $(INSTALL_PATH)/build/default
 	@@mkdir -p $(INSTALL_PATH)/lib
+	@@mkdir -p $(INSTALL_PATH)/vendor
 
 	@@cp -f $(BASE)/build/default/nodegit.node $(INSTALL_PATH)/build/default/nodegit.node
 	@@cp -f $(BASE)/lib/* $(INSTALL_PATH)/lib/
+	@@cp -rf $(BASE)/vendor/* $(INSTALL_PATH)/vendor/
 	@@cp -f $(BASE)/package.json $(INSTALL_PATH)/
 
 	@@echo "Installed to $(INSTALL_PATH)"

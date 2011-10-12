@@ -57,31 +57,31 @@ API Example Usage
 #### Convenience API ####
 
 ```` javascript
-var git = require( 'nodegit' );
+var git = require("nodegit");
 
 // Read a repository
-git.repo( '.git', function( err, repo ) {
-    // Success is always 0, failure is always an error string
-    if( err ) { throw err; }
+git.repo(".git", function(err, repo) {
+  // Success is always 0, failure is always an error string
+  if (err) { throw err; }
 
-    // Use the master branch
-    repo.branch( 'master', function( err, branch ) {
-        if( err ) { throw err; }
+  // Use the master branch
+  repo.branch("master", function(err, branch) {
+    if (err) { throw err; }
 
-        // Iterate over the revision history
-        var history = branch.history();
-        
-        // Commit event is emitted with index 0,n... and commit object
-        history.on( 'commit', function( idx, commit ) {
-            // Print out `git log` emulation
-            console.log( 'commit ' + commit.sha );
-            console.log( commit.author.name + '<' + commit.author.email + '>' );
-            console.log( commit.time );
-            console.log( '\n' );
-            console.log( commit.message );
-            console.log( '\n' );
-        });
+    // Iterate over the revision history
+    var history = branch.history();
+    
+    // Commit event emits commit object
+    history.on("commit", function(commit) {
+      // Print out `git log` emulation
+      console.log("commit " + commit.sha);
+      console.log(commit.author.name + "<" + commit.author.email + ">");
+      console.log(commit.time);
+      console.log("\n");
+      console.log(commit.message);
+      console.log("\n");
     });
+  });
 });
 ````
 
@@ -204,6 +204,11 @@ Release information
 -------------------
 
 __Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods)__
+
+### v0.0.5: ###
+    * Added in fast Buffer support.
+    * Blob raw write supported added, no convenience methods yet...
+    * Updated libgit2 to version 0.12.0
 
 ### v0.0.4: ###
     * Many fixes!

@@ -42,7 +42,7 @@ static struct {
 	{GIT_EOBJTYPE, "The specified object is of invalid type"},
 	{GIT_EOBJCORRUPTED, "The specified object has its data corrupted"},
 	{GIT_ENOTAREPO, "The specified repository is invalid"},
-	{GIT_EINVALIDTYPE, "The object type is invalid or doesn't match"},
+	{GIT_EINVALIDTYPE, "The object or config variable type is invalid or doesn't match"},
 	{GIT_EMISSINGOBJDATA, "The object cannot be written that because it's missing internal data"},
 	{GIT_EPACKCORRUPTED, "The packfile for the ODB is corrupted"},
 	{GIT_EFLOCKFAIL, "Failed to adquire or release a file lock"},
@@ -61,6 +61,7 @@ static struct {
 	{GIT_EEXISTS, "A reference with this name already exists"},
 	{GIT_EOVERFLOW, "The given integer literal is too large to be parsed"},
 	{GIT_ENOTNUM, "The given literal is not a valid number"},
+	{GIT_EAMBIGUOUSOIDPREFIX, "The given oid prefix is ambiguous"},
 };
 
 const char *git_strerror(int num)
@@ -76,7 +77,7 @@ const char *git_strerror(int num)
 	return "Unknown error";
 }
 
-int git__rethrow(int error, const char *msg, ...)
+void git___rethrow(const char *msg, ...)
 {
 	char new_error[1024];
 	char *old_error = NULL;
@@ -90,23 +91,26 @@ int git__rethrow(int error, const char *msg, ...)
 	old_error = strdup(g_last_error);
 	snprintf(g_last_error, sizeof(g_last_error), "%s \n    - %s", new_error, old_error);
 	free(old_error);
-
-	return error;
 }
 
-int git__throw(int error, const char *msg, ...)
+void git___throw(const char *msg, ...)
 {
 	va_list va;
 
 	va_start(va, msg);
 	vsnprintf(g_last_error, sizeof(g_last_error), msg, va);
 	va_end(va);
-
-	return error;
 }
 
 const char *git_lasterror(void)
 {
+	if (!g_last_error[0])
+		return NULL;
+
 	return g_last_error;
 }
 
+void git_clearerror(void)
+{
+	g_last_error[0] = '\0';
+}

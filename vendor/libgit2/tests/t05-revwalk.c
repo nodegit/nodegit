@@ -74,7 +74,7 @@ static int get_commit_index(git_oid *raw_oid)
 	char oid[40];
 
 	git_oid_fmt(oid, raw_oid);
-	
+
 	for (i = 0; i < commit_count; ++i)
 		if (memcmp(oid, commit_ids[i], 40) == 0)
 			return i;
@@ -108,7 +108,7 @@ static int test_walk(git_revwalk *walk, const git_oid *root,
 		}*/
 	}
 
-	for (i = 0; i < results_count; ++i) 
+	for (i = 0; i < results_count; ++i)
 		if (memcmp(possible_results[i],
 				result_array, result_bytes) == 0)
 			return GIT_SUCCESS;
@@ -124,7 +124,7 @@ BEGIN_TEST(walk0, "do a simple walk on a repo with different sorting modes")
 	must_pass(git_repository_open(&repo, REPOSITORY_FOLDER));
 	must_pass(git_revwalk_new(&walk, repo));
 
-	git_oid_mkstr(&id, commit_head);
+	git_oid_fromstr(&id, commit_head);
 
 	must_pass(test_walk(walk, &id, GIT_SORT_TIME, commit_sorting_time, 1));
 	must_pass(test_walk(walk, &id, GIT_SORT_TOPOLOGICAL, commit_sorting_topo, 2));
