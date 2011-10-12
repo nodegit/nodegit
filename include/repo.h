@@ -43,7 +43,7 @@ class GitRepo : public EventEmitter {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Open(const Arguments& args);
-    static int EIO_Open(eio_req* req);
+    static void EIO_Open(eio_req* req);
     static int EIO_AfterOpen(eio_req* req);
 
     static Handle<Value> Lookup(const Arguments& args);
@@ -53,7 +53,7 @@ class GitRepo : public EventEmitter {
     static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Init(const Arguments& args);
-    static int EIO_Init(eio_req* req);
+    static void EIO_Init(eio_req* req);
     static int EIO_AfterInit(eio_req* req);
 
   private:

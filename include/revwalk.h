@@ -42,7 +42,7 @@ class GitRevWalk : public EventEmitter {
     static Handle<Value> Hide(const Arguments& args);
 
     static Handle<Value> Next(const Arguments& args);
-    static int EIO_Next(eio_req* req);
+    static void EIO_Next(eio_req* req);
     static int EIO_AfterNext(eio_req* req);
 
     static Handle<Value> Sorting(const Arguments& args);

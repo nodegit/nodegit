@@ -156,14 +156,14 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitRevWalk::EIO_Next(eio_req *req) {
+void GitRevWalk::EIO_Next(eio_req *req) {
   next_request *ar = static_cast<next_request *>(req->data);
   git_oid oid = ar->oid->GetValue();
 
   ar->err = ar->revwalk->Next(&oid);
   ar->oid->SetValue(oid);
 
-  return 0;
+  return;
 }
 
 int GitRevWalk::EIO_AfterNext(eio_req *req) {
