@@ -33,7 +33,7 @@ class GitReference : public EventEmitter {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
-    static int EIO_Lookup(eio_req* req);
+    static void EIO_Lookup(eio_req* req);
     static int EIO_AfterLookup(eio_req* req);
 
     static Handle<Value> Oid(const Arguments& args);

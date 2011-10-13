@@ -98,10 +98,10 @@ class GitTree : public EventEmitter {
     static int EIO_AfterLookup(eio_req *req);
     static Handle<Value> EntryCount(const Arguments& args);
     static Handle<Value> EntryByIndex(const Arguments& args);
-    static int EIO_EntryByIndex(eio_req *req);
+    static void EIO_EntryByIndex(eio_req *req);
     static int EIO_AfterEntryByIndex(eio_req *req);
     static Handle<Value> EntryByName(const Arguments& args);
-    static int EIO_EntryByName(eio_req *req);
+    static void EIO_EntryByName(eio_req *req);
     static int EIO_AfterEntryByName(eio_req *req);
     static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);

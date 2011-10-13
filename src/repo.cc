@@ -101,12 +101,12 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitRepo::EIO_Open(eio_req *req) {
+void GitRepo::EIO_Open(eio_req *req) {
   open_request *ar = static_cast<open_request *>(req->data);
 
   ar->err = ar->repo->Open(ar->path.c_str());
 
-  return 0;
+  return;
 }
 
 int GitRepo::EIO_AfterOpen(eio_req *req) {
@@ -258,12 +258,12 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitRepo::EIO_Init(eio_req *req) {
+void GitRepo::EIO_Init(eio_req *req) {
   init_request *ar = static_cast<init_request *>(req->data);
 
   ar->err = ar->repo->Init(ar->path.c_str(), ar->is_bare);
 
-  return 0;
+  return;
 }
 
 int GitRepo::EIO_AfterInit(eio_req *req) {

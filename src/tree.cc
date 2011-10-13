@@ -190,12 +190,12 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitTree::EIO_EntryByIndex(eio_req *req) {
+void GitTree::EIO_EntryByIndex(eio_req *req) {
   entryindex_request *er = static_cast<entryindex_request *>(req->data);
 
   er->entry->SetValue(er->tree->EntryByIndex(er->idx));
 
-  return 0;
+  return;
 }
 
 int GitTree::EIO_AfterEntryByIndex(eio_req *req) {
@@ -256,12 +256,12 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitTree::EIO_EntryByName(eio_req *req) {
+void GitTree::EIO_EntryByName(eio_req *req) {
   entryname_request *er = static_cast<entryname_request *>(req->data);
 
   er->entry->SetValue(er->tree->EntryByName(er->name.c_str()));
 
-  return 0;
+  return;
 }
 
 int GitTree::EIO_AfterEntryByName(eio_req *req) {
