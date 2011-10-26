@@ -8,7 +8,7 @@
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
+#include <node_object_wrap.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -23,7 +23,7 @@ using namespace v8;
 /**
  * Class wrapper for libgit2 git_commit
  */
-class GitCommit : public EventEmitter {
+class GitCommit : public ObjectWrap {
   public:
     /**
      * v8::FunctionTemplate used to create Node.js constructor

@@ -7,7 +7,7 @@
 #define TAG_H
 
 #include <node.h>
-#include <node_events.h>
+#include <node_object_wrap.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
