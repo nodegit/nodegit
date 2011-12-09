@@ -6,7 +6,6 @@
 #include <string.h>
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -147,13 +146,12 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitCommit::EIO_Lookup(eio_req *req) {
+void GitCommit::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
   git_oid oid = ar->oid->GetValue();
   ar->err = ar->commit->Lookup(ar->repo->GetValue(), &oid);
 
-  return 0;
 }
 
 int GitCommit::EIO_AfterLookup(eio_req *req) {

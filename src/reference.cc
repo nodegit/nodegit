@@ -4,7 +4,6 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 #include <string>
 
 #include "../vendor/libgit2/include/git2.h"
@@ -94,14 +93,13 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitReference::EIO_Lookup(eio_req *req) {
+void GitReference::EIO_Lookup(eio_req *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
   git_repository* repo = ar->repo->GetValue();
 
   ar->err = ar->ref->Lookup(repo, ar->name.c_str());
 
-  return 0;
 }
 
 int GitReference::EIO_AfterLookup(eio_req *req) {

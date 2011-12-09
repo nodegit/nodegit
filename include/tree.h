@@ -7,7 +7,6 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 #include <string>
 
 #include "../vendor/libgit2/include/git2.h"
@@ -21,7 +20,7 @@ using namespace node;
 /**
  * Class wrapper for libgit2 git_tree
  */
-class GitTree : public EventEmitter {
+class GitTree : public ObjectWrap {
   public:
     /**
      * v8::FunctionTemplate used to create Node.js constructor
@@ -98,10 +97,10 @@ class GitTree : public EventEmitter {
     static int EIO_AfterLookup(eio_req *req);
     static Handle<Value> EntryCount(const Arguments& args);
     static Handle<Value> EntryByIndex(const Arguments& args);
-    static int EIO_EntryByIndex(eio_req *req);
+    static void EIO_EntryByIndex(eio_req *req);
     static int EIO_AfterEntryByIndex(eio_req *req);
     static Handle<Value> EntryByName(const Arguments& args);
-    static int EIO_EntryByName(eio_req *req);
+    static void EIO_EntryByName(eio_req *req);
     static int EIO_AfterEntryByName(eio_req *req);
     static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);

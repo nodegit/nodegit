@@ -111,13 +111,12 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitBlob::EIO_Lookup(eio_req* req) {
+void GitBlob::EIO_Lookup(eio_req* req) {
   lookup_request* ar = static_cast<lookup_request* >(req->data);
 
   git_oid oid = ar->oid->GetValue();
   ar->err = ar->blob->Lookup(ar->repo->GetValue(), &oid);
 
-  return 0;
 }
 
 int GitBlob::EIO_AfterLookup(eio_req* req) {
