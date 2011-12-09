@@ -7,7 +7,6 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -17,7 +16,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace node;
 using namespace v8;
 
-class GitRevWalk : public EventEmitter {
+class GitRevWalk : public ObjectWrap {
   public:
     static Persistent<FunctionTemplate> constructor_template;
     static void Initialize(Handle<v8::Object> target);
@@ -42,7 +41,7 @@ class GitRevWalk : public EventEmitter {
     static Handle<Value> Hide(const Arguments& args);
 
     static Handle<Value> Next(const Arguments& args);
-    static int EIO_Next(eio_req* req);
+    static void EIO_Next(eio_req* req);
     static int EIO_AfterNext(eio_req* req);
 
     static Handle<Value> Sorting(const Arguments& args);

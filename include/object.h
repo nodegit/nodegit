@@ -7,7 +7,6 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -19,7 +18,7 @@ using namespace node;
 /**
  * Class wrapper for libgit2 git_object
  */
-class GitObject : public EventEmitter {
+class GitObject : public ObjectWrap {
   public:
     /**
      * v8::FunctionTemplate used to create Node.js constructor

@@ -137,7 +137,7 @@ class GitBlob : public ObjectWrap {
      * Returns:
      *   completion code integer
      */
-    static int EIO_Lookup(eio_req* req);
+    static void EIO_Lookup(eio_req* req);
     /**
      * Function: EIO_AfterLookup
      *

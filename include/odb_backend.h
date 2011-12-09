@@ -7,7 +7,6 @@
 #define ODB_BACKEND_H
 
 #include <node.h>
-#include <node_events.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
