@@ -1,6 +1,6 @@
 NODE_JS = $(if $(shell test -f /usr/bin/nodejs && echo "true"),nodejs,node)
 NODE_BLD = node-waf
-NODE_LIB_PATH = ~/.node_libraries
+NODE_LIB_PATH = ~/.node_modules
 
 BASE = .
 INSTALL_PATH = $(NODE_LIB_PATH)/nodegit
@@ -22,11 +22,11 @@ debug:
 
 install:
 	@@mkdir -p $(INSTALL_PATH)
-	@@mkdir -p $(INSTALL_PATH)/build/default
+	@@mkdir -p $(INSTALL_PATH)/build/Release
 	@@mkdir -p $(INSTALL_PATH)/lib
 	@@mkdir -p $(INSTALL_PATH)/vendor
 
-	@@cp -f $(BASE)/build/default/nodegit.node $(INSTALL_PATH)/build/default/nodegit.node
+	@@cp -f $(BASE)/build/Release/nodegit.node $(INSTALL_PATH)/build/Release/nodegit.node
 	@@cp -f $(BASE)/lib/* $(INSTALL_PATH)/lib/
 	@@cp -rf $(BASE)/vendor/* $(INSTALL_PATH)/vendor/
 	@@cp -f $(BASE)/package.json $(INSTALL_PATH)/

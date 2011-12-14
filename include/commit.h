@@ -8,7 +8,6 @@
 
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -23,7 +22,7 @@ using namespace v8;
 /**
  * Class wrapper for libgit2 git_commit
  */
-class GitCommit : public EventEmitter {
+class GitCommit : public ObjectWrap {
   public:
     /**
      * v8::FunctionTemplate used to create Node.js constructor
@@ -59,7 +58,7 @@ class GitCommit : public EventEmitter {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
-    static int EIO_Lookup(eio_req *req);
+    static void EIO_Lookup(eio_req *req);
     static int EIO_AfterLookup(eio_req *req);
 
     static Handle<Value> Close(const Arguments& args);

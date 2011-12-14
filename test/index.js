@@ -1,10 +1,9 @@
-require.paths.unshift( '../vendor' );
 
 try {
   var reporter = require( '../vendor/nodeunit' ).reporters['default'];
 }
 catch( e ) {
-  var sys = require( 'sys' );
+  var sys = require( 'util' );
   sys.puts( 'Cannot find nodeunit module.' );
   sys.puts( 'You can download submodules for this project by doing:' );
   sys.puts( '' );
@@ -17,7 +16,7 @@ try {
   var rimraf = require( '../vendor/rimraf' );
 }
 catch(e) {
-  var sys = require( 'sys' );
+  var sys = require( 'util' );
   sys.puts( 'Cannot find rimraf module.' );
   sys.puts( 'You can download submodules for this project by doing:' );
   sys.puts( '' );
