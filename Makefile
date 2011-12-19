@@ -41,9 +41,6 @@ clean:
 	@@rm -rf $(BASE)/build/
 	@@rm -rf $(BASE)/vendor/libgit2/build/
 
-test:
-	@@$(NODE_JS) $(BASE)/test/index.js test
-
 lint:
 	@@$(NODE_JS) $(BASE)/util/hint-check.js
 
