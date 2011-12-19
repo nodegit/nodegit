@@ -14,7 +14,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": "*"
+    "node": "~0.6"
   },
   "scripts": {
     "preinstall": "./configure",
