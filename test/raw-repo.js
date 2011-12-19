@@ -1,5 +1,5 @@
 var git = require( '../' ).raw,
-    rimraf = require( '../vendor/rimraf' ) || require( 'rimraf' ),
+    rimraf = require('rimraf'),
     path = require( 'path' ),
     fs = require( 'fs' );
 

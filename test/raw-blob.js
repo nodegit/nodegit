@@ -1,6 +1,6 @@
 var git = require( '../' ).raw
   , path = require( 'path' )
-  , rimraf = require( '../vendor/rimraf' );
+  , rimraf = require('rimraf');
 
 var testRepo = new git.Repo();
 

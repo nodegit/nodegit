@@ -1,5 +1,5 @@
 var git = require( '../' ).raw,
-    rimraf = require( '../vendor/rimraf' ) || require( 'rimraf' );
+    rimraf = require('rimraf');
 
 // Helper functions
 var helper = {
