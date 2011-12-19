@@ -1,9 +1,3 @@
-[submodule "vendor/nodeunit"]
-	path = vendor/nodeunit
-	url = git://github.com/caolan/nodeunit.git
-[submodule "vendor/rimraf"]
-	path = vendor/rimraf
-	url = git://github.com/isaacs/rimraf.git
 [submodule "vendor/libgit2"]
 	path = vendor/libgit2
 	url = git://github.com/libgit2/libgit2.git
