@@ -16,8 +16,13 @@
   "engines": {
     "node": "~0.6"
   },
+  "devDependencies": {
+    "nodeunit": "0.6.x",
+    "rimraf": "1.0.x"
+  },
   "scripts": {
     "preinstall": "./configure",
-    "install": "make"
+    "install": "make",
+    "test": "cd test && nodeunit *.js"
   }
 }
