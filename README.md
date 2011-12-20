@@ -205,6 +205,9 @@ Release information
 
 __Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods)__
 
+### v0.0.6: ###
+    * Updated to work with Node ~0.6.
+
 ### v0.0.5: ###
     * Added in fast Buffer support.
     * Blob raw write supported added, no convenience methods yet...
