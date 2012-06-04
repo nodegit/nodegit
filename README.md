@@ -8,7 +8,7 @@ Currently under active development (and seeking contributors), `nodegit` provide
 Building and installing
 -----------------------
 
-### Dependancies ###
+### Dependencies ###
 To run `nodegit` you need `Node.js` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 ### Easy install (Recommended) ###
