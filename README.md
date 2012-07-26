@@ -181,13 +181,9 @@ Running tests
 
 __`nodegit` library code is written adhering to a modified `JSHint`. Run these checks with `make lint` in the project root.__
 
-__To run unit tests ensure the submodules `nodeunit` and `rimraf` are located in the `vendor/` subdirectory.__
+__To run unit tests ensure to update the submodules with `git submodule update --init` and install the development dependencies nodeunit and rimraf with `npm install`.__
 
-If they are not, `cd` into the `nodegit` dir and run the following `git` commands to automatically fetch them:
-    $ cd nodegit
-    $ git submodule update --init
-
-Then simply run `make test` in the project root.
+Then simply run `npm test` in the project root.
 
 Generating documentation
 ------------------------
