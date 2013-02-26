@@ -8,7 +8,7 @@ git.repo( '../.git', function( err, repo ) {
 
     var history = commit.history();
     history.on( 'commit', function() {
-      console.log(arguments);
+      // console.log(arguments);
     });
 
     history.on( 'end', function( commits ) {
