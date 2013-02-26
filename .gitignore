@@ -4,3 +4,4 @@ doc
 !doc/Theme.css
 example/stress/test
 node_modules
+.DS_Store
