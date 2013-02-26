@@ -19,7 +19,7 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
+
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Tree"));
@@ -113,7 +113,7 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
 //  return scope.Close( Undefined() );
 }
 
-//int GitTree::EIO_Lookup(eio_req *req) {
+//void GitTree::EIO_Lookup(uv_work_t *req) {
 //  lookup_request *lr = static_cast<lookup_request *>(req->data);
 //
 //  git_oid oid = lr->oid->GetValue();
@@ -122,7 +122,7 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
 //  return 0;
 //}
 
-//int GitTree::EIO_AfterLookup(eio_req *req) {
+//void GitTree::EIO_AfterLookup(uv_work_t *req) {
 //  lookup_request *lr = static_cast<lookup_request *>(req->data);
 //
 //  ev_unref(EV_DEFAULT_UC);
@@ -137,7 +137,7 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
 //
 //  if(try_catch.HasCaught())
 //    FatalException(try_catch);
-//    
+//
 //  lr->callback.Dispose();
 //
 //  delete lr;
@@ -151,7 +151,7 @@ Handle<Value> GitTree::EntryCount(const Arguments& args) {
   GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
 
   int count = tree->EntryCount();
-    
+
   return scope.Close( Integer::New(count) );
 }
 
@@ -183,23 +183,24 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
 
   tree->Ref();
 
-  eio_custom(EIO_EntryByIndex, EIO_PRI_DEFAULT, EIO_AfterEntryByIndex, er);
-  ev_ref(EV_DEFAULT_UC);
+  uv_work_t *req = new uv_work_t;
+  req->data = er;
+  uv_queue_work(uv_default_loop(), req, EIO_EntryByIndex, EIO_AfterEntryByIndex);
 
   return scope.Close( Undefined() );
 }
 
-void GitTree::EIO_EntryByIndex(eio_req *req) {
+void GitTree::EIO_EntryByIndex(uv_work_t *req) {
   entryindex_request *er = static_cast<entryindex_request *>(req->data);
 
   er->entry->SetValue(er->tree->EntryByIndex(er->idx));
 
 }
 
-int GitTree::EIO_AfterEntryByIndex(eio_req *req) {
+void GitTree::EIO_AfterEntryByIndex(uv_work_t *req) {
   entryindex_request *er = static_cast<entryindex_request *>(req->data);
 
-  ev_unref(EV_DEFAULT_UC);
+  delete req;
   er->tree->Unref();
 
   Handle<Value> argv[0];
@@ -210,12 +211,10 @@ int GitTree::EIO_AfterEntryByIndex(eio_req *req) {
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
-    
+
   er->callback.Dispose();
 
   delete er;
-
-  return 0;
 }
 
 Handle<Value> GitTree::EntryByName(const Arguments& args) {
@@ -248,23 +247,24 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
 
   tree->Ref();
 
-  eio_custom(EIO_EntryByName, EIO_PRI_DEFAULT, EIO_AfterEntryByName, er);
-  ev_ref(EV_DEFAULT_UC);
+  uv_work_t *req = new uv_work_t;
+  req->data = er;
+  uv_queue_work(uv_default_loop(), req, EIO_EntryByName, EIO_AfterEntryByName);
 
   return scope.Close( Undefined() );
 }
 
-void GitTree::EIO_EntryByName(eio_req *req) {
+void GitTree::EIO_EntryByName(uv_work_t *req) {
   entryname_request *er = static_cast<entryname_request *>(req->data);
 
   er->entry->SetValue(er->tree->EntryByName(er->name.c_str()));
 
 }
 
-int GitTree::EIO_AfterEntryByName(eio_req *req) {
+void GitTree::EIO_AfterEntryByName(uv_work_t *req) {
   entryname_request *er = static_cast<entryname_request *>(req->data);
 
-  ev_unref(EV_DEFAULT_UC);
+  delete req;
   er->tree->Unref();
 
   Handle<Value> argv[1];
@@ -276,12 +276,10 @@ int GitTree::EIO_AfterEntryByName(eio_req *req) {
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
-    
+
   er->callback.Dispose();
 
   delete er;
-
-  return 0;
 }
 
 Handle<Value> GitTree::SortEntries(const Arguments& args) {
@@ -290,7 +288,7 @@ Handle<Value> GitTree::SortEntries(const Arguments& args) {
   GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
 
   int err = tree->SortEntries();
-  
+
   return scope.Close( Integer::New(err) );
 }
 

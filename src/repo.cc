@@ -19,7 +19,7 @@ void GitRepo::Initialize(Handle<Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
+
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Repo"));
@@ -94,24 +94,25 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
 
   repo->Ref();
 
-  eio_custom(EIO_Open, EIO_PRI_DEFAULT, EIO_AfterOpen, ar);
-  ev_ref(EV_DEFAULT_UC);
+  uv_work_t *req = new uv_work_t;
+  req->data = ar;
+  uv_queue_work(uv_default_loop(), req, EIO_Open, EIO_AfterOpen);
 
   return scope.Close( Undefined() );
 }
 
-void GitRepo::EIO_Open(eio_req *req) {
+void GitRepo::EIO_Open(uv_work_t *req) {
   open_request *ar = static_cast<open_request *>(req->data);
 
   ar->err = ar->repo->Open(ar->path.c_str());
 
 }
 
-int GitRepo::EIO_AfterOpen(eio_req *req) {
+void GitRepo::EIO_AfterOpen(uv_work_t *req) {
   HandleScope scope;
 
   open_request *ar = static_cast<open_request *>(req->data);
-  ev_unref(EV_DEFAULT_UC);
+  delete req;
   ar->repo->Unref();
 
   Local<Value> argv[1];
@@ -123,12 +124,10 @@ int GitRepo::EIO_AfterOpen(eio_req *req) {
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
-    
+
   ar->callback.Dispose();
 
   delete ar;
-
-  return 0;
 }
 
 Handle<Value> GitRepo::Lookup(const Arguments& args) {
@@ -167,7 +166,7 @@ Handle<Value> GitRepo::Lookup(const Arguments& args) {
   return scope.Close( Undefined() );
 }
 
-int GitRepo::EIO_Lookup(eio_req *req) {
+void GitRepo::EIO_Lookup(uv_work_t *req) {
   //lookup_request *ar = static_cast<lookup_request *>(req->data);
   //
   //String::Utf8Value name(ar->name);
@@ -183,11 +182,11 @@ int GitRepo::EIO_Lookup(eio_req *req) {
   //return 0;
 }
 
-int GitRepo::EIO_AfterLookup(eio_req *req) {
+void GitRepo::EIO_AfterLookup(uv_work_t *req) {
   //HandleScope scope;
 
   //lookup_request *ar = static_cast<lookupref_request *>(req->data);
-  //ev_unref(EV_DEFAULT_UC);
+  // delete req;
   //ar->repo->Unref();
 
   //Local<Value> argv[1];
@@ -199,7 +198,7 @@ int GitRepo::EIO_AfterLookup(eio_req *req) {
 
   //if(try_catch.HasCaught())
   //  FatalException(try_catch);
-  //  
+  //
   //ar->err.Dispose();
   //ar->name.Dispose();
   //ar->callback.Dispose();
@@ -250,24 +249,25 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
 
   repo->Ref();
 
-  eio_custom(EIO_Init, EIO_PRI_DEFAULT, EIO_AfterInit, ar);
-  ev_ref(EV_DEFAULT_UC);
+  uv_work_t *req = new uv_work_t;
+  req->data = ar;
+  uv_queue_work(uv_default_loop(), req, EIO_Init, EIO_AfterInit);
 
   return scope.Close( Undefined() );
 }
 
-void GitRepo::EIO_Init(eio_req *req) {
+void GitRepo::EIO_Init(uv_work_t *req) {
   init_request *ar = static_cast<init_request *>(req->data);
 
   ar->err = ar->repo->Init(ar->path.c_str(), ar->is_bare);
 
 }
 
-int GitRepo::EIO_AfterInit(eio_req *req) {
+void GitRepo::EIO_AfterInit(uv_work_t *req) {
   HandleScope scope;
 
   init_request *ar = static_cast<init_request *>(req->data);
-  ev_unref(EV_DEFAULT_UC);
+  delete req;
   ar->repo->Unref();
 
   Local<Value> argv[2];
@@ -279,11 +279,9 @@ int GitRepo::EIO_AfterInit(eio_req *req) {
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
-    
+
   ar->callback.Dispose();
 
   delete ar;
-
-  return 0;
 }
 Persistent<FunctionTemplate> GitRepo::constructor_template;

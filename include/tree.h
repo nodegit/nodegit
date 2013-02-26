@@ -93,15 +93,15 @@ class GitTree : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
-    static int EIO_Lookup(eio_req *req);
-    static int EIO_AfterLookup(eio_req *req);
+    static void EIO_Lookup(uv_work_t *req);
+    static void EIO_AfterLookup(uv_work_t *req);
     static Handle<Value> EntryCount(const Arguments& args);
     static Handle<Value> EntryByIndex(const Arguments& args);
-    static void EIO_EntryByIndex(eio_req *req);
-    static int EIO_AfterEntryByIndex(eio_req *req);
+    static void EIO_EntryByIndex(uv_work_t *req);
+    static void EIO_AfterEntryByIndex(uv_work_t *req);
     static Handle<Value> EntryByName(const Arguments& args);
-    static void EIO_EntryByName(eio_req *req);
-    static int EIO_AfterEntryByName(eio_req *req);
+    static void EIO_EntryByName(uv_work_t *req);
+    static void EIO_AfterEntryByName(uv_work_t *req);
     static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);
 

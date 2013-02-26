@@ -18,7 +18,7 @@ void GitRevWalk::Initialize(Handle<Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
+
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("RevWalk"));
@@ -119,7 +119,7 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
   }
 
   GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  
+
   git_oid tmp = oid->GetValue();
   int err = revwalk->Push(&tmp);
 
@@ -149,13 +149,14 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
 
   revwalk->Ref();
 
-  eio_custom(EIO_Next, EIO_PRI_DEFAULT, EIO_AfterNext, ar);
-  ev_ref(EV_DEFAULT_UC);
+  uv_work_t *req = new uv_work_t;
+  req->data = ar;
+  uv_queue_work(uv_default_loop(), req, EIO_Next, EIO_AfterNext);
 
   return scope.Close( Undefined() );
 }
 
-void GitRevWalk::EIO_Next(eio_req *req) {
+void GitRevWalk::EIO_Next(uv_work_t *req) {
   next_request *ar = static_cast<next_request *>(req->data);
   git_oid oid = ar->oid->GetValue();
 
@@ -164,11 +165,11 @@ void GitRevWalk::EIO_Next(eio_req *req) {
 
 }
 
-int GitRevWalk::EIO_AfterNext(eio_req *req) {
+void GitRevWalk::EIO_AfterNext(uv_work_t *req) {
   HandleScope scope;
 
   next_request *ar = static_cast<next_request *>(req->data);
-  ev_unref(EV_DEFAULT_UC);
+  delete req;
   ar->revwalk->Unref();
 
   Local<Value> argv[1];
@@ -180,12 +181,10 @@ int GitRevWalk::EIO_AfterNext(eio_req *req) {
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
-    
+
   ar->callback.Dispose();
 
   delete ar;
-
-  return 0;
 }
 
 Handle<Value> GitRevWalk::Free(const Arguments& args) {

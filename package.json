@@ -4,6 +4,12 @@
   "version": "0.0.6",
   "homepage": "https://github.com/tbranyen/nodegit",
   "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
+  "contributors": [
+    {
+      "name": "Michael Robinson",
+      "email": "mike@pagesofinterest.net"
+    }
+  ],
   "main": "./lib/index.js",
   "repository": {
     "type": "git",

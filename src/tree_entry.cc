@@ -19,7 +19,7 @@ using namespace node;
 
 void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
+
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("TreeEntry"));
@@ -94,7 +94,7 @@ Handle<Value> GitTreeEntry::Id(const Arguments& args) {
   GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
   oid->SetValue(*const_cast<git_oid *>(entry->Id()));
-  
+
   return scope.Close( Undefined() );
 }
 
@@ -118,7 +118,7 @@ Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
   entry->ToObject(repo->GetValue(), &out);
 
   object->SetValue(out);
-  
+
   return scope.Close( Undefined() );
 }
 Persistent<FunctionTemplate> GitTreeEntry::constructor_template;

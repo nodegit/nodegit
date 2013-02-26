@@ -41,8 +41,8 @@ class GitRevWalk : public ObjectWrap {
     static Handle<Value> Hide(const Arguments& args);
 
     static Handle<Value> Next(const Arguments& args);
-    static void EIO_Next(eio_req* req);
-    static int EIO_AfterNext(eio_req* req);
+    static void EIO_Next(uv_work_t* req);
+    static void EIO_AfterNext(uv_work_t* req);
 
     static Handle<Value> Sorting(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);

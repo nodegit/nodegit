@@ -132,22 +132,17 @@ class GitBlob : public ObjectWrap {
      * Function: EIO_Lookup
      *
      * Parameters:
-     *   req - an eio_req pointer
+     *   req - an uv_work_t pointer
      *
-     * Returns:
-     *   completion code integer
      */
-    static void EIO_Lookup(eio_req* req);
+    static void EIO_Lookup(uv_work_t* req);
     /**
      * Function: EIO_AfterLookup
      *
      * Parameters:
-     *   req - an eio_req pointer
-     *
-     * Returns:
-     *   completion code integer
+     *   req - an uv_work_t pointer
      */
-    static int EIO_AfterLookup(eio_req* req);
+    static void EIO_AfterLookup(uv_work_t* req);
     /**
      * Function: RawContent
      *

@@ -58,8 +58,8 @@ class GitCommit : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
-    static void EIO_Lookup(eio_req *req);
-    static int EIO_AfterLookup(eio_req *req);
+    static void EIO_Lookup(uv_work_t *req);
+    static void EIO_AfterLookup(uv_work_t *req);
 
     static Handle<Value> Close(const Arguments& args);
     static Handle<Value> Id(const Arguments& args);
@@ -71,8 +71,8 @@ class GitCommit : public ObjectWrap {
     static Handle<Value> Author(const Arguments& args);
 
     static Handle<Value> Tree(const Arguments& args);
-    static int EIO_Tree(eio_req* req);
-    static int EIO_AfterTree(eio_req* req);
+    static void EIO_Tree(uv_work_t* req);
+    static void EIO_AfterTree(uv_work_t* req);
 
     static Handle<Value> ParentCount(const Arguments& args);
     static Handle<Value> Parent(const Arguments& args);
