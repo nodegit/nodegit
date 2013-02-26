@@ -21,7 +21,7 @@ void GitBlob::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
+
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Blob"));
@@ -105,13 +105,14 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 
   blob->Ref();
 
-  eio_custom(EIO_Lookup, EIO_PRI_DEFAULT, EIO_AfterLookup, ar);
-  ev_ref(EV_DEFAULT_UC);
+  uv_work_t *req = new uv_work_t;
+  req->data = ar;
+  uv_queue_work(uv_default_loop(), req, EIO_Lookup, EIO_AfterLookup);
 
   return scope.Close( Undefined() );
 }
 
-void GitBlob::EIO_Lookup(eio_req* req) {
+void GitBlob::EIO_Lookup(uv_work_t* req) {
   lookup_request* ar = static_cast<lookup_request* >(req->data);
 
   git_oid oid = ar->oid->GetValue();
@@ -119,9 +120,9 @@ void GitBlob::EIO_Lookup(eio_req* req) {
 
 }
 
-int GitBlob::EIO_AfterLookup(eio_req* req) {
+void GitBlob::EIO_AfterLookup(uv_work_t* req) {
   lookup_request* ar = static_cast<lookup_request* >(req->data);
-  ev_unref(EV_DEFAULT_UC);
+  delete req;
   ar->blob->Unref();
 
   Local<Value> argv[1];
@@ -133,12 +134,10 @@ int GitBlob::EIO_AfterLookup(eio_req* req) {
 
   if(try_catch.HasCaught())
     FatalException(try_catch);
-    
+
   ar->callback.Dispose();
 
   delete ar;
-
-  return 0;
 }
 
 Handle<Value> GitBlob::RawContent(const Arguments& args) {
@@ -151,7 +150,7 @@ Handle<Value> GitBlob::RawContent(const Arguments& args) {
 
   int bufferLength = rawSize;
   Buffer* buffer = Buffer::New(const_cast<char *>(contents.c_str()), bufferLength);
-     
+
   Local<Object> fastBuffer;
   MAKE_FAST_BUFFER(buffer, fastBuffer);
 

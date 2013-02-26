@@ -42,18 +42,18 @@ class GitRepo : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Open(const Arguments& args);
-    static void EIO_Open(eio_req* req);
-    static int EIO_AfterOpen(eio_req* req);
+    static void EIO_Open(uv_work_t* req);
+    static void EIO_AfterOpen(uv_work_t* req);
 
     static Handle<Value> Lookup(const Arguments& args);
-    static int EIO_Lookup(eio_req* req);
-    static int EIO_AfterLookup(eio_req* req);
+    static void EIO_Lookup(uv_work_t* req);
+    static void EIO_AfterLookup(uv_work_t* req);
 
     static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Init(const Arguments& args);
-    static void EIO_Init(eio_req* req);
-    static int EIO_AfterInit(eio_req* req);
+    static void EIO_Init(uv_work_t* req);
+    static void EIO_AfterInit(uv_work_t* req);
 
   private:
     git_repository* repo;

@@ -23,7 +23,7 @@ void GitCommit::Initialize(Handle<Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
+
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
   constructor_template->SetClassName(String::NewSymbol("Commit"));
@@ -140,13 +140,14 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 
   commit->Ref();
 
-  eio_custom(EIO_Lookup, EIO_PRI_DEFAULT, EIO_AfterLookup, ar);
-  ev_ref(EV_DEFAULT_UC);
+  uv_work_t *req = new uv_work_t;
+  req->data = ar;
+  uv_queue_work(uv_default_loop(), req, EIO_Lookup, EIO_AfterLookup);
 
   return scope.Close( Undefined() );
 }
 
-void GitCommit::EIO_Lookup(eio_req *req) {
+void GitCommit::EIO_Lookup(uv_work_t *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
   git_oid oid = ar->oid->GetValue();
@@ -154,11 +155,12 @@ void GitCommit::EIO_Lookup(eio_req *req) {
 
 }
 
-int GitCommit::EIO_AfterLookup(eio_req *req) {
+void GitCommit::EIO_AfterLookup(uv_work_t *req) {
   HandleScope scope;
 
   lookup_request *ar = static_cast<lookup_request *>(req->data);
-  ev_unref(EV_DEFAULT_UC);
+  delete req;
+
   ar->commit->Unref();
 
   Handle<Value> argv[1];
@@ -171,12 +173,10 @@ int GitCommit::EIO_AfterLookup(eio_req *req) {
   if(try_catch.HasCaught()) {
     FatalException(try_catch);
   }
-    
+
   ar->callback.Dispose();
 
   delete ar;
-
-  return 0;
 }
 
 Handle<Value> GitCommit::Close(const Arguments& args) {
@@ -184,7 +184,7 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   commit->Close();
-  
+
   return scope.Close( Undefined() );
 }
 
@@ -200,13 +200,13 @@ Handle<Value> GitCommit::Id(const Arguments& args) {
   GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
 
   oid->SetValue(*const_cast<git_oid *>(commit->Id()));
-  
+
   return scope.Close( Undefined() );
 }
 
 Handle<Value> GitCommit::MessageShort(const Arguments& args) {
   HandleScope scope;
-  
+
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   return scope.Close( String::New(commit->MessageShort()) );
@@ -214,7 +214,7 @@ Handle<Value> GitCommit::MessageShort(const Arguments& args) {
 
 Handle<Value> GitCommit::Message(const Arguments& args) {
   HandleScope scope;
-  
+
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   return scope.Close( String::New(commit->Message()) );
@@ -222,7 +222,7 @@ Handle<Value> GitCommit::Message(const Arguments& args) {
 
 Handle<Value> GitCommit::Time(const Arguments& args) {
   HandleScope scope;
-  
+
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   return scope.Close( Integer::New(commit->Time()) );
@@ -232,7 +232,7 @@ Handle<Value> GitCommit::TimeOffset(const Arguments& args) {
   HandleScope scope;
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-  
+
   return scope.Close( Integer::New(commit->TimeOffset()) );
 }
 
@@ -248,7 +248,7 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
   GitSig *sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
 
   sig->SetValue(const_cast<git_signature *>(commit->Committer()));
-  
+
   return scope.Close( Undefined() );
 }
 
@@ -264,7 +264,7 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
   GitSig *sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
 
   sig->SetValue(const_cast<git_signature *>(commit->Author()));
-  
+
   return scope.Close( Undefined() );
 }
 
