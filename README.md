@@ -3,7 +3,7 @@ Node.js libgit2 bindings
 
 Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
 
-Currently under active development (and seeking contributors), `nodegit` provides asynchronous native bindings to the `libgit2` C API.
+Currently under active development (and seeking contributions), `nodegit` provides asynchronous native bindings to the `libgit2` C API.
 
 Building and installing
 -----------------------
@@ -22,7 +22,7 @@ $ npm install nodegit
 
 #### Install `nodegit` by cloning source from GitHub and running the `configure`, `make`, and `make install` commands: ####
 \*Note: `nodegit` assumes your library path exists at `~/.node_libraries` you can change this by specifying a new lib path\*
-    
+
 ```` bash
 $ git clone git://github.com/tbranyen/nodegit.git
 $ cd nodegit
@@ -70,7 +70,7 @@ git.repo(".git", function(err, repo) {
 
     // Iterate over the revision history
     var history = branch.history();
-    
+
     // Commit event emits commit object
     history.on("commit", function(commit) {
       // Print out `git log` emulation
@@ -103,7 +103,7 @@ repo.open( '.git', function( err ) {
 
     // Create instance of Ref constructor with this repository
     var ref = new git.Ref( repo );
-    
+
     // Find the master branch
     repo.lookupRef( ref, '/refs/heads/master', function( err ) {
         if( err ) {
@@ -185,8 +185,10 @@ __To run unit tests ensure to update the submodules with `git submodule update -
 
 Then simply run `npm test` in the project root.
 
-Generating documentation
+Documentation
 ------------------------
+
+Recent documentation may be found here: [`nodegit` documentation](http://tbranyen.github.com/nodegit/)
 
 __`nodegit` native and library code is documented to be built with `Natural Docs`.__
 
@@ -200,6 +202,10 @@ Release information
 -------------------
 
 __Can keep track of current method coverage at: [http://bit.ly/tb_methods](http://bit.ly/tb_methods)__
+
+### v0.0.7: ###
+    * Updated to work with Node ~0.8.
+    * More unit tests
 
 ### v0.0.6: ###
     * Updated to work with Node ~0.6.
