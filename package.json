@@ -34,8 +34,8 @@
     "rimraf": "1.0.x"
   },
   "scripts": {
-    "preinstall": "",
-    "install": "./build.sh",
+    "preinstall": "./build.sh",
+    "install": "",
     "test": "cd test && nodeunit *.js"
   }
 }
