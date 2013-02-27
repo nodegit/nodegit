@@ -3,7 +3,17 @@ Node.js libgit2 bindings
 
 Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
 
-Currently under active development (and seeking contributions), `nodegit` provides asynchronous native bindings to the `libgit2` C API.
+Currently under active development (and seeking contributions), `nodegit` provides asynchronous native bindings to the [`libgit2`](http://libgit2.github.com/libgit2/) C API.
+
+
+Contributing
+------------
+
+Nodegit aims to eventually provide native asynchronous bindings for as much of libgit2 as possible, but we can't do it alone!
+
+We welcome pull requests, but please pay attention to the following: whether your lovely code fixes a bug or adds a new feature, please include unit tests that either prove the bug is fixed, or that your new feature works as expected. See [running tests](#running-tests)
+
+Unit tests are what makes the Node event loop go around.
 
 Building and installing
 -----------------------
