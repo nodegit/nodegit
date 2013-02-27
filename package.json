@@ -1,8 +1,15 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "homepage": "https://github.com/tbranyen/nodegit",
+  "keywords": [
+    "libgit2",
+    "git2",
+    "git",
+    "native"
+  ],
+  "license": "GPLv2",
   "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
   "contributors": [
     {
@@ -20,15 +27,15 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": "~0.6"
+    "node": "~0.8"
   },
   "devDependencies": {
     "nodeunit": "0.6.x",
     "rimraf": "1.0.x"
   },
   "scripts": {
-    "preinstall": "./configure",
-    "install": "make",
+    "preinstall": "",
+    "install": "./build.sh",
     "test": "cd test && nodeunit *.js"
   }
 }
