@@ -206,6 +206,8 @@ __Can keep track of current method coverage at: [http://bit.ly/tb_methods](http:
 ### v0.0.7: ###
     * Updated to work with Node ~0.8.
     * More unit tests
+    * Added convenience build script
+    * Locked libgit2 to version 0.15.0
 
 ### v0.0.6: ###
     * Updated to work with Node ~0.6.
