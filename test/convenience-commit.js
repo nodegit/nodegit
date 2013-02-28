@@ -111,7 +111,7 @@ exports.masterHead = function(test) {
  * @param  {Object} test
  */
 exports.tree = function(test) {
-  test.expect(3);
+  test.expect(2);
   git.repo('../.git', function(error, repository) {
 
     repository.commit(historyCountKnownSHA, function(error, commit) {
