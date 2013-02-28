@@ -264,4 +264,4 @@ Getting involved
 
 If you find this project of interest, please document all issues and fork if you feel you can provide a patch.  Testing is of huge importance; by simply running the unit tests on your system and reporting issues you can contribute!
 
-__Before submitting a pull request, please ensure both unit tests and lint checks pass.__
+__Before submitting a pull request, please ensure both that you've added unit tests to cover your shiny new code, and that all unit tests and lint checks pass.__
