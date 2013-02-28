@@ -1,15 +1,15 @@
-var git = require( "../" );
-var rimraf = require("rimraf");
-var fs = require( "fs" );
+var git = require('../');
+var rimraf = require('rimraf');
+var fs = require( 'fs' );
 
 // Helper functions
 var helper = {
   // Test if obj is a true function
   testFunction: function(test, obj, label) {
     // The object reports itself as a function
-    test(typeof obj, "function", label + " reports as a function.");
+    test(typeof obj, 'function', label + ' reports as a function.');
     // This ensures the repo is actually a derivative of the Function [[Class]]
-    test(toString.call(obj), "[object Function]", label + " [[Class]] is of type function.");
+    test(toString.call(obj), '[object Function]', label + ' [[Class]] is of type function.');
   },
   // Test code and handle exception thrown
   testException: function(test, fun, label) {
@@ -31,7 +31,7 @@ var helper = {
 exports.method = function(test){
   test.expect(2);
 
-  helper.testFunction(test.equals, git.commit, "Commmit");
+  helper.testFunction(test.equals, git.commit, 'Commmit');
 
   test.done();
 };
