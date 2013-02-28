@@ -36,6 +36,24 @@ exports.method = function(test){
   test.done();
 };
 
+/**
+ * Test that
+ *
+ * @param  {Object} test
+ */
+exports.improperCommitId = function(test) {
+  test.expect(1);
+  git.repo('../.git', function(error, repository) {
+
+    repository.commit('not a proper commit sha', function(error, commit) {
+
+      test.equals(error, 'Object does not exist in the scope searched.', 'Attempting to get commit by invalid SHA should error');
+
+      test.done();
+    });
+  });
+};
+
 var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
 
 /**
