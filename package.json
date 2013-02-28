@@ -30,7 +30,7 @@
     "node": "~0.8"
   },
   "devDependencies": {
-    "nodeunit": "0.6.x",
+    "nodeunit": "0.7.x",
     "rimraf": "1.0.x"
   },
   "scripts": {
