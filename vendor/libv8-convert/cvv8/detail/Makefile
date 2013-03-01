@@ -1,0 +1,2 @@
+all $(MAKECMDGOALS):
+	$(MAKE) -C .. $@
