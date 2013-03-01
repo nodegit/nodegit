@@ -29,13 +29,16 @@
   "engines": {
     "node": "~0.8"
   },
+  "depenencies": {
+    "async": ">= 0.1.21",
+    "node-gyp": "~0.8.2"
+  },
   "devDependencies": {
     "nodeunit": "0.7.x",
     "rimraf": "1.0.x"
   },
   "scripts": {
-    "preinstall": "./build.sh",
-    "install": "",
+    "install": "node install.js",
     "test": "cd test && nodeunit *.js"
   }
 }
