@@ -42,12 +42,13 @@ exports.method = function(test){
  * @param  {Object} test
  */
 exports.improperCommitId = function(test) {
-  test.expect(1);
+  test.expect(2);
   git.repo('../.git', function(error, repository) {
 
     repository.commit('not a proper commit sha', function(error, commit) {
 
-      test.equals(error, 'Object does not exist in the scope searched.', 'Attempting to get commit by invalid SHA should error');
+      test.equals(error.code, git.error.GIT_ENOTFOUND, 'Correct error should occur');
+      test.equals(error.message, 'Object does not exist in the scope searched.', 'Attempting to get commit by invalid SHA should error');
 
       test.done();
     });
@@ -62,20 +63,22 @@ var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
  * @param  {Object} test
  */
 exports.history = function(test) {
-  test.expect(2);
+  test.expect(368);
   git.repo('../.git', function(error, repository) {
 
     repository.commit(historyCountKnownSHA, function(error, commit) {
-
       test.equals(error, 0, 'Getting latest branch commit should not error');
 
       var historyCount = 0;
       var expectedHistoryCount = 364;
-      commit.history().on('commit', function(commit) {
+      commit.history().on('commit', function(error, commit) {
+        test.equals(error, null, 'There should be no errors');
         historyCount++;
-      }).on('end', function(commits) {
+      }).on('end', function(error, commits) {
 
-        test.equals(historyCount, expectedHistoryCount, 'History count does not match expected');
+        test.equals(error, null, 'There should be no errors');
+        test.equals(historyCount, expectedHistoryCount, 'Manual count does not match expected');
+        test.equals(commits.length, expectedHistoryCount, '"end" count does not match expected');
 
         test.done();
       });
