@@ -1,7 +1,10 @@
 var async = require('async'),
     child_process = require('child_process'),
     spawn = child_process.spawn,
-    path = require('path');
+    path = require('path'),
+    fs = require('fs'),
+    request = require('request'),
+    AdmZip = require('adm-zip');
 
 function passthru() {
     var args = Array.prototype.slice.call(arguments);
@@ -27,14 +30,62 @@ function envpassthru() {
     passthru.apply(null, ['/usr/bin/env'].concat(Array.prototype.slice.call(arguments)));
 }
 
+var updateSubmodules = function(mainCallback) {
+    console.log('[nodegit] Downloading libgit2 dependency.');
+    async.series([
+        function(callback) {
+            envpassthru('git', 'submodule', 'init', callback);
+        }, function(callback) {
+            envpassthru('git', 'submodule', 'update', callback);
+        }
+        ], function(error) {
+            if (error) process.exit(error);
+            mainCallback();
+        });
+};
+
+var checkoutDependencies = function(mainCallback) {
+    console.log('[nodegit] Downloading libgit2 dependency.');
+
+    var libgit2ZipUrl = 'https://github.com/libgit2/libgit2/archive/v0.15.0.zip';
+        zipFile = __dirname + '/vendor/libgit2.zip',
+        unzippedFolderName = __dirname + '/vendor/libgit2-0.15.0',
+        targetFolderName = __dirname + '/vendor/libgit2';
+
+    async.series([
+        function(callback) {
+            request(libgit2ZipUrl)
+                .pipe(fs.createWriteStream(zipFile))
+                .on('close', function () {
+                    callback();
+            });
+
+        }, function(callback) {
+            var zip = new AdmZip(zipFile);
+            zip.extractAllTo(__dirname + '/vendor/', true);
+            fs.unlink(zipFile);
+            callback();
+        },
+        function renameLibgit2Folder(callback) {
+            fs.rename(unzippedFolderName, targetFolderName, callback);
+        }
+        ], function(error) {
+            if (error) process.exit(error);
+            mainCallback();
+        });
+};
+
 var buildDir = path.join(__dirname, 'vendor/libgit2/build');
 async.series([
     function(callback) {
-        console.log('[nodegit] Downloading libgit2 dependency.');
-        envpassthru('git', 'submodule', 'init', callback);
-    },
-    function(callback) {
-        envpassthru('git', 'submodule', 'update', callback);
+        // Check for presence of .git folder
+        fs.exists(__dirname + '/.git', function(exists) {
+            if (exists) {
+                updateSubmodules(callback);
+            } else {
+                checkoutDependencies(callback);
+            }
+        });
     },
     function(callback) {
         console.log('[nodegit] Building libgit2 dependency.');
