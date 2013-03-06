@@ -8,6 +8,7 @@
 #include <node.h>
 
 #include "../vendor/libgit2/include/git2.h"
+#include "cvv8/v8-convert.hpp"
 
 #include "../include/reference.h"
 #include "../include/sig.h"
@@ -22,25 +23,26 @@ using namespace node;
 void GitCommit::Initialize(Handle<Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Commit"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Commit"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "close", Close);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "messageShort", MessageShort);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "message", Message);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "time", Time);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "timeOffset", TimeOffset);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "author", Author);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "tree", Tree);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "parentCount", ParentCount);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "parent", Parent);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "id", Id);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "messageShort", MessageShort);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "message", Message);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "time", Time);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "timeOffset", TimeOffset);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "parentCount", ParentCount);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "parentSync", ParentSync);
 
-  target->Set(String::NewSymbol("Commit"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Commit"), constructor_template);
 }
 
 git_commit* GitCommit::GetValue() {
@@ -112,6 +114,14 @@ Handle<Value> GitCommit::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitCommit::NewInstance() {
+  HandleScope scope;
+
+  Local<Object> instance = constructor_template->NewInstance();
+
+  return scope.Close(instance);
+}
+
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
   HandleScope scope;
 
@@ -142,20 +152,19 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 
   uv_work_t *req = new uv_work_t;
   req->data = ar;
-  uv_queue_work(uv_default_loop(), req, EIO_Lookup, EIO_AfterLookup);
+  uv_queue_work(uv_default_loop(), req, LookupWork, LookupAfterWork);
 
   return scope.Close( Undefined() );
 }
 
-void GitCommit::EIO_Lookup(uv_work_t *req) {
+void GitCommit::LookupWork(uv_work_t *req) {
   lookup_request *ar = static_cast<lookup_request *>(req->data);
 
   git_oid oid = ar->oid->GetValue();
   ar->err = ar->commit->Lookup(ar->repo->GetValue(), &oid);
-
 }
 
-void GitCommit::EIO_AfterLookup(uv_work_t *req) {
+void GitCommit::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
 
   lookup_request *ar = static_cast<lookup_request *>(req->data);
@@ -217,7 +226,7 @@ Handle<Value> GitCommit::Message(const Arguments& args) {
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
-  return scope.Close( String::New(commit->Message()) );
+  return scope.Close(String::New(commit->Message()));
 }
 
 Handle<Value> GitCommit::Time(const Arguments& args) {
@@ -296,27 +305,107 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   return scope.Close( Integer::New(count) );
 }
 
-Handle<Value> GitCommit::Parent(const Arguments& args) {
+Handle<Value> GitCommit::ParentSync(const Arguments& args) {
   HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsNumber()) {
+    return ThrowException(Exception::Error(String::New("Position must be a Number.")));
+  }
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Commit is required and must be an Object.")));
+  git_commit *parentCommitValue ;
+  int errorCode = git_commit_parent(&parentCommitValue, commit->commit, args[0]->ToInteger()->Value());
+
+  if (errorCode) {
+    return ThrowException(Exception::Error(String::New(git_lasterror())));
   }
 
-  if(args.Length() == 1 || !args[1]->IsNumber()) {
+  Local<Object> parent = GitCommit::constructor_template->NewInstance();
+  GitCommit *parentCommit = ObjectWrap::Unwrap<GitCommit>(parent);
+  parentCommit->SetValue(parentCommitValue);
+
+  return scope.Close(parent);
+}
+
+Handle<Value> GitCommit::Parent(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() != 2) {
+    return ThrowException(Exception::Error(String::New("Position and callback are required")));
+  }
+
+  if(!args[0]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Position is required and must be a Number.")));
   }
 
-  GitCommit* out = ObjectWrap::Unwrap<GitCommit>(args[0]->ToObject());
-  git_commit* in;
-  int index = args[1]->ToInteger()->Value();
+  if(!args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
 
-  int err = commit->Parent(&in, index);
-  out->SetValue(in);
+  Local<Function> callback = Local<Function>::Cast(args[1]);
 
-  return scope.Close( Integer::New(err) );
+  ParentBaton* baton = new ParentBaton();
+  baton->request.data = baton;
+  baton->commit =  ObjectWrap::Unwrap<GitCommit>(args.This());
+  baton->commit->Ref();
+  baton->index = args[0]->ToInteger()->Value();
+  baton->callback = Persistent<Function>::New(callback);
+
+  uv_queue_work(uv_default_loop(), &baton->request, ParentWork, ParentAfterWork);
+
+ return Undefined();
 }
 
-Persistent<FunctionTemplate> GitCommit::constructor_template;
+void GitCommit::ParentWork(uv_work_t* req) {
+  ParentBaton* baton = static_cast<ParentBaton*>(req->data);
+
+  baton->rawParentCommit = NULL;
+  baton->errorCode = git_commit_parent(&baton->rawParentCommit, baton->commit->commit, baton->index);
+
+  if (baton->errorCode) {
+    baton->errorMessage = git_lasterror();
+  }
+}
+
+void GitCommit::ParentAfterWork(uv_work_t* req) {
+  HandleScope scope;
+
+  ParentBaton* baton = static_cast<ParentBaton* >(req->data);
+  delete req;
+
+  if (baton->errorCode) {
+    Local<Value> argv[1] = {
+      Exception::Error(String::New(baton->errorMessage))
+    };
+
+    TryCatch try_catch;
+
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
+  } else {
+
+    Local<Object> parent = GitCommit::constructor_template->NewInstance();
+    GitCommit *parentCommit = ObjectWrap::Unwrap<GitCommit>(parent);
+    parentCommit->SetValue(baton->rawParentCommit);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      parent
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
+  }
+  baton->commit->Unref();
+  baton->callback.Dispose();
+  delete baton;
+}
+
+Persistent<Function> GitCommit::constructor_template;

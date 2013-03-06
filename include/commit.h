@@ -27,7 +27,7 @@ class GitCommit : public ObjectWrap {
     /**
      * v8::FunctionTemplate used to create Node.js constructor
      */
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
 
     /**
      * Used to intialize the EventEmitter from Node.js
@@ -56,10 +56,11 @@ class GitCommit : public ObjectWrap {
     ~GitCommit() {}
 
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> NewInstance();
 
     static Handle<Value> Lookup(const Arguments& args);
-    static void EIO_Lookup(uv_work_t *req);
-    static void EIO_AfterLookup(uv_work_t *req);
+    static void LookupWork(uv_work_t *req);
+    static void LookupAfterWork(uv_work_t *req);
 
     static Handle<Value> Close(const Arguments& args);
     static Handle<Value> Id(const Arguments& args);
@@ -71,11 +72,15 @@ class GitCommit : public ObjectWrap {
     static Handle<Value> Author(const Arguments& args);
 
     static Handle<Value> Tree(const Arguments& args);
-    static void EIO_Tree(uv_work_t* req);
-    static void EIO_AfterTree(uv_work_t* req);
+    static void TreeWork(uv_work_t* req);
+    static void TreeAfterWork(uv_work_t* req);
 
     static Handle<Value> ParentCount(const Arguments& args);
+
+    static Handle<Value> ParentSync(const Arguments& args);
     static Handle<Value> Parent(const Arguments& args);
+    static void ParentWork(uv_work_t* req);
+    static void ParentAfterWork(uv_work_t* req);
 
   private:
     git_commit* commit;
@@ -89,10 +94,22 @@ class GitCommit : public ObjectWrap {
       Persistent<Function> callback;
     };
 
-    //struct tree_request {
-    //  GitCommit* commit;
-    //  Tree* tree;
-    //  Persistent<Function> callback;
-    //};
+    /**
+     * Struct: parent_request
+     *   Contains references to the current commit, parent commit (output)
+     *   parent commit's index, also contains references to an error code post
+     *   lookup, and a callback function to execute.
+     */
+    struct ParentBaton {
+      uv_work_t request;
+      int errorCode;
+      const char* errorMessage;
+
+      int index;
+      GitCommit *commit;
+      git_commit *rawParentCommit;
+      Persistent<Function> callback;
+    };
+
 };
 #endif
