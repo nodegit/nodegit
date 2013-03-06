@@ -405,7 +405,6 @@ void GitCommit::ParentAfterWork(uv_work_t* req) {
     }
   }
   baton->commit->Unref();
-  delete baton;
 }
 
 Persistent<Function> GitCommit::constructor_template;
