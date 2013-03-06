@@ -61,6 +61,7 @@ int GitCommit::Lookup(git_repository* repo, git_oid* oid) {
 
 void GitCommit::Close() {
   git_commit_close(this->commit);
+  this->commit = NULL;
 }
 
 const git_oid* GitCommit::Id() {
@@ -194,7 +195,7 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   commit->Close();
 
-  return scope.Close( Undefined() );
+  return scope.Close(Undefined());
 }
 
 Handle<Value> GitCommit::Id(const Arguments& args) {
@@ -210,7 +211,7 @@ Handle<Value> GitCommit::Id(const Arguments& args) {
 
   oid->SetValue(*const_cast<git_oid *>(commit->Id()));
 
-  return scope.Close( Undefined() );
+  return scope.Close(Undefined());
 }
 
 Handle<Value> GitCommit::MessageShort(const Arguments& args) {
@@ -404,7 +405,6 @@ void GitCommit::ParentAfterWork(uv_work_t* req) {
     }
   }
   baton->commit->Unref();
-  baton->callback.Dispose();
   delete baton;
 }
 
