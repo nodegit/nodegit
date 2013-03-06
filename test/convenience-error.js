@@ -47,7 +47,7 @@ exports.improperCommitId = function(test) {
 
     repository.commit('not a proper commit sha', function(error, commit) {
 
-      test.equals(error.code, git.error.GIT_EINVALIDTYPE, 'Attempting to get commit by invalid SHA should error');
+      test.notEqual(error.code, git.error.GIT_SUCCESS, 'Attempting to get commit by invalid SHA should error');
 
       test.done();
     });

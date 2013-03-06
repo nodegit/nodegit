@@ -10,7 +10,7 @@ var helper = {
     // This ensures the repo is actually a derivative of the Function [[Class]]
     test( toString.call( obj ), '[object Function]', label +' [[Class]] is of type function.' );
   },
-  // Test code and handle exception thrown 
+  // Test code and handle exception thrown
   testException: function( test, fun, label ) {
     try {
       fun();
@@ -28,7 +28,7 @@ exports.constructor = function( test ){
 
   // Test for function
   helper.testFunction( test.equals, git.Oid, 'Oid' );
-  
+
   // Ensure we get an instance of Oid
   test.ok( new git.Oid() instanceof git.Oid, 'Invocation returns an instance of Oid' );
 
@@ -48,7 +48,7 @@ exports.mkstr = function( test ) {
   helper.testException( test.ok, function() {
     testOid.mkstr();
   }, 'Throw an exception if no hex String' );
- 
+
   // Test that both arguments result correctly
   helper.testException( test.ifError, function() {
     testOid.mkstr( "somestr" );

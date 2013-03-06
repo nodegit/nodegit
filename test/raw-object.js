@@ -10,7 +10,7 @@ var helper = {
     // This ensures the repo is actually a derivative of the Function [[Class]]
     test( toString.call( obj ), '[object Function]', label +' [[Class]] is of type function.' );
   },
-  // Test code and handle exception thrown 
+  // Test code and handle exception thrown
   testException: function( test, fun, label ) {
     try {
       fun();
