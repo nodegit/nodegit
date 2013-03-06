@@ -44,9 +44,7 @@ exports.method = function(test){
 exports.improperCommitId = function(test) {
   test.expect(2);
   git.repo('../.git', function(error, repository) {
-
     repository.commit('not a proper commit sha', function(error, commit) {
-
       test.equals(error.code, git.error.GIT_ENOTFOUND, 'Correct error should occur');
       test.equals(error.message, 'Object does not exist in the scope searched.', 'Attempting to get commit by invalid SHA should error');
 
@@ -104,6 +102,43 @@ exports.masterHead = function(test) {
 
         test.done();
       });
+    });
+  });
+};
+
+/**
+ * Test that retreiving parent works as expected.
+ *
+ * @param  {Object} test
+ */
+exports.parentSync = function(test) {
+  test.expect(2);
+  git.repo('../.git', function(error, repository) {
+    repository.commit('2d71044741412280370cb0326c96d3a5a7b5dca1', function(error, commit) {
+      test.equals(commit.parentCount, 1, 'Commit has exactly one parent');
+      var parent = commit.parentSync(0)
+      test.equals(parent.sha, 'e8876707938abf94d5cc02b0c4017c4fec2aa44e', 'Parent SHA should match expected value');
+      test.done();
+    });
+  });
+};
+
+/**
+ * Test that retreiving parent works as expected.
+ *
+ * @param  {Object} test
+ */
+exports.parent = function(test) {
+  test.expect(2);
+  git.repo('../.git', function(error, repository) {
+    repository.commit('2d71044741412280370cb0326c96d3a5a7b5dca1', function(error, commit) {
+      test.equals(commit.parentCount, 1, 'Commit has exactly one parent');
+      commit.parent(0, function(error, parent) {
+        if (error) throw error;
+        test.equals(parent.sha, 'e8876707938abf94d5cc02b0c4017c4fec2aa44e', 'Parent SHA should match expected value');
+        test.done();
+      });
+
     });
   });
 };
