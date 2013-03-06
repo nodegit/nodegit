@@ -80,9 +80,6 @@ Handle<Value> GitBlob::New(const Arguments& args) {
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
   HandleScope scope;
 
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-  Local<Function> callback;
-
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
@@ -95,7 +92,8 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  callback = Local<Function>::Cast(args[2]);
+  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+  Local<Function> callback = Local<Function>::Cast(args[2]);
 
   lookup_request* ar = new lookup_request();
   ar->blob = blob;
@@ -132,8 +130,9 @@ void GitBlob::EIO_AfterLookup(uv_work_t* req) {
 
   ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
-  if(try_catch.HasCaught())
+  if(try_catch.HasCaught()) {
     FatalException(try_catch);
+  }
 
   ar->callback.Dispose();
 
