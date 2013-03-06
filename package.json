@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.0.71",
+  "version": "0.0.72",
   "homepage": "https://github.com/tbranyen/nodegit",
   "keywords": [
     "libgit2",
@@ -30,12 +30,12 @@
     "node": "~0.8"
   },
   "dependencies": {
+    "async": ">= 0.1.21",
+    "adm-zip": "0.2.x",
+    "request": "2.9.x",
     "node-gyp": "~0.8.2"
   },
   "devDependencies": {
-    "adm-zip": "0.2.x",
-    "request": "2.9.x",
-    "async": ">= 0.1.21",
     "nodeunit": "0.7.x",
     "rimraf": "1.0.x"
   },
