@@ -10,7 +10,7 @@ var helper = {
     // This ensures the repo is actually a derivative of the Function [[Class]]
     test( toString.call( obj ), '[object Function]', label +' [[Class]] is of type function.' );
   },
-  // Test code and handle exception thrown 
+  // Test code and handle exception thrown
   testException: function( test, fun, label ) {
     try {
       fun();
@@ -28,7 +28,7 @@ exports.constructor = function( test ){
 
   // Test for function
   helper.testFunction( test.equals, git.Error, 'Error' );
-  
+
   // Ensure we get an instance of Error
   test.ok( new git.Error() instanceof git.Error, 'Invocation returns an instance of Error' );
 
@@ -48,7 +48,7 @@ exports.str_error = function( test ) {
   helper.testException( test.ok, function() {
     testError.strError();
   }, 'Throw an exception if no error code' );
- 
+
   // Test that arguments result correctly
   helper.testException( test.ifError, function() {
     testError.strError( 0 );
