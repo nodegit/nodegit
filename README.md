@@ -1,4 +1,4 @@
-Node.js libgit2 bindings
+Node.js libgit2 bindings [![Build Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/tbranyen/nodegit)
 =======================
 
 Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
