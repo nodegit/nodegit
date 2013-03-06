@@ -30,26 +30,19 @@ $ npm install nodegit
 
 ### Mac OS X/Linux/Unix ###
 
-#### Install `nodegit` by cloning source from GitHub and running the `configure`, `make`, and `make install` commands: ####
-\*Note: `nodegit` assumes your library path exists at `~/.node_libraries` you can change this by specifying a new lib path\*
+#### Install `nodegit` by cloning source from GitHub and running `node install`: ####
 
 ```` bash
 $ git clone git://github.com/tbranyen/nodegit.git
 $ cd nodegit
-
-$ ./configure
-$ make
-$ make install
-
-$ make install NODE_LIB_PATH=/path/to/your/libraries
+$ node install
 ````
 
 \*Updating to a new version\*
 
 ```` bash
-$ make update
-
-$ make update NODE_LIB_PATH=/path/to/your/libraries
+$ git pull
+$ node install
 ````
 
 ### Windows via Cygwin ###
@@ -70,22 +63,22 @@ API Example Usage
 var git = require("nodegit");
 
 // Read a repository
-git.repo(".git", function(err, repo) {
+git.repo('.git', function(err, repo) {
   // Success is always 0, failure is always an error string
-  if (err) { throw err; }
+  if (error) { throw error; }
 
   // Use the master branch
-  repo.branch("master", function(err, branch) {
-    if (err) { throw err; }
+  repo.branch('master', function(err, branch) {
+    if (error) { throw error; }
 
     // Iterate over the revision history
     var history = branch.history();
 
     // Commit event emits commit object
-    history.on("commit", function(commit) {
+    history.on('commit', function(commit) {
       // Print out `git log` emulation
-      console.log("commit " + commit.sha);
-      console.log(commit.author.name + "<" + commit.author.email + ">");
+      console.log('commit ' + commit.sha);
+      console.log(commit.author.name + '<' + commit.author.email + '>');
       console.log(commit.time);
       console.log("\n");
       console.log(commit.message);
@@ -98,81 +91,81 @@ git.repo(".git", function(err, repo) {
 #### Raw API ####
 
 ```` javascript
-var git = require( 'nodegit' ).raw;
+var git = require('nodegit').raw;
 
 // Create instance of Repo constructor
 var repo = new git.Repo();
 
 // Read a repository
-repo.open( '.git', function( err ) {
+repo.open('.git', function(error) {
     // Err is an integer, success is 0, use strError for string representation
-    if( err ) {
+    if(error) {
         var error = new git.Error();
-        throw error.strError( err );
+        throw error.strError(error);
     }
 
     // Create instance of Ref constructor with this repository
-    var ref = new git.Ref( repo );
+    var ref = new git.Ref(repo);
 
     // Find the master branch
-    repo.lookupRef( ref, '/refs/heads/master', function( err ) {
-        if( err ) {
+    repo.lookupRef(ref, '/refs/heads/master', function(err) {
+        if(error) {
           var error = new git.Error();
-          throw error.strError( err );
+          throw error.strError(err);
         }
 
         // Create instance of Commit constructor with this repository
-        var commit = new git.Commit( repo ),
+        var commit = new git.Commit(repo),
             // Create instance of Oid constructor
             oid = new git.Oid();
 
         // Set the oid constructor internal reference to this branch reference
-        ref.oid( oid );
+        ref.oid(oid);
 
         // Lookup the commit for this oid
-        commit.lookup( oid, function() {
-            if( err ) {
+        commit.lookup(oid, function(err) {
+            if(err) {
               var error = new git.Error();
               throw error.strError( err );
             }
 
             // Create instance of RevWalk constructor with this repository
-            var revwalk = new git.RevWalk( repo );
+            var revwalk = new git.RevWalk(repo);
 
             // Push the commit as the start to walk
-            revwalk.push( commit );
+            revwalk.push(commit);
 
             // Recursive walk
             function walk() {
                 // Each revision walk iteration yields a commit
-                var revisionCommit = new git.Commit( repo );
+                var revisionCommit = new git.Commit(repo);
 
-                revwalk.next( revisionCommit, function( err ) {
+                revwalk.next( revisionCommit, function(err) {
                     // Finish recursion once no more revision commits are left
-                    if( err ) { return; }
+                    if(err) { return; }
 
                     // Create instance of Oid for sha
                     var oid = new git.Oid();
 
                     // Set oid to the revision commit
-                    revisionCommit.id( oid );
+                    revisionCommit.id(oid);
 
                     // Create instance of Sig for author
                     var author = new git.Sig();
 
                     // Set the author to the revision commit author
-                    revisionCommit.author( author );
+                    revisionCommit.author(author);
 
                     // Convert timestamp to milliseconds and set new Date object
                     var time = new Date( revisionCommit.time() * 1000 );
 
                     // Print out `git log` emulation
-                    console.log( oid.toString( 40 ) );
-                    console.log( author.name() + '<' + author.email() + '>' );
-                    console.log( time );
-                    console.log( '\n' );
-                    console.log( revisionCommit.message() );
-                    console.log( '\n' );
+                    console.log(oid.toString( 40 ));
+                    console.log(author.name() + '<' + author.email() + '>');
+                    console.log(time);
+                    console.log('\n');
+                    console.log(revisionCommit.message());
+                    console.log('\n');
 
                     // Recurse!
                     walk();
