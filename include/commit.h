@@ -8,6 +8,7 @@
 
 #include <v8.h>
 #include <node.h>
+#include <vector>
 
 #include "../vendor/libgit2/include/git2.h"
 
@@ -40,16 +41,17 @@ class GitCommit : public ObjectWrap {
     void SetValue(git_commit* commit);
     int Lookup(git_repository* repo, git_oid* oid);
     void Close();
-    const git_oid* Id();
-    const char* MessageShort();
-    const char* Message();
-    time_t Time();
-    int TimeOffset();
-    const git_signature* Committer();
-    const git_signature* Author();
-    int Tree(git_tree** tree);
-    unsigned int ParentCount();
-    int Parent(git_commit** commit, int pos);
+
+    // const git_oid* Id();
+    // const char* MessageShort();
+    // const char* Message();
+    // time_t Time();
+    // int TimeOffset();
+    // const git_signature* Committer();
+    // const git_signature* Author();
+    // int Tree(git_tree** tree);
+    // unsigned int ParentCount();
+    // int Parent(git_commit** commit, int pos);
 
   protected:
     GitCommit() {}
@@ -57,6 +59,10 @@ class GitCommit : public ObjectWrap {
 
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> NewInstance();
+
+    static Handle<Value> FetchDetails(const Arguments& args);
+    static void FetchDetailsWork(uv_work_t *req);
+    static void FetchDetailsAfterWork(uv_work_t *req);
 
     static Handle<Value> Lookup(const Arguments& args);
     static void LookupWork(uv_work_t *req);
@@ -95,10 +101,32 @@ class GitCommit : public ObjectWrap {
     };
 
     /**
-     * Struct: parent_request
-     *   Contains references to the current commit, parent commit (output)
-     *   parent commit's index, also contains references to an error code post
-     *   lookup, and a callback function to execute.
+     * Struct containing details for a commit.
+     */
+    struct FetchDetailsBaton {
+      uv_work_t request;
+      int errorCode;
+      const char* errorMessage;
+
+      git_commit* rawCommit;
+
+      const git_oid *oid;
+      char sha[GIT_OID_HEXSZ + 1];
+      const char* message;
+      time_t time;
+      int timeOffset;
+      const git_signature* committer;
+      const git_signature* author;
+      unsigned int parentCount;
+      std::vector<std::string> parentShas;
+
+      Persistent<Function> callback;
+    };
+
+    /**
+     * Contains references to the current commit, parent commit (output)
+     * parent commit's index, also contains references to an error code post
+     * lookup, and a callback function to execute.
      */
     struct ParentBaton {
       uv_work_t request;
@@ -106,8 +134,9 @@ class GitCommit : public ObjectWrap {
       const char* errorMessage;
 
       int index;
-      GitCommit *commit;
-      git_commit *rawParentCommit;
+      GitCommit* commit;
+      git_commit* rawParentCommit;
+
       Persistent<Function> callback;
     };
 
