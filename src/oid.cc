@@ -15,22 +15,22 @@ using namespace node;
 void GitOid::Initialize(Handle<Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Oid"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Oid"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkstr", Mkstr);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "mkraw", Mkraw);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "fmt", Fmt);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "pathFmt", PathFmt);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "allocFmt", AllocFmt);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toString", ToString);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "cpy", Cpy);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "cmp", Cmp);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "mkstr", Mkstr);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "mkraw", Mkraw);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "fmt", Fmt);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "pathFmt", PathFmt);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "allocFmt", AllocFmt);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "toString", ToString);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "cpy", Cpy);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "cmp", Cmp);
 
-  target->Set(String::NewSymbol("Oid"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Oid"), constructor_template);
 }
 
 git_oid GitOid::GetValue() {
@@ -195,4 +195,4 @@ Handle<Value> GitOid::Cmp(const Arguments& args) {
 
   return scope.Close( Integer::New(cmp) );
 }
-Persistent<FunctionTemplate> GitOid::constructor_template;
+Persistent<Function> GitOid::constructor_template;

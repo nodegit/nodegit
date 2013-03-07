@@ -15,7 +15,9 @@ using namespace v8;
 
 class GitOid : public ObjectWrap {
   public:
-    static Persistent<FunctionTemplate> constructor_template;
+
+    static Persistent<Function> constructor_template;
+
     static void Initialize (Handle<v8::Object> target);
     Handle<Value> WrapObj(Local<Object> obj);
     git_oid GetValue();
