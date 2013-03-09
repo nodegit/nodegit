@@ -1,4 +1,5 @@
 var git = require( '../' ).raw,
+    path = require('path'),
     rimraf = require('rimraf');
 
 var testRepo = new git.Repo();
@@ -12,7 +13,7 @@ var helper = {
     // This ensures the repo is actually a derivative of the Function [[Class]]
     test( toString.call( obj ), '[object Function]', label +' [[Class]] is of type function.' );
   },
-  // Test code and handle exception thrown 
+  // Test code and handle exception thrown
   testException: function( test, fun, label ) {
     try {
       fun();
@@ -25,15 +26,15 @@ var helper = {
 };
 
 // RevWalk
-exports.constructor = function( test ){
-  test.expect( 3 );
+exports.constructor = function(test){
+  test.expect(3);
 
   // Test for function
-  helper.testFunction( test.equals, git.RevWalk, 'RevWalk' );
-  
+  helper.testFunction(test.equals, git.RevWalk, 'RevWalk');
+
   // Ensure we get an instance of Oid
-  testRepo.open( './dummyrepo/.git', function( err, path ) {
-    test.ok( new git.RevWalk( testRepo ) instanceof git.RevWalk, 'Invocation returns an instance of RevWalk' );
+  testRepo.open( './dummyrepo/.git', function(error, path) {
+    test.ok(new git.RevWalk(testRepo) instanceof git.RevWalk, 'Invocation returns an instance of RevWalk');
 
     test.done();
   });
