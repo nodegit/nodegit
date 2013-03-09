@@ -45,8 +45,8 @@ exports.improperCommitId = function(test) {
   test.expect(2);
   git.repo('../.git', function(error, repository) {
     repository.commit('not a proper commit sha', function(error, commit) {
-      test.equals(error.code, git.error.GIT_ENOTFOUND, 'Correct error should occur');
-      test.equals(error.message, 'Object does not exist in the scope searched.', 'Attempting to get commit by invalid SHA should error');
+      test.notEqual(error.code, git.error.GIT_SUCCESS, 'Error should occur');
+      test.notEqual(error.message, null, 'Attempting to get commit by invalid SHA should error');
 
       test.done();
     });
@@ -63,10 +63,8 @@ var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
 exports.history = function(test) {
   test.expect(368);
   git.repo('../.git', function(error, repository) {
-
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      test.equals(error, 0, 'Getting latest branch commit should not error');
-
+      test.equals(error, null, 'Getting latest branch commit should not error');
       var historyCount = 0;
       var expectedHistoryCount = 364;
       commit.history().on('commit', function(error, commit) {
@@ -94,11 +92,11 @@ exports.masterHead = function(test) {
   git.repo('../.git', function(error, repository) {
     repository.branch('master', function(error, branch) {
 
-      test.equals(error, 0, 'Getting branch should not error');
+      test.equals(error, null, 'Getting branch should not error');
 
       repository.commit(branch.sha, function(error, commit) {
 
-        test.equals(error, 0, 'Getting latest branch commit should not error');
+        test.equals(error, null, 'Getting latest branch commit should not error');
 
         test.done();
       });
@@ -116,7 +114,7 @@ exports.parentSync = function(test) {
   git.repo('../.git', function(error, repository) {
     repository.commit('2d71044741412280370cb0326c96d3a5a7b5dca1', function(error, commit) {
       test.equals(commit.parentCount, 1, 'Commit has exactly one parent');
-      var parent = commit.parentSync(0)
+      var parent = commit.parentSync(0);
       test.equals(parent.sha, 'e8876707938abf94d5cc02b0c4017c4fec2aa44e', 'Parent SHA should match expected value');
       test.done();
     });
@@ -154,7 +152,7 @@ exports.tree = function(test) {
 
     repository.commit(historyCountKnownSHA, function(error, commit) {
 
-      test.equals(error, 0, 'Getting latest branch commit should not error');
+      test.equals(error, null, 'Getting latest branch commit should not error');
 
       var commitTreeEntryCount = 0;
       var expectedCommitTreeEntryCount = 200;
