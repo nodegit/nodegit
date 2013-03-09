@@ -233,7 +233,7 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
     committer->Set(String::NewSymbol("email"), cvv8::CastToJS(baton->committer->email));
 
     Local<Object> committerWhen = Object::New();
-    committerWhen->Set(String::NewSymbol("when"), cvv8::CastToJS(baton->committer->when.time));
+    committerWhen->Set(String::NewSymbol("time"), cvv8::CastToJS(baton->committer->when.time));
     committerWhen->Set(String::NewSymbol("offset"), cvv8::CastToJS(baton->committer->when.offset));
     committer->Set(String::NewSymbol("when"), cvv8::CastToJS(committerWhen));
 
@@ -244,7 +244,7 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
     author->Set(String::NewSymbol("email"), cvv8::CastToJS(baton->author->email));
 
     Local<Object> authorWhen = Object::New();
-    authorWhen->Set(String::NewSymbol("when"), cvv8::CastToJS(baton->author->when.time));
+    authorWhen->Set(String::NewSymbol("time"), cvv8::CastToJS(baton->author->when.time));
     authorWhen->Set(String::NewSymbol("offset"), cvv8::CastToJS(baton->author->when.offset));
     author->Set(String::NewSymbol("when"), authorWhen);
 
