@@ -32,13 +32,6 @@ void GitCommit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
 
-  // NODE_SET_PROTOTYPE_METHOD(tpl, "id", Id);
-  // NODE_SET_PROTOTYPE_METHOD(tpl, "messageShort", MessageShort);
-  // NODE_SET_PROTOTYPE_METHOD(tpl, "message", Message);
-  // NODE_SET_PROTOTYPE_METHOD(tpl, "time", Time);
-  // NODE_SET_PROTOTYPE_METHOD(tpl, "timeOffset", TimeOffset);
-  // NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
-
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parentCount", ParentCount);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
