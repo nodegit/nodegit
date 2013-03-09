@@ -52,6 +52,7 @@ class GitCommit : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> NewInstance();
 
+    static Handle<Value> FetchDetailsSync(const Arguments& args);
     static Handle<Value> FetchDetails(const Arguments& args);
     static void FetchDetailsWork(uv_work_t *req);
     static void FetchDetailsAfterWork(uv_work_t *req);
@@ -98,7 +99,6 @@ class GitCommit : public ObjectWrap {
       const char* errorMessage;
 
       git_commit* rawCommit;
-
       const git_oid *oid;
       char sha[GIT_OID_HEXSZ + 1];
       const char* message;
