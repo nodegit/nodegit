@@ -84,11 +84,15 @@ class GitCommit : public ObjectWrap {
     git_commit* commit;
     git_oid* oid;
 
-    struct lookup_request {
-      GitCommit* commit;
+    struct LookupBaton {
+      uv_work_t request;
+      int errorCode;
+      const char* errorMessage;
+
       GitRepo* repo;
       GitOid* oid;
-      int err;
+      git_commit* rawCommit;
+
       Persistent<Function> callback;
     };
 

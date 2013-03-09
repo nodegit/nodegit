@@ -204,9 +204,6 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
   HandleScope scope;
 
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-  Local<Function> callback;
-
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
@@ -219,52 +216,63 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  callback = Local<Function>::Cast(args[2]);
+  LookupBaton *baton = new LookupBaton();
+  baton->request.data = baton;
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
+  baton->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
-  lookup_request *ar = new lookup_request();
-  ar->commit = commit;
-  ar->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
-  ar->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
-  ar->callback = Persistent<Function>::New(callback);
+  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, LookupAfterWork);
 
-  commit->Ref();
-
-  uv_work_t *req = new uv_work_t;
-  req->data = ar;
-  uv_queue_work(uv_default_loop(), req, LookupWork, LookupAfterWork);
-
-  return scope.Close(Undefined());
+  return Undefined();
 }
 
 void GitCommit::LookupWork(uv_work_t *req) {
-  lookup_request *ar = static_cast<lookup_request *>(req->data);
+  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
-  git_oid oid = ar->oid->GetValue();
-  ar->err = ar->commit->Lookup(ar->repo->GetValue(), &oid);
+  baton->rawCommit = NULL;
+  git_oid oid = baton->oid->GetValue();
+  baton->errorCode = git_commit_lookup(&baton->rawCommit, baton->repo->GetValue(), &oid);
+  if (baton->errorCode) {
+    baton->errorMessage = git_lasterror();
+  }
 }
 
 void GitCommit::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
 
-  lookup_request *ar = static_cast<lookup_request *>(req->data);
+  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
   delete req;
 
-  ar->commit->Unref();
+  if (baton->errorCode) {
+    Local<Value> argv[1] = {
+      Exception::Error(String::New(baton->errorMessage))
+    };
 
-  Handle<Value> argv[1];
-  argv[0] = Integer::New(ar->err);
+    TryCatch try_catch;
 
-  TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
+  } else {
 
-  if(try_catch.HasCaught()) {
-    FatalException(try_catch);
+    Local<Object> commit = GitCommit::constructor_template->NewInstance();
+    GitCommit *commitInstance = ObjectWrap::Unwrap<GitCommit>(commit);
+    commitInstance->SetValue(baton->rawCommit);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      commit
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
   }
-
-  ar->callback.Dispose();
-
-  delete ar;
 }
 
 Handle<Value> GitCommit::Close(const Arguments& args) {
