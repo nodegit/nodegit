@@ -39,7 +39,6 @@ class GitCommit : public ObjectWrap {
 
     git_commit* GetValue();
     void SetValue(git_commit* commit);
-    int Lookup(git_repository* repo, git_oid* oid);
     void Close();
 
     // const git_oid* Id();

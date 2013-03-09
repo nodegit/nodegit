@@ -57,12 +57,6 @@ void GitCommit::SetValue(git_commit* commit) {
   this->commit = commit;
 }
 
-int GitCommit::Lookup(git_repository* repo, git_oid* oid) {
-  int err = git_commit_lookup(&this->commit, repo, oid);
-
-  return err;
-}
-
 void GitCommit::Close() {
   git_commit_close(this->commit);
   this->commit = NULL;
