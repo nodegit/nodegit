@@ -48,9 +48,9 @@ class GitCommit : public ObjectWrap {
     // int TimeOffset();
     // const git_signature* Committer();
     // const git_signature* Author();
-    // int Tree(git_tree** tree);
-    // unsigned int ParentCount();
-    // int Parent(git_commit** commit, int pos);
+    int Tree(git_tree** tree);
+    unsigned int ParentCount();
+    int Parent(git_commit** commit, int pos);
 
   protected:
     GitCommit() {}
@@ -68,13 +68,6 @@ class GitCommit : public ObjectWrap {
     static void LookupAfterWork(uv_work_t *req);
 
     static Handle<Value> Close(const Arguments& args);
-    static Handle<Value> Id(const Arguments& args);
-    static Handle<Value> MessageShort(const Arguments& args);
-    static Handle<Value> Message(const Arguments& args);
-    static Handle<Value> Time(const Arguments& args);
-    static Handle<Value> TimeOffset(const Arguments& args);
-    static Handle<Value> Committer(const Arguments& args);
-    static Handle<Value> Author(const Arguments& args);
 
     static Handle<Value> Tree(const Arguments& args);
     static void TreeWork(uv_work_t* req);

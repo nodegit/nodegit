@@ -55,35 +55,6 @@ void GitCommit::Close() {
   this->commit = NULL;
 }
 
-// const git_oid* GitCommit::Id() {
-//   return git_commit_id(this->commit);
-// }
-
-// const char* GitCommit::MessageShort() {
-//   return "";
-//   //return git_commit_message_short(this->commit);
-// }
-
-// const char* GitCommit::Message() {
-//   return git_commit_message(this->commit);
-// }
-
-// time_t GitCommit::Time() {
-//   return git_commit_time(this->commit);
-// }
-
-// int GitCommit::TimeOffset() {
-//   return git_commit_time_offset(this->commit);
-// }
-
-// const git_signature* GitCommit::Committer() {
-//   return git_commit_author(this->commit);
-// }
-
-// const git_signature* GitCommit::Author() {
-//   return git_commit_author(this->commit);
-// }
-
 int GitCommit::Tree(git_tree** tree) {
   return git_commit_tree(tree, this->commit);
 }
@@ -303,86 +274,6 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
   commit->Close();
 
   return scope.Close(Undefined());
-}
-
-Handle<Value> GitCommit::Id(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
-  }
-
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-
-  oid->SetValue(*const_cast<git_oid *>(commit->Id()));
-
-  return scope.Close(Undefined());
-}
-
-Handle<Value> GitCommit::MessageShort(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  return scope.Close( String::New(commit->MessageShort()) );
-}
-
-Handle<Value> GitCommit::Message(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  return scope.Close(String::New(commit->Message()));
-}
-
-Handle<Value> GitCommit::Time(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  return scope.Close( Integer::New(commit->Time()) );
-}
-
-Handle<Value> GitCommit::TimeOffset(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  return scope.Close( Integer::New(commit->TimeOffset()) );
-}
-
-Handle<Value> GitCommit::Committer(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
-  }
-
-  GitSig *sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
-
-  sig->SetValue(const_cast<git_signature *>(commit->Committer()));
-
-  return scope.Close( Undefined() );
-}
-
-Handle<Value> GitCommit::Author(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Signature is required and must be an Object.")));
-  }
-
-  GitSig *sig = ObjectWrap::Unwrap<GitSig>(args[0]->ToObject());
-
-  sig->SetValue(const_cast<git_signature *>(commit->Author()));
-
-  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitCommit::Tree(const Arguments& args) {
