@@ -394,8 +394,8 @@ void GitCommit::ParentAfterWork(uv_work_t* req) {
   } else {
 
     Local<Object> parent = GitCommit::constructor_template->NewInstance();
-    GitCommit *parentCommit = ObjectWrap::Unwrap<GitCommit>(parent);
-    parentCommit->SetValue(baton->rawParentCommit);
+    GitCommit *parentInstance = ObjectWrap::Unwrap<GitCommit>(parent);
+    parentInstance->SetValue(baton->rawParentCommit);
 
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),

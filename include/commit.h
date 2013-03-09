@@ -41,13 +41,6 @@ class GitCommit : public ObjectWrap {
     void SetValue(git_commit* commit);
     void Close();
 
-    // const git_oid* Id();
-    // const char* MessageShort();
-    // const char* Message();
-    // time_t Time();
-    // int TimeOffset();
-    // const git_signature* Committer();
-    // const git_signature* Author();
     int Tree(git_tree** tree);
     unsigned int ParentCount();
     int Parent(git_commit** commit, int pos);
