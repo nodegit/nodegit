@@ -80,8 +80,7 @@ class GitCommit : public ObjectWrap {
 
     struct LookupBaton {
       uv_work_t request;
-      int errorCode;
-      const char* errorMessage;
+      const git_error* error;
 
       GitRepo* repo;
       GitOid* oid;
@@ -95,8 +94,7 @@ class GitCommit : public ObjectWrap {
      */
     struct FetchDetailsBaton {
       uv_work_t request;
-      int errorCode;
-      const char* errorMessage;
+      const git_error* error;
 
       git_commit* rawCommit;
       const git_oid *oid;
@@ -119,8 +117,7 @@ class GitCommit : public ObjectWrap {
      */
     struct ParentBaton {
       uv_work_t request;
-      int errorCode;
-      const char* errorMessage;
+      const git_error* error;
 
       int index;
       GitCommit* commit;

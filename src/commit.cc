@@ -16,6 +16,7 @@
 #include "../include/oid.h"
 #include "../include/tree.h"
 #include "../include/commit.h"
+ #include "../include/error.h"
 
 using namespace v8;
 using namespace cvv8;
@@ -201,9 +202,9 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
   FetchDetailsBaton* baton = static_cast<FetchDetailsBaton* >(req->data);
   delete req;
 
-  if (baton->errorCode) {
+  if (baton->error) {
     Local<Value> argv[1] = {
-      Exception::Error(String::New(baton->errorMessage))
+      GitError::WrapError(baton->error)
     };
 
     TryCatch try_catch;
@@ -226,7 +227,6 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
     details->Set(String::NewSymbol("message"), cvv8::CastToJS(baton->message));
     details->Set(String::NewSymbol("time"), cvv8::CastToJS(baton->time));
     details->Set(String::NewSymbol("timeOffset"), cvv8::CastToJS(baton->timeOffset));
-
 
     Local<Object> committer = Object::New();
     committer->Set(String::NewSymbol("name"), cvv8::CastToJS(baton->committer->name));
@@ -283,6 +283,7 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 
   LookupBaton *baton = new LookupBaton();
   baton->request.data = baton;
+  baton->error = NULL;
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
   baton->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
@@ -297,9 +298,9 @@ void GitCommit::LookupWork(uv_work_t *req) {
 
   baton->rawCommit = NULL;
   git_oid oid = baton->oid->GetValue();
-  baton->errorCode = git_commit_lookup(&baton->rawCommit, baton->repo->GetValue(), &oid);
-  if (baton->errorCode) {
-    baton->errorMessage = git_lasterror();
+  int returnCode = git_commit_lookup(&baton->rawCommit, baton->repo->GetValue(), &oid);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
   }
 }
 
@@ -309,9 +310,9 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
   delete req;
 
-  if (baton->errorCode) {
+  if (baton->error) {
     Local<Value> argv[1] = {
-      Exception::Error(String::New(baton->errorMessage))
+      GitError::WrapError(baton->error)
     };
 
     TryCatch try_catch;
@@ -387,10 +388,10 @@ Handle<Value> GitCommit::ParentSync(const Arguments& args) {
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
 
   git_commit *parentCommitValue ;
-  int errorCode = git_commit_parent(&parentCommitValue, commit->commit, args[0]->ToInteger()->Value());
+  int returnCode = git_commit_parent(&parentCommitValue, commit->commit, args[0]->ToInteger()->Value());
 
-  if (errorCode) {
-    return ThrowException(Exception::Error(String::New(git_lasterror())));
+  if (returnCode != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Local<Object> parent = GitCommit::constructor_template->NewInstance();
@@ -419,6 +420,7 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
   baton->request.data = baton;
   baton->commit =  ObjectWrap::Unwrap<GitCommit>(args.This());
   baton->commit->Ref();
+  baton->error = NULL;
   baton->index = args[0]->ToInteger()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -431,10 +433,10 @@ void GitCommit::ParentWork(uv_work_t* req) {
   ParentBaton* baton = static_cast<ParentBaton*>(req->data);
 
   baton->rawParentCommit = NULL;
-  baton->errorCode = git_commit_parent(&baton->rawParentCommit, baton->commit->commit, baton->index);
+  int returnCode = git_commit_parent(&baton->rawParentCommit, baton->commit->commit, baton->index);
 
-  if (baton->errorCode) {
-    baton->errorMessage = git_lasterror();
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
   }
 }
 
@@ -444,9 +446,9 @@ void GitCommit::ParentAfterWork(uv_work_t* req) {
   ParentBaton* baton = static_cast<ParentBaton* >(req->data);
   delete req;
 
-  if (baton->errorCode) {
+  if (baton->error) {
     Local<Value> argv[1] = {
-      Exception::Error(String::New(baton->errorMessage))
+      GitError::WrapError(baton->error)
     };
 
     TryCatch try_catch;

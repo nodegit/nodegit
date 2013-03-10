@@ -4,7 +4,6 @@ var git = require( '../' ).raw,
 
 var testRepo = new git.Repo();
 
-// Helper functions
 var helper = {
   // Test if obj is a true function
   testFunction: function( test, obj, label ) {
@@ -25,7 +24,9 @@ var helper = {
   }
 };
 
-// Commit
+/**
+ * Commit
+ */
 exports.constructor = function(test){
   test.expect( 3 );
 
@@ -40,7 +41,9 @@ exports.constructor = function(test){
   });
 };
 
-// Commit::Lookup
+/**
+ * Commit::Lookup
+ */
 exports.lookup = function(test) {
   var testOid = new git.Oid(),
       testCommit = new git.Commit();
