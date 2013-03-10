@@ -17,64 +17,49 @@ using namespace node;
 
 namespace cvv8 {
   template <>
-  struct NativeToJS<git_error> : NativeToJS<int32_t> {};
+  struct NativeToJS<git_error_t> : NativeToJS<int32_t> {};
 }
 
 void GitError::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Error"));
-
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "strError", StrError);
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Error"));
 
   // Add libgit2 error codes to error object
   Local<Object> libgit2Errors = Object::New();
 
-  libgit2Errors->Set(String::NewSymbol("GIT_SUCCESS"), cvv8::CastToJS(GIT_SUCCESS), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ERROR"), cvv8::CastToJS(GIT_ERROR), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ENOTOID"), cvv8::CastToJS(GIT_ENOTOID), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ENOTFOUND"), cvv8::CastToJS(GIT_ENOTFOUND), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ENOMEM"), cvv8::CastToJS(GIT_ENOMEM), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EOSERR"), cvv8::CastToJS(GIT_EOSERR), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EOBJTYPE"), cvv8::CastToJS(GIT_EOBJTYPE), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ENOTAREPO"), cvv8::CastToJS(GIT_ENOTAREPO), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EINVALIDTYPE"), cvv8::CastToJS(GIT_EINVALIDTYPE), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EMISSINGOBJDATA"), cvv8::CastToJS(GIT_EMISSINGOBJDATA), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EPACKCORRUPTED"), cvv8::CastToJS(GIT_EPACKCORRUPTED), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EFLOCKFAIL"), cvv8::CastToJS(GIT_EFLOCKFAIL), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EZLIB"), cvv8::CastToJS(GIT_EZLIB), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EBUSY"), cvv8::CastToJS(GIT_EBUSY), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EBAREINDEX"), cvv8::CastToJS(GIT_EBAREINDEX), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EINVALIDREFNAME"), cvv8::CastToJS(GIT_EINVALIDREFNAME), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EREFCORRUPTED"), cvv8::CastToJS(GIT_EREFCORRUPTED), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ETOONESTEDSYMREF"), cvv8::CastToJS(GIT_ETOONESTEDSYMREF), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EPACKEDREFSCORRUPTED"), cvv8::CastToJS(GIT_EPACKEDREFSCORRUPTED), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EINVALIDPATH"), cvv8::CastToJS(GIT_EINVALIDPATH), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EREVWALKOVER"), cvv8::CastToJS(GIT_EREVWALKOVER), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EINVALIDREFSTATE"), cvv8::CastToJS(GIT_EINVALIDREFSTATE), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ENOTIMPLEMENTED"), cvv8::CastToJS(GIT_ENOTIMPLEMENTED), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EEXISTS"), cvv8::CastToJS(GIT_EEXISTS), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EOVERFLOW"), cvv8::CastToJS(GIT_EOVERFLOW), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ENOTNUM"), cvv8::CastToJS(GIT_ENOTNUM), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ESTREAM"), cvv8::CastToJS(GIT_ESTREAM), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EINVALIDARGS"), cvv8::CastToJS(GIT_EINVALIDARGS), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EOBJCORRUPTED"), cvv8::CastToJS(GIT_EOBJCORRUPTED), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EAMBIGUOUSOIDPREFIX"), cvv8::CastToJS(GIT_EAMBIGUOUSOIDPREFIX), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_EPASSTHROUGH"), cvv8::CastToJS(GIT_EPASSTHROUGH), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ENOMATCH"), cvv8::CastToJS(GIT_ENOMATCH), ReadOnly);
-  libgit2Errors->Set(String::NewSymbol("GIT_ESHORTBUFFER"), cvv8::CastToJS(GIT_ESHORTBUFFER), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_NOMEMORY"), cvv8::CastToJS(GITERR_NOMEMORY), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_OS"), cvv8::CastToJS(GITERR_OS), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_INVALID"), cvv8::CastToJS(GITERR_INVALID), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_REFERENCE"), cvv8::CastToJS(GITERR_REFERENCE), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_ZLIB"), cvv8::CastToJS(GITERR_ZLIB), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_REPOSITORY"), cvv8::CastToJS(GITERR_REPOSITORY), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_CONFIG"), cvv8::CastToJS(GITERR_CONFIG), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_REGEX"), cvv8::CastToJS(GITERR_REGEX), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_ODB"), cvv8::CastToJS(GITERR_ODB), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_INDEX"), cvv8::CastToJS(GITERR_INDEX), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_OBJECT"), cvv8::CastToJS(GITERR_OBJECT), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_NET"), cvv8::CastToJS(GITERR_NET), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_TAG"), cvv8::CastToJS(GITERR_TAG), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_TREE"), cvv8::CastToJS(GITERR_TREE), ReadOnly);
+  libgit2Errors->Set(String::NewSymbol("GITERR_INDEXER"), cvv8::CastToJS(GITERR_INDEXER), ReadOnly);
 
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
   constructor_template->Set(String::NewSymbol("codes"), libgit2Errors, ReadOnly);
 
-  target->Set(String::NewSymbol("Error"), constructor_template->GetFunction());
+  target->Set(String::NewSymbol("Error"), constructor_template);
 }
 
-const char* GitError::StrError(int err) {
-  return git_strerror(err);
+Local<Object> GitError::WrapError(const git_error* error) {
+  Local<Object> gitError = GitError::constructor_template->NewInstance();
+  Local<StackTrace> stackTrace = StackTrace::CurrentStackTrace(10);
+  gitError->Set(String::NewSymbol("stackTrace"), cvv8::CastToJS(stackTrace->AsArray()));
+  gitError->Set(String::NewSymbol("message"), String::New(error->message));
+  gitError->Set(String::NewSymbol("code"), Integer::New(error->klass));
+  return gitError;
 }
 
 Handle<Value> GitError::New(const Arguments& args) {
@@ -86,18 +71,4 @@ Handle<Value> GitError::New(const Arguments& args) {
   return scope.Close( args.This() );
 }
 
-Handle<Value> GitError::StrError(const Arguments& args) {
-  HandleScope scope;
-
-  GitError* error = ObjectWrap::Unwrap<GitError>(args.This());
-
-  if(args.Length() == 0 || !args[0]->IsNumber()) {
-    return ThrowException(Exception::Error(String::New("Error is required and must be a Number.")));
-  }
-
-  Local<Integer> err = Local<Integer>::Cast(args[0]);
-
-  return scope.Close( String::New(error->StrError(err->Value())) );
-}
-
-Persistent<FunctionTemplate> GitError::constructor_template;
+Persistent<Function> GitError::constructor_template;
