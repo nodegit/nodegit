@@ -62,7 +62,7 @@ char* GitOid::AllocFmt() {
 }
 
 char* GitOid::ToString(char* buffer, size_t bufferSize) {
-  return git_oid_to_string(buffer, bufferSize, &this->oid);
+  return git_oid_tostr(buffer, bufferSize, &this->oid);
 }
 
 void GitOid::Cpy(git_oid* out) {

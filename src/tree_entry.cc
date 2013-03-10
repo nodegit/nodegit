@@ -53,7 +53,7 @@ const git_oid* GitTreeEntry::Id() {
 }
 
 int GitTreeEntry::ToObject(git_repository* repo, git_object** obj) {
-  return git_tree_entry_2object(obj, repo, this->entry);
+  return git_tree_entry_to_object(obj, repo, this->entry);
 }
 
 Handle<Value> GitTreeEntry::New(const Arguments& args) {

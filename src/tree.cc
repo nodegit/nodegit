@@ -69,7 +69,7 @@ Handle<Value> GitTree::New(const Arguments& args) {
 
   tree->Wrap(args.This());
 
-  return scope.Close( args.This() );
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitTree::Lookup(const Arguments& args) {
