@@ -57,7 +57,7 @@ int GitBlob::RawSize() {
 }
 
 void GitBlob::Close() {
-  git_blob_close(this->blob);
+  git_blob_free(this->blob);
 }
 
 int CreateFromFile(git_oid* oid, git_repository* repo, const char* path) {

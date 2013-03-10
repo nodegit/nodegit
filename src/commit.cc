@@ -52,7 +52,7 @@ void GitCommit::SetValue(git_commit* commit) {
 }
 
 void GitCommit::Close() {
-  git_commit_close(this->commit);
+  git_commit_free(this->commit);
   this->commit = NULL;
 }
 
