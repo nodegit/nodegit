@@ -42,12 +42,10 @@ exports.method = function(test){
  * @param  {Object} test
  */
 exports.improperCommitId = function(test) {
-  test.expect(2);
+  test.expect(1);
   git.repo('../.git', function(error, repository) {
     repository.commit('not a proper commit sha', function(error, commit) {
-      test.notEqual(error.code, git.error.GIT_SUCCESS, 'Error should occur');
-      test.notEqual(error.message, null, 'Attempting to get commit by invalid SHA should error');
-
+      test.notEqual(error, null, 'Error should occur');
       test.done();
     });
   });
