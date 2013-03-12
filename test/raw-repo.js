@@ -12,7 +12,7 @@ var helper = {
     // This ensures the repo is actually a derivative of the Function [[Class]]
     test( toString.call( obj ), '[object Function]', label +' [[Class]] is of type function.' );
   },
-  // Test code and handle exception thrown 
+  // Test code and handle exception thrown
   testException: function( test, fun, label ) {
     try {
       fun();
@@ -30,7 +30,7 @@ exports.constructor = function( test ){
 
   // Test for function
   helper.testFunction( test.equals, git.Repo, 'Repo' );
-  
+
   // Ensure we get an instance of Repo
   test.ok( new git.Repo() instanceof git.Repo, 'Invocation returns an instance of Repo' );
 
@@ -38,34 +38,31 @@ exports.constructor = function( test ){
 };
 
 // Repo::Open
-exports.open = function( test ) {
+exports.open = function(test) {
   var testRepo = new git.Repo();
 
-  test.expect( 6 );
+  test.expect(6);
 
   // Test for function
-  helper.testFunction( test.equals, testRepo.open, 'Repo::Open' );
+  helper.testFunction(test.equals, testRepo.open, 'Repo::Open');
 
   // Test path argument existence
   helper.testException( test.ok, function() {
     testRepo.open();
   }, 'Throw an exception if no path' );
- 
+
   // Test callback argument existence
-  helper.testException( test.ok, function() {
-    testRepo.open( "some/path" );
-  }, 'Throw an exception if no callback' );
+  helper.testException(test.ok, function() {
+    testRepo.open('some/path');
+  }, 'Throw an exception if no callback');
 
   // Test invalid repository
-  testRepo.open( '/etc/hosts', function( err ) {
-    test.equals( -7, err, 'Invalid repository error code' );
+  testRepo.open('/etc/hosts', function(error) {
+    test.equals(git.Error.codes.GIT_ERROR, error.klass, 'Invalid repository error code');
 
     // Test valid repository
-    testRepo.open( path.resolve( '../.git' ), function( err ) {
-      test.equals( 0, err, 'Valid repository error code' );
-
-//      testRepo.free();
-
+    testRepo.open(path.resolve('../.git'), function(error) {
+      test.equals(0, error, 'Valid repository error code');
       test.done();
     });
   });
@@ -73,13 +70,13 @@ exports.open = function( test ) {
 
 // TODO: Figure out how write unit tests for free
 // Repo::Free
-exports.free = function( test ) {
+exports.free = function(test) {
   var testRepo = new git.Repo();
 
-  test.expect( 2 );
+  test.expect(2);
 
   // Test for function
-  helper.testFunction( test.equals, testRepo.free, 'Repo::Free' );
+  helper.testFunction(test.equals, testRepo.free, 'Repo::Free');
 
   test.done();
 };
@@ -97,7 +94,7 @@ exports.init = function( test ) {
   helper.testException( test.ok, function() {
     testRepo.init();
   }, 'Throw an exception if no path' );
- 
+
   // Test is_bare argument existence
   helper.testException( test.ok, function() {
     testRepo.init( "some/path" );
@@ -117,7 +114,7 @@ exports.init = function( test ) {
       testRepo.open( './test.git', function(err, path) {
         test.equals( 0, err, 'Valid repository created' );
 
-          testRepo.free();       
+          testRepo.free();
 
           // Cleanup, remove test repo directory
           rimraf( './test.git', function() {
