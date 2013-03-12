@@ -30,9 +30,7 @@ var helper = {
  */
 exports.method = function(test){
   test.expect(2);
-
   helper.testFunction(test.equals, git.commit, 'Commmit');
-
   test.done();
 };
 
@@ -69,7 +67,6 @@ exports.history = function(test) {
         test.equals(error, null, 'There should be no errors');
         historyCount++;
       }).on('end', function(error, commits) {
-
         test.equals(error, null, 'There should be no errors');
         test.equals(historyCount, expectedHistoryCount, 'Manual count does not match expected');
         test.equals(commits.length, expectedHistoryCount, '"end" count does not match expected');
