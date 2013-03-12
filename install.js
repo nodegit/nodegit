@@ -47,9 +47,10 @@ var updateSubmodules = function(mainCallback) {
 var checkoutDependencies = function(mainCallback) {
     console.log('[nodegit] Downloading libgit2 dependency.');
 
-    var libgit2ZipUrl = 'https://github.com/libgit2/libgit2/archive/v0.17.0.zip';
+    var commit = 'b70bf922a1de35722904930c42467e95c889562f';
+    var libgit2ZipUrl = 'https://github.com/libgit2/libgit2/archive/' + commit + '.zip';
         zipFile = __dirname + '/vendor/libgit2.zip',
-        unzippedFolderName = __dirname + '/vendor/libgit2-0.17.0',
+        unzippedFolderName = __dirname + '/vendor/libgit2-' + commit,
         targetFolderName = __dirname + '/vendor/libgit2';
 
     async.series([
@@ -103,8 +104,8 @@ async.series([
     },
     function(callback) {
         console.log('[nodegit] Building native module.');
-        // shpassthru('node-gyp configure --debug', callback);
-        shpassthru('node-gyp configure', callback);
+        shpassthru('node-gyp configure --debug', callback);
+        // shpassthru('node-gyp configure', callback);
     },
     function(callback) {
         shpassthru('node-gyp build', callback);

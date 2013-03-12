@@ -14,7 +14,8 @@
                 'src/revwalk.cc',
                 'src/sig.cc',
                 'src/tree.cc',
-                'src/tree_entry.cc'
+                'src/tree_entry.cc',
+                'src/threads.cc'
             ],
             'todosources': [
             ],
