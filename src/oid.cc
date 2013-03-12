@@ -119,7 +119,7 @@ Handle<Value> GitOid::Fmt(const Arguments& args) {
   char buffer[40];
   oid->Fmt(buffer);
 
-  return scope.Close( String::New(buffer) );
+  return scope.Close(String::New(buffer));
 }
 
 Handle<Value> GitOid::PathFmt(const Arguments& args) {
