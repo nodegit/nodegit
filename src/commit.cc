@@ -139,7 +139,7 @@ Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
     int parentIndex = parentCount -1;
     char sha[GIT_OID_HEXSZ + 1];
     sha[GIT_OID_HEXSZ] = '\0';
-    const git_oid *parentOid = git_commit_parent_oid(commit->commit, parentIndex);
+    const git_oid *parentOid = git_commit_parent_id(commit->commit, parentIndex);
     git_oid_fmt(sha, parentOid);
     parentShas.push_back(sha);
     parentCount--;
@@ -189,7 +189,7 @@ void GitCommit::FetchDetailsWork(uv_work_t *req) {
     int parentIndex = parentCount -1;
     char sha[GIT_OID_HEXSZ + 1];
     sha[GIT_OID_HEXSZ] = '\0';
-    const git_oid *parentOid = git_commit_parent_oid(baton->rawCommit, parentIndex);
+    const git_oid *parentOid = git_commit_parent_id(baton->rawCommit, parentIndex);
     git_oid_fmt(sha, parentOid);
     baton->parentShas.push_back(sha);
     parentCount--;

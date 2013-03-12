@@ -45,7 +45,7 @@ const char* GitTreeEntry::Name() {
 }
 
 int GitTreeEntry::Attributes() {
-  return git_tree_entry_attributes(this->entry);
+  return git_tree_entry_filemode(this->entry);
 }
 
 const git_oid* GitTreeEntry::Id() {

@@ -176,7 +176,7 @@ void GitRevWalk::NextWork(uv_work_t *req) {
   // baton->oid = NULL;
   int returnCode = git_revwalk_next(&baton->oid, baton->revwalk);
   if (returnCode != GIT_OK) {
-    if (returnCode == GIT_REVWALKOVER) {
+    if (returnCode == GIT_ITEROVER) {
       baton->walkOver = true;
     } else {
       baton->error = giterr_last();
