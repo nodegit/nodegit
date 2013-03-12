@@ -47,9 +47,9 @@ var updateSubmodules = function(mainCallback) {
 var checkoutDependencies = function(mainCallback) {
     console.log('[nodegit] Downloading libgit2 dependency.');
 
-    var libgit2ZipUrl = 'https://github.com/libgit2/libgit2/archive/v0.15.0.zip';
+    var libgit2ZipUrl = 'https://github.com/libgit2/libgit2/archive/v0.17.0.zip';
         zipFile = __dirname + '/vendor/libgit2.zip',
-        unzippedFolderName = __dirname + '/vendor/libgit2-0.15.0',
+        unzippedFolderName = __dirname + '/vendor/libgit2-0.17.0',
         targetFolderName = __dirname + '/vendor/libgit2';
 
     async.series([
