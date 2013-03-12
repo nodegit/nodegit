@@ -22,9 +22,11 @@ var helper = {
   }
 };
 
-// Repo
-// Ensure the repo method can handle opening repositories with async/sync
-// signatures properly.
+/**
+ * Repo
+ * Ensure the repo method can handle opening repositories with async/sync
+ * signatures properly.
+ */
 exports.method = function(test){
   test.expect(5);
 
@@ -47,10 +49,13 @@ exports.method = function(test){
   });
 };
 
-// Repo::Init
-// Ensure the init method can create repositories at the destination path and
-// can create either bare/non-bare.  This should work async/sync and provide
-// the proper return values.
+/**
+ * Repo::Init
+ *
+ * Ensure the init method can create repositories at the destination path and
+ * can create either bare/non-bare.  This should work async/sync and provide
+ * the proper return values.
+ */
 exports.init = function(test) {
   test.expect(4);
 
@@ -59,11 +64,11 @@ exports.init = function(test) {
   // Cleanup, remove test repo directory - if it exists
   rimraf('./test.git', function() {
     // Create bare repo and test for creation
-    git.repo().init('./test.git', true, function(err, path, isBare) {
-      test.equals(0, err, 'Successfully created bare repository');
+    git.repo().init('./test.git', true, function(error, path, isBare) {
+      test.equals(null, error, 'Successfully created bare repository');
       // Verify repo exists
-      git.repo('./test.git', function(err, path, repo) {
-        test.equals(0, err, 'Valid repository created');
+      git.repo('./test.git', function(error, path, repo) {
+        test.equals(null, error, 'Valid repository created');
 
         // Cleanup, remove test repo directory
         rimraf('./test.git', test.done);
