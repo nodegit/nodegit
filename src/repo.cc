@@ -45,17 +45,6 @@ void GitRepo::Free() {
   git_repository_free(this->repo);
 }
 
-int GitRepo::Init(const char* path, bool is_bare) {
-  git_repository* repo_;
-  int err = git_repository_init(&repo_, path, is_bare);
-
-  if(err == 0) {
-    this->repo = *&repo_;
-  }
-
-  return err;
-}
-
 Handle<Value> GitRepo::New(const Arguments& args) {
   HandleScope scope;
 
@@ -81,6 +70,9 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   baton->error = NULL;
   String::Utf8Value path(args[0]);
   baton->path = *path;
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This());
+  baton->repo->Ref();
+  baton->rawRepo = baton->repo->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OpenWork, OpenAfterWork);
@@ -91,7 +83,7 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
 void GitRepo::OpenWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
-  int returnCode = git_repository_open(&baton->repo, baton->path.c_str());
+  int returnCode = git_repository_open(&baton->rawRepo, baton->path.c_str());
   if (returnCode != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -102,37 +94,21 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
   delete req;
+  baton->repo->Unref();
 
+  Local<Value> argv[1];
   if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
+    argv[0] = GitError::WrapError(baton->error);
   } else {
+    argv[0] = Local<Value>::New(Null());
+  }
 
-    Local<Object> repository = GitRepo::constructor_template->NewInstance();
-    GitRepo *repositoryInstance = ObjectWrap::Unwrap<GitRepo>(repository);
-    repositoryInstance->SetValue(baton->repo);
+  TryCatch try_catch;
 
-    Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
-      repository
-    };
+  baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
-    TryCatch try_catch;
-
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
+  if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
   }
 }
 
