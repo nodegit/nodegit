@@ -60,14 +60,14 @@ exports.history = function(test) {
   test.expect(368);
   git.repo('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      test.equals(error, null, 'Getting latest branch commit should not error');
+      test.equals(null, error, 'Getting latest branch commit should not error');
       var historyCount = 0;
       var expectedHistoryCount = 364;
       commit.history().on('commit', function(error, commit) {
-        test.equals(error, null, 'There should be no errors');
+        test.equals(null, error, 'There should be no errors');
         historyCount++;
       }).on('end', function(error, commits) {
-        test.equals(error, null, 'There should be no errors');
+        test.equals(null, error, 'There should be no errors');
         test.equals(historyCount, expectedHistoryCount, 'Manual count does not match expected');
         test.equals(commits.length, expectedHistoryCount, '"end" count does not match expected');
 
