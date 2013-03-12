@@ -1,5 +1,7 @@
 /*
  * Copyright 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+ * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
+ *
  * Dual licensed under the MIT and GPL licenses.
  */
 
@@ -82,8 +84,9 @@ class GitCommit : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
 
-      GitRepo* repo;
-      GitOid* oid;
+      git_repository* repo;
+      git_oid oid;
+      const char* sha;
       git_commit* rawCommit;
 
       Persistent<Function> callback;

@@ -1,5 +1,6 @@
 /*
  * Copyright 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+ *
  * Dual licensed under the MIT and GPL licenses.
  */
 
@@ -16,7 +17,7 @@
 #include "../include/oid.h"
 #include "../include/tree.h"
 #include "../include/commit.h"
- #include "../include/error.h"
+#include "../include/error.h"
 
 using namespace v8;
 using namespace cvv8;
@@ -273,8 +274,8 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  if(args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
+  if(args.Length() == 1 || !(args[1]->IsObject() || args[1]->IsString())) {
+    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object or String")));
   }
 
   if(args.Length() == 2 || !args[2]->IsFunction()) {
@@ -284,8 +285,21 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   LookupBaton *baton = new LookupBaton();
   baton->request.data = baton;
   baton->error = NULL;
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
-  baton->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+
+  if (baton->repo == NULL) {
+    printf("BeforeWork: baton->repo is null\n");
+  }
+  if (args[1]->IsObject()) {
+    baton->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    baton->sha = NULL;
+  } else {
+    // Make this less ugly
+    String::AsciiValue shaValue(args[1]->ToString());
+    char *sha = (char *) malloc(shaValue.length() + 1);
+    strcpy(sha, *shaValue);
+    baton->sha = sha;
+  }
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, LookupAfterWork);
@@ -296,9 +310,17 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 void GitCommit::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
+  git_oid oid = baton->oid;
+  if (baton->sha != NULL) {
+    int returnCode = git_oid_fromstr(&oid, baton->sha);
+    if (returnCode != GIT_OK) {
+      baton->error = giterr_last();
+      return;
+    }
+  }
+
   baton->rawCommit = NULL;
-  git_oid oid = baton->oid->GetValue();
-  int returnCode = git_commit_lookup(&baton->rawCommit, baton->repo->GetValue(), &oid);
+  int returnCode = git_commit_lookup(&baton->rawCommit, baton->repo, &oid);
   if (returnCode != GIT_OK) {
     baton->error = giterr_last();
   }
