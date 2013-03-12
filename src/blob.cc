@@ -61,7 +61,7 @@ void GitBlob::Close() {
 }
 
 int CreateFromFile(git_oid* oid, git_repository* repo, const char* path) {
-  return git_blob_create_fromfile(oid, repo, path);
+  return git_blob_create_fromdisk(oid, repo, path);
 }
 
 int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len) {
