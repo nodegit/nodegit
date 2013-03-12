@@ -25,14 +25,14 @@ var helper = {
 };
 
 // Repo
-exports.constructor = function( test ){
-  test.expect( 3 );
+exports.constructor = function(test){
+  test.expect(3);
 
   // Test for function
-  helper.testFunction( test.equals, git.Repo, 'Repo' );
+  helper.testFunction(test.equals, git.Repo, 'Repo');
 
   // Ensure we get an instance of Repo
-  test.ok( new git.Repo() instanceof git.Repo, 'Invocation returns an instance of Repo' );
+  test.ok(new git.Repo() instanceof git.Repo, 'Invocation returns an instance of Repo');
 
   test.done();
 };
@@ -62,7 +62,7 @@ exports.open = function(test) {
 
     // Test valid repository
     testRepo.open(path.resolve('../.git'), function(error) {
-      test.equals(0, error, 'Valid repository error code');
+      test.equals(null, error, 'Valid repository error code');
       test.done();
     });
   });
@@ -106,18 +106,18 @@ exports.init = function( test ) {
   }, 'Throw an exception if no callback' );
 
   // Cleanup, remove test repo directory - if it exists
-  rimraf( './test.git', function() {
+  rimraf('./test.git', function() {
     // Create bare repo and test for creation
-    testRepo.init( './test.git', true, function( err, path, is_bare ) {
-      test.equals( 0, err, 'Successfully created bare repository' );
+    testRepo.init('./test.git', true, function(error, path, is_bare) {
+      test.equals(null, error, 'Successfully created bare repository');
       // Verify repo exists
-      testRepo.open( './test.git', function(err, path) {
-        test.equals( 0, err, 'Valid repository created' );
+      testRepo.open('./test.git', function(error, path) {
+        test.equals(null, error, 'Valid repository created');
 
           testRepo.free();
 
           // Cleanup, remove test repo directory
-          rimraf( './test.git', function() {
+          rimraf('./test.git', function() {
             test.done();
           });
       });
