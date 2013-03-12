@@ -1,7 +1,6 @@
 /*
 Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 */
-
 #ifndef REVWALK_H
 #define REVWALK_H
 
@@ -27,7 +26,6 @@ class GitRevWalk : public ObjectWrap {
     void Reset();
     int Push(git_oid* oid);
     int Hide();
-    int Next(git_oid* oid);
     int Sorting(int sort);
     void Free();
     git_repository* Repository();
@@ -37,12 +35,21 @@ class GitRevWalk : public ObjectWrap {
     ~GitRevWalk() {}
     static Handle<Value> New(const Arguments& args);
     static Handle<Value> Reset(const Arguments& args);
+
+    /**
+     * Although git_revwalk_next is not blocking when iterating with a
+     * time-sorting mode, options may be added later to allow different sort
+     * modes, hence the async implementation.
+     */
     static Handle<Value> Push(const Arguments& args);
+    static void PushWork(uv_work_t *req);
+    static void PushAfterWork(uv_work_t *req);
+
     static Handle<Value> Hide(const Arguments& args);
 
     static Handle<Value> Next(const Arguments& args);
-    static void EIO_Next(uv_work_t* req);
-    static void EIO_AfterNext(uv_work_t* req);
+    static void NextWork(uv_work_t* req);
+    static void NextAfterWork(uv_work_t* req);
 
     static Handle<Value> Sorting(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);
@@ -52,10 +59,24 @@ class GitRevWalk : public ObjectWrap {
     git_revwalk* revwalk;
     git_repository* repo;
 
-    struct next_request {
-      GitRevWalk* revwalk;
-      GitOid* oid;
-      int err;
+    struct PushBaton {
+      uv_work_t request;
+      const git_error* error;
+
+      git_revwalk *revwalk;
+      git_oid oid;
+
+      Persistent<Function> callback;
+    };
+
+    struct NextBaton {
+      uv_work_t request;
+      const git_error* error;
+      bool walkOver;
+
+      git_revwalk *revwalk;
+      git_oid oid;
+
       Persistent<Function> callback;
     };
 };
