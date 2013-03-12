@@ -27,7 +27,7 @@ typedef enum {
   _GIT_EBUFS = -6,
 
   _GIT_PASSTHROUGH = -30,
-  _GIT_REVWALKOVER = -31,
+  _GIT_ITEROVER = -31,
 } git_error_return_t;
 
 namespace cvv8 {
@@ -75,7 +75,7 @@ void GitError::Initialize (Handle<v8::Object> target) {
   libgit2ReturnCodes->Set(String::NewSymbol("GIT_EAMBIGUOUS"), cvv8::CastToJS(_GIT_EAMBIGUOUS), ReadOnly);
   libgit2ReturnCodes->Set(String::NewSymbol("GIT_EBUFS"), cvv8::CastToJS(_GIT_EBUFS), ReadOnly);
   libgit2ReturnCodes->Set(String::NewSymbol("GIT_PASSTHROUGH"), cvv8::CastToJS(_GIT_PASSTHROUGH), ReadOnly);
-  libgit2ReturnCodes->Set(String::NewSymbol("GIT_REVWALKOVER"), cvv8::CastToJS(_GIT_REVWALKOVER), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_ITEROVER"), cvv8::CastToJS(_GIT_ITEROVER), ReadOnly);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   constructor_template->Set(String::NewSymbol("codes"), libgit2Errors, ReadOnly);

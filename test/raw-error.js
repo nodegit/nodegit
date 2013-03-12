@@ -45,7 +45,7 @@ exports.codes = function(test) {
   test.equals(git.Error.returnCodes.GIT_EAMBIGUOUS, -5, 'GIT_EAMBIGUOUS should equal  -5'),
   test.equals(git.Error.returnCodes.GIT_EBUFS, -6, 'GIT_EBUFS should equal  -6'),
   test.equals(git.Error.returnCodes.GIT_PASSTHROUGH, -30, 'GIT_PASSTHROUGH should equal -30'),
-  test.equals(git.Error.returnCodes.GIT_REVWALKOVER, -31, 'GIT_REVWALKOVER should equal -31'),
+  test.equals(git.Error.returnCodes.GIT_ITEROVER, -31, 'GIT_ITEROVER should equal -31'),
 
   test.equals(git.Error.codes.GITERR_NOMEMORY, 0, 'GITERR_NOMEMORY should equal 0');
   test.equals(git.Error.codes.GITERR_OS, 1, 'GITERR_OS should equal 1');
