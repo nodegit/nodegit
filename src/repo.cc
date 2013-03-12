@@ -18,18 +18,18 @@ using namespace node;
 void GitRepo::Initialize(Handle<Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Repo"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Repo"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "open", Open);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "init", Init);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "open", Open);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "init", Init);
 
-  target->Set(String::NewSymbol("Repo"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Repo"), constructor_template);
 }
 
 git_repository* GitRepo::GetValue() {
@@ -280,4 +280,4 @@ void GitRepo::EIO_AfterInit(uv_work_t *req) {
 
   delete ar;
 }
-Persistent<FunctionTemplate> GitRepo::constructor_template;
+Persistent<Function> GitRepo::constructor_template;

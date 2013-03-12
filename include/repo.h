@@ -18,7 +18,7 @@ using namespace v8;
 
 class GitRepo : public ObjectWrap {
   public:
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize(Handle<v8::Object> target);
     git_repository* GetValue();
     void SetValue(git_repository* repo);
