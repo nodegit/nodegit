@@ -46,8 +46,8 @@ class GitRepo : public ObjectWrap {
     static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Init(const Arguments& args);
-    static void EIO_Init(uv_work_t* req);
-    static void EIO_AfterInit(uv_work_t* req);
+    static void InitWork(uv_work_t* req);
+    static void InitAfterWork(uv_work_t* req);
 
   private:
     git_repository* repo;
@@ -56,7 +56,9 @@ class GitRepo : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
 
-      git_repository* repo;
+      git_repository* rawRepo;
+      GitRepo *repo;
+
       std::string path;
 
       Persistent<Function> callback;
@@ -67,11 +69,15 @@ class GitRepo : public ObjectWrap {
       Persistent<Function> callback;
     };
 
-    struct init_request {
+    struct InitBaton {
+      uv_work_t request;
+      const git_error* error;
+
       GitRepo* repo;
-      int err;
+      git_repository* rawRepo;
       std::string path;
-      bool is_bare;
+      bool isBare;
+
       Persistent<Function> callback;
     };
 };
