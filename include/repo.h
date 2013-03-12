@@ -36,8 +36,8 @@ class GitRepo : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Open(const Arguments& args);
-    static void EIO_Open(uv_work_t* req);
-    static void EIO_AfterOpen(uv_work_t* req);
+    static void OpenWork(uv_work_t* req);
+    static void OpenAfterWork(uv_work_t* req);
 
     static Handle<Value> Lookup(const Arguments& args);
     static void EIO_Lookup(uv_work_t* req);
@@ -52,10 +52,13 @@ class GitRepo : public ObjectWrap {
   private:
     git_repository* repo;
 
-    struct open_request {
-      GitRepo* repo;
-      int err;
+    struct OpenBaton {
+      uv_work_t request;
+      const git_error* error;
+
+      git_repository* repo;
       std::string path;
+
       Persistent<Function> callback;
     };
 

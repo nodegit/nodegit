@@ -11,6 +11,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "../include/object.h"
 #include "../include/repo.h"
 #include "../include/commit.h"
+#include "../include/error.h"
 
 using namespace v8;
 using namespace node;
@@ -61,14 +62,11 @@ Handle<Value> GitRepo::New(const Arguments& args) {
   GitRepo *repo = new GitRepo();
   repo->Wrap(args.This());
 
-  return scope.Close( args.This() );
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitRepo::Open(const Arguments& args) {
   HandleScope scope;
-
-  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
-  Local<Function> callback;
 
   if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("Path is required and must be a String.")));
@@ -78,52 +76,64 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  callback = Local<Function>::Cast(args[1]);
-
-  open_request *ar = new open_request();
-  ar->repo = repo;
-
+  OpenBaton *baton = new OpenBaton();
+  baton->request.data = baton;
+  baton->error = NULL;
   String::Utf8Value path(args[0]);
-  ar->path = *path;
+  baton->path = *path;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
-  ar->callback = Persistent<Function>::New(callback);
+  uv_queue_work(uv_default_loop(), &baton->request, OpenWork, OpenAfterWork);
 
-  repo->Ref();
-
-  uv_work_t *req = new uv_work_t;
-  req->data = ar;
-  uv_queue_work(uv_default_loop(), req, EIO_Open, EIO_AfterOpen);
-
-  return scope.Close( Undefined() );
+  return Undefined();
 }
 
-void GitRepo::EIO_Open(uv_work_t *req) {
-  open_request *ar = static_cast<open_request *>(req->data);
+void GitRepo::OpenWork(uv_work_t *req) {
+  OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
-  ar->err = ar->repo->Open(ar->path.c_str());
-
+  int returnCode = git_repository_open(&baton->repo, baton->path.c_str());
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
 }
 
-void GitRepo::EIO_AfterOpen(uv_work_t *req) {
+void GitRepo::OpenAfterWork(uv_work_t *req) {
   HandleScope scope;
 
-  open_request *ar = static_cast<open_request *>(req->data);
+  OpenBaton *baton = static_cast<OpenBaton *>(req->data);
   delete req;
-  ar->repo->Unref();
 
-  Local<Value> argv[1];
-  argv[0] = Integer::New(ar->err);
+  if (baton->error) {
+    Local<Value> argv[1] = {
+      GitError::WrapError(baton->error)
+    };
 
-  TryCatch try_catch;
+    TryCatch try_catch;
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
-  if(try_catch.HasCaught())
-    FatalException(try_catch);
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
+  } else {
 
-  ar->callback.Dispose();
+    Local<Object> repository = GitRepo::constructor_template->NewInstance();
+    GitRepo *repositoryInstance = ObjectWrap::Unwrap<GitRepo>(repository);
+    repositoryInstance->SetValue(baton->repo);
 
-  delete ar;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      repository
+    };
+
+    TryCatch try_catch;
+
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
+  }
 }
 
 Handle<Value> GitRepo::Lookup(const Arguments& args) {
