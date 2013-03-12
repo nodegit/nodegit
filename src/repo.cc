@@ -40,10 +40,6 @@ void GitRepo::SetValue(git_repository* repo) {
   this->repo = repo;
 }
 
-int GitRepo::Open(const char* path) {
-  return git_repository_open(&this->repo, path);
-}
-
 void GitRepo::Free() {
   git_repository_free(this->repo);
 }

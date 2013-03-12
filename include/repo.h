@@ -22,19 +22,13 @@ class GitRepo : public ObjectWrap {
     static void Initialize(Handle<v8::Object> target);
     git_repository* GetValue();
     void SetValue(git_repository* repo);
+
     // Asynchronous
     int Open(const char* path);
     int Init(const char* path, bool is_bare);
+
     // Synchronous
     void Free();
-
-    // TODO: Implement these methods
-    //int Open2(const char* path);
-    //int Open3(const char* path);
-    //int Lookup(Object **obj, Oid *id, Otype type);
-    //Odb Database();
-    //int Index(Index **index);
-    //int NewObject(git_object **obj, Otype type);
 
   protected:
     GitRepo() {}
