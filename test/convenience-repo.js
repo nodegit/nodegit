@@ -16,8 +16,7 @@ var helper = {
     try {
       fun();
       test(false, label);
-    }
-    catch (ex) {
+    } catch (ex) {
       test(true, label);
     }
   }
@@ -37,13 +36,12 @@ exports.method = function(test){
   }, 'Throw an exception if no callback');
 
   // Test invalid repository
-  git.repo('/etc/hosts', function(err, path) {
-    test.equals('The specified repository is invalid', err.message, 'Invalid repository error code');
+  git.repo('/etc/hosts', function(error, path) {
+    test.equals(error.code, error.GITERR_REPOSITORY, error.message, 'Invalid repository error code');
 
     // Test valid repository
-    git.repo('../.git', function(err, path) {
-      test.equals(0, err, 'Valid repository error code');
-
+    git.repo('../.git', function(error, path) {
+      test.equals(null, error, 'Valid repository error code');
       test.done();
     });
   });
