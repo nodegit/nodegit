@@ -15,9 +15,27 @@ using namespace v8;
 using namespace cvv8;
 using namespace node;
 
+/**
+ * Copied from libgit2/include/errors.h, to allow exporting to JS
+ */
+typedef enum {
+  _GIT_OK = 0,
+  _GIT_ERROR = -1,
+  _GIT_ENOTFOUND = -3,
+  _GIT_EEXISTS = -4,
+  _GIT_EAMBIGUOUS = -5,
+  _GIT_EBUFS = -6,
+
+  _GIT_PASSTHROUGH = -30,
+  _GIT_REVWALKOVER = -31,
+} git_error_return_t;
+
 namespace cvv8 {
   template <>
   struct NativeToJS<git_error_t> : NativeToJS<int32_t> {};
+
+  template <>
+  struct NativeToJS<git_error_return_t> : NativeToJS<int32_t> {};
 }
 
 void GitError::Initialize (Handle<v8::Object> target) {
@@ -47,8 +65,22 @@ void GitError::Initialize (Handle<v8::Object> target) {
   libgit2Errors->Set(String::NewSymbol("GITERR_TREE"), cvv8::CastToJS(GITERR_TREE), ReadOnly);
   libgit2Errors->Set(String::NewSymbol("GITERR_INDEXER"), cvv8::CastToJS(GITERR_INDEXER), ReadOnly);
 
+  // Add libgit2 error codes to error object
+  Local<Object> libgit2ReturnCodes = Object::New();
+
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_OK"), cvv8::CastToJS(_GIT_OK), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_ERROR"), cvv8::CastToJS(_GIT_ERROR), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_ENOTFOUND"), cvv8::CastToJS(_GIT_ENOTFOUND), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_EEXISTS"), cvv8::CastToJS(_GIT_EEXISTS), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_EAMBIGUOUS"), cvv8::CastToJS(_GIT_EAMBIGUOUS), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_EBUFS"), cvv8::CastToJS(_GIT_EBUFS), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_PASSTHROUGH"), cvv8::CastToJS(_GIT_PASSTHROUGH), ReadOnly);
+  libgit2ReturnCodes->Set(String::NewSymbol("GIT_REVWALKOVER"), cvv8::CastToJS(_GIT_REVWALKOVER), ReadOnly);
+
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   constructor_template->Set(String::NewSymbol("codes"), libgit2Errors, ReadOnly);
+  constructor_template->Set(String::NewSymbol("returnCodes"), libgit2ReturnCodes, ReadOnly);
+
 
   target->Set(String::NewSymbol("Error"), constructor_template);
 }
