@@ -23,11 +23,11 @@ var helper = {
 };
 
 // Oid
-exports.constructor = function( test ){
-  test.expect( 3 );
+exports.constructor = function(test){
+  test.expect(3);
 
   // Test for function
-  helper.testFunction( test.equals, git.Oid, 'Oid' );
+  helper.testFunction(test.equals, git.Oid, 'Oid');
 
   // Ensure we get an instance of Oid
   test.ok( new git.Oid() instanceof git.Oid, 'Invocation returns an instance of Oid' );
@@ -55,10 +55,10 @@ exports.mkstr = function( test ) {
   }, 'No exception is thrown with proper arguments' );
 
   // Test invalid hex id string
-  test.equals( -2, testOid.mkstr( '1392DLFJIOS' ), 'Invalid hex id String' );
+  test.equals(git.Error.returnCodes.GIT_ERROR, testOid.mkstr('1392DLFJIOS'), 'Invalid hex id String');
 
   // Test valid hex id string
-  test.equals( 0, testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' ), 'Valid hex id String' );
+  test.equals(git.Error.returnCodes.GIT_OK, testOid.mkstr( '1810DFF58D8A660512D4832E740F692884338CCD' ), 'Valid hex id String');
 
   test.done();
 };
