@@ -94,6 +94,8 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
   delete req;
+
+  baton->repo->SetValue(baton->rawRepo);
   baton->repo->Unref();
 
   Local<Value> argv[1];
