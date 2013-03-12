@@ -418,7 +418,7 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
 
   ParentBaton* baton = new ParentBaton();
   baton->request.data = baton;
-  baton->commit =  ObjectWrap::Unwrap<GitCommit>(args.This());
+  baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   baton->commit->Ref();
   baton->error = NULL;
   baton->index = args[0]->ToInteger()->Value();
