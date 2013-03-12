@@ -113,11 +113,11 @@ exports.fetchDetails = function(test) {
            committer:
             { name: 'Tim Branyen',
                     email: 'tim.branyen@gmail.com',
-              when: { when: 1300145116, offset: -240 } },
+              when: { time: 1300145116, offset: -240 } },
            author:
             { name: 'Tim Branyen',
                     email: 'tim.branyen@gmail.com',
-              when: { when: 1300145116, offset: -240 } },
+              when: { time: 1300145116, offset: -240 } },
            parentCount: 1,
            parentShas: [ 'b1f941c62f508db5f392a6bb0ea1d591753a045b' ] };
 
