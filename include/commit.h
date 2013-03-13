@@ -47,7 +47,6 @@ class GitCommit : public ObjectWrap {
     ~GitCommit() {}
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> NewInstance();
 
     static Handle<Value> FetchDetailsSync(const Arguments& args);
     static Handle<Value> FetchDetails(const Arguments& args);

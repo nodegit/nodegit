@@ -72,14 +72,6 @@ Handle<Value> GitCommit::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> GitCommit::NewInstance() {
-  HandleScope scope;
-
-  Local<Object> instance = constructor_template->NewInstance();
-
-  return scope.Close(instance);
-}
-
 Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
   HandleScope scope;
 
