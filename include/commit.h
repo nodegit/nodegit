@@ -44,8 +44,6 @@ class GitCommit : public ObjectWrap {
     void Close();
 
     int Tree(git_tree** tree);
-    unsigned int ParentCount();
-    int Parent(git_commit** commit, int pos);
 
   protected:
     GitCommit() {}
@@ -68,8 +66,6 @@ class GitCommit : public ObjectWrap {
     static Handle<Value> Tree(const Arguments& args);
     static void TreeWork(uv_work_t* req);
     static void TreeAfterWork(uv_work_t* req);
-
-    static Handle<Value> ParentCount(const Arguments& args);
 
     static Handle<Value> ParentSync(const Arguments& args);
     static Handle<Value> Parent(const Arguments& args);

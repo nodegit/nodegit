@@ -36,7 +36,6 @@ void GitCommit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "parentCount", ParentCount);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parentSync", ParentSync);
   NODE_SET_PROTOTYPE_METHOD(tpl, "fetchDetails", FetchDetails);
@@ -61,14 +60,6 @@ void GitCommit::Close() {
 
 int GitCommit::Tree(git_tree** tree) {
   return git_commit_tree(tree, this->commit);
-}
-
-unsigned int GitCommit::ParentCount() {
-  return git_commit_parentcount(this->commit);
-}
-
-int GitCommit::Parent(git_commit** commit, int pos) {
-  return git_commit_parent(commit, this->commit, pos);
 }
 
 Handle<Value> GitCommit::New(const Arguments& args) {
@@ -386,16 +377,6 @@ Handle<Value> GitCommit::Tree(const Arguments& args) {
   g_tree->SetValue(tree);
 
   return scope.Close( Integer::New(err) );
-}
-
-Handle<Value> GitCommit::ParentCount(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  unsigned int count = commit->ParentCount();
-
-  return scope.Close( Integer::New(count) );
 }
 
 Handle<Value> GitCommit::ParentSync(const Arguments& args) {
