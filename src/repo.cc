@@ -95,22 +95,34 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
   delete req;
 
-  baton->repo->SetValue(baton->rawRepo);
   baton->repo->Unref();
 
-  Local<Value> argv[1];
   if (baton->error) {
-    argv[0] = GitError::WrapError(baton->error);
-  } else {
-    argv[0] = Local<Value>::New(Null());
-  }
+    Local<Value> argv[1] = {
+      GitError::WrapError(baton->error)
+    };
 
-  TryCatch try_catch;
+    TryCatch try_catch;
 
-  baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
-  if (try_catch.HasCaught()) {
+    if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
+    }
+  } else {
+
+    baton->repo->SetValue(baton->rawRepo);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      baton->repo->handle_
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
   }
 }
 
