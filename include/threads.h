@@ -25,6 +25,10 @@ class GitThreads : public ObjectWrap {
 
     static void Initialize (Handle<v8::Object> target);
 
+    /**
+     * Calls git_threads_init synchronously. This is called one time
+     * on initialization, and is required for libgit2 to run correctly.
+     */
     static Handle<Value> Init(const Arguments& args);
 
   protected:
