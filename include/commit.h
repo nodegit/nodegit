@@ -78,7 +78,7 @@ class GitCommit : public ObjectWrap {
 
       git_repository* repo;
       git_oid oid;
-      const char* sha;
+      std::string sha;
       git_commit* rawCommit;
 
       Persistent<Function> callback;

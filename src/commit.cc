@@ -20,6 +20,8 @@
 #include "../include/commit.h"
 #include "../include/error.h"
 
+#include "../include/functions/string.h"
+
 using namespace v8;
 using namespace cvv8;
 using namespace node;
@@ -273,14 +275,10 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 
   if (args[1]->IsObject()) {
     baton->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
-    baton->sha = NULL;
   } else {
-    // Make this less ugly
-    String::AsciiValue shaValue(args[1]->ToString());
-    char *sha = (char *) malloc(shaValue.length() + 1);
-    strcpy(sha, *shaValue);
-    baton->sha = sha;
+    baton->sha = stringArgToString(args[1]->ToString());
   }
+
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, LookupAfterWork);
@@ -292,8 +290,8 @@ void GitCommit::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   git_oid oid = baton->oid;
-  if (baton->sha != NULL) {
-    int returnCode = git_oid_fromstr(&oid, baton->sha);
+  if (!baton->sha.empty()) {
+    int returnCode = git_oid_fromstr(&oid, baton->sha.c_str());
     if (returnCode != GIT_OK) {
       baton->error = giterr_last();
       return;
@@ -353,6 +351,9 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
+/**
+ * @todo asynchronize
+ */
 Handle<Value> GitCommit::Tree(const Arguments& args) {
   HandleScope scope;
 
