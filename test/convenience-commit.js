@@ -25,8 +25,6 @@ var helper = {
 
 /**
  * Test that the commit object is present.
- *
- * @param  {Object} test
  */
 exports.method = function(test){
   test.expect(2);
@@ -35,9 +33,7 @@ exports.method = function(test){
 };
 
 /**
- * Test that
- *
- * @param  {Object} test
+ * Test that improper commit ID's result in an error message
  */
 exports.improperCommitId = function(test) {
   test.expect(1);
@@ -79,8 +75,6 @@ exports.history = function(test) {
 
 /**
  * Test that retreiving master branch's HEAD commit works as expected.
- *
- * @param  {Object} test
  */
 exports.masterHead = function(test) {
   test.expect(2);
@@ -138,8 +132,6 @@ exports.parent = function(test) {
 
 /**
  * Test that retrieving and walking a commit's tree works as expected.
- *
- * @param  {Object} test
  */
 exports.tree = function(test) {
   test.expect(2);
@@ -159,6 +151,21 @@ exports.tree = function(test) {
         test.equals(commitTreeEntryCount, expectedCommitTreeEntryCount, 'Commit tree entry count does not match expected');
 
         test.done();
+      });
+    });
+  });
+};
+
+/**
+ * Test that parentsDiffTrees works as expected.
+ */
+exports.parentsDiffTrees = function(test) {
+  test.expect(1);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.parentsDiffTrees(function(error, parentsDiffTrees) {
+        console.log(arguments);
+        process.exit();
       });
     });
   });
