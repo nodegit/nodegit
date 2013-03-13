@@ -25,7 +25,9 @@ var helper = {
   }
 };
 
-// RevWalk
+/**
+ * RevWalk
+ */
 exports.constructor = function(test){
   test.expect(3);
 
@@ -33,9 +35,8 @@ exports.constructor = function(test){
   helper.testFunction(test.equals, git.RevWalk, 'RevWalk');
 
   // Ensure we get an instance of Oid
-  testRepo.open( './dummyrepo/.git', function(error, path) {
-    test.ok(new git.RevWalk(testRepo) instanceof git.RevWalk, 'Invocation returns an instance of RevWalk');
-
+  testRepo.open('../.git', function(error, repository) {
+    test.ok(new git.RevWalk(repository) instanceof git.RevWalk, 'Invocation returns an instance of RevWalk');
     test.done();
   });
 };
