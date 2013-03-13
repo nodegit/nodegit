@@ -287,9 +287,6 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   baton->error = NULL;
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
 
-  if (baton->repo == NULL) {
-    printf("BeforeWork: baton->repo is null\n");
-  }
   if (args[1]->IsObject()) {
     baton->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
     baton->sha = NULL;
@@ -342,7 +339,7 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
     if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
+      node::FatalException(try_catch);
     }
   } else {
 
@@ -358,7 +355,7 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
     TryCatch try_catch;
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
     if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
+      node::FatalException(try_catch);
     }
   }
 }
