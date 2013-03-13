@@ -5,9 +5,6 @@
  * Dual licensed under the MIT and GPL licenses.
  */
 
-#ifndef COMMIT_H
-#define COMMIT_H
-
 #include <v8.h>
 #include <node.h>
 #include <vector>
@@ -126,4 +123,3 @@ class GitCommit : public ObjectWrap {
     };
 
 };
-#endif
