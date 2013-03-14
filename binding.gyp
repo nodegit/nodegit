@@ -15,7 +15,8 @@
                 'src/sig.cc',
                 'src/tree.cc',
                 'src/tree_entry.cc',
-                'src/threads.cc'
+                'src/diff_list.cc',
+                'src/threads.cc',
                 'src/functions/string.cc'
             ],
             'todosources': [
