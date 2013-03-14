@@ -16,6 +16,7 @@
                 'src/tree.cc',
                 'src/tree_entry.cc',
                 'src/threads.cc'
+                'src/functions/string.cc'
             ],
             'todosources': [
             ],
