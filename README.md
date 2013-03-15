@@ -1,17 +1,26 @@
-Node.js libgit2 bindings [![Build Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/tbranyen/nodegit)
-=======================
+nodegit
+=======
 
-Created by Tim Branyen [@tbranyen](http://twitter.com/tbranyen)
+> Node.js libgit2 bindings
 
-Currently under active development (and seeking contributions), `nodegit` provides asynchronous native bindings to the [`libgit2`](http://libgit2.github.com/libgit2/) C API.
+**v0.0.72** [![Build
+Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/tbranyen/nodegit)
 
+Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen) and Michael
+Robinson [@codeofinterest](http://twitter.com/codeofinterest), with help from
+[awesome
+contributors](https://github.com/tbranyen/nodegit/contributors)!
 
 Contributing
 ------------
 
-Nodegit aims to eventually provide native asynchronous bindings for as much of libgit2 as possible, but we can't do it alone!
+Nodegit aims to eventually provide native asynchronous bindings for as much of
+libgit2 as possible, but we can't do it alone!
 
-We welcome pull requests, but please pay attention to the following: whether your lovely code fixes a bug or adds a new feature, please include unit tests that either prove the bug is fixed, or that your new feature works as expected. See [running tests](#running-tests)
+We welcome pull requests, but please pay attention to the following: whether
+your lovely code fixes a bug or adds a new feature, please include unit tests
+that either prove the bug is fixed, or that your new feature works as expected.
+See [running tests](#running-tests)
 
 Unit tests are what makes the Node event loop go around.
 
@@ -19,7 +28,8 @@ Building and installing
 -----------------------
 
 ### Dependencies ###
-To run `nodegit` you need `Node.js` and to run unit tests you will need to have `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
+To run `nodegit` you need `Node.js` and to run unit tests you will need to have
+`git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 ### Easy install (Recommended) ###
 This will install and configure everything you need to use `nodegit`.
@@ -255,6 +265,10 @@ __Can keep track of current method coverage at: [http://bit.ly/tb_methods](http:
 Getting involved
 ----------------
 
-If you find this project of interest, please document all issues and fork if you feel you can provide a patch.  Testing is of huge importance; by simply running the unit tests on your system and reporting issues you can contribute!
+If you find this project of interest, please document all issues and fork if
+you feel you can provide a patch.  Testing is of huge importance; by simply
+running the unit tests on your system and reporting issues you can contribute!
 
-__Before submitting a pull request, please ensure both that you've added unit tests to cover your shiny new code, and that all unit tests and lint checks pass.__
+__Before submitting a pull request, please ensure both that you've added unit
+tests to cover your shiny new code, and that all unit tests and lint checks
+pass.__
