@@ -46,22 +46,21 @@ var updateSubmodules = function(mainCallback) {
 
 var checkoutDependencies = function(mainCallback) {
     console.log('[nodegit] Downloading libgit2 dependency.');
-
     var commit = 'b70bf922a1de35722904930c42467e95c889562f';
     var libgit2ZipUrl = 'https://github.com/libgit2/libgit2/archive/' + commit + '.zip';
         zipFile = __dirname + '/vendor/libgit2.zip',
         unzippedFolderName = __dirname + '/vendor/libgit2-' + commit,
         targetFolderName = __dirname + '/vendor/libgit2';
 
-    async.series([
-        function(callback) {
-            request(libgit2ZipUrl)
-                .pipe(fs.createWriteStream(zipFile))
-                .on('close', function () {
-                    callback();
+    async.waterfall([
+        function downloadLibgit2(callback) {
+            var ws = fs.createWriteStream(zipFile);
+            ws.on('close', function() {
+                callback();
             });
-
-        }, function(callback) {
+            request(libgit2ZipUrl)
+                .pipe(ws);
+        }, function unzipLibgit2(callback) {
             var zip = new AdmZip(zipFile);
             zip.extractAllTo(__dirname + '/vendor/', true);
             fs.unlink(zipFile);
