@@ -134,13 +134,11 @@ Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
 void GitDiffList::TreeToTreeWork(uv_work_t *req) {
   TreeToTreeBaton *baton = static_cast<TreeToTreeBaton *>(req->data);
 
-
   // Prepare git_oid's
   git_oid *oldOid = &baton->oldOid;
   if (!baton->oldSha.empty()) {
     int returnCode = git_oid_fromstr(oldOid, baton->oldSha.c_str());
     if (returnCode != GIT_OK) {
-      printf("oldOid\n");
       baton->error = giterr_last();
       return;
     }
@@ -163,7 +161,7 @@ void GitDiffList::TreeToTreeWork(uv_work_t *req) {
   }
 
   git_commit* newCommit = NULL;
-  returnCode = git_commit_lookup(&newCommit, baton->repo, oldOid);
+  returnCode = git_commit_lookup(&newCommit, baton->repo, newOid);
   if (returnCode != GIT_OK) {
     baton->error = giterr_last();
     return;
@@ -173,14 +171,12 @@ void GitDiffList::TreeToTreeWork(uv_work_t *req) {
   git_tree* oldTree = NULL;
   returnCode = git_commit_tree(&oldTree, oldCommit);
   if (returnCode != GIT_OK) {
-    printf("oldTree\n");
     baton->error = giterr_last();
     return;
   }
   git_tree* newTree = NULL;
   returnCode = git_commit_tree(&newTree, newCommit);
   if (returnCode != GIT_OK) {
-    printf("newTree\n");
     baton->error = giterr_last();
     return;
   }
@@ -188,7 +184,6 @@ void GitDiffList::TreeToTreeWork(uv_work_t *req) {
   baton->rawDiffList = NULL;
   returnCode = git_diff_tree_to_tree(&baton->rawDiffList, baton->repo, oldTree, newTree, NULL);
   if (returnCode != GIT_OK) {
-    printf("t2t\n");
     baton->error = giterr_last();
   }
 }
