@@ -5,11 +5,11 @@
  * Dual licensed under the MIT and GPL licenses.
  */
 
-#include <string.h>
 #include <v8.h>
 #include <node.h>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "cvv8/v8-convert.hpp"
+#include "git2.h"
 
 #include "../include/diff_list.h"
 #include "../include/error.h"
@@ -18,6 +18,14 @@
 
 using namespace v8;
 using namespace node;
+
+namespace cvv8 {
+  template <>
+  struct NativeToJS<git_delta_t> : NativeToJS<int32_t> {};
+
+  template <>
+  struct NativeToJS<git_diff_line_t> : NativeToJS<char> {};
+}
 
 void GitDiffList::Initialize(Handle<Object> target) {
   HandleScope scope;
@@ -30,7 +38,21 @@ void GitDiffList::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "treeToTree", TreeToTree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
 
+  // Add libgit2 delta types to diff_list object
+  Local<Object> libgit2DeltaTypes = Object::New();
+
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_UNMODIFIED"), cvv8::CastToJS(GIT_DELTA_UNMODIFIED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_ADDED"), cvv8::CastToJS(GIT_DELTA_ADDED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_DELETED"), cvv8::CastToJS(GIT_DELTA_DELETED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_MODIFIED"), cvv8::CastToJS(GIT_DELTA_MODIFIED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_RENAMED"), cvv8::CastToJS(GIT_DELTA_RENAMED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_COPIED"), cvv8::CastToJS(GIT_DELTA_COPIED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_IGNORED"), cvv8::CastToJS(GIT_DELTA_IGNORED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_UNTRACKED"), cvv8::CastToJS(GIT_DELTA_UNTRACKED), ReadOnly);
+  libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_TYPECHANGE"), cvv8::CastToJS(GIT_DELTA_TYPECHANGE), ReadOnly);
+
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  constructor_template->Set(String::NewSymbol("deltaTypes"), libgit2DeltaTypes, ReadOnly);
   target->Set(String::NewSymbol("DiffList"), constructor_template);
 }
 
