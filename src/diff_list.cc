@@ -221,13 +221,13 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
   }
 }
 
-Handle<Value> GitDiffList::Iterate(const Arguments& args) {
+Handle<Value> GitDiffList::Walk(const Arguments& args) {
   HandleScope scope;
 
   GitDiffList*  diffList = ObjectWrap::Unwrap<GitDiffList>(args.This());
 
   if (diffList->GetValue() == NULL) {
-    return ThrowException(Exception::Error(String::New("Diff list has not been initialized.")));
+    return ThrowException(Exception::Error(String::New("No diff list to Walk.")));
   }
 
   if(args.Length() == 0 || !args[0]->IsFunction()) {
@@ -246,22 +246,188 @@ Handle<Value> GitDiffList::Iterate(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("End callback is required and must be a Function.")));
   }
 
-  IterateBaton* baton = new IterateBaton();
+
+  WalkBaton* baton = new WalkBaton();
+  uv_async_init(uv_default_loop(), &baton->asyncFile, WalkWorkSendFile);
+  uv_async_init(uv_default_loop(), &baton->asyncHunk, WalkWorkSendHunk);
+  uv_async_init(uv_default_loop(), &baton->asyncData, WalkWorkSendData);
+  uv_async_init(uv_default_loop(), &baton->asyncEnd, WalkWorkSendEnd);
+
+  uv_mutex_init(&baton->mutex);
+
   baton->rawDiffList = diffList->GetValue();
+  diffList->Ref();
 
   baton->fileCallback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
   baton->hunkCallback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
   baton->lineCallback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
   baton->endCallback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
-  uv_thread_create(&baton->threadId, IterateWork, &baton);
+  uv_thread_create(&baton->threadId, WalkWork, baton);
 
   return Undefined();
 }
 
-void GitDiffList::IterateWork(void *arg) {
-  printf("here\n");
+void GitDiffList::WalkWork(void *payload) {
+    WalkBaton *baton = static_cast<WalkBaton *>(payload);
+
+    int returnCode = git_diff_foreach(baton->rawDiffList, WalkWorkFile, WalkWorkHunk, WalkWorkData, payload);
+    if (returnCode != GIT_OK) {
+      baton->error = giterr_last();
+      baton->asyncEnd.data = baton;
+      uv_async_send(&baton->asyncEnd);
+      return;
+    }
+
+    baton->asyncFile.data = baton;
+    uv_async_send(&baton->asyncFile);
+
+    baton->asyncEnd.data = baton;
+    uv_async_send(&baton->asyncEnd);
+    printf("GitDiffList::WalkWork finished\n");
 }
 
+int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
+                                  void *payload) {
+
+  printf("GitDiffList::WalkWorkFile\n");
+  WalkBaton *baton = static_cast<WalkBaton *>(payload);
+  uv_mutex_lock(&baton->mutex);
+
+  GitDiffList::Delta* newDelta = new GitDiffList::Delta();
+  memcpy(&newDelta->raw, delta, sizeof(git_diff_delta));
+
+  // @todo use combined OID or another less stupid way to index deltas
+  std::string key(newDelta->raw->old_file.path);
+  key.append(newDelta->raw->new_file.path);
+  baton->fileDeltas[key] = newDelta;
+  uv_mutex_unlock(&baton->mutex);
+
+  if (baton->fileDeltas.size() == GitDiffList::WALK_DELTA_THRESHHOLD) {
+    uv_async_send(&baton->asyncFile);
+  }
+
+  return GIT_OK;
+}
+
+int GitDiffList::WalkWorkHunk(const git_diff_delta *delta, const git_diff_range *range, const char *header, size_t header_len, void *payload) {
+
+  // printf("%s\n", header);
+  // WalkBaton *baton = static_cast<WalkBaton *>(payload);
+  // uv_mutex_lock(&baton->mutex);
+
+  // git_diff_delta *deltaCopy = (git_diff_delta*)malloc(sizeof(delta));
+  // memcpy(deltaCopy, delta, sizeof(git_diff_delta));
+
+  // baton->fileDeltas.push_back(deltaCopy);
+  // uv_mutex_unlock(&baton->mutex);
+
+  // if (baton->fileDeltas.size() == GitDiffList::WALK_DELTA_THRESHHOLD) {
+  //   uv_async_send(&baton->asyncFile);
+  // }
+
+
+  return GIT_OK;
+}
+
+int GitDiffList::WalkWorkData(const git_diff_delta *delta, const git_diff_range *range,
+                                  char line_origin, const char *content, size_t content_len,
+                                  void *payload) {
+  printf("GitDiffList::WalkWorkData\n");
+
+  WalkBaton *baton = static_cast<WalkBaton *>(payload);
+  uv_mutex_lock(&baton->mutex);
+
+  GitDiffList::DeltaContent *deltaContent = new GitDiffList::DeltaContent();
+
+  // git_diff_range* range = (git_diff_range*)malloc(sizeof(range));
+  memcpy(&deltaContent->range, range, sizeof(git_diff_range));
+  deltaContent->lineOrigin = line_origin;
+  deltaContent->contentLength = content_len;
+  deltaContent->content = content;
+
+  std::string key(delta->old_file.path);
+  key.append(delta->new_file.path);
+  baton->fileDeltas[key]->contents.push_back(deltaContent);
+
+  uv_mutex_unlock(&baton->mutex);
+
+  return GIT_OK;
+}
+
+void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
+  HandleScope scope;
+
+  WalkBaton *baton = static_cast<WalkBaton *>(handle->data);
+
+  if (baton->error) {
+    Local<Value> argv[1] = {
+      GitError::WrapError(baton->error)
+    };
+
+    TryCatch try_catch;
+    baton->fileCallback->Call(Context::GetCurrent()->Global(), 1, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  } else {
+
+    /*
+    diff_file_delta
+      git_diff_file old_file
+        git_oid oid
+        const char *path
+        git_off_t size
+        uint32_t flags
+        uint16_t mode
+
+      git_diff_file new_file
+      git_delta_t status
+      uint32_t similarity
+      uint32_t flags
+     */
+
+    uv_mutex_lock(&baton->mutex);
+
+    std::vector<Local<Object> > fileDeltasArray;
+
+    for(std::map<std::string, GitDiffList::Delta* >::iterator iterator=baton->fileDeltas.begin(); iterator != baton->fileDeltas.end(); ++iterator) {
+
+      Local<Object> fileDelta = Object::New();
+      GitDiffList::Delta* delta = iterator->second;
+
+      Local<Object> oldFile = Object::New();
+      oldFile->Set(String::NewSymbol("path"), String::New(delta->raw->old_file.path));
+      fileDelta->Set(String::NewSymbol("oldFile"), oldFile);
+
+      Local<Object> newFile = Object::New();
+      newFile->Set(String::NewSymbol("path"), String::New(delta->raw->new_file.path));
+      fileDelta->Set(String::NewSymbol("newFile"), newFile);
+
+      fileDelta->Set(String::NewSymbol("status"), cvv8::CastToJS(delta->raw->status));
+
+      fileDeltasArray.push_back(fileDelta);
+    }
+    uv_mutex_unlock(&baton->mutex);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      cvv8::CastToJS(fileDeltasArray)
+    };
+
+    TryCatch try_catch;
+    baton->fileCallback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
+}
+
+void GitDiffList::WalkWorkSendHunk(uv_async_t *handle, int status /*UNUSED*/) { }
+void GitDiffList::WalkWorkSendData(uv_async_t *handle, int status /*UNUSED*/) { }
+void GitDiffList::WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/) {
+  // @todo destroy threads mutex etc
+  printf("GitDiffList::WalkWorkSendEnd\n");
+}
 
 Persistent<Function> GitDiffList::constructor_template;
