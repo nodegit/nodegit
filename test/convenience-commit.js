@@ -164,8 +164,8 @@ exports.parentsDiffTrees = function(test) {
   git.repo('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parentsDiffTrees(function(error, parentsDiffTrees) {
-        console.log(arguments);
-        process.exit();
+        test.equals(parentsDiffTrees.length, 1, 'Should be one item in parents diff trees');
+        test.done();
       });
     });
   });
