@@ -22,9 +22,6 @@ using namespace node;
 namespace cvv8 {
   template <>
   struct NativeToJS<git_delta_t> : NativeToJS<int32_t> {};
-
-  template <>
-  struct NativeToJS<git_diff_line_t> : NativeToJS<char> {};
 }
 
 void GitDiffList::Initialize(Handle<Object> target) {
@@ -36,6 +33,7 @@ void GitDiffList::Initialize(Handle<Object> target) {
   tpl->SetClassName(String::NewSymbol("DiffList"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "treeToTree", TreeToTree);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "walk", Walk);
   NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
 
   // Add libgit2 delta types to diff_list object
@@ -51,8 +49,52 @@ void GitDiffList::Initialize(Handle<Object> target) {
   libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_UNTRACKED"), cvv8::CastToJS(GIT_DELTA_UNTRACKED), ReadOnly);
   libgit2DeltaTypes->Set(String::NewSymbol("GIT_DELTA_TYPECHANGE"), cvv8::CastToJS(GIT_DELTA_TYPECHANGE), ReadOnly);
 
+  Local<Object> libgit2LineOriginConstants = Object::New();
+
+  // @todo refactor this into something sane
+  char _GIT_DIFF_LINE_CONTEXT[2];
+  _GIT_DIFF_LINE_CONTEXT[0] = GIT_DIFF_LINE_CONTEXT;
+  _GIT_DIFF_LINE_CONTEXT[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_CONTEXT"), cvv8::CastToJS(_GIT_DIFF_LINE_CONTEXT), ReadOnly);
+
+  char _GIT_DIFF_LINE_ADDITION[2];
+  _GIT_DIFF_LINE_ADDITION[0] = GIT_DIFF_LINE_ADDITION;
+  _GIT_DIFF_LINE_ADDITION[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_ADDITION"), cvv8::CastToJS(_GIT_DIFF_LINE_ADDITION), ReadOnly);
+
+  char _GIT_DIFF_LINE_DELETION[2];
+  _GIT_DIFF_LINE_DELETION[0] = GIT_DIFF_LINE_DELETION;
+  _GIT_DIFF_LINE_DELETION[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_DELETION"), cvv8::CastToJS(_GIT_DIFF_LINE_DELETION), ReadOnly);
+
+  char _GIT_DIFF_LINE_ADD_EOFNL[2];
+  _GIT_DIFF_LINE_ADD_EOFNL[0] = GIT_DIFF_LINE_ADD_EOFNL;
+  _GIT_DIFF_LINE_ADD_EOFNL[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_ADD_EOFNL"), cvv8::CastToJS(_GIT_DIFF_LINE_ADD_EOFNL), ReadOnly);
+
+  char _GIT_DIFF_LINE_DEL_EOFNL[2];
+  _GIT_DIFF_LINE_DEL_EOFNL[0] = GIT_DIFF_LINE_DEL_EOFNL;
+  _GIT_DIFF_LINE_DEL_EOFNL[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_DEL_EOFNL"), cvv8::CastToJS(_GIT_DIFF_LINE_DEL_EOFNL), ReadOnly);
+
+  char _GIT_DIFF_LINE_FILE_HDR[2];
+  _GIT_DIFF_LINE_FILE_HDR[0] = GIT_DIFF_LINE_FILE_HDR;
+  _GIT_DIFF_LINE_FILE_HDR[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_FILE_HDR"), cvv8::CastToJS(_GIT_DIFF_LINE_FILE_HDR), ReadOnly);
+
+  char _GIT_DIFF_LINE_HUNK_HDR[2];
+  _GIT_DIFF_LINE_HUNK_HDR[0] = GIT_DIFF_LINE_HUNK_HDR;
+  _GIT_DIFF_LINE_HUNK_HDR[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_HUNK_HDR"), cvv8::CastToJS(_GIT_DIFF_LINE_HUNK_HDR), ReadOnly);
+
+  char _GIT_DIFF_LINE_BINARY[2];
+  _GIT_DIFF_LINE_BINARY[0] = GIT_DIFF_LINE_BINARY;
+  _GIT_DIFF_LINE_BINARY[1] = '\0';
+  libgit2LineOriginConstants->Set(String::NewSymbol("GIT_DIFF_LINE_BINARY"), cvv8::CastToJS(_GIT_DIFF_LINE_BINARY), ReadOnly);
+
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   constructor_template->Set(String::NewSymbol("deltaTypes"), libgit2DeltaTypes, ReadOnly);
+  constructor_template->Set(String::NewSymbol("lineOriginTypes"), libgit2LineOriginConstants, ReadOnly);
   target->Set(String::NewSymbol("DiffList"), constructor_template);
 }
 
@@ -284,18 +326,32 @@ void GitDiffList::WalkWork(void *payload) {
 
     baton->asyncEnd.data = baton;
     uv_async_send(&baton->asyncEnd);
-    printf("GitDiffList::WalkWork finished\n");
 }
 
 int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
                                   void *payload) {
-
-  printf("GitDiffList::WalkWorkFile\n");
   WalkBaton *baton = static_cast<WalkBaton *>(payload);
+
+  /*
+    diff_file_delta
+      git_diff_file old_file
+        git_oid oid
+        const char *path
+        git_off_t size
+        uint32_t flags
+        uint16_t mode
+
+      git_diff_file new_file
+      git_delta_t status
+      uint32_t similarity
+      uint32_t flags
+     */
+
   uv_mutex_lock(&baton->mutex);
 
   GitDiffList::Delta* newDelta = new GitDiffList::Delta();
-  memcpy(&newDelta->raw, delta, sizeof(git_diff_delta));
+  newDelta->raw = (git_diff_delta*)malloc(sizeof(git_diff_delta));
+  memcpy(newDelta->raw, delta, sizeof(git_diff_delta));
 
   // @todo use combined OID or another less stupid way to index deltas
   std::string key(newDelta->raw->old_file.path);
@@ -311,38 +367,22 @@ int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
 }
 
 int GitDiffList::WalkWorkHunk(const git_diff_delta *delta, const git_diff_range *range, const char *header, size_t header_len, void *payload) {
-
-  // printf("%s\n", header);
-  // WalkBaton *baton = static_cast<WalkBaton *>(payload);
-  // uv_mutex_lock(&baton->mutex);
-
-  // git_diff_delta *deltaCopy = (git_diff_delta*)malloc(sizeof(delta));
-  // memcpy(deltaCopy, delta, sizeof(git_diff_delta));
-
-  // baton->fileDeltas.push_back(deltaCopy);
-  // uv_mutex_unlock(&baton->mutex);
-
-  // if (baton->fileDeltas.size() == GitDiffList::WALK_DELTA_THRESHHOLD) {
-  //   uv_async_send(&baton->asyncFile);
-  // }
-
-
   return GIT_OK;
 }
 
 int GitDiffList::WalkWorkData(const git_diff_delta *delta, const git_diff_range *range,
                                   char line_origin, const char *content, size_t content_len,
                                   void *payload) {
-  printf("GitDiffList::WalkWorkData\n");
-
   WalkBaton *baton = static_cast<WalkBaton *>(payload);
   uv_mutex_lock(&baton->mutex);
 
-  GitDiffList::DeltaContent *deltaContent = new GitDiffList::DeltaContent();
+  GitDiffList::DeltaContent *deltaContent = new GitDiffList::DeltaContent;
 
-  // git_diff_range* range = (git_diff_range*)malloc(sizeof(range));
-  memcpy(&deltaContent->range, range, sizeof(git_diff_range));
+  deltaContent->range = (git_diff_range*)malloc(sizeof(git_diff_range));
+  memcpy(deltaContent->range, range, sizeof(git_diff_range));
+
   deltaContent->lineOrigin = line_origin;
+
   deltaContent->contentLength = content_len;
   deltaContent->content = content;
 
@@ -372,26 +412,11 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
     }
   } else {
 
-    /*
-    diff_file_delta
-      git_diff_file old_file
-        git_oid oid
-        const char *path
-        git_off_t size
-        uint32_t flags
-        uint16_t mode
-
-      git_diff_file new_file
-      git_delta_t status
-      uint32_t similarity
-      uint32_t flags
-     */
-
     uv_mutex_lock(&baton->mutex);
 
     std::vector<Local<Object> > fileDeltasArray;
 
-    for(std::map<std::string, GitDiffList::Delta* >::iterator iterator=baton->fileDeltas.begin(); iterator != baton->fileDeltas.end(); ++iterator) {
+    for(std::map<std::string, GitDiffList::Delta* >::iterator iterator = baton->fileDeltas.begin(); iterator != baton->fileDeltas.end(); ++iterator) {
 
       Local<Object> fileDelta = Object::New();
       GitDiffList::Delta* delta = iterator->second;
@@ -404,10 +429,47 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
       newFile->Set(String::NewSymbol("path"), String::New(delta->raw->new_file.path));
       fileDelta->Set(String::NewSymbol("newFile"), newFile);
 
+      std::vector<Local<Object> > deltaContent;
+      for(std::vector<GitDiffList::DeltaContent* >::iterator contentIterator = delta->contents.begin(); contentIterator != delta->contents.end(); ++contentIterator) {
+        DeltaContent* rawContent = (*contentIterator);
+        Local<Object> content = Object::New();
+
+        Local<Object> range = Object::New();
+        /*
+        int old_start
+        int old_lines
+        int new_start
+        int new_lines
+         */
+        Local<Object> oldRange = Object::New();
+        oldRange->Set(String::New("start"), Integer::New(rawContent->range->old_start));
+        oldRange->Set(String::New("lines"), Integer::New(rawContent->range->old_lines));
+        range->Set(String::New("old"), oldRange);
+
+        Local<Object> newRange = Object::New();
+        newRange->Set(String::New("start"), Integer::New(rawContent->range->new_start));
+        newRange->Set(String::New("lines"), Integer::New(rawContent->range->new_lines));
+        range->Set(String::New("new"), newRange);
+
+        content->Set(String::New("range"), range);
+        content->Set(String::New("content"), String::New(rawContent->content.c_str()));
+
+        char lineOrigin[2];
+        strncpy(lineOrigin, &rawContent->lineOrigin, 1);
+        content->Set(String::New("lineOrigin"), String::New(lineOrigin));
+        content->Set(String::New("contentLength"), Integer::New(rawContent->contentLength));
+
+        deltaContent.push_back(content);
+      }
+
+      fileDelta->Set(String::NewSymbol("content"), cvv8::CastToJS(deltaContent));
       fileDelta->Set(String::NewSymbol("status"), cvv8::CastToJS(delta->raw->status));
 
       fileDeltasArray.push_back(fileDelta);
     }
+
+    baton->fileDeltas.clear();
+
     uv_mutex_unlock(&baton->mutex);
 
     Handle<Value> argv[2] = {
@@ -426,8 +488,24 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
 void GitDiffList::WalkWorkSendHunk(uv_async_t *handle, int status /*UNUSED*/) { }
 void GitDiffList::WalkWorkSendData(uv_async_t *handle, int status /*UNUSED*/) { }
 void GitDiffList::WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/) {
-  // @todo destroy threads mutex etc
-  printf("GitDiffList::WalkWorkSendEnd\n");
+  WalkBaton *baton = static_cast<WalkBaton *>(handle->data);
+
+  uv_mutex_destroy(&baton->mutex);
+
+  Local<Value> argv[1];
+  if (baton->error) {
+    argv[0] = GitError::WrapError(baton->error);
+  } else {
+    argv[0] = Local<Value>::New(Null());
+  }
+
+  TryCatch try_catch;
+
+  baton->endCallback->Call(Context::GetCurrent()->Global(), 1, argv);
+
+  if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+  }
 }
 
 Persistent<Function> GitDiffList::constructor_template;
