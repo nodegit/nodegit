@@ -359,7 +359,7 @@ int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
   baton->fileDeltas[key] = newDelta;
   uv_mutex_unlock(&baton->mutex);
 
-  if (baton->fileDeltas.size() == GitDiffList::WALK_DELTA_THRESHHOLD) {
+  if ((unsigned int)baton->fileDeltas.size() == (unsigned int)GitDiffList::WALK_DELTA_THRESHHOLD) {
     uv_async_send(&baton->asyncFile);
   }
 
