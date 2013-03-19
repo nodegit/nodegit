@@ -50,11 +50,12 @@ var checkoutDependencies = function(mainCallback) {
     var commit = 'e953c1606d0d7aea680c9b19db0b955b34ae63c2';
 
     var url = 'https://github.com/libgit2/libgit2/tarball/'+ commit;
-    var path = __dirname + '/vendor/libgit2-' + commit;
+    var path = __dirname + '/vendor/libgit2/';
     request({
         url: url
     }).pipe(zlib.createUnzip()).pipe(tar.Extract({
-        path: path
+        path: path,
+        strip: true
     })).on('end', function() {
         mainCallback();
     });
