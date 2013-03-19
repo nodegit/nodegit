@@ -168,7 +168,7 @@ Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
 
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, TreeToTreeWork, TreeToTreeAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, TreeToTreeWork, (uv_after_work_cb)TreeToTreeAfterWork);
 
   return Undefined();
 }

@@ -185,7 +185,7 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
 
   uv_work_t *req = new uv_work_t;
   req->data = er;
-  uv_queue_work(uv_default_loop(), req, EIO_EntryByIndex, EIO_AfterEntryByIndex);
+  uv_queue_work(uv_default_loop(), req, EIO_EntryByIndex, (uv_after_work_cb)EIO_AfterEntryByIndex);
 
   return scope.Close( Undefined() );
 }
@@ -249,7 +249,7 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
 
   uv_work_t *req = new uv_work_t;
   req->data = er;
-  uv_queue_work(uv_default_loop(), req, EIO_EntryByName, EIO_AfterEntryByName);
+  uv_queue_work(uv_default_loop(), req, EIO_EntryByName, (uv_after_work_cb)EIO_AfterEntryByName);
 
   return scope.Close( Undefined() );
 }

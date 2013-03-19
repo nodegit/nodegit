@@ -150,7 +150,7 @@ Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
   baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->commit;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, FetchDetailsWork, FetchDetailsAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, FetchDetailsWork, (uv_after_work_cb)FetchDetailsAfterWork);
 
   return Undefined();
 }
@@ -281,7 +281,7 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, LookupAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
 
   return Undefined();
 }
@@ -418,7 +418,7 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
   baton->index = args[0]->ToInteger()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, ParentWork, ParentAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, ParentWork, (uv_after_work_cb)ParentAfterWork);
 
   return Undefined();
 }

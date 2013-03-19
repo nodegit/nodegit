@@ -116,7 +116,7 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
   baton->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, PushWork, PushAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, PushWork, (uv_after_work_cb)PushAfterWork);
 
   return Undefined();
 }
@@ -168,7 +168,7 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
   baton->walkOver = false;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, NextWork, NextAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, NextWork, (uv_after_work_cb)NextAfterWork);
 
   return Undefined();
 }

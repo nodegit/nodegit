@@ -78,7 +78,7 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   baton->rawRepo = baton->repo->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, OpenWork, OpenAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, OpenWork, (uv_after_work_cb)OpenAfterWork);
 
   return Undefined();
 }
@@ -244,7 +244,7 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   baton->isBare = args[1]->ToBoolean()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, InitWork, InitAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, InitWork, (uv_after_work_cb)InitAfterWork);
 
   return Undefined();
 }

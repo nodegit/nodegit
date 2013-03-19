@@ -92,7 +92,7 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
 
   uv_work_t *req = new uv_work_t;
   req->data = ar;
-  uv_queue_work(uv_default_loop(), req, EIO_Lookup, EIO_AfterLookup);
+  uv_queue_work(uv_default_loop(), req, EIO_Lookup, (uv_after_work_cb)EIO_AfterLookup);
 
   return scope.Close( Undefined() );
 }
