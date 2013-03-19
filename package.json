@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "async": ">= 0.1.21",
-    "adm-zip": "0.2.x",
     "request": "2.9.x",
     "node-gyp": "~0.8.2"
   },
