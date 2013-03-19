@@ -41,4 +41,7 @@ extern "C" void init(Handle<v8::Object> target) {
   GitDiffList::Initialize(target);
 
   GitThreads::Initialize(target);
+
 }
+
+NODE_MODULE(nodegit, init)
