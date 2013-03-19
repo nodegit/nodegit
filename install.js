@@ -4,7 +4,8 @@ var async = require('async'),
     path = require('path'),
     fs = require('fs'),
     request = require('request'),
-    AdmZip = require('adm-zip');
+    zlib = require('zlib'),
+    tar = require('tar');
 
 function passthru() {
     var args = Array.prototype.slice.call(arguments);
@@ -47,32 +48,16 @@ var updateSubmodules = function(mainCallback) {
 var checkoutDependencies = function(mainCallback) {
     console.log('[nodegit] Downloading libgit2 dependency.');
     var commit = 'e953c1606d0d7aea680c9b19db0b955b34ae63c2';
-    var libgit2ZipUrl = 'https://github.com/libgit2/libgit2/archive/' + commit + '.zip';
-        zipFile = __dirname + '/vendor/libgit2.zip',
-        unzippedFolderName = __dirname + '/vendor/libgit2-' + commit,
-        targetFolderName = __dirname + '/vendor/libgit2';
 
-    async.waterfall([
-        function downloadLibgit2(callback) {
-            var ws = fs.createWriteStream(zipFile);
-            ws.on('close', function() {
-                callback();
-            });
-            request(libgit2ZipUrl)
-                .pipe(ws);
-        }, function unzipLibgit2(callback) {
-            var zip = new AdmZip(zipFile);
-            zip.extractAllTo(__dirname + '/vendor/', true);
-            fs.unlink(zipFile);
-            callback();
-        },
-        function renameLibgit2Folder(callback) {
-            fs.rename(unzippedFolderName, targetFolderName, callback);
-        }
-        ], function(error) {
-            if (error) process.exit(error);
-            mainCallback();
-        });
+    var url = 'https://github.com/libgit2/libgit2/tarball/'+ commit;
+    var path = __dirname + '/vendor/libgit2-' + commit;
+    request({
+        url: url
+    }).pipe(zlib.createUnzip()).pipe(tar.Extract({
+        path: path
+    })).on('end', function() {
+        mainCallback();
+    });
 };
 
 var buildDir = path.join(__dirname, 'vendor/libgit2/build');
