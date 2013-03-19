@@ -103,8 +103,8 @@ async.series([
     },
     function(callback) {
         console.log('[nodegit] Building native module.');
-        // shpassthru('node-gyp configure --debug', callback);
-        shpassthru('node-gyp configure', callback);
+        // shpassthru('node-gyp configure --python python2 --debug', callback);
+        shpassthru('node-gyp configure --python python2', callback);
     },
     function(callback) {
         shpassthru('node-gyp build', callback);
