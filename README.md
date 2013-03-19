@@ -28,7 +28,7 @@ Building and installing
 -----------------------
 
 ### Dependencies ###
-To run `nodegit` you need `Node.js` and to run unit tests you will need to have
+To install `nodegit` you need `Node.js` and `cmake`. To run unit tests you will need to have
 `git` installed and accessible from your `PATH` to fetch any `vendor/` addons.
 
 ### Easy install (Recommended) ###
