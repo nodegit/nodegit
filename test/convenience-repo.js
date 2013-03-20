@@ -1,6 +1,6 @@
-var git = require( '../' );
-var rimraf = require('rimraf');
-var fs = require( 'fs' );
+var git = require('../'),
+    rimraf = require('rimraf'),
+    fs = require( 'fs' );
 
 // Helper functions
 var helper = {
@@ -47,6 +47,18 @@ exports.method = function(test){
       test.done();
     });
   });
+};
+
+/**
+ * Ensure repo doesn't attempt to open missing directories
+ */
+exports.nonexistentDirectory = function(test) {
+    test.expect(2);
+    git.repo('/surely/this/directory/does/not/exist/on/this/machine', function(error, repository) {
+        test.notEqual(error, null, 'Attempting to open a nonexistent directory should error');
+        test.equals(repository, null, 'Non existent directory should result in null repository');
+        test.done();
+    });
 };
 
 /**
