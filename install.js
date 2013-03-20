@@ -63,7 +63,7 @@ var checkoutDependencies = function(mainCallback) {
 
 var libgit2BuildDirectory = path.join(__dirname, 'vendor/libgit2/build');
 async.series([
-    function(callback) {
+    function prepareLibgit2Repository(callback) {
         // Check for presence of .git folder
         fs.exists(__dirname + '/.git', function(exists) {
             if (exists) {
@@ -82,28 +82,28 @@ async.series([
             }
         });
     },
-    function(callback) {
+    function createLibgit2BuildDirectory(callback) {
         console.log('[nodegit] Building libgit2 dependency.');
         fs.mkdirs(libgit2BuildDirectory, callback);
     },
-    function(callback) {
+    function configureLibgit2(callback) {
         envpassthru('cmake', '-DTHREADSAFE=1', '-DBUILD_CLAR=0', '..', {
             cwd: libgit2BuildDirectory
         }, callback);
     },
-    function(callback) {
+    function buildLibgit2(callback) {
         envpassthru('cmake', '--build', '.', {
             cwd: libgit2BuildDirectory
         }, callback);
     },
-    function(callback) {
+    function configureNodegit(callback) {
         console.log('[nodegit] Building native module.');
         // shpassthru('node-gyp configure --python python2 --debug', callback);
         shpassthru('node-gyp configure --python python2', callback);
     },
-    function(callback) {
+    function buildNodegit(callback) {
         shpassthru('node-gyp build', callback);
     }
-], function(err) {
-    if(err) process.exit(err);
+], function handleError(error) {
+    if(error) process.exit(error);
 });
