@@ -2,9 +2,9 @@ var async = require('async'),
     child_process = require('child_process'),
     spawn = child_process.spawn,
     path = require('path'),
-    fs = require('fs'),
     request = require('request'),
     zlib = require('zlib'),
+    fs = require('fs-extra'),
     tar = require('tar');
 
 function passthru() {
@@ -61,7 +61,7 @@ var checkoutDependencies = function(mainCallback) {
     });
 };
 
-var buildDir = path.join(__dirname, 'vendor/libgit2/build');
+var libgit2BuildDirectory = path.join(__dirname, 'vendor/libgit2/build');
 async.series([
     function(callback) {
         // Check for presence of .git folder
@@ -73,18 +73,27 @@ async.series([
             }
         });
     },
+    function deleteExistingLibgit2BuildFolder(callback) {
+        fs.exists(libgit2BuildDirectory, function(exists) {
+            if (exists) {
+                fs.remove(libgit2BuildDirectory, callback);
+            } else {
+                callback();
+            }
+        });
+    },
     function(callback) {
         console.log('[nodegit] Building libgit2 dependency.');
-        envpassthru('mkdir', '-p', buildDir, callback);
+        fs.mkdirs(libgit2BuildDirectory, callback);
     },
     function(callback) {
         envpassthru('cmake', '-DTHREADSAFE=1', '-DBUILD_CLAR=0', '..', {
-            cwd: buildDir
+            cwd: libgit2BuildDirectory
         }, callback);
     },
     function(callback) {
         envpassthru('cmake', '--build', '.', {
-            cwd: buildDir
+            cwd: libgit2BuildDirectory
         }, callback);
     },
     function(callback) {
