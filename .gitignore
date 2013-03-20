@@ -1,7 +1,11 @@
-.lock-wscript
-build
-doc
-!doc/Theme.css
-example/stress/test
-node_modules
+# Files
 .DS_Store
+/sftp-config.json
+
+# Directories
+/build
+/example/stress/test
+/doc
+!doc/Theme.css
+/node_modules
+
