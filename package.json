@@ -33,10 +33,11 @@
     "async": ">= 0.1.21",
     "request": "2.9.x",
     "node-gyp": "~0.8.2",
-    "tar": ""
+    "tar": "0.1.17",
+    "fs-extra": "0.6.0"
   },
   "devDependencies": {
-    "nodeunit": "0.7.x",
+    "nodeunit": "",
     "rimraf": "1.0.x"
   },
   "scripts": {
