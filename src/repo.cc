@@ -16,6 +16,8 @@
 #include "../include/commit.h"
 #include "../include/error.h"
 
+#include "../include/functions/string.h"
+
 using namespace v8;
 using namespace node;
 
@@ -37,7 +39,7 @@ void GitRepo::Initialize(Handle<Object> target) {
 }
 
 git_repository* GitRepo::GetValue() {
-    return this->repo;
+  return this->repo;
 }
 
 void GitRepo::SetValue(git_repository* repo) {
@@ -71,12 +73,11 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   OpenBaton *baton = new OpenBaton();
   baton->request.data = baton;
   baton->error = NULL;
-  String::Utf8Value path(args[0]);
-  baton->path = *path;
+  baton->path = stringArgToString(args[0]->ToString());;
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This());
+  baton->callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+
   baton->repo->Ref();
-  baton->rawRepo = baton->repo->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OpenWork, (uv_after_work_cb)OpenAfterWork);
 
@@ -96,9 +97,6 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   HandleScope scope;
 
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
-  delete req;
-
-  baton->repo->Unref();
 
   if (baton->error) {
     Local<Value> argv[1] = {
@@ -106,9 +104,7 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
     };
 
     TryCatch try_catch;
-
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
     if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
     }
@@ -127,84 +123,8 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
       node::FatalException(try_catch);
     }
   }
-}
-
-Handle<Value> GitRepo::Lookup(const Arguments& args) {
-  HandleScope scope;
-
-  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
-  Local<Function> callback;
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Object is required and must be a Object.")));
-  }
-
-  if(args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("GitRepo is required and must be a Object.")));
-  }
-
-  if(args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be a Object.")));
-  }
-
-  if(args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  callback = Local<Function>::Cast(args[3]);
-
-  lookup_request *ar = new lookup_request();
-  ar->repo = repo;
-  ar->callback = Persistent<Function>::New(callback);
-
-  repo->Ref();
-
-  //eio_custom(EIO_LookupRef, EIO_PRI_DEFAULT, EIO_AfterLookupRef, ar);
-  //ev_ref(EV_DEFAULT_UC);
-
-  return scope.Close( Undefined() );
-}
-
-void GitRepo::EIO_Lookup(uv_work_t *req) {
-  //lookup_request *ar = static_cast<lookup_request *>(req->data);
-  //
-  //String::Utf8Value name(ar->name);
-  //git_reference *ref;
-  //
-  //int err = ar->repo->LookupRef((git_reference **)ref, *name);
-  //ar->err = Persistent<Value>::New(Integer::New(err));
-  //
-  //if(Int32::Cast(*ar->err)->Value() == 0) {
-  //  ar->ref->SetValue(*&ref);
-  //}
-  //
-  //return 0;
-}
-
-void GitRepo::EIO_AfterLookup(uv_work_t *req) {
-  //HandleScope scope;
-
-  //lookup_request *ar = static_cast<lookupref_request *>(req->data);
-  // delete req;
-  //ar->repo->Unref();
-
-  //Local<Value> argv[1];
-  //argv[0] = Number::Cast(*ar->err);
-
-  //TryCatch try_catch;
-
-  //ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-  //if(try_catch.HasCaught())
-  //  FatalException(try_catch);
-  //
-  //ar->err.Dispose();
-  //ar->name.Dispose();
-  //ar->callback.Dispose();
-
-  //delete ar;
-
-  //return 0;
+  delete req;
+  baton->repo->Unref();
 }
 
 Handle<Value> GitRepo::Free(const Arguments& args) {
