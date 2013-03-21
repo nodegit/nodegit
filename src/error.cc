@@ -86,11 +86,14 @@ void GitError::Initialize (Handle<v8::Object> target) {
 }
 
 Local<Object> GitError::WrapError(const git_error* error) {
+
   Local<Object> gitError = GitError::constructor_template->NewInstance();
   Local<StackTrace> stackTrace = StackTrace::CurrentStackTrace(10);
+
   gitError->Set(String::NewSymbol("stackTrace"), cvv8::CastToJS(stackTrace->AsArray()));
   gitError->Set(String::NewSymbol("message"), String::New(error->message));
   gitError->Set(String::NewSymbol("code"), Integer::New(error->klass));
+
   return gitError;
 }
 
@@ -100,7 +103,7 @@ Handle<Value> GitError::New(const Arguments& args) {
   GitError *error = new GitError();
   error->Wrap(args.This());
 
-  return scope.Close( args.This() );
+  return scope.Close(args.This());
 }
 
 Persistent<Function> GitError::constructor_template;
