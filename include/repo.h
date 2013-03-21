@@ -20,12 +20,9 @@ class GitRepo : public ObjectWrap {
   public:
     static Persistent<Function> constructor_template;
     static void Initialize(Handle<v8::Object> target);
+
     git_repository* GetValue();
     void SetValue(git_repository* repo);
-
-    // Asynchronous
-    int Open(const char* path);
-    int Init(const char* path, bool is_bare);
 
     // Synchronous
     void Free();
@@ -38,10 +35,6 @@ class GitRepo : public ObjectWrap {
     static Handle<Value> Open(const Arguments& args);
     static void OpenWork(uv_work_t* req);
     static void OpenAfterWork(uv_work_t* req);
-
-    static Handle<Value> Lookup(const Arguments& args);
-    static void EIO_Lookup(uv_work_t* req);
-    static void EIO_AfterLookup(uv_work_t* req);
 
     static Handle<Value> Free(const Arguments& args);
 
@@ -61,11 +54,6 @@ class GitRepo : public ObjectWrap {
 
       std::string path;
 
-      Persistent<Function> callback;
-    };
-
-    struct lookup_request {
-      GitRepo* repo;
       Persistent<Function> callback;
     };
 
