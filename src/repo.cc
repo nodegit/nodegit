@@ -7,7 +7,6 @@
 
 #include <v8.h>
 #include <node.h>
-#include <string>
 
 #include "../vendor/libgit2/include/git2.h"
 
