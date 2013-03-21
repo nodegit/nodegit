@@ -19,8 +19,6 @@
                 'src/threads.cc',
                 'src/functions/string.cc'
             ],
-            'todosources': [
-            ],
 
             'include_dirs': [
                 'vendor/libv8-convert',
