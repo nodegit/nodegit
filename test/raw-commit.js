@@ -1,25 +1,25 @@
-var git = require( '../' ).raw,
-    rimraf = require( 'rimraf' ),
-    path = require( 'path' );
+var git = require('../').raw,
+    rimraf = require('rimraf'),
+    path = require('path');
 
 var testRepo = new git.Repo();
 
 var helper = {
   // Test if obj is a true function
-  testFunction: function( test, obj, label ) {
+  testFunction: function(test, obj, label) {
     // The object reports itself as a function
-    test( typeof obj, 'function', label +' reports as a function.' );
+    test(typeof obj, 'function', label +' reports as a function.');
     // This ensures the repo is actually a derivative of the Function [[Class]]
-    test( toString.call( obj ), '[object Function]', label +' [[Class]] is of type function.' );
+    test(toString.call(obj), '[object Function]', label +' [[Class]] is of type function.');
   },
   // Test code and handle exception thrown
-  testException: function( test, fun, label ) {
+  testException: function(test, fun, label) {
     try {
       fun();
-      test( false, label );
+      test(false, label);
     }
     catch (ex) {
-      test( true, label );
+      test(true, label);
     }
   }
 };
@@ -28,14 +28,14 @@ var helper = {
  * Commit
  */
 exports.constructor = function(test){
-  test.expect( 3 );
+  test.expect(3);
 
   // Test for function
-  helper.testFunction( test.equals, git.Commit, 'Commit' );
+  helper.testFunction(test.equals, git.Commit, 'Commit');
 
-  testRepo.open( path.resolve( '../.git' ), function( err ) {
+  testRepo.open(path.resolve('../.git'), function(err) {
     // Ensure we get an instance of Commit
-    test.ok( new git.Commit( testRepo ) instanceof git.Commit, 'Invocation returns an instance of Commit' );
+    test.ok(new git.Commit(testRepo) instanceof git.Commit, 'Invocation returns an instance of Commit');
 
     test.done();
   });
@@ -56,26 +56,26 @@ exports.lookup = function(test) {
   helper.testFunction(test.equals, testCommit.lookup, 'Commit::Lookup');
 
   // Test repo argument existence
-  helper.testException( test.ok, function() {
+  helper.testException(test.ok, function() {
     testCommit.lookup();
-  }, 'Throw an exception if no repo' );
+  }, 'Throw an exception if no repo');
 
   // Test oid argument existence
   helper.testException(test.ok, function() {
     testCommit.lookup(testRepo);
-  }, 'Throw an exception if no oid' );
+  }, 'Throw an exception if no oid');
 
   // Test callback argument existence
   helper.testException(test.ok, function() {
     testCommit.lookup(testOid);
-  }, 'Throw an exception if no callback' );
+  }, 'Throw an exception if no callback');
 
   // Test that all arguments result correctly
   helper.testException(test.ifError, function() {
-    testCommit.lookup(testRepo, testOid, function() {} );
-  }, 'No exception is thrown with proper arguments' );
+    testCommit.lookup(testRepo, testOid, function() {});
+  }, 'No exception is thrown with proper arguments');
 
-  testRepo.open( path.resolve('../.git'), function() {
+  testRepo.open(path.resolve('../.git'), function() {
     // Test invalid commit
     testOid.mkstr('100644');
     testCommit.lookup(testRepo, testOid, function(err) {
@@ -83,10 +83,10 @@ exports.lookup = function(test) {
 
       // Test valid commit
       testOid.mkstr('cb76e3c030ab29db332aff3b297dc39451a84762');
-      testCommit.lookup( testRepo, testOid, function(err) {
+      testCommit.lookup(testRepo, testOid, function(err) {
         test.equals(null, err, 'Valid commit');
 
-        //test.equals( 'Updated gitignore and raw-commit test', testCommit.messageShort(), 'Commit message is valid' );
+        //test.equals('Updated gitignore and raw-commit test', testCommit.messageShort(), 'Commit message is valid');
 
         test.done();
       });

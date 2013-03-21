@@ -1,6 +1,6 @@
-var git = require('../');
-var rimraf = require('rimraf');
-var fs = require('fs');
+var git = require('../'),
+    rimraf = require('rimraf'),
+    fs = require('fs');
 
 var sha = '5716e9757886eaf38d51c86b192258c960d9cfea';
 var fileCount = 513;
