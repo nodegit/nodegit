@@ -232,9 +232,7 @@ void GitDiffList::TreeToTreeWork(uv_work_t *req) {
 
 void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
   HandleScope scope;
-
   TreeToTreeBaton *baton = static_cast<TreeToTreeBaton *>(req->data);
-  delete req;
 
   if (baton->error) {
     Local<Value> argv[1] = {
@@ -261,6 +259,7 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
       node::FatalException(try_catch);
     }
   }
+  delete req;
 }
 
 Handle<Value> GitDiffList::Walk(const Arguments& args) {

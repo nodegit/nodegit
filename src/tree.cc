@@ -200,9 +200,6 @@ void GitTree::EIO_EntryByIndex(uv_work_t *req) {
 void GitTree::EIO_AfterEntryByIndex(uv_work_t *req) {
   entryindex_request *er = static_cast<entryindex_request *>(req->data);
 
-  delete req;
-  er->tree->Unref();
-
   Handle<Value> argv[0];
 
   TryCatch try_catch;
@@ -214,6 +211,8 @@ void GitTree::EIO_AfterEntryByIndex(uv_work_t *req) {
 
   er->callback.Dispose();
 
+  delete req;
+  er->tree->Unref();
   delete er;
 }
 

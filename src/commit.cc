@@ -187,7 +187,6 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
   HandleScope scope;
 
   FetchDetailsBaton* baton = static_cast<FetchDetailsBaton* >(req->data);
-  delete req;
 
   if (baton->error) {
     Local<Value> argv[1] = {
@@ -251,6 +250,7 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
         node::FatalException(try_catch);
     }
   }
+  delete req;
 }
 
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
@@ -307,9 +307,7 @@ void GitCommit::LookupWork(uv_work_t *req) {
 
 void GitCommit::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
-
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  delete req;
 
   if (baton->error) {
     Local<Value> argv[1] = {
@@ -340,6 +338,7 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
       node::FatalException(try_catch);
     }
   }
+  delete req;
 }
 
 Handle<Value> GitCommit::Close(const Arguments& args) {
@@ -436,9 +435,7 @@ void GitCommit::ParentWork(uv_work_t* req) {
 
 void GitCommit::ParentAfterWork(uv_work_t* req) {
   HandleScope scope;
-
   ParentBaton* baton = static_cast<ParentBaton* >(req->data);
-  delete req;
 
   if (baton->error) {
     Local<Value> argv[1] = {
@@ -470,6 +467,7 @@ void GitCommit::ParentAfterWork(uv_work_t* req) {
     }
   }
   baton->commit->Unref();
+  delete req;
 }
 
 Persistent<Function> GitCommit::constructor_template;

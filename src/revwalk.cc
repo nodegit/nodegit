@@ -134,9 +134,7 @@ void GitRevWalk::PushWork(uv_work_t *req) {
 
 void GitRevWalk::PushAfterWork(uv_work_t *req) {
   HandleScope scope;
-
   PushBaton *baton = static_cast<PushBaton *>(req->data);
-  delete req;
 
   Local<Value> argv[1];
   if (baton->error) {
@@ -146,12 +144,11 @@ void GitRevWalk::PushAfterWork(uv_work_t *req) {
   }
 
   TryCatch try_catch;
-
   baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
   if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
   }
+  delete req;
 }
 
 Handle<Value> GitRevWalk::Next(const Arguments& args) {
@@ -189,9 +186,7 @@ void GitRevWalk::NextWork(uv_work_t *req) {
 
 void GitRevWalk::NextAfterWork(uv_work_t *req) {
   HandleScope scope;
-
   NextBaton *baton = static_cast<NextBaton *>(req->data);
-  delete req;
 
   if (baton->error) {
     Local<Value> argv[1] = {
@@ -225,6 +220,7 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
       FatalException(try_catch);
     }
   }
+  delete req;
 }
 
 Handle<Value> GitRevWalk::Free(const Arguments& args) {

@@ -108,9 +108,8 @@ void GitReference::EIO_Lookup(uv_work_t *req) {
 
 void GitReference::EIO_AfterLookup(uv_work_t *req) {
   HandleScope scope;
-
   lookup_request *ar = static_cast<lookup_request *>(req->data);
-  delete req;
+
   ar->ref->Unref();
 
   Local<Value> argv[1];
@@ -126,6 +125,7 @@ void GitReference::EIO_AfterLookup(uv_work_t *req) {
   ar->callback.Dispose();
 
   delete ar;
+  delete req;
 }
 
 Handle<Value> GitReference::Oid(const Arguments& args) {
