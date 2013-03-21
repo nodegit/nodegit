@@ -30,7 +30,6 @@ void GitRepo::Initialize(Handle<Object> target) {
   tpl->SetClassName(String::NewSymbol("Repo"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "open", Open);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(tpl, "init", Init);
 
@@ -182,8 +181,6 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   HandleScope scope;
 
   InitBaton *baton = static_cast<InitBaton *>(req->data);
-  delete req;
-  baton->repo->Unref();
 
   Local<Value> argv[1];
   if (baton->error) {
@@ -193,12 +190,12 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   }
 
   TryCatch try_catch;
-
   baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
   if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
   }
+  delete req;
+  baton->repo->Unref();
 }
 
 Persistent<Function> GitRepo::constructor_template;
