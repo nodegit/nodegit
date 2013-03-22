@@ -3,7 +3,7 @@ nodegit
 
 > Node.js libgit2 bindings
 
-**v0.0.72** [![Build
+**v0.0.74** [![Build
 Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/tbranyen/nodegit)
 
 Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen) and Michael
