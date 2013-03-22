@@ -1,6 +1,9 @@
-/*
-Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
-*/
+/**
+ * Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+ * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
+ *
+ * Dual licensed under the MIT and GPL licenses.
+ */
 
 #ifndef REF_H
 #define REF_H
@@ -19,7 +22,7 @@ using namespace v8;
 
 class GitReference : public ObjectWrap {
   public:
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize(Handle<v8::Object> target);
     git_reference* GetValue();
     void SetValue(git_reference* ref);

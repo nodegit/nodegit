@@ -21,16 +21,16 @@ using namespace node;
 void GitReference::Initialize(Handle<Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Ref"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Reference"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "oid", Oid);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
 
-  target->Set(String::NewSymbol("Ref"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Reference"), constructor_template);
 }
 
 git_reference* GitReference::GetValue() {
