@@ -77,7 +77,7 @@ class GitCommit : public ObjectWrap {
       const git_error* error;
 
       git_repository* repo;
-      git_oid oid;
+      git_oid rawOid;
       std::string sha;
       git_commit* rawCommit;
 
