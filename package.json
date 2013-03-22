@@ -27,7 +27,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": "~0.8"
+    "node": ">= 0.8"
   },
   "dependencies": {
     "async": ">= 0.1.21",
