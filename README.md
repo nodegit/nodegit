@@ -69,34 +69,32 @@ API Example Usage
 
 #### Convenience API ####
 
-```` javascript
+```JavaScript
 var git = require("nodegit");
 
 // Read a repository
-git.repo('.git', function(err, repo) {
-  // Success is always 0, failure is always an error string
+var git = require('nodegit');
+
+// nodegit follows the error, values ... callback argument convention
+git.repo('.git', function(error, repo) {
   if (error) { throw error; }
 
   // Use the master branch
-  repo.branch('master', function(err, branch) {
+  repo.branch('master', function(error, branch) {
     if (error) { throw error; }
 
-    // Iterate over the revision history
-    var history = branch.history();
-
-    // Commit event emits commit object
-    history.on('commit', function(commit) {
-      // Print out `git log` emulation
+    // Print out `git log` emulation for each commit in the branch's history
+    branch.history().on('commit', function(error, commit) {
       console.log('commit ' + commit.sha);
       console.log(commit.author.name + '<' + commit.author.email + '>');
-      console.log(commit.time);
+      console.log(new Date(commit.time * 1000));
       console.log("\n");
       console.log(commit.message);
       console.log("\n");
     });
   });
 });
-````
+```
 
 #### Raw API ####
 
