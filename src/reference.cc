@@ -14,6 +14,9 @@
 #include "../include/repo.h"
 #include "../include/reference.h"
 #include "../include/oid.h"
+#include "../include/error.h"
+
+#include "../include/functions/string.h"
 
 using namespace v8;
 using namespace node;
@@ -41,14 +44,6 @@ void GitReference::SetValue(git_reference *ref) {
   this->ref = ref;
 }
 
-int GitReference::Lookup(git_repository* repo, const char* name) {
-  return git_reference_lookup(&this->ref, repo, name);
-}
-
-const git_oid* GitReference::Oid() {
-  return git_reference_target(this->ref);
-}
-
 Handle<Value> GitReference::New(const Arguments& args) {
   HandleScope scope;
 
@@ -59,11 +54,84 @@ Handle<Value> GitReference::New(const Arguments& args) {
   return args.This();
 }
 
-Handle<Value> GitReference::Lookup(const Arguments& args) {
+Handle<Value> GitReference::Oid(const Arguments& args) {
   HandleScope scope;
 
-  GitReference *ref = ObjectWrap::Unwrap<GitReference>(args.This());
-  Local<Function> callback;
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  OidBaton *baton = new OidBaton;
+  baton->request.data = baton;
+  baton->error = NULL;
+  baton->rawOid = NULL;
+  baton->rawRef = ObjectWrap::Unwrap<GitReference>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, OidWork, (uv_after_work_cb)OidAfterWork);
+
+  return Undefined();
+}
+
+void GitReference::OidWork(uv_work_t* req) {
+  OidBaton *baton = static_cast<OidBaton *>(req->data);
+
+  git_ref_t referenceType = git_reference_type(baton->rawRef);
+
+  if (referenceType == GIT_REF_INVALID) {
+    printf("invalid\n");
+    giterr_set_str(GITERR_INVALID, "Invalid reference type");
+    baton->error = giterr_last();
+    return;
+  }
+
+  if (referenceType == GIT_REF_SYMBOLIC) {
+    printf("symbolic\n");
+    int returnCode = git_reference_resolve(&baton->rawRef, baton->rawRef);
+    if (returnCode != GIT_OK) {
+      baton->error = giterr_last();
+      return;
+    }
+  }
+  baton->rawOid = git_reference_target(baton->rawRef);
+}
+void GitReference::OidAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  OidBaton *baton = static_cast<OidBaton *>(req->data);
+
+  if (baton->error) {
+    Local<Value> argv[1] = {
+      GitError::WrapError(baton->error)
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  } else {
+
+    Handle<Object> oid = GitOid::constructor_template->NewInstance();
+    GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
+    oidInstance->SetValue(*const_cast<git_oid *>(baton->rawOid));
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      oid
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
+
+  delete req;
+}
+
+Handle<Value> GitReference::Lookup(const Arguments& args) {
+  HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be a Object.")));
@@ -77,70 +145,62 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  callback = Local<Function>::Cast(args[2]);
+  LookupBaton *baton = new LookupBaton;
+  baton->request.data = baton;
+  baton->ref = ObjectWrap::Unwrap<GitReference>(args.This());
+  baton->ref->Ref();
+  baton->error = NULL;
+  baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->name = stringArgToString(args[1]->ToString());
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
-  lookup_request *ar = new lookup_request();
-  ar->ref = ref;
-  ar->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
+  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
 
-  String::Utf8Value name(args[1]);
-  ar->name = *name;
-
-  ar->callback = Persistent<Function>::New(callback);
-
-  ref->Ref();
-
-  uv_work_t *req = new uv_work_t;
-  req->data = ar;
-  uv_queue_work(uv_default_loop(), req, EIO_Lookup, (uv_after_work_cb)EIO_AfterLookup);
-
-  return scope.Close( Undefined() );
+  return Undefined();
 }
 
-void GitReference::EIO_Lookup(uv_work_t *req) {
-  lookup_request *ar = static_cast<lookup_request *>(req->data);
+void GitReference::LookupWork(uv_work_t *req) {
+  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
-  git_repository* repo = ar->repo->GetValue();
-
-  ar->err = ar->ref->Lookup(repo, ar->name.c_str());
-
+  baton->rawRef = NULL;
+  int returnCode = git_reference_lookup(&baton->rawRef, baton->rawRepo, baton->name.c_str());
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
 }
 
-void GitReference::EIO_AfterLookup(uv_work_t *req) {
+void GitReference::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
-  lookup_request *ar = static_cast<lookup_request *>(req->data);
+  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
-  ar->ref->Unref();
+  if (baton->error) {
+    Local<Value> argv[1] = {
+      GitError::WrapError(baton->error)
+    };
 
-  Local<Value> argv[1];
-  argv[0] = Integer::New(ar->err);
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  } else {
 
-  TryCatch try_catch;
+    baton->ref->SetValue(baton->rawRef);
 
-  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      baton->ref->handle_
+    };
 
-  if(try_catch.HasCaught())
-    FatalException(try_catch);
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
 
-  ar->callback.Dispose();
-
-  delete ar;
+  baton->ref->Unref();
   delete req;
 }
 
-Handle<Value> GitReference::Oid(const Arguments& args) {
-  HandleScope scope;
-
-  GitReference *ref = ObjectWrap::Unwrap<GitReference>(args.This());
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
-  }
-
-  GitOid *oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  git_oid* in = const_cast<git_oid *>(ref->Oid());
-  oid->SetValue(*in);
-
-  return scope.Close( Undefined() );
-}
-Persistent<FunctionTemplate> GitReference::constructor_template;
+Persistent<Function> GitReference::constructor_template;
