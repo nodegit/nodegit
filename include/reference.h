@@ -22,12 +22,11 @@ using namespace v8;
 
 class GitReference : public ObjectWrap {
   public:
+    const git_oid* Oid();
     static Persistent<Function> constructor_template;
     static void Initialize(Handle<v8::Object> target);
     git_reference* GetValue();
     void SetValue(git_reference* ref);
-    int Lookup(git_repository* repo, const char* name);
-    const git_oid* Oid();
 
   protected:
     GitReference() {}
