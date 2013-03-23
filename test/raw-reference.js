@@ -27,18 +27,19 @@ exports.constructor = function(test){
   test.expect(3);
 
   // Test for function
-  helper.testFunction(test.equals, git.Ref, 'Ref');
+  helper.testFunction(test.equals, git.Reference, 'Reference');
 
   // Ensure we get an instance of Ref
-  test.ok(new git.Ref() instanceof git.Ref, 'Invocation returns an instance of Ref');
+  test.ok(new git.Reference() instanceof git.Reference, 'Invocation returns an instance of Ref');
 
   test.done();
 };
 
 // Ref::Lookup
 exports.lookup = function(test) {
+
   var testRepo = new git.Repo(),
-      master = new git.Ref();
+      master = new git.Reference();
 
   test.expect(5);
 
