@@ -1,5 +1,5 @@
-/*
- * Copyright 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+/**
+ * Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
  * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
  *
  * Dual licensed under the MIT and GPL licenses.
@@ -68,7 +68,7 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  OpenBaton *baton = new OpenBaton();
+  OpenBaton *baton = new OpenBaton;
   baton->request.data = baton;
   baton->error = NULL;
   baton->path = stringArgToString(args[0]->ToString());;
@@ -157,8 +157,7 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This());
   baton->repo->Ref();
   baton->rawRepo = baton->repo->GetValue();
-  String::Utf8Value path(args[0]);
-  baton->path = *path;
+  baton->path = stringArgToString(args[0]->ToString());;
   baton->isBare = args[1]->ToBoolean()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
