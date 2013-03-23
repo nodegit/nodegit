@@ -34,11 +34,14 @@ class GitReference : public ObjectWrap {
     ~GitReference() {}
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> Oid(const Arguments& args);
+    static void OidWork(uv_work_t* req);
+    static void OidAfterWork(uv_work_t* req);
+
     static Handle<Value> Lookup(const Arguments& args);
     static void LookupWork(uv_work_t* req);
     static void LookupAfterWork(uv_work_t* req);
 
-    static Handle<Value> Oid(const Arguments& args);
 
   private:
     git_reference *ref;
@@ -51,6 +54,16 @@ class GitReference : public ObjectWrap {
       git_reference* rawRef;
       git_repository* rawRepo;
       std::string name;
+
+      Persistent<Function> callback;
+    };
+
+    struct OidBaton {
+      uv_work_t request;
+      const git_error* error;
+
+      const git_oid* rawOid;
+      git_reference* rawRef;
 
       Persistent<Function> callback;
     };
