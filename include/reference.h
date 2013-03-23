@@ -25,6 +25,7 @@ class GitReference : public ObjectWrap {
     const git_oid* Oid();
     static Persistent<Function> constructor_template;
     static void Initialize(Handle<v8::Object> target);
+
     git_reference* GetValue();
     void SetValue(git_reference* ref);
 
@@ -34,19 +35,23 @@ class GitReference : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
-    static void EIO_Lookup(uv_work_t* req);
-    static void EIO_AfterLookup(uv_work_t* req);
+    static void LookupWork(uv_work_t* req);
+    static void LookupAfterWork(uv_work_t* req);
 
     static Handle<Value> Oid(const Arguments& args);
 
   private:
     git_reference *ref;
 
-    struct lookup_request {
+    struct LookupBaton {
+      uv_work_t request;
+      const git_error* error;
+
       GitReference* ref;
-      GitRepo* repo;
-      int err;
+      git_reference* rawRef;
+      git_repository* rawRepo;
       std::string name;
+
       Persistent<Function> callback;
     };
 };
