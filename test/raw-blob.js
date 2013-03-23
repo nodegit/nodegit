@@ -41,7 +41,7 @@ exports.constructor = function(test){
 // Blob::Lookup
 exports.lookup = function(test) {
   var testOid = new git.Oid(),
-      testRef = new git.Ref(testRepo),
+      testRef = new git.Reference(testRepo),
       testBlob = new git.Blob();
 
   test.expect(5);
