@@ -25,7 +25,7 @@ class GitTree : public ObjectWrap {
     /**
      * v8::FunctionTemplate used to create Node.js constructor
      */
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
 
     /**
      * Used to intialize the EventEmitter from Node.js
@@ -69,8 +69,6 @@ class GitTree : public ObjectWrap {
      */
     git_tree_entry* EntryByIndex(int idx);
 
-    git_tree_entry* EntryByName(const char* name);
-
     int SortEntries();
     void ClearEntries();
 
@@ -99,9 +97,9 @@ class GitTree : public ObjectWrap {
     static Handle<Value> EntryByIndex(const Arguments& args);
     static void EIO_EntryByIndex(uv_work_t *req);
     static void EIO_AfterEntryByIndex(uv_work_t *req);
-    static Handle<Value> EntryByName(const Arguments& args);
-    static void EIO_EntryByName(uv_work_t *req);
-    static void EIO_AfterEntryByName(uv_work_t *req);
+    static Handle<Value> EntryByPath(const Arguments& args);
+    static void EntryByPathWork(uv_work_t *req);
+    static void EntryByPathAfterWork(uv_work_t *req);
     static Handle<Value> SortEntries(const Arguments& args);
     static Handle<Value> ClearEntries(const Arguments& args);
 
@@ -129,13 +127,15 @@ class GitTree : public ObjectWrap {
       int idx;
       Persistent<Function> callback;
     };
-    /**
-     * Structure to handle async entryByName
-     */
-    struct entryname_request {
-      GitTree* tree;
-      GitTreeEntry* entry;
-      std::string name;
+
+    struct EntryByPathBaton {
+      uv_work_t request;
+      const git_error* error;
+
+      git_tree* rawTree;
+      std::string path;
+      git_tree_entry* rawEntry;
+
       Persistent<Function> callback;
     };
 };

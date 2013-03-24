@@ -11,6 +11,9 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "../include/oid.h"
 #include "../include/tree.h"
 #include "../include/tree_entry.h"
+#include "../include/error.h"
+
+#include "../include/functions/string.h"
 
 using namespace v8;
 using namespace node;
@@ -18,19 +21,19 @@ using namespace node;
 void GitTree::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Tree"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Tree"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryCount", EntryCount);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByIndex", EntryByIndex);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "entryByName", EntryByName);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "sortEntries", EntryCount);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "entryCount", EntryCount);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "entryByIndex", EntryByIndex);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "entryByPath", EntryByPath);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "sortEntries", EntryCount);
 
-  target->Set(String::NewSymbol("Tree"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Tree"), constructor_template);
 }
 
 git_tree* GitTree::GetValue() {
@@ -51,10 +54,6 @@ size_t GitTree::EntryCount() {
 
 git_tree_entry* GitTree::EntryByIndex(int idx) {
   return const_cast<git_tree_entry*>(git_tree_entry_byindex(this->tree, idx));
-}
-
-git_tree_entry* GitTree::EntryByName(const char* name) {
-  return const_cast<git_tree_entry*>(git_tree_entry_byname(this->tree, name));
 }
 
 int GitTree::SortEntries() {
@@ -216,69 +215,77 @@ void GitTree::EIO_AfterEntryByIndex(uv_work_t *req) {
   delete er;
 }
 
-Handle<Value> GitTree::EntryByName(const Arguments& args) {
+Handle<Value> GitTree::EntryByPath(const Arguments& args) {
   HandleScope scope;
 
-  GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
-
-  Local<Function> callback;
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("TreeEntry is required and must be a Object.")));
-  }
-
-  if(args.Length() == 1 || !args[1]->IsString()) {
+  if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("Name is required and must be a String.")));
   }
 
-  if(args.Length() == 2 || !args[2]->IsFunction()) {
+  if(args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  callback = Local<Function>::Cast(args[2]);
-  String::Utf8Value name(args[1]->ToString());
+  EntryByPathBaton *baton = new EntryByPathBaton;
+  baton->request.data = baton;
+  baton->error = NULL;
+  baton->rawEntry = NULL;
 
-  entryname_request *er = new entryname_request();
-  er->tree = tree;
-  er->entry = ObjectWrap::Unwrap<GitTreeEntry>(args[0]->ToObject());
-  er->name = *name;
-  er->callback = Persistent<Function>::New(callback);
-
+  GitTree *tree = ObjectWrap::Unwrap<GitTree>(args.This());
   tree->Ref();
 
-  uv_work_t *req = new uv_work_t;
-  req->data = er;
-  uv_queue_work(uv_default_loop(), req, EIO_EntryByName, (uv_after_work_cb)EIO_AfterEntryByName);
+  baton->rawTree = tree->GetValue();
+  baton->path = stringArgToString(args[0]->ToString());
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
-  return scope.Close( Undefined() );
+  uv_queue_work(uv_default_loop(), &baton->request, EntryByPathWork, (uv_after_work_cb)EntryByPathAfterWork);
+
+  return Undefined();
 }
 
-void GitTree::EIO_EntryByName(uv_work_t *req) {
-  entryname_request *er = static_cast<entryname_request *>(req->data);
+void GitTree::EntryByPathWork(uv_work_t *req) {
+  EntryByPathBaton *baton = static_cast<EntryByPathBaton *>(req->data);
 
-  er->entry->SetValue(er->tree->EntryByName(er->name.c_str()));
-
+  int returnCode = git_tree_entry_bypath(&baton->rawEntry, baton->rawTree, baton->path.c_str());
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
 }
 
-void GitTree::EIO_AfterEntryByName(uv_work_t *req) {
-  entryname_request *er = static_cast<entryname_request *>(req->data);
+void GitTree::EntryByPathAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  EntryByPathBaton *baton = static_cast<EntryByPathBaton *>(req->data);
 
+  if (baton->error) {
+    Local<Value> argv[1] = {
+      GitError::WrapError(baton->error)
+    };
+
+    TryCatch try_catch;
+
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  } else {
+
+    Local<Object> entry = GitTreeEntry::constructor_template->NewInstance();
+    GitTreeEntry *entryInstance = ObjectWrap::Unwrap<GitTreeEntry>(entry);
+    entryInstance->SetValue(baton->rawEntry);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      entry
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
   delete req;
-  er->tree->Unref();
-
-  Handle<Value> argv[1];
-  argv[0] = Boolean::New(er->entry->GetValue() != NULL);
-
-  TryCatch try_catch;
-
-  er->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-  if(try_catch.HasCaught())
-    FatalException(try_catch);
-
-  er->callback.Dispose();
-
-  delete er;
 }
 
 Handle<Value> GitTree::SortEntries(const Arguments& args) {
@@ -300,4 +307,4 @@ Handle<Value> GitTree::ClearEntries(const Arguments& args) {
 
   return scope.Close( Undefined() );
 }
-Persistent<FunctionTemplate> GitTree::constructor_template;
+Persistent<Function> GitTree::constructor_template;
