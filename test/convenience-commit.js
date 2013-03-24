@@ -170,3 +170,19 @@ exports.parentsDiffTrees = function(test) {
     });
   });
 };
+
+exports.file = function(test) {
+  test.expect(5);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.file('README.md', function(error, file) {
+        test.equal(error, null, 'Should not error');
+        test.notEqual(file, null, 'File should not be null');
+        test.equal(file.name, 'README.md', 'File name should match expected');
+        test.equal(file.sha, 'b252f396b17661462372f78b7bcfc403b8731aaa', 'SHA shoud match expected');
+        test.equal(file.attributes, 33188, 'Attributes should match expected');
+        test.done();
+      });
+    });
+  });
+};
