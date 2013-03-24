@@ -268,7 +268,7 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  LookupBaton *baton = new LookupBaton();
+  LookupBaton *baton = new LookupBaton;
   baton->request.data = baton;
   baton->error = NULL;
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
