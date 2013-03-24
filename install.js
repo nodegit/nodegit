@@ -5,7 +5,8 @@ var async = require('async'),
     request = require('request'),
     zlib = require('zlib'),
     fs = require('fs-extra'),
-    tar = require('tar');
+    tar = require('tar'),
+    exec = require('child_process').exec;
 
 function passthru() {
     var args = Array.prototype.slice.call(arguments);
@@ -62,7 +63,28 @@ var checkoutDependencies = function(mainCallback) {
 };
 
 var libgit2BuildDirectory = path.join(__dirname, 'vendor/libgit2/build');
+
+// The python executable to use when building libgit2
+var pythonExecutable = 'python';
+
 async.series([
+    function checkPython2Exists(callback) {
+        exec('which python2',
+          function (error) {
+            if (error !== null) {
+                pythonExecutable = 'python2';
+                callback();
+                return;
+            }
+            // python2 is not available, check for python
+            exec('which python', function(error) {
+                if (error) {
+                    throw new Error('Python is required to build libgit2');
+                }
+            });
+        });
+
+    },
     function prepareLibgit2Repository(callback) {
         // Check for presence of .git folder
         fs.exists(__dirname + '/.git', function(exists) {
@@ -99,7 +121,7 @@ async.series([
     function configureNodegit(callback) {
         console.log('[nodegit] Building native module.');
         // shpassthru('node-gyp configure --python python2 --debug', callback);
-        shpassthru('node-gyp configure --python python2', callback);
+        shpassthru('node-gyp configure --python ' + pythonExecutable, callback);
     },
     function buildNodegit(callback) {
         shpassthru('node-gyp build', callback);
