@@ -18,18 +18,18 @@ using namespace v8;
 using namespace node;
 
 void GitTreeEntry::Initialize(Handle<v8::Object> target) {
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("TreeEntry"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("TreeEntry"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "name", Name);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "attributes", Attributes);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "toObject", ToObject);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "attributes", Attributes);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "id", Id);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "toObject", ToObject);
 
-  target->Set(String::NewSymbol("TreeEntry"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("TreeEntry"), constructor_template);
 }
 
 git_tree_entry* GitTreeEntry::GetValue() {
@@ -63,7 +63,7 @@ Handle<Value> GitTreeEntry::New(const Arguments& args) {
 
   entry->Wrap(args.This());
 
-  return scope.Close( args.This() );
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitTreeEntry::Name(const Arguments& args) {
@@ -121,5 +121,5 @@ Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
 
   return scope.Close( Undefined() );
 }
-Persistent<FunctionTemplate> GitTreeEntry::constructor_template;
+Persistent<Function> GitTreeEntry::constructor_template;
 
