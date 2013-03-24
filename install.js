@@ -81,6 +81,7 @@ async.series([
                 if (error) {
                     throw new Error('Python is required to build libgit2');
                 }
+                callback();
             });
         });
 
