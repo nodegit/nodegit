@@ -219,7 +219,7 @@ Handle<Value> GitTree::EntryByPath(const Arguments& args) {
   HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("Name is required and must be a String.")));
+    return ThrowException(Exception::Error(String::New("Path is required and must be a String.")));
   }
 
   if(args.Length() == 1 || !args[1]->IsFunction()) {
