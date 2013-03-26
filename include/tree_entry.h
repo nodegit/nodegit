@@ -42,7 +42,6 @@ class GitTreeEntry : ObjectWrap {
 
   protected:
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> ToObject(const Arguments& args);
 
   private:
     git_tree_entry* entry;
