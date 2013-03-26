@@ -20,8 +20,6 @@
 #include "../include/commit.h"
 #include "../include/error.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace cvv8;
 using namespace node;
