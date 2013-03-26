@@ -23,9 +23,6 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("TreeEntry"));
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "attributes", Attributes);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "id", Id);
   NODE_SET_PROTOTYPE_METHOD(tpl, "toObject", ToObject);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -40,22 +37,6 @@ void GitTreeEntry::SetValue(git_tree_entry* entry) {
   this->entry = entry;
 }
 
-const char* GitTreeEntry::Name() {
-  return git_tree_entry_name(this->entry);
-}
-
-int GitTreeEntry::Attributes() {
-  return git_tree_entry_filemode(this->entry);
-}
-
-const git_oid* GitTreeEntry::Id() {
-  return git_tree_entry_id(this->entry);
-}
-
-int GitTreeEntry::ToObject(git_repository* repo, git_object** obj) {
-  return git_tree_entry_to_object(obj, repo, this->entry);
-}
-
 Handle<Value> GitTreeEntry::New(const Arguments& args) {
   HandleScope scope;
 
@@ -66,37 +47,6 @@ Handle<Value> GitTreeEntry::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> GitTreeEntry::Name(const Arguments& args) {
-  HandleScope scope;
-
-  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
-
-  return scope.Close( String::New(entry->Name()) );
-}
-
-Handle<Value> GitTreeEntry::Attributes(const Arguments& args) {
-  HandleScope scope;
-
-  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
-
-  return scope.Close( Number::New(entry->Attributes()) );
-}
-
-Handle<Value> GitTreeEntry::Id(const Arguments& args) {
-  HandleScope scope;
-
-  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
-  }
-
-  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-
-  oid->SetValue(*const_cast<git_oid *>(entry->Id()));
-
-  return scope.Close( Undefined() );
-}
 
 Handle<Value> GitTreeEntry::ToObject(const Arguments& args) {
   HandleScope scope;

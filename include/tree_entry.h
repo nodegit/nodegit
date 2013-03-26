@@ -37,30 +37,11 @@ class GitTreeEntry : ObjectWrap {
      * @param target v8::Object the Node.js module object
      */
     static void Initialize(Handle<v8::Object> target);
-
-    /**
-     * Accessor for GitTreeEntry
-     *
-     * @return the internal git_tree_entry reference
-     */
     git_tree_entry* GetValue();
-
-    /**
-     * Mutator for GitTreeEntry
-     *
-     * @param obj a git_tree_entry object
-     */
     void SetValue(git_tree_entry* tree);
-    const char* Name();
-    int Attributes();
-    const git_oid* Id();
-    int ToObject(git_repository* repo, git_object** obj);
 
   protected:
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Name(const Arguments& args);
-    static Handle<Value> Attributes(const Arguments& args);
-    static Handle<Value> Id(const Arguments& args);
     static Handle<Value> ToObject(const Arguments& args);
 
   private:
