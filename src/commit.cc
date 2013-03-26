@@ -76,64 +76,33 @@ Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
   HandleScope scope;
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
+  git_commit* rawCommit = commit->GetValue();
 
-  Local<Object> details = Object::New();
+  GitCommitDetails* details = new GitCommitDetails;
+  details->oid = git_commit_id(rawCommit);
 
-  Handle<Object> oid = GitOid::constructor_template->NewInstance();
+  details->sha[GIT_OID_HEXSZ] = '\0';
+  git_oid_fmt(details->sha, details->oid);
 
-  char sha[GIT_OID_HEXSZ + 1];
-  sha[GIT_OID_HEXSZ] = '\0';
-  GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-  const git_oid* rawOid = git_commit_id(commit->commit);
-  oidInstance->SetValue(*const_cast<git_oid *>(rawOid));
-  git_oid_fmt(sha, rawOid);
+  details->message = git_commit_message(rawCommit);
+  details->time = git_commit_time(rawCommit);
+  details->timeOffset = git_commit_time_offset(rawCommit);
+  details->committer = git_commit_committer(rawCommit);
+  details->author = git_commit_author(rawCommit);
+  details->parentCount = git_commit_parentcount(rawCommit);
 
-  details->Set(String::NewSymbol("id"), oid);
-  details->Set(String::NewSymbol("sha"), String::New(sha));
-  details->Set(String::NewSymbol("message"), cvv8::CastToJS(git_commit_message(commit->commit)));
-  details->Set(String::NewSymbol("time"), cvv8::CastToJS(git_commit_time(commit->commit)));
-  details->Set(String::NewSymbol("timeOffset"), cvv8::CastToJS(git_commit_time_offset(commit->commit)));
-
-  const git_signature *rawCommitter = git_commit_committer(commit->commit);
-  Local<Object> committer = Object::New();
-  committer->Set(String::NewSymbol("name"), cvv8::CastToJS(rawCommitter->name));
-  committer->Set(String::NewSymbol("email"), cvv8::CastToJS(rawCommitter->email));
-
-  Local<Object> committerWhen = Object::New();
-  committerWhen->Set(String::NewSymbol("when"), cvv8::CastToJS(rawCommitter->when.time));
-  committerWhen->Set(String::NewSymbol("offset"), cvv8::CastToJS(rawCommitter->when.offset));
-  committer->Set(String::NewSymbol("when"), cvv8::CastToJS(committerWhen));
-
-  details->Set(String::NewSymbol("committer"), committer);
-
-  const git_signature* rawAuthor = git_commit_author(commit->commit);
-  Local<Object> author = Object::New();
-  author->Set(String::NewSymbol("name"), cvv8::CastToJS(rawAuthor->name));
-  author->Set(String::NewSymbol("email"), cvv8::CastToJS(rawAuthor->email));
-
-  Local<Object> authorWhen = Object::New();
-  authorWhen->Set(String::NewSymbol("when"), cvv8::CastToJS(rawAuthor->when.time));
-  authorWhen->Set(String::NewSymbol("offset"), cvv8::CastToJS(rawAuthor->when.offset));
-  author->Set(String::NewSymbol("when"), authorWhen);
-
-  details->Set(String::NewSymbol("author"), author);
-
-  int parentCount = git_commit_parentcount(commit->commit);
-  std::vector<std::string> parentShas;
+  int parentCount = details->parentCount;
   while (parentCount > 0) {
     int parentIndex = parentCount -1;
     char sha[GIT_OID_HEXSZ + 1];
     sha[GIT_OID_HEXSZ] = '\0';
-    const git_oid *parentOid = git_commit_parent_id(commit->commit, parentIndex);
+    const git_oid *parentOid = git_commit_parent_id(rawCommit, parentIndex);
     git_oid_fmt(sha, parentOid);
-    parentShas.push_back(sha);
+    details->parentShas.push_back(sha);
     parentCount--;
   }
 
-  details->Set(String::NewSymbol("parentCount"), cvv8::CastToJS(parentCount));
-  details->Set(String::NewSymbol("parentShas"), cvv8::CastToJS(parentShas));
-
-  return scope.Close(details);
+  return scope.Close(createCommitDetailsObject(details));
 }
 
 Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
@@ -145,7 +114,8 @@ Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
 
   FetchDetailsBaton* baton = new FetchDetailsBaton;
   baton->request.data = baton;
-  baton->error = NULL;  
+  baton->error = NULL;
+  baton->details = new GitCommitDetails;
   baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->commit;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
@@ -157,27 +127,27 @@ Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
 void GitCommit::FetchDetailsWork(uv_work_t *req) {
   FetchDetailsBaton* baton = static_cast<FetchDetailsBaton*>(req->data);
 
-  baton->oid = git_commit_id(baton->rawCommit);
+  GitCommitDetails* details = baton->details;
+  details->oid = git_commit_id(baton->rawCommit);
 
-  baton->sha[GIT_OID_HEXSZ] = '\0';
+  details->sha[GIT_OID_HEXSZ] = '\0';
+  git_oid_fmt(details->sha, details->oid);
 
-  git_oid_fmt(baton->sha, baton->oid);
+  details->message = git_commit_message(baton->rawCommit);
+  details->time = git_commit_time(baton->rawCommit);
+  details->timeOffset = git_commit_time_offset(baton->rawCommit);
+  details->committer = git_commit_committer(baton->rawCommit);
+  details->author = git_commit_author(baton->rawCommit);
+  details->parentCount = git_commit_parentcount(baton->rawCommit);
 
-  baton->message = git_commit_message(baton->rawCommit);
-  baton->time = git_commit_time(baton->rawCommit);
-  baton->timeOffset = git_commit_time_offset(baton->rawCommit);
-  baton->committer = git_commit_committer(baton->rawCommit);
-  baton->author = git_commit_author(baton->rawCommit);
-  baton->parentCount = git_commit_parentcount(baton->rawCommit);
-
-  int parentCount = baton->parentCount;
+  int parentCount = details->parentCount;
   while (parentCount > 0) {
     int parentIndex = parentCount -1;
     char sha[GIT_OID_HEXSZ + 1];
     sha[GIT_OID_HEXSZ] = '\0';
     const git_oid *parentOid = git_commit_parent_id(baton->rawCommit, parentIndex);
     git_oid_fmt(sha, parentOid);
-    baton->parentShas.push_back(sha);
+    details->parentShas.push_back(sha);
     parentCount--;
   }
 }
@@ -201,46 +171,9 @@ void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
     }
   } else {
 
-    Local<Object> details = Object::New();
-
-    Handle<Object> oid = GitOid::constructor_template->NewInstance();
-    GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-    oidInstance->SetValue(*const_cast<git_oid *>(baton->oid));
-
-    details->Set(String::NewSymbol("id"), oid);
-    details->Set(String::NewSymbol("sha"), String::New(baton->sha));
-    details->Set(String::NewSymbol("message"), cvv8::CastToJS(baton->message));
-    details->Set(String::NewSymbol("time"), cvv8::CastToJS(baton->time));
-    details->Set(String::NewSymbol("timeOffset"), cvv8::CastToJS(baton->timeOffset));
-
-    Local<Object> committer = Object::New();
-    committer->Set(String::NewSymbol("name"), cvv8::CastToJS(baton->committer->name));
-    committer->Set(String::NewSymbol("email"), cvv8::CastToJS(baton->committer->email));
-
-    Local<Object> committerWhen = Object::New();
-    committerWhen->Set(String::NewSymbol("time"), cvv8::CastToJS(baton->committer->when.time));
-    committerWhen->Set(String::NewSymbol("offset"), cvv8::CastToJS(baton->committer->when.offset));
-    committer->Set(String::NewSymbol("when"), cvv8::CastToJS(committerWhen));
-
-    details->Set(String::NewSymbol("committer"), committer);
-
-    Local<Object> author = Object::New();
-    author->Set(String::NewSymbol("name"), cvv8::CastToJS(baton->author->name));
-    author->Set(String::NewSymbol("email"), cvv8::CastToJS(baton->author->email));
-
-    Local<Object> authorWhen = Object::New();
-    authorWhen->Set(String::NewSymbol("time"), cvv8::CastToJS(baton->author->when.time));
-    authorWhen->Set(String::NewSymbol("offset"), cvv8::CastToJS(baton->author->when.offset));
-    author->Set(String::NewSymbol("when"), authorWhen);
-
-    details->Set(String::NewSymbol("author"), author);
-
-    details->Set(String::NewSymbol("parentCount"), cvv8::CastToJS(baton->parentCount));
-    details->Set(String::NewSymbol("parentShas"), cvv8::CastToJS(baton->parentShas));
-
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      details
+      createCommitDetailsObject(baton->details)
     };
 
     TryCatch try_catch;

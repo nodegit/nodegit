@@ -16,6 +16,9 @@
 #include "oid.h"
 #include "tree.h"
 
+#include "../include/functions/string.h"
+#include "../include/functions/commit.h"
+
 using namespace node;
 using namespace v8;
 
@@ -92,15 +95,7 @@ class GitCommit : public ObjectWrap {
       const git_error* error;
 
       git_commit* rawCommit;
-      const git_oid *oid;
-      char sha[GIT_OID_HEXSZ + 1];
-      const char* message;
-      time_t time;
-      int timeOffset;
-      const git_signature* committer;
-      const git_signature* author;
-      unsigned int parentCount;
-      std::vector<std::string> parentShas;
+      GitCommitDetails* details;
 
       Persistent<Function> callback;
     };
