@@ -79,14 +79,12 @@ void GitReference::OidWork(uv_work_t* req) {
   git_ref_t referenceType = git_reference_type(baton->rawRef);
 
   if (referenceType == GIT_REF_INVALID) {
-    printf("invalid\n");
     giterr_set_str(GITERR_INVALID, "Invalid reference type");
     baton->error = giterr_last();
     return;
   }
 
   if (referenceType == GIT_REF_SYMBOLIC) {
-    printf("symbolic\n");
     int returnCode = git_reference_resolve(&baton->rawRef, baton->rawRef);
     if (returnCode != GIT_OK) {
       baton->error = giterr_last();
