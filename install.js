@@ -71,7 +71,7 @@ async.series([
     function checkPython2Exists(callback) {
         exec('which python2',
           function (error) {
-            if (error !== null) {
+            if (!error) {
                 pythonExecutable = 'python2';
                 callback();
                 return;
