@@ -143,8 +143,9 @@ Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  FetchDetailsBaton* baton = new FetchDetailsBaton();
+  FetchDetailsBaton* baton = new FetchDetailsBaton;
   baton->request.data = baton;
+  baton->error = NULL;  
   baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->commit;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
