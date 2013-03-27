@@ -66,7 +66,6 @@ class GitCommit : public ObjectWrap {
     static void TreeWork(uv_work_t* req);
     static void TreeAfterWork(uv_work_t* req);
 
-    static Handle<Value> ParentSync(const Arguments& args);
     static Handle<Value> Parent(const Arguments& args);
     static void ParentWork(uv_work_t* req);
     static void ParentAfterWork(uv_work_t* req);
@@ -110,7 +109,7 @@ class GitCommit : public ObjectWrap {
       const git_error* error;
 
       int index;
-      GitCommit* commit;
+      git_commit* rawCommit;
       git_commit* rawParentCommit;
 
       Persistent<Function> callback;

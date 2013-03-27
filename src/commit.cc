@@ -20,6 +20,8 @@
 #include "../include/commit.h"
 #include "../include/error.h"
 
+#include "../include/functions/utilities.h"
+
 using namespace v8;
 using namespace cvv8;
 using namespace node;
@@ -37,7 +39,6 @@ void GitCommit::Initialize(Handle<Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "parentSync", ParentSync);
   NODE_SET_PROTOTYPE_METHOD(tpl, "fetchDetails", FetchDetails);
   NODE_SET_PROTOTYPE_METHOD(tpl, "fetchDetailsSync", FetchDetailsSync);
 
@@ -303,29 +304,6 @@ Handle<Value> GitCommit::Tree(const Arguments& args) {
   return scope.Close( Integer::New(err) );
 }
 
-Handle<Value> GitCommit::ParentSync(const Arguments& args) {
-  HandleScope scope;
-
-  if(args.Length() == 0 || !args[0]->IsNumber()) {
-    return ThrowException(Exception::Error(String::New("Position must be a Number.")));
-  }
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  git_commit *parentCommitValue ;
-  int returnCode = git_commit_parent(&parentCommitValue, commit->commit, args[0]->ToInteger()->Value());
-
-  if (returnCode != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
-  Local<Object> parent = GitCommit::constructor_template->NewInstance();
-  GitCommit *parentCommit = ObjectWrap::Unwrap<GitCommit>(parent);
-  parentCommit->SetValue(parentCommitValue);
-
-  return scope.Close(parent);
-}
-
 Handle<Value> GitCommit::Parent(const Arguments& args) {
   HandleScope scope;
 
@@ -343,9 +321,9 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
 
   ParentBaton* baton = new ParentBaton();
   baton->request.data = baton;
-  baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-  baton->commit->Ref();
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
   baton->error = NULL;
+  baton->rawParentCommit = NULL;
   baton->index = args[0]->ToInteger()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -353,36 +331,20 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
 
   return Undefined();
 }
-
 void GitCommit::ParentWork(uv_work_t* req) {
   ParentBaton* baton = static_cast<ParentBaton*>(req->data);
 
-  baton->rawParentCommit = NULL;
-  int returnCode = git_commit_parent(&baton->rawParentCommit, baton->commit->commit, baton->index);
+  int returnCode = git_commit_parent(&baton->rawParentCommit, baton->rawCommit, baton->index);
 
   if (returnCode != GIT_OK) {
     baton->error = giterr_last();
   }
 }
-
 void GitCommit::ParentAfterWork(uv_work_t* req) {
   HandleScope scope;
   ParentBaton* baton = static_cast<ParentBaton* >(req->data);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
-  } else {
-
+  if (success(baton->error, baton->callback)) {
     Local<Object> parent = GitCommit::constructor_template->NewInstance();
     GitCommit *parentInstance = ObjectWrap::Unwrap<GitCommit>(parent);
     parentInstance->SetValue(baton->rawParentCommit);
@@ -398,7 +360,6 @@ void GitCommit::ParentAfterWork(uv_work_t* req) {
         node::FatalException(try_catch);
     }
   }
-  baton->commit->Unref();
   delete req;
 }
 
