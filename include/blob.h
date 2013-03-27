@@ -140,6 +140,9 @@ class GitBlob : public ObjectWrap {
      *   Object args.This()
      */
     static Handle<Value> RawContent(const Arguments& args);
+    static void RawContentWork(uv_work_t* req);
+    static void RawContentAfterWork(uv_work_t* req);
+
     /**
      * Function: RawSize
      *
@@ -198,6 +201,17 @@ class GitBlob : public ObjectWrap {
       git_oid rawOid;
 
       Persistent<Function> callback;
+    };
+
+    struct RawContentBaton {
+        uv_work_t request;
+
+        GitBlob* blob;
+        git_blob* rawBlob;
+        std::string rawContent;
+        int rawSize;
+
+        Persistent<Function> callback;
     };
 };
 

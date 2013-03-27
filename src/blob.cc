@@ -120,26 +120,44 @@ void GitBlob::LookupAfterWork(uv_work_t* req) {
 Handle<Value> GitBlob::RawContent(const Arguments& args) {
   HandleScope scope;
 
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
 
-  int rawSize = blob->RawSize();
-  std::string contents = (const char *)const_cast<void *>(blob->RawContent());
+  RawContentBaton* baton = new RawContentBaton;
+  baton->request.data = baton;
+  baton->rawBlob = ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  int bufferLength = rawSize;
-  Buffer* buffer = Buffer::New(const_cast<char *>(contents.c_str()), bufferLength);
+  uv_queue_work(uv_default_loop(), &baton->request, RawContentWork, (uv_after_work_cb)RawContentAfterWork);
+
+  return Undefined();
+}
+void GitBlob::RawContentWork(uv_work_t* req) {
+  RawContentBaton* baton = static_cast<RawContentBaton*>(req->data);
+
+  baton->rawContent = (const char *)const_cast<void *>(git_blob_rawcontent(baton->rawBlob));
+  baton->rawSize = git_blob_rawsize(baton->rawBlob);
+}
+void GitBlob::RawContentAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  RawContentBaton* baton = static_cast<RawContentBaton* >(req->data);
 
   Local<Object> fastBuffer;
+  Buffer* buffer = Buffer::New(const_cast<char *>(baton->rawContent.c_str()), baton->rawSize);
   MAKE_FAST_BUFFER(buffer, fastBuffer);
 
-  return scope.Close( fastBuffer );
-}
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    fastBuffer
+  };
 
-Handle<Value> GitBlob::RawSize(const Arguments& args) {
-  HandleScope scope;
-
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-
-  return scope.Close( Integer::New(blob->RawSize()) );
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
 }
 
 Handle<Value> GitBlob::Close(const Arguments& args) {
