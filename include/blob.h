@@ -60,22 +60,6 @@ class GitBlob : public ObjectWrap {
      */
     int Lookup(git_repository* repo, const git_oid *id);
     /**
-     * Function: RawContent
-     *   Get a read-only buffer with the raw content of a blob.
-     *
-     * Returns:
-     *   raw content buffer; NULL if the blob has no contents
-     */
-    const void* RawContent();
-    /**
-     * Function: RawSize
-     *   Lookup a blob object from a repository.
-     *
-     * Returns:
-     *   size in bytes
-     */
-    int RawSize();
-    /**
      *
      * Function: Close
      *   Free a blob object.

@@ -27,7 +27,6 @@ void GitBlob::Initialize (Handle<v8::Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "rawContent", RawContent);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "rawSize", RawSize);
   NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createFromFile", CreateFromFile);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createFromBuffer", CreateFromBuffer);
@@ -39,21 +38,8 @@ void GitBlob::Initialize (Handle<v8::Object> target) {
 git_blob* GitBlob::GetValue() {
   return this->blob;
 }
-
 void GitBlob::SetValue(git_blob* blob) {
   this->blob = blob;
-}
-
-int GitBlob::Lookup(git_repository* repo, const git_oid* id) {
-  return git_blob_lookup(&this->blob, repo, id);
-}
-
-const void* GitBlob::RawContent() {
-  return git_blob_rawcontent(this->blob);
-}
-
-int GitBlob::RawSize() {
-  return git_blob_rawsize(this->blob);
 }
 
 void GitBlob::Close() {
@@ -63,7 +49,6 @@ void GitBlob::Close() {
 int CreateFromFile(git_oid* oid, git_repository* repo, const char* path) {
   return git_blob_create_fromdisk(oid, repo, path);
 }
-
 int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len) {
   return git_blob_create_frombuffer(oid, repo, buffer, len);
 }
