@@ -1,6 +1,9 @@
 /*
-Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
-*/
+ * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+ * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
+ *
+ * Dual licensed under the MIT and GPL licenses.
+ */
 
 #include <v8.h>
 #include <node.h>
@@ -17,7 +20,7 @@ void GitSig::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
+
   constructor_template = Persistent<FunctionTemplate>::New(t);
   constructor_template->InstanceTemplate()->SetInternalFieldCount(3);
   constructor_template->SetClassName(String::NewSymbol("Sig"));

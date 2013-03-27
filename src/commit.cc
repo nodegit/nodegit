@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+ * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
  * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
  *
  * Dual licensed under the MIT and GPL licenses.
@@ -39,8 +39,6 @@ void GitCommit::Initialize(Handle<Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "fetchDetails", FetchDetails);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "fetchDetailsSync", FetchDetailsSync);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   target->Set(String::NewSymbol("Commit"), constructor_template);
@@ -69,118 +67,115 @@ Handle<Value> GitCommit::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
-  HandleScope scope;
+// Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
+//   HandleScope scope;
 
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-  git_commit* rawCommit = commit->GetValue();
+//   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
+//   git_commit* rawCommit = commit->GetValue();
 
-  GitCommitDetails* details = new GitCommitDetails;
-  details->oid = git_commit_id(rawCommit);
+//   GitCommitDetails* details = new GitCommitDetails;
+//   details->oid = git_commit_id(rawCommit);
 
-  details->sha[GIT_OID_HEXSZ] = '\0';
-  git_oid_fmt(details->sha, details->oid);
+//   details->sha[GIT_OID_HEXSZ] = '\0';
+//   git_oid_fmt(details->sha, details->oid);
 
-  details->message = git_commit_message(rawCommit);
-  details->time = git_commit_time(rawCommit);
-  details->timeOffset = git_commit_time_offset(rawCommit);
-  details->committer = git_commit_committer(rawCommit);
-  details->author = git_commit_author(rawCommit);
-  details->parentCount = git_commit_parentcount(rawCommit);
+//   details->message = git_commit_message(rawCommit);
+//   details->time = git_commit_time(rawCommit);
+//   details->timeOffset = git_commit_time_offset(rawCommit);
+//   details->committer = git_commit_committer(rawCommit);
+//   details->author = git_commit_author(rawCommit);
+//   details->parentCount = git_commit_parentcount(rawCommit);
 
-  int parentCount = details->parentCount;
-  while (parentCount > 0) {
-    int parentIndex = parentCount -1;
-    char sha[GIT_OID_HEXSZ + 1];
-    sha[GIT_OID_HEXSZ] = '\0';
-    const git_oid *parentOid = git_commit_parent_id(rawCommit, parentIndex);
-    git_oid_fmt(sha, parentOid);
-    details->parentShas.push_back(sha);
-    parentCount--;
-  }
+//   int parentCount = details->parentCount;
+//   while (parentCount > 0) {
+//     int parentIndex = parentCount -1;
+//     char sha[GIT_OID_HEXSZ + 1];
+//     sha[GIT_OID_HEXSZ] = '\0';
+//     const git_oid *parentOid = git_commit_parent_id(rawCommit, parentIndex);
+//     git_oid_fmt(sha, parentOid);
+//     details->parentShas.push_back(sha);
+//     parentCount--;
+//   }
 
-  return scope.Close(createCommitDetailsObject(details));
-}
+//   return scope.Close(createCommitDetailsObject(details));
+// }
+// Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
+//   HandleScope scope;
 
-Handle<Value> GitCommit::FetchDetails(const Arguments& args) {
-  HandleScope scope;
+//   if(args.Length() == 0 || !args[0]->IsFunction()) {
+//     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+//   }
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
+//   FetchDetailsBaton* baton = new FetchDetailsBaton;
+//   baton->request.data = baton;
+//   baton->error = NULL;
+//   baton->details = new GitCommitDetails;
+//   baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->commit;
+//   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  FetchDetailsBaton* baton = new FetchDetailsBaton;
-  baton->request.data = baton;
-  baton->error = NULL;
-  baton->details = new GitCommitDetails;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->commit;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+//   uv_queue_work(uv_default_loop(), &baton->request, FetchDetailsWork, (uv_after_work_cb)FetchDetailsAfterWork);
 
-  uv_queue_work(uv_default_loop(), &baton->request, FetchDetailsWork, (uv_after_work_cb)FetchDetailsAfterWork);
+//   return Undefined();
+// }
+// void GitCommit::FetchDetailsWork(uv_work_t *req) {
+//   FetchDetailsBaton* baton = static_cast<FetchDetailsBaton*>(req->data);
 
-  return Undefined();
-}
+//   GitCommitDetails* details = baton->details;
+//   details->oid = git_commit_id(baton->rawCommit);
 
-void GitCommit::FetchDetailsWork(uv_work_t *req) {
-  FetchDetailsBaton* baton = static_cast<FetchDetailsBaton*>(req->data);
+//   details->sha[GIT_OID_HEXSZ] = '\0';
+//   git_oid_fmt(details->sha, details->oid);
 
-  GitCommitDetails* details = baton->details;
-  details->oid = git_commit_id(baton->rawCommit);
+//   details->message = git_commit_message(baton->rawCommit);
+//   details->time = git_commit_time(baton->rawCommit);
+//   details->timeOffset = git_commit_time_offset(baton->rawCommit);
+//   details->committer = git_commit_committer(baton->rawCommit);
+//   details->author = git_commit_author(baton->rawCommit);
+//   details->parentCount = git_commit_parentcount(baton->rawCommit);
 
-  details->sha[GIT_OID_HEXSZ] = '\0';
-  git_oid_fmt(details->sha, details->oid);
+//   int parentCount = details->parentCount;
+//   while (parentCount > 0) {
+//     int parentIndex = parentCount -1;
+//     char sha[GIT_OID_HEXSZ + 1];
+//     sha[GIT_OID_HEXSZ] = '\0';
+//     const git_oid *parentOid = git_commit_parent_id(baton->rawCommit, parentIndex);
+//     git_oid_fmt(sha, parentOid);
+//     details->parentShas.push_back(sha);
+//     parentCount--;
+//   }
+// }
+// void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
+//   HandleScope scope;
 
-  details->message = git_commit_message(baton->rawCommit);
-  details->time = git_commit_time(baton->rawCommit);
-  details->timeOffset = git_commit_time_offset(baton->rawCommit);
-  details->committer = git_commit_committer(baton->rawCommit);
-  details->author = git_commit_author(baton->rawCommit);
-  details->parentCount = git_commit_parentcount(baton->rawCommit);
+//   FetchDetailsBaton* baton = static_cast<FetchDetailsBaton* >(req->data);
 
-  int parentCount = details->parentCount;
-  while (parentCount > 0) {
-    int parentIndex = parentCount -1;
-    char sha[GIT_OID_HEXSZ + 1];
-    sha[GIT_OID_HEXSZ] = '\0';
-    const git_oid *parentOid = git_commit_parent_id(baton->rawCommit, parentIndex);
-    git_oid_fmt(sha, parentOid);
-    details->parentShas.push_back(sha);
-    parentCount--;
-  }
-}
+//   if (baton->error) {
+//     Local<Value> argv[1] = {
+//       GitError::WrapError(baton->error)
+//     };
 
-void GitCommit::FetchDetailsAfterWork(uv_work_t *req) {
-  HandleScope scope;
+//     TryCatch try_catch;
 
-  FetchDetailsBaton* baton = static_cast<FetchDetailsBaton* >(req->data);
+//     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
+//     if (try_catch.HasCaught()) {
+//         node::FatalException(try_catch);
+//     }
+//   } else {
 
-    TryCatch try_catch;
+//     Handle<Value> argv[2] = {
+//       Local<Value>::New(Null()),
+//       createCommitDetailsObject(baton->details)
+//     };
 
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
-  } else {
-
-    Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
-      createCommitDetailsObject(baton->details)
-    };
-
-    TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
-  }
-  delete req;
-}
+//     TryCatch try_catch;
+//     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+//     if (try_catch.HasCaught()) {
+//         node::FatalException(try_catch);
+//     }
+//   }
+//   delete req;
+// }
 
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
   HandleScope scope;

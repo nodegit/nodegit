@@ -1,6 +1,9 @@
 /*
-Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
-*/
+ * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+ * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
+ *
+ * Dual licensed under the MIT and GPL licenses.
+ */
 
 #ifndef REPO_H
 #define REPO_H
