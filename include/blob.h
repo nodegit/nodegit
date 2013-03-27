@@ -25,7 +25,7 @@ class GitBlob : public ObjectWrap {
      * Variable: constructor_template
      *   Used to create Node.js constructor.
      */
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     /**
      * Function: Initialize
      *   Used to intialize the EventEmitter from Node.js

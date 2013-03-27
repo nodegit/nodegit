@@ -20,20 +20,20 @@ using namespace node;
 void GitBlob::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Blob"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Blob"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "lookup", Lookup);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "rawContent", RawContent);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "rawSize", RawSize);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "close", Close);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "createFromFile", CreateFromFile);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "createFromBuffer", CreateFromBuffer);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "rawContent", RawContent);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "rawSize", RawSize);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "createFromFile", CreateFromFile);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "createFromBuffer", CreateFromBuffer);
 
-  target->Set(String::NewSymbol("Blob"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Blob"), constructor_template);
 }
 
 git_blob* GitBlob::GetValue() {
@@ -232,4 +232,4 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   return scope.Close( Integer::New(err) );
 }
 
-Persistent<FunctionTemplate> GitBlob::constructor_template;
+Persistent<Function> GitBlob::constructor_template;
