@@ -23,7 +23,7 @@ class GitObject : public ObjectWrap {
     /**
      * v8::FunctionTemplate used to create Node.js constructor
      */
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
 
     /**
      * Used to intialize the EventEmitter from Node.js

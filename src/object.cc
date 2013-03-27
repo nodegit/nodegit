@@ -5,6 +5,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include <v8.h>
 #include <node.h>
 
+#include "cvv8/v8-convert.hpp"
 #include "../vendor/libgit2/include/git2.h"
 
 #include "../include/object.h"
@@ -14,39 +15,42 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 using namespace v8;
 using namespace node;
 
+namespace cvv8 {
+  template <>
+  struct NativeToJS<git_otype> : NativeToJS<int32_t> {};
+}
+
 void GitObject::Initialize (Handle<v8::Object> target) {
-  HandleScope scope;
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
-  
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("Object"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("Object"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "id", Id);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "type", Type);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "owner", Owner);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "type2String", Type2String);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "string2Type", String2Type);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "typeIsLoose", TypeIsLoose);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "size", Size);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "id", Id);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "owner", Owner);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "type2String", Type2String);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "string2Type", String2Type);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "typeIsLoose", TypeIsLoose);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "size", Size);
 
-  Local<Object> type = Object::New();
+  Local<Object> types = Object::New();
 
-  type->Set(String::New("ANY"), Integer::New(-2));
-  type->Set(String::New("BAD"), Integer::New(-1));
-  type->Set(String::New("_EXT1"), Integer::New(0));
-  type->Set(String::New("COMMIT"), Integer::New(1));
-  type->Set(String::New("TREE"), Integer::New(2));
-  type->Set(String::New("BLOB"), Integer::New(3));
-  type->Set(String::New("TAG"), Integer::New(4));
-  type->Set(String::New("_EXT2"), Integer::New(5));
-  type->Set(String::New("OFS_DELTA"), Integer::New(6));
-  type->Set(String::New("REF_DELTA"), Integer::New(7));
+  types->Set(String::New("GIT_OBJ_ANY"), cvv8::CastToJS(GIT_OBJ_ANY));
+  types->Set(String::New("GIT_OBJ_BAD"), cvv8::CastToJS(GIT_OBJ_BAD));
+  types->Set(String::New("GIT_OBJ__EXT1"), cvv8::CastToJS(GIT_OBJ__EXT1));
+  types->Set(String::New("GIT_OBJ_COMMIT"), cvv8::CastToJS(GIT_OBJ_COMMIT));
+  types->Set(String::New("GIT_OBJ_TREE"), cvv8::CastToJS(GIT_OBJ_TREE));
+  types->Set(String::New("GIT_OBJ_BLOB"), cvv8::CastToJS(GIT_OBJ_BLOB));
+  types->Set(String::New("GIT_OBJ_TAG"), cvv8::CastToJS(GIT_OBJ_TAG));
+  types->Set(String::New("GIT_OBJ__EXT2"), cvv8::CastToJS(GIT_OBJ__EXT2));
+  types->Set(String::New("GIT_OBJ_OFS_DELTA"), cvv8::CastToJS(GIT_OBJ_OFS_DELTA));
+  types->Set(String::New("GIT_OBJ_REF_DELTA"), cvv8::CastToJS(GIT_OBJ_REF_DELTA));
 
-  constructor_template->Set(String::New("type"), type);
+  tpl->Set(String::New("types"), types);
 
-  target->Set(String::NewSymbol("Object"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Object"), constructor_template);
 }
 
 git_object* GitObject::GetValue() {
@@ -99,7 +103,7 @@ Handle<Value> GitObject::Id(const Arguments& args) {
   HandleScope scope;
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-  
+
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
   }
@@ -115,7 +119,7 @@ Handle<Value> GitObject::Type(const Arguments& args) {
   HandleScope scope;
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-  
+
   return scope.Close( Integer::New(obj->Type()) );
 }
 
@@ -123,7 +127,7 @@ Handle<Value> GitObject::Owner(const Arguments& args) {
   HandleScope scope;
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-  
+
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
@@ -139,7 +143,7 @@ Handle<Value> GitObject::Type2String(const Arguments& args) {
   HandleScope scope;
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-  
+
   if(args.Length() == 0 || !args[0]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Type is required and must be a Number.")));
   }
@@ -153,7 +157,7 @@ Handle<Value> GitObject::String2Type(const Arguments& args) {
   HandleScope scope;
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-  
+
   if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("Type is required and must be a String.")));
   }
@@ -167,7 +171,7 @@ Handle<Value> GitObject::TypeIsLoose(const Arguments& args) {
   HandleScope scope;
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-  
+
   if(args.Length() == 0 || !args[0]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Type is required and must be a Number.")));
   }
@@ -181,7 +185,7 @@ Handle<Value> GitObject::Size(const Arguments& args) {
   HandleScope scope;
 
   GitObject *obj = ObjectWrap::Unwrap<GitObject>(args.This());
-  
+
   if(args.Length() == 0 || !args[0]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Type is required and must be a Number.")));
   }
@@ -191,4 +195,4 @@ Handle<Value> GitObject::Size(const Arguments& args) {
   return scope.Close( Integer::New(obj->Size(type)) );
 }
 
-Persistent<FunctionTemplate> GitObject::constructor_template;
+Persistent<Function> GitObject::constructor_template;
