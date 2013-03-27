@@ -8,4 +8,4 @@
 /doc
 !doc/Theme.css
 /node_modules
-
+/testing.js
