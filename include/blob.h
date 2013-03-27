@@ -14,6 +14,7 @@
 #include "repo.h"
 
 using namespace node;
+using namespace v8;
 
 /**
  * Class: GitBlob
@@ -31,9 +32,9 @@ class GitBlob : public ObjectWrap {
      *   Used to intialize the EventEmitter from Node.js
      *
      * Parameters:
-     *   target - v8::Object the Node.js global module object
+     *   target - Object the Node.js global module object
      */
-    static void Initialize(v8::Handle<v8::Object> target);
+    static void Initialize(Handle<Object> target);
     /**
      * Accessor for GitBlob
      *
@@ -112,22 +113,22 @@ class GitBlob : public ObjectWrap {
      * Function: New
      *
      * Parameters:
-     *   args v8::Arguments function call
+     *   args Arguments function call
      *
      * Returns:
-     *   v8::Object args.This()
+     *   Object args.This()
      */
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
+    static Handle<Value> New(const Arguments& args);
     /**
      * Function: Lookup
      *
      * Parameters:
-     *   args v8::Arguments function call
+     *   args Arguments function call
      *
      * Returns:
-     *   v8::Object args.This()
+     *   Object args.This()
      */
-    static v8::Handle<v8::Value> Lookup(const v8::Arguments& args);
+    static Handle<Value> Lookup(const Arguments& args);
     /**
      * Function: EIO_Lookup
      *
@@ -147,52 +148,52 @@ class GitBlob : public ObjectWrap {
      * Function: RawContent
      *
      * Parameters:
-     *   args v8::Arguments function call
+     *   args Arguments function call
      *
      * Returns:
-     *   v8::Object args.This()
+     *   Object args.This()
      */
-    static v8::Handle<v8::Value> RawContent(const v8::Arguments& args);
+    static Handle<Value> RawContent(const Arguments& args);
     /**
      * Function: RawSize
      *
      * Parameters:
-     *   args v8::Arguments function call
+     *   args Arguments function call
      *
      * Returns:
-     *   v8::Object args.This()
+     *   Object args.This()
      */
-    static v8::Handle<v8::Value> RawSize(const v8::Arguments& args);
+    static Handle<Value> RawSize(const Arguments& args);
     /**
      * Function: Close
      *
      * Parameters:
-     *   args v8::Arguments function call
+     *   args Arguments function call
      *
      * Returns:
-     *   v8::Object args.This()
+     *   Object args.This()
      */
-    static v8::Handle<v8::Value> Close(const v8::Arguments& args);
+    static Handle<Value> Close(const Arguments& args);
     /**
      * Function: CreateFromFile
      *
      * Parameters:
-     *   args v8::Arguments function call
+     *   args Arguments function call
      *
      * Returns:
-     *   v8::Object args.This()
+     *   Object args.This()
      */
-    static v8::Handle<v8::Value> CreateFromFile(const v8::Arguments& args);
+    static Handle<Value> CreateFromFile(const Arguments& args);
     /**
      * Function: CreateFromBuffer
      *
      * Parameters:
-     *   args v8::Arguments function call
+     *   args Arguments function call
      *
      * Returns:
-     *   v8::Object args.This()
+     *   Object args.This()
      */
-    static v8::Handle<v8::Value> CreateFromBuffer(const v8::Arguments& args);
+    static Handle<Value> CreateFromBuffer(const Arguments& args);
 
   private:
     /**
@@ -212,7 +213,7 @@ class GitBlob : public ObjectWrap {
       GitRepo* repo;
       GitOid* oid;
       int err;
-      v8::Persistent<v8::Function> callback;
+      Persistent<Function> callback;
     };
 };
 
