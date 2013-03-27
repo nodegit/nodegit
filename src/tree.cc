@@ -14,6 +14,7 @@ Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
 #include "../include/error.h"
 
 #include "../include/functions/string.h"
+#include "../include/functions/utilities.h"
 
 using namespace v8;
 using namespace node;
@@ -193,7 +194,6 @@ void GitTree::EIO_EntryByIndex(uv_work_t *req) {
   entryindex_request *er = static_cast<entryindex_request *>(req->data);
 
   er->entry->SetValue(er->tree->EntryByIndex(er->idx));
-
 }
 
 void GitTree::EIO_AfterEntryByIndex(uv_work_t *req) {
@@ -242,7 +242,6 @@ Handle<Value> GitTree::EntryByPath(const Arguments& args) {
 
   return Undefined();
 }
-
 void GitTree::EntryByPathWork(uv_work_t *req) {
   EntryByPathBaton *baton = static_cast<EntryByPathBaton *>(req->data);
 
@@ -251,25 +250,11 @@ void GitTree::EntryByPathWork(uv_work_t *req) {
     baton->error = giterr_last();
   }
 }
-
 void GitTree::EntryByPathAfterWork(uv_work_t *req) {
   HandleScope scope;
   EntryByPathBaton *baton = static_cast<EntryByPathBaton *>(req->data);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
-  } else {
-
+  if (success(baton->error, baton->callback)) {
     Local<Object> entry = GitTreeEntry::constructor_template->NewInstance();
     GitTreeEntry *entryInstance = ObjectWrap::Unwrap<GitTreeEntry>(entry);
     entryInstance->SetValue(baton->rawEntry);
