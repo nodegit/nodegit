@@ -59,10 +59,6 @@ void GitCommit::Close() {
   this->commit = NULL;
 }
 
-int GitCommit::Tree(git_tree** tree) {
-  return git_commit_tree(tree, this->commit);
-}
-
 Handle<Value> GitCommit::New(const Arguments& args) {
   HandleScope scope;
 
@@ -218,7 +214,6 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 
   return Undefined();
 }
-
 void GitCommit::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
@@ -237,7 +232,6 @@ void GitCommit::LookupWork(uv_work_t *req) {
     baton->error = giterr_last();
   }
 }
-
 void GitCommit::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
@@ -283,25 +277,52 @@ Handle<Value> GitCommit::Close(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-/**
- * @todo asynchronize
- */
 Handle<Value> GitCommit::Tree(const Arguments& args) {
   HandleScope scope;
 
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Tree is required and must be an Object.")));
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  GitTree* g_tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject());
+  TreeBaton* baton = new TreeBaton;
+  baton->request.data = baton;
+  baton->error = NULL;
+  baton->rawTree = NULL;
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  git_tree* tree;
-  int err = commit->Tree(&tree);
-  g_tree->SetValue(tree);
+  uv_queue_work(uv_default_loop(), &baton->request, TreeWork, (uv_after_work_cb)TreeAfterWork);
 
-  return scope.Close( Integer::New(err) );
+  return Undefined();
+}
+void GitCommit::TreeWork(uv_work_t* req) {
+  TreeBaton* baton = static_cast<TreeBaton*>(req->data);
+  int returnCode = git_commit_tree(&baton->rawTree, baton->rawCommit);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+void GitCommit::TreeAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  TreeBaton* baton = static_cast<TreeBaton* >(req->data);
+
+  if (success(baton->error, baton->callback)) {
+    Local<Object> tree = GitTree::constructor_template->NewInstance();
+    GitTree *treeInstance = ObjectWrap::Unwrap<GitTree>(tree);
+    treeInstance->SetValue(baton->rawTree);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      tree
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
+  }
+  delete req;
 }
 
 Handle<Value> GitCommit::Parent(const Arguments& args) {

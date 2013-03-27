@@ -41,9 +41,8 @@ class GitCommit : public ObjectWrap {
 
     git_commit* GetValue();
     void SetValue(git_commit* commit);
-    void Close();
 
-    int Tree(git_tree** tree);
+    void Close();
 
   protected:
     GitCommit() {}
@@ -82,6 +81,16 @@ class GitCommit : public ObjectWrap {
       git_oid rawOid;
       std::string sha;
       git_commit* rawCommit;
+
+      Persistent<Function> callback;
+    };
+
+    struct TreeBaton {
+      uv_work_t request;
+      const git_error* error;
+
+      git_commit* rawCommit;
+      git_tree* rawTree;
 
       Persistent<Function> callback;
     };
