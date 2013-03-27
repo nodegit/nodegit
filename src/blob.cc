@@ -3,16 +3,15 @@
  * Dual licensed under the MIT and GPL licenses.
  */
 
-#include <v8.h>
-#include <node.h>
 #include <node_buffer.h>
-#include <string.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
 #include "../include/utils.h"
 #include "../include/repo.h"
 #include "../include/blob.h"
+
+#include "../include/functions/utilities.h"
 
 using namespace v8;
 using namespace node;
@@ -77,51 +76,45 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-  Local<Function> callback = Local<Function>::Cast(args[2]);
+  LookupBaton* baton = new LookupBaton;
+  baton->request.data = baton;
+  baton->blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+  baton->blob->Ref();
+  baton->rawBlob = baton->blob->GetValue();
+  baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->rawOid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
-  lookup_request* ar = new lookup_request();
-  ar->blob = blob;
-  ar->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
-  ar->oid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject());
-  ar->callback = Persistent<Function>::New(callback);
+  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
 
-  blob->Ref();
-
-  uv_work_t *req = new uv_work_t;
-  req->data = ar;
-  uv_queue_work(uv_default_loop(), req, EIO_Lookup, (uv_after_work_cb)EIO_AfterLookup);
-
-  return scope.Close( Undefined() );
+  return Undefined();
 }
-
-void GitBlob::EIO_Lookup(uv_work_t* req) {
-  lookup_request* ar = static_cast<lookup_request* >(req->data);
-
-  git_oid oid = ar->oid->GetValue();
-  ar->err = ar->blob->Lookup(ar->repo->GetValue(), &oid);
-
-}
-
-void GitBlob::EIO_AfterLookup(uv_work_t* req) {
-  lookup_request* ar = static_cast<lookup_request* >(req->data);
-  delete req;
-  ar->blob->Unref();
-
-  Local<Value> argv[1];
-  argv[0] = Integer::New(ar->err);
-
-  TryCatch try_catch;
-
-  ar->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-  if(try_catch.HasCaught()) {
-    FatalException(try_catch);
+void GitBlob::LookupWork(uv_work_t* req) {
+  LookupBaton* baton = static_cast<LookupBaton* >(req->data);
+  int returnCode =  git_blob_lookup(&baton->rawBlob, baton->rawRepo, &baton->rawOid);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
   }
+}
+void GitBlob::LookupAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  LookupBaton* baton = static_cast<LookupBaton* >(req->data);
 
-  ar->callback.Dispose();
+  if (success(baton->error, baton->callback)) {
+    baton->blob->SetValue(baton->rawBlob);
 
-  delete ar;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      baton->blob->handle_
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
+  delete req;
 }
 
 Handle<Value> GitBlob::RawContent(const Arguments& args) {

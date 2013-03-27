@@ -8,13 +8,14 @@
 
 #include <v8.h>
 #include <node.h>
+#include <string.h>
 
 #include "../vendor/libgit2/include/git2.h"
 
 #include "repo.h"
 
-using namespace node;
 using namespace v8;
+using namespace node;
 
 /**
  * Class: GitBlob
@@ -114,20 +115,21 @@ class GitBlob : public ObjectWrap {
      */
     static Handle<Value> Lookup(const Arguments& args);
     /**
-     * Function: EIO_Lookup
+     * Function: LookupWork
      *
      * Parameters:
      *   req - an uv_work_t pointer
      *
      */
-    static void EIO_Lookup(uv_work_t* req);
+    static void LookupWork(uv_work_t* req);
     /**
-     * Function: EIO_AfterLookup
+     * Function: LookupAfterWork
      *
      * Parameters:
      *   req - an uv_work_t pointer
      */
-    static void EIO_AfterLookup(uv_work_t* req);
+    static void LookupAfterWork(uv_work_t* req);
+
     /**
      * Function: RawContent
      *
@@ -186,17 +188,15 @@ class GitBlob : public ObjectWrap {
      */
     git_blob* blob;
 
-    /**
-     * Struct: lookup_request
-     *   Contains references to the current blob, repo, and oid for a
-     *   commit lookup, also contains references to an error code post
-     *   lookup, and a callback function to execute.
-     */
-    struct lookup_request {
+    struct LookupBaton {
+      uv_work_t request;
+      const git_error* error;
+
       GitBlob* blob;
-      GitRepo* repo;
-      GitOid* oid;
-      int err;
+      git_blob* rawBlob;
+      git_repository* rawRepo;
+      git_oid rawOid;
+
       Persistent<Function> callback;
     };
 };
