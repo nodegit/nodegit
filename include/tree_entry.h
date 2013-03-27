@@ -26,16 +26,9 @@ using namespace node;
  */
 class GitTreeEntry : ObjectWrap {
   public:
-    /**
-     * v8::FunctionTemplate used to create Node.js constructor
-     */
+
     static Persistent<Function> constructor_template;
 
-    /**
-     * Used to intialize the EventEmitter from Node.js
-     *
-     * @param target v8::Object the Node.js module object
-     */
     static void Initialize(Handle<v8::Object> target);
     git_tree_entry* GetValue();
     void SetValue(git_tree_entry* tree);
@@ -43,12 +36,51 @@ class GitTreeEntry : ObjectWrap {
   protected:
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> Name(const Arguments& args);
+    static void NameWork(uv_work_t* req);
+    static void NameAfterWork(uv_work_t* req);
+
+    static Handle<Value> FileMode(const Arguments& args);
+    static void FileModeWork(uv_work_t* req);
+    static void FileModeAfterWork(uv_work_t* req);
+
+    static Handle<Value> Id(const Arguments& args);
+    static void IdWork(uv_work_t* req);
+    static void IdAfterWork(uv_work_t* req);
+
     static Handle<Value> ToBlob(const Arguments& args);
     static void ToBlobWork(uv_work_t *req);
     static void ToBlobAfterWork(uv_work_t *req);
 
   private:
     git_tree_entry* entry;
+
+    struct NameBaton {
+      uv_work_t request;
+
+      git_tree_entry* rawEntry;
+      std::string name;
+
+      Persistent<Function> callback;
+    };
+
+    struct FileModeBaton {
+      uv_work_t request;
+
+      git_tree_entry* rawEntry;
+      int fileMode;
+
+      Persistent<Function> callback;
+    };
+
+    struct IdBaton {
+      uv_work_t request;
+
+      git_tree_entry* rawEntry;
+      git_oid* rawOid;
+
+      Persistent<Function> callback;
+    };
 
     struct ToBlobBaton {
       uv_work_t request;
