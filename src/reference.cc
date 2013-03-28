@@ -143,7 +143,6 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
 
   return Undefined();
 }
-
 void GitReference::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
@@ -153,23 +152,11 @@ void GitReference::LookupWork(uv_work_t *req) {
     baton->error = giterr_last();
   }
 }
-
 void GitReference::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
-  } else {
-
+  if (success(baton->error, baton->callback)) {
     baton->ref->SetValue(baton->rawRef);
 
     Handle<Value> argv[2] = {
