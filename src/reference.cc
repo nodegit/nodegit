@@ -17,6 +17,7 @@
 #include "../include/error.h"
 
 #include "../include/functions/string.h"
+#include "../include/functions/utilities.h"
 
 using namespace v8;
 using namespace node;
@@ -39,7 +40,6 @@ void GitReference::Initialize(Handle<Object> target) {
 git_reference* GitReference::GetValue() {
   return this->ref;
 }
-
 void GitReference::SetValue(git_reference *ref) {
   this->ref = ref;
 }
@@ -72,7 +72,6 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
 
   return Undefined();
 }
-
 void GitReference::OidWork(uv_work_t* req) {
   OidBaton *baton = static_cast<OidBaton *>(req->data);
 
@@ -91,24 +90,12 @@ void GitReference::OidWork(uv_work_t* req) {
       return;
     }
   }
-  baton->rawOid = git_reference_target(baton->rawRef);
 }
 void GitReference::OidAfterWork(uv_work_t* req) {
   HandleScope scope;
   OidBaton *baton = static_cast<OidBaton *>(req->data);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
-  } else {
-
+  if (success(baton->error, baton->callback)) {
     Handle<Object> oid = GitOid::constructor_template->NewInstance();
     GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
     oidInstance->SetValue(*const_cast<git_oid *>(baton->rawOid));
