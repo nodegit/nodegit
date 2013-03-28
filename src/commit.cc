@@ -35,6 +35,9 @@ void GitCommit::Initialize(Handle<Object> target) {
   tpl->SetClassName(String::NewSymbol("Commit"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "sha", Sha);
+
   NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
@@ -212,9 +215,8 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
 void GitCommit::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
-  git_oid rawOid = baton->rawOid;
   if (!baton->sha.empty()) {
-    int returnCode = git_oid_fromstr(&rawOid, baton->sha.c_str());
+    int returnCode = git_oid_fromstr(&baton->rawOid, baton->sha.c_str());
     if (returnCode != GIT_OK) {
       baton->error = giterr_last();
       return;
@@ -222,7 +224,7 @@ void GitCommit::LookupWork(uv_work_t *req) {
   }
 
   baton->rawCommit = NULL;
-  int returnCode = git_commit_lookup(&baton->rawCommit, baton->repo, &rawOid);
+  int returnCode = git_commit_lookup(&baton->rawCommit, baton->repo, &baton->rawOid);
   if (returnCode != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -231,23 +233,11 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
-  } else {
-
+  if (success(baton->error, baton->callback)) {
     Local<Object> commit = GitCommit::constructor_template->NewInstance();
     GitCommit *commitInstance = ObjectWrap::Unwrap<GitCommit>(commit);
     commitInstance->SetValue(baton->rawCommit);
+    commitInstance->oid = &baton->rawOid;
 
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -259,6 +249,56 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
     if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
     }
+  }
+  delete req;
+}
+
+Handle<Value> GitCommit::Oid(const Arguments& args) {
+  HandleScope scope;
+
+  Local<Object> oid = GitOid::constructor_template->NewInstance();
+  GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
+  oidInstance->SetValue(*const_cast<git_oid *>(ObjectWrap::Unwrap<GitCommit>(args.This())->oid));
+
+  return scope.Close(oid);
+}
+
+Handle<Value> GitCommit::Sha(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  ShaBaton* baton = new ShaBaton;
+  baton->request.data = baton;
+  baton->rawOid = ObjectWrap::Unwrap<GitCommit>(args.This())->oid;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, ShaWork, (uv_after_work_cb)ShaAfterWork);
+
+  return Undefined();
+}
+void GitCommit::ShaWork(uv_work_t* req) {
+  ShaBaton *baton = static_cast<ShaBaton *>(req->data);
+
+  baton->sha[GIT_OID_HEXSZ] = '\0';
+
+  git_oid_fmt(baton->sha, baton->rawOid);
+}
+void GitCommit::ShaAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  ShaBaton *baton = static_cast<ShaBaton *>(req->data);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    String::New(baton->sha)
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
   }
   delete req;
 }
