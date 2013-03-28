@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
+ * Copyright 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
  * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
  *
  * Dual licensed under the MIT and GPL licenses.
@@ -17,7 +17,6 @@
 #include "tree.h"
 
 #include "../include/functions/string.h"
-#include "../include/functions/commit.h"
 
 using namespace node;
 using namespace v8;
@@ -49,17 +48,13 @@ class GitCommit : public ObjectWrap {
     ~GitCommit() {}
 
     static Handle<Value> New(const Arguments& args);
-
-    static Handle<Value> FetchDetailsSync(const Arguments& args);
-    static Handle<Value> FetchDetails(const Arguments& args);
-    static void FetchDetailsWork(uv_work_t *req);
-    static void FetchDetailsAfterWork(uv_work_t *req);
+    static Handle<Value> Close(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
     static void LookupWork(uv_work_t *req);
     static void LookupAfterWork(uv_work_t *req);
 
-    static Handle<Value> Close(const Arguments& args);
+    static Handle<Value> Oid(const Arguments& args);
 
     static Handle<Value> Tree(const Arguments& args);
     static void TreeWork(uv_work_t* req);
@@ -91,19 +86,6 @@ class GitCommit : public ObjectWrap {
 
       git_commit* rawCommit;
       git_tree* rawTree;
-
-      Persistent<Function> callback;
-    };
-
-    /**
-     * Struct containing details for a commit.
-     */
-    struct FetchDetailsBaton {
-      uv_work_t request;
-      const git_error* error;
-
-      git_commit* rawCommit;
-      GitCommitDetails* details;
 
       Persistent<Function> callback;
     };
