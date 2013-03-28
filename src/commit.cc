@@ -52,11 +52,6 @@ void GitCommit::SetValue(git_commit* commit) {
   this->commit = commit;
 }
 
-void GitCommit::Close() {
-  git_commit_free(this->commit);
-  this->commit = NULL;
-}
-
 Handle<Value> GitCommit::New(const Arguments& args) {
   HandleScope scope;
 
@@ -65,6 +60,11 @@ Handle<Value> GitCommit::New(const Arguments& args) {
   commit->Wrap(args.This());
 
   return scope.Close(args.This());
+}
+
+void GitCommit::Close() {
+  git_commit_free(this->commit);
+  this->commit = NULL;
 }
 
 // Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
