@@ -64,10 +64,15 @@ Handle<Value> GitCommit::New(const Arguments& args) {
 
   return scope.Close(args.This());
 }
+Handle<Value> GitCommit::Close(const Arguments& args) {
+  HandleScope scope;
 
-void GitCommit::Close() {
-  git_commit_free(this->commit);
-  this->commit = NULL;
+  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
+  commit->Close();
+  git_commit_free(commit->commit);
+  commit->commit = NULL;
+
+  return scope.Close(Undefined());
 }
 
 // Handle<Value> GitCommit::FetchDetailsSync(const Arguments& args) {
@@ -301,15 +306,6 @@ void GitCommit::ShaAfterWork(uv_work_t* req) {
     node::FatalException(try_catch);
   }
   delete req;
-}
-
-Handle<Value> GitCommit::Close(const Arguments& args) {
-  HandleScope scope;
-
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-  commit->Close();
-
-  return scope.Close(Undefined());
 }
 
 Handle<Value> GitCommit::Tree(const Arguments& args) {

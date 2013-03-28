@@ -41,8 +41,6 @@ class GitCommit : public ObjectWrap {
     git_commit* GetValue();
     void SetValue(git_commit* commit);
 
-    void Close();
-
   protected:
     GitCommit() {}
     ~GitCommit() {}
