@@ -90,6 +90,8 @@ void GitReference::OidWork(uv_work_t* req) {
       return;
     }
   }
+
+  baton->rawOid = git_reference_target(baton->rawRef);
 }
 void GitReference::OidAfterWork(uv_work_t* req) {
   HandleScope scope;
