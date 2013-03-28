@@ -18,6 +18,8 @@
 #include "../include/tree_entry.h"
 #include "../include/error.h"
 
+#include "../include/functions/utilities.h"
+
 using namespace v8;
 using namespace node;
 
@@ -27,6 +29,9 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("TreeEntry"));
 
+  NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "fileMode", FileMode);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "id", Id);
   NODE_SET_PROTOTYPE_METHOD(tpl, "toBlob", ToBlob);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -36,7 +41,6 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
 git_tree_entry* GitTreeEntry::GetValue() {
   return this->entry;
 }
-
 void GitTreeEntry::SetValue(git_tree_entry* entry) {
   this->entry = entry;
 }
@@ -51,6 +55,55 @@ Handle<Value> GitTreeEntry::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitTreeEntry::Name(const Arguments& args) {
+  HandleScope scope;
+
+  // GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+
+  // return scope.Close(String::New(git_tree_entry_name(entry->entry)));
+  return Undefined();
+}
+void GitTreeEntry::NameWork(uv_work_t* req) {
+
+}
+void GitTreeEntry::NameAfterWork(uv_work_t* req) {
+
+}
+
+Handle<Value> GitTreeEntry::FileMode(const Arguments& args) {
+  // HandleScope scope;
+
+  // GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+
+  // return scope.Close(Number::New(git_tree_entry_filemode(entry->entry)));
+  return Undefined();
+}
+void GitTreeEntry::FileModeWork(uv_work_t* req) {
+
+}
+void GitTreeEntry::FileModeAfterWork(uv_work_t* req) {
+
+}
+
+Handle<Value> GitTreeEntry::Id(const Arguments& args) {
+  // HandleScope scope;
+
+  // GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+
+  // Handle<Object> oid = GitOid::constructor_template->NewInstance();
+  // GitOid* oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
+  // oidInstance->SetValue(*const_cast<git_oid *>(git_tree_entry_id(entry->entry)));
+
+  // return oid;
+  return Undefined();
+}
+void GitTreeEntry::IdWork(uv_work_t* req) {
+
+}
+void GitTreeEntry::IdAfterWork(uv_work_t* req) {
+
+}
+
 Handle<Value> GitTreeEntry::ToBlob(const Arguments& args) {
   HandleScope scope;
 
@@ -62,7 +115,7 @@ Handle<Value> GitTreeEntry::ToBlob(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  ToBlobBaton* baton = new ToBlobBaton();
+  ToBlobBaton* baton = new ToBlobBaton;
   baton->request.data = baton;
   baton->error = NULL;
   baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
