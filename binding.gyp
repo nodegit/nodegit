@@ -17,7 +17,6 @@
                 'src/tree_entry.cc',
                 'src/diff_list.cc',
                 'src/threads.cc',
-                'src/functions/commit.cc',
                 'src/functions/string.cc',
                 'src/functions/utilities.cc'
             ],
