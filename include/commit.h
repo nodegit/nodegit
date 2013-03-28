@@ -56,6 +56,10 @@ class GitCommit : public ObjectWrap {
 
     static Handle<Value> Oid(const Arguments& args);
 
+    static Handle<Value> Sha(const Arguments& args);
+    static void ShaWork(uv_work_t* req);
+    static void ShaAfterWork(uv_work_t* req);
+
     static Handle<Value> Tree(const Arguments& args);
     static void TreeWork(uv_work_t* req);
     static void TreeAfterWork(uv_work_t* req);
@@ -76,6 +80,15 @@ class GitCommit : public ObjectWrap {
       git_oid rawOid;
       std::string sha;
       git_commit* rawCommit;
+
+      Persistent<Function> callback;
+    };
+
+    struct ShaBaton {
+      uv_work_t request;
+
+      git_oid* rawOid;
+      char sha[GIT_OID_HEXSZ + 1];
 
       Persistent<Function> callback;
     };
