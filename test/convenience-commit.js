@@ -1,6 +1,6 @@
-var git = require('../');
-var rimraf = require('rimraf');
-var fs = require( 'fs' );
+var git = require('../'),
+    rimraf = require('rimraf'),
+    fs = require( 'fs' );
 
 // Helper functions
 var helper = {
@@ -49,8 +49,6 @@ var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
 
 /**
  * Test that retreiving walking a given commit's history works as expected.
- *
- * @param  {Object} test
  */
 exports.history = function(test) {
   test.expect(368);
@@ -66,7 +64,6 @@ exports.history = function(test) {
         test.equals(null, error, 'There should be no errors');
         test.equals(historyCount, expectedHistoryCount, 'Manual count does not match expected');
         test.equals(commits.length, expectedHistoryCount, '"end" count does not match expected');
-
         test.done();
       });
     });
