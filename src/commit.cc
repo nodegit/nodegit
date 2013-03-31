@@ -13,7 +13,7 @@
 #include "cvv8/v8-convert.hpp"
 
 #include "../include/reference.h"
-#include "../include/sig.h"
+#include "../include/signature.h"
 #include "../include/repo.h"
 #include "../include/oid.h"
 #include "../include/tree.h"
@@ -355,8 +355,8 @@ void GitCommit::AuthorAfterWork(uv_work_t* req) {
   SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
 
   Local<Object> signature = GitSignature::constructor_template->NewInstance();
-  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitCommit>(signature);
-  signatureInstance->SetValue(baton->rawSignature);
+  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitSignature>(signature);
+  signatureInstance->SetValue(const_cast<git_signature *>(baton->rawSignature));
 
   Handle<Value> argv[2] = {
     Local<Value>::New(Null()),
@@ -397,8 +397,8 @@ void GitCommit::CommitterAfterWork(uv_work_t* req) {
   SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
 
   Local<Object> signature = GitSignature::constructor_template->NewInstance();
-  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitCommit>(signature);
-  signatureInstance->SetValue(baton->rawSignature);
+  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitSignature>(signature);
+  signatureInstance->SetValue(const_cast<git_signature *>(baton->rawSignature));
 
   Handle<Value> argv[2] = {
     Local<Value>::New(Null()),
