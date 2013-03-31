@@ -11,7 +11,7 @@
 #include "../vendor/libgit2/include/git2.h"
 
 #include "../include/repo.h"
-#include "../include/sig.h"
+#include "../include/signature.h"
 
 using namespace v8;
 using namespace node;
