@@ -45,7 +45,7 @@ void GitCommit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   target->Set(String::NewSymbol("Commit"), constructor_template);
@@ -67,30 +67,15 @@ Handle<Value> GitCommit::New(const Arguments& args) {
 
   return scope.Close(args.This());
 }
-Handle<Value> GitCommit::Close(const Arguments& args) {
+Handle<Value> GitCommit::Free(const Arguments& args) {
   HandleScope scope;
 
   GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
   git_commit_free(commit->commit);
   commit->commit = NULL;
 
-  return scope.Close(Undefined());
+  return Undefined();
 }
-//   details->parentCount = git_commit_parentcount(rawCommit);
-
-//   int parentCount = details->parentCount;
-//   while (parentCount > 0) {
-//     int parentIndex = parentCount -1;
-//     char sha[GIT_OID_HEXSZ + 1];
-//     sha[GIT_OID_HEXSZ] = '\0';
-//     const git_oid *parentOid = git_commit_parent_id(rawCommit, parentIndex);
-//     git_oid_fmt(sha, parentOid);
-//     details->parentShas.push_back(sha);
-//     parentCount--;
-//   }
-
-//   return scope.Close(createCommitDetailsObject(details));
-// }
 
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
   HandleScope scope;
