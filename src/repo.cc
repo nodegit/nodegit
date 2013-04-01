@@ -151,7 +151,7 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  InitBaton *baton = new InitBaton();
+  InitBaton *baton = new InitBaton;
   baton->request.data = baton;
   baton->error = NULL;
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This());

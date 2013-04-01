@@ -109,7 +109,7 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  PushBaton* baton = new PushBaton();
+  PushBaton* baton = new PushBaton;
 
   baton->request.data = baton;
   baton->revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
@@ -158,7 +158,7 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  NextBaton* baton = new NextBaton();
+  NextBaton* baton = new NextBaton;
 
   baton->request.data = baton;
   baton->revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
