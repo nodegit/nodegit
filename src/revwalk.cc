@@ -15,87 +15,135 @@
 #include "../include/commit.h"
 #include "../include/error.h"
 
+#include "../include/functions/utilities.h"
+
 using namespace v8;
 using namespace node;
 
 void GitRevWalk::Initialize(Handle<Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> t = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
-  constructor_template = Persistent<FunctionTemplate>::New(t);
-  constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-  constructor_template->SetClassName(String::NewSymbol("RevWalk"));
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("RevWalk"));
 
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "reset", Reset);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "push", Push);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "next", Next);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "free", Free);
-  NODE_SET_PROTOTYPE_METHOD(constructor_template, "repository", Repository);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "allocate", Allocate);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "reset", Reset);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "push", Push);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "next", Next);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
 
-  Local<Object> sort = Object::New();
+  // Local<Object> sort = Object::New();
 
-  sort->Set(String::New("NONE"), Integer::New(0));
-  sort->Set(String::New("TOPOLOGICAL"), Integer::New(1));
-  sort->Set(String::New("TIME"), Integer::New(2));
-  sort->Set(String::New("REVERSE"), Integer::New(4));
+  // sort->Set(String::New("NONE"), Integer::New(0));
+  // sort->Set(String::New("TOPOLOGICAL"), Integer::New(1));
+  // sort->Set(String::New("TIME"), Integer::New(2));
+  // sort->Set(String::New("REVERSE"), Integer::New(4));
 
-  constructor_template->Set(String::New("sort"), sort);
+  // tpl->Set(String::New("sort"), sort);
 
-  target->Set(String::NewSymbol("RevWalk"), constructor_template->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("RevWalk"), constructor_template);
 }
 
 git_revwalk* GitRevWalk::GetValue() {
   return this->revwalk;
 }
-
 void GitRevWalk::SetValue(git_revwalk* revwalk) {
   this->revwalk = revwalk;
 }
-
-int GitRevWalk::New(git_repository* repo) {
+git_repository* GitRevWalk::GetRepo() {
+  return this->repo;
+}
+void GitRevWalk::SetRepo(git_repository* repo) {
   this->repo = repo;
-
-  return git_revwalk_new(&this->revwalk, this->repo);
 }
 
-void GitRevWalk::Reset() {
-  git_revwalk_reset(this->revwalk);
-}
+Handle<Value> GitRevWalk::Free(const Arguments& args) {
+  HandleScope scope;
 
-void GitRevWalk::Free() {
-  git_revwalk_free(this->revwalk);
-}
+  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
 
-git_repository* GitRevWalk::Repository() {
-	return git_revwalk_repository(this->revwalk);
+  git_revwalk_free(revwalk->revwalk);
+
+  return Undefined();
 }
 
 Handle<Value> GitRevWalk::New(const Arguments& args) {
   HandleScope scope;
 
   GitRevWalk *revwalk = new GitRevWalk();
-
   if(args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
   GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
-  revwalk->New(repo->GetValue());
+  revwalk->SetRepo(repo->GetValue());
 
   revwalk->Wrap(args.This());
 
-  return scope.Close( args.This() );
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitRevWalk::Reset(const Arguments& args) {
   HandleScope scope;
 
   GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
+  git_revwalk_reset(revwalk->revwalk);
 
-  revwalk->Reset();
+  return Undefined();
+}
 
-  return scope.Close( Undefined() );
+Handle<Value> GitRevWalk::Allocate(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  AllocateBaton *baton = new AllocateBaton;
+  baton->request.data = baton;
+  baton->error = NULL;
+  baton->revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
+  baton->rawRevwalk = NULL;
+  baton->rawRepo = baton->revwalk->GetRepo();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, AllocateWork, (uv_after_work_cb)AllocateAfterWork);
+
+  return Undefined();
+}
+void GitRevWalk::AllocateWork(uv_work_t *req) {
+  AllocateBaton *baton = static_cast<AllocateBaton *>(req->data);
+
+  int returnCode = git_revwalk_new(&baton->rawRevwalk, baton->rawRepo);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRevWalk::AllocateAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  AllocateBaton *baton = static_cast<AllocateBaton *>(req->data);
+
+
+  if (success(baton->error, baton->callback)) {
+
+    baton->revwalk->SetValue(baton->rawRevwalk);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      baton->revwalk->handle_
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
+  delete req;
 }
 
 Handle<Value> GitRevWalk::Push(const Arguments& args) {
@@ -112,26 +160,25 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
   PushBaton* baton = new PushBaton;
 
   baton->request.data = baton;
-  baton->revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->error = NULL;
+  baton->rawRevwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
+  baton->rawOid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushWork, (uv_after_work_cb)PushAfterWork);
 
   return Undefined();
 }
-
 void GitRevWalk::PushWork(uv_work_t *req) {
   PushBaton *baton = static_cast<PushBaton *>(req->data);
 
-  git_revwalk_sorting(baton->revwalk, GIT_SORT_TIME | GIT_SORT_REVERSE);
+  git_revwalk_sorting(baton->rawRevwalk, GIT_SORT_TIME | GIT_SORT_REVERSE);
 
-  int returnCode = git_revwalk_push(baton->revwalk, &baton->oid);
+  int returnCode = git_revwalk_push(baton->rawRevwalk, &baton->rawOid);
   if (returnCode) {
     baton->error = giterr_last();
   }
 }
-
 void GitRevWalk::PushAfterWork(uv_work_t *req) {
   HandleScope scope;
   PushBaton *baton = static_cast<PushBaton *>(req->data);
@@ -161,7 +208,8 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
   NextBaton* baton = new NextBaton;
 
   baton->request.data = baton;
-  baton->revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
+  baton->error = NULL;
+  baton->rawRevwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
   baton->walkOver = false;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
@@ -169,42 +217,27 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
 
   return Undefined();
 }
-
 void GitRevWalk::NextWork(uv_work_t *req) {
   NextBaton *baton = static_cast<NextBaton *>(req->data);
 
-  // baton->oid = NULL;
-  int returnCode = git_revwalk_next(&baton->oid, baton->revwalk);
+  int returnCode = git_revwalk_next(&baton->rawOid, baton->rawRevwalk);
   if (returnCode != GIT_OK) {
     if (returnCode == GIT_ITEROVER) {
       baton->walkOver = true;
     } else {
+      git_revwalk_reset(baton->rawRevwalk);
       baton->error = giterr_last();
     }
   }
 }
-
 void GitRevWalk::NextAfterWork(uv_work_t *req) {
   HandleScope scope;
   NextBaton *baton = static_cast<NextBaton *>(req->data);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
-  } else {
-
+  if (success(baton->error, baton->callback)) {
     Local<Object> oid = GitOid::constructor_template->NewInstance();
     GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-    oidInstance->SetValue(baton->oid);
+    oidInstance->SetValue(baton->rawOid);
 
     Local<Value> argv[3] = {
       Local<Value>::New(Null()),
@@ -213,9 +246,7 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
     };
 
     TryCatch try_catch;
-
     baton->callback->Call(Context::GetCurrent()->Global(), 3, argv);
-
     if(try_catch.HasCaught()) {
       FatalException(try_catch);
     }
@@ -223,28 +254,4 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
   delete req;
 }
 
-Handle<Value> GitRevWalk::Free(const Arguments& args) {
-  HandleScope scope;
-
-  GitRevWalk *revwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This());
-
-  revwalk->Free();
-
-  return scope.Close( Undefined() );
-}
-
-Handle<Value> GitRevWalk::Repository(const Arguments& args) {
-  HandleScope scope;
-
-  GitRevWalk *revwalk = new GitRevWalk();
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
-  }
-
-  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject());
-  repo->SetValue(revwalk->Repository());
-
-  return scope.Close( Undefined() );
-}
-Persistent<FunctionTemplate> GitRevWalk::constructor_template;
+Persistent<Function> GitRevWalk::constructor_template;
