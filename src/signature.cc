@@ -33,7 +33,7 @@ void GitSignature::Initialize(Handle<v8::Object> target) {
 }
 
 git_signature* GitSignature::GetValue() {
-  return this->sig;
+  return this->signature;
 }
 
 void GitSignature::SetValue(git_signature* signature) {
@@ -49,30 +49,26 @@ Handle<Value> GitSignature::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-Handle<Value> GitSignature::Duplicate(const Arguments& args) {
-  HandleScope scope;
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("GitSignature is required and must be an Object.")));
-  }
-
-  Local<Object> duplicateSignature = GitSignature::constructor_template->NewInstance();
-  GitSignature *duplicateSignatureInstance = ObjectWrap::Unwrap<GitSignature>(signature);
-
-  GitSignature* signature = ObjectWrap::Unwrap<GitSignature>(args[0]->ToObject());
-
-  duplicateSignatureInstance->SetValue(git_signature_dup(signature->GetValue()));
-
-  return duplicateSignature;
-}
-
 Handle<Value> GitSignature::Free(const Arguments& args) {
   HandleScope scope;
 
   GitSignature *signature = ObjectWrap::Unwrap<GitSignature>(args.This());
-  git_signature_free(this->signature);
+  git_signature_free(signature->signature);
+  signature->signature = NULL;
 
   return Undefined();
+}
+
+Handle<Value> GitSignature::Duplicate(const Arguments& args) {
+  HandleScope scope;
+
+  Local<Object> duplicateSignature = GitSignature::constructor_template->NewInstance();
+  GitSignature *duplicateSignatureInstance = ObjectWrap::Unwrap<GitSignature>(duplicateSignature);
+
+  GitSignature* signature = ObjectWrap::Unwrap<GitSignature>(args.This());
+  duplicateSignatureInstance->SetValue(git_signature_dup(signature->GetValue()));
+
+  return duplicateSignature;
 }
 
 Handle<Value> GitSignature::Name(const Arguments& args) {
@@ -80,7 +76,7 @@ Handle<Value> GitSignature::Name(const Arguments& args) {
 
   GitSignature *signature = ObjectWrap::Unwrap<GitSignature>(args.This());
 
-  return String::New(signature->Name());
+  return scope.Close(String::New(signature->GetValue()->name));
 }
 
 Handle<Value> GitSignature::Email(const Arguments& args) {
@@ -88,7 +84,7 @@ Handle<Value> GitSignature::Email(const Arguments& args) {
 
   GitSignature *signature = ObjectWrap::Unwrap<GitSignature>(args.This());
 
-  return String::New(signature->Email());
+  return scope.Close(String::New(signature->GetValue()->email));
 }
 
 Persistent<Function> GitSignature::constructor_template;
