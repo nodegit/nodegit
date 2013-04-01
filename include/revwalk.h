@@ -19,65 +19,70 @@ using namespace v8;
 
 class GitRevWalk : public ObjectWrap {
   public:
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize(Handle<v8::Object> target);
 
     git_revwalk* GetValue();
     void SetValue(git_revwalk* revwalk);
-    int New(git_repository* repo);
-    void Reset();
-    int Push(git_oid* oid);
-    int Hide();
-    int Sorting(int sort);
-    void Free();
-    git_repository* Repository();
+    git_repository* GetRepo();
+    void SetRepo(git_repository* repository);
 
   protected:
     GitRevWalk() {}
     ~GitRevWalk() {}
+
     static Handle<Value> New(const Arguments& args);
+    static Handle<Value> Free(const Arguments& args);
+
     static Handle<Value> Reset(const Arguments& args);
 
-    /**
-     * Although git_revwalk_next is not blocking when iterating with a
-     * time-sorting mode, options may be added later to allow different sort
-     * modes, hence the async implementation.
-     */
+    static Handle<Value> Allocate(const Arguments& args);
+    static void AllocateWork(uv_work_t *req);
+    static void AllocateAfterWork(uv_work_t *req);
+
     static Handle<Value> Push(const Arguments& args);
     static void PushWork(uv_work_t *req);
     static void PushAfterWork(uv_work_t *req);
-
-    static Handle<Value> Hide(const Arguments& args);
 
     static Handle<Value> Next(const Arguments& args);
     static void NextWork(uv_work_t* req);
     static void NextAfterWork(uv_work_t* req);
 
     static Handle<Value> Sorting(const Arguments& args);
-    static Handle<Value> Free(const Arguments& args);
-    static Handle<Value> Repository(const Arguments& args);
 
   private:
     git_revwalk* revwalk;
     git_repository* repo;
 
+    struct AllocateBaton {
+      uv_work_t request;
+      const git_error* error;
+
+      GitRevWalk* revwalk;
+      git_revwalk *rawRevwalk;
+      git_repository* rawRepo;
+
+      Persistent<Function> callback;
+    };
+
     struct PushBaton {
       uv_work_t request;
       const git_error* error;
 
-      git_revwalk *revwalk;
-      git_oid oid;
+      git_revwalk *rawRevwalk;
+      git_oid rawOid;
 
       Persistent<Function> callback;
     };
 
     struct NextBaton {
       uv_work_t request;
+
       const git_error* error;
       bool walkOver;
 
-      git_revwalk *revwalk;
-      git_oid oid;
+      git_revwalk *rawRevwalk;
+      git_oid rawOid;
 
       Persistent<Function> callback;
     };
