@@ -419,6 +419,7 @@ Handle<Value> GitCommit::Tree(const Arguments& args) {
 }
 void GitCommit::TreeWork(uv_work_t* req) {
   TreeBaton* baton = static_cast<TreeBaton*>(req->data);
+
   int returnCode = git_commit_tree(&baton->rawTree, baton->rawCommit);
   if (returnCode != GIT_OK) {
     baton->error = giterr_last();
