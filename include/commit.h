@@ -40,13 +40,14 @@ class GitCommit : public ObjectWrap {
 
     git_commit* GetValue();
     void SetValue(git_commit* commit);
+    void SetOid(git_oid* oid);
 
   protected:
     GitCommit() {}
     ~GitCommit() {}
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Close(const Arguments& args);
+    static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
     static void LookupWork(uv_work_t *req);
@@ -82,9 +83,9 @@ class GitCommit : public ObjectWrap {
     static void TreeWork(uv_work_t* req);
     static void TreeAfterWork(uv_work_t* req);
 
-    static Handle<Value> Parent(const Arguments& args);
-    static void ParentWork(uv_work_t* req);
-    static void ParentAfterWork(uv_work_t* req);
+    static Handle<Value> Parents(const Arguments& args);
+    static void ParentsWork(uv_work_t* req);
+    static void ParentsAfterWork(uv_work_t* req);
 
   private:
     git_commit* commit;
@@ -133,7 +134,7 @@ class GitCommit : public ObjectWrap {
       uv_work_t request;
 
       git_commit* rawCommit;
-      git_signature* signature;
+      const git_signature* rawSignature;
 
       Persistent<Function> callback;
     };
@@ -158,15 +159,19 @@ class GitCommit : public ObjectWrap {
       Persistent<Function> callback;
     };
 
-    struct ParentBaton {
+    struct Parent {
+      const git_oid* rawOid;
+      git_commit* rawCommit;
+    };
+
+    struct ParentsBaton {
       uv_work_t request;
       const git_error* error;
 
       int index;
       git_commit* rawCommit;
-      git_commit* rawParentCommit;
+      std::vector<Parent* > parents;
 
       Persistent<Function> callback;
     };
-
 };
