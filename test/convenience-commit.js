@@ -219,13 +219,14 @@ exports.masterHead = function(test) {
  * @param  {Object} test
  */
 exports.parents = function(test) {
-  test.expect(2);
+  test.expect(3);
   git.repo('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parents(function(error, parents) {
         test.equals(parents.length, 1, 'Commit should have exactly one parent');
         parents[0].sha(function parentSha(error, sha) {
-          test.equals(sha, '', 'Parent SHA should match expected value');
+          test.equals(error, null, 'Getting parent SHA should not error');
+          test.equals(sha, 'ecfd36c80a3e9081f200dfda2391acadb56dac27', 'Parent SHA should match expected value');
           test.done();
         });
       });
