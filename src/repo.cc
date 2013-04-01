@@ -138,7 +138,6 @@ Handle<Value> GitRepo::Free(const Arguments& args) {
 Handle<Value> GitRepo::Init(const Arguments& args) {
   HandleScope scope;
 
-
   if(args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("path is required and must be a String.")));
   }
