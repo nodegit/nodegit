@@ -34,7 +34,7 @@ void GitDiffList::Initialize(Handle<Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "treeToTree", TreeToTree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "walk", Walk);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
 
   // Add libgit2 delta types to diff_list object
   Local<Object> libgit2DeltaTypes = Object::New();
