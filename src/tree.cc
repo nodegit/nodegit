@@ -7,8 +7,10 @@
 
 #include <v8.h>
 #include <node.h>
+#include <vector>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "cvv8/v8-convert.hpp"
+#include "git2.h"
 
 #include "../include/repo.h"
 #include "../include/oid.h"
@@ -21,6 +23,7 @@
 
 using namespace v8;
 using namespace node;
+using namespace cvv8;
 
 void GitTree::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
@@ -30,6 +33,7 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Tree"));
 
+  NODE_SET_PROTOTYPE_METHOD(tpl, "walk", Walk);
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByPath", EntryByPath);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -51,6 +55,133 @@ Handle<Value> GitTree::New(const Arguments& args) {
   tree->Wrap(args.This());
 
   return scope.Close(args.This());
+}
+
+Handle<Value> GitTree::Walk(const Arguments& args) {
+  HandleScope scope;
+
+  GitTree* tree = ObjectWrap::Unwrap<GitTree>(args.This());
+
+  if (tree->GetValue() == NULL) {
+    return ThrowException(Exception::Error(String::New("No tree list to Walk.")));
+  }
+
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Entry callback is required and must be a Function.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("End callback is required and must be a Function.")));
+  }
+
+  WalkBaton* baton = new WalkBaton;
+  uv_async_init(uv_default_loop(), &baton->asyncEntry, WalkWorkSendEntry);
+  uv_async_init(uv_default_loop(), &baton->asyncEnd, WalkWorkSendEnd);
+
+  uv_mutex_init(&baton->mutex);
+
+  baton->rawTree = tree->GetValue();
+  baton->error = NULL;
+  baton->entryCallback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  baton->endCallback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+
+  uv_thread_create(&baton->threadId, WalkWork, baton);
+
+  return Undefined();
+}
+void GitTree::WalkWork(void* payload) {
+  WalkBaton *baton = static_cast<WalkBaton *>(payload);
+
+  int returnCode = git_tree_walk(baton->rawTree, GIT_TREEWALK_PRE, WalkWorkEntry, payload);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+    baton->asyncEnd.data = baton;
+    uv_async_send(&baton->asyncEnd);
+    return;
+  }
+
+  baton->asyncEntry.data = baton;
+  uv_async_send(&baton->asyncEntry);
+
+  baton->asyncEnd.data = baton;
+  uv_async_send(&baton->asyncEnd);
+}
+int GitTree::WalkWorkEntry(const char* root, const git_tree_entry* entry, void* payload) {
+  WalkBaton *baton = static_cast<WalkBaton *>(payload);
+
+  uv_mutex_lock(&baton->mutex);
+
+  GitTree::WalkEntry* walkEntry = new WalkEntry;
+  walkEntry->rawEntry = git_tree_entry_dup(entry);
+  walkEntry->root = root;
+
+  baton->rawTreeEntries.push_back(walkEntry);
+
+  uv_mutex_unlock(&baton->mutex);
+
+  if ((unsigned int)baton->rawTreeEntries.size() == (unsigned int)GitTree::WALK_ENTRY_SEND_THRESHOLD) {
+    baton->asyncEntry.data = baton;
+    uv_async_send(&baton->asyncEntry);
+  }
+
+  return GIT_OK;
+}
+void GitTree::WalkWorkSendEntry(uv_async_t *handle, int status /*UNUSED*/) {
+  HandleScope scope;
+
+  WalkBaton *baton = static_cast<WalkBaton *>(handle->data);
+
+  uv_mutex_lock(&baton->mutex);
+
+  if (success(baton->error, baton->entryCallback)) {
+
+    std::vector<Local<Object> > treeEntries;
+
+    for(std::vector<WalkEntry* >::iterator treeEntriesIterator = baton->rawTreeEntries.begin(); treeEntriesIterator != baton->rawTreeEntries.end(); ++treeEntriesIterator) {
+      WalkEntry* walkEntry = (*treeEntriesIterator);
+
+      Local<Object> entry = GitTreeEntry::constructor_template->NewInstance();
+      GitTreeEntry *entryInstance = ObjectWrap::Unwrap<GitTreeEntry>(entry);
+      entryInstance->SetValue(walkEntry->rawEntry);
+      entryInstance->SetRoot(walkEntry->root);
+
+      treeEntries.push_back(entry);
+    }
+
+    baton->rawTreeEntries.clear();
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      CastToJS(treeEntries)
+    };
+
+    TryCatch try_catch;
+    baton->entryCallback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
+  uv_mutex_unlock(&baton->mutex);
+}
+void GitTree::WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/) {
+  WalkBaton *baton = static_cast<WalkBaton *>(handle->data);
+
+  uv_mutex_destroy(&baton->mutex);
+
+  Local<Value> argv[1];
+  if (baton->error) {
+    argv[0] = GitError::WrapError(baton->error);
+  } else {
+    argv[0] = Local<Value>::New(Null());
+  }
+
+  TryCatch try_catch;
+
+  baton->endCallback->Call(Context::GetCurrent()->Global(), 1, argv);
+
+  if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+  }
 }
 
 Handle<Value> GitTree::EntryByPath(const Arguments& args) {
@@ -96,6 +227,7 @@ void GitTree::EntryByPathAfterWork(uv_work_t *req) {
     Local<Object> entry = GitTreeEntry::constructor_template->NewInstance();
     GitTreeEntry *entryInstance = ObjectWrap::Unwrap<GitTreeEntry>(entry);
     entryInstance->SetValue(baton->rawEntry);
+    entryInstance->SetRoot(baton->path.substr(0, baton->path.find_last_of("\\/")));
 
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),

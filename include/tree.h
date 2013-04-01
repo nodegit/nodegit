@@ -11,8 +11,9 @@
 #include <v8.h>
 #include <node.h>
 #include <string>
+#include <vector>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 #include "repo.h"
 #include "tree_entry.h"
@@ -25,28 +26,14 @@ using namespace node;
  */
 class GitTree : public ObjectWrap {
   public:
-    /**
-     * v8::FunctionTemplate used to create Node.js constructor
-     */
+
     static Persistent<Function> constructor_template;
 
-    /**
-     * Used to intialize the EventEmitter from Node.js
-     *
-     * @param target v8::Object the Node.js module object
-     */
+    static const int WALK_ENTRY_SEND_THRESHOLD = 10;
+
     static void Initialize(Handle<v8::Object> target);
-    /**
-     * Accessor for GitTree
-     *
-     * @return the internal git_tree reference
-     */
+
     git_tree* GetValue();
-    /**
-     * Mutator for GitTree
-     *
-     * @param obj a git_tree object
-     */
     void SetValue(git_tree* tree);
 
   protected:
@@ -55,15 +42,39 @@ class GitTree : public ObjectWrap {
 
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> Walk(const Arguments& args);
+    static void WalkWork(void* payload);
+    static int WalkWorkEntry(const char *root, const git_tree_entry *entry, void *payload);
+    static void WalkWorkSendEntry(uv_async_t *handle, int status /*UNUSED*/);
+    static void WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/);
+
     static Handle<Value> EntryByPath(const Arguments& args);
     static void EntryByPathWork(uv_work_t *req);
     static void EntryByPathAfterWork(uv_work_t *req);
 
   private:
-    /**
-     * Internal reference to git_tree object
-     */
+
     git_tree* tree;
+
+    struct WalkEntry {
+        git_tree_entry* rawEntry;
+        std::string root;
+    };
+
+    struct WalkBaton {
+      uv_thread_t threadId;
+      uv_mutex_t mutex;
+      uv_async_t asyncEntry;
+      uv_async_t asyncEnd;
+
+      const git_error* error;
+
+      std::vector<WalkEntry* > rawTreeEntries;
+
+      git_tree* rawTree;
+      Persistent<Function> entryCallback;
+      Persistent<Function> endCallback;
+    };
 
     struct EntryByPathBaton {
       uv_work_t request;
