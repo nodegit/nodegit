@@ -241,21 +241,20 @@ exports.parents = function(test) {
 exports.tree = function(test) {
   test.expect(2);
   git.repo('../.git', function(error, repository) {
-
     repository.commit(historyCountKnownSHA, function(error, commit) {
-
       test.equals(error, null, 'Getting latest branch commit should not error');
 
       var commitTreeEntryCount = 0;
       var expectedCommitTreeEntryCount = 200;
 
-      commit.tree().walk().on('entry', function(commit) {
-        commitTreeEntryCount++;
-      }).on('end', function(commits) {
+      commit.tree(function commitTree(error, tree) {
+        tree.walk().on('entry', function(error, entry) {
+          commitTreeEntryCount++;
+        }).on('end', function(error, entries) {
+          test.equals(commitTreeEntryCount, expectedCommitTreeEntryCount, 'Commit tree entry count does not match expected');
 
-        test.equals(commitTreeEntryCount, expectedCommitTreeEntryCount, 'Commit tree entry count does not match expected');
-
-        test.done();
+          test.done();
+        });
       });
     });
   });
