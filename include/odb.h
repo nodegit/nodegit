@@ -8,7 +8,7 @@
 
 #include <node.h>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 using namespace node;
 
@@ -52,5 +52,5 @@ class GitOdb : public ObjectWrap {
      */
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
 };
- 
+
 #endif

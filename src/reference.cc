@@ -9,7 +9,7 @@
 #include <node.h>
 #include <string>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 #include "../include/repo.h"
 #include "../include/reference.h"

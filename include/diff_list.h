@@ -11,7 +11,7 @@
 #include <string>
 #include <map>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 #include "../include/repo.h"
 

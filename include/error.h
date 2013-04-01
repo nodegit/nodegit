@@ -8,7 +8,7 @@
 
 #include <node.h>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 using namespace v8;
 using namespace node;

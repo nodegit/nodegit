@@ -5,7 +5,7 @@
 
 #include <node_buffer.h>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 #include "../include/utils.h"
 #include "../include/repo.h"

@@ -11,7 +11,7 @@
 #include <v8.h>
 #include <node.h>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 #include "repo.h"
 #include "oid.h"

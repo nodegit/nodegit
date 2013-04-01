@@ -9,7 +9,7 @@
 #include <node.h>
 
 #include "cvv8/v8-convert.hpp"
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 #include "../include/object.h"
 #include "../include/repo.h"
