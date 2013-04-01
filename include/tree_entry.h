@@ -10,8 +10,9 @@
 
 #include <v8.h>
 #include <node.h>
+#include <string>
 
-#include "../vendor/libgit2/include/git2.h"
+#include "git2.h"
 
 #include "repo.h"
 #include "tree.h"
@@ -32,9 +33,13 @@ class GitTreeEntry : ObjectWrap {
     static void Initialize(Handle<v8::Object> target);
     git_tree_entry* GetValue();
     void SetValue(git_tree_entry* tree);
+    void SetRoot(std::string root);
+    std::string GetRoot();
 
   protected:
     static Handle<Value> New(const Arguments& args);
+
+    static Handle<Value> Root(const Arguments& args);
 
     static Handle<Value> Name(const Arguments& args);
     static void NameWork(uv_work_t* req);
@@ -54,12 +59,13 @@ class GitTreeEntry : ObjectWrap {
 
   private:
     git_tree_entry* entry;
+    std::string root;
 
     struct NameBaton {
       uv_work_t request;
 
       git_tree_entry* rawEntry;
-      std::string name;
+      const char* name;
 
       Persistent<Function> callback;
     };
