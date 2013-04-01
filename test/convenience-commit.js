@@ -245,7 +245,7 @@ exports.tree = function(test) {
       test.equals(error, null, 'Getting latest branch commit should not error');
 
       var commitTreeEntryCount = 0;
-      var expectedCommitTreeEntryCount = 200;
+      var expectedCommitTreeEntryCount = 238;
 
       commit.tree(function commitTree(error, tree) {
         tree.walk().on('entry', function(error, entry) {
@@ -269,22 +269,6 @@ exports.parentsDiffTrees = function(test) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parentsDiffTrees(function(error, parentsDiffTrees) {
         test.equals(parentsDiffTrees.length, 1, 'Should be one item in parents diff trees');
-        test.done();
-      });
-    });
-  });
-};
-
-exports.file = function(test) {
-  test.expect(5);
-  git.repo('../.git', function(error, repository) {
-    repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.file('README.md', function(error, file) {
-        test.equal(error, null, 'Should not error');
-        test.notEqual(file, null, 'File should not be null');
-        test.equal(file.name, 'README.md', 'File name should match expected');
-        test.equal(file.sha, 'b252f396b17661462372f78b7bcfc403b8731aaa', 'SHA shoud match expected');
-        test.equal(file.attributes, 33188, 'Attributes should match expected');
         test.done();
       });
     });
