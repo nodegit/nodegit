@@ -24,30 +24,21 @@ using namespace v8;
 class GitDiffList : public ObjectWrap {
   public:
 
-    /**
-     * v8::FunctionTemplate used to create Node.js constructor
-     */
     static Persistent<Function> constructor_template;
 
-    static const int WALK_DELTA_THRESHHOLD = 10;
+    static const int WALK_DELTA_SEND_THRESHHOLD = 10;
 
-    /**
-     * Used to intialize the EventEmitter from Node.js
-     *
-     * @param target v8::Object the Node.js module object
-     */
     static void Initialize (Handle<v8::Object> target);
 
     git_diff_list* GetValue();
     void SetValue(git_diff_list* diffList);
-    void Close();
 
   protected:
     GitDiffList() {}
     ~GitDiffList() {}
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Close(const Arguments& args);
+    static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> TreeToTree(const Arguments& args);
     static void TreeToTreeWork(uv_work_t *req);
@@ -81,8 +72,6 @@ class GitDiffList : public ObjectWrap {
 
   private:
     git_diff_list* diffList;
-    // git_oid* oldOid;
-    // git_oid* newOid;
 
     struct TreeToTreeBaton {
       uv_work_t request;
