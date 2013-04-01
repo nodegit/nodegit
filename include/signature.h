@@ -25,21 +25,21 @@ class GitSignature : public ObjectWrap {
     static void Initialize(Handle<v8::Object> target);
 
     git_signature* GetValue();
-    void SetValue(git_signature* GitSignature);
+    void SetValue(git_signature* signature);
 
   protected:
     GitSignature() {};
     ~GitSignature() {};
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Dup(const Arguments& args);
+    static Handle<Value> Duplicate(const Arguments& args);
     static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Name(const Arguments& args);
     static Handle<Value> Email(const Arguments& args);
 
   private:
-    git_signature* sig;
+    git_signature* signature;
 };
 
 #endif
