@@ -15,9 +15,11 @@
 #include "../include/error.h"
 
 #include "../include/functions/string.h"
+#include "../include/functions/utilities.h"
 
 using namespace v8;
 using namespace node;
+using namespace cvv8;
 
 namespace cvv8 {
   template <>
@@ -143,7 +145,7 @@ Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  TreeToTreeBaton *baton = new TreeToTreeBaton();
+  TreeToTreeBaton *baton = new TreeToTreeBaton;
   baton->request.data = baton;
   baton->error = NULL;
   baton->diffList = ObjectWrap::Unwrap<GitDiffList>(args.This());
@@ -293,7 +295,7 @@ Handle<Value> GitDiffList::Walk(const Arguments& args) {
 
   baton->rawDiffList = diffList->GetValue();
   diffList->Ref();
-
+  baton->error = NULL;
   baton->fileCallback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
   baton->hunkCallback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
   baton->lineCallback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
@@ -341,7 +343,7 @@ int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
 
   uv_mutex_lock(&baton->mutex);
 
-  GitDiffList::Delta* newDelta = new GitDiffList::Delta();
+  Delta* newDelta = new Delta;
   newDelta->raw = (git_diff_delta*)malloc(sizeof(git_diff_delta));
   memcpy(newDelta->raw, delta, sizeof(git_diff_delta));
 
@@ -352,6 +354,7 @@ int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
   uv_mutex_unlock(&baton->mutex);
 
   if ((unsigned int)baton->fileDeltas.size() == (unsigned int)GitDiffList::WALK_DELTA_SEND_THRESHHOLD) {
+    baton->asyncFile.data = baton;
     uv_async_send(&baton->asyncFile);
   }
 
@@ -389,19 +392,8 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
 
   WalkBaton *baton = static_cast<WalkBaton *>(handle->data);
 
-  if (baton->error) {
-    Local<Value> argv[1] = {
-      GitError::WrapError(baton->error)
-    };
-
-    TryCatch try_catch;
-    baton->fileCallback->Call(Context::GetCurrent()->Global(), 1, argv);
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
-  } else {
-
-    uv_mutex_lock(&baton->mutex);
+  uv_mutex_lock(&baton->mutex);
+  if (success(baton->error, baton->fileCallback)) {
 
     std::vector<Local<Object> > fileDeltasArray;
 
@@ -459,7 +451,6 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
 
     baton->fileDeltas.clear();
 
-    uv_mutex_unlock(&baton->mutex);
 
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -472,6 +463,7 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
       node::FatalException(try_catch);
     }
   }
+  uv_mutex_unlock(&baton->mutex);
 }
 void GitDiffList::WalkWorkSendHunk(uv_async_t *handle, int status /*UNUSED*/) { }
 void GitDiffList::WalkWorkSendData(uv_async_t *handle, int status /*UNUSED*/) { }
