@@ -114,17 +114,12 @@ Handle<Value> GitDiffList::New(const Arguments& args) {
 
   return scope.Close(args.This());
 }
-
-void GitDiffList::Close() {
-  git_diff_list_free(this->diffList);
-  this->diffList = NULL;
-}
-
-Handle<Value> GitDiffList::Close(const Arguments& args) {
+Handle<Value> GitDiffList::Free(const Arguments& args) {
   HandleScope scope;
 
   GitDiffList *diffList = ObjectWrap::Unwrap<GitDiffList>(args.This());
-  diffList->Close();
+  git_diff_list_free(diffList->diffList);
+  diffList->diffList = NULL;
 
   return scope.Close(Undefined());
 }
@@ -265,7 +260,7 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
 Handle<Value> GitDiffList::Walk(const Arguments& args) {
   HandleScope scope;
 
-  GitDiffList*  diffList = ObjectWrap::Unwrap<GitDiffList>(args.This());
+  GitDiffList* diffList = ObjectWrap::Unwrap<GitDiffList>(args.This());
 
   if (diffList->GetValue() == NULL) {
     return ThrowException(Exception::Error(String::New("No diff list to Walk.")));
@@ -288,7 +283,7 @@ Handle<Value> GitDiffList::Walk(const Arguments& args) {
   }
 
 
-  WalkBaton* baton = new WalkBaton();
+  WalkBaton* baton = new WalkBaton;
   uv_async_init(uv_default_loop(), &baton->asyncFile, WalkWorkSendFile);
   uv_async_init(uv_default_loop(), &baton->asyncHunk, WalkWorkSendHunk);
   uv_async_init(uv_default_loop(), &baton->asyncData, WalkWorkSendData);
@@ -308,7 +303,6 @@ Handle<Value> GitDiffList::Walk(const Arguments& args) {
 
   return Undefined();
 }
-
 void GitDiffList::WalkWork(void *payload) {
     WalkBaton *baton = static_cast<WalkBaton *>(payload);
 
@@ -326,7 +320,6 @@ void GitDiffList::WalkWork(void *payload) {
     baton->asyncEnd.data = baton;
     uv_async_send(&baton->asyncEnd);
 }
-
 int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
                                   void *payload) {
   WalkBaton *baton = static_cast<WalkBaton *>(payload);
@@ -358,17 +351,15 @@ int GitDiffList::WalkWorkFile(const git_diff_delta *delta, float progress,
   baton->fileDeltas[key] = newDelta;
   uv_mutex_unlock(&baton->mutex);
 
-  if ((unsigned int)baton->fileDeltas.size() == (unsigned int)GitDiffList::WALK_DELTA_THRESHHOLD) {
+  if ((unsigned int)baton->fileDeltas.size() == (unsigned int)GitDiffList::WALK_DELTA_SEND_THRESHHOLD) {
     uv_async_send(&baton->asyncFile);
   }
 
   return GIT_OK;
 }
-
 int GitDiffList::WalkWorkHunk(const git_diff_delta *delta, const git_diff_range *range, const char *header, size_t header_len, void *payload) {
   return GIT_OK;
 }
-
 int GitDiffList::WalkWorkData(const git_diff_delta *delta, const git_diff_range *range,
                                   char line_origin, const char *content, size_t content_len,
                                   void *payload) {
@@ -393,7 +384,6 @@ int GitDiffList::WalkWorkData(const git_diff_delta *delta, const git_diff_range 
 
   return GIT_OK;
 }
-
 void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
   HandleScope scope;
 
@@ -483,7 +473,6 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
     }
   }
 }
-
 void GitDiffList::WalkWorkSendHunk(uv_async_t *handle, int status /*UNUSED*/) { }
 void GitDiffList::WalkWorkSendData(uv_async_t *handle, int status /*UNUSED*/) { }
 void GitDiffList::WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/) {
