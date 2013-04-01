@@ -91,7 +91,7 @@ exports.offset = function(test) {
 };
 
 exports.author = function(test) {
-  test.expect(3);
+  test.expect(2);
   git.repo('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.author(function(error, author) {
@@ -123,7 +123,7 @@ exports.authorEmail = function(test) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.author(function commitAuthor(error, author) {
         author.email(function authorName(error, email) {
-          test.equals(email, 'mike@pagesofinterest.net', 'The author email should match expected value');
+          test.equals(email, 'mike@panmedia.co.nz', 'The author email should match expected value');
           test.done();
         });
       });
@@ -151,7 +151,7 @@ exports.committerEmail = function(test) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.committer(function commitCommitter(error, committer) {
         committer.email(function committerName(error, email) {
-          test.equals(email, 'mike@pagesofinterest.net', 'The committer email should match expected value');
+          test.equals(email, 'mike@panmedia.co.nz', 'The committer email should match expected value');
           test.done();
         });
       });
@@ -203,9 +203,11 @@ exports.masterHead = function(test) {
   git.repo('../.git', function(error, repository) {
     repository.branch('master', function(error, branch) {
       test.equals(error, null, 'Getting branch should not error');
-        repository.commit(branch.sha, function(error, commit) {
-        test.equals(error, null, 'Getting latest branch commit should not error');
-        test.done();
+      branch.sha(function(error, sha) {
+        repository.commit(sha, function(error, commit) {
+          test.equals(error, null, 'Getting latest branch commit should not error');
+          test.done();
+        });
       });
     });
   });
@@ -216,32 +218,16 @@ exports.masterHead = function(test) {
  *
  * @param  {Object} test
  */
-exports.parentSync = function(test) {
+exports.parents = function(test) {
   test.expect(2);
   git.repo('../.git', function(error, repository) {
-    repository.commit('2d71044741412280370cb0326c96d3a5a7b5dca1', function(error, commit) {
-      test.equals(commit.parentCount, 1, 'Commit has exactly one parent');
-      var parent = commit.parentSync(0);
-      test.equals(parent.sha, 'e8876707938abf94d5cc02b0c4017c4fec2aa44e', 'Parent SHA should match expected value');
-      test.done();
-    });
-  });
-};
-
-/**
- * Test that retreiving parent works as expected.
- *
- * @param  {Object} test
- */
-exports.parent = function(test) {
-  test.expect(2);
-  git.repo('../.git', function(error, repository) {
-    repository.commit('2d71044741412280370cb0326c96d3a5a7b5dca1', function(error, commit) {
-      test.equals(commit.parentCount, 1, 'Commit has exactly one parent');
-      commit.parent(0, function(error, parent) {
-        if (error) throw error;
-        test.equals(parent.sha, 'e8876707938abf94d5cc02b0c4017c4fec2aa44e', 'Parent SHA should match expected value');
-        test.done();
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.parents(function(error, parents) {
+        test.equals(parents.length, 1, 'Commit should have exactly one parent');
+        parents[0].sha(function parentSha(error, sha) {
+          test.equals(sha, '', 'Parent SHA should match expected value');
+          test.done();
+        });
       });
 
     });
