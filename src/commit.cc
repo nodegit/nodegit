@@ -43,7 +43,7 @@ void GitCommit::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
   NODE_SET_PROTOTYPE_METHOD(tpl, "committer", Committer);
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "parents", Parents);
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
 
@@ -54,9 +54,11 @@ void GitCommit::Initialize(Handle<Object> target) {
 git_commit* GitCommit::GetValue() {
   return this->commit;
 }
-
 void GitCommit::SetValue(git_commit* commit) {
   this->commit = commit;
+}
+void GitCommit::SetOid(git_oid* oid) {
+  this->oid = oid;
 }
 
 Handle<Value> GitCommit::New(const Arguments& args) {
@@ -134,7 +136,7 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
     Local<Object> commit = GitCommit::constructor_template->NewInstance();
     GitCommit *commitInstance = ObjectWrap::Unwrap<GitCommit>(commit);
     commitInstance->SetValue(baton->rawCommit);
-    commitInstance->oid = &baton->rawOid;
+    commitInstance->SetOid(&baton->rawOid);
 
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -180,7 +182,6 @@ void GitCommit::ShaWork(uv_work_t* req) {
   ShaBaton *baton = static_cast<ShaBaton *>(req->data);
 
   baton->sha[GIT_OID_HEXSZ] = '\0';
-
   git_oid_fmt(baton->sha, baton->rawOid);
 }
 void GitCommit::ShaAfterWork(uv_work_t* req) {
@@ -446,54 +447,70 @@ void GitCommit::TreeAfterWork(uv_work_t* req) {
   delete req;
 }
 
-Handle<Value> GitCommit::Parent(const Arguments& args) {
+Handle<Value> GitCommit::Parents(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() != 2) {
-    return ThrowException(Exception::Error(String::New("Position and callback are required")));
-  }
-
-  if(!args[0]->IsNumber()) {
-    return ThrowException(Exception::Error(String::New("Position is required and must be a Number.")));
-  }
-
-  if(!args[1]->IsFunction()) {
+  if(args.Length() == 0 && !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  ParentBaton* baton = new ParentBaton();
+  ParentsBaton* baton = new ParentsBaton;
   baton->request.data = baton;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
   baton->error = NULL;
-  baton->rawParentCommit = NULL;
-  baton->index = args[0]->ToInteger()->Value();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, ParentWork, (uv_after_work_cb)ParentAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, ParentsWork, (uv_after_work_cb)ParentsAfterWork);
 
   return Undefined();
 }
-void GitCommit::ParentWork(uv_work_t* req) {
-  ParentBaton* baton = static_cast<ParentBaton*>(req->data);
+void GitCommit::ParentsWork(uv_work_t* req) {
+  ParentsBaton* baton = static_cast<ParentsBaton*>(req->data);
 
-  int returnCode = git_commit_parent(&baton->rawParentCommit, baton->rawCommit, baton->index);
+  int parentCount = git_commit_parentcount(baton->rawCommit);
+  while (parentCount > 0) {
+    git_commit* rawParentCommit = NULL;
 
-  if (returnCode != GIT_OK) {
-    baton->error = giterr_last();
+    int parentIndex = parentCount -1;
+    int returnCode = git_commit_parent(&rawParentCommit, baton->rawCommit, parentIndex);
+
+    if (returnCode != GIT_OK) {
+      baton->error = giterr_last();
+      return;
+    }
+
+    const git_oid* rawParentOid = git_commit_id(rawParentCommit);
+
+    Parent* parent = new Parent;
+    parent->rawCommit = rawParentCommit;
+    parent->rawOid = rawParentOid;
+
+    baton->parents.push_back(parent);
+
+    parentCount--;
   }
 }
-void GitCommit::ParentAfterWork(uv_work_t* req) {
+void GitCommit::ParentsAfterWork(uv_work_t* req) {
   HandleScope scope;
-  ParentBaton* baton = static_cast<ParentBaton* >(req->data);
+  ParentsBaton* baton = static_cast<ParentsBaton* >(req->data);
 
   if (success(baton->error, baton->callback)) {
-    Local<Object> parent = GitCommit::constructor_template->NewInstance();
-    GitCommit *parentInstance = ObjectWrap::Unwrap<GitCommit>(parent);
-    parentInstance->SetValue(baton->rawParentCommit);
+    std::vector<Local<Object> > parents;
+
+    for(std::vector<Parent* >::iterator parentIterator = baton->parents.begin(); parentIterator != baton->parents.end(); ++parentIterator) {
+      Parent *parentData = (*parentIterator);
+
+      Local<Object> parent = GitCommit::constructor_template->NewInstance();
+      GitCommit *parentInstance = ObjectWrap::Unwrap<GitCommit>(parent);
+      parentInstance->SetValue(parentData->rawCommit);
+      parentInstance->SetOid(const_cast<git_oid *>(parentData->rawOid));
+
+      parents.push_back(parent);
+    }
 
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      parent
+      cvv8::CastToJS(parents)
     };
 
     TryCatch try_catch;
