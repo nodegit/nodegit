@@ -51,7 +51,6 @@ Handle<Value> GitBlob::New(const Arguments& args) {
 
   return scope.Close( args.This() );
 }
-
 Handle<Value> GitBlob::Free(const Arguments& args) {
   HandleScope scope;
 
@@ -59,14 +58,6 @@ Handle<Value> GitBlob::Free(const Arguments& args) {
   git_blob_free(blob->blob);
 
   return scope.Close( Undefined() );
-}
-
-
-int CreateFromFile(git_oid* oid, git_repository* repo, const char* path) {
-  return git_blob_create_fromdisk(oid, repo, path);
-}
-int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len) {
-  return git_blob_create_frombuffer(oid, repo, buffer, len);
 }
 
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
@@ -99,7 +90,7 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 }
 void GitBlob::LookupWork(uv_work_t* req) {
   LookupBaton* baton = static_cast<LookupBaton* >(req->data);
-  int returnCode =  git_blob_lookup(&baton->rawBlob, baton->rawRepo, &baton->rawOid);
+  int returnCode = git_blob_lookup(&baton->rawBlob, baton->rawRepo, &baton->rawOid);
   if (returnCode != GIT_OK) {
     baton->error = giterr_last();
   }
