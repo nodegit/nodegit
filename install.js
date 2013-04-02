@@ -97,13 +97,13 @@ async.series([
         });
     },
     function deleteExistingLibgit2BuildFolder(callback) {
-        fs.exists(libgit2BuildDirectory, function(exists) {
-            if (exists) {
-                fs.remove(libgit2BuildDirectory, callback);
-            } else {
+        // fs.exists(libgit2BuildDirectory, function(exists) {
+        //     if (exists) {
+        //         fs.remove(libgit2BuildDirectory, callback);
+        //     } else {
                 callback();
-            }
-        });
+            // }
+        // });
     },
     function createLibgit2BuildDirectory(callback) {
         console.log('[nodegit] Building libgit2 dependency.');
