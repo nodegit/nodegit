@@ -38,11 +38,11 @@ exports.method = function(test){
   }, 'Throw an exception if no callback');
 
   // Test invalid repository
-  git.repo('/etc/hosts', function(error, path) {
+  git.repo('/etc/hosts', function(error, repository) {
     test.equals(error.code, error.GITERR_REPOSITORY, error.message, 'Invalid repository error code');
 
     // Test valid repository
-    git.repo('../.git', function(error, path) {
+    git.repo('../.git', function(error, repository) {
       test.equals(null, error, 'Valid repository error code');
       test.done();
     });
@@ -62,16 +62,11 @@ exports.nonexistentDirectory = function(test) {
 };
 
 /**
- * Repo::Init
- *
  * Ensure the init method can create repositories at the destination path and
- * can create either bare/non-bare.  This should work async/sync and provide
- * the proper return values.
+ * can create either bare/non-bare.
  */
 exports.init = function(test) {
-  test.expect(4);
-
-  helper.testFunction(test.equals, git.repo().init, 'Repo::Init');
+  test.expect(2);
 
   // Cleanup, remove test repo directory - if it exists
   rimraf('./test.git', function() {
