@@ -32,18 +32,12 @@ class GitBlob : public ObjectWrap {
     git_blob* GetValue();
     void SetValue(git_blob* blob);
 
-    int Lookup(git_repository* repo, const git_oid *id);
-
-    int CreateFromFile(git_oid* oid, git_repository* repo, const char* path);
-    int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len);
-
   protected:
     GitBlob() {};
     ~GitBlob() {};
 
     static Handle<Value> New(const Arguments& args);
-
-    static Handle<Value> CreateFromFile(const Arguments& args);
+    static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
     static void LookupWork(uv_work_t* req);
