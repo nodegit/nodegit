@@ -4,7 +4,6 @@ var git = require('../').raw,
 
 var testRepo = new git.Repo();
 
-// Helper functions
 var helper = {
   // Test if obj is a true function
   testFunction: function(test, obj, label) {
@@ -25,16 +24,13 @@ var helper = {
   }
 };
 
-// Blob
+/**
+ * Blob constructor
+ */
 exports.constructor = function(test){
   test.expect(3);
-
-  // Test for function
   helper.testFunction(test.equals, git.Blob, 'Blob');
-
-  // Ensure we get an instance of Blob
   test.ok(new git.Blob() instanceof git.Blob, 'Invocation returns an instance of Blob');
-
   test.done();
 };
 
@@ -65,70 +61,34 @@ exports.lookup = function(test) {
   }, 'Throw an exception if no callback Object');
 
   testRepo.open(path.resolve('../.git'), function() {
-
-    //testOid.mkstr('59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5');
-
-    //testCommit.lookup(testRepo, testOid, function(err) {
-    //  var tree = new git.Tree(testRepo)
-    //    , entry = new git.TreeEntry()
-    //    , blob = new git.Blob(testRepo);
-
-    //  if(!testCommit.tree(tree) && tree.entryCount() > 1) {
-    //    tree.entryByIndex(entry, 1);
-    //    entry.toObject(testRepo, blob);
-
-    //    //console.log(entry.name() + ':');
-    //    //console.log(blob.rawSize());
-    //    //console.dir(blob.rawContent());
-    //  }
-    //});
+    // @todo actually lookup
     test.done();
-
   });
 };
 
 // Blob::RawContent
 exports.rawContent = function(test) {
-  var testOid = new git.Oid()
-    , testBlob = new git.Blob()
-    , testCommit = new git.Commit();
+  var testOid = new git.Oid(),
+      testBlob = new git.Blob(),
+      testCommit = new git.Commit();
 
   test.expect(2);
 
   // Test for function
   helper.testFunction(test.equals, testBlob.rawContent, 'Blob::RawContent');
 
-  testRepo.open(path.resolve('../.git'), function() {
-    testOid.mkstr('59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5');
-
-    testCommit.lookup(testRepo, testOid, function(err) {
-      var tree = new git.Tree(testRepo),
-          entry = new git.TreeEntry(),
-          blob = new git.Blob(testRepo);
-
-      //if(!testCommit.tree(tree) && tree.entryCount() > 1) {
-      //  tree.entryByIndex(entry, 1);
-      //  entry.toObject(testRepo, blob);
-
-      //  //console.log(entry.name() + ':');
-      //  //console.log(blob.rawSize());
-      //  //console.dir(blob.rawContent());
-      //}
-    });
-  });
-
   test.done();
 };
 
-// Blob::Close
-exports.close = function(test) {
+// Blob::Free
+exports.free = function(test) {
   var testOid = new git.Oid(),
       testBlob = new git.Blob();
 
   test.expect(2);
 
   // Test for function
-  helper.testFunction(test.equals, testBlob.close, 'Blob::Close');
+  helper.testFunction(test.equals, testBlob.free, 'Blob::Free');
 
   test.done();
 };
@@ -141,7 +101,7 @@ exports.createFromFile = function(test) {
   test.expect(2);
 
   // Test for function
-  helper.testFunction(test.equals, testBlob.createFromFile, 'Blob::Close');
+  helper.testFunction(test.equals, testBlob.createFromFile, 'Blob::CreateFromFile');
 
   test.done();
 };
