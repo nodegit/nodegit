@@ -1,22 +1,26 @@
 var git = require('../'),
     utilities = require('../lib/utilities');
 
-var object = {
-  property: 'value'
+exports.successNoError = function(test){
+  test.expect(0);
+
+  if (utilities.success(null, function() { })) {
+    test.done();
+  }
 };
 
-var details = {
-  one: 'one',
-  two: 'two'
-};
-
-// Repo
-exports.basic = function(test){
-  test.expect(2);
-
-  object = utilities.applyProperties(details, object);
-  test.equal(object.one, details.one, 'Properties should match');
-  test.equal(object.two, details.two, 'Properties should match');
-
-  test.done();
+/**
+ * Test whether success function calls callback with error
+ */
+exports.successError = function(test){
+  test.expect(3);
+  utilities.success(git.error({
+    code: git.raw.Error.codes.GITERR_INVALID,
+    message: 'Message'
+  }), function(error) {
+    test.notEqual(error, null, 'Error should not be null');
+    test.equal(error.code, git.raw.Error.codes.GITERR_INVALID, 'Error code should match input');
+    test.equal(error.message, 'Message', 'Error message should match input');
+    test.done();
+  });
 };
