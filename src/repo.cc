@@ -39,13 +39,8 @@ void GitRepo::Initialize(Handle<Object> target) {
 git_repository* GitRepo::GetValue() {
   return this->repo;
 }
-
 void GitRepo::SetValue(git_repository* repo) {
   this->repo = repo;
-}
-
-void GitRepo::Free() {
-  git_repository_free(this->repo);
 }
 
 Handle<Value> GitRepo::New(const Arguments& args) {
@@ -56,6 +51,16 @@ Handle<Value> GitRepo::New(const Arguments& args) {
 
   return scope.Close(args.This());
 }
+
+Handle<Value> GitRepo::Free(const Arguments& args) {
+  HandleScope scope;
+
+  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
+  git_repository_free(repo->repo);
+
+  return scope.Close( Undefined() );
+}
+
 
 Handle<Value> GitRepo::Open(const Arguments& args) {
   HandleScope scope;
@@ -123,16 +128,6 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   }
   delete req;
   baton->repo->Unref();
-}
-
-Handle<Value> GitRepo::Free(const Arguments& args) {
-  HandleScope scope;
-
-  GitRepo *repo = ObjectWrap::Unwrap<GitRepo>(args.This());
-
-  repo->Free();
-
-  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitRepo::Init(const Arguments& args) {
