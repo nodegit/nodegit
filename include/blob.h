@@ -48,7 +48,12 @@ class GitBlob : public ObjectWrap {
     static void RawContentAfterWork(uv_work_t* req);
 
     static Handle<Value> CreateFromFile(const Arguments& args);
+    static void CreateFromFileWork(uv_work_t* req);
+    static void CreateFromFileAfterWork(uv_work_t* req);
+
     static Handle<Value> CreateFromBuffer(const Arguments& args);
+    static void CreateFromBufferWork(uv_work_t* req);
+    static void CreateFromBufferAfterWork(uv_work_t* req);
 
   private:
 
@@ -73,6 +78,31 @@ class GitBlob : public ObjectWrap {
         git_blob* rawBlob;
         std::string rawContent;
         int rawSize;
+
+        Persistent<Function> callback;
+    };
+
+    struct CreateFromFileBaton {
+        uv_work_t request;
+        const git_error* error;
+
+        GitBlob* blob;
+        git_blob* rawBlob;
+        git_repository* rawRepo;
+        std::string path;
+
+        Persistent<Function> callback;
+    };
+
+    struct CreateFromBufferBaton {
+        uv_work_t request;
+        const git_error* error;
+
+        GitBlob* blob;
+        git_blob* rawBlob;
+        git_repository* rawRepo;
+        const void* data;
+        size_t dataLength;
 
         Persistent<Function> callback;
     };

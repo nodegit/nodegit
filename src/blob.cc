@@ -13,6 +13,7 @@
 #include "../include/repo.h"
 #include "../include/blob.h"
 
+#include "../include/functions/string.h"
 #include "../include/functions/utilities.h"
 
 using namespace v8;
@@ -162,59 +163,128 @@ void GitBlob::RawContentAfterWork(uv_work_t* req) {
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   HandleScope scope;
 
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
-  }
-
-  if(args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  if(args.Length() == 2 || !args[2]->IsString()) {
+  if(args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("Path is required and must be an String.")));
   }
 
-  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject());
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be an Function.")));
+  }
 
-  String::Utf8Value path(args[2]);
+  CreateFromFileBaton* baton = new CreateFromFileBaton;
+  baton->request.data = baton;
+  baton->error = NULL;
+  baton->blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+  baton->blob->Ref();
+  baton->rawBlob = baton->blob->GetValue();
+  baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->path = stringArgToString(args[1]->ToString());
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
-  git_oid tmp_oid = oid->GetValue();
-  int err = blob->CreateFromFile(&tmp_oid, repo->GetValue(), *path);
+  uv_queue_work(uv_default_loop(), &baton->request, CreateFromFileWork, (uv_after_work_cb)CreateFromFileAfterWork);
 
-  return scope.Close( Integer::New(err) );
+  return Undefined();
+}
+void GitBlob::CreateFromFileWork(uv_work_t* req) {
+  CreateFromFileBaton* baton = static_cast<CreateFromFileBaton*>(req->data);
+
+  git_oid* rawOid = NULL;
+  int returnCode = git_blob_create_fromdisk(rawOid, baton->rawRepo, baton->path.c_str());
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+    return;
+  }
+
+  returnCode = git_blob_lookup(&baton->rawBlob, baton->rawRepo, rawOid);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+void GitBlob::CreateFromFileAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  CreateFromFileBaton* baton = static_cast<CreateFromFileBaton* >(req->data);
+
+  baton->blob->SetValue(baton->rawBlob);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    baton->blob->handle_
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
 }
 
 Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   HandleScope scope;
 
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-
   if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object.")));
-  }
-
-  if(args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
   }
 
-  if(args.Length() == 2 || !Buffer::HasInstance(args[2])) {
-    return ThrowException(Exception::Error(String::New("Buffer is required and must be a Buffer.")));
+  if(args.Length() == 1 || !Buffer::HasInstance(args[1])) {
+    return ThrowException(Exception::Error(String::New("Buffer is required and must be an Buffer.")));
   }
 
-  GitOid* oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject());
-  GitRepo* repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject());
-  Local<Object> buffer = args[2]->ToObject();
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be an Function.")));
+  }
 
-  const void* data = Buffer::Data(buffer);
-  size_t length = Buffer::Length(buffer);
+  CreateFromBufferBaton* baton = new CreateFromBufferBaton;
+  baton->request.data = baton;
+  baton->error = NULL;
+  baton->blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+  baton->blob->Ref();
+  baton->rawBlob = baton->blob->GetValue();
+  baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  Local<Object> buffer = args[1]->ToObject();
+  baton->data = Buffer::Data(buffer);
+  baton->dataLength = Buffer::Length(buffer);
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
-  git_oid tmp_oid = oid->GetValue();
-  int err = blob->CreateFromBuffer(&tmp_oid, repo->GetValue(), data, length);
+  uv_queue_work(uv_default_loop(), &baton->request, CreateFromFileWork, (uv_after_work_cb)CreateFromFileAfterWork);
 
-  return scope.Close( Integer::New(err) );
+  return Undefined();
+}
+void GitBlob::CreateFromBufferWork(uv_work_t* req) {
+  CreateFromBufferBaton* baton = static_cast<CreateFromBufferBaton* >(req->data);
+
+  git_oid* rawOid = NULL;
+  int returnCode = git_blob_create_frombuffer(rawOid, baton->rawRepo, baton->data, baton->dataLength);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
+
+  returnCode = git_blob_lookup(&baton->rawBlob, baton->rawRepo, rawOid);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+void GitBlob::CreateFromBufferAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  CreateFromBufferBaton* baton = static_cast<CreateFromBufferBaton* >(req->data);
+
+  baton->blob->SetValue(baton->rawBlob);
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    baton->blob->handle_
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
 }
 
 Persistent<Function> GitBlob::constructor_template;
