@@ -120,19 +120,6 @@ exports.rawContent = function(test) {
   test.done();
 };
 
-// Blob::RawSize
-exports.rawSize = function(test) {
-  var testOid = new git.Oid(),
-      testBlob = new git.Blob();
-
-  test.expect(2);
-
-  // Test for function
-  helper.testFunction(test.equals, testBlob.rawSize, 'Blob::RawSize');
-
-  test.done();
-};
-
 // Blob::Close
 exports.close = function(test) {
   var testOid = new git.Oid(),
