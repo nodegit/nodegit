@@ -39,7 +39,7 @@ exports.method = function(test){
 
   // Test invalid repository
   git.repo('/etc/hosts', function(error, repository) {
-    test.equals(error.code, error.GITERR_REPOSITORY, error.message, 'Invalid repository error code');
+    test.equals(error.code, error.codes.GITERR_REPOSITORY, error.message, 'Invalid repository error code');
 
     // Test valid repository
     git.repo('../.git', function(error, repository) {
