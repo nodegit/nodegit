@@ -28,7 +28,7 @@ void GitBlob::Initialize (Handle<v8::Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "rawContent", RawContent);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "close", Close);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createFromFile", CreateFromFile);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createFromBuffer", CreateFromBuffer);
 
@@ -43,17 +43,6 @@ void GitBlob::SetValue(git_blob* blob) {
   this->blob = blob;
 }
 
-void GitBlob::Close() {
-  git_blob_free(this->blob);
-}
-
-int CreateFromFile(git_oid* oid, git_repository* repo, const char* path) {
-  return git_blob_create_fromdisk(oid, repo, path);
-}
-int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len) {
-  return git_blob_create_frombuffer(oid, repo, buffer, len);
-}
-
 Handle<Value> GitBlob::New(const Arguments& args) {
   HandleScope scope;
 
@@ -61,6 +50,23 @@ Handle<Value> GitBlob::New(const Arguments& args) {
   blob->Wrap(args.This());
 
   return scope.Close( args.This() );
+}
+
+Handle<Value> GitBlob::Free(const Arguments& args) {
+  HandleScope scope;
+
+  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
+  git_blob_free(blob->blob);
+
+  return scope.Close( Undefined() );
+}
+
+
+int CreateFromFile(git_oid* oid, git_repository* repo, const char* path) {
+  return git_blob_create_fromdisk(oid, repo, path);
+}
+int CreateFromBuffer(git_oid* oid, git_repository* repo, const void* buffer, size_t len) {
+  return git_blob_create_frombuffer(oid, repo, buffer, len);
 }
 
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
@@ -160,16 +166,6 @@ void GitBlob::RawContentAfterWork(uv_work_t* req) {
     node::FatalException(try_catch);
   }
   delete req;
-}
-
-Handle<Value> GitBlob::Close(const Arguments& args) {
-  HandleScope scope;
-
-  GitBlob* blob = ObjectWrap::Unwrap<GitBlob>(args.This());
-
-  blob->Close();
-
-  return scope.Close( Undefined() );
 }
 
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
