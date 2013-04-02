@@ -85,9 +85,6 @@ exports.lookup = function(test) {
       testOid.mkstr('cb76e3c030ab29db332aff3b297dc39451a84762');
       testCommit.lookup(testRepo, testOid, function(err) {
         test.equals(null, err, 'Valid commit');
-
-        //test.equals('Updated gitignore and raw-commit test', testCommit.messageShort(), 'Commit message is valid');
-
         test.done();
       });
     });
