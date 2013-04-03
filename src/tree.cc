@@ -66,11 +66,15 @@ Handle<Value> GitTree::Walk(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("No tree list to Walk.")));
   }
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Entry callback is required and must be a Function.")));
+  if(args.Length() == 0 || !args[0]->IsBoolean()) {
+    return ThrowException(Exception::Error(String::New("Blobs only flag is required and must be a Boolean.")));
   }
 
   if(args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Entry callback is required and must be a Function.")));
+  }
+
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("End callback is required and must be a Function.")));
   }
 
@@ -82,8 +86,9 @@ Handle<Value> GitTree::Walk(const Arguments& args) {
 
   baton->rawTree = tree->GetValue();
   baton->error = NULL;
-  baton->entryCallback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-  baton->endCallback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  baton->blobsOnly = CastFromJS<bool>(args[0]->ToBoolean());
+  baton->entryCallback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  baton->endCallback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_thread_create(&baton->threadId, WalkWork, baton);
 
@@ -106,16 +111,32 @@ void GitTree::WalkWork(void* payload) {
   baton->asyncEnd.data = baton;
   uv_async_send(&baton->asyncEnd);
 }
-int GitTree::WalkWorkEntry(const char* root, const git_tree_entry* entry, void* payload) {
+int GitTree::WalkWorkEntry(const char* root, const git_tree_entry* entry,
+                           void* payload) {
   WalkBaton *baton = static_cast<WalkBaton *>(payload);
 
   uv_mutex_lock(&baton->mutex);
 
-  GitTree::WalkEntry* walkEntry = new WalkEntry;
-  walkEntry->rawEntry = git_tree_entry_dup(entry);
-  walkEntry->root = root;
+  if (!baton->blobsOnly) {
 
-  baton->rawTreeEntries.push_back(walkEntry);
+    GitTree::WalkEntry* walkEntry = new WalkEntry;
+    walkEntry->rawEntry = git_tree_entry_dup(entry);
+    walkEntry->root = root;
+    baton->rawTreeEntries.push_back(walkEntry);
+
+  } else {
+    git_tree_entry* rawEntry = git_tree_entry_dup(entry);
+    git_filemode_t fileMode = git_tree_entry_filemode(rawEntry);
+
+    if (fileMode == GIT_FILEMODE_BLOB ||
+        fileMode == GIT_FILEMODE_BLOB_EXECUTABLE) {
+
+      GitTree::WalkEntry* walkEntry = new WalkEntry;
+      walkEntry->rawEntry = rawEntry;
+      walkEntry->root = root;
+      baton->rawTreeEntries.push_back(walkEntry);
+    }
+  }
 
   uv_mutex_unlock(&baton->mutex);
 

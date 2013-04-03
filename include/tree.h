@@ -72,6 +72,8 @@ class GitTree : public ObjectWrap {
       std::vector<WalkEntry* > rawTreeEntries;
 
       git_tree* rawTree;
+      bool blobsOnly;
+
       Persistent<Function> entryCallback;
       Persistent<Function> endCallback;
     };
