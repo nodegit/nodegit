@@ -10,7 +10,6 @@
 
 #include "git2.h"
 
-#include "../include/object.h"
 #include "../include/repo.h"
 #include "../include/commit.h"
 #include "../include/error.h"

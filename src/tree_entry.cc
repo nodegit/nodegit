@@ -15,7 +15,6 @@
 #include "../include/repo.h"
 #include "../include/blob.h"
 #include "../include/tree.h"
-#include "../include/object.h"
 #include "../include/oid.h"
 #include "../include/tree_entry.h"
 #include "../include/error.h"

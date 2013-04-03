@@ -14,8 +14,6 @@
 
 #include "git2.h"
 
-#include "object.h"
-
 using namespace node;
 using namespace v8;
 
@@ -27,7 +25,6 @@ class GitRepo : public ObjectWrap {
     git_repository* GetValue();
     void SetValue(git_repository* repo);
 
-    // Synchronous
     void Free();
 
   protected:

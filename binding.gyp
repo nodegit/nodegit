@@ -7,7 +7,6 @@
                 'src/blob.cc',
                 'src/commit.cc',
                 'src/error.cc',
-                'src/object.cc',
                 'src/oid.cc',
                 'src/reference.cc',
                 'src/repo.cc',

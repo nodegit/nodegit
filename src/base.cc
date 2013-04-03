@@ -16,7 +16,6 @@
 #include "../include/blob.h"
 #include "../include/repo.h"
 #include "../include/oid.h"
-#include "../include/object.h"
 #include "../include/commit.h"
 #include "../include/revwalk.h"
 #include "../include/tree.h"
@@ -33,7 +32,6 @@ extern "C" void init(Handle<v8::Object> target) {
   GitSignature::Initialize(target);
   GitBlob::Initialize(target);
   GitOid::Initialize(target);
-  GitObject::Initialize(target);
   GitRepo::Initialize(target);
   GitCommit::Initialize(target);
   GitRevWalk::Initialize(target);

@@ -15,6 +15,7 @@
 #include "git2.h"
 
 #include "repo.h"
+#include "oid.h"
 
 using namespace v8;
 using namespace node;

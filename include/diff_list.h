@@ -13,7 +13,8 @@
 
 #include "git2.h"
 
-#include "../include/repo.h"
+#include "repo.h"
+#include "oid.h"
 
 using namespace node;
 using namespace v8;

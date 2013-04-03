@@ -17,7 +17,6 @@
 #include "repo.h"
 #include "tree.h"
 #include "oid.h"
-#include "object.h"
 
 using namespace v8;
 using namespace node;
