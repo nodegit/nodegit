@@ -34,15 +34,13 @@ var knownSha = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
 
 exports.fromString = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
-    (new git.oid()).fromString(knownSha, function(error, oid) {
-      test.equal(error, null, 'Should not error');
-      test.done();
-    });
+  (new git.oid()).fromString(knownSha, function(error, oid) {
+    test.equal(error, null, 'Should not error');
+    test.done();
   });
 };
 
-exports.fromString = function(test) {
+exports.sha = function(test) {
   test.expect(2);
   (new git.oid()).fromString(knownSha, function(error, oid) {
     oid.sha(function(error, sha) {
