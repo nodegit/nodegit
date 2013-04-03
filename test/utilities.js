@@ -14,10 +14,7 @@ exports.successNoError = function(test){
  */
 exports.successError = function(test){
   test.expect(3);
-  utilities.success(git.error({
-    code: git.raw.Error.codes.GITERR_INVALID,
-    message: 'Message'
-  }), function(error) {
+  utilities.success(new git.error('Message', git.raw.Error.codes.GITERR_INVALID), function(error) {
     test.notEqual(error, null, 'Error should not be null');
     test.equal(error.code, git.raw.Error.codes.GITERR_INVALID, 'Error code should match input');
     test.equal(error.message, 'Message', 'Error message should match input');
