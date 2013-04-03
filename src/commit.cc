@@ -5,9 +5,9 @@
  * Dual licensed under the MIT and GPL licenses.
  */
 
-#include <string.h>
 #include <v8.h>
 #include <node.h>
+#include <string.h>
 
 #include "git2.h"
 #include "cvv8/v8-convert.hpp"
@@ -21,6 +21,7 @@
 #include "../include/error.h"
 
 #include "../include/functions/utilities.h"
+#include "../include/functions/string.h"
 
 using namespace v8;
 using namespace cvv8;
@@ -36,7 +37,6 @@ void GitCommit::Initialize(Handle<Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "sha", Sha);
   NODE_SET_PROTOTYPE_METHOD(tpl, "message", Message);
   NODE_SET_PROTOTYPE_METHOD(tpl, "time", Time);
   NODE_SET_PROTOTYPE_METHOD(tpl, "offset", Offset);
@@ -160,45 +160,6 @@ Handle<Value> GitCommit::Oid(const Arguments& args) {
   oidInstance->SetValue(*const_cast<git_oid *>(ObjectWrap::Unwrap<GitCommit>(args.This())->oid));
 
   return scope.Close(oid);
-}
-
-Handle<Value> GitCommit::Sha(const Arguments& args) {
-  HandleScope scope;
-
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  ShaBaton* baton = new ShaBaton;
-  baton->request.data = baton;
-  baton->rawOid = ObjectWrap::Unwrap<GitCommit>(args.This())->oid;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, ShaWork, (uv_after_work_cb)ShaAfterWork);
-
-  return Undefined();
-}
-void GitCommit::ShaWork(uv_work_t* req) {
-  ShaBaton *baton = static_cast<ShaBaton *>(req->data);
-
-  baton->sha[GIT_OID_HEXSZ] = '\0';
-  git_oid_fmt(baton->sha, baton->rawOid);
-}
-void GitCommit::ShaAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  ShaBaton *baton = static_cast<ShaBaton *>(req->data);
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    String::New(baton->sha)
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
 }
 
 Handle<Value> GitCommit::Message(const Arguments& args) {

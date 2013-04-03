@@ -16,8 +16,6 @@
 #include "oid.h"
 #include "tree.h"
 
-#include "../include/functions/string.h"
-
 using namespace node;
 using namespace v8;
 
@@ -54,10 +52,6 @@ class GitCommit : public ObjectWrap {
     static void LookupAfterWork(uv_work_t *req);
 
     static Handle<Value> Oid(const Arguments& args);
-
-    static Handle<Value> Sha(const Arguments& args);
-    static void ShaWork(uv_work_t* req);
-    static void ShaAfterWork(uv_work_t* req);
 
     static Handle<Value> Message(const Arguments& args);
     static void MessageWork(uv_work_t* req);
@@ -99,15 +93,6 @@ class GitCommit : public ObjectWrap {
       git_oid rawOid;
       std::string sha;
       git_commit* rawCommit;
-
-      Persistent<Function> callback;
-    };
-
-    struct ShaBaton {
-      uv_work_t request;
-
-      git_oid* rawOid;
-      char sha[GIT_OID_HEXSZ + 1];
 
       Persistent<Function> callback;
     };
