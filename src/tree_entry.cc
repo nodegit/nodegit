@@ -8,6 +8,8 @@
 #include <v8.h>
 #include <node.h>
 
+#include "cvv8/v8-convert.hpp"
+
 #include "git2.h"
 
 #include "../include/repo.h"
@@ -22,6 +24,12 @@
 
 using namespace v8;
 using namespace node;
+using namespace cvv8;
+
+namespace cvv8 {
+  template <>
+  struct NativeToJS<git_filemode_t> : NativeToJS<int32_t> {};
+}
 
 void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
@@ -35,7 +43,18 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "toBlob", ToBlob);
 
+  // Add libgit2 file modes to entry object
+  Local<Object> libgit2FileModes = Object::New();
+
+  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_NEW"), CastToJS(GIT_FILEMODE_NEW), ReadOnly);
+  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_TREE"), CastToJS(GIT_FILEMODE_TREE), ReadOnly);
+  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_BLOB"), CastToJS(GIT_FILEMODE_BLOB), ReadOnly);
+  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_BLOB_EXECUTABLE"), CastToJS(GIT_FILEMODE_BLOB_EXECUTABLE), ReadOnly);
+  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_LINK"), CastToJS(GIT_FILEMODE_LINK), ReadOnly);
+  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_COMMIT"), CastToJS(GIT_FILEMODE_COMMIT), ReadOnly);
+
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  constructor_template->Set(String::NewSymbol("fileModes"), libgit2FileModes, ReadOnly);
   target->Set(String::NewSymbol("TreeEntry"), constructor_template);
 }
 
@@ -86,12 +105,6 @@ Handle<Value> GitTreeEntry::Root(const Arguments& args) {
 }
 
 Handle<Value> GitTreeEntry::Name(const Arguments& args) {
-  // HandleScope scope;
-
-  // GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
-
-  // return scope.Close(String::New(git_tree_entry_name(entry->entry)));
-  // return Undefined();
   HandleScope scope;
 
   if(args.Length() == 0 || !args[0]->IsFunction()) {
