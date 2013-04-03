@@ -32,7 +32,7 @@ void GitTreeEntry::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(tpl, "root", Root);
   NODE_SET_PROTOTYPE_METHOD(tpl, "fileMode", FileMode);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "id", Id);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "toBlob", ToBlob);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -147,23 +147,46 @@ void GitTreeEntry::FileModeAfterWork(uv_work_t* req) {
 
 }
 
-Handle<Value> GitTreeEntry::Id(const Arguments& args) {
-  // HandleScope scope;
+Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
+  HandleScope scope;
 
-  // GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
 
-  // Handle<Object> oid = GitOid::constructor_template->NewInstance();
-  // GitOid* oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-  // oidInstance->SetValue(*const_cast<git_oid *>(git_tree_entry_id(entry->entry)));
+  OidBaton* baton = new OidBaton;
+  baton->request.data = baton;
+  baton->rawEntry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  // return oid;
+  uv_queue_work(uv_default_loop(), &baton->request, OidWork, (uv_after_work_cb)OidAfterWork);
+
   return Undefined();
 }
-void GitTreeEntry::IdWork(uv_work_t* req) {
+void GitTreeEntry::OidWork(uv_work_t* req) {
+  OidBaton *baton = static_cast<OidBaton *>(req->data);
 
+  baton->rawOid = git_tree_entry_id(const_cast<git_tree_entry *>(baton->rawEntry));
 }
-void GitTreeEntry::IdAfterWork(uv_work_t* req) {
+void GitTreeEntry::OidAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  OidBaton *baton = static_cast<OidBaton *>(req->data);
 
+  Handle<Object> oid = GitOid::constructor_template->NewInstance();
+  GitOid* oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
+  oidInstance->SetValue(*const_cast<git_oid *>(baton->rawOid));
+
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    oid
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
 }
 
 Handle<Value> GitTreeEntry::ToBlob(const Arguments& args) {
