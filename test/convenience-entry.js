@@ -12,6 +12,15 @@ var getEntry = function(path, callback) {
  });
 };
 
+exports.missingFile = function(test) {
+  test.expect(1);
+
+  getEntry('test/convenience-entry.js', function(error, entry) {
+    test.notEqual(error, null, 'Missing file should error');
+    test.done();
+  });
+};
+
 exports.sha = function(test) {
   test.expect(1);
   getEntry('README.md', function(error, entry) {
@@ -48,6 +57,67 @@ exports.isDirectory = function(test) {
           test.done();
         });
       });
+    });
+  });
+};
+
+exports.name = function(test) {
+  test.expect(2);
+  getEntry('test/raw-commit.js', function(error, entry) {
+    test.equal(error, null, 'Should not error');
+    entry.name(function(error, name) {
+      test.equal(name, 'raw-commit.js', 'Name should match expected value');
+      test.done();
+    });
+  });
+};
+
+exports.root = function(test) {
+  test.expect(1);
+  getEntry('test/raw-commit.js', function(error, entry) {
+    entry.root(function(error, root) {
+      test.equal(root, 'test', 'Root should match expected value');
+      test.done();
+    });
+  });
+};
+
+exports.path = function(test) {
+  test.expect(1);
+  getEntry('test/raw-commit.js', function(error, entry) {
+    entry.path(function(error, path) {
+      test.equal(path, 'test/raw-commit.js', 'Path should match expected value');
+      test.done();
+    });
+  });
+};
+
+exports.content = function(test) {
+  test.expect(1);
+  getEntry('test/raw-commit.js', function(error, entry) {
+    entry.content(function(error, content) {
+      test.equal(content.length, 2736, 'Content length should match expected value');
+      test.done();
+    });
+  });
+};
+
+exports.toBlob = function(test) {
+  test.expect(1);
+  getEntry('test/raw-commit.js', function(error, entry) {
+    entry.toBlob(function(error, blob) {
+      test.equal(blob instanceof git.blob, true, 'Expected instance of Blob');
+      test.done();
+    });
+  });
+};
+
+exports.tree = function(test) {
+  test.expect(1);
+  getEntry('test', function(error, entry) {
+    entry.tree(function(error, tree) {
+      test.equal(tree instanceof git.tree, true, 'Expected instance of Tree');
+      test.done();
     });
   });
 };
