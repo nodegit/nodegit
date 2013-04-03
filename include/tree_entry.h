@@ -49,9 +49,9 @@ class GitTreeEntry : ObjectWrap {
     static void FileModeWork(uv_work_t* req);
     static void FileModeAfterWork(uv_work_t* req);
 
-    static Handle<Value> Id(const Arguments& args);
-    static void IdWork(uv_work_t* req);
-    static void IdAfterWork(uv_work_t* req);
+    static Handle<Value> Oid(const Arguments& args);
+    static void OidWork(uv_work_t* req);
+    static void OidAfterWork(uv_work_t* req);
 
     static Handle<Value> ToBlob(const Arguments& args);
     static void ToBlobWork(uv_work_t *req);
@@ -79,11 +79,11 @@ class GitTreeEntry : ObjectWrap {
       Persistent<Function> callback;
     };
 
-    struct IdBaton {
+    struct OidBaton {
       uv_work_t request;
 
       git_tree_entry* rawEntry;
-      git_oid* rawOid;
+      const git_oid* rawOid;
 
       Persistent<Function> callback;
     };
