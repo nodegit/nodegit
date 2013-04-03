@@ -42,6 +42,10 @@ class GitTree : public ObjectWrap {
 
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> Lookup(const Arguments& args);
+    static void LookupWork(uv_work_t* req);
+    static void LookupAfterWork(uv_work_t* req);
+
     static Handle<Value> Walk(const Arguments& args);
     static void WalkWork(void* payload);
     static int WalkWorkEntry(const char *root, const git_tree_entry *entry, void *payload);
@@ -55,6 +59,17 @@ class GitTree : public ObjectWrap {
   private:
 
     git_tree* tree;
+
+    struct LookupBaton {
+      uv_work_t request;
+      const git_error* error;
+
+      git_oid rawOid;
+      git_repository* rawRepo;
+      git_tree* rawTree;
+
+      Persistent<Function> callback;
+    };
 
     struct WalkEntry {
         git_tree_entry* rawEntry;

@@ -33,6 +33,7 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Tree"));
 
+  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "walk", Walk);
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByPath", EntryByPath);
 
@@ -55,6 +56,64 @@ Handle<Value> GitTree::New(const Arguments& args) {
   tree->Wrap(args.This());
 
   return scope.Close(args.This());
+}
+
+Handle<Value> GitTree::Lookup(const Arguments& args) {
+  HandleScope scope;
+
+  if(args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid is required and must be a Object.")));
+  }
+
+  if(args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repository is required and must be a Object.")));
+  }
+
+  if(args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  LookupBaton* baton = new LookupBaton;
+  baton->request.data = baton;
+  baton->error = NULL;
+  baton->rawTree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
+  baton->rawOid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
+
+  return Undefined();
+}
+void GitTree::LookupWork(uv_work_t* req) {
+  LookupBaton* baton = static_cast<LookupBaton*>(req->data);
+
+  int returnCode = git_tree_lookup(&baton->rawTree, baton->rawRepo, &baton->rawOid);
+  if (returnCode != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+void GitTree::LookupAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  LookupBaton* baton = static_cast<LookupBaton* >(req->data);
+
+  if (success(baton->error, baton->callback)) {
+    Local<Object> tree = GitTree::constructor_template->NewInstance();
+    GitTree *treeInstance = ObjectWrap::Unwrap<GitTree>(tree);
+    treeInstance->SetValue(baton->rawTree);
+
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      tree
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+        node::FatalException(try_catch);
+    }
+  }
+  delete req;
 }
 
 Handle<Value> GitTree::Walk(const Arguments& args) {
