@@ -145,19 +145,41 @@ void GitTreeEntry::NameAfterWork(uv_work_t* req) {
 }
 
 Handle<Value> GitTreeEntry::FileMode(const Arguments& args) {
-  // HandleScope scope;
+  HandleScope scope;
 
-  // GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
+  if(args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
 
-  // return scope.Close(Number::New(git_tree_entry_filemode(entry->entry)));
+  FileModeBaton *baton = new FileModeBaton;
+  baton->request.data = baton;
+  baton->rawEntry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, FileModeWork, (uv_after_work_cb)FileModeAfterWork);
+
   return Undefined();
 }
 void GitTreeEntry::FileModeWork(uv_work_t* req) {
+  FileModeBaton *baton = static_cast<FileModeBaton *>(req->data);
 
-
+  baton->fileMode = git_tree_entry_filemode(baton->rawEntry);
 }
 void GitTreeEntry::FileModeAfterWork(uv_work_t* req) {
+  HandleScope scope;
+  FileModeBaton *baton = static_cast<FileModeBaton *>(req->data);
 
+  Handle<Value> argv[2] = {
+    Local<Value>::New(Null()),
+    Integer::New(baton->fileMode)
+  };
+
+  TryCatch try_catch;
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  delete req;
 }
 
 Handle<Value> GitTreeEntry::Oid(const Arguments& args) {

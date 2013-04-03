@@ -74,7 +74,7 @@ class GitTreeEntry : ObjectWrap {
       uv_work_t request;
 
       git_tree_entry* rawEntry;
-      int fileMode;
+      git_filemode_t fileMode;
 
       Persistent<Function> callback;
     };
