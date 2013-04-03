@@ -35,64 +35,48 @@ exports.constructor = function(test){
   test.done();
 };
 
-// Oid::Mkstr
-exports.mkstr = function(test) {
-  var testOid = new git.Oid();
-
+// Oid::FromString
+exports.fromString = function(test) {
   test.expect(6);
 
+  var testOid = new git.Oid();
+
   // Test for function
-  helper.testFunction(test.equals, testOid.mkstr, 'Oid::Mkstr');
+  helper.testFunction(test.equals, testOid.fromString, 'Oid::FromString');
 
   // Test path argument existence
   helper.testException(test.ok, function() {
-    testOid.mkstr();
+    testOid.fromString();
   }, 'Throw an exception if no hex String');
 
   // Test that both arguments result correctly
   helper.testException(test.ifError, function() {
-    testOid.mkstr("somestr");
+    testOid.fromString("somestr", function() {});
   }, 'No exception is thrown with proper arguments');
 
   // Test invalid hex id string
-  test.equals(git.Error.returnCodes.GIT_ERROR, testOid.mkstr('1392DLFJIOS'), 'Invalid hex id String');
-
-  // Test valid hex id string
-  test.equals(git.Error.returnCodes.GIT_OK, testOid.mkstr('1810DFF58D8A660512D4832E740F692884338CCD'), 'Valid hex id String');
-
-  test.done();
+  testOid.fromString('1392DLFJIOS', function(error, oid) {
+    test.notEqual(null, error, 'Invalid hex id String');
+    testOid.fromString('1810DFF58D8A660512D4832E740F692884338CCD', function(error, oid) {
+      // Test valid hex id string
+      test.equal(null, error, 'Valid hex id String');
+      test.done();
+    });
+  });
 };
 
-// Oid::Fmt
-exports.fmt = function(test) {
+// Oid::Sha
+exports.sha = function(test) {
+  test.expect(3);
   var testOid = new git.Oid();
 
-  test.expect(3);
-
   // Test for function
-  helper.testFunction(test.equals, testOid.fmt, 'Oid::Fmt');
+  helper.testFunction(test.equals, testOid.sha, 'Oid::Sha');
 
   // Test valid hex id string
-  testOid.mkstr('1810DFF58D8A660512D4832E740F692884338CCD');
-
-  // Slight hackery to get this to work... should investigate oid fmt
-  test.equals('1810DFF58D8A660512D4832E740F692884338CCD', testOid.fmt().substring(0, 40).toUpperCase(), 'Valid hex id String');
-
-  test.done();
-};
-
-// Oid::Fmt
-exports.toString = function(test) {
-  var testOid = new git.Oid();
-
-  test.expect(3);
-
-  // Test for function
-  helper.testFunction(test.equals, testOid.toString, 'Oid::ToString');
-
-  // Test valid hex id string
-  testOid.mkstr('1810DFF58D8A660512D4832E740F692884338CCD');
-  test.equals('1810DFF58D8A660512D4832E740F692884338CCD', testOid.toString(40).toUpperCase(), 'Valid hex id String');
-
-  test.done();
+  var sha = '1810DFF58D8A660512D4832E740F692884338CCD';
+  testOid.fromString(sha, function(error, rawOid) {
+    test.equals(sha, testOid.sha().toUpperCase(), 'Valid hex id String');
+    test.done();
+  });
 };
