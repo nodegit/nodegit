@@ -1,6 +1,4 @@
-var git = require('../').raw,
-    rimraf = require('rimraf'),
-    path = require('path');
+var git = require('../').raw;
 
 var testRepo = new git.Repo();
 
@@ -33,7 +31,7 @@ exports.constructor = function(test){
   // Test for function
   helper.testFunction(test.equals, git.Commit, 'Commit');
 
-  testRepo.open(path.resolve('../.git'), function(err) {
+  testRepo.open('../.git', function(err) {
     // Ensure we get an instance of Commit
     test.ok(new git.Commit(testRepo) instanceof git.Commit, 'Invocation returns an instance of Commit');
 
@@ -45,47 +43,43 @@ exports.constructor = function(test){
  * Commit::Lookup
  */
 exports.lookup = function(test) {
+  test.expect(7);
+
   var testOid = new git.Oid(),
       testCommit = new git.Commit();
-
-  testOid.mkstr('cb09e99e91d41705197e0fb60823fdc7df776691');
-
-  test.expect(8);
 
   // Test for function
   helper.testFunction(test.equals, testCommit.lookup, 'Commit::Lookup');
 
-  // Test repo argument existence
-  helper.testException(test.ok, function() {
-    testCommit.lookup();
-  }, 'Throw an exception if no repo');
+  testOid.fromString('cb09e99e91d41705197e0fb60823fdc7df776691', function(error, testOid) {
 
-  // Test oid argument existence
-  helper.testException(test.ok, function() {
-    testCommit.lookup(testRepo);
-  }, 'Throw an exception if no oid');
+    // Test repo argument existence
+    helper.testException(test.ok, function() {
+      testCommit.lookup();
+    }, 'Throw an exception if no repo');
 
-  // Test callback argument existence
-  helper.testException(test.ok, function() {
-    testCommit.lookup(testOid);
-  }, 'Throw an exception if no callback');
+    // Test oid argument existence
+    helper.testException(test.ok, function() {
+      testCommit.lookup(testRepo);
+    }, 'Throw an exception if no oid');
 
-  // Test that all arguments result correctly
-  helper.testException(test.ifError, function() {
-    testCommit.lookup(testRepo, testOid, function() {});
-  }, 'No exception is thrown with proper arguments');
+    // Test callback argument existence
+    helper.testException(test.ok, function() {
+      testCommit.lookup(testOid);
+    }, 'Throw an exception if no callback');
 
-  testRepo.open(path.resolve('../.git'), function() {
-    // Test invalid commit
-    testOid.mkstr('100644');
-    testCommit.lookup(testRepo, testOid, function(err) {
-      test.notEqual(0, err, 'Not a valid commit');
+    // Test that all arguments result correctly
+    helper.testException(test.ifError, function() {
+      testCommit.lookup(testRepo, testOid, function() {});
+    }, 'No exception is thrown with proper arguments');
 
+    testRepo.open('../.git', function() {
       // Test valid commit
-      testOid.mkstr('cb76e3c030ab29db332aff3b297dc39451a84762');
-      testCommit.lookup(testRepo, testOid, function(err) {
-        test.equals(null, err, 'Valid commit');
-        test.done();
+      testOid.fromString('cb76e3c030ab29db332aff3b297dc39451a84762', function(error, testOid) {
+        testCommit.lookup(testRepo, testOid, function(err) {
+          test.equal(null, err, 'Valid commit');
+          test.done();
+        });
       });
     });
   });
