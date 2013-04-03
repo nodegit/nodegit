@@ -6,7 +6,7 @@ var sha = '5716e9757886eaf38d51c86b192258c960d9cfea';
 var fileCount = 512; // Number of blob & blob executabless
 
 exports.walk = function(test) {
-  test.expect(516);
+  test.expect(515);
 
   git.repo('../.git', function(error, repo) {
     repo.commit(sha, function(error, commit) {
