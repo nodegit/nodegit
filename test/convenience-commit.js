@@ -245,7 +245,7 @@ exports.tree = function(test) {
       test.equals(error, null, 'Getting latest branch commit should not error');
 
       var commitTreeEntryCount = 0;
-      var expectedCommitTreeEntryCount = 238;
+      var expectedCommitTreeEntryCount = 198;
 
       commit.tree(function commitTree(error, tree) {
         tree.walk().on('entry', function(error, entry) {
