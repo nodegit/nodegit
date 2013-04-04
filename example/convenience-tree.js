@@ -1,24 +1,23 @@
-var git = require( '../' );
+// Load in the module.
+var git = require('nodegit');
 
-git.repo( '../.git', function( err, repo ) {
-  if( err ) { throw err; }
+// Open the repository in the current directory.
+git.repo('.git', function(error, repository) {
+  if (error) throw error;
 
-  repo.branch( 'master', function( err, branch ) {
-    if( err ) { throw err; }
+  // Use the master branch.
+  repository.branch('master', function(error, branch) {
+    if (error) throw error;
 
-    branch.tree().walk().on('entry', function( idx, entry ) {
-      //console.log(entry.entry);
-      console.log( entry.name, entry.attributes );
-      //console.log( entry.content );
+    // Iterate over the revision history.
+    branch.tree(function(error, tree) {
+        console.log(tree);
+      if (error) throw error;
+      tree.walk().on('entry', function(error, entry) {
+        entry.name(function(error, name) {
+            console.log(name);
+        });
+      });
     });
-
-    //branch.tree().entry('example/raw-blob.js', function( entry ) {
-    //  if( entry ) {
-    //    console.log(entry.name);
-    //  }
-    //  else {
-    //    console.log('not found');
-    //  }
-    //});
   });
 });

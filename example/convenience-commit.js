@@ -1,43 +1,49 @@
-var git = require( '../' );
+// Load in the module.
+var git = require('nodegit'),
+    async = require('async');
 
-git.repo( '../.git', function( err, repo ) {
-  if( err ) { throw new Error( err ); }
+// Open the repository in the current directory.
+git.repo('.git', function(error, repository) {
+  if (error) {
+    throw error;
+  }
 
-  repo.commit( '59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5', function( err, commit ) {
-    if( err ) { throw new Error( err ); }
+  // Use the master branch.
+  repository.branch('master', function(error, branch) {
+    if (error) {
+      throw error;
+    }
 
-    var history = commit.history();
-    history.on( 'commit', function() {
-      // console.log(arguments);
-    });
+    // Iterate over the revision history.
+    branch.history().on('commit', function(error, commit) {
 
-    history.on( 'end', function( commits ) {
-      // Read first commit tree
-      var tree = commits[0].tree();
-
-      // Synchronous
-      tree.walk().on('entry', function( i, entry ) {
-        console.log( entry.content );
-        return false;
-      });
-
-      // Asynchronous - not yet implemented
-      //tree.walk().on( 'entry', function( err, i, entry ) {
-      //  console.log( entry );
-      //});
+      // Print out `git log` emulation.
+        async.series([
+            function(callback) {
+                commit.sha(callback);
+            },
+            function(callback) {
+                commit.time(callback);
+            },
+            function(callback) {
+                commit.author(function(error, author) {
+                    author.name(callback);
+                });
+            },
+            function(callback) {
+                commit.author(function(error, author) {
+                    author.email(callback);
+                });
+            },
+            function(callback) {
+                commit.message(callback);
+            }
+        ], function printCommit(error, results) {
+            console.log('SHA ' + results[0]);
+            console.log(new Date(results[1] * 1000));
+            console.log(results[2] + ' <' + results[3] + '>');
+            console.log(results[4]);
+        });
     });
   });
-
-  //repo.branch( 'master', function( err, branch ) {
-  //  if( err ) { throw new Error( err ); }
-
-  //  var history = branch.history();
-  //  console.log( history );
-
-  //  //branch.tree().each( function( i, entry ) {
-  //  //  console.log( entry.name );
-  //  //  console.log( entry.contents );
-
-  //  //});
-  //});
 });
