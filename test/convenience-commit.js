@@ -230,7 +230,6 @@ exports.parents = function(test) {
           test.done();
         });
       });
-
     });
   });
 };
@@ -252,7 +251,6 @@ exports.tree = function(test) {
           commitTreeEntryCount++;
         }).on('end', function(error, entries) {
           test.equals(commitTreeEntryCount, expectedCommitTreeEntryCount, 'Commit tree entry count does not match expected');
-
           test.done();
         });
       });
