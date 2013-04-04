@@ -11,6 +11,11 @@ Robinson [@codeofinterest](http://twitter.com/codeofinterest), with help from
 [awesome
 contributors](https://github.com/tbranyen/nodegit/contributors)!
 
+API Documentation
+------------------------
+
+Documentation may be found here: [`nodegit` documentation](http://tbranyen.github.com/nodegit/).
+
 Contributing
 ------------
 
@@ -70,123 +75,56 @@ API Example Usage
 #### Convenience API ####
 
 ```JavaScript
-var git = require("nodegit");
+// Load in the module.
+var git = require('nodegit'),
+    async = require('async');
 
-// Read a repository
-var git = require('nodegit');
+// Open the repository in the current directory.
+git.repo('.git', function(error, repository) {
+  if (error) {
+    throw error;
+  }
 
-// nodegit follows the error, values ... callback argument convention
-git.repo('.git', function(error, repo) {
-  if (error) { throw error; }
+  // Use the master branch.
+  repository.branch('master', function(error, branch) {
+    if (error) {
+      throw error;
+    }
 
-  // Use the master branch
-  repo.branch('master', function(error, branch) {
-    if (error) { throw error; }
-
-    // Print out `git log` emulation for each commit in the branch's history
+    // Iterate over the revision history.
     branch.history().on('commit', function(error, commit) {
-      console.log('commit ' + commit.sha);
-      console.log(commit.author.name + '<' + commit.author.email + '>');
-      console.log(new Date(commit.time * 1000));
-      console.log("\n");
-      console.log(commit.message);
-      console.log("\n");
+
+      // Print out `git log` emulation.
+        async.series([
+            function(callback) {
+                commit.sha(callback);
+            },
+            function(callback) {
+                commit.time(callback);
+            },
+            function(callback) {
+                commit.author(function(error, author) {
+                    author.name(callback);
+                });
+            },
+            function(callback) {
+                commit.author(function(error, author) {
+                    author.email(callback);
+                });
+            },
+            function(callback) {
+                commit.message(callback);
+            }
+        ], function printCommit(error, results) {
+            console.log('SHA ' + results[0]);
+            console.log(new Date(results[1] * 1000));
+            console.log(results[2] + ' <' + results[3] + '>');
+            console.log(results[4]);
+        });
     });
   });
 });
 ```
-
-#### Raw API ####
-
-```` javascript
-var git = require('nodegit').raw;
-
-// Create instance of Repo constructor
-var repo = new git.Repo();
-
-// Read a repository
-repo.open('.git', function(err) {
-  // Err is an integer, success is 0, use strError for string representation
-  if (err) {
-    var error = new git.Error();
-    throw error.strError(err);
-  }
-
-  // Create instance of Ref constructor with this repository
-  var ref = new git.Ref(repo);
-
-  // Find the master branch
-  repo.lookupRef(ref, '/refs/heads/master', function(err) {
-    if (err) {
-      var error = new git.Error();
-      throw error.strError(err);
-    }
-
-    // Create instance of Commit constructor with this repository
-    var commit = new git.Commit(repo);
-
-    // Create instance of Oid constructor
-    var oid = new git.Oid();
-
-    // Set the oid constructor internal reference to this branch reference
-    ref.oid(oid);
-
-    // Lookup the commit for this oid
-    commit.lookup(oid, function(err) {
-      if (err) {
-        var error = new git.Error();
-        throw error.strError(err);
-      }
-
-      // Create instance of RevWalk constructor with this repository
-      var revwalk = new git.RevWalk(repo);
-
-      // Push the commit as the start to walk
-      revwalk.push(commit);
-
-      // Recursive walk
-      function walk() {
-        // Each revision walk iteration yields a commit
-        var revisionCommit = new git.Commit(repo);
-
-        revwalk.next(revisionCommit, function(err) {
-          // Finish recursion once no more revision commits are left
-          if (err) { return; }
-
-          // Create instance of Oid for sha
-          var oid = new git.Oid();
-
-          // Set oid to the revision commit
-          revisionCommit.id(oid);
-
-          // Create instance of Sig for author
-          var author = new git.Sig();
-
-          // Set the author to the revision commit author
-          revisionCommit.author(author);
-
-          // Convert timestamp to milliseconds and set new Date object
-          var time = new Date( revisionCommit.time() * 1000 );
-
-          // Print out `git log` emulation
-          console.log(oid.toString( 40 ));
-          console.log(author.name() + '<' + author.email() + '>');
-          console.log(time);
-          console.log('\n');
-          console.log(revisionCommit.message());
-          console.log('\n');
-
-          // Recurse!
-          walk();
-        });
-      }
-
-      // Initiate recursion
-      walk():
-    });
-  });
-});
-````
 
 Running tests
 -------------
@@ -196,11 +134,6 @@ __`nodegit` library code is written adhering to a modified `JSHint`. Run these c
 __To run unit tests ensure to update the submodules with `git submodule update --init` and install the development dependencies nodeunit and rimraf with `npm install`.__
 
 Then simply run `npm test` in the project root.
-
-Documentation
-------------------------
-
-Recent documentation may be found here: [`nodegit` documentation](http://tbranyen.github.com/nodegit/)
 
 Release information
 -------------------
