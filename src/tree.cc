@@ -247,6 +247,8 @@ void GitTree::WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/) {
   WalkBaton *baton = static_cast<WalkBaton *>(handle->data);
 
   uv_mutex_destroy(&baton->mutex);
+  uv_close((uv_handle_t*) &baton->asyncEnd, NULL);
+  uv_close((uv_handle_t*) &baton->asyncEntry, NULL);
 
   Local<Value> argv[1];
   if (baton->error) {
@@ -256,9 +258,7 @@ void GitTree::WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/) {
   }
 
   TryCatch try_catch;
-
   baton->endCallback->Call(Context::GetCurrent()->Global(), 1, argv);
-
   if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
   }

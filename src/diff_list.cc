@@ -471,6 +471,10 @@ void GitDiffList::WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/) {
   WalkBaton *baton = static_cast<WalkBaton *>(handle->data);
 
   uv_mutex_destroy(&baton->mutex);
+  uv_close((uv_handle_t*) &baton->asyncFile, NULL);
+  uv_close((uv_handle_t*) &baton->asyncHunk, NULL);
+  uv_close((uv_handle_t*) &baton->asyncData, NULL);
+  uv_close((uv_handle_t*) &baton->asyncEnd, NULL);
 
   Local<Value> argv[1];
   if (baton->error) {
