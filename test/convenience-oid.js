@@ -21,9 +21,6 @@ var helper = {
   }
 };
 
-/**
- * Test that the commit object is present.
- */
 exports.method = function(test){
   test.expect(2);
   helper.testFunction(test.equals, git.commit, 'Oid');
