@@ -69,7 +69,7 @@ exports.time = function(test) {
       commit.time(function(error, time) {
         test.equals(error, null, 'There should be no error');
         test.notEqual(time, null, 'Time should not be null');
-        test.equals(time, 1362012884, 'Time should match expected value');
+        test.equals(time, 1362012884000, 'Time should match expected value');
         test.done();
       });
     });
