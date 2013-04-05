@@ -1,29 +1,27 @@
 // Load in the module.
 var git = require('nodegit'),
-    async = require('async');
+  async = require('async');
 
 // Open the repository in the current directory.
 git.repo('.git', function(error, repository) {
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
-  // Use the master branch.
+  // Use the master branch (a branch is the HEAD commit)
   repository.branch('master', function(error, branch) {
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    // Iterate over the revision history.
-    branch.history().on('commit', function(error, commit) {
+    // History returns an event, and begins walking the history
+    var history = branch.history();
 
+    // History emits 'commit' event for each commit in the branch's history
+    history.on('commit', function(error, commit) {
       // Print out `git log` emulation.
         async.series([
             function(callback) {
                 commit.sha(callback);
             },
             function(callback) {
-                commit.time(callback);
+                commit.date(callback);
             },
             function(callback) {
                 commit.author(function(error, author) {
@@ -39,8 +37,9 @@ git.repo('.git', function(error, repository) {
                 commit.message(callback);
             }
         ], function printCommit(error, results) {
+            if (error) throw error;
             console.log('SHA ' + results[0]);
-            console.log(new Date(results[1] * 1000));
+            console.log(results[1] * 1000);
             console.log(results[2] + ' <' + results[3] + '>');
             console.log(results[4]);
         });
