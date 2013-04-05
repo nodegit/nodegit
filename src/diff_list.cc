@@ -435,8 +435,12 @@ void GitDiffList::WalkWorkSendFile(uv_async_t *handle, int status /*UNUSED*/) {
         content->Set(String::New("range"), range);
         content->Set(String::New("content"), String::New(rawContent->content.c_str()));
 
+        // char lineOrigin[2];
+        // strncpy(lineOrigin, &rawContent->lineOrigin, 1);
         char lineOrigin[2];
-        strncpy(lineOrigin, &rawContent->lineOrigin, 1);
+        lineOrigin[0] = rawContent->lineOrigin;
+        lineOrigin[1] = '\0';
+        // std::string lineOrigin(rawContent->lineOrigin);
         content->Set(String::New("lineOrigin"), String::New(lineOrigin));
         content->Set(String::New("contentLength"), Integer::New(rawContent->contentLength));
 
