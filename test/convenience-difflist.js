@@ -48,8 +48,6 @@ exports.walkingDiffs = function(test) {
           (new git.diffList(commit.rawRepo)).treeToTree(parentSha, historyCountKnownSHA, function(error, diffList) {
             test.equal(null, error, 'Should not error');
             diffList.walk().on('delta', function(error, delta) {
-              console.log(delta.content[0].range);
-              process.exit();
               test.equal(null, error, 'Should not error');
               test.equal(delta.oldFile.path, 'README.md', 'Old file path should match expected');
               test.equal(delta.newFile.path, 'README.md', 'New file path should match expected');
