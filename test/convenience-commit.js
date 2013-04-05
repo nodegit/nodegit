@@ -76,6 +76,21 @@ exports.time = function(test) {
   });
 };
 
+exports.date = function(test) {
+  test.expect(4);
+  git.repo('../.git', function(error, repository) {
+    repository.commit(historyCountKnownSHA, function(error, commit) {
+      commit.date(function(error, date) {
+        test.equals(error, null, 'There should be no error');
+        test.notEqual(date, null, 'Date should not be null');
+        test.equal(date instanceof Date, true, 'Date should be a date object');
+        test.equals(date.getTime(), 1362012884000, 'Date should match expected value');
+        test.done();
+      });
+    });
+  });
+};
+
 exports.offset = function(test) {
   test.expect(3);
   git.repo('../.git', function(error, repository) {
