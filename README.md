@@ -196,3 +196,5 @@ running the unit tests on your system and reporting issues you can contribute!
 __Before submitting a pull request, please ensure both that you've added unit
 tests to cover your shiny new code, and that all unit tests and lint checks
 pass.__
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a81b20d9f61dbcdc7c68002c6a564b5b "githalytics.com")](http://githalytics.com/tbranyen/nodegit)
