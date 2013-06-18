@@ -1,0 +1,55 @@
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+
+#ifndef <%- cppClassName.toUpperCase() %>_H
+#define <%- cppClassName.toUpperCase() %>_H
+
+#include <v8.h>
+#include <node.h>
+#include <string>
+
+#include "git2.h"
+
+using namespace node;
+using namespace v8;
+
+class <%- cppClassName %> : public ObjectWrap {
+  public:
+
+    static Persistent<Function> constructor_template;
+    static void Initialize (Handle<v8::Object> target);
+
+    <%- cType %> GetValue();
+
+  private:
+    <%- cppClassName %>(<%- cType %> *raw);
+    ~<%- cppClassName %>();
+
+    static Handle<Value> New(const Arguments& args);
+
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+-%>
+    static Handle<Value> <%- functionInfo.cppFunctionName %>(const Arguments& args);
+<% if (functionInfo.isAsync) { -%>
+    static void <%- cppFunctionName %>Work(uv_work_t* req);
+    static void <%- cppFunctionName %>AfterWork(uv_work_t* req);
+
+    struct <%- cppFunctionName %>Baton {
+      uv_work_t request;
+      const git_error* error;
+
+<% for (var i = 0 in functionInfo.args) { -%>
+      <%- functionInfo.args[i].cType %> <%- functionInfo.args[i].name %>;
+<% } -%>
+      Persistent<Function> callback;
+    };
+<% } -%>
+<% } -%>
+    <%- cType %> *raw;
+};
+
+#endif

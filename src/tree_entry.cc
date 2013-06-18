@@ -205,18 +205,16 @@ void GitTreeEntry::OidWork(uv_work_t* req) {
 void GitTreeEntry::OidAfterWork(uv_work_t* req) {
   HandleScope scope;
   OidBaton *baton = static_cast<OidBaton *>(req->data);
+  Handle<Value> argv[1] = { External::New((void *) baton->rawOid) };
+  Handle<Object> oid = GitOid::constructor_template->NewInstance(1, argv);
 
-  Handle<Object> oid = GitOid::constructor_template->NewInstance();
-  GitOid* oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-  oidInstance->SetValue(*const_cast<git_oid *>(baton->rawOid));
-
-  Handle<Value> argv[2] = {
+  Handle<Value> argv2[2] = {
     Local<Value>::New(Null()),
     oid
   };
 
   TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }

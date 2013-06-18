@@ -24,8 +24,6 @@
 #include "../include/threads.h"
 
 extern "C" void init(Handle<v8::Object> target) {
-  HandleScope scope;
-
   GitError::Initialize(target);
 
   GitReference::Initialize(target);

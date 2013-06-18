@@ -235,18 +235,19 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
   NextBaton *baton = static_cast<NextBaton *>(req->data);
 
   if (success(baton->error, baton->callback)) {
-    Local<Object> oid = GitOid::constructor_template->NewInstance();
-    GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-    oidInstance->SetValue(baton->rawOid);
+    git_oid *rawOid = (git_oid *)malloc(sizeof(git_oid));
+    git_oid_cpy(rawOid, &baton->rawOid);
+    Handle<Value> argv[1] = { External::New(rawOid) };
+    Local<Object> oid = GitOid::constructor_template->NewInstance(1, argv);
 
-    Local<Value> argv[3] = {
+    Local<Value> argv2[3] = {
       Local<Value>::New(Null()),
       oid,
       Local<Value>::New(Boolean::New(baton->walkOver))
     };
 
     TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 3, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 3, argv2);
     if(try_catch.HasCaught()) {
       FatalException(try_catch);
     }

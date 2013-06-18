@@ -30,7 +30,7 @@ exports.constructor = function(test){
   helper.testFunction(test.equals, git.Oid, 'Oid');
 
   // Ensure we get an instance of Oid
-  test.ok(new git.Oid() instanceof git.Oid, 'Invocation returns an instance of Oid');
+  test.throws(function() { new git.Oid(); }, 'Cannot instantiate an Oid directly');
 
   test.done();
 };
@@ -39,44 +39,33 @@ exports.constructor = function(test){
 exports.fromString = function(test) {
   test.expect(6);
 
-  var testOid = new git.Oid();
-
   // Test for function
-  helper.testFunction(test.equals, testOid.fromString, 'Oid::FromString');
+  helper.testFunction(test.equals, git.Oid.fromString, 'Oid::FromString');
 
   // Test path argument existence
   helper.testException(test.ok, function() {
-    testOid.fromString();
+    git.Oid.fromString();
   }, 'Throw an exception if no hex String');
 
   // Test that both arguments result correctly
-  helper.testException(test.ifError, function() {
-    testOid.fromString("somestr", function() {});
-  }, 'No exception is thrown with proper arguments');
+  test.throws(function() { git.Oid.fromString("somestr", function() {}); });
 
-  // Test invalid hex id string
-  testOid.fromString('1392DLFJIOS', function(error, oid) {
-    test.notEqual(null, error, 'Invalid hex id String');
-    testOid.fromString('1810DFF58D8A660512D4832E740F692884338CCD', function(error, oid) {
-      // Test valid hex id string
-      test.equal(null, error, 'Valid hex id String');
-      test.done();
-    });
-  });
+  // Test valid hex id string
+  test.throws(function() { git.Oid.fromString('1392DLFJIOS'); });
+  test.doesNotThrow(function() { git.Oid.fromString('1810DFF58D8A660512D4832E740F692884338CCD'); });
+  test.done();
 };
 
 // Oid::Sha
 exports.sha = function(test) {
   test.expect(3);
-  var testOid = new git.Oid();
+  var sha = '1810DFF58D8A660512D4832E740F692884338CCD';
+  var testOid = git.Oid.fromString(sha);
 
   // Test for function
   helper.testFunction(test.equals, testOid.sha, 'Oid::Sha');
 
   // Test valid hex id string
-  var sha = '1810DFF58D8A660512D4832E740F692884338CCD';
-  testOid.fromString(sha, function(error, rawOid) {
-    test.equals(sha, testOid.sha().toUpperCase(), 'Valid hex id String');
-    test.done();
-  });
+  test.equals(sha, testOid.sha().toUpperCase(), 'Valid hex id String');
+  test.done();
 };

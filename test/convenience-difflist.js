@@ -44,30 +44,29 @@ exports.walkingDiffs = function(test) {
   git.repo('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parents(function(error, parents) {
-        parents[0].sha(function(error, parentSha) {
-          (new git.diffList(commit.rawRepo)).treeToTree(parentSha, historyCountKnownSHA, function(error, diffList) {
+        var parentSha = parents[0].sha();
+        (new git.diffList(commit.rawRepo)).treeToTree(parentSha, historyCountKnownSHA, function(error, diffList) {
+          test.equal(null, error, 'Should not error');
+          diffList.walk().on('delta', function(error, delta) {
             test.equal(null, error, 'Should not error');
-            diffList.walk().on('delta', function(error, delta) {
-              test.equal(null, error, 'Should not error');
-              test.equal(delta.oldFile.path, 'README.md', 'Old file path should match expected');
-              test.equal(delta.newFile.path, 'README.md', 'New file path should match expected');
-              test.equal(delta.content.length, 5, 'Content array should be of known length');
-              test.equal(delta.status, diffList.deltaTypes.GIT_DELTA_MODIFIED, 'Status should be known type');
-              test.equal(delta.content[0].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'First content item should be context');
-              test.equal(delta.content[1].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'Second content item should be context');
-              test.equal(delta.content[2].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'Third content item should be context');
-              
-              var oldContent = '__Before submitting a pull request, please ensure both unit tests and lint checks pass.__\n';
-              test.equal(delta.content[3].content, oldContent, 'Old content should match known value');              
-              test.equal(delta.content[3].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_DELETION, 'Fourth content item should be deletion');              
-              test.equal(delta.content[3].contentLength, 90, 'Fourth content length should match known value');              
-              
-              var newContent = '__Before submitting a pull request, please ensure both that you\'ve added unit tests to cover your shiny new code, and that all unit tests and lint checks pass.__\n';
-              test.equal(delta.content[4].content, newContent, 'New content should match known value');              
-              test.equal(delta.content[4].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_ADDITION, 'Fifth content item should be addition');              
-              test.equal(delta.content[4].contentLength, 162, 'Fifth content length should match known value');              
-              test.done();
-            });
+            test.equal(delta.oldFile.path, 'README.md', 'Old file path should match expected');
+            test.equal(delta.newFile.path, 'README.md', 'New file path should match expected');
+            test.equal(delta.content.length, 5, 'Content array should be of known length');
+            test.equal(delta.status, diffList.deltaTypes.GIT_DELTA_MODIFIED, 'Status should be known type');
+            test.equal(delta.content[0].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'First content item should be context');
+            test.equal(delta.content[1].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'Second content item should be context');
+            test.equal(delta.content[2].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'Third content item should be context');
+
+            var oldContent = '__Before submitting a pull request, please ensure both unit tests and lint checks pass.__\n';
+            test.equal(delta.content[3].content, oldContent, 'Old content should match known value');
+            test.equal(delta.content[3].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_DELETION, 'Fourth content item should be deletion');
+            test.equal(delta.content[3].contentLength, 90, 'Fourth content length should match known value');
+
+            var newContent = '__Before submitting a pull request, please ensure both that you\'ve added unit tests to cover your shiny new code, and that all unit tests and lint checks pass.__\n';
+            test.equal(delta.content[4].content, newContent, 'New content should match known value');
+            test.equal(delta.content[4].lineOrigin, diffList.lineOriginTypes.GIT_DIFF_LINE_ADDITION, 'Fifth content item should be addition');
+            test.equal(delta.content[4].contentLength, 162, 'Fifth content length should match known value');
+            test.done();
           });
         });
       });
@@ -80,13 +79,12 @@ exports.walkingEnd = function(test) {
   git.repo('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parents(function(error, parents) {
-        parents[0].sha(function(error, parentSha) {
-          (new git.diffList(commit.rawRepo)).treeToTree(parentSha, historyCountKnownSHA, function(error, diffList) {
-            diffList.walk().on('end', function(error, diffs) {
-              test.equal(null, error, 'Should not error');
-              test.equal(diffs.length, 1, 'Diffs array should be of known length');
-              test.done();
-            });
+        var parentSha = parents[0].sha();
+        (new git.diffList(commit.rawRepo)).treeToTree(parentSha, historyCountKnownSHA, function(error, diffList) {
+          diffList.walk().on('end', function(error, diffs) {
+            test.equal(null, error, 'Should not error');
+            test.equal(diffs.length, 1, 'Diffs array should be of known length');
+            test.done();
           });
         });
       });

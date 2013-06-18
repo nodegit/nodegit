@@ -36,7 +36,7 @@ exports.constructor = function(test){
 
 // Blob::Lookup
 exports.lookup = function(test) {
-  var testOid = new git.Oid(),
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
       testRef = new git.Reference(testRepo),
       testBlob = new git.Blob();
 
@@ -68,7 +68,7 @@ exports.lookup = function(test) {
 
 // Blob::RawContent
 exports.rawContent = function(test) {
-  var testOid = new git.Oid(),
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
       testBlob = new git.Blob(),
       testCommit = new git.Commit();
 
@@ -82,7 +82,7 @@ exports.rawContent = function(test) {
 
 // Blob::Free
 exports.free = function(test) {
-  var testOid = new git.Oid(),
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
       testBlob = new git.Blob();
 
   test.expect(2);
@@ -95,7 +95,7 @@ exports.free = function(test) {
 
 // Blob::CreateFromFile
 exports.createFromFile = function(test) {
-  var testOid = new git.Oid(),
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
       testBlob = new git.Blob();
 
   test.expect(2);
@@ -108,7 +108,7 @@ exports.createFromFile = function(test) {
 
 // Blob::CreateFromBuffer
 exports.createFromBuffer = function(test) {
-  var testOid = new git.Oid(),
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
       testBlob = new git.Blob();
 
   test.expect(2);

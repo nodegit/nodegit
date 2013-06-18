@@ -38,10 +38,12 @@
   },
   "devDependencies": {
     "nodeunit": "",
-    "rimraf": "1.0.x"
+    "rimraf": "1.0.x",
+    "ejs": "0.8.x"
   },
   "scripts": {
     "install": "node install.js",
-    "test": "cd test && nodeunit *.js"
+    "test": "cd test && nodeunit *.js",
+    "gen": "node gen.js"
   }
 }

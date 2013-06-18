@@ -1,0 +1,190 @@
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+#include <v8.h>
+#include <node.h>
+#include <string.h>
+
+#include "git2.h"
+
+#include "../include/<%= filename %>"
+
+#include "../include/functions/utilities.h"
+#include "../include/functions/string.h"
+
+using namespace v8;
+using namespace node;
+
+<%- cppClassName %>::<%- cppClassName %>(<%- cType %> *raw) {
+  this->raw = raw;
+}
+
+<%- cppClassName %>::~<%- cppClassName %>() {
+  <%- freeFunctionName %>(this->raw);
+}
+
+void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
+  HandleScope scope;
+
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("<%- jsClassName %>"));
+
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+-%>
+<% if (functionInfo.isConstructorMethod) { -%>
+  NODE_SET_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
+<% } else if (functionInfo.isPrototypeMethod) { -%>
+  NODE_SET_PROTOTYPE_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
+<% } -%>
+<% } -%>
+
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("<%- jsClassName %>"), constructor_template);
+}
+
+Handle<Value> <%- cppClassName %>::New(const Arguments& args) {
+  HandleScope scope;
+
+  if (args.Length() == 0 || !args[0]->IsExternal()) {
+    return ThrowException(Exception::Error(String::New("<%= cType %> is required.")));
+  }
+
+  <%- cppClassName %>* object = new <%- cppClassName %>((<%= cType%> *) External::Unwrap(args[0]));
+  object->Wrap(args.This());
+
+  return scope.Close(args.This());
+}
+
+<%- cType %> <%- cppClassName %>::GetValue() {
+  return *this->raw;
+}
+
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+-%>
+
+<% if (functionInfo.isAsync) { -%>
+Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
+  HandleScope scope;
+
+<%
+  var offset = functionInfo.isPrototypeMethod || functionInfo.isConstructorMethod ? 1 : 0;
+  for (var i = 0; i < functionInfo.args.length - offset; i++) {
+    var arg = functionInfo.args[i + offset];
+-%>
+  if (args.Length() == <%- i %> || !args[<%- i %>]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
+  }
+<% } -%>
+  if (args.Length() == <%- i %> || !args[<%- i %>]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+<%- functionInfo.cppFunctionName %>Baton* baton = new <%- functionInfo.cppFunctionName %>Baton;
+  baton->request.data = baton;
+  <%- cppClassName %> object = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This());
+  object->Ref();
+  baton-><%- functionInfo.args[0].name %> = object::GetValue();
+<%
+    for (var i = 1; i < functionInfo.args.length; i++) {
+      var arg = functionInfo.args[i];
+-%>
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[i]->ToObject())->Value();
+<% } -%>
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[i]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, <%- functionInfo.cppFunctionName %>Work, (uv_after_work_cb)<%- functionInfo.cppFunctionName %>AfterWork);
+
+  return Undefined();
+}
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t* req) {
+<%- functionInfo.cppFunctionName %>Baton* baton = static_cast<<%- functionInfo.cppFunctionName %>Baton* >(req->data);
+<%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(<% for (var i in functionInfo.args) { var arg = functionInfo.args[i]; %>baton-><%- arg.name %><% if (i < functionInfo.args.length - 1) { %>,<% } %><% } %>);
+<% if (functionInfo.return.isErrorCode) { -%>
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+<% } else { -%>
+  baton->result = result;
+<% } -%>
+}
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t* req) {
+  HandleScope scope;
+<%- functionInfo.cppFunctionName %>Baton* baton = static_cast<<%- functionInfo.cppFunctionName %>Baton*>(req->data);
+
+  if (success(baton->error, baton->callback)) {
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      baton->result
+    };
+
+    TryCatch try_catch;
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    if (try_catch.HasCaught()) {
+      node::FatalException(try_catch);
+    }
+  }
+
+<%- cppClassName %> object = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This());
+  object->Unref();
+  baton->callback.Dispose();
+  delete baton;
+  delete req;
+}
+<% } else { -%>
+Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
+  HandleScope scope;
+
+<%
+  var offset = functionInfo.isPrototypeMethod || functionInfo.isConstructorMethod ? 1 : 0;
+  for (var i = 0; i < functionInfo.args.length - offset; i++) {
+    var arg = functionInfo.args[i + offset];
+-%>
+  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- arg.jsClassName %>()) {
+    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
+  }
+<% } -%>
+
+<% if (functionInfo.isConstructorMethod) { -%>
+  <%- functionInfo.args[0].cType %> out = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
+<% } else if (functionInfo.isPrototypeMethod) { -%>
+  <%- cType %> in = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
+<% } -%>
+
+  <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
+    <% if (functionInfo.isConstructorMethod) { %>out<% } else if (functionInfo.isPrototypeMethod) { -%>&in<% } -%><% if (functionInfo.args.length - offset > 0) { %>,<% } %>
+<% for (var i = offset; i < functionInfo.args.length; i++) { var arg = functionInfo.args[i]; -%>
+<% if (arg.cppClassName == 'String') { %>
+    stringArgToString(args[<%- i - offset%>]->ToString()).c_str()
+<% } else { -%>
+    ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->Value()
+<% } -%>
+<% if (i < functionInfo.args.length - 1) { %>, <% } -%>
+<% } %>
+  );
+
+<% if (functionInfo.return.isErrorCode) { -%>
+  if (result != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+  }
+<% } -%>
+<% if (functionInfo.isConstructorMethod) { -%>
+  Handle<Value> argv[1] = { External::New(out) };
+  return scope.Close(constructor_template->NewInstance(1, argv));
+<% } else if (functionInfo.return.cType == "void") { -%>
+  return Undefined();
+<% } else { -%>
+  return scope.Close(<%- functionInfo.return.cppClassName %>::New(result));
+<% } -%>
+<% } -%>
+}
+<% } -%>
+
+Persistent<Function> <%- cppClassName %>::constructor_template;

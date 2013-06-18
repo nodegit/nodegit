@@ -155,11 +155,10 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
 Handle<Value> GitCommit::Oid(const Arguments& args) {
   HandleScope scope;
 
-  Local<Object> oid = GitOid::constructor_template->NewInstance();
-  GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-  oidInstance->SetValue(*const_cast<git_oid *>(ObjectWrap::Unwrap<GitCommit>(args.This())->oid));
-
-  return scope.Close(oid);
+  git_oid *rawOid = (git_oid *)malloc(sizeof(git_oid));
+  git_oid_cpy(rawOid, ObjectWrap::Unwrap<GitCommit>(args.This())->oid);
+  Handle<Value> argv[1] = { External::New(rawOid) };
+  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
 }
 
 Handle<Value> GitCommit::Message(const Arguments& args) {

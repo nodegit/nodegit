@@ -52,12 +52,11 @@ exports.sha = function(test) {
   test.expect(3);
   git.repo('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.sha(function(error, sha) {
-        test.equals(error, null, 'There should be no error');
-        test.notEqual(sha, null, 'SHA should not be null');
-        test.equals(sha, historyCountKnownSHA, 'SHA should match expected value');
-        test.done();
-      });
+      var sha = commit.sha();
+      test.equals(error, null, 'There should be no error');
+      test.notEqual(sha, null, 'SHA should not be null');
+      test.equals(sha, historyCountKnownSHA, 'SHA should match expected value');
+      test.done();
     });
   });
 };
@@ -218,11 +217,10 @@ exports.masterHead = function(test) {
   git.repo('../.git', function(error, repository) {
     repository.branch('master', function(error, branch) {
       test.equals(error, null, 'Getting branch should not error');
-      branch.sha(function(error, sha) {
-        repository.commit(sha, function(error, commit) {
-          test.equals(error, null, 'Getting latest branch commit should not error');
-          test.done();
-        });
+      var sha = branch.sha();
+      repository.commit(sha, function(error, commit) {
+        test.equals(error, null, 'Getting latest branch commit should not error');
+        test.done();
       });
     });
   });
@@ -239,11 +237,10 @@ exports.parents = function(test) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parents(function(error, parents) {
         test.equals(parents.length, 1, 'Commit should have exactly one parent');
-        parents[0].sha(function parentSha(error, sha) {
-          test.equals(error, null, 'Getting parent SHA should not error');
-          test.equals(sha, 'ecfd36c80a3e9081f200dfda2391acadb56dac27', 'Parent SHA should match expected value');
-          test.done();
-        });
+        var sha = parents[0].sha();
+        test.equals(error, null, 'Getting parent SHA should not error');
+        test.equals(sha, 'ecfd36c80a3e9081f200dfda2391acadb56dac27', 'Parent SHA should match expected value');
+        test.done();
       });
     });
   });

@@ -98,17 +98,18 @@ void GitReference::OidAfterWork(uv_work_t* req) {
   OidBaton *baton = static_cast<OidBaton *>(req->data);
 
   if (success(baton->error, baton->callback)) {
-    Handle<Object> oid = GitOid::constructor_template->NewInstance();
-    GitOid *oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-    oidInstance->SetValue(*const_cast<git_oid *>(baton->rawOid));
+    git_oid *rawOid = (git_oid *)malloc(sizeof(git_oid));
+    git_oid_cpy(rawOid, baton->rawOid);
+    Handle<Value> argv[1] = { External::New((void *)rawOid) };
+    Handle<Object> oid = GitOid::constructor_template->NewInstance(1, argv);
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       oid
     };
 
     TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
     if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
     }

@@ -45,42 +45,37 @@ exports.constructor = function(test){
 exports.lookup = function(test) {
   test.expect(7);
 
-  var testOid = new git.Oid(),
+  var testOid = git.Oid.fromString('cb76e3c030ab29db332aff3b297dc39451a84762'),
       testCommit = new git.Commit();
 
   // Test for function
   helper.testFunction(test.equals, testCommit.lookup, 'Commit::Lookup');
 
-  testOid.fromString('cb09e99e91d41705197e0fb60823fdc7df776691', function(error, testOid) {
+  // Test repo argument existence
+  helper.testException(test.ok, function() {
+    testCommit.lookup();
+  }, 'Throw an exception if no repo');
 
-    // Test repo argument existence
-    helper.testException(test.ok, function() {
-      testCommit.lookup();
-    }, 'Throw an exception if no repo');
+  // Test oid argument existence
+  helper.testException(test.ok, function() {
+    testCommit.lookup(testRepo);
+  }, 'Throw an exception if no oid');
 
-    // Test oid argument existence
-    helper.testException(test.ok, function() {
-      testCommit.lookup(testRepo);
-    }, 'Throw an exception if no oid');
+  // Test callback argument existence
+  helper.testException(test.ok, function() {
+    testCommit.lookup(testOid);
+  }, 'Throw an exception if no callback');
 
-    // Test callback argument existence
-    helper.testException(test.ok, function() {
-      testCommit.lookup(testOid);
-    }, 'Throw an exception if no callback');
+  // Test that all arguments result correctly
+  helper.testException(test.ifError, function() {
+    testCommit.lookup(testRepo, testOid, function() {});
+  }, 'No exception is thrown with proper arguments');
 
-    // Test that all arguments result correctly
-    helper.testException(test.ifError, function() {
-      testCommit.lookup(testRepo, testOid, function() {});
-    }, 'No exception is thrown with proper arguments');
-
-    testRepo.open('../.git', function() {
-      // Test valid commit
-      testOid.fromString('cb76e3c030ab29db332aff3b297dc39451a84762', function(error, testOid) {
-        testCommit.lookup(testRepo, testOid, function(err) {
-          test.equal(null, err, 'Valid commit');
-          test.done();
-        });
-      });
+  testRepo.open('../.git', function() {
+    // Test valid commit
+    testCommit.lookup(testRepo, testOid, function(err) {
+      test.equal(null, err, 'Valid commit');
+      test.done();
     });
   });
 };
