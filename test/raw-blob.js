@@ -30,34 +30,33 @@ var helper = {
 exports.constructor = function(test){
   test.expect(3);
   helper.testFunction(test.equals, git.Blob, 'Blob');
-  test.ok(new git.Blob() instanceof git.Blob, 'Invocation returns an instance of Blob');
+  test.throws(function() { new git.Blob(); });
   test.done();
 };
 
 // Blob::Lookup
 exports.lookup = function(test) {
   var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
-      testRef = new git.Reference(testRepo),
-      testBlob = new git.Blob();
+      testRef = new git.Reference(testRepo);
 
   test.expect(5);
 
   // Test for function
-  helper.testFunction(test.equals, testBlob.lookup, 'Blob::Lookup');
+  helper.testFunction(test.equals, git.Blob.lookup, 'Blob::Lookup');
 
   // Test repo argument existence
   helper.testException(test.ok, function() {
-    testBlob.lookup();
+    git.Blob.lookup();
   }, 'Throw an exception if no repo Object');
 
   // Test Oid argument existence
   helper.testException(test.ok, function() {
-    testBlob.lookup(testRepo);
+    git.Blob.lookup(testRepo);
   }, 'Throw an exception if no oid Object');
 
   // Test Callback argument existence
   helper.testException(test.ok, function() {
-    testBlob.lookup(testRepo, testOid);
+    git.Blob.lookup(testRepo, testOid);
   }, 'Throw an exception if no callback Object');
 
   testRepo.open(path.resolve('../.git'), function() {
@@ -68,53 +67,40 @@ exports.lookup = function(test) {
 
 // Blob::RawContent
 exports.rawContent = function(test) {
-  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
-      testBlob = new git.Blob(),
+  // This shouldn't fail unless someone rewrites history:
+  var testOid = git.Oid.fromString('111dd657329797f6165f52f5085f61ac976dcf04'),
       testCommit = new git.Commit();
+  test.expect(3);
+  testRepo.open(path.resolve('../.git'), function(err, repo) {
+    git.Blob.lookup(repo, testOid, function(err, blob) {
+      // Test for function
+      helper.testFunction(test.equals, blob.content, 'Blob::RawContent');
+      test.equals(blob.content().toBuffer(7).toString(), "@import");
 
-  test.expect(2);
-
-  // Test for function
-  helper.testFunction(test.equals, testBlob.rawContent, 'Blob::RawContent');
-
-  test.done();
-};
-
-// Blob::Free
-exports.free = function(test) {
-  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
-      testBlob = new git.Blob();
-
-  test.expect(2);
-
-  // Test for function
-  helper.testFunction(test.equals, testBlob.free, 'Blob::Free');
-
-  test.done();
+      test.done();
+    });
+  });
 };
 
 // Blob::CreateFromFile
 exports.createFromFile = function(test) {
-  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
-      testBlob = new git.Blob();
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6');
 
   test.expect(2);
 
   // Test for function
-  helper.testFunction(test.equals, testBlob.createFromFile, 'Blob::CreateFromFile');
+  helper.testFunction(test.equals, git.Blob.createFromFile, 'Blob::CreateFromFile');
 
   test.done();
 };
 
 // Blob::CreateFromBuffer
 exports.createFromBuffer = function(test) {
-  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
-      testBlob = new git.Blob();
-
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6');
   test.expect(2);
 
   // Test for function
-  helper.testFunction(test.equals, testBlob.createFromBuffer, 'Blob::CreateFromBuffer');
+  helper.testFunction(test.equals, git.Blob.createFromBuffer, 'Blob::CreateFromBuffer');
 
   test.done();
 };

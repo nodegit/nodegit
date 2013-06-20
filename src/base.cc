@@ -10,6 +10,7 @@
 
 #include "git2.h"
 
+#include "../include/wrapper.h"
 #include "../include/reference.h"
 #include "../include/signature.h"
 #include "../include/error.h"
@@ -24,6 +25,10 @@
 #include "../include/threads.h"
 
 extern "C" void init(Handle<v8::Object> target) {
+  HandleScope scope;
+
+  Wrapper::Initialize(target);
+
   GitError::Initialize(target);
 
   GitReference::Initialize(target);

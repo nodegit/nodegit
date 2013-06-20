@@ -257,17 +257,16 @@ void GitTreeEntry::ToBlobAfterWork(uv_work_t *req) {
   ToBlobBaton* baton = static_cast<ToBlobBaton* >(req->data);
 
   if (success(baton->error, baton->callback)) {
-    Handle<Object> blob = GitBlob::constructor_template->NewInstance();
-    GitBlob *blobInstance = ObjectWrap::Unwrap<GitBlob>(blob);
-    blobInstance->SetValue(baton->rawBlob);
+    Handle<Value> argv[1] = { External::New(baton->rawBlob) };
+    Handle<Object> blob = GitBlob::constructor_template->NewInstance(1, argv);
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       blob
     };
 
     TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
     if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
     }

@@ -1,112 +1,75 @@
 /**
- * Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 
-#ifndef BLOB_H
-#define BLOB_H
+#ifndef GITBLOB_H
+#define GITBLOB_H
 
 #include <v8.h>
 #include <node.h>
-#include <string.h>
+#include <string>
 
 #include "git2.h"
 
-#include "repo.h"
-#include "oid.h"
-
-using namespace v8;
 using namespace node;
+using namespace v8;
 
-/**
- *   Wrapper for libgit2 git_blob.
- */
 class GitBlob : public ObjectWrap {
   public:
 
     static Persistent<Function> constructor_template;
+    static void Initialize (Handle<v8::Object> target);
 
-    static void Initialize(Handle<Object> target);
+    git_blob *GetValue();
 
-    git_blob* GetValue();
-    void SetValue(git_blob* blob);
-
-  protected:
-    GitBlob() {};
-    ~GitBlob() {};
+  private:
+    GitBlob(git_blob *raw);
+    ~GitBlob();
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Lookup(const Arguments& args);
     static void LookupWork(uv_work_t* req);
     static void LookupAfterWork(uv_work_t* req);
 
-    static Handle<Value> RawContent(const Arguments& args);
-    static void RawContentWork(uv_work_t* req);
-    static void RawContentAfterWork(uv_work_t* req);
-
+    struct LookupBaton {
+      uv_work_t request;
+      const git_error* error;
+      git_blob *out;
+      git_repository * repo;
+      const git_oid * id;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> Content(const Arguments& args);
+    static Handle<Value> Size(const Arguments& args);
     static Handle<Value> CreateFromFile(const Arguments& args);
     static void CreateFromFileWork(uv_work_t* req);
     static void CreateFromFileAfterWork(uv_work_t* req);
 
+    struct CreateFromFileBaton {
+      uv_work_t request;
+      const git_error* error;
+      git_oid * id;
+      git_repository * repo;
+      const char * path;
+      Persistent<Function> callback;
+    };
     static Handle<Value> CreateFromBuffer(const Arguments& args);
     static void CreateFromBufferWork(uv_work_t* req);
     static void CreateFromBufferAfterWork(uv_work_t* req);
 
-  private:
-
-    git_blob* blob;
-
-    struct LookupBaton {
+    struct CreateFromBufferBaton {
       uv_work_t request;
       const git_error* error;
-
-      GitBlob* blob;
-      git_blob* rawBlob;
-      git_repository* rawRepo;
-      git_oid rawOid;
-
+      git_oid * oid;
+      git_repository * repo;
+      const void * buffer;
+      size_t len;
       Persistent<Function> callback;
     };
-
-    struct RawContentBaton {
-        uv_work_t request;
-
-        GitBlob* blob;
-        git_blob* rawBlob;
-        std::string rawContent;
-        int rawSize;
-
-        Persistent<Function> callback;
-    };
-
-    struct CreateFromFileBaton {
-        uv_work_t request;
-        const git_error* error;
-
-        GitBlob* blob;
-        git_blob* rawBlob;
-        git_repository* rawRepo;
-        std::string path;
-
-        Persistent<Function> callback;
-    };
-
-    struct CreateFromBufferBaton {
-        uv_work_t request;
-        const git_error* error;
-
-        GitBlob* blob;
-        git_blob* rawBlob;
-        git_repository* rawRepo;
-        const void* data;
-        size_t dataLength;
-
-        Persistent<Function> callback;
-    };
+    static Handle<Value> IsBinary(const Arguments& args);
+    git_blob *raw;
 };
 
 #endif

@@ -162,7 +162,7 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
   baton->request.data = baton;
   baton->error = NULL;
   baton->rawRevwalk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->rawOid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->rawOid = *ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushWork, (uv_after_work_cb)PushAfterWork);

@@ -9,6 +9,7 @@
 
 #include "../include/oid.h"
 
+
 #include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
@@ -51,8 +52,8 @@ Handle<Value> GitOid::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-git_oid GitOid::GetValue() {
-  return *this->raw;
+git_oid *GitOid::GetValue() {
+  return this->raw;
 }
 
 
@@ -74,7 +75,7 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
-  Handle<Value> argv[1] = { External::New(out) };
+  Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(constructor_template->NewInstance(1, argv));
 }
 
@@ -82,10 +83,10 @@ Handle<Value> GitOid::Sha(const Arguments& args) {
   HandleScope scope;
 
 
-  git_oid in = ObjectWrap::Unwrap<GitOid>(args.This())->GetValue();
+  git_oid *in = ObjectWrap::Unwrap<GitOid>(args.This())->GetValue();
 
   char * result = git_oid_allocfmt(
-    &in
+    in
   );
 
   return scope.Close(String::New(result));

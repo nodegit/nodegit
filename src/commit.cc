@@ -100,7 +100,7 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
 
   if (args[1]->IsObject()) {
-    baton->rawOid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    baton->rawOid = *ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
   } else {
     baton->sha = stringArgToString(args[1]->ToString());
   }

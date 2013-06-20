@@ -77,7 +77,7 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
   baton->request.data = baton;
   baton->error = NULL;
   baton->rawTree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
-  baton->rawOid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->rawOid = *ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 

@@ -18,7 +18,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -64,7 +64,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -110,7 +110,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -156,7 +156,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -178,7 +178,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -210,8 +210,9 @@
   },
   {
     "filename": "blob.h",
+    "dependencies": ["../include/repo.h", "../include/oid.h", "../include/wrapper.h", "node_buffer.h"],
     "jsClassName": "Blob",
-    "cppClassName": "Blob",
+    "cppClassName": "GitBlob",
     "cType": "git_blob",
     "freeFunctionName": "git_blob_free",
     "functions": [
@@ -221,13 +222,13 @@
           {
             "name": "blob",
             "cType": "git_blob **",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           },
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -237,7 +238,7 @@
             "jsClassName": "Oid"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "isFree": false,
@@ -255,13 +256,13 @@
           {
             "name": "blob",
             "cType": "git_blob **",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           },
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -277,6 +278,7 @@
             "jsClassName": "size_t"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -295,10 +297,11 @@
           {
             "name": "blob",
             "cType": "git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -317,7 +320,7 @@
           {
             "name": "blob",
             "cType": "const git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           }
         ],
@@ -325,8 +328,8 @@
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "id",
-        "cppFunctionName": "Id",
+        "jsFunctionName": "oid",
+        "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
           "cppClassName": "GitOid",
@@ -339,7 +342,7 @@
           {
             "name": "blob",
             "cType": "const git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           }
         ],
@@ -347,11 +350,11 @@
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "rawcontent",
-        "cppFunctionName": "Rawcontent",
+        "jsFunctionName": "content",
+        "cppFunctionName": "Content",
         "return": {
           "cType": "const void *",
-          "cppClassName": "void",
+          "cppClassName": "Wrapper",
           "isErrorCode": false
         }
       },
@@ -361,7 +364,7 @@
           {
             "name": "blob",
             "cType": "const git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           }
         ],
@@ -369,11 +372,11 @@
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "rawsize",
-        "cppFunctionName": "Rawsize",
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
         "return": {
           "cType": "git_off_t",
-          "cppClassName": "OffT",
+          "cppClassName": "Number",
           "isErrorCode": false
         }
       },
@@ -389,7 +392,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -399,6 +402,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -423,7 +427,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -433,12 +437,12 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "createFromdisk",
-        "cppFunctionName": "CreateFromdisk",
+        "jsFunctionName": "createFromFile",
+        "cppFunctionName": "CreateFromFile",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -457,7 +461,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -479,6 +483,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -503,28 +508,28 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
             "name": "buffer",
             "cType": "const void *",
-            "cppClassName": "void",
-            "jsClassName": "void"
+            "cppClassName": "Buffer",
+            "jsClassName": "Buffer"
           },
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
-            "jsClassName": "size_t"
+            "cppClassName": "Number",
+            "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "createFrombuffer",
-        "cppFunctionName": "CreateFrombuffer",
+        "jsFunctionName": "createFromBuffer",
+        "cppFunctionName": "CreateFromBuffer",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -537,7 +542,7 @@
           {
             "name": "blob",
             "cType": "git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           }
         ],
@@ -549,7 +554,7 @@
         "cppFunctionName": "IsBinary",
         "return": {
           "cType": "int",
-          "cppClassName": "int",
+          "cppClassName": "Boolean",
           "isErrorCode": true
         }
       }
@@ -574,7 +579,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -636,7 +641,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -722,7 +727,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -852,7 +857,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -914,7 +919,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -951,7 +956,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -979,7 +984,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -1013,7 +1018,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -1056,7 +1061,7 @@
           {
             "name": "out",
             "cType": "git_repository **",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -1111,7 +1116,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -1145,7 +1150,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -1529,7 +1534,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -1599,7 +1604,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -2822,7 +2827,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -2868,7 +2873,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -2914,7 +2919,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -2954,7 +2959,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -3582,13 +3587,13 @@
           {
             "name": "old_blob",
             "cType": "const git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           },
           {
             "name": "new_blob",
             "cType": "const git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           },
           {
@@ -3640,7 +3645,7 @@
           {
             "name": "old_blob",
             "cType": "const git_blob *",
-            "cppClassName": "Blob",
+            "cppClassName": "GitBlob",
             "jsClassName": "Blob"
           },
           {
@@ -3807,7 +3812,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -3850,7 +3855,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -3878,7 +3883,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -3906,7 +3911,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -4027,7 +4032,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "Repository",
+          "cppClassName": "GitRepo",
           "isErrorCode": false
         }
       },
@@ -4199,7 +4204,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -5103,7 +5108,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5143,7 +5148,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5243,7 +5248,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5333,7 +5338,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5417,7 +5422,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5475,7 +5480,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5549,7 +5554,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -5571,7 +5576,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5626,7 +5631,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5666,7 +5671,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -5762,7 +5767,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "Repository",
+          "cppClassName": "GitRepo",
           "isErrorCode": false
         }
       },
@@ -6698,6 +6703,7 @@
   },
   {
     "filename": "oid.h",
+    "dependencies": [],
     "jsClassName": "Oid",
     "cppClassName": "GitOid",
     "cType": "git_oid",
@@ -6721,7 +6727,7 @@
         ],
         "isAsync": false,
         "isConstructorMethod": true,
-        "isPrototypeMethod": true,
+        "isPrototypeMethod": false,
         "isFree": false,
         "jsFunctionName": "fromString",
         "cppFunctionName": "FromString",
@@ -7209,7 +7215,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -7719,7 +7725,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -7747,7 +7753,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -7856,7 +7862,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -8242,7 +8248,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -8276,7 +8282,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -8310,7 +8316,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -8356,7 +8362,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -8524,7 +8530,7 @@
         "cppFunctionName": "GitReferenceOwner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "Repository",
+          "cppClassName": "GitRepo",
           "isErrorCode": false
         }
       },
@@ -8670,7 +8676,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -8698,7 +8704,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -8788,7 +8794,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -9222,7 +9228,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -9262,7 +9268,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -9302,7 +9308,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -9830,7 +9836,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10146,7 +10152,7 @@
   {
     "filename": "repository.h",
     "jsClassName": "Repository",
-    "cppClassName": "Repository",
+    "cppClassName": "GitRepo",
     "cType": "git_repository",
     "freeFunctionName": "git_repository_free",
     "functions": [
@@ -10156,7 +10162,7 @@
           {
             "name": "out",
             "cType": "git_repository **",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10184,7 +10190,7 @@
           {
             "name": "out",
             "cType": "git_repository **",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10258,7 +10264,7 @@
           {
             "name": "out",
             "cType": "git_repository **",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10298,7 +10304,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10320,7 +10326,7 @@
           {
             "name": "out",
             "cType": "git_repository **",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10354,7 +10360,7 @@
           {
             "name": "out",
             "cType": "git_repository **",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10394,7 +10400,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10416,7 +10422,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10438,7 +10444,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10460,7 +10466,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10482,7 +10488,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10504,7 +10510,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10526,7 +10532,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10560,7 +10566,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10588,7 +10594,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10610,7 +10616,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10644,7 +10650,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10666,7 +10672,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10700,7 +10706,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10722,7 +10728,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10756,7 +10762,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10778,7 +10784,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10818,7 +10824,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10840,7 +10846,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10862,7 +10868,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -10884,7 +10890,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10918,7 +10924,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -10958,7 +10964,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11076,7 +11082,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -11107,7 +11113,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11141,7 +11147,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11190,7 +11196,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11224,7 +11230,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11267,7 +11273,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -11641,7 +11647,7 @@
         "cppFunctionName": "Repository",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "Repository",
+          "cppClassName": "GitRepo",
           "isErrorCode": false
         }
       }
@@ -11799,7 +11805,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11839,7 +11845,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11873,7 +11879,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11910,7 +11916,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11944,7 +11950,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -11990,7 +11996,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -12024,7 +12030,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -12134,7 +12140,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -12162,7 +12168,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -12202,7 +12208,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -12326,7 +12332,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "Repository",
+          "cppClassName": "GitRepo",
           "isErrorCode": false
         }
       },
@@ -12682,7 +12688,7 @@
           {
             "name": "repo",
             "cType": "git_repository **",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -12732,7 +12738,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -12825,7 +12831,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -12859,7 +12865,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13081,7 +13087,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13139,7 +13145,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13179,7 +13185,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13219,7 +13225,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13253,7 +13259,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -13287,7 +13293,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           }
         ],
@@ -13309,7 +13315,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13697,7 +13703,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13731,7 +13737,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -13821,7 +13827,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "Repository",
+          "cppClassName": "GitRepo",
           "isErrorCode": false
         }
       },
@@ -14137,7 +14143,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {
@@ -14401,7 +14407,7 @@
           {
             "name": "repo",
             "cType": "git_repository *",
-            "cppClassName": "Repository",
+            "cppClassName": "GitRepo",
             "jsClassName": "Repository"
           },
           {

@@ -152,13 +152,13 @@ Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
 
   if (args[1]->IsObject()) {
-    baton->oldOid = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    baton->oldOid = *ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
   } else {
     baton->oldSha = stringArgToString(args[1]->ToString());
   }
 
   if (args[2]->IsObject()) {
-    baton->newOid = ObjectWrap::Unwrap<GitOid>(args[2]->ToObject())->GetValue();
+    baton->newOid = *ObjectWrap::Unwrap<GitOid>(args[2]->ToObject())->GetValue();
   } else {
     baton->newSha = stringArgToString(args[2]->ToString());
   }

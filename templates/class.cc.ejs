@@ -1,3 +1,15 @@
+<%
+  function isPrimitive(cppClassName) {
+    return ["Boolean", "Number", "String"].indexOf(cppClassName) > -1;
+  }
+
+  function jsClassName2v8ValueClassName(cppClassName) {
+    if (isPrimitive(cppClassName))
+      return cppClassName;
+    else
+      return 'Object';
+  }
+-%>
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
@@ -8,6 +20,10 @@
 #include "git2.h"
 
 #include "../include/<%= filename %>"
+
+<% for (d in dependencies) { -%>
+#include "<%- dependencies[d] %>"
+<% } -%>
 
 #include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
@@ -36,10 +52,10 @@ void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
     var functionInfo = functions[i];
     if (functionInfo.ignore) continue;
 -%>
-<% if (functionInfo.isConstructorMethod) { -%>
-  NODE_SET_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
-<% } else if (functionInfo.isPrototypeMethod) { -%>
+<% if (functionInfo.isPrototypeMethod) { -%>
   NODE_SET_PROTOTYPE_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
+<% } else { -%>
+  NODE_SET_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
 <% } -%>
 <% } -%>
 
@@ -60,8 +76,8 @@ Handle<Value> <%- cppClassName %>::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
-<%- cType %> <%- cppClassName %>::GetValue() {
-  return *this->raw;
+<%- cType %> *<%- cppClassName %>::GetValue() {
+  return this->raw;
 }
 
 <%
@@ -79,7 +95,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   for (var i = 0; i < functionInfo.args.length - offset; i++) {
     var arg = functionInfo.args[i + offset];
 -%>
-  if (args.Length() == <%- i %> || !args[<%- i %>]->IsObject()) {
+  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- jsClassName2v8ValueClassName(arg.cppClassName) %>()) {
     return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
   }
 <% } -%>
@@ -87,26 +103,47 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-<%- functionInfo.cppFunctionName %>Baton* baton = new <%- functionInfo.cppFunctionName %>Baton;
+  <%- functionInfo.cppFunctionName %>Baton* baton = new <%- functionInfo.cppFunctionName %>Baton;
+  baton->error = NULL;
   baton->request.data = baton;
+<% if (functionInfo.isConstructorMethod) { -%>
+<% } else if (functionInfo.isPrototypeMethod) { -%>
   <%- cppClassName %> object = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This());
-  object->Ref();
-  baton-><%- functionInfo.args[0].name %> = object::GetValue();
+  baton->in = object::GetValue();
+<% } -%>
 <%
-    for (var i = 1; i < functionInfo.args.length; i++) {
+    for (var i = offset; i < functionInfo.args.length; i++) {
       var arg = functionInfo.args[i];
 -%>
-  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[i]->ToObject())->Value();
+<% if (arg.cppClassName == 'String') { %>
+  baton-><%- arg.name %> = stringArgToString(args[<%- i - offset%>]->ToString()).c_str();
+<% } else if (arg.cppClassName == 'Buffer') { -%>
+  baton-><%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject()));
+<% } else if (arg.cppClassName == 'Number') { -%>
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->Value();
+<% } else { -%>
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->GetValue();
 <% } -%>
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[i]));
+<% } -%>
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- i - offset %>]));
 
   uv_queue_work(uv_default_loop(), &baton->request, <%- functionInfo.cppFunctionName %>Work, (uv_after_work_cb)<%- functionInfo.cppFunctionName %>AfterWork);
 
   return Undefined();
 }
-void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t* req) {
-<%- functionInfo.cppFunctionName %>Baton* baton = static_cast<<%- functionInfo.cppFunctionName %>Baton* >(req->data);
-<%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(<% for (var i in functionInfo.args) { var arg = functionInfo.args[i]; %>baton-><%- arg.name %><% if (i < functionInfo.args.length - 1) { %>,<% } %><% } %>);
+
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req) {
+  <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
+  <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
+<% if (functionInfo.isConstructorMethod) { -%>
+    &baton->out<% if (functionInfo.args.length - offset > 0) { %>,<% } %>
+<% } else if (functionInfo.isPrototypeMethod) { -%>
+      baton->in<% if (functionInfo.args.length - offset > 0) { %>,<% } %>
+<% } -%>
+<% for (var i = offset; i < functionInfo.args.length; i++) { var arg = functionInfo.args[i]; -%>
+    baton-><%- arg.name %><% if (i < functionInfo.args.length - 1) { %>, <% } %>
+<% } -%>
+  );
 <% if (functionInfo.return.isErrorCode) { -%>
   if (result != GIT_OK) {
     baton->error = giterr_last();
@@ -115,28 +152,39 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t* req
   baton->result = result;
 <% } -%>
 }
-void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t* req) {
+
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t *req) {
   HandleScope scope;
-<%- functionInfo.cppFunctionName %>Baton* baton = static_cast<<%- functionInfo.cppFunctionName %>Baton*>(req->data);
+  <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
 
+  TryCatch try_catch;
   if (success(baton->error, baton->callback)) {
-    Handle<Value> argv[2] = {
+<% if (functionInfo.isConstructorMethod) { -%>
+    Handle<Value> argv[1] = { External::New(baton->out) };
+    Handle<Object> object = constructor_template->NewInstance(1, argv);
+<% } else { -%>
+    Handle<Value> argv[1] = { External::New(baton-><%- functionInfo.args[0].name %>) };
+    Handle<Object> object = <%- functionInfo.args[0].cppClassName %>::constructor_template->NewInstance(1, argv);
+<% } -%>
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      baton->result
+      object
     };
-
-    TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+  } else {
+    Handle<Value> argv2[2] = {
+      Exception::Error(String::New(baton->error->message)),
+      Local<Value>::New(Null())
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   }
 
-<%- cppClassName %> object = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This());
-  object->Unref();
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+
   baton->callback.Dispose();
   delete baton;
-  delete req;
 }
 <% } else { -%>
 Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
@@ -147,7 +195,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   for (var i = 0; i < functionInfo.args.length - offset; i++) {
     var arg = functionInfo.args[i + offset];
 -%>
-  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- arg.jsClassName %>()) {
+  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- jsClassName2v8ValueClassName(arg.cppClassName) %>()) {
     return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
   }
 <% } -%>
@@ -155,16 +203,16 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <% if (functionInfo.isConstructorMethod) { -%>
   <%- functionInfo.args[0].cType %> out = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
 <% } else if (functionInfo.isPrototypeMethod) { -%>
-  <%- cType %> in = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
+  <%- cType %> *in = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
 <% } -%>
 
   <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
-    <% if (functionInfo.isConstructorMethod) { %>out<% } else if (functionInfo.isPrototypeMethod) { -%>&in<% } -%><% if (functionInfo.args.length - offset > 0) { %>,<% } %>
+    <% if (functionInfo.isConstructorMethod) { %>out<% } else if (functionInfo.isPrototypeMethod) { -%>in<% } -%><% if (functionInfo.args.length - offset > 0) { %>,<% } %>
 <% for (var i = offset; i < functionInfo.args.length; i++) { var arg = functionInfo.args[i]; -%>
 <% if (arg.cppClassName == 'String') { %>
     stringArgToString(args[<%- i - offset%>]->ToString()).c_str()
 <% } else { -%>
-    ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->Value()
+    ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->GetValue()
 <% } -%>
 <% if (i < functionInfo.args.length - 1) { %>, <% } -%>
 <% } %>
@@ -176,15 +224,21 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   }
 <% } -%>
 <% if (functionInfo.isConstructorMethod) { -%>
-  Handle<Value> argv[1] = { External::New(out) };
+  Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(constructor_template->NewInstance(1, argv));
 <% } else if (functionInfo.return.cType == "void") { -%>
   return Undefined();
-<% } else { -%>
+<% } else if (isPrimitive(functionInfo.return.cppClassName)) { -%>
   return scope.Close(<%- functionInfo.return.cppClassName %>::New(result));
-<% } -%>
+<% } else if (functionInfo.return.cppClassName == "External") { -%>
+  return scope.Close(External::New((void *)result));
+<% } else { -%>
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)result) };
+  return scope.Close(<%- functionInfo.return.cppClassName %>::constructor_template->NewInstance(1, argv)); 
 <% } -%>
 }
+<% } -%>
 <% } -%>
 
 Persistent<Function> <%- cppClassName %>::constructor_template;

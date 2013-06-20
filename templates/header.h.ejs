@@ -20,7 +20,7 @@ class <%- cppClassName %> : public ObjectWrap {
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
-    <%- cType %> GetValue();
+    <%- cType %> *GetValue();
 
   private:
     <%- cppClassName %>(<%- cType %> *raw);
@@ -35,15 +35,23 @@ class <%- cppClassName %> : public ObjectWrap {
 -%>
     static Handle<Value> <%- functionInfo.cppFunctionName %>(const Arguments& args);
 <% if (functionInfo.isAsync) { -%>
-    static void <%- cppFunctionName %>Work(uv_work_t* req);
-    static void <%- cppFunctionName %>AfterWork(uv_work_t* req);
+    static void <%- functionInfo.cppFunctionName %>Work(uv_work_t* req);
+    static void <%- functionInfo.cppFunctionName %>AfterWork(uv_work_t* req);
 
-    struct <%- cppFunctionName %>Baton {
+    struct <%- functionInfo.cppFunctionName %>Baton {
       uv_work_t request;
       const git_error* error;
-
-<% for (var i = 0 in functionInfo.args) { -%>
-      <%- functionInfo.args[i].cType %> <%- functionInfo.args[i].name %>;
+<% if (functionInfo.isConstructorMethod) { -%>
+      <%- cType %> *out;
+<% } else if (functionInfo.isPrototypeMethod) { -%>
+  <%- cType %> *in;
+<% } -%>
+<%
+  var offset = functionInfo.isPrototypeMethod || functionInfo.isConstructorMethod ? 1 : 0;
+  for (var i = 0; i < functionInfo.args.length - offset; i++) {
+    var arg = functionInfo.args[i + offset];
+-%>
+      <%- arg.cType %> <%- arg.name %>;
 <% } -%>
       Persistent<Function> callback;
     };
