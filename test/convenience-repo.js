@@ -55,9 +55,9 @@ exports.method = function(test){
 exports.nonexistentDirectory = function(test) {
     test.expect(2);
     git.repo('/surely/this/directory/does/not/exist/on/this/machine', function(error, repository) {
-        test.notEqual(error, null, 'Attempting to open a nonexistent directory should error');
-        test.equals(repository, null, 'Non existent directory should result in null repository');
-        test.done();
+      test.notEqual(error, null, 'Attempting to open a nonexistent directory should error');
+      test.equals(repository, null, 'Non existent directory should result in null repository');
+      test.done();
     });
 };
 
@@ -71,7 +71,7 @@ exports.init = function(test) {
   // Cleanup, remove test repo directory - if it exists
   rimraf('./test.git', function() {
     // Create bare repo and test for creation
-    git.repo().init('./test.git', true, function(error, path, isBare) {
+    git.init('./test.git', true, function(error, path, isBare) {
       test.equals(null, error, 'Successfully created bare repository');
       // Verify repo exists
       git.repo('./test.git', function(error, path, repo) {

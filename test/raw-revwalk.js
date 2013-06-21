@@ -2,8 +2,6 @@ var git = require('../').raw,
     path = require('path'),
     rimraf = require('rimraf');
 
-var testRepo = new git.Repo();
-
 // Helper functions
 var helper = {
   // Test if obj is a true function
@@ -35,7 +33,7 @@ exports.constructor = function(test){
   helper.testFunction(test.equals, git.RevWalk, 'RevWalk');
 
   // Ensure we get an instance of Oid
-  testRepo.open('../.git', function(error, repository) {
+  git.Repo.open('../.git', function(error, repository) {
     test.ok(new git.RevWalk(repository) instanceof git.RevWalk, 'Invocation returns an instance of RevWalk');
     test.done();
   });

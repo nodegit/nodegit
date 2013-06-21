@@ -3,7 +3,7 @@
     return ["Boolean", "Number", "String"].indexOf(cppClassName) > -1;
   }
 
-  function jsClassName2v8ValueClassName(cppClassName) {
+  function cppClassName2v8ValueClassName(cppClassName) {
     if (isPrimitive(cppClassName))
       return cppClassName;
     else
@@ -95,7 +95,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   for (var i = 0; i < functionInfo.args.length - offset; i++) {
     var arg = functionInfo.args[i + offset];
 -%>
-  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- jsClassName2v8ValueClassName(arg.cppClassName) %>()) {
+  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
     return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
   }
 <% } -%>
@@ -116,11 +116,12 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
       var arg = functionInfo.args[i];
 -%>
 <% if (arg.cppClassName == 'String') { %>
-  baton-><%- arg.name %> = stringArgToString(args[<%- i - offset%>]->ToString()).c_str();
+  String::Utf8Value str<%- i - offset%>(args[<%- i - offset%>]->ToString());
+  baton-><%- arg.name %> = strdup(*str<%- i - offset%>);
 <% } else if (arg.cppClassName == 'Buffer') { -%>
   baton-><%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject()));
-<% } else if (arg.cppClassName == 'Number') { -%>
-  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->Value();
+<% } else if (isPrimitive(arg.cppClassName)) { -%>
+  baton-><%- arg.name %> = args[<%- i - offset%>]->To<%- arg.cppClassName %>()->Value();
 <% } else { -%>
   baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->GetValue();
 <% } -%>
@@ -158,7 +159,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
   <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
 
   TryCatch try_catch;
-  if (success(baton->error, baton->callback)) {
+  if (!baton->error) {
 <% if (functionInfo.isConstructorMethod) { -%>
     Handle<Value> argv[1] = { External::New(baton->out) };
     Handle<Object> object = constructor_template->NewInstance(1, argv);
@@ -172,11 +173,10 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
-    Handle<Value> argv2[2] = {
-      Exception::Error(String::New(baton->error->message)),
-      Local<Value>::New(Null())
+    Handle<Value> argv2[1] = {
+      GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
   }
 
   if (try_catch.HasCaught()) {
@@ -184,6 +184,14 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
   }
 
   baton->callback.Dispose();
+<%
+    for (var i = offset; i < functionInfo.args.length; i++) {
+      var arg = functionInfo.args[i];
+-%>
+<% if (arg.cppClassName == 'String') { %>
+  delete baton-><%- arg.name %>;
+<% } -%>
+<% } -%>
   delete baton;
 }
 <% } else { -%>
@@ -195,7 +203,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   for (var i = 0; i < functionInfo.args.length - offset; i++) {
     var arg = functionInfo.args[i + offset];
 -%>
-  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- jsClassName2v8ValueClassName(arg.cppClassName) %>()) {
+  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
     return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
   }
 <% } -%>

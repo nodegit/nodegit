@@ -1,7 +1,5 @@
 var git = require('../').raw;
 
-var testRepo = new git.Repo();
-
 var helper = {
   // Test if obj is a true function
   testFunction: function(test, obj, label) {
@@ -30,10 +28,9 @@ exports.constructor = function(test){
 
   // Test for function
   helper.testFunction(test.equals, git.Commit, 'Commit');
-
-  testRepo.open('../.git', function(err) {
+  git.Repo.open('../.git', function(err, repo) {
     // Ensure we get an instance of Commit
-    test.ok(new git.Commit(testRepo) instanceof git.Commit, 'Invocation returns an instance of Commit');
+    test.ok(new git.Commit(repo) instanceof git.Commit, 'Invocation returns an instance of Commit');
 
     test.done();
   });
@@ -51,29 +48,28 @@ exports.lookup = function(test) {
   // Test for function
   helper.testFunction(test.equals, testCommit.lookup, 'Commit::Lookup');
 
-  // Test repo argument existence
-  helper.testException(test.ok, function() {
-    testCommit.lookup();
-  }, 'Throw an exception if no repo');
+  git.Repo.open('../.git', function(error, repo) {
+    // Test repo argument existence
+    helper.testException(test.ok, function() {
+      testCommit.lookup();
+    }, 'Throw an exception if no repo');
 
-  // Test oid argument existence
-  helper.testException(test.ok, function() {
-    testCommit.lookup(testRepo);
-  }, 'Throw an exception if no oid');
+    // Test oid argument existence
+    helper.testException(test.ok, function() {
+      testCommit.lookup(repo);
+    }, 'Throw an exception if no oid');
 
-  // Test callback argument existence
-  helper.testException(test.ok, function() {
-    testCommit.lookup(testOid);
-  }, 'Throw an exception if no callback');
+    // Test callback argument existence
+    helper.testException(test.ok, function() {
+      testCommit.lookup(repo);
+    }, 'Throw an exception if no callback');
 
-  // Test that all arguments result correctly
-  helper.testException(test.ifError, function() {
-    testCommit.lookup(testRepo, testOid, function() {});
-  }, 'No exception is thrown with proper arguments');
-
-  testRepo.open('../.git', function() {
+    // Test that all arguments result correctly
+    helper.testException(test.ifError, function() {
+      testCommit.lookup(repo, testOid, function() {});
+    }, 'No exception is thrown with proper arguments');
     // Test valid commit
-    testCommit.lookup(testRepo, testOid, function(err) {
+    testCommit.lookup(repo, testOid, function(err) {
       test.equal(null, err, 'Valid commit');
       test.done();
     });

@@ -94,29 +94,33 @@ exports.walkingEnd = function(test) {
 
 exports.deltaTypes = function(test) {
   test.expect(9);
-  var diffList = new git.diffList((new git.repo()).rawRepo);
-  test.equal(diffList.deltaTypes.GIT_DELTA_UNMODIFIED, git.raw.DiffList.deltaTypes.GIT_DELTA_UNMODIFIED, 'GIT_DELTA_UNMODIFIED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_ADDED, git.raw.DiffList.deltaTypes.GIT_DELTA_ADDED, 'GIT_DELTA_ADDED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_DELETED, git.raw.DiffList.deltaTypes.GIT_DELTA_DELETED, 'GIT_DELTA_DELETED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_MODIFIED, git.raw.DiffList.deltaTypes.GIT_DELTA_MODIFIED, 'GIT_DELTA_MODIFIED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_RENAMED, git.raw.DiffList.deltaTypes.GIT_DELTA_RENAMED, 'GIT_DELTA_RENAMED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_COPIED, git.raw.DiffList.deltaTypes.GIT_DELTA_COPIED, 'GIT_DELTA_COPIED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_IGNORED, git.raw.DiffList.deltaTypes.GIT_DELTA_IGNORED, 'GIT_DELTA_IGNORED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_UNTRACKED, git.raw.DiffList.deltaTypes.GIT_DELTA_UNTRACKED, 'GIT_DELTA_UNTRACKED delta type should match expected value');
-  test.equal(diffList.deltaTypes.GIT_DELTA_TYPECHANGE, git.raw.DiffList.deltaTypes.GIT_DELTA_TYPECHANGE, 'GIT_DELTA_TYPECHANGE delta type should match expected value');
-  test.done();
+  git.repo('../.git', function(error, repo) {
+    var diffList = new git.diffList(repo.rawRepo);
+    test.equal(diffList.deltaTypes.GIT_DELTA_UNMODIFIED, git.raw.DiffList.deltaTypes.GIT_DELTA_UNMODIFIED, 'GIT_DELTA_UNMODIFIED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_ADDED, git.raw.DiffList.deltaTypes.GIT_DELTA_ADDED, 'GIT_DELTA_ADDED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_DELETED, git.raw.DiffList.deltaTypes.GIT_DELTA_DELETED, 'GIT_DELTA_DELETED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_MODIFIED, git.raw.DiffList.deltaTypes.GIT_DELTA_MODIFIED, 'GIT_DELTA_MODIFIED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_RENAMED, git.raw.DiffList.deltaTypes.GIT_DELTA_RENAMED, 'GIT_DELTA_RENAMED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_COPIED, git.raw.DiffList.deltaTypes.GIT_DELTA_COPIED, 'GIT_DELTA_COPIED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_IGNORED, git.raw.DiffList.deltaTypes.GIT_DELTA_IGNORED, 'GIT_DELTA_IGNORED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_UNTRACKED, git.raw.DiffList.deltaTypes.GIT_DELTA_UNTRACKED, 'GIT_DELTA_UNTRACKED delta type should match expected value');
+    test.equal(diffList.deltaTypes.GIT_DELTA_TYPECHANGE, git.raw.DiffList.deltaTypes.GIT_DELTA_TYPECHANGE, 'GIT_DELTA_TYPECHANGE delta type should match expected value');
+    test.done();
+  });
 };
 
 exports.lineOriginTypes = function(test) {
   test.expect(8);
-  var diffList = new git.diffList((new git.repo()).rawRepo);
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'GIT_DIFF_LINE_CONTEXT line origin type should match expected value');
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_ADDITION, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_ADDITION, 'GIT_DIFF_LINE_ADDITION line origin type should match expected value');
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_DELETION, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_DELETION, 'GIT_DIFF_LINE_DELETION line origin type should match expected value');
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_ADD_EOFNL, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_ADD_EOFNL, 'GIT_DIFF_LINE_ADD_EOFNL line origin type should match expected value');
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_DEL_EOFNL, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_DEL_EOFNL, 'GIT_DIFF_LINE_DEL_EOFNL line origin type should match expected value');
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_FILE_HDR, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_FILE_HDR, 'GIT_DIFF_LINE_FILE_HDR line origin type should match expected value');
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_HUNK_HDR, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_HUNK_HDR, 'GIT_DIFF_LINE_HUNK_HDR line origin type should match expected value');
-  test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_BINARY, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_BINARY, 'GIT_DIFF_LINE_BINARY line origin type should match expected value');
-  test.done();
+  git.repo('../.git', function(error, repo) {
+    var diffList = new git.diffList(repo.rawRepo);
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_CONTEXT, 'GIT_DIFF_LINE_CONTEXT line origin type should match expected value');
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_ADDITION, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_ADDITION, 'GIT_DIFF_LINE_ADDITION line origin type should match expected value');
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_DELETION, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_DELETION, 'GIT_DIFF_LINE_DELETION line origin type should match expected value');
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_ADD_EOFNL, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_ADD_EOFNL, 'GIT_DIFF_LINE_ADD_EOFNL line origin type should match expected value');
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_DEL_EOFNL, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_DEL_EOFNL, 'GIT_DIFF_LINE_DEL_EOFNL line origin type should match expected value');
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_FILE_HDR, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_FILE_HDR, 'GIT_DIFF_LINE_FILE_HDR line origin type should match expected value');
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_HUNK_HDR, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_HUNK_HDR, 'GIT_DIFF_LINE_HUNK_HDR line origin type should match expected value');
+    test.equal(diffList.lineOriginTypes.GIT_DIFF_LINE_BINARY, git.raw.DiffList.lineOriginTypes.GIT_DIFF_LINE_BINARY, 'GIT_DIFF_LINE_BINARY line origin type should match expected value');
+    test.done();
+  });
 };

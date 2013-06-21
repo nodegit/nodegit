@@ -2,8 +2,6 @@ var git = require('../').raw,
     path = require('path'),
     rimraf = require('rimraf');
 
-var testRepo = new git.Repo();
-
 var helper = {
   // Test if obj is a true function
   testFunction: function(test, obj, label) {
@@ -36,31 +34,29 @@ exports.constructor = function(test){
 
 // Blob::Lookup
 exports.lookup = function(test) {
-  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6'),
-      testRef = new git.Reference(testRepo);
-
   test.expect(5);
+  var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6');
+  git.Repo.open('../.git', function(error, repo) {
+    var testRef = new git.Reference(repo);
 
-  // Test for function
-  helper.testFunction(test.equals, git.Blob.lookup, 'Blob::Lookup');
+    // Test for function
+    helper.testFunction(test.equals, git.Blob.lookup, 'Blob::Lookup');
 
-  // Test repo argument existence
-  helper.testException(test.ok, function() {
-    git.Blob.lookup();
-  }, 'Throw an exception if no repo Object');
+    // Test repo argument existence
+    helper.testException(test.ok, function() {
+      git.Blob.lookup();
+    }, 'Throw an exception if no repo Object');
 
-  // Test Oid argument existence
-  helper.testException(test.ok, function() {
-    git.Blob.lookup(testRepo);
-  }, 'Throw an exception if no oid Object');
+    // Test Oid argument existence
+    helper.testException(test.ok, function() {
+      git.Blob.lookup(repo);
+    }, 'Throw an exception if no oid Object');
 
-  // Test Callback argument existence
-  helper.testException(test.ok, function() {
-    git.Blob.lookup(testRepo, testOid);
-  }, 'Throw an exception if no callback Object');
+    // Test Callback argument existence
+    helper.testException(test.ok, function() {
+      git.Blob.lookup(repo, testOid);
+    }, 'Throw an exception if no callback Object');
 
-  testRepo.open(path.resolve('../.git'), function() {
-    // @todo actually lookup
     test.done();
   });
 };
@@ -71,7 +67,7 @@ exports.rawContent = function(test) {
   var testOid = git.Oid.fromString('111dd657329797f6165f52f5085f61ac976dcf04'),
       testCommit = new git.Commit();
   test.expect(3);
-  testRepo.open(path.resolve('../.git'), function(err, repo) {
+  git.Repo.open(path.resolve('../.git'), function(err, repo) {
     git.Blob.lookup(repo, testOid, function(err, blob) {
       // Test for function
       helper.testFunction(test.equals, blob.content, 'Blob::RawContent');

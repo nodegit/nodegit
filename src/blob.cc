@@ -108,7 +108,7 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   TryCatch try_catch;
-  if (success(baton->error, baton->callback)) {
+  if (!baton->error) {
     Handle<Value> argv[1] = { External::New(baton->out) };
     Handle<Object> object = constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
@@ -117,11 +117,10 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
-    Handle<Value> argv2[2] = {
-      Exception::Error(String::New(baton->error->message)),
-      Local<Value>::New(Null())
+    Handle<Value> argv2[1] = {
+      GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
   }
 
   if (try_catch.HasCaught()) {
@@ -197,7 +196,8 @@ Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   baton->id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject())->GetValue();
 
-  baton->path = stringArgToString(args[2]->ToString()).c_str();
+  String::Utf8Value str2(args[2]->ToString());
+  baton->path = strdup(*str2);
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateFromFileWork, (uv_after_work_cb)CreateFromFileAfterWork);
@@ -222,7 +222,7 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
   CreateFromFileBaton *baton = static_cast<CreateFromFileBaton *>(req->data);
 
   TryCatch try_catch;
-  if (success(baton->error, baton->callback)) {
+  if (!baton->error) {
     Handle<Value> argv[1] = { External::New(baton->id) };
     Handle<Object> object = GitOid::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
@@ -231,11 +231,10 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
-    Handle<Value> argv2[2] = {
-      Exception::Error(String::New(baton->error->message)),
-      Local<Value>::New(Null())
+    Handle<Value> argv2[1] = {
+      GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
   }
 
   if (try_catch.HasCaught()) {
@@ -243,6 +242,8 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
   }
 
   baton->callback.Dispose();
+
+  delete baton->path;
   delete baton;
 }
 
@@ -271,7 +272,7 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   baton->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject())->GetValue();
   baton->buffer = Buffer::Data(ObjectWrap::Unwrap<Buffer>(args[2]->ToObject()));
-  baton->len = ObjectWrap::Unwrap<Number>(args[3]->ToObject())->Value();
+  baton->len = args[3]->ToNumber()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[4]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateFromBufferWork, (uv_after_work_cb)CreateFromBufferAfterWork);
@@ -297,7 +298,7 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
   CreateFromBufferBaton *baton = static_cast<CreateFromBufferBaton *>(req->data);
 
   TryCatch try_catch;
-  if (success(baton->error, baton->callback)) {
+  if (!baton->error) {
     Handle<Value> argv[1] = { External::New(baton->oid) };
     Handle<Object> object = GitOid::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
@@ -306,11 +307,10 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
-    Handle<Value> argv2[2] = {
-      Exception::Error(String::New(baton->error->message)),
-      Local<Value>::New(Null())
+    Handle<Value> argv2[1] = {
+      GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
   }
 
   if (try_catch.HasCaught()) {

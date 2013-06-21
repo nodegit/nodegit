@@ -38,8 +38,7 @@ exports.constructor = function(test){
 // Ref::Lookup
 exports.lookup = function(test) {
 
-  var testRepo = new git.Repo(),
-      master = new git.Reference();
+  var master = new git.Reference();
 
   test.expect(5);
 
@@ -51,33 +50,35 @@ exports.lookup = function(test) {
     master.lookup();
   }, 'Throw an exception if no repo');
 
-  // Test name argument existence
-  helper.testException(test.ok, function() {
-    master.lookup(testRepo);
-  }, 'Throw an exception if no name');
+  git.Repo.open('../.git', function(error, repo) {
+    // Test name argument existence
+    helper.testException(test.ok, function() {
+      master.lookup(repo);
+    }, 'Throw an exception if no name');
 
-  // Test callback argument existence
-  helper.testException(test.ok, function() {
-    master.lookup(testRepo, 'refs/heads/master');
-  }, 'Throw an exception if no callback');
+    // Test callback argument existence
+    helper.testException(test.ok, function() {
+      master.lookup(repo, 'refs/heads/master');
+    }, 'Throw an exception if no callback');
 
-  // Cleanup, remove test repo directory - if it exists
-  rimraf('./test.git', function() {
-  //  // Create bare repo and test for creation
-  //  testRepo.init('./test.git', true, function(err, path, is_bare) {
-  //    test.equals(0, err, 'Successfully created bare repository');
-  //    // Verify repo exists
-  //    testRepo.open('./test.git', function(err, path) {
-  //      test.equals(0, err, 'Valid repository created');
-  //      test.equals(true, is_bare, 'Returns valid is_bare value');
+    // Cleanup, remove test repo directory - if it exists
+    rimraf('./test.git', function() {
+    //  // Create bare repo and test for creation
+    //  repo.init('./test.git', true, function(err, path, is_bare) {
+    //    test.equals(0, err, 'Successfully created bare repository');
+    //    // Verify repo exists
+    //    repo.open('./test.git', function(err, path) {
+    //      test.equals(0, err, 'Valid repository created');
+    //      test.equals(true, is_bare, 'Returns valid is_bare value');
 
-  //        testRepo.free();
+    //        repo.free();
 
-  //        // Cleanup, remove test repo directory
-  //        rimraf('./test.git', function() {
-            test.done();
-  //        });
-  //    });
-  //  });
+    //        // Cleanup, remove test repo directory
+    //        rimraf('./test.git', function() {
+              test.done();
+    //        });
+    //    });
+    //  });
+    });
   });
 };

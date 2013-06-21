@@ -10150,8 +10150,9 @@
     ]
   },
   {
-    "filename": "repository.h",
-    "jsClassName": "Repository",
+    "filename": "repo.h",
+    "dependencies": [],
+    "jsClassName": "Repo",
     "cppClassName": "GitRepo",
     "cType": "git_repository",
     "freeFunctionName": "git_repository_free",
@@ -10172,7 +10173,7 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "isFree": false,
@@ -10200,6 +10201,7 @@
             "jsClassName": "Odb"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -10246,6 +10248,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10286,6 +10289,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -10308,6 +10312,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10338,11 +10343,11 @@
           {
             "name": "is_bare",
             "cType": "unsigned",
-            "cppClassName": "unsigned",
-            "jsClassName": "unsigned"
+            "cppClassName": "Boolean",
+            "jsClassName": "Boolean"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "isFree": false,
@@ -10376,6 +10381,7 @@
             "jsClassName": "RepositoryInitOptions"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -10404,6 +10410,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10426,6 +10433,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10448,6 +10456,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10470,6 +10479,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10548,6 +10558,7 @@
             "jsClassName": "int"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10570,6 +10581,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10598,6 +10610,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10626,6 +10639,7 @@
             "jsClassName": "Config"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10654,6 +10668,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10682,6 +10697,7 @@
             "jsClassName": "Odb"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10710,6 +10726,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10738,6 +10755,7 @@
             "jsClassName": "Refdb"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10766,6 +10784,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10794,6 +10813,7 @@
             "jsClassName": "Index"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10828,6 +10848,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -10850,6 +10871,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10872,6 +10894,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10906,6 +10929,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10940,6 +10964,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -10986,6 +11011,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -11014,6 +11040,7 @@
             "jsClassName": "const"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -11042,6 +11069,7 @@
             "jsClassName": "const"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -11064,6 +11092,7 @@
             "jsClassName": "Repository*"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -11086,6 +11115,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
