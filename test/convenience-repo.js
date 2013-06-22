@@ -34,15 +34,15 @@ exports.method = function(test){
 
   // Test callback argument existence
   helper.testException(test.ok, function() {
-    git.repo('some/path');
+    git.repo.open('some/path');
   }, 'Throw an exception if no callback');
 
   // Test invalid repository
-  git.repo('/etc/hosts', function(error, repository) {
+  git.repo.open('/etc/hosts', function(error, repository) {
     test.equals(error.code, error.codes.GITERR_REPOSITORY, error.message, 'Invalid repository error code');
 
     // Test valid repository
-    git.repo('../.git', function(error, repository) {
+    git.repo.open('../.git', function(error, repository) {
       test.equals(null, error, 'Valid repository error code');
       test.done();
     });
@@ -54,7 +54,7 @@ exports.method = function(test){
  */
 exports.nonexistentDirectory = function(test) {
     test.expect(2);
-    git.repo('/surely/this/directory/does/not/exist/on/this/machine', function(error, repository) {
+    git.repo.open('/surely/this/directory/does/not/exist/on/this/machine', function(error, repository) {
       test.notEqual(error, null, 'Attempting to open a nonexistent directory should error');
       test.equals(repository, null, 'Non existent directory should result in null repository');
       test.done();
@@ -67,14 +67,13 @@ exports.nonexistentDirectory = function(test) {
  */
 exports.init = function(test) {
   test.expect(2);
-
   // Cleanup, remove test repo directory - if it exists
   rimraf('./test.git', function() {
     // Create bare repo and test for creation
-    git.init('./test.git', true, function(error, path, isBare) {
+    git.repo.init('./test.git', true, function(error, path, isBare) {
       test.equals(null, error, 'Successfully created bare repository');
       // Verify repo exists
-      git.repo('./test.git', function(error, path, repo) {
+      git.repo.open('./test.git', function(error, path, repo) {
         test.equals(null, error, 'Valid repository created');
 
         // Cleanup, remove test repo directory

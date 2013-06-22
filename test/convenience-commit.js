@@ -36,21 +36,20 @@ exports.method = function(test){
 
 exports.message = function(test) {
   test.expect(3);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.message(function(error, message) {
-        test.equals(error, null, 'There should be no error');
-        test.notEqual(message, null, 'Message should not be null');
-        test.equals(message, 'Update README.md', 'Message should match expected value');
-        test.done();
-      });
+      var message = commit.message();
+      test.equals(error, null, 'There should be no error');
+      test.notEqual(message, null, 'Message should not be null');
+      test.equals(message, 'Update README.md', 'Message should match expected value');
+      test.done();
     });
   });
 };
 
 exports.sha = function(test) {
   test.expect(3);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       var sha = commit.sha();
       test.equals(error, null, 'There should be no error');
@@ -63,112 +62,100 @@ exports.sha = function(test) {
 
 exports.time = function(test) {
   test.expect(3);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.time(function(error, time) {
-        test.equals(error, null, 'There should be no error');
-        test.notEqual(time, null, 'Time should not be null');
-        test.equals(time, 1362012884000, 'Time should match expected value');
-        test.done();
-      });
+      var time = commit.time();
+      test.equals(error, null, 'There should be no error');
+      test.notEqual(time, null, 'Time should not be null');
+      test.equals(time, 1362012884000, 'Time should match expected value');
+      test.done();
     });
   });
 };
 
 exports.date = function(test) {
   test.expect(4);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.date(function(error, date) {
-        test.equals(error, null, 'There should be no error');
-        test.notEqual(date, null, 'Date should not be null');
-        test.equal(date instanceof Date, true, 'Date should be a date object');
-        test.equals(date.getTime(), 1362012884000, 'Date should match expected value');
-        test.done();
-      });
+      var date = commit.date();
+      test.equals(error, null, 'There should be no error');
+      test.notEqual(date, null, 'Date should not be null');
+      test.equal(date instanceof Date, true, 'Date should be a date object');
+      test.equals(date.getTime(), 1362012884000, 'Date should match expected value');
+      test.done();
     });
   });
 };
 
 exports.offset = function(test) {
   test.expect(3);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.offset(function(error, offset) {
-        test.equals(error, null, 'There should be no error');
-        test.notEqual(offset, null, 'Offset should not be null');
-        test.equals(offset, 780, 'Offset should match expected value');
-        test.done();
-      });
+      var offset = commit.offset();
+      test.equals(error, null, 'There should be no error');
+      test.notEqual(offset, null, 'Offset should not be null');
+      test.equals(offset, 780, 'Offset should match expected value');
+      test.done();
     });
   });
 };
 
 exports.author = function(test) {
   test.expect(2);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.author(function(error, author) {
-        test.equals(error, null, 'There should be no error');
-        test.notEqual(author, null, 'Author should not be null');
-        test.done();
-      });
+      var author = commit.author();
+      test.equals(error, null, 'There should be no error');
+      test.notEqual(author, null, 'Author should not be null');
+      test.done();
     });
   });
 };
 
 exports.authorName = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.author(function commitAuthor(error, author) {
-        author.name(function authorName(error, name) {
-          test.equals(name, 'Michael Robinson', 'The author name should match expected value');
-          test.done();
-        });
-      });
+      var author = commit.author();
+      var name = author.name();
+      test.equals(name, 'Michael Robinson', 'The author name should match expected value');
+      test.done();
     });
   });
 };
 
 exports.authorEmail = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.author(function commitAuthor(error, author) {
-        author.email(function authorName(error, email) {
-          test.equals(email, 'mike@panmedia.co.nz', 'The author email should match expected value');
-          test.done();
-        });
-      });
+      var author = commit.author();
+      var email = author.email();
+      test.equals(email, 'mike@panmedia.co.nz', 'The author email should match expected value');
+      test.done();
     });
   });
 };
 
 exports.committerName = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.committer(function commitCommitter(error, committer) {
-        committer.name(function committerName(error, name) {
-          test.equals(name, 'Michael Robinson', 'The author name should match expected value');
-          test.done();
-        });
-      });
+      var committer = commit.committer();
+      var name = committer.name();
+      test.equals(name, 'Michael Robinson', 'The author name should match expected value');
+      test.done();
     });
   });
 };
 
 exports.committerEmail = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
-      commit.committer(function commitCommitter(error, committer) {
-        committer.email(function committerName(error, email) {
-          test.equals(email, 'mike@panmedia.co.nz', 'The committer email should match expected value');
-          test.done();
-        });
-      });
+      var committer = commit.committer();
+      var email = committer.email();
+      test.equals(email, 'mike@panmedia.co.nz', 'The committer email should match expected value');
+      test.done();
     });
   });
 };
@@ -178,7 +165,7 @@ exports.committerEmail = function(test) {
  */
 exports.improperCommitId = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit('not a proper commit sha', function(error, commit) {
       test.notEqual(error, null, 'Error should occur');
       test.done();
@@ -191,7 +178,7 @@ exports.improperCommitId = function(test) {
  */
 exports.history = function(test) {
   test.expect(368);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       test.equals(null, error, 'Getting latest branch commit should not error');
       var historyCount = 0;
@@ -214,7 +201,7 @@ exports.history = function(test) {
  */
 exports.masterHead = function(test) {
   test.expect(2);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.branch('master', function(error, branch) {
       test.equals(error, null, 'Getting branch should not error');
       var sha = branch.sha();
@@ -233,7 +220,7 @@ exports.masterHead = function(test) {
  */
 exports.parents = function(test) {
   test.expect(3);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parents(function(error, parents) {
         test.equals(parents.length, 1, 'Commit should have exactly one parent');
@@ -251,14 +238,14 @@ exports.parents = function(test) {
  */
 exports.tree = function(test) {
   test.expect(2);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       test.equals(error, null, 'Getting latest branch commit should not error');
 
       var commitTreeEntryCount = 0;
       var expectedCommitTreeEntryCount = 198;
 
-      commit.tree(function commitTree(error, tree) {
+      commit.getTree(function(error, tree) {
         tree.walk().on('entry', function(error, entry) {
           commitTreeEntryCount++;
         }).on('end', function(error, entries) {
@@ -275,7 +262,7 @@ exports.tree = function(test) {
  */
 exports.parentsDiffTrees = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit(historyCountKnownSHA, function(error, commit) {
       commit.parentsDiffTrees(function(error, parentsDiffTrees) {
         test.equals(parentsDiffTrees.length, 1, 'Should be one item in parents diff trees');

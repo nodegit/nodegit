@@ -20,7 +20,6 @@ GitOid::GitOid(git_oid *raw) {
 }
 
 GitOid::~GitOid() {
-  free(this->raw);
 }
 
 void GitOid::Initialize(Handle<v8::Object> target) {
@@ -33,6 +32,7 @@ void GitOid::Initialize(Handle<v8::Object> target) {
 
   NODE_SET_METHOD(tpl, "fromString", FromString);
   NODE_SET_PROTOTYPE_METHOD(tpl, "sha", Sha);
+
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   target->Set(String::NewSymbol("Oid"), constructor_template);
@@ -60,18 +60,20 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String is required.")));
+    return ThrowException(Exception::Error(String::New("String str is required.")));
   }
   git_oid * out;
   out = (git_oid *)malloc(sizeof(git_oid));
 
   int result = git_oid_fromstr(
+
     out
-,     stringArgToString(args[0]->ToString()).c_str()
+, 
+    stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    return ThrowException(GitError::WrapError(giterr_last()));
   }
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
@@ -82,10 +84,12 @@ Handle<Value> GitOid::Sha(const Arguments& args) {
   HandleScope scope;
 
   char * result = git_oid_allocfmt(
+
     ObjectWrap::Unwrap<GitOid>(args.This())->GetValue()
   );
 
   return scope.Close(String::New(result));
 }
+
 
 Persistent<Function> GitOid::constructor_template;

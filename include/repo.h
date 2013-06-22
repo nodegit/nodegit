@@ -28,6 +28,7 @@ class GitRepo : public ObjectWrap {
 
     static Handle<Value> New(const Arguments& args);
 
+
     static Handle<Value> Open(const Arguments& args);
     static void OpenWork(uv_work_t* req);
     static void OpenAfterWork(uv_work_t* req);

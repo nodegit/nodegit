@@ -21,6 +21,14 @@ using namespace v8;
 using namespace node;
 using namespace cvv8;
 
+GitDiffList::GitDiffList(git_diff_list *raw) {
+  this->raw = raw;
+}
+
+GitDiffList::~GitDiffList() {
+  git_diff_list_free(this->raw);
+}
+
 namespace cvv8 {
   template <>
   struct NativeToJS<git_delta_t> : NativeToJS<int32_t> {};
@@ -34,9 +42,8 @@ void GitDiffList::Initialize(Handle<Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("DiffList"));
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "treeToTree", TreeToTree);
+  NODE_SET_METHOD(tpl, "treeToTree", TreeToTree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "walk", Walk);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
 
   // Add libgit2 delta types to diff_list object
   Local<Object> libgit2DeltaTypes = Object::New();
@@ -101,29 +108,20 @@ void GitDiffList::Initialize(Handle<Object> target) {
 }
 
 git_diff_list* GitDiffList::GetValue() {
-  return this->diffList;
-}
-
-void GitDiffList::SetValue(git_diff_list* diffList) {
-  this->diffList = diffList;
+  return this->raw;
 }
 
 Handle<Value> GitDiffList::New(const Arguments& args) {
   HandleScope scope;
 
-  GitDiffList *diffList = new GitDiffList();
-  diffList->Wrap(args.This());
+  if (args.Length() == 0 || !args[0]->IsExternal()) {
+    return ThrowException(Exception::Error(String::New("git_diff_list is required.")));
+  }
+
+  GitDiffList* object = new GitDiffList((git_diff_list *) External::Unwrap(args[0]));
+  object->Wrap(args.This());
 
   return scope.Close(args.This());
-}
-Handle<Value> GitDiffList::Free(const Arguments& args) {
-  HandleScope scope;
-
-  GitDiffList *diffList = ObjectWrap::Unwrap<GitDiffList>(args.This());
-  git_diff_list_free(diffList->diffList);
-  diffList->diffList = NULL;
-
-  return scope.Close(Undefined());
 }
 
 Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
@@ -148,7 +146,6 @@ Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
   TreeToTreeBaton *baton = new TreeToTreeBaton;
   baton->request.data = baton;
   baton->error = NULL;
-  baton->diffList = ObjectWrap::Unwrap<GitDiffList>(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
 
   if (args[1]->IsObject()) {
@@ -242,8 +239,11 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
       node::FatalException(try_catch);
     }
   } else {
+    Handle<Value> argv2[1] = {
+      External::New(baton->rawDiffList)
+    };
 
-    baton->diffList->SetValue(baton->rawDiffList);
+    baton->diffList = ObjectWrap::Unwrap<GitDiffList>(GitDiffList::constructor_template->NewInstance(1, argv2));
 
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),

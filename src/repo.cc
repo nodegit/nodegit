@@ -36,6 +36,7 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "path", Path);
   NODE_SET_PROTOTYPE_METHOD(tpl, "workdir", Workdir);
 
+
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   target->Set(String::NewSymbol("Repo"), constructor_template);
 }
@@ -62,7 +63,7 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String is required.")));
+    return ThrowException(Exception::Error(String::New("String path is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
@@ -129,10 +130,10 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String is required.")));
+    return ThrowException(Exception::Error(String::New("String path is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsBoolean()) {
-    return ThrowException(Exception::Error(String::New("Boolean is required.")));
+    return ThrowException(Exception::Error(String::New("Boolean is_bare is required.")));
   }
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
@@ -145,7 +146,7 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   String::Utf8Value path(args[0]->ToString());
   // XXX FIXME remove strdup and use std::string
   baton->path = strdup(*path);
-  baton->is_bare = args[1]->ToBoolean()->Value();
+  baton->is_bare = (unsigned) args[1]->ToBoolean()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, InitWork, (uv_after_work_cb)InitAfterWork);
@@ -201,6 +202,7 @@ Handle<Value> GitRepo::Path(const Arguments& args) {
   HandleScope scope;
 
   const char * result = git_repository_path(
+
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
 
@@ -211,10 +213,12 @@ Handle<Value> GitRepo::Workdir(const Arguments& args) {
   HandleScope scope;
 
   const char * result = git_repository_workdir(
+
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
 
   return scope.Close(String::New(result));
 }
+
 
 Persistent<Function> GitRepo::constructor_template;

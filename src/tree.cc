@@ -25,6 +25,14 @@ using namespace v8;
 using namespace node;
 using namespace cvv8;
 
+GitTree::GitTree(git_tree *raw) {
+  this->raw = raw;
+}
+
+GitTree::~GitTree() {
+  git_tree_free(this->raw);
+}
+
 void GitTree::Initialize (Handle<v8::Object> target) {
   HandleScope scope;
 
@@ -33,7 +41,7 @@ void GitTree::Initialize (Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Tree"));
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
+  NODE_SET_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "walk", Walk);
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByPath", EntryByPath);
 
@@ -42,18 +50,18 @@ void GitTree::Initialize (Handle<v8::Object> target) {
 }
 
 git_tree* GitTree::GetValue() {
-  return this->tree;
-}
-void GitTree::SetValue(git_tree* tree) {
-  this->tree = tree;
+  return this->raw;
 }
 
 Handle<Value> GitTree::New(const Arguments& args) {
   HandleScope scope;
 
-  GitTree *tree = new GitTree();
+  if (args.Length() == 0 || !args[0]->IsExternal()) {
+    return ThrowException(Exception::Error(String::New("git_tree is required.")));
+  }
 
-  tree->Wrap(args.This());
+  GitTree* object = new GitTree((git_tree *) External::Unwrap(args[0]));
+  object->Wrap(args.This());
 
   return scope.Close(args.This());
 }
@@ -76,7 +84,6 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
   LookupBaton* baton = new LookupBaton;
   baton->request.data = baton;
   baton->error = NULL;
-  baton->rawTree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->rawOid = *ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
@@ -98,17 +105,18 @@ void GitTree::LookupAfterWork(uv_work_t* req) {
   LookupBaton* baton = static_cast<LookupBaton* >(req->data);
 
   if (success(baton->error, baton->callback)) {
-    Local<Object> tree = GitTree::constructor_template->NewInstance();
-    GitTree *treeInstance = ObjectWrap::Unwrap<GitTree>(tree);
-    treeInstance->SetValue(baton->rawTree);
+    Handle<Value> argv[1] = {
+      External::New(baton->rawTree)
+    };
+    Local<Object> tree = GitTree::constructor_template->NewInstance(1, argv);
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       tree
     };
 
     TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
     if (try_catch.HasCaught()) {
         node::FatalException(try_catch);
     }
@@ -219,24 +227,25 @@ void GitTree::WalkWorkSendEntry(uv_async_t *handle, int status /*UNUSED*/) {
 
     for(std::vector<WalkEntry* >::iterator treeEntriesIterator = baton->rawTreeEntries.begin(); treeEntriesIterator != baton->rawTreeEntries.end(); ++treeEntriesIterator) {
       WalkEntry* walkEntry = (*treeEntriesIterator);
+  
+      Handle<Value> argv[1] = {
+        External::New(walkEntry->rawEntry)
+      };
 
-      Local<Object> entry = GitTreeEntry::constructor_template->NewInstance();
-      GitTreeEntry *entryInstance = ObjectWrap::Unwrap<GitTreeEntry>(entry);
-      entryInstance->SetValue(walkEntry->rawEntry);
-      entryInstance->SetRoot(walkEntry->root);
+      Local<Object> entry = GitTreeEntry::constructor_template->NewInstance(1, argv);
 
       treeEntries.push_back(entry);
     }
 
     baton->rawTreeEntries.clear();
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       CastToJS(treeEntries)
     };
 
     TryCatch try_catch;
-    baton->entryCallback->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->entryCallback->Call(Context::GetCurrent()->Global(), 2, argv2);
     if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
     }
@@ -304,18 +313,18 @@ void GitTree::EntryByPathAfterWork(uv_work_t *req) {
   EntryByPathBaton *baton = static_cast<EntryByPathBaton *>(req->data);
 
   if (success(baton->error, baton->callback)) {
-    Local<Object> entry = GitTreeEntry::constructor_template->NewInstance();
-    GitTreeEntry *entryInstance = ObjectWrap::Unwrap<GitTreeEntry>(entry);
-    entryInstance->SetValue(baton->rawEntry);
-    entryInstance->SetRoot(baton->path.substr(0, baton->path.find_last_of("\\/")));
+    Handle<Value> argv[1] = {
+      External::New(baton->rawEntry)
+    };
+    Local<Object> entry = GitTreeEntry::constructor_template->NewInstance(1, argv);
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       entry
     };
 
     TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
     if (try_catch.HasCaught()) {
       node::FatalException(try_catch);
     }

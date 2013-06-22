@@ -32,14 +32,12 @@ class GitDiffList : public ObjectWrap {
     static void Initialize (Handle<v8::Object> target);
 
     git_diff_list* GetValue();
-    void SetValue(git_diff_list* diffList);
 
   protected:
-    GitDiffList() {}
-    ~GitDiffList() {}
+    GitDiffList(git_diff_list *raw);
+    ~GitDiffList();
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> TreeToTree(const Arguments& args);
     static void TreeToTreeWork(uv_work_t *req);
@@ -72,7 +70,7 @@ class GitDiffList : public ObjectWrap {
     static void WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/);
 
   private:
-    git_diff_list* diffList;
+    git_diff_list* raw;
 
     struct TreeToTreeBaton {
       uv_work_t request;

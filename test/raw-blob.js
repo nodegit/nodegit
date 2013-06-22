@@ -63,8 +63,7 @@ exports.lookup = function(test) {
 // Blob::RawContent
 exports.rawContent = function(test) {
   // This shouldn't fail unless someone rewrites history:
-  var testOid = git.Oid.fromString('111dd657329797f6165f52f5085f61ac976dcf04'),
-      testCommit = new git.Commit();
+  var testOid = git.Oid.fromString('111dd657329797f6165f52f5085f61ac976dcf04');
   test.expect(3);
   git.Repo.open(path.resolve('../.git'), function(err, repo) {
     git.Blob.lookup(repo, testOid, function(err, blob) {

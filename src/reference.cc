@@ -40,6 +40,7 @@ void GitReference::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(tpl, "resolve", Resolve);
 
+
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   target->Set(String::NewSymbol("Reference"), constructor_template);
 }
@@ -66,10 +67,10 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository is required.")));
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String is required.")));
+    return ThrowException(Exception::Error(String::New("String name is required.")));
   }
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
@@ -140,10 +141,10 @@ Handle<Value> GitReference::OidForName(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository is required.")));
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String is required.")));
+    return ThrowException(Exception::Error(String::New("String name is required.")));
   }
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
@@ -214,6 +215,7 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
   HandleScope scope;
 
   const git_oid * result = git_reference_target(
+
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
 
@@ -226,6 +228,7 @@ Handle<Value> GitReference::Name(const Arguments& args) {
   HandleScope scope;
 
   const char * result = git_reference_symbolic_target(
+
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
 
@@ -236,6 +239,7 @@ Handle<Value> GitReference::Type(const Arguments& args) {
   HandleScope scope;
 
   git_ref_t result = git_reference_type(
+
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
 
@@ -300,5 +304,6 @@ void GitReference::ResolveAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
 
 Persistent<Function> GitReference::constructor_template;

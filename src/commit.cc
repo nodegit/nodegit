@@ -1,33 +1,33 @@
-/*
- * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
-
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 #include <v8.h>
 #include <node.h>
 #include <string.h>
 
 #include "git2.h"
-#include "cvv8/v8-convert.hpp"
 
-#include "../include/reference.h"
-#include "../include/signature.h"
-#include "../include/repo.h"
-#include "../include/oid.h"
-#include "../include/tree.h"
 #include "../include/commit.h"
-#include "../include/error.h"
+#include "../include/oid.h"
+#include "../include/repo.h"
+#include "../include/signature.h"
+#include "../include/tree.h"
 
 #include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
-using namespace cvv8;
 using namespace node;
 
-void GitCommit::Initialize(Handle<Object> target) {
+GitCommit::GitCommit(git_commit *raw) {
+  this->raw = raw;
+}
+
+GitCommit::~GitCommit() {
+  git_commit_free(this->raw);
+}
+
+void GitCommit::Initialize(Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
@@ -35,452 +35,342 @@ void GitCommit::Initialize(Handle<Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Commit"));
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "lookup", Lookup);
+  NODE_SET_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "messageEncoding", MessageEncoding);
   NODE_SET_PROTOTYPE_METHOD(tpl, "message", Message);
   NODE_SET_PROTOTYPE_METHOD(tpl, "time", Time);
   NODE_SET_PROTOTYPE_METHOD(tpl, "offset", Offset);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
   NODE_SET_PROTOTYPE_METHOD(tpl, "committer", Committer);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
   NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "parents", Parents);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "treeId", TreeId);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "parentCount", ParentCount);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "free", Free);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
   target->Set(String::NewSymbol("Commit"), constructor_template);
 }
 
-git_commit* GitCommit::GetValue() {
-  return this->commit;
-}
-void GitCommit::SetValue(git_commit* commit) {
-  this->commit = commit;
-}
-void GitCommit::SetOid(git_oid* oid) {
-  this->oid = oid;
-}
-
 Handle<Value> GitCommit::New(const Arguments& args) {
   HandleScope scope;
 
-  GitCommit *commit = new GitCommit();
-  commit->Wrap(args.This());
+  if (args.Length() == 0 || !args[0]->IsExternal()) {
+    return ThrowException(Exception::Error(String::New("git_commit is required.")));
+  }
+
+  GitCommit* object = new GitCommit((git_commit *) External::Unwrap(args[0]));
+  object->Wrap(args.This());
 
   return scope.Close(args.This());
 }
-Handle<Value> GitCommit::Free(const Arguments& args) {
-  HandleScope scope;
 
-  GitCommit *commit = ObjectWrap::Unwrap<GitCommit>(args.This());
-  git_commit_free(commit->commit);
-  commit->commit = NULL;
-
-  return Undefined();
+git_commit *GitCommit::GetValue() {
+  return this->raw;
 }
+
 
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repo is required and must be an Object.")));
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
-
-  if(args.Length() == 1 || !(args[1]->IsObject() || args[1]->IsString())) {
-    return ThrowException(Exception::Error(String::New("Oid is required and must be an Object or String")));
+  if (args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
-
-  if(args.Length() == 2 || !args[2]->IsFunction()) {
+  if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  LookupBaton *baton = new LookupBaton;
-  baton->request.data = baton;
+  LookupBaton* baton = new LookupBaton;
   baton->error = NULL;
+  baton->request.data = baton;
+
+  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
+  // Either ref the argument or copy?
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-
-  if (args[1]->IsObject()) {
-    baton->rawOid = *ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
-  } else {
-    baton->sha = stringArgToString(args[1]->ToString());
-  }
-
+  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
+  // Either ref the argument or copy?
+  baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
 
   return Undefined();
 }
+
 void GitCommit::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-
-  if (!baton->sha.empty()) {
-    int returnCode = git_oid_fromstr(&baton->rawOid, baton->sha.c_str());
-    if (returnCode != GIT_OK) {
-      baton->error = giterr_last();
-      return;
-    }
-  }
-
-  baton->rawCommit = NULL;
-  int returnCode = git_commit_lookup(&baton->rawCommit, baton->repo, &baton->rawOid);
-  if (returnCode != GIT_OK) {
+  int result = git_commit_lookup(
+    &baton->commit, 
+    baton->repo, 
+    baton->id
+  );
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
+
 void GitCommit::LookupAfterWork(uv_work_t *req) {
   HandleScope scope;
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
-  if (success(baton->error, baton->callback)) {
-    Local<Object> commit = GitCommit::constructor_template->NewInstance();
-    GitCommit *commitInstance = ObjectWrap::Unwrap<GitCommit>(commit);
-    commitInstance->SetValue(baton->rawCommit);
-    commitInstance->SetOid(&baton->rawOid);
+  TryCatch try_catch;
+  if (!baton->error) {
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv[1] = { External::New(baton->commit) };
+    Handle<Object> object = GitCommit::constructor_template->NewInstance(1, argv);
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      commit
+      object
     };
-
-    TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+  } else {
+    Handle<Value> argv2[1] = {
+      GitError::WrapError(baton->error)
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
   }
-  delete req;
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+
+  baton->callback.Dispose();
+  delete baton;
 }
 
 Handle<Value> GitCommit::Oid(const Arguments& args) {
   HandleScope scope;
 
-  git_oid *rawOid = (git_oid *)malloc(sizeof(git_oid));
-  git_oid_cpy(rawOid, ObjectWrap::Unwrap<GitCommit>(args.This())->oid);
-  Handle<Value> argv[1] = { External::New(rawOid) };
+  const git_oid * result = git_commit_id(
+
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
+
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)result) };
   return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+}
+
+Handle<Value> GitCommit::MessageEncoding(const Arguments& args) {
+  HandleScope scope;
+
+  const char * result = git_commit_message_encoding(
+
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
+
+  return scope.Close(String::New(result));
 }
 
 Handle<Value> GitCommit::Message(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
+  const char * result = git_commit_message(
 
-  MessageBaton* baton = new MessageBaton;
-  baton->request.data = baton;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
 
-  uv_queue_work(uv_default_loop(), &baton->request, MessageWork, (uv_after_work_cb)MessageAfterWork);
-
-  return Undefined();
-}
-void GitCommit::MessageWork(uv_work_t* req) {
-  MessageBaton *baton = static_cast<MessageBaton *>(req->data);
-
-  baton->message = git_commit_message(baton->rawCommit);
-}
-void GitCommit::MessageAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  MessageBaton *baton = static_cast<MessageBaton *>(req->data);
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    String::New(baton->message.c_str())
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
+  return scope.Close(String::New(result));
 }
 
 Handle<Value> GitCommit::Time(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
+  git_time_t result = git_commit_time(
 
-  TimeBaton* baton = new TimeBaton;
-  baton->request.data = baton;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
 
-  uv_queue_work(uv_default_loop(), &baton->request, TimeWork, (uv_after_work_cb)TimeAfterWork);
-
-  return Undefined();
-}
-void GitCommit::TimeWork(uv_work_t* req) {
-  TimeBaton *baton = static_cast<TimeBaton *>(req->data);
-
-  baton->time = git_commit_time(baton->rawCommit);
-}
-void GitCommit::TimeAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  TimeBaton *baton = static_cast<TimeBaton *>(req->data);
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    Integer::New(baton->time)
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
+  return scope.Close(Number::New(result));
 }
 
 Handle<Value> GitCommit::Offset(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
+  int result = git_commit_time_offset(
 
-  OffsetBaton* baton = new OffsetBaton;
-  baton->request.data = baton;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
 
-  uv_queue_work(uv_default_loop(), &baton->request, OffsetWork, (uv_after_work_cb)OffsetAfterWork);
-
-  return Undefined();
-}
-void GitCommit::OffsetWork(uv_work_t* req) {
-  OffsetBaton *baton = static_cast<OffsetBaton *>(req->data);
-
-  baton->offset = git_commit_time_offset(baton->rawCommit);
-}
-void GitCommit::OffsetAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  OffsetBaton *baton = static_cast<OffsetBaton *>(req->data);
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    Integer::New(baton->offset)
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
-}
-
-Handle<Value> GitCommit::Author(const Arguments& args) {
-  HandleScope scope;
-
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  SignatureBaton* baton = new SignatureBaton;
-  baton->request.data = baton;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, AuthorWork, (uv_after_work_cb)AuthorAfterWork);
-
-  return Undefined();
-}
-void GitCommit::AuthorWork(uv_work_t* req) {
-  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
-
-  baton->rawSignature = git_commit_author(baton->rawCommit);
-}
-void GitCommit::AuthorAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
-
-  Local<Object> signature = GitSignature::constructor_template->NewInstance();
-  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitSignature>(signature);
-  signatureInstance->SetValue(const_cast<git_signature *>(baton->rawSignature));
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    signature
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
+  return scope.Close(Integer::New(result));
 }
 
 Handle<Value> GitCommit::Committer(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
+  const git_signature * result = git_commit_committer(
 
-  SignatureBaton* baton = new SignatureBaton;
-  baton->request.data = baton;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
 
-  uv_queue_work(uv_default_loop(), &baton->request, CommitterWork, (uv_after_work_cb)CommitterAfterWork);
-
-  return Undefined();
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)result) };
+  return scope.Close(GitSignature::constructor_template->NewInstance(1, argv));
 }
-void GitCommit::CommitterWork(uv_work_t* req) {
-  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
 
-  baton->rawSignature = git_commit_committer(baton->rawCommit);
-}
-void GitCommit::CommitterAfterWork(uv_work_t* req) {
+Handle<Value> GitCommit::Author(const Arguments& args) {
   HandleScope scope;
-  SignatureBaton *baton = static_cast<SignatureBaton *>(req->data);
 
-  Local<Object> signature = GitSignature::constructor_template->NewInstance();
-  GitSignature *signatureInstance = ObjectWrap::Unwrap<GitSignature>(signature);
-  signatureInstance->SetValue(const_cast<git_signature *>(baton->rawSignature));
+  const git_signature * result = git_commit_author(
 
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    signature
-  };
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
 
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)result) };
+  return scope.Close(GitSignature::constructor_template->NewInstance(1, argv));
 }
 
 Handle<Value> GitCommit::Tree(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
+  if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   TreeBaton* baton = new TreeBaton;
-  baton->request.data = baton;
   baton->error = NULL;
-  baton->rawTree = NULL;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->request.data = baton;
+
+  baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, TreeWork, (uv_after_work_cb)TreeAfterWork);
 
   return Undefined();
 }
-void GitCommit::TreeWork(uv_work_t* req) {
-  TreeBaton* baton = static_cast<TreeBaton*>(req->data);
 
-  int returnCode = git_commit_tree(&baton->rawTree, baton->rawCommit);
-  if (returnCode != GIT_OK) {
+void GitCommit::TreeWork(uv_work_t *req) {
+  TreeBaton *baton = static_cast<TreeBaton *>(req->data);
+  int result = git_commit_tree(
+    &baton->tree_out, 
+    baton->commit
+  );
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
-void GitCommit::TreeAfterWork(uv_work_t* req) {
+
+void GitCommit::TreeAfterWork(uv_work_t *req) {
   HandleScope scope;
-  TreeBaton* baton = static_cast<TreeBaton* >(req->data);
+  TreeBaton *baton = static_cast<TreeBaton *>(req->data);
 
-  if (success(baton->error, baton->callback)) {
-    Local<Object> tree = GitTree::constructor_template->NewInstance();
-    GitTree *treeInstance = ObjectWrap::Unwrap<GitTree>(tree);
-    treeInstance->SetValue(baton->rawTree);
+  TryCatch try_catch;
+  if (!baton->error) {
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv[1] = { External::New(baton->tree_out) };
+    Handle<Object> object = GitTree::constructor_template->NewInstance(1, argv);
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      tree
+      object
     };
-
-    TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+  } else {
+    Handle<Value> argv2[1] = {
+      GitError::WrapError(baton->error)
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
   }
-  delete req;
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+
+  baton->callback.Dispose();
+  delete baton;
 }
 
-Handle<Value> GitCommit::Parents(const Arguments& args) {
+Handle<Value> GitCommit::TreeId(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 && !args[0]->IsFunction()) {
+  const git_oid * result = git_commit_tree_id(
+
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
+
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)result) };
+  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+}
+
+Handle<Value> GitCommit::ParentCount(const Arguments& args) {
+  HandleScope scope;
+
+  unsigned int result = git_commit_parentcount(
+
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+  );
+
+  return scope.Close(Uint32::New(result));
+}
+
+Handle<Value> GitCommit::Parent(const Arguments& args) {
+  HandleScope scope;
+
+  if (args.Length() == 0 || !args[0]->IsUint32()) {
+    return ThrowException(Exception::Error(String::New("Number n is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  ParentsBaton* baton = new ParentsBaton;
-  baton->request.data = baton;
+  ParentBaton* baton = new ParentBaton;
   baton->error = NULL;
-  baton->rawCommit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  baton->request.data = baton;
 
-  uv_queue_work(uv_default_loop(), &baton->request, ParentsWork, (uv_after_work_cb)ParentsAfterWork);
+  baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->n = (unsigned int) args[0]->ToUint32()->Value();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, ParentWork, (uv_after_work_cb)ParentAfterWork);
 
   return Undefined();
 }
-void GitCommit::ParentsWork(uv_work_t* req) {
-  ParentsBaton* baton = static_cast<ParentsBaton*>(req->data);
 
-  int parentCount = git_commit_parentcount(baton->rawCommit);
-  while (parentCount > 0) {
-    git_commit* rawParentCommit = NULL;
-
-    int parentIndex = parentCount -1;
-    int returnCode = git_commit_parent(&rawParentCommit, baton->rawCommit, parentIndex);
-
-    if (returnCode != GIT_OK) {
-      baton->error = giterr_last();
-      return;
-    }
-
-    const git_oid* rawParentOid = git_commit_id(rawParentCommit);
-
-    Parent* parent = new Parent;
-    parent->rawCommit = rawParentCommit;
-    parent->rawOid = rawParentOid;
-
-    baton->parents.push_back(parent);
-
-    parentCount--;
+void GitCommit::ParentWork(uv_work_t *req) {
+  ParentBaton *baton = static_cast<ParentBaton *>(req->data);
+  int result = git_commit_parent(
+    &baton->out, 
+    baton->commit, 
+    baton->n
+  );
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
   }
 }
-void GitCommit::ParentsAfterWork(uv_work_t* req) {
+
+void GitCommit::ParentAfterWork(uv_work_t *req) {
   HandleScope scope;
-  ParentsBaton* baton = static_cast<ParentsBaton* >(req->data);
+  ParentBaton *baton = static_cast<ParentBaton *>(req->data);
 
-  if (success(baton->error, baton->callback)) {
-    std::vector<Local<Object> > parents;
+  TryCatch try_catch;
+  if (!baton->error) {
 
-    for(std::vector<Parent* >::iterator parentIterator = baton->parents.begin(); parentIterator != baton->parents.end(); ++parentIterator) {
-      Parent *parentData = (*parentIterator);
-
-      Local<Object> parent = GitCommit::constructor_template->NewInstance();
-      GitCommit *parentInstance = ObjectWrap::Unwrap<GitCommit>(parent);
-      parentInstance->SetValue(parentData->rawCommit);
-      parentInstance->SetOid(const_cast<git_oid *>(parentData->rawOid));
-
-      parents.push_back(parent);
-    }
-
-    Handle<Value> argv[2] = {
+    Handle<Value> argv[1] = { External::New(baton->out) };
+    Handle<Object> object = GitCommit::constructor_template->NewInstance(1, argv);
+    Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      cvv8::CastToJS(parents)
+      object
     };
-
-    TryCatch try_catch;
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-    if (try_catch.HasCaught()) {
-        node::FatalException(try_catch);
-    }
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+  } else {
+    Handle<Value> argv2[1] = {
+      GitError::WrapError(baton->error)
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
   }
-  delete req;
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+
+  baton->callback.Dispose();
+  delete baton;
 }
+
 
 Persistent<Function> GitCommit::constructor_template;

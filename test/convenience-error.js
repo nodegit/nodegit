@@ -75,7 +75,7 @@ exports.returnCodes = function(test) {
  */
 exports.improperCommitId = function(test) {
   test.expect(1);
-  git.repo('../.git', function(error, repository) {
+  git.repo.open('../.git', function(error, repository) {
     repository.commit('not a proper commit sha', function(error, commit) {
       test.notEqual(error.code, git.error.GIT_SUCCESS, 'Attempting to get commit by invalid SHA should error');
       test.done();

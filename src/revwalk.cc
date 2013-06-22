@@ -10,6 +10,7 @@
 
 #include "git2.h"
 
+#include "../include/oid.h"
 #include "../include/revwalk.h"
 #include "../include/repo.h"
 #include "../include/commit.h"

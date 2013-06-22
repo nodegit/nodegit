@@ -28,6 +28,7 @@ class GitBlob : public ObjectWrap {
 
     static Handle<Value> New(const Arguments& args);
 
+
     static Handle<Value> Lookup(const Arguments& args);
     static void LookupWork(uv_work_t* req);
     static void LookupAfterWork(uv_work_t* req);

@@ -1,6 +1,6 @@
 <%
   function isPrimitive(cppClassName) {
-    return ["Boolean", "Number", "String"].indexOf(cppClassName) > -1;
+    return ["Boolean", "Number", "String", "Integer", "Int32", "Uint32"].indexOf(cppClassName) > -1;
   }
 
   function cppClassName2v8ValueClassName(cppClassName) {
@@ -20,8 +20,10 @@
 #include "git2.h"
 
 #include "../include/<%= filename %>"
+<% if (typeof dependencies != 'undefined') { -%>
 <% for (d in dependencies) { -%>
 #include "<%- dependencies[d] %>"
+<% } -%>
 <% } -%>
 
 #include "../include/functions/utilities.h"
@@ -35,7 +37,9 @@ using namespace node;
 }
 
 <%- cppClassName %>::~<%- cppClassName %>() {
+<% if (typeof freeFunctionName != 'undefined') { -%>
   <%- freeFunctionName %>(this->raw);
+<% } -%>
 }
 
 void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
@@ -46,6 +50,7 @@ void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("<%- jsClassName %>"));
 
+<% if (typeof functions != 'undefined') { -%>
 <%
   for (var i in functions) {
     var functionInfo = functions[i];
@@ -55,6 +60,17 @@ void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
 <% } else { -%>
   NODE_SET_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
+<% } -%>
+<% } -%>
+<% } -%>
+
+<% if (typeof fields != 'undefined') { -%>
+<%
+  for (var i in fields) {
+    var fieldInfo = fields[i];
+    if (fieldInfo.ignore) continue;
+-%>
+  NODE_SET_PROTOTYPE_METHOD(tpl, "<%- fieldInfo.jsFunctionName %>", <%- fieldInfo.cppFunctionName %>);
 <% } -%>
 <% } -%>
 
@@ -79,6 +95,7 @@ Handle<Value> <%- cppClassName %>::New(const Arguments& args) {
   return this->raw;
 }
 
+<% if (typeof functions != 'undefined') { -%>
 <%
   for (var i in functions) {
     var functionInfo = functions[i];
@@ -95,7 +112,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     if (arg.isReturn || arg.isSelf) continue;
 -%>
   if (args.Length() == <%- j %> || !args[<%- j %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
-    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
+    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> <%- arg.name %> is required.")));
   }
 <%
     j++;
@@ -123,7 +140,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <% } else if (arg.cppClassName == 'Buffer') { -%>
   baton-><%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- j %>]->ToObject()));
 <% } else if (isPrimitive(arg.cppClassName)) { -%>
-  baton-><%- arg.name %> = args[<%- j %>]->To<%- arg.cppClassName %>()->Value();
+  baton-><%- arg.name %> = (<%- arg.cType %>) args[<%- j %>]->To<%- arg.cppClassName %>()->Value();
 <% } else { -%>
   // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
   // Either ref the argument or copy?
@@ -214,7 +231,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 -%>
 
   if (args.Length() == <%- j %> || !args[<%- j %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
-    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
+    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> <%- arg.name %> is required.")));
   }
 <%
     j++;
@@ -225,7 +242,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     var arg = functionInfo.args[i];
     if (!arg.isReturn) continue;
 -%>
-  <%- arg.cType %> <%- arg.name %>;
+  <%- arg.cType.replace('**', '*') %> <%- arg.name %>;
 <% if (arg.shouldAlloc) { -%>
   <%- arg.name %> = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
 <% } -%>
@@ -236,6 +253,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
     var arg = functionInfo.args[i];
 -%>
+<% if (/\*\*/.test(arg.cType)) { %>&<% } %>
 <% if (arg.isSelf) { -%>
     ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()
 <% } else if (arg.isReturn) { -%>
@@ -254,7 +272,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 
 <% if (functionInfo.return.isErrorCode) { -%>
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    return ThrowException(GitError::WrapError(giterr_last()));
   }
 <% } -%>
 <%
@@ -276,6 +294,30 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)<%- resultName %>) };
   return scope.Close(<%- result.cppClassName %>::constructor_template->NewInstance(1, argv));
+<% } -%>
+}
+<% } -%>
+<% } -%>
+<% } -%>
+
+<% if (typeof fields != 'undefined') { -%>
+<%
+  for (var i in fields) {
+    var fieldInfo = fields[i];
+    if (fieldInfo.ignore) continue;
+-%>
+Handle<Value> <%- cppClassName %>::<%- fieldInfo.cppFunctionName %>(const Arguments& args) {
+  HandleScope scope;
+  <%- fieldInfo.cType %> field = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()-><%- fieldInfo.name %>;
+
+<% if (isPrimitive(fieldInfo.cppClassName)) { -%>
+  return scope.Close(<%- fieldInfo.cppClassName %>::New(field));
+<% } else if (fieldInfo.cppClassName == "External") { -%>
+  return scope.Close(External::New((void *)<% if (!/\*/.test(fieldInfo.cType)) { %>&<% } %>field));
+<% } else { -%>
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)<% if (!/\*/.test(fieldInfo.cType)) { %>&<% } %>field) };
+  return scope.Close(<%- fieldInfo.cppClassName %>::constructor_template->NewInstance(1, argv));
 <% } -%>
 }
 <% } -%>

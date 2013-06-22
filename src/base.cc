@@ -13,10 +13,12 @@
 #include "../include/wrapper.h"
 #include "../include/reference.h"
 #include "../include/signature.h"
+#include "../include/time.h"
 #include "../include/error.h"
 #include "../include/blob.h"
 #include "../include/repo.h"
 #include "../include/oid.h"
+#include "../include/object.h"
 #include "../include/commit.h"
 #include "../include/revwalk.h"
 #include "../include/tree.h"
@@ -33,8 +35,10 @@ extern "C" void init(Handle<v8::Object> target) {
 
   GitReference::Initialize(target);
   GitSignature::Initialize(target);
+  GitTime::Initialize(target);
   GitBlob::Initialize(target);
   GitOid::Initialize(target);
+  GitObject::Initialize(target);
   GitRepo::Initialize(target);
   GitCommit::Initialize(target);
   GitRevWalk::Initialize(target);

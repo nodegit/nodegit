@@ -1,0 +1,4 @@
+- replace all argv crap with Wrap static methods for tighter instantiation
+- audit memory issues - explicit malloc and frees, copies
+- look into the v88 conversions crap
+- rename all async methods getXXX

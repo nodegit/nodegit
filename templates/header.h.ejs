@@ -28,6 +28,17 @@ class <%- cppClassName %> : public ObjectWrap {
 
     static Handle<Value> New(const Arguments& args);
 
+<% if (typeof fields != 'undefined') { -%>
+<%
+  for (var i in fields) {
+    var fieldInfo = fields[i];
+    if (fieldInfo.ignore) continue;
+-%>
+    static Handle<Value> <%- fieldInfo.cppFunctionName %>(const Arguments& args);
+<% } -%>
+<% } -%>
+
+<% if (typeof functions != 'undefined') { -%>
 <%
   for (var i in functions) {
     var functionInfo = functions[i];
@@ -53,6 +64,7 @@ class <%- cppClassName %> : public ObjectWrap {
 <% } -%>
       Persistent<Function> callback;
     };
+<% } -%>
 <% } -%>
 <% } -%>
     <%- cType %> *raw;

@@ -34,11 +34,10 @@ class GitTree : public ObjectWrap {
     static void Initialize(Handle<v8::Object> target);
 
     git_tree* GetValue();
-    void SetValue(git_tree* tree);
 
   protected:
-    GitTree() {};
-    ~GitTree() {};
+    GitTree(git_tree *raw);
+    ~GitTree();
 
     static Handle<Value> New(const Arguments& args);
 
@@ -58,7 +57,7 @@ class GitTree : public ObjectWrap {
 
   private:
 
-    git_tree* tree;
+    git_tree* raw;
 
     struct LookupBaton {
       uv_work_t request;
