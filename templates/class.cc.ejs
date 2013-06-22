@@ -20,7 +20,6 @@
 #include "git2.h"
 
 #include "../include/<%= filename %>"
-
 <% for (d in dependencies) { -%>
 #include "<%- dependencies[d] %>"
 <% } -%>
@@ -91,42 +90,50 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   HandleScope scope;
 
 <%
-  var offset = functionInfo.isPrototypeMethod || functionInfo.isConstructorMethod ? 1 : 0;
-  for (var i = 0; i < functionInfo.args.length - offset; i++) {
-    var arg = functionInfo.args[i + offset];
+  for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+    if (arg.isReturn || arg.isSelf) continue;
 -%>
-  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
+  if (args.Length() == <%- j %> || !args[<%- j %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
     return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
   }
-<% } -%>
-  if (args.Length() == <%- i %> || !args[<%- i %>]->IsFunction()) {
+<%
+    j++;
+  }
+-%>
+  if (args.Length() == <%- j %> || !args[<%- j %>]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   <%- functionInfo.cppFunctionName %>Baton* baton = new <%- functionInfo.cppFunctionName %>Baton;
   baton->error = NULL;
   baton->request.data = baton;
-<% if (functionInfo.isConstructorMethod) { -%>
-<% } else if (functionInfo.isPrototypeMethod) { -%>
-  <%- cppClassName %> object = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This());
-  baton->in = object::GetValue();
-<% } -%>
 <%
-    for (var i = offset; i < functionInfo.args.length; i++) {
+    for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
       var arg = functionInfo.args[i];
 -%>
-<% if (arg.cppClassName == 'String') { %>
-  String::Utf8Value str<%- i - offset%>(args[<%- i - offset%>]->ToString());
-  baton-><%- arg.name %> = strdup(*str<%- i - offset%>);
+<% if (arg.isSelf) { -%>
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
+<% } else if (arg.isReturn) { -%>
+
+<% } else if (arg.cppClassName == 'String') { -%>
+  String::Utf8Value <%- arg.name %>(args[<%- j %>]->ToString());
+  // XXX FIXME remove strdup and use std::string
+  baton-><%- arg.name %> = strdup(*<%- arg.name %>);
 <% } else if (arg.cppClassName == 'Buffer') { -%>
-  baton-><%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject()));
+  baton-><%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- j %>]->ToObject()));
 <% } else if (isPrimitive(arg.cppClassName)) { -%>
-  baton-><%- arg.name %> = args[<%- i - offset%>]->To<%- arg.cppClassName %>()->Value();
+  baton-><%- arg.name %> = args[<%- j %>]->To<%- arg.cppClassName %>()->Value();
 <% } else { -%>
-  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->GetValue();
+  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
+  // Either ref the argument or copy?
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- j %>]->ToObject())->GetValue();
 <% } -%>
-<% } -%>
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- i - offset %>]));
+<%
+    if (!(arg.isReturn || arg.isSelf)) j++;
+  }
+-%>
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- j %>]));
 
   uv_queue_work(uv_default_loop(), &baton->request, <%- functionInfo.cppFunctionName %>Work, (uv_after_work_cb)<%- functionInfo.cppFunctionName %>AfterWork);
 
@@ -136,13 +143,11 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req) {
   <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
   <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
-<% if (functionInfo.isConstructorMethod) { -%>
-    &baton->out<% if (functionInfo.args.length - offset > 0) { %>,<% } %>
-<% } else if (functionInfo.isPrototypeMethod) { -%>
-      baton->in<% if (functionInfo.args.length - offset > 0) { %>,<% } %>
-<% } -%>
-<% for (var i = offset; i < functionInfo.args.length; i++) { var arg = functionInfo.args[i]; -%>
-    baton-><%- arg.name %><% if (i < functionInfo.args.length - 1) { %>, <% } %>
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+-%>
+    <% if (/\*\*/.test(arg.cType)) { %>&<% } %>baton-><%- arg.name %><% if (i < functionInfo.args.length - 1) { %>, <% } %>
 <% } -%>
   );
 <% if (functionInfo.return.isErrorCode) { -%>
@@ -160,12 +165,17 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
 
   TryCatch try_catch;
   if (!baton->error) {
-<% if (functionInfo.isConstructorMethod) { -%>
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> object = constructor_template->NewInstance(1, argv);
-<% } else { -%>
-    Handle<Value> argv[1] = { External::New(baton-><%- functionInfo.args[0].name %>) };
-    Handle<Object> object = <%- functionInfo.args[0].cppClassName %>::constructor_template->NewInstance(1, argv);
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+-%>
+<% if (arg.cppClassName == 'String') { -%>
+    // free((void *) baton-><%- arg.name %>);
+<% } -%>
+<% if (arg.isReturn) { %>
+    Handle<Value> argv[1] = { External::New(baton-><%- arg.name %>) };
+    Handle<Object> object = <%- arg.cppClassName %>::constructor_template->NewInstance(1, argv);
+<% } -%>
 <% } -%>
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
@@ -185,7 +195,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
 
   baton->callback.Dispose();
 <%
-    for (var i = offset; i < functionInfo.args.length; i++) {
+    for (var i = 0; i < functionInfo.args.length; i++) {
       var arg = functionInfo.args[i];
 -%>
 <% if (arg.cppClassName == 'String') { %>
@@ -197,33 +207,49 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
 <% } else { -%>
 Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
   HandleScope scope;
-
 <%
-  var offset = functionInfo.isPrototypeMethod || functionInfo.isConstructorMethod ? 1 : 0;
-  for (var i = 0; i < functionInfo.args.length - offset; i++) {
-    var arg = functionInfo.args[i + offset];
+  for (var i = 0, j = 0; i < functionInfo.args.length ; i++) {
+    var arg = functionInfo.args[i];
+    if (arg.isReturn || arg.isSelf) continue;
 -%>
-  if(args.Length() == <%- i %> || !args[<%- i %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
+
+  if (args.Length() == <%- j %> || !args[<%- j %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
     return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> is required.")));
   }
+<%
+    j++;
+  }
+-%>
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+    if (!arg.isReturn) continue;
+-%>
+  <%- arg.cType %> <%- arg.name %>;
+<% if (arg.shouldAlloc) { -%>
+  <%- arg.name %> = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
 <% } -%>
-
-<% if (functionInfo.isConstructorMethod) { -%>
-  <%- functionInfo.args[0].cType %> out = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
-<% } else if (functionInfo.isPrototypeMethod) { -%>
-  <%- cType %> *in = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
 <% } -%>
 
   <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
-    <% if (functionInfo.isConstructorMethod) { %>out<% } else if (functionInfo.isPrototypeMethod) { -%>in<% } -%><% if (functionInfo.args.length - offset > 0) { %>,<% } %>
-<% for (var i = offset; i < functionInfo.args.length; i++) { var arg = functionInfo.args[i]; -%>
-<% if (arg.cppClassName == 'String') { %>
-    stringArgToString(args[<%- i - offset%>]->ToString()).c_str()
+<%
+  for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+-%>
+<% if (arg.isSelf) { -%>
+    ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()
+<% } else if (arg.isReturn) { -%>
+    <%- arg.name %>
+<% } else if (arg.cppClassName == 'String') { -%>
+    stringArgToString(args[<%- j %>]->ToString()).c_str()
 <% } else { -%>
-    ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- i - offset%>]->ToObject())->GetValue()
+    ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- j %>]->ToObject())->GetValue()
 <% } -%>
 <% if (i < functionInfo.args.length - 1) { %>, <% } -%>
-<% } %>
+<%
+    if (!(arg.isReturn || arg.isSelf)) j++;
+  }
+-%>
   );
 
 <% if (functionInfo.return.isErrorCode) { -%>
@@ -231,19 +257,25 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 <% } -%>
-<% if (functionInfo.isConstructorMethod) { -%>
-  Handle<Value> argv[1] = { External::New((void *)out) };
-  return scope.Close(constructor_template->NewInstance(1, argv));
-<% } else if (functionInfo.return.cType == "void") { -%>
+<%
+  var result = null;
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+    if (arg.isReturn) result = arg;
+  }
+  if (!result) result = functionInfo.return;
+  var resultName = result.name || 'result';
+-%>
+<% if (result.cType == "void") { -%>
   return Undefined();
-<% } else if (isPrimitive(functionInfo.return.cppClassName)) { -%>
-  return scope.Close(<%- functionInfo.return.cppClassName %>::New(result));
-<% } else if (functionInfo.return.cppClassName == "External") { -%>
-  return scope.Close(External::New((void *)result));
+<% } else if (isPrimitive(result.cppClassName)) { -%>
+  return scope.Close(<%- result.cppClassName %>::New(<%- resultName %>));
+<% } else if (result.cppClassName == "External") { -%>
+  return scope.Close(External::New((void *)<%- resultName %>));
 <% } else { -%>
   // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(<%- functionInfo.return.cppClassName %>::constructor_template->NewInstance(1, argv)); 
+  Handle<Value> argv[1] = { External::New((void *)<%- resultName %>) };
+  return scope.Close(<%- result.cppClassName %>::constructor_template->NewInstance(1, argv));
 <% } -%>
 }
 <% } -%>

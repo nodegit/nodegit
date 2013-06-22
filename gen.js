@@ -8,7 +8,7 @@ var idefs = JSON.parse(fs.readFileSync('v0.18.0.json')),
 
 for (var i in idefs) {
   var idef = idefs[i];
-  if (["Oid", "Blob", "Repo"].indexOf(idef.jsClassName) > -1) {
+  if (["Oid", "Blob", "Repo", "Reference"].indexOf(idef.jsClassName) > -1) {
     fs.writeFileSync(
       path.resolve("./include/" + idef.filename), headerTemplate(idef));
     fs.writeFileSync(

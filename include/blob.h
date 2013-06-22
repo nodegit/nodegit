@@ -35,7 +35,7 @@ class GitBlob : public ObjectWrap {
     struct LookupBaton {
       uv_work_t request;
       const git_error* error;
-      git_blob *out;
+      git_blob * blob;
       git_repository * repo;
       const git_oid * id;
       Persistent<Function> callback;

@@ -8,7 +8,6 @@
 #include "git2.h"
 
 #include "../include/blob.h"
-
 #include "../include/repo.h"
 #include "../include/oid.h"
 #include "../include/wrapper.h"
@@ -69,10 +68,10 @@ git_blob *GitBlob::GetValue() {
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
+  if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository is required.")));
   }
-  if(args.Length() == 1 || !args[1]->IsObject()) {
+  if (args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid is required.")));
   }
   if (args.Length() == 2 || !args[2]->IsFunction()) {
@@ -82,7 +81,12 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   LookupBaton* baton = new LookupBaton;
   baton->error = NULL;
   baton->request.data = baton;
+
+  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
+  // Either ref the argument or copy?
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
+  // Either ref the argument or copy?
   baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -94,7 +98,7 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 void GitBlob::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
   int result = git_blob_lookup(
-    &baton->out,
+    &baton->blob, 
     baton->repo, 
     baton->id
   );
@@ -109,8 +113,9 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> object = constructor_template->NewInstance(1, argv);
+
+    Handle<Value> argv[1] = { External::New(baton->blob) };
+    Handle<Object> object = GitBlob::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       object
@@ -134,41 +139,32 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
 Handle<Value> GitBlob::Oid(const Arguments& args) {
   HandleScope scope;
 
-
-  git_blob *in = ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue();
-
   const git_oid * result = git_blob_id(
-    in
+    ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitOid::constructor_template->NewInstance(1, argv)); 
+  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
 }
 
 Handle<Value> GitBlob::Content(const Arguments& args) {
   HandleScope scope;
 
-
-  git_blob *in = ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue();
-
   const void * result = git_blob_rawcontent(
-    in
+    ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(Wrapper::constructor_template->NewInstance(1, argv)); 
+  return scope.Close(Wrapper::constructor_template->NewInstance(1, argv));
 }
 
 Handle<Value> GitBlob::Size(const Arguments& args) {
   HandleScope scope;
 
-
-  git_blob *in = ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue();
-
   git_off_t result = git_blob_rawsize(
-    in
+    ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
   return scope.Close(Number::New(result));
@@ -177,28 +173,27 @@ Handle<Value> GitBlob::Size(const Arguments& args) {
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required.")));
-  }
-  if(args.Length() == 1 || !args[1]->IsObject()) {
+  if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository is required.")));
   }
-  if(args.Length() == 2 || !args[2]->IsString()) {
+  if (args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("String is required.")));
   }
-  if (args.Length() == 3 || !args[3]->IsFunction()) {
+  if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   CreateFromFileBaton* baton = new CreateFromFileBaton;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject())->GetValue();
 
-  String::Utf8Value str2(args[2]->ToString());
-  baton->path = strdup(*str2);
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
+  // Either ref the argument or copy?
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  String::Utf8Value path(args[1]->ToString());
+  // XXX FIXME remove strdup and use std::string
+  baton->path = strdup(*path);
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateFromFileWork, (uv_after_work_cb)CreateFromFileAfterWork);
 
@@ -223,8 +218,10 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
+
     Handle<Value> argv[1] = { External::New(baton->id) };
     Handle<Object> object = GitOid::constructor_template->NewInstance(1, argv);
+    // free((void *) baton->path);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       object
@@ -250,30 +247,29 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
 Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid is required.")));
-  }
-  if(args.Length() == 1 || !args[1]->IsObject()) {
+  if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository is required.")));
   }
-  if(args.Length() == 2 || !args[2]->IsObject()) {
+  if (args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Buffer is required.")));
   }
-  if(args.Length() == 3 || !args[3]->IsNumber()) {
+  if (args.Length() == 2 || !args[2]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Number is required.")));
   }
-  if (args.Length() == 4 || !args[4]->IsFunction()) {
+  if (args.Length() == 3 || !args[3]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   CreateFromBufferBaton* baton = new CreateFromBufferBaton;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[1]->ToObject())->GetValue();
-  baton->buffer = Buffer::Data(ObjectWrap::Unwrap<Buffer>(args[2]->ToObject()));
-  baton->len = args[3]->ToNumber()->Value();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[4]));
+
+  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
+  // Either ref the argument or copy?
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->buffer = Buffer::Data(ObjectWrap::Unwrap<Buffer>(args[1]->ToObject()));
+  baton->len = args[2]->ToNumber()->Value();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateFromBufferWork, (uv_after_work_cb)CreateFromBufferAfterWork);
 
@@ -299,6 +295,7 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
+
     Handle<Value> argv[1] = { External::New(baton->oid) };
     Handle<Object> object = GitOid::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
@@ -324,11 +321,8 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
 Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   HandleScope scope;
 
-
-  git_blob *in = ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue();
-
   int result = git_blob_is_binary(
-    in
+    ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
   if (result != GIT_OK) {

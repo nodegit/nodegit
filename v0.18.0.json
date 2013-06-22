@@ -210,7 +210,12 @@
   },
   {
     "filename": "blob.h",
-    "dependencies": ["../include/repo.h", "../include/oid.h", "../include/wrapper.h", "node_buffer.h"],
+    "dependencies": [
+      "../include/repo.h",
+      "../include/oid.h",
+      "../include/wrapper.h",
+      "node_buffer.h"
+    ],
     "jsClassName": "Blob",
     "cppClassName": "GitBlob",
     "cType": "git_blob",
@@ -223,7 +228,8 @@
             "name": "blob",
             "cType": "git_blob **",
             "cppClassName": "GitBlob",
-            "jsClassName": "Blob"
+            "jsClassName": "Blob",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -257,7 +263,8 @@
             "name": "blob",
             "cType": "git_blob **",
             "cppClassName": "GitBlob",
-            "jsClassName": "Blob"
+            "jsClassName": "Blob",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -321,7 +328,8 @@
             "name": "blob",
             "cType": "const git_blob *",
             "cppClassName": "GitBlob",
-            "jsClassName": "Blob"
+            "jsClassName": "Blob",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -343,7 +351,8 @@
             "name": "blob",
             "cType": "const git_blob *",
             "cppClassName": "GitBlob",
-            "jsClassName": "Blob"
+            "jsClassName": "Blob",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -365,7 +374,8 @@
             "name": "blob",
             "cType": "const git_blob *",
             "cppClassName": "GitBlob",
-            "jsClassName": "Blob"
+            "jsClassName": "Blob",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -422,7 +432,8 @@
             "name": "id",
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -503,7 +514,8 @@
             "name": "oid",
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -543,7 +555,8 @@
             "name": "blob",
             "cType": "git_blob *",
             "cppClassName": "GitBlob",
-            "jsClassName": "Blob"
+            "jsClassName": "Blob",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -572,8 +585,9 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -619,7 +633,7 @@
           {
             "name": "branch",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
@@ -680,14 +694,15 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
             "name": "branch",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -720,8 +735,9 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -760,6 +776,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "const char **",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -767,7 +784,7 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
@@ -788,14 +805,15 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
             "name": "branch",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
@@ -817,7 +835,7 @@
           {
             "name": "branch",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -885,7 +903,7 @@
           {
             "name": "branch",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
@@ -1060,6 +1078,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_repository **",
             "cppClassName": "GitRepo",
             "jsClassName": "Repository"
@@ -1111,7 +1130,8 @@
             "name": "commit",
             "cType": "git_commit **",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -1145,7 +1165,8 @@
             "name": "commit",
             "cType": "git_commit **",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -1207,7 +1228,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1229,7 +1251,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1251,7 +1274,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1273,7 +1297,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1295,7 +1320,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1317,7 +1343,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1339,7 +1366,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1389,7 +1417,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1411,7 +1440,8 @@
             "name": "commit",
             "cType": "const git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -1431,6 +1461,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_commit **",
             "cppClassName": "Commit",
             "jsClassName": "Commit"
@@ -1467,7 +1498,8 @@
             "name": "commit",
             "cType": "git_commit *",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isSelf": true
           },
           {
             "name": "n",
@@ -1495,7 +1527,8 @@
             "name": "ancestor",
             "cType": "git_commit **",
             "cppClassName": "Commit",
-            "jsClassName": "Commit"
+            "jsClassName": "Commit",
+            "isReturn": true
           },
           {
             "name": "commit",
@@ -1756,6 +1789,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -1784,6 +1818,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -1812,6 +1847,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -1840,6 +1876,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_config **",
             "cppClassName": "Config",
             "jsClassName": "Config"
@@ -1862,6 +1899,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_config **",
             "cppClassName": "Config",
             "jsClassName": "Config"
@@ -1886,7 +1924,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "file",
@@ -1926,7 +1965,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -1964,6 +2004,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_config **",
             "cppClassName": "Config",
             "jsClassName": "Config"
@@ -1992,6 +2033,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_config **",
             "cppClassName": "Config",
             "jsClassName": "Config"
@@ -2028,7 +2070,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -2070,6 +2113,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "const git_config_entry **",
             "cppClassName": "ConfigEntry",
             "jsClassName": "ConfigEntry"
@@ -2104,6 +2148,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int32_t *",
             "cppClassName": "int32_t",
             "jsClassName": "int32_t"
@@ -2138,6 +2183,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int64_t *",
             "cppClassName": "int64_t",
             "jsClassName": "int64_t"
@@ -2172,6 +2218,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int *",
             "cppClassName": "int",
             "jsClassName": "int"
@@ -2206,6 +2253,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "const char **",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -2242,7 +2290,8 @@
             "name": "cfg",
             "cType": "const git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -2288,7 +2337,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -2322,7 +2372,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -2356,7 +2407,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -2390,7 +2442,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -2424,7 +2477,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -2464,7 +2518,8 @@
             "name": "cfg",
             "cType": "git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -2492,7 +2547,8 @@
             "name": "cfg",
             "cType": "const git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "callback",
@@ -2526,7 +2582,8 @@
             "name": "cfg",
             "cType": "const git_config *",
             "cppClassName": "Config",
-            "jsClassName": "Config"
+            "jsClassName": "Config",
+            "isSelf": true
           },
           {
             "name": "regexp",
@@ -2564,6 +2621,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int *",
             "cppClassName": "int",
             "jsClassName": "int"
@@ -2610,6 +2668,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int *",
             "cppClassName": "int",
             "jsClassName": "int"
@@ -2650,6 +2709,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int *",
             "cppClassName": "int",
             "jsClassName": "int"
@@ -2678,6 +2738,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int32_t *",
             "cppClassName": "int32_t",
             "jsClassName": "int32_t"
@@ -2706,6 +2767,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "int64_t *",
             "cppClassName": "int64_t",
             "jsClassName": "int64_t"
@@ -3947,6 +4009,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_index **",
             "cppClassName": "Index",
             "jsClassName": "Index"
@@ -3975,6 +4038,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_index **",
             "cppClassName": "Index",
             "jsClassName": "Index"
@@ -4021,7 +4085,8 @@
             "name": "index",
             "cType": "const git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4043,7 +4108,8 @@
             "name": "index",
             "cType": "const git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4065,7 +4131,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "caps",
@@ -4093,7 +4160,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4115,7 +4183,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4137,7 +4206,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "tree",
@@ -4163,6 +4233,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -4191,6 +4262,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -4227,7 +4299,8 @@
             "name": "index",
             "cType": "const git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4249,7 +4322,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4271,7 +4345,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "n",
@@ -4299,7 +4374,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4333,7 +4409,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4367,7 +4444,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "dir",
@@ -4401,7 +4479,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "source_entry",
@@ -4451,7 +4530,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4479,7 +4559,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4541,7 +4622,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "ancestor_entry",
@@ -4627,7 +4709,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4655,7 +4738,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4677,7 +4761,8 @@
             "name": "index",
             "cType": "const git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4699,7 +4784,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4755,7 +4841,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4783,7 +4870,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "n",
@@ -4811,7 +4899,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4875,7 +4964,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "n",
@@ -4903,7 +4993,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -4932,6 +5023,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_indexer_stream **",
             "cppClassName": "IndexerStream",
             "jsClassName": "IndexerStream"
@@ -5101,6 +5193,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -5141,6 +5234,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -5184,6 +5278,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -5241,6 +5336,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_note_iterator **",
             "cppClassName": "NoteIterator",
             "jsClassName": "NoteIterator"
@@ -5331,6 +5427,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_note **",
             "cppClassName": "Note",
             "jsClassName": "Note"
@@ -5415,6 +5512,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -5547,6 +5645,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "const char **",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -5626,7 +5725,8 @@
             "name": "object",
             "cType": "git_object **",
             "cppClassName": "Object",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -5666,7 +5766,8 @@
             "name": "object_out",
             "cType": "git_object **",
             "cppClassName": "Object",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -5712,7 +5813,8 @@
             "name": "obj",
             "cType": "const git_object *",
             "cppClassName": "Object",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -5734,7 +5836,8 @@
             "name": "obj",
             "cType": "const git_object *",
             "cppClassName": "Object",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -5756,7 +5859,8 @@
             "name": "obj",
             "cType": "const git_object *",
             "cppClassName": "Object",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -5888,7 +5992,8 @@
             "name": "peeled",
             "cType": "git_object **",
             "cppClassName": "Object",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isReturn": true
           },
           {
             "name": "object",
@@ -5922,7 +6027,8 @@
             "name": "dest",
             "cType": "git_object **",
             "cppClassName": "Object",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isReturn": true
           },
           {
             "name": "source",
@@ -5957,6 +6063,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb **",
             "cppClassName": "Odb",
             "jsClassName": "Odb"
@@ -5979,6 +6086,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb **",
             "cppClassName": "Odb",
             "jsClassName": "Odb"
@@ -6009,7 +6117,8 @@
             "name": "odb",
             "cType": "git_odb *",
             "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "jsClassName": "Odb",
+            "isSelf": true
           },
           {
             "name": "backend",
@@ -6043,7 +6152,8 @@
             "name": "odb",
             "cType": "git_odb *",
             "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "jsClassName": "Odb",
+            "isSelf": true
           },
           {
             "name": "backend",
@@ -6077,7 +6187,8 @@
             "name": "odb",
             "cType": "git_odb *",
             "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "jsClassName": "Odb",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -6125,6 +6236,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb_object **",
             "cppClassName": "OdbObject",
             "jsClassName": "OdbObject"
@@ -6159,6 +6271,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb_object **",
             "cppClassName": "OdbObject",
             "jsClassName": "OdbObject"
@@ -6241,7 +6354,8 @@
             "name": "db",
             "cType": "git_odb *",
             "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "jsClassName": "Odb",
+            "isSelf": true
           },
           {
             "name": "id",
@@ -6269,7 +6383,8 @@
             "name": "db",
             "cType": "struct git_odb *",
             "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "jsClassName": "Odb",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -6291,7 +6406,8 @@
             "name": "db",
             "cType": "git_odb *",
             "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "jsClassName": "Odb",
+            "isSelf": true
           },
           {
             "name": "cb",
@@ -6323,6 +6439,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6369,6 +6486,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb_stream **",
             "cppClassName": "OdbStream",
             "jsClassName": "OdbStream"
@@ -6409,6 +6527,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb_stream **",
             "cppClassName": "OdbStream",
             "jsClassName": "OdbStream"
@@ -6443,6 +6562,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb_writepack **",
             "cppClassName": "OdbWritepack",
             "jsClassName": "OdbWritepack"
@@ -6483,6 +6603,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6523,6 +6644,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6676,6 +6798,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb_backend **",
             "cppClassName": "OdbBackend",
             "jsClassName": "OdbBackend"
@@ -6714,6 +6837,8 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
+            "shouldAlloc": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6742,6 +6867,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6755,8 +6881,8 @@
         ],
         "ignore": true,
         "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": true,
+        "isConstructorMethod": true,
+        "isPrototypeMethod": false,
         "isFree": false,
         "jsFunctionName": "fromstrp",
         "cppFunctionName": "Fromstrp",
@@ -6771,6 +6897,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6790,8 +6917,8 @@
         ],
         "ignore": true,
         "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": true,
+        "isConstructorMethod": true,
+        "isPrototypeMethod": false,
         "isFree": false,
         "jsFunctionName": "fromstrn",
         "cppFunctionName": "Fromstrn",
@@ -6806,6 +6933,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6819,8 +6947,8 @@
         ],
         "ignore": true,
         "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": true,
+        "isConstructorMethod": true,
+        "isPrototypeMethod": false,
         "isFree": false,
         "jsFunctionName": "fromraw",
         "cppFunctionName": "Fromraw",
@@ -6835,6 +6963,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -6843,7 +6972,8 @@
             "name": "id",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -6864,6 +6994,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -6895,7 +7026,8 @@
             "name": "id",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -6915,6 +7047,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -6950,6 +7083,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6958,7 +7092,8 @@
             "name": "src",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -6981,7 +7116,8 @@
             "name": "a",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           },
           {
             "name": "b",
@@ -7010,7 +7146,8 @@
             "name": "a",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           },
           {
             "name": "b",
@@ -7039,7 +7176,8 @@
             "name": "a",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           },
           {
             "name": "b",
@@ -7074,7 +7212,8 @@
             "name": "id",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           },
           {
             "name": "str",
@@ -7103,7 +7242,8 @@
             "name": "id",
             "cType": "const git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -7208,6 +7348,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_packbuilder **",
             "cppClassName": "Packbuilder",
             "jsClassName": "Packbuilder"
@@ -7463,6 +7604,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_push **",
             "cppClassName": "Push",
             "jsClassName": "Push"
@@ -7493,7 +7635,8 @@
             "name": "push",
             "cType": "git_push *",
             "cppClassName": "Push",
-            "jsClassName": "Push"
+            "jsClassName": "Push",
+            "isSelf": true
           },
           {
             "name": "opts",
@@ -7521,7 +7664,8 @@
             "name": "push",
             "cType": "git_push *",
             "cppClassName": "Push",
-            "jsClassName": "Push"
+            "jsClassName": "Push",
+            "isSelf": true
           },
           {
             "name": "refspec",
@@ -7549,7 +7693,8 @@
             "name": "push",
             "cType": "git_push *",
             "cppClassName": "Push",
-            "jsClassName": "Push"
+            "jsClassName": "Push",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -7571,7 +7716,8 @@
             "name": "push",
             "cType": "git_push *",
             "cppClassName": "Push",
-            "jsClassName": "Push"
+            "jsClassName": "Push",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -7593,7 +7739,8 @@
             "name": "push",
             "cType": "git_push *",
             "cppClassName": "Push",
-            "jsClassName": "Push"
+            "jsClassName": "Push",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -7615,7 +7762,8 @@
             "name": "push",
             "cType": "git_push *",
             "cppClassName": "Push",
-            "jsClassName": "Push"
+            "jsClassName": "Push",
+            "isSelf": true
           },
           {
             "name": "cb",
@@ -7680,7 +7828,8 @@
             "name": "refdb",
             "cType": "git_refdb *",
             "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
+            "jsClassName": "Refdb",
+            "isSelf": true
           },
           {
             "name": "name",
@@ -7709,7 +7858,7 @@
         "cppFunctionName": "GitReference_Alloc",
         "return": {
           "cType": "git_reference *",
-          "cppClassName": "Reference",
+          "cppClassName": "GitReference",
           "isErrorCode": false
         }
       },
@@ -7718,6 +7867,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_refdb **",
             "cppClassName": "Refdb",
             "jsClassName": "Refdb"
@@ -7746,6 +7896,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_refdb **",
             "cppClassName": "Refdb",
             "jsClassName": "Refdb"
@@ -7776,7 +7927,8 @@
             "name": "refdb",
             "cType": "git_refdb *",
             "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
+            "jsClassName": "Refdb",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -7820,7 +7972,8 @@
             "name": "refdb",
             "cType": "git_refdb *",
             "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
+            "jsClassName": "Refdb",
+            "isSelf": true
           },
           {
             "name": "backend",
@@ -7857,7 +8010,8 @@
             "name": "backend_out",
             "cType": "struct git_refdb_backend **",
             "cppClassName": "RefdbBackend",
-            "jsClassName": "RefdbBackend"
+            "jsClassName": "RefdbBackend",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -7898,6 +8052,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reflog **",
             "cppClassName": "Reflog",
             "jsClassName": "Reflog"
@@ -7905,7 +8060,7 @@
           {
             "name": "ref",
             "cType": "const git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
@@ -7928,7 +8083,8 @@
             "name": "reflog",
             "cType": "git_reflog *",
             "cppClassName": "Reflog",
-            "jsClassName": "Reflog"
+            "jsClassName": "Reflog",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -7950,7 +8106,8 @@
             "name": "reflog",
             "cType": "git_reflog *",
             "cppClassName": "Reflog",
-            "jsClassName": "Reflog"
+            "jsClassName": "Reflog",
+            "isSelf": true
           },
           {
             "name": "id",
@@ -7989,7 +8146,7 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -8017,7 +8174,7 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
@@ -8040,7 +8197,8 @@
             "name": "reflog",
             "cType": "git_reflog *",
             "cppClassName": "Reflog",
-            "jsClassName": "Reflog"
+            "jsClassName": "Reflog",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -8062,7 +8220,8 @@
             "name": "reflog",
             "cType": "git_reflog *",
             "cppClassName": "Reflog",
-            "jsClassName": "Reflog"
+            "jsClassName": "Reflog",
+            "isSelf": true
           },
           {
             "name": "idx",
@@ -8090,7 +8249,8 @@
             "name": "reflog",
             "cType": "git_reflog *",
             "cppClassName": "Reflog",
-            "jsClassName": "Reflog"
+            "jsClassName": "Reflog",
+            "isSelf": true
           },
           {
             "name": "idx",
@@ -8230,19 +8390,24 @@
     ]
   },
   {
-    "filename": "refs.h",
-    "jsClassName": "Refs",
-    "cppClassName": "Refs",
-    "cType": "git_refs",
-    "freeFunctionName": "git_refs_free",
+    "filename": "reference.h",
+    "dependencies": [
+      "../include/repo.h",
+      "../include/oid.h"
+    ],
+    "jsClassName": "Reference",
+    "cppClassName": "GitReference",
+    "cType": "git_reference",
+    "freeFunctionName": "git_reference_free",
     "functions": [
       {
         "cFunctionName": "git_reference_lookup",
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -8258,12 +8423,12 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
-        "isConstructorMethod": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceLookup",
-        "cppFunctionName": "GitReferenceLookup",
+        "jsFunctionName": "lookup",
+        "cppFunctionName": "Lookup",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8275,6 +8440,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -8292,12 +8458,12 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceNameToId",
-        "cppFunctionName": "GitReferenceNameToId",
+        "jsFunctionName": "oidForName",
+        "cppFunctionName": "OidForName",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8309,8 +8475,9 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -8338,12 +8505,13 @@
             "jsClassName": "int"
           }
         ],
+        "ignore": true,
         "isAsync": false,
-        "isConstructorMethod": false,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceSymbolicCreate",
-        "cppFunctionName": "GitReferenceSymbolicCreate",
+        "jsFunctionName": "createSymbolic",
+        "cppFunctionName": "CreateSymbolic",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8355,8 +8523,9 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -8384,12 +8553,13 @@
             "jsClassName": "int"
           }
         ],
+        "ignore": true,
         "isAsync": false,
-        "isConstructorMethod": false,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceCreate",
-        "cppFunctionName": "GitReferenceCreate",
+        "jsFunctionName": "create",
+        "cppFunctionName": "Create",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8402,16 +8572,17 @@
           {
             "name": "ref",
             "cType": "const git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceTarget",
-        "cppFunctionName": "GitReferenceTarget",
+        "jsFunctionName": "oid",
+        "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
           "cppClassName": "GitOid",
@@ -8424,16 +8595,17 @@
           {
             "name": "ref",
             "cType": "const git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceSymbolicTarget",
-        "cppFunctionName": "GitReferenceSymbolicTarget",
+        "jsFunctionName": "name",
+        "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
           "cppClassName": "String",
@@ -8446,19 +8618,20 @@
           {
             "name": "ref",
             "cType": "const git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceType",
-        "cppFunctionName": "GitReferenceType",
+        "jsFunctionName": "type",
+        "cppFunctionName": "Type",
         "return": {
           "cType": "git_ref_t",
-          "cppClassName": "RefT",
+          "cppClassName": "Number",
           "isErrorCode": false
         }
       },
@@ -8468,16 +8641,18 @@
           {
             "name": "ref",
             "cType": "const git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceName",
-        "cppFunctionName": "GitReferenceName",
+        "jsFunctionName": "name",
+        "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
           "cppClassName": "String",
@@ -8489,23 +8664,25 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
             "name": "ref",
             "cType": "const git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceResolve",
-        "cppFunctionName": "GitReferenceResolve",
+        "jsFunctionName": "resolve",
+        "cppFunctionName": "Resolve",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8518,16 +8695,18 @@
           {
             "name": "ref",
             "cType": "const git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceOwner",
-        "cppFunctionName": "GitReferenceOwner",
+        "jsFunctionName": "owner",
+        "cppFunctionName": "owner",
         "return": {
           "cType": "git_repository *",
           "cppClassName": "GitRepo",
@@ -8539,15 +8718,17 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           },
           {
             "name": "target",
@@ -8556,9 +8737,10 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
         "jsFunctionName": "gitReferenceSymbolicSetTarget",
         "cppFunctionName": "GitReferenceSymbolicSetTarget",
@@ -8573,15 +8755,17 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           },
           {
             "name": "id",
@@ -8590,12 +8774,13 @@
             "jsClassName": "Oid"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceSetTarget",
-        "cppFunctionName": "GitReferenceSetTarget",
+        "jsFunctionName": "setTarget",
+        "cppFunctionName": "setTarget",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8607,15 +8792,17 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           },
           {
             "name": "new_name",
@@ -8630,12 +8817,13 @@
             "jsClassName": "int"
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceRename",
-        "cppFunctionName": "GitReferenceRename",
+        "jsFunctionName": "rename",
+        "cppFunctionName": "Rename",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8648,16 +8836,18 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceDelete",
-        "cppFunctionName": "GitReferenceDelete",
+        "jsFunctionName": "delete",
+        "cppFunctionName": "Delete",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8686,12 +8876,13 @@
             "jsClassName": "unsigned"
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceList",
-        "cppFunctionName": "GitReferenceList",
+        "jsFunctionName": "list",
+        "cppFunctionName": "List",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8726,12 +8917,13 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceForeach",
-        "cppFunctionName": "GitReferenceForeach",
+        "jsFunctionName": "foreach",
+        "cppFunctionName": "Foreach",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8744,10 +8936,11 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -8766,22 +8959,24 @@
           {
             "name": "ref1",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           },
           {
             "name": "ref2",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceCmp",
-        "cppFunctionName": "GitReferenceCmp",
+        "jsFunctionName": "compare",
+        "cppFunctionName": "Compare",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8822,12 +9017,13 @@
             "jsClassName": "void"
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceForeachGlob",
-        "cppFunctionName": "GitReferenceForeachGlob",
+        "jsFunctionName": "foreachGlob",
+        "cppFunctionName": "ForeachGlob",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8840,16 +9036,18 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceHasLog",
-        "cppFunctionName": "GitReferenceHasLog",
+        "jsFunctionName": "hasLog",
+        "cppFunctionName": "HasLog",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8862,16 +9060,18 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceIsBranch",
-        "cppFunctionName": "GitReferenceIsBranch",
+        "jsFunctionName": "isBranch",
+        "cppFunctionName": "IsBranch",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8884,16 +9084,18 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceIsRemote",
-        "cppFunctionName": "GitReferenceIsRemote",
+        "jsFunctionName": "isRemote",
+        "cppFunctionName": "IsRemote",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8907,7 +9109,8 @@
             "name": "buffer_out",
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "char",
+            "isSelf": true
           },
           {
             "name": "buffer_size",
@@ -8928,12 +9131,13 @@
             "jsClassName": "unsigned"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferenceNormalizeName",
-        "cppFunctionName": "GitReferenceNormalizeName",
+        "jsFunctionName": "normalizeName",
+        "cppFunctionName": "NormalizeName",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8945,6 +9149,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_object **",
             "cppClassName": "Object",
             "jsClassName": "Object"
@@ -8952,8 +9157,9 @@
           {
             "name": "ref",
             "cType": "git_reference *",
-            "cppClassName": "Reference",
-            "jsClassName": "Reference"
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference",
+            "isSelf": true
           },
           {
             "name": "type",
@@ -8962,12 +9168,13 @@
             "jsClassName": "Otype"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": false,
-        "jsFunctionName": "gitReferencePeel",
-        "cppFunctionName": "GitReferencePeel",
+        "jsFunctionName": "peel",
+        "cppFunctionName": "Peel",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -8984,12 +9191,13 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "isFree": false,
-        "jsFunctionName": "gitReferenceIsValidName",
-        "cppFunctionName": "GitReferenceIsValidName",
+        "jsFunctionName": "isValidName",
+        "cppFunctionName": "IsValidName",
         "return": {
           "cType": "int",
           "cppClassName": "int",
@@ -9012,7 +9220,8 @@
             "name": "refspec",
             "cType": "const git_refspec *",
             "cppClassName": "Refspec",
-            "jsClassName": "Refspec"
+            "jsClassName": "Refspec",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9034,7 +9243,8 @@
             "name": "refspec",
             "cType": "const git_refspec *",
             "cppClassName": "Refspec",
-            "jsClassName": "Refspec"
+            "jsClassName": "Refspec",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9056,7 +9266,8 @@
             "name": "refspec",
             "cType": "const git_refspec *",
             "cppClassName": "Refspec",
-            "jsClassName": "Refspec"
+            "jsClassName": "Refspec",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9078,7 +9289,8 @@
             "name": "refspec",
             "cType": "const git_refspec *",
             "cppClassName": "Refspec",
-            "jsClassName": "Refspec"
+            "jsClassName": "Refspec",
+            "isSelf": true
           },
           {
             "name": "refname",
@@ -9106,7 +9318,8 @@
             "name": "refspec",
             "cType": "const git_refspec *",
             "cppClassName": "Refspec",
-            "jsClassName": "Refspec"
+            "jsClassName": "Refspec",
+            "isSelf": true
           },
           {
             "name": "refname",
@@ -9132,6 +9345,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -9172,6 +9386,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -9221,6 +9436,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_remote **",
             "cppClassName": "Remote",
             "jsClassName": "Remote"
@@ -9261,6 +9477,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_remote **",
             "cppClassName": "Remote",
             "jsClassName": "Remote"
@@ -9301,6 +9518,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_remote **",
             "cppClassName": "Remote",
             "jsClassName": "Remote"
@@ -9337,7 +9555,8 @@
             "name": "remote",
             "cType": "const git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9359,7 +9578,8 @@
             "name": "remote",
             "cType": "const git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9381,7 +9601,8 @@
             "name": "remote",
             "cType": "const git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9403,7 +9624,8 @@
             "name": "remote",
             "cType": "const git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9425,7 +9647,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "url",
@@ -9453,7 +9676,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "url",
@@ -9481,7 +9705,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "spec",
@@ -9509,7 +9734,8 @@
             "name": "remote",
             "cType": "const git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9531,7 +9757,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "spec",
@@ -9559,7 +9786,8 @@
             "name": "remote",
             "cType": "const git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9581,7 +9809,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "direction",
@@ -9609,7 +9838,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "list_cb",
@@ -9643,7 +9873,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "progress_cb",
@@ -9677,7 +9908,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9699,7 +9931,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9721,7 +9954,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9765,7 +9999,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -9829,6 +10064,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_strarray *",
             "cppClassName": "Strarray",
             "jsClassName": "Strarray"
@@ -9859,7 +10095,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "check",
@@ -9887,7 +10124,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "cred_acquire_cb",
@@ -9921,7 +10159,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "transport",
@@ -9949,7 +10188,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "callbacks",
@@ -9977,7 +10217,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -10014,7 +10255,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "value",
@@ -10042,7 +10284,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "new_name",
@@ -10082,7 +10325,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -10104,7 +10348,8 @@
             "name": "remote",
             "cType": "git_remote *",
             "cppClassName": "Remote",
-            "jsClassName": "Remote"
+            "jsClassName": "Remote",
+            "isSelf": true
           },
           {
             "name": "value",
@@ -10162,6 +10407,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_repository **",
             "cppClassName": "GitRepo",
             "jsClassName": "Repository"
@@ -10190,6 +10436,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_repository **",
             "cppClassName": "GitRepo",
             "jsClassName": "Repository"
@@ -10266,6 +10513,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_repository **",
             "cppClassName": "GitRepo",
             "jsClassName": "Repository"
@@ -10330,6 +10578,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_repository **",
             "cppClassName": "GitRepo",
             "jsClassName": "Repository"
@@ -10364,6 +10613,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_repository **",
             "cppClassName": "GitRepo",
             "jsClassName": "Repository"
@@ -10399,8 +10649,9 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_reference **",
-            "cppClassName": "Reference",
+            "cppClassName": "GitReference",
             "jsClassName": "Reference"
           },
           {
@@ -10430,7 +10681,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -10453,7 +10705,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -10476,7 +10729,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -10499,7 +10753,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -10521,7 +10776,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -10543,7 +10799,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           },
           {
             "name": "workdir",
@@ -10578,7 +10835,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -10599,6 +10857,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_config **",
             "cppClassName": "Config",
             "jsClassName": "Config"
@@ -10630,7 +10889,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           },
           {
             "name": "config",
@@ -10657,6 +10917,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_odb **",
             "cppClassName": "Odb",
             "jsClassName": "Odb"
@@ -10688,7 +10949,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           },
           {
             "name": "odb",
@@ -10715,6 +10977,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_refdb **",
             "cppClassName": "Refdb",
             "jsClassName": "Refdb"
@@ -10746,7 +11009,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           },
           {
             "name": "refdb",
@@ -10773,6 +11037,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_index **",
             "cppClassName": "Index",
             "jsClassName": "Index"
@@ -10804,7 +11069,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           },
           {
             "name": "index",
@@ -10831,6 +11097,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
             "jsClassName": "char"
@@ -10868,7 +11135,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -10891,7 +11159,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -10914,7 +11183,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           },
           {
             "name": "callback",
@@ -10949,7 +11219,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           },
           {
             "name": "callback",
@@ -10982,6 +11253,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -11112,7 +11384,8 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
         "ignore": true,
@@ -11219,6 +11492,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_object **",
             "cppClassName": "Object",
             "jsClassName": "Object"
@@ -11296,6 +11570,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_revwalk **",
             "cppClassName": "Revwalk",
             "jsClassName": "Revwalk"
@@ -11326,7 +11601,8 @@
             "name": "walker",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -11348,7 +11624,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "id",
@@ -11376,7 +11653,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "glob",
@@ -11404,7 +11682,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -11426,7 +11705,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "commit_id",
@@ -11454,7 +11734,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "glob",
@@ -11482,7 +11763,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -11504,7 +11786,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "refname",
@@ -11532,7 +11815,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "refname",
@@ -11558,6 +11842,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -11588,7 +11873,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "sort_mode",
@@ -11616,7 +11902,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           },
           {
             "name": "range",
@@ -11666,7 +11953,8 @@
             "name": "walk",
             "cType": "git_revwalk *",
             "cppClassName": "Revwalk",
-            "jsClassName": "Revwalk"
+            "jsClassName": "Revwalk",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -11695,6 +11983,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_signature **",
             "cppClassName": "Signature",
             "jsClassName": "Signature"
@@ -11741,6 +12030,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_signature **",
             "cppClassName": "Signature",
             "jsClassName": "Signature"
@@ -11777,7 +12067,8 @@
             "name": "sig",
             "cType": "const git_signature *",
             "cppClassName": "Signature",
-            "jsClassName": "Signature"
+            "jsClassName": "Signature",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -11828,6 +12119,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -12128,7 +12420,8 @@
             "name": "tgt",
             "cType": "git_strarray *",
             "cppClassName": "Strarray",
-            "jsClassName": "Strarray"
+            "jsClassName": "Strarray",
+            "isSelf": true
           },
           {
             "name": "src",
@@ -12165,7 +12458,8 @@
             "name": "submodule",
             "cType": "git_submodule **",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -12233,7 +12527,8 @@
             "name": "submodule",
             "cType": "git_submodule **",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -12279,7 +12574,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12301,7 +12597,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           },
           {
             "name": "write_index",
@@ -12329,7 +12626,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12351,7 +12649,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12373,7 +12672,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12395,7 +12695,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12417,7 +12718,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12439,7 +12741,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           },
           {
             "name": "url",
@@ -12467,7 +12770,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12489,7 +12793,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12511,7 +12816,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12548,7 +12854,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           },
           {
             "name": "ignore",
@@ -12591,7 +12898,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           },
           {
             "name": "update",
@@ -12619,7 +12927,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12641,7 +12950,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           },
           {
             "name": "fetch_recurse_submodules",
@@ -12669,7 +12979,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           },
           {
             "name": "overwrite",
@@ -12697,7 +13008,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12747,7 +13059,8 @@
             "name": "submodule",
             "cType": "git_submodule *",
             "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -12854,6 +13167,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_tag **",
             "cppClassName": "Tag",
             "jsClassName": "Tag"
@@ -12888,6 +13202,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_tag **",
             "cppClassName": "Tag",
             "jsClassName": "Tag"
@@ -12952,7 +13267,8 @@
             "name": "tag",
             "cType": "const git_tag *",
             "cppClassName": "Tag",
-            "jsClassName": "Tag"
+            "jsClassName": "Tag",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13002,7 +13318,8 @@
             "name": "tag",
             "cType": "const git_tag *",
             "cppClassName": "Tag",
-            "jsClassName": "Tag"
+            "jsClassName": "Tag",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13024,7 +13341,8 @@
             "name": "tag",
             "cType": "const git_tag *",
             "cppClassName": "Tag",
-            "jsClassName": "Tag"
+            "jsClassName": "Tag",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13046,7 +13364,8 @@
             "name": "tag",
             "cType": "const git_tag *",
             "cppClassName": "Tag",
-            "jsClassName": "Tag"
+            "jsClassName": "Tag",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13068,7 +13387,8 @@
             "name": "tag",
             "cType": "const git_tag *",
             "cppClassName": "Tag",
-            "jsClassName": "Tag"
+            "jsClassName": "Tag",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13090,7 +13410,8 @@
             "name": "tag",
             "cType": "const git_tag *",
             "cppClassName": "Tag",
-            "jsClassName": "Tag"
+            "jsClassName": "Tag",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13491,6 +13812,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_cred **",
             "cppClassName": "Cred",
             "jsClassName": "Cred"
@@ -13525,6 +13847,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_transport **",
             "cppClassName": "Transport",
             "jsClassName": "Transport"
@@ -13559,6 +13882,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_transport **",
             "cppClassName": "Transport",
             "jsClassName": "Transport"
@@ -13593,6 +13917,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_transport **",
             "cppClassName": "Transport",
             "jsClassName": "Transport"
@@ -13627,6 +13952,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_transport **",
             "cppClassName": "Transport",
             "jsClassName": "Transport"
@@ -13661,6 +13987,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_smart_subtransport **",
             "cppClassName": "SmartSubtransport",
             "jsClassName": "SmartSubtransport"
@@ -13689,6 +14016,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_smart_subtransport **",
             "cppClassName": "SmartSubtransport",
             "jsClassName": "SmartSubtransport"
@@ -13726,6 +14054,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_tree **",
             "cppClassName": "Tree",
             "jsClassName": "Tree"
@@ -13760,6 +14089,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_tree **",
             "cppClassName": "Tree",
             "jsClassName": "Tree"
@@ -13824,7 +14154,8 @@
             "name": "tree",
             "cType": "const git_tree *",
             "cppClassName": "Tree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13846,7 +14177,8 @@
             "name": "tree",
             "cType": "const git_tree *",
             "cppClassName": "Tree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13868,7 +14200,8 @@
             "name": "tree",
             "cType": "const git_tree *",
             "cppClassName": "Tree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           }
         ],
         "isAsync": false,
@@ -13890,7 +14223,8 @@
             "name": "tree",
             "cType": "git_tree *",
             "cppClassName": "Tree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           },
           {
             "name": "filename",
@@ -13918,7 +14252,8 @@
             "name": "tree",
             "cType": "git_tree *",
             "cppClassName": "Tree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           },
           {
             "name": "idx",
@@ -13946,7 +14281,8 @@
             "name": "tree",
             "cType": "const git_tree *",
             "cppClassName": "Tree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           },
           {
             "name": "oid",
@@ -13972,6 +14308,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_tree_entry **",
             "cppClassName": "TreeEntry",
             "jsClassName": "TreeEntry"
@@ -14200,6 +14537,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "git_treebuilder **",
             "cppClassName": "Treebuilder",
             "jsClassName": "Treebuilder"
@@ -14322,6 +14660,7 @@
         "args": [
           {
             "name": "out",
+            "isReturn": true,
             "cType": "const git_tree_entry **",
             "cppClassName": "TreeEntry",
             "jsClassName": "TreeEntry"
@@ -14466,7 +14805,8 @@
             "name": "tree",
             "cType": "const git_tree *",
             "cppClassName": "Tree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           },
           {
             "name": "mode",

@@ -24,13 +24,10 @@ var helper = {
 
 // Ref
 exports.constructor = function(test){
-  test.expect(3);
+  test.expect(2);
 
   // Test for function
   helper.testFunction(test.equals, git.Reference, 'Reference');
-
-  // Ensure we get an instance of Ref
-  test.ok(new git.Reference() instanceof git.Reference, 'Invocation returns an instance of Ref');
 
   test.done();
 };
@@ -38,27 +35,25 @@ exports.constructor = function(test){
 // Ref::Lookup
 exports.lookup = function(test) {
 
-  var master = new git.Reference();
-
   test.expect(5);
 
   // Test for function
-  helper.testFunction(test.equals, master.lookup, 'Ref::Lookup');
+  helper.testFunction(test.equals, git.Reference.lookup, 'Ref::Lookup');
 
   // Test repo argument existence
   helper.testException(test.ok, function() {
-    master.lookup();
+    git.Reference.lookup();
   }, 'Throw an exception if no repo');
 
   git.Repo.open('../.git', function(error, repo) {
     // Test name argument existence
     helper.testException(test.ok, function() {
-      master.lookup(repo);
+      git.Reference.lookup(repo);
     }, 'Throw an exception if no name');
 
     // Test callback argument existence
     helper.testException(test.ok, function() {
-      master.lookup(repo, 'refs/heads/master');
+      git.Reference.lookup(repo, 'refs/heads/master');
     }, 'Throw an exception if no callback');
 
     // Cleanup, remove test repo directory - if it exists

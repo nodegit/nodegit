@@ -36,9 +36,8 @@ exports.constructor = function(test){
 exports.lookup = function(test) {
   test.expect(5);
   var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6');
-  git.Repo.open('../.git', function(error, repo) {
-    var testRef = new git.Reference(repo);
 
+  git.Repo.open('../.git', function(error, repo) {
     // Test for function
     helper.testFunction(test.equals, git.Blob.lookup, 'Blob::Lookup');
 

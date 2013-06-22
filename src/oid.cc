@@ -9,7 +9,6 @@
 
 #include "../include/oid.h"
 
-
 #include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
@@ -60,33 +59,30 @@ git_oid *GitOid::GetValue() {
 Handle<Value> GitOid::FromString(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsString()) {
+  if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String is required.")));
   }
-
-  git_oid * out = (git_oid *)malloc(sizeof(git_oid));
+  git_oid * out;
+  out = (git_oid *)malloc(sizeof(git_oid));
 
   int result = git_oid_fromstr(
-    out,
-    stringArgToString(args[0]->ToString()).c_str()
-
+    out
+,     stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
+  // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
-  return scope.Close(constructor_template->NewInstance(1, argv));
+  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
 }
 
 Handle<Value> GitOid::Sha(const Arguments& args) {
   HandleScope scope;
 
-
-  git_oid *in = ObjectWrap::Unwrap<GitOid>(args.This())->GetValue();
-
   char * result = git_oid_allocfmt(
-    in
+    ObjectWrap::Unwrap<GitOid>(args.This())->GetValue()
   );
 
   return scope.Close(String::New(result));

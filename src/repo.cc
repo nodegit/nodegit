@@ -9,7 +9,6 @@
 
 #include "../include/repo.h"
 
-
 #include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
@@ -62,7 +61,7 @@ git_repository *GitRepo::GetValue() {
 Handle<Value> GitRepo::Open(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsString()) {
+  if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsFunction()) {
@@ -73,8 +72,9 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
 
-  String::Utf8Value str0(args[0]->ToString());
-  baton->path = strdup(*str0);
+  String::Utf8Value path(args[0]->ToString());
+  // XXX FIXME remove strdup and use std::string
+  baton->path = strdup(*path);
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OpenWork, (uv_after_work_cb)OpenAfterWork);
@@ -85,7 +85,7 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
 void GitRepo::OpenWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
   int result = git_repository_open(
-    &baton->out,
+    &baton->out, 
     baton->path
   );
   if (result != GIT_OK) {
@@ -99,8 +99,10 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
+
     Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> object = constructor_template->NewInstance(1, argv);
+    Handle<Object> object = GitRepo::constructor_template->NewInstance(1, argv);
+    // free((void *) baton->path);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       object
@@ -126,10 +128,10 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 Handle<Value> GitRepo::Init(const Arguments& args) {
   HandleScope scope;
 
-  if(args.Length() == 0 || !args[0]->IsString()) {
+  if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String is required.")));
   }
-  if(args.Length() == 1 || !args[1]->IsBoolean()) {
+  if (args.Length() == 1 || !args[1]->IsBoolean()) {
     return ThrowException(Exception::Error(String::New("Boolean is required.")));
   }
   if (args.Length() == 2 || !args[2]->IsFunction()) {
@@ -140,8 +142,9 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
 
-  String::Utf8Value str0(args[0]->ToString());
-  baton->path = strdup(*str0);
+  String::Utf8Value path(args[0]->ToString());
+  // XXX FIXME remove strdup and use std::string
+  baton->path = strdup(*path);
   baton->is_bare = args[1]->ToBoolean()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -153,7 +156,7 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
 void GitRepo::InitWork(uv_work_t *req) {
   InitBaton *baton = static_cast<InitBaton *>(req->data);
   int result = git_repository_init(
-    &baton->out,
+    &baton->out, 
     baton->path, 
     baton->is_bare
   );
@@ -168,8 +171,10 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
+
     Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> object = constructor_template->NewInstance(1, argv);
+    Handle<Object> object = GitRepo::constructor_template->NewInstance(1, argv);
+    // free((void *) baton->path);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       object
@@ -195,11 +200,8 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 Handle<Value> GitRepo::Path(const Arguments& args) {
   HandleScope scope;
 
-
-  git_repository *in = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-
   const char * result = git_repository_path(
-    in
+    ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
 
   return scope.Close(String::New(result));
@@ -208,11 +210,8 @@ Handle<Value> GitRepo::Path(const Arguments& args) {
 Handle<Value> GitRepo::Workdir(const Arguments& args) {
   HandleScope scope;
 
-
-  git_repository *in = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-
   const char * result = git_repository_workdir(
-    in
+    ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
 
   return scope.Close(String::New(result));
