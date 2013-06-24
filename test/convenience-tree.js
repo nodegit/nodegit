@@ -12,15 +12,15 @@ exports.walk = function(test) {
     repo.commit(sha, function(error, commit) {
       var entryCount = 0;
       commit.getTree(function(error, tree) {
-        tree.walk().on('entry', function(error, index, entry) {
+        tree.walk().on('entry', function(index, entry) {
             test.equals(error, null, 'There should be no error');
             entryCount++;
-        }).on('end', function(error, entries) {
-          test.equals(error, null, 'There should be no error');
+        }).on('end', function(errors, entries) {
+          test.equals(errors, null, 'There should be no error');
           test.equals(entryCount, fileCount, 'The manual tree entry count and the "end" tree entry count do not match');
           test.equals(entries.length, fileCount, 'The end entries count and the manual entry count do not match');
           test.done();
-        });
+        }).start();
       });
     });
   });

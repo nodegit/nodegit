@@ -140,7 +140,7 @@ void GitObject::LookupAfterWork(uv_work_t *req) {
 Handle<Value> GitObject::Oid(const Arguments& args) {
   HandleScope scope;
 
-const git_oid *  result = git_object_id(
+  const git_oid * result = git_object_id(
 
 
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
@@ -155,7 +155,7 @@ const git_oid *  result = git_object_id(
 Handle<Value> GitObject::Type(const Arguments& args) {
   HandleScope scope;
 
-git_otype  result = git_object_type(
+  git_otype result = git_object_type(
 
 
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
@@ -168,7 +168,7 @@ git_otype  result = git_object_type(
 Handle<Value> GitObject::Owner(const Arguments& args) {
   HandleScope scope;
 
-git_repository *  result = git_object_owner(
+  git_repository * result = git_object_owner(
 
 
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()

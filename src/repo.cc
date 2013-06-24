@@ -195,7 +195,7 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 Handle<Value> GitRepo::Path(const Arguments& args) {
   HandleScope scope;
 
-const char *  result = git_repository_path(
+  const char * result = git_repository_path(
 
 
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
@@ -208,7 +208,7 @@ const char *  result = git_repository_path(
 Handle<Value> GitRepo::Workdir(const Arguments& args) {
   HandleScope scope;
 
-const char *  result = git_repository_workdir(
+  const char * result = git_repository_workdir(
 
 
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()

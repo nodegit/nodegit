@@ -20,11 +20,15 @@ class <%- cppClassName %> : public ObjectWrap {
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
+<% if (typeof cType != 'undefined') { -%>
     <%- cType %> *GetValue();
+<% } -%>
 
   private:
+<% if (typeof cType != 'undefined') { -%>
     <%- cppClassName %>(<%- cType %> *raw);
     ~<%- cppClassName %>();
+<% } -%>
 
     static Handle<Value> New(const Arguments& args);
 
@@ -68,7 +72,9 @@ class <%- cppClassName %> : public ObjectWrap {
 <% } -%>
 <% } -%>
 <% } -%>
+<% if (typeof cType != 'undefined') { -%>
     <%- cType %> *raw;
+<% } -%>
 };
 
 #endif

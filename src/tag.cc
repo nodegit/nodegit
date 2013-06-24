@@ -142,7 +142,7 @@ void GitTag::LookupAfterWork(uv_work_t *req) {
 Handle<Value> GitTag::Oid(const Arguments& args) {
   HandleScope scope;
 
-const git_oid *  result = git_tag_id(
+  const git_oid * result = git_tag_id(
 
 
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
@@ -215,7 +215,7 @@ void GitTag::TargetAfterWork(uv_work_t *req) {
 Handle<Value> GitTag::TargetId(const Arguments& args) {
   HandleScope scope;
 
-const git_oid *  result = git_tag_target_id(
+  const git_oid * result = git_tag_target_id(
 
 
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
@@ -230,7 +230,7 @@ const git_oid *  result = git_tag_target_id(
 Handle<Value> GitTag::TargetType(const Arguments& args) {
   HandleScope scope;
 
-git_otype  result = git_tag_target_type(
+  git_otype result = git_tag_target_type(
 
 
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
@@ -243,7 +243,7 @@ git_otype  result = git_tag_target_type(
 Handle<Value> GitTag::Name(const Arguments& args) {
   HandleScope scope;
 
-const char *  result = git_tag_name(
+  const char * result = git_tag_name(
 
 
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
@@ -256,7 +256,7 @@ const char *  result = git_tag_name(
 Handle<Value> GitTag::Tagger(const Arguments& args) {
   HandleScope scope;
 
-const git_signature *  result = git_tag_tagger(
+  const git_signature * result = git_tag_tagger(
 
 
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
@@ -271,7 +271,7 @@ const git_signature *  result = git_tag_tagger(
 Handle<Value> GitTag::Message(const Arguments& args) {
   HandleScope scope;
 
-const char *  result = git_tag_message(
+  const char * result = git_tag_message(
 
 
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
@@ -476,7 +476,7 @@ Handle<Value> GitTag::Delete(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String tag_name is required.")));
   }
 
-int  result = git_tag_delete(
+  int result = git_tag_delete(
 
 
     ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
@@ -500,7 +500,7 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
   }
   git_object * tag_target_out;
 
-int  result = git_tag_peel(
+  int result = git_tag_peel(
 
 &
     tag_target_out

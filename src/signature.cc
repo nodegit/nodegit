@@ -71,7 +71,7 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
   }
   git_signature * out;
 
-int  result = git_signature_now(
+  int result = git_signature_now(
 
 &
     out

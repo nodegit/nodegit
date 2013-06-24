@@ -144,7 +144,7 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
 Handle<Value> GitCommit::Oid(const Arguments& args) {
   HandleScope scope;
 
-const git_oid *  result = git_commit_id(
+  const git_oid * result = git_commit_id(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -159,7 +159,7 @@ const git_oid *  result = git_commit_id(
 Handle<Value> GitCommit::MessageEncoding(const Arguments& args) {
   HandleScope scope;
 
-const char *  result = git_commit_message_encoding(
+  const char * result = git_commit_message_encoding(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -172,7 +172,7 @@ const char *  result = git_commit_message_encoding(
 Handle<Value> GitCommit::Message(const Arguments& args) {
   HandleScope scope;
 
-const char *  result = git_commit_message(
+  const char * result = git_commit_message(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -185,7 +185,7 @@ const char *  result = git_commit_message(
 Handle<Value> GitCommit::Time(const Arguments& args) {
   HandleScope scope;
 
-git_time_t  result = git_commit_time(
+  git_time_t result = git_commit_time(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -198,7 +198,7 @@ git_time_t  result = git_commit_time(
 Handle<Value> GitCommit::Offset(const Arguments& args) {
   HandleScope scope;
 
-int  result = git_commit_time_offset(
+  int result = git_commit_time_offset(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -211,7 +211,7 @@ int  result = git_commit_time_offset(
 Handle<Value> GitCommit::Committer(const Arguments& args) {
   HandleScope scope;
 
-const git_signature *  result = git_commit_committer(
+  const git_signature * result = git_commit_committer(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -226,7 +226,7 @@ const git_signature *  result = git_commit_committer(
 Handle<Value> GitCommit::Author(const Arguments& args) {
   HandleScope scope;
 
-const git_signature *  result = git_commit_author(
+  const git_signature * result = git_commit_author(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -299,7 +299,7 @@ void GitCommit::TreeAfterWork(uv_work_t *req) {
 Handle<Value> GitCommit::TreeId(const Arguments& args) {
   HandleScope scope;
 
-const git_oid *  result = git_commit_tree_id(
+  const git_oid * result = git_commit_tree_id(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -314,7 +314,7 @@ const git_oid *  result = git_commit_tree_id(
 Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   HandleScope scope;
 
-unsigned int  result = git_commit_parentcount(
+  unsigned int result = git_commit_parentcount(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -396,7 +396,7 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number n is required.")));
   }
 
-const git_oid *  result = git_commit_parent_id(
+  const git_oid * result = git_commit_parent_id(
 
 
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -419,7 +419,7 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
   }
   git_commit * ancestor;
 
-int  result = git_commit_nth_gen_ancestor(
+  int result = git_commit_nth_gen_ancestor(
 
 &
     ancestor

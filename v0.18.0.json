@@ -82,7 +82,7 @@
             "name": "num_attr",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "names",
@@ -275,7 +275,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -842,7 +842,7 @@
             "name": "buffer_size",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "repo",
@@ -902,7 +902,7 @@
             "name": "buffer_size",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "repo",
@@ -1149,7 +1149,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -1749,7 +1749,7 @@
             "name": "length",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -1777,7 +1777,7 @@
             "name": "length",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -1805,7 +1805,7 @@
             "name": "length",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -2574,7 +2574,7 @@
             "name": "map_n",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -2608,7 +2608,7 @@
             "name": "map_n",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "value",
@@ -3220,7 +3220,7 @@
             "name": "idx",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -3302,19 +3302,19 @@
             "name": "total_context",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "total_additions",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "total_deletions",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "patch",
@@ -3353,13 +3353,13 @@
             "name": "header_len",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "lines_in_hunk",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "patch",
@@ -3371,7 +3371,7 @@
             "name": "hunk_idx",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -3398,7 +3398,7 @@
             "name": "hunk_idx",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -3431,7 +3431,7 @@
             "name": "content_len",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "old_lineno",
@@ -3455,13 +3455,13 @@
             "name": "hunk_idx",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "line_of_hunk",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -3611,7 +3611,7 @@
             "name": "buffer_len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "options",
@@ -3745,13 +3745,13 @@
             "name": "ahead",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "behind",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "repo",
@@ -4220,7 +4220,7 @@
             "name": "n",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -4450,7 +4450,7 @@
             "name": "at_pos",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "index",
@@ -4662,7 +4662,7 @@
             "name": "at_pos",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "index",
@@ -4731,7 +4731,7 @@
             "name": "n",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -4824,7 +4824,7 @@
             "name": "n",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -4929,7 +4929,7 @@
             "name": "size",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "stats",
@@ -5094,7 +5094,7 @@
             "name": "length",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -5131,7 +5131,7 @@
             "name": "out_size",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "message",
@@ -5615,7 +5615,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "type",
@@ -6108,7 +6108,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -6129,7 +6129,7 @@
             "name": "len_out",
             "cType": "size_t *",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "type_out",
@@ -6271,7 +6271,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "type",
@@ -6311,7 +6311,7 @@
             "name": "size",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "type",
@@ -6425,7 +6425,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "type",
@@ -6704,7 +6704,7 @@
             "name": "length",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -6839,7 +6839,7 @@
             "name": "n",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "id",
@@ -6966,7 +6966,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -7040,7 +7040,7 @@
             "name": "min_length",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -7962,7 +7962,7 @@
             "name": "idx",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -7989,7 +7989,7 @@
             "name": "idx",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "rewrite_previous_entry",
@@ -9031,7 +9031,7 @@
             "name": "outlen",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "spec",
@@ -9071,7 +9071,7 @@
             "name": "outlen",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "spec",
@@ -10099,7 +10099,7 @@
             "name": "path_size",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "start_path",
@@ -10704,7 +10704,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           },
           {
             "name": "repo",
@@ -11823,7 +11823,7 @@
             "name": "index",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -12793,7 +12793,7 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "ignore": true,
@@ -13287,7 +13287,6 @@
     "dependencies": [],
     "jsClassName": "Threads",
     "cppClassName": "GitThreads",
-    "cType": "git_threads",
     "functions": [
       {
         "cFunctionName": "git_threads_init",
@@ -13603,7 +13602,7 @@
           {
             "name": "entry",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           }
@@ -13616,7 +13615,7 @@
         "cppFunctionName": "Dup",
         "return": {
           "cType": "git_tree_entry *",
-          "cppClassName": "TreeEntry"
+          "cppClassName": "GitTreeEntry"
         }
       },
       {
@@ -13625,7 +13624,7 @@
           {
             "name": "entry",
             "cType": "git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           }
@@ -13648,7 +13647,7 @@
           {
             "name": "entry",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           }
@@ -13669,7 +13668,7 @@
           {
             "name": "entry",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           }
@@ -13690,7 +13689,7 @@
           {
             "name": "entry",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           }
@@ -13711,7 +13710,7 @@
           {
             "name": "entry",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           }
@@ -13732,14 +13731,14 @@
           {
             "name": "e1",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           },
           {
             "name": "e2",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry"
           }
         ],
@@ -13774,7 +13773,7 @@
           {
             "name": "entry",
             "cType": "const git_tree_entry *",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry",
             "isSelf": true
           }
@@ -13794,6 +13793,7 @@
   },
   {
     "filename": "tree.h",
+    "dependencies": ["../include/repo.h", "../include/oid.h", "../include/tree_entry.h"],
     "jsClassName": "Tree",
     "cppClassName": "GitTree",
     "cType": "git_tree",
@@ -13822,7 +13822,7 @@
             "jsClassName": "Oid"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "lookup",
@@ -13859,10 +13859,11 @@
             "name": "len",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "lookupPrefix",
@@ -13883,6 +13884,7 @@
             "jsClassName": "Tree"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -13926,6 +13928,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -13950,8 +13953,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "entrycount",
-        "cppFunctionName": "Entrycount",
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
         "return": {
           "cType": "size_t",
           "cppClassName": "Uint32"
@@ -13977,11 +13980,11 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "entryByname",
-        "cppFunctionName": "EntryByname",
+        "jsFunctionName": "entryByName",
+        "cppFunctionName": "EntryByName",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry"
+          "cppClassName": "GitTreeEntry"
         }
       },
       {
@@ -13998,17 +14001,17 @@
             "name": "idx",
             "cType": "size_t",
             "cppClassName": "Uint32",
-            "jsClassName": "size_t"
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "entryByindex",
-        "cppFunctionName": "EntryByindex",
+        "jsFunctionName": "entryByIndex",
+        "cppFunctionName": "EntryByIndex",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry"
+          "cppClassName": "GitTreeEntry"
         }
       },
       {
@@ -14031,11 +14034,11 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "entryByoid",
-        "cppFunctionName": "EntryByoid",
+        "jsFunctionName": "entryByOid",
+        "cppFunctionName": "EntryByOid",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry"
+          "cppClassName": "GitTreeEntry"
         }
       },
       {
@@ -14045,14 +14048,15 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_tree_entry **",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry"
           },
           {
             "name": "root",
             "cType": "git_tree *",
             "cppClassName": "GitTree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -14061,11 +14065,11 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "entryBypath",
-        "cppFunctionName": "EntryBypath",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getEntryByPath",
+        "cppFunctionName": "GetEntryByPath",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -14089,6 +14093,7 @@
             "jsClassName": "Tree"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14110,6 +14115,7 @@
             "jsClassName": "Treebuilder"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14130,6 +14136,7 @@
             "jsClassName": "Treebuilder"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14150,6 +14157,7 @@
             "jsClassName": "Treebuilder"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14177,6 +14185,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14184,7 +14193,7 @@
         "cppFunctionName": "GitTreebuilderGet",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry"
+          "cppClassName": "GitTreeEntry"
         }
       },
       {
@@ -14194,7 +14203,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "const git_tree_entry **",
-            "cppClassName": "TreeEntry",
+            "cppClassName": "GitTreeEntry",
             "jsClassName": "TreeEntry"
           },
           {
@@ -14222,6 +14231,7 @@
             "jsClassName": "FilemodeT"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14249,6 +14259,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14282,6 +14293,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -14314,7 +14326,8 @@
             "jsClassName": "Treebuilder"
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "jsFunctionName": "gitTreebuilderWrite",
@@ -14354,7 +14367,8 @@
             "jsClassName": "void"
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "walk",

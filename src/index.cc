@@ -140,7 +140,7 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
 Handle<Value> GitIndex::Owner(const Arguments& args) {
   HandleScope scope;
 
-git_repository *  result = git_index_owner(
+  git_repository * result = git_index_owner(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -391,7 +391,7 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
 Handle<Value> GitIndex::Entrycount(const Arguments& args) {
   HandleScope scope;
 
-size_t  result = git_index_entrycount(
+  size_t result = git_index_entrycount(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -404,7 +404,7 @@ size_t  result = git_index_entrycount(
 Handle<Value> GitIndex::Clear(const Arguments& args) {
   HandleScope scope;
 
-git_index_clear(
+  git_index_clear(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -425,7 +425,7 @@ Handle<Value> GitIndex::Remove(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
-int  result = git_index_remove(
+  int result = git_index_remove(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -455,7 +455,7 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
-int  result = git_index_remove_directory(
+  int result = git_index_remove_directory(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -547,7 +547,7 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-int  result = git_index_remove_bypath(
+  int result = git_index_remove_bypath(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -567,14 +567,14 @@ Handle<Value> GitIndex::Find(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("size_t at_pos is required.")));
+    return ThrowException(Exception::Error(String::New("Number at_pos is required.")));
   }
 
   if (args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-int  result = git_index_find(
+  int result = git_index_find(
 
 
   (size_t *) args[0]->ToUint32()->Value()
@@ -597,7 +597,7 @@ Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-int  result = git_index_conflict_remove(
+  int result = git_index_conflict_remove(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -616,7 +616,7 @@ int  result = git_index_conflict_remove(
 Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
   HandleScope scope;
 
-git_index_conflict_cleanup(
+  git_index_conflict_cleanup(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -629,7 +629,7 @@ git_index_conflict_cleanup(
 Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   HandleScope scope;
 
-int  result = git_index_has_conflicts(
+  int result = git_index_has_conflicts(
 
 
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()

@@ -65,7 +65,7 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   git_oid * out;
   out = (git_oid *)malloc(sizeof(git_oid));
 
-int  result = git_oid_fromstr(
+  int result = git_oid_fromstr(
 
 
     out
@@ -86,7 +86,7 @@ int  result = git_oid_fromstr(
 Handle<Value> GitOid::Sha(const Arguments& args) {
   HandleScope scope;
 
-char *  result = git_oid_allocfmt(
+  char * result = git_oid_allocfmt(
 
 
     ObjectWrap::Unwrap<GitOid>(args.This())->GetValue()

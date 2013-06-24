@@ -137,7 +137,7 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
 Handle<Value> GitBlob::Oid(const Arguments& args) {
   HandleScope scope;
 
-const git_oid *  result = git_blob_id(
+  const git_oid * result = git_blob_id(
 
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
@@ -152,7 +152,7 @@ const git_oid *  result = git_blob_id(
 Handle<Value> GitBlob::Content(const Arguments& args) {
   HandleScope scope;
 
-const void *  result = git_blob_rawcontent(
+  const void * result = git_blob_rawcontent(
 
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
@@ -167,7 +167,7 @@ const void *  result = git_blob_rawcontent(
 Handle<Value> GitBlob::Size(const Arguments& args) {
   HandleScope scope;
 
-git_off_t  result = git_blob_rawsize(
+  git_off_t result = git_blob_rawsize(
 
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
@@ -325,7 +325,7 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
 Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   HandleScope scope;
 
-int  result = git_blob_is_binary(
+  int result = git_blob_is_binary(
 
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()

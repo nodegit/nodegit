@@ -32,6 +32,7 @@
 using namespace v8;
 using namespace node;
 
+<% if (typeof cType != 'undefined') { -%>
 <%- cppClassName %>::<%- cppClassName %>(<%- cType %> *raw) {
   this->raw = raw;
 }
@@ -94,6 +95,25 @@ Handle<Value> <%- cppClassName %>::New(const Arguments& args) {
 <%- cType %> *<%- cppClassName %>::GetValue() {
   return this->raw;
 }
+<% } else { -%>
+void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
+  HandleScope scope;
+
+  Persistent<Object> object = Persistent<Object>::New(Object::New());
+
+<% if (typeof functions != 'undefined') { -%>
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+-%>
+  object->Set(String::NewSymbol("<%- functionInfo.jsFunctionName %>"), FunctionTemplate::New(<%- functionInfo.cppFunctionName %>)->GetFunction());
+<% } -%>
+<% } -%>
+
+  target->Set(String::NewSymbol("<%- jsClassName %>"), object);
+}
+<% } -%>
 
 <% if (typeof functions != 'undefined') { -%>
 <%
@@ -257,7 +277,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <% } -%>
 <% } -%>
 
-<% if (result.cType != "void") { %><%- functionInfo.return.cType %>  result = <% } %><%- functionInfo.cFunctionName %>(
+  <% if (result.cType != "void") { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(
 <%
   for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
     var arg = functionInfo.args[i];
@@ -327,4 +347,6 @@ Handle<Value> <%- cppClassName %>::<%- fieldInfo.cppFunctionName %>(const Argume
 <% } -%>
 <% } -%>
 
+<% if (typeof cType != 'undefined') { -%>
 Persistent<Function> <%- cppClassName %>::constructor_template;
+<% } -%>

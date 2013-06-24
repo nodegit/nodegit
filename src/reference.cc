@@ -234,7 +234,7 @@ Handle<Value> GitReference::CreateSymbolic(const Arguments& args) {
   }
   git_reference * out;
 
-int  result = git_reference_symbolic_create(
+  int result = git_reference_symbolic_create(
 
 &
     out
@@ -281,7 +281,7 @@ Handle<Value> GitReference::Create(const Arguments& args) {
   }
   git_reference * out;
 
-int  result = git_reference_create(
+  int result = git_reference_create(
 
 &
     out
@@ -311,7 +311,7 @@ int  result = git_reference_create(
 Handle<Value> GitReference::Oid(const Arguments& args) {
   HandleScope scope;
 
-const git_oid *  result = git_reference_target(
+  const git_oid * result = git_reference_target(
 
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
@@ -326,7 +326,7 @@ const git_oid *  result = git_reference_target(
 Handle<Value> GitReference::Name(const Arguments& args) {
   HandleScope scope;
 
-const char *  result = git_reference_symbolic_target(
+  const char * result = git_reference_symbolic_target(
 
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
@@ -339,7 +339,7 @@ const char *  result = git_reference_symbolic_target(
 Handle<Value> GitReference::Type(const Arguments& args) {
   HandleScope scope;
 
-git_ref_t  result = git_reference_type(
+  git_ref_t result = git_reference_type(
 
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
@@ -415,7 +415,7 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   }
   git_reference * out;
 
-int  result = git_reference_symbolic_set_target(
+  int result = git_reference_symbolic_set_target(
 
 &
     out
@@ -444,7 +444,7 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   }
   git_reference * out;
 
-int  result = git_reference_set_target(
+  int result = git_reference_set_target(
 
 &
     out
@@ -599,7 +599,7 @@ void GitReference::DeleteAfterWork(uv_work_t *req) {
 Handle<Value> GitReference::IsBranch(const Arguments& args) {
   HandleScope scope;
 
-int  result = git_reference_is_branch(
+  int result = git_reference_is_branch(
 
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
@@ -615,7 +615,7 @@ int  result = git_reference_is_branch(
 Handle<Value> GitReference::IsRemote(const Arguments& args) {
   HandleScope scope;
 
-int  result = git_reference_is_remote(
+  int result = git_reference_is_remote(
 
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
@@ -636,7 +636,7 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   }
   git_object * out;
 
-int  result = git_reference_peel(
+  int result = git_reference_peel(
 
 &
     out
@@ -664,7 +664,7 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String refname is required.")));
   }
 
-int  result = git_reference_is_valid_name(
+  int result = git_reference_is_valid_name(
 
 
     stringArgToString(args[0]->ToString()).c_str()
