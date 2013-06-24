@@ -71,18 +71,22 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
   }
   git_signature * out;
 
-  int result = git_signature_now(
+int  result = git_signature_now(
+
 &
     out
 , 
+
     stringArgToString(args[0]->ToString()).c_str()
 , 
+
     stringArgToString(args[1]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(GitSignature::constructor_template->NewInstance(1, argv));

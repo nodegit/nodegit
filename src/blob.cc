@@ -95,12 +95,12 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 
 void GitBlob::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int result = git_blob_lookup(
+  int blob = git_blob_lookup(
     &baton->blob, 
     baton->repo, 
     baton->id
   );
-  if (result != GIT_OK) {
+  if (blob != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -137,10 +137,12 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
 Handle<Value> GitBlob::Oid(const Arguments& args) {
   HandleScope scope;
 
-  const git_oid * result = git_blob_id(
+const git_oid *  result = git_blob_id(
+
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
+
 
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)result) };
@@ -150,10 +152,12 @@ Handle<Value> GitBlob::Oid(const Arguments& args) {
 Handle<Value> GitBlob::Content(const Arguments& args) {
   HandleScope scope;
 
-  const void * result = git_blob_rawcontent(
+const void *  result = git_blob_rawcontent(
+
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
+
 
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)result) };
@@ -163,10 +167,12 @@ Handle<Value> GitBlob::Content(const Arguments& args) {
 Handle<Value> GitBlob::Size(const Arguments& args) {
   HandleScope scope;
 
-  git_off_t result = git_blob_rawsize(
+git_off_t  result = git_blob_rawsize(
+
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
+
 
   return scope.Close(Number::New(result));
 }
@@ -201,12 +207,12 @@ Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
 
 void GitBlob::CreateFromFileWork(uv_work_t *req) {
   CreateFromFileBaton *baton = static_cast<CreateFromFileBaton *>(req->data);
-  int result = git_blob_create_fromdisk(
+  int id = git_blob_create_fromdisk(
     baton->id, 
     baton->repo, 
     baton->path
   );
-  if (result != GIT_OK) {
+  if (id != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -275,13 +281,13 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
 
 void GitBlob::CreateFromBufferWork(uv_work_t *req) {
   CreateFromBufferBaton *baton = static_cast<CreateFromBufferBaton *>(req->data);
-  int result = git_blob_create_frombuffer(
+  int oid = git_blob_create_frombuffer(
     baton->oid, 
     baton->repo, 
     baton->buffer, 
     baton->len
   );
-  if (result != GIT_OK) {
+  if (oid != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -319,7 +325,8 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
 Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   HandleScope scope;
 
-  int result = git_blob_is_binary(
+int  result = git_blob_is_binary(
+
 
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
@@ -327,6 +334,7 @@ Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Boolean::New(result));
 }
 

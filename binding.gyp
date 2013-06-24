@@ -11,6 +11,8 @@
                 'src/reference.cc',
                 'src/object.cc',
                 'src/repo.cc',
+                'src/index.cc',
+                'src/tag.cc',
                 'src/revwalk.cc',
                 'src/signature.cc',
                 'src/time.cc',

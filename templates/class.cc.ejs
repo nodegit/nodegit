@@ -100,6 +100,14 @@ Handle<Value> <%- cppClassName %>::New(const Arguments& args) {
   for (var i in functions) {
     var functionInfo = functions[i];
     if (functionInfo.ignore) continue;
+
+    var result = null;
+    for (var i = 0; i < functionInfo.args.length; i++) {
+      var arg = functionInfo.args[i];
+      if (arg.isReturn) result = arg;
+    }
+    if (!result) result = functionInfo.return;
+    var resultName = result.name || 'result';
 -%>
 
 <% if (functionInfo.isAsync) { -%>
@@ -160,7 +168,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 
 void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req) {
   <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
-  <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
+  <%- functionInfo.return.cType %> <%- resultName %> = <%- functionInfo.cFunctionName %>(
 <%
   for (var i = 0; i < functionInfo.args.length; i++) {
     var arg = functionInfo.args[i];
@@ -169,11 +177,11 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req
 <% } -%>
   );
 <% if (functionInfo.return.isErrorCode) { -%>
-  if (result != GIT_OK) {
+  if (<%- resultName %> != GIT_OK) {
     baton->error = giterr_last();
   }
 <% } else { -%>
-  baton->result = result;
+  baton->result = <%- resultName %>;
 <% } -%>
 }
 
@@ -183,15 +191,6 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
 
   TryCatch try_catch;
   if (!baton->error) {
-<%
-  var result = null;
-  for (var i = 0; i < functionInfo.args.length; i++) {
-    var arg = functionInfo.args[i];
-    if (arg.isReturn) result = arg;
-  }
-  if (!result) result = functionInfo.return;
-  var resultName = result.name || 'result';
--%>
 <% if (result.isErrorCode) { %>
     Handle<Value> <%- resultName %> = Local<Value>::New(Undefined());
 <% } else { -%>
@@ -258,11 +257,12 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <% } -%>
 <% } -%>
 
-  <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
+<% if (result.cType != "void") { %><%- functionInfo.return.cType %>  result = <% } %><%- functionInfo.cFunctionName %>(
 <%
   for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
     var arg = functionInfo.args[i];
 -%>
+
 <% if (/\*\*/.test(arg.cType)) { %>&<% } %>
 <% if (arg.isSelf) { -%>
     ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()
@@ -287,15 +287,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 <% } -%>
-<%
-  var result = null;
-  for (var i = 0; i < functionInfo.args.length; i++) {
-    var arg = functionInfo.args[i];
-    if (arg.isReturn) result = arg;
-  }
-  if (!result) result = functionInfo.return;
-  var resultName = result.name || 'result';
--%>
+
 <% if (result.cType == "void") { -%>
   return Undefined();
 <% } else if (isV8Value(result.cppClassName)) { -%>

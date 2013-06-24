@@ -81,7 +81,7 @@
           {
             "name": "num_attr",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -164,8 +164,7 @@
         "cppFunctionName": "CacheFlush",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -275,7 +274,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -310,8 +309,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -332,8 +330,7 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -354,8 +351,7 @@
         "cppFunctionName": "Content",
         "return": {
           "cType": "const void *",
-          "cppClassName": "Wrapper",
-          "isErrorCode": false
+          "cppClassName": "Wrapper"
         }
       },
       {
@@ -376,8 +372,7 @@
         "cppFunctionName": "Size",
         "return": {
           "cType": "git_off_t",
-          "cppClassName": "Number",
-          "isErrorCode": false
+          "cppClassName": "Number"
         }
       },
       {
@@ -846,7 +841,7 @@
           {
             "name": "buffer_size",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -906,7 +901,7 @@
           {
             "name": "buffer_size",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -981,7 +976,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -1153,7 +1148,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -1189,8 +1184,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -1211,8 +1205,7 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -1233,8 +1226,7 @@
         "cppFunctionName": "MessageEncoding",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -1255,8 +1247,7 @@
         "cppFunctionName": "Message",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -1277,8 +1268,7 @@
         "cppFunctionName": "Time",
         "return": {
           "cType": "git_time_t",
-          "cppClassName": "Number",
-          "isErrorCode": false
+          "cppClassName": "Number"
         }
       },
       {
@@ -1320,8 +1310,7 @@
         "cppFunctionName": "Committer",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature",
-          "isErrorCode": false
+          "cppClassName": "GitSignature"
         }
       },
       {
@@ -1342,8 +1331,7 @@
         "cppFunctionName": "Author",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature",
-          "isErrorCode": false
+          "cppClassName": "GitSignature"
         }
       },
       {
@@ -1393,8 +1381,7 @@
         "cppFunctionName": "TreeId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -1415,8 +1402,7 @@
         "cppFunctionName": "ParentCount",
         "return": {
           "cType": "unsigned int",
-          "cppClassName": "Uint32",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -1479,8 +1465,7 @@
         "cppFunctionName": "ParentId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -1703,8 +1688,7 @@
         "cppFunctionName": "GitLibgit2Version",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -1764,7 +1748,7 @@
           {
             "name": "length",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -1792,7 +1776,7 @@
           {
             "name": "length",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -1820,7 +1804,7 @@
           {
             "name": "length",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -2061,8 +2045,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -2590,7 +2573,7 @@
           {
             "name": "map_n",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -2624,7 +2607,7 @@
           {
             "name": "map_n",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -2810,8 +2793,7 @@
         "cppFunctionName": "ListFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -2883,7 +2865,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -2922,7 +2904,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -3131,8 +3113,7 @@
         "cppFunctionName": "StatusChar",
         "return": {
           "cType": "char",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -3185,8 +3166,7 @@
         "cppFunctionName": "NumDeltas",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -3212,8 +3192,7 @@
         "cppFunctionName": "NumDeltasOfType",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -3240,7 +3219,7 @@
           {
             "name": "idx",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -3273,8 +3252,7 @@
         "cppFunctionName": "PatchFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -3294,8 +3272,7 @@
         "cppFunctionName": "PatchDelta",
         "return": {
           "cType": "const git_diff_delta *",
-          "cppClassName": "DiffDelta",
-          "isErrorCode": false
+          "cppClassName": "DiffDelta"
         }
       },
       {
@@ -3315,8 +3292,7 @@
         "cppFunctionName": "PatchNumHunks",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -3325,19 +3301,19 @@
           {
             "name": "total_context",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
             "name": "total_additions",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
             "name": "total_deletions",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -3376,13 +3352,13 @@
           {
             "name": "header_len",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
             "name": "lines_in_hunk",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -3394,7 +3370,7 @@
           {
             "name": "hunk_idx",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -3421,7 +3397,7 @@
           {
             "name": "hunk_idx",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -3454,7 +3430,7 @@
           {
             "name": "content_len",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -3478,13 +3454,13 @@
           {
             "name": "hunk_idx",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
             "name": "line_of_hunk",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -3634,7 +3610,7 @@
           {
             "name": "buffer_len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -3698,8 +3674,7 @@
         "cppFunctionName": "GiterrLast",
         "return": {
           "cType": "const git_error *",
-          "cppClassName": "Error",
-          "isErrorCode": false
+          "cppClassName": "Error"
         }
       },
       {
@@ -3712,8 +3687,7 @@
         "cppFunctionName": "GiterrClear",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -3739,8 +3713,7 @@
         "cppFunctionName": "GiterrSetStr",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -3753,8 +3726,7 @@
         "cppFunctionName": "GiterrSetOom",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -3772,13 +3744,13 @@
           {
             "name": "ahead",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
             "name": "behind",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -3905,8 +3877,9 @@
   },
   {
     "filename": "index.h",
+    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/tree.h"],
     "jsClassName": "Index",
-    "cppClassName": "Index",
+    "cppClassName": "GitIndex",
     "cType": "git_index",
     "freeFunctionName": "git_index_free",
     "functions": [
@@ -3917,7 +3890,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_index **",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -3945,10 +3918,11 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_index **",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -3966,7 +3940,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           }
         ],
@@ -3979,8 +3953,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -3989,7 +3962,7 @@
           {
             "name": "index",
             "cType": "const git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4001,8 +3974,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "GitRepo",
-          "isErrorCode": false
+          "cppClassName": "GitRepo"
         }
       },
       {
@@ -4011,7 +3983,7 @@
           {
             "name": "index",
             "cType": "const git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4024,8 +3996,7 @@
         "cppFunctionName": "Caps",
         "return": {
           "cType": "unsigned int",
-          "cppClassName": "Uint32",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -4034,7 +4005,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4063,7 +4034,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4085,7 +4056,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4107,7 +4078,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4142,7 +4113,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4171,7 +4142,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -4199,7 +4170,7 @@
           {
             "name": "index",
             "cType": "const git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4211,8 +4182,7 @@
         "cppFunctionName": "Entrycount",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -4221,7 +4191,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4233,8 +4203,7 @@
         "cppFunctionName": "Clear",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -4243,14 +4212,14 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
           {
             "name": "n",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -4262,8 +4231,7 @@
         "cppFunctionName": "GetByindex",
         "return": {
           "cType": "const git_index_entry *",
-          "cppClassName": "IndexEntry",
-          "isErrorCode": false
+          "cppClassName": "IndexEntry"
         }
       },
       {
@@ -4272,7 +4240,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4297,8 +4265,7 @@
         "cppFunctionName": "GetBypath",
         "return": {
           "cType": "const git_index_entry *",
-          "cppClassName": "IndexEntry",
-          "isErrorCode": false
+          "cppClassName": "IndexEntry"
         }
       },
       {
@@ -4307,7 +4274,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4341,7 +4308,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4375,7 +4342,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4426,7 +4393,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4454,7 +4421,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4482,13 +4449,13 @@
           {
             "name": "at_pos",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4515,7 +4482,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4574,7 +4541,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -4602,7 +4569,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4630,7 +4597,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4642,8 +4609,7 @@
         "cppFunctionName": "ConflictCleanup",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -4652,7 +4618,7 @@
           {
             "name": "index",
             "cType": "const git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4673,7 +4639,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4686,8 +4652,7 @@
         "cppFunctionName": "ReucEntrycount",
         "return": {
           "cType": "unsigned int",
-          "cppClassName": "Uint32",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -4696,13 +4661,13 @@
           {
             "name": "at_pos",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -4730,7 +4695,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4749,8 +4714,7 @@
         "cppFunctionName": "ReucGetBypath",
         "return": {
           "cType": "const git_index_reuc_entry *",
-          "cppClassName": "IndexReucEntry",
-          "isErrorCode": false
+          "cppClassName": "IndexReucEntry"
         }
       },
       {
@@ -4759,14 +4723,14 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
           {
             "name": "n",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -4778,8 +4742,7 @@
         "cppFunctionName": "ReucGetByindex",
         "return": {
           "cType": "const git_index_reuc_entry *",
-          "cppClassName": "IndexReucEntry",
-          "isErrorCode": false
+          "cppClassName": "IndexReucEntry"
         }
       },
       {
@@ -4788,7 +4751,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
@@ -4853,14 +4816,14 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           },
           {
             "name": "n",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -4882,7 +4845,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index",
             "isSelf": true
           }
@@ -4895,8 +4858,7 @@
         "cppFunctionName": "ReucClear",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -4966,7 +4928,7 @@
           {
             "name": "size",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -5031,8 +4993,7 @@
         "cppFunctionName": "StreamHash",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -5053,8 +5014,7 @@
         "cppFunctionName": "StreamFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -5133,7 +5093,7 @@
           {
             "name": "length",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -5170,7 +5130,7 @@
           {
             "name": "out_size",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -5266,8 +5226,7 @@
         "cppFunctionName": "GitNoteIteratorFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -5360,8 +5319,7 @@
         "cppFunctionName": "GitNoteMessage",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -5381,8 +5339,7 @@
         "cppFunctionName": "GitNoteOid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -5512,8 +5469,7 @@
         "cppFunctionName": "GitNoteFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -5658,7 +5614,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -5698,8 +5654,7 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -5720,8 +5675,7 @@
         "cppFunctionName": "Type",
         "return": {
           "cType": "git_otype",
-          "cppClassName": "Number",
-          "isErrorCode": false
+          "cppClassName": "Number"
         }
       },
       {
@@ -5742,8 +5696,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "GitRepo",
-          "isErrorCode": false
+          "cppClassName": "GitRepo"
         }
       },
       {
@@ -5765,8 +5718,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -5787,8 +5739,7 @@
         "cppFunctionName": "Type2string",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -5809,8 +5760,7 @@
         "cppFunctionName": "String2type",
         "return": {
           "cType": "git_otype",
-          "cppClassName": "Number",
-          "isErrorCode": false
+          "cppClassName": "Number"
         }
       },
       {
@@ -5853,8 +5803,7 @@
         "cppFunctionName": "Size",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -6096,8 +6045,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -6159,7 +6107,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -6180,7 +6128,7 @@
           {
             "name": "len_out",
             "cType": "size_t *",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -6322,7 +6270,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -6362,7 +6310,7 @@
           {
             "name": "size",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -6476,7 +6424,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -6549,8 +6497,7 @@
         "cppFunctionName": "ObjectFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -6570,8 +6517,7 @@
         "cppFunctionName": "ObjectId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -6591,8 +6537,7 @@
         "cppFunctionName": "ObjectData",
         "return": {
           "cType": "const void *",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -6612,8 +6557,7 @@
         "cppFunctionName": "ObjectSize",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -6633,8 +6577,7 @@
         "cppFunctionName": "ObjectType",
         "return": {
           "cType": "git_otype",
-          "cppClassName": "Int32",
-          "isErrorCode": false
+          "cppClassName": "Int32"
         }
       }
     ]
@@ -6760,7 +6703,7 @@
           {
             "name": "length",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -6801,8 +6744,7 @@
         "cppFunctionName": "Fromraw",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -6831,8 +6773,7 @@
         "cppFunctionName": "Fmt",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -6860,8 +6801,7 @@
         "cppFunctionName": "Pathfmt",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -6882,8 +6822,7 @@
         "cppFunctionName": "Sha",
         "return": {
           "cType": "char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -6899,7 +6838,7 @@
           {
             "name": "n",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -6917,8 +6856,7 @@
         "cppFunctionName": "Sha",
         "return": {
           "cType": "char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -6947,8 +6885,7 @@
         "cppFunctionName": "Cpy",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -7028,7 +6965,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -7102,7 +7039,7 @@
           {
             "name": "min_length",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -7114,8 +7051,7 @@
         "cppFunctionName": "ShortenNew",
         "return": {
           "cType": "git_oid_shorten *",
-          "cppClassName": "OidShorten",
-          "isErrorCode": false
+          "cppClassName": "OidShorten"
         }
       },
       {
@@ -7165,8 +7101,7 @@
         "cppFunctionName": "ShortenFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -7229,8 +7164,7 @@
         "cppFunctionName": "GitPackbuilderSetThreads",
         "return": {
           "cType": "unsigned int",
-          "cppClassName": "Uint32",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -7370,8 +7304,7 @@
         "cppFunctionName": "GitPackbuilderObjectCount",
         "return": {
           "cType": "uint32_t",
-          "cppClassName": "Uint32",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -7391,8 +7324,7 @@
         "cppFunctionName": "GitPackbuilderWritten",
         "return": {
           "cType": "uint32_t",
-          "cppClassName": "Uint32",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -7413,8 +7345,7 @@
         "cppFunctionName": "GitPackbuilderFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -7628,8 +7559,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -7677,8 +7607,7 @@
         "cppFunctionName": "GitReference_Alloc",
         "return": {
           "cType": "git_reference *",
-          "cppClassName": "GitReference",
-          "isErrorCode": false
+          "cppClassName": "GitReference"
         }
       },
       {
@@ -7777,8 +7706,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -8017,8 +7945,7 @@
         "cppFunctionName": "Entrycount",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -8034,7 +7961,7 @@
           {
             "name": "idx",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -8045,8 +7972,7 @@
         "cppFunctionName": "EntryByindex",
         "return": {
           "cType": "const git_reflog_entry *",
-          "cppClassName": "ReflogEntry",
-          "isErrorCode": false
+          "cppClassName": "ReflogEntry"
         }
       },
       {
@@ -8062,7 +7988,7 @@
           {
             "name": "idx",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -8100,8 +8026,7 @@
         "cppFunctionName": "EntryIdOld",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -8121,8 +8046,7 @@
         "cppFunctionName": "EntryIdNew",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -8142,8 +8066,7 @@
         "cppFunctionName": "EntryCommitter",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature",
-          "isErrorCode": false
+          "cppClassName": "GitSignature"
         }
       },
       {
@@ -8163,8 +8086,7 @@
         "cppFunctionName": "EntryMessage",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -8185,8 +8107,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -8381,8 +8302,7 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -8403,8 +8323,7 @@
         "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -8425,8 +8344,7 @@
         "cppFunctionName": "Type",
         "return": {
           "cType": "git_ref_t",
-          "cppClassName": "Number",
-          "isErrorCode": false
+          "cppClassName": "Number"
         }
       },
       {
@@ -8448,8 +8366,7 @@
         "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -8500,8 +8417,7 @@
         "cppFunctionName": "owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "GitRepo",
-          "isErrorCode": false
+          "cppClassName": "GitRepo"
         }
       },
       {
@@ -8730,8 +8646,7 @@
         "cppFunctionName": "GitReferenceFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -9000,8 +8915,7 @@
         "cppFunctionName": "Src",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -9022,8 +8936,7 @@
         "cppFunctionName": "Dst",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -9117,7 +9030,7 @@
           {
             "name": "outlen",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -9157,7 +9070,7 @@
           {
             "name": "outlen",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -9347,8 +9260,7 @@
         "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -9369,8 +9281,7 @@
         "cppFunctionName": "Url",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -9391,8 +9302,7 @@
         "cppFunctionName": "Pushurl",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -9497,8 +9407,7 @@
         "cppFunctionName": "Fetchspec",
         "return": {
           "cType": "const git_refspec *",
-          "cppClassName": "Refspec",
-          "isErrorCode": false
+          "cppClassName": "Refspec"
         }
       },
       {
@@ -9547,8 +9456,7 @@
         "cppFunctionName": "Pushspec",
         "return": {
           "cType": "const git_refspec *",
-          "cppClassName": "Refspec",
-          "isErrorCode": false
+          "cppClassName": "Refspec"
         }
       },
       {
@@ -9687,8 +9595,7 @@
         "cppFunctionName": "Stop",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -9709,8 +9616,7 @@
         "cppFunctionName": "Disconnect",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -9731,8 +9637,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -9851,8 +9756,7 @@
         "cppFunctionName": "CheckCert",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -9885,8 +9789,7 @@
         "cppFunctionName": "SetCredAcquireCb",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -9963,8 +9866,7 @@
         "cppFunctionName": "Stats",
         "return": {
           "cType": "const git_transfer_progress *",
-          "cppClassName": "TransferProgress",
-          "isErrorCode": false
+          "cppClassName": "TransferProgress"
         }
       },
       {
@@ -9977,8 +9879,7 @@
         "cppFunctionName": "Autotag",
         "return": {
           "cType": "GIT_EXTERN(",
-          "cppClassName": "GIT_EXTERN(",
-          "isErrorCode": false
+          "cppClassName": "GIT_EXTERN("
         }
       },
       {
@@ -10005,8 +9906,7 @@
         "cppFunctionName": "SetAutotag",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -10095,8 +9995,7 @@
         "cppFunctionName": "SetUpdateFetchhead",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -10199,7 +10098,7 @@
           {
             "name": "path_size",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -10293,8 +10192,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -10482,8 +10380,7 @@
         "cppFunctionName": "Path",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -10504,8 +10401,7 @@
         "cppFunctionName": "Workdir",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -10620,8 +10516,7 @@
         "cppFunctionName": "SetConfig",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -10678,8 +10573,7 @@
         "cppFunctionName": "SetOdb",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -10736,8 +10630,7 @@
         "cppFunctionName": "SetRefdb",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -10747,7 +10640,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_index **",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           },
           {
@@ -10782,7 +10675,7 @@
           {
             "name": "index",
             "cType": "git_index *",
-            "cppClassName": "Index",
+            "cppClassName": "GitIndex",
             "jsClassName": "Index"
           }
         ],
@@ -10794,8 +10687,7 @@
         "cppFunctionName": "SetIndex",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -10811,7 +10703,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           },
           {
@@ -10974,7 +10866,7 @@
           {
             "name": "type",
             "cType": "git_otype",
-            "cppClassName": "Otype",
+            "cppClassName": "Int32",
             "jsClassName": "Otype"
           },
           {
@@ -11303,8 +11195,7 @@
         "cppFunctionName": "Reset",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -11571,8 +11462,7 @@
         "cppFunctionName": "Sorting",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -11621,8 +11511,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -11643,8 +11532,7 @@
         "cppFunctionName": "Repository",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "GitRepo",
-          "isErrorCode": false
+          "cppClassName": "GitRepo"
         }
       }
     ]
@@ -11809,8 +11697,7 @@
         "cppFunctionName": "Dup",
         "return": {
           "cType": "git_signature *",
-          "cppClassName": "GitSignature",
-          "isErrorCode": false
+          "cppClassName": "GitSignature"
         }
       },
       {
@@ -11832,8 +11719,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -11936,7 +11822,7 @@
           {
             "name": "index",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -12133,8 +12019,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -12377,8 +12262,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "GitRepo",
-          "isErrorCode": false
+          "cppClassName": "GitRepo"
         }
       },
       {
@@ -12399,8 +12283,7 @@
         "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -12421,8 +12304,7 @@
         "cppFunctionName": "Path",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -12443,8 +12325,7 @@
         "cppFunctionName": "Url",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -12493,8 +12374,7 @@
         "cppFunctionName": "IndexId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -12515,8 +12395,7 @@
         "cppFunctionName": "HeadId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -12537,8 +12416,7 @@
         "cppFunctionName": "WdId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -12551,8 +12429,7 @@
         "cppFunctionName": "Ignore",
         "return": {
           "cType": "GIT_EXTERN(",
-          "cppClassName": "GIT_EXTERN(",
-          "isErrorCode": false
+          "cppClassName": "GIT_EXTERN("
         }
       },
       {
@@ -12579,8 +12456,7 @@
         "cppFunctionName": "SetIgnore",
         "return": {
           "cType": "git_submodule_ignore_t",
-          "cppClassName": "SubmoduleIgnoreT",
-          "isErrorCode": false
+          "cppClassName": "SubmoduleIgnoreT"
         }
       },
       {
@@ -12593,8 +12469,7 @@
         "cppFunctionName": "Update",
         "return": {
           "cType": "GIT_EXTERN(",
-          "cppClassName": "GIT_EXTERN(",
-          "isErrorCode": false
+          "cppClassName": "GIT_EXTERN("
         }
       },
       {
@@ -12621,8 +12496,7 @@
         "cppFunctionName": "SetUpdate",
         "return": {
           "cType": "git_submodule_update_t",
-          "cppClassName": "SubmoduleUpdateT",
-          "isErrorCode": false
+          "cppClassName": "SubmoduleUpdateT"
         }
       },
       {
@@ -12853,8 +12727,9 @@
   },
   {
     "filename": "tag.h",
+    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/object.h", "../include/signature.h"],
     "jsClassName": "Tag",
-    "cppClassName": "Tag",
+    "cppClassName": "GitTag",
     "cType": "git_tag",
     "freeFunctionName": "git_tag_free",
     "functions": [
@@ -12865,7 +12740,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_tag **",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag"
           },
           {
@@ -12881,7 +12756,7 @@
             "jsClassName": "Oid"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "lookup",
@@ -12899,7 +12774,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_tag **",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag"
           },
           {
@@ -12917,10 +12792,11 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -12938,10 +12814,11 @@
           {
             "name": "tag",
             "cType": "git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -12950,8 +12827,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -12960,7 +12836,7 @@
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag",
             "isSelf": true
           }
@@ -12972,8 +12848,7 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -12983,18 +12858,20 @@
             "name": "target_out",
             "cType": "git_object **",
             "cppClassName": "GitObject",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isReturn": true
           },
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
-            "jsClassName": "Tag"
+            "cppClassName": "GitTag",
+            "jsClassName": "Tag",
+            "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "target",
         "cppFunctionName": "Target",
         "return": {
@@ -13009,7 +12886,7 @@
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag",
             "isSelf": true
           }
@@ -13021,8 +12898,7 @@
         "cppFunctionName": "TargetId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -13031,7 +12907,7 @@
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag",
             "isSelf": true
           }
@@ -13043,8 +12919,7 @@
         "cppFunctionName": "TargetType",
         "return": {
           "cType": "git_otype",
-          "cppClassName": "Otype",
-          "isErrorCode": false
+          "cppClassName": "Int32"
         }
       },
       {
@@ -13053,7 +12928,7 @@
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag",
             "isSelf": true
           }
@@ -13065,8 +12940,7 @@
         "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -13075,7 +12949,7 @@
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag",
             "isSelf": true
           }
@@ -13087,8 +12961,7 @@
         "cppFunctionName": "Tagger",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature",
-          "isErrorCode": false
+          "cppClassName": "GitSignature"
         }
       },
       {
@@ -13097,7 +12970,7 @@
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag",
             "isSelf": true
           }
@@ -13109,8 +12982,7 @@
         "cppFunctionName": "Message",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -13120,7 +12992,8 @@
             "name": "oid",
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -13159,8 +13032,8 @@
             "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
-        "isConstructorMethod": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "create",
         "cppFunctionName": "Create",
@@ -13198,6 +13071,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -13216,7 +13090,8 @@
             "name": "oid",
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -13243,8 +13118,8 @@
             "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
-        "isConstructorMethod": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "createLightweight",
         "cppFunctionName": "CreateLightweight",
@@ -13297,6 +13172,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -13330,6 +13206,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -13363,6 +13240,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -13381,18 +13259,19 @@
             "name": "tag_target_out",
             "cType": "git_object **",
             "cppClassName": "GitObject",
-            "jsClassName": "Object"
+            "jsClassName": "Object",
+            "isReturn": true
           },
           {
             "name": "tag",
             "cType": "const git_tag *",
-            "cppClassName": "Tag",
+            "cppClassName": "GitTag",
             "jsClassName": "Tag"
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "peel",
         "cppFunctionName": "Peel",
         "return": {
@@ -13434,8 +13313,7 @@
         "cppFunctionName": "Shutdown",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       }
     ]
@@ -13738,8 +13616,7 @@
         "cppFunctionName": "Dup",
         "return": {
           "cType": "git_tree_entry *",
-          "cppClassName": "TreeEntry",
-          "isErrorCode": false
+          "cppClassName": "TreeEntry"
         }
       },
       {
@@ -13762,8 +13639,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -13784,8 +13660,7 @@
         "cppFunctionName": "Name",
         "return": {
           "cType": "const char *",
-          "cppClassName": "String",
-          "isErrorCode": false
+          "cppClassName": "String"
         }
       },
       {
@@ -13806,8 +13681,7 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -13828,8 +13702,7 @@
         "cppFunctionName": "Type",
         "return": {
           "cType": "git_otype",
-          "cppClassName": "Number",
-          "isErrorCode": false
+          "cppClassName": "Number"
         }
       },
       {
@@ -13850,8 +13723,7 @@
         "cppFunctionName": "filemode",
         "return": {
           "cType": "git_filemode_t",
-          "cppClassName": "Number",
-          "isErrorCode": false
+          "cppClassName": "Number"
         }
       },
       {
@@ -13986,7 +13858,7 @@
           {
             "name": "len",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -14019,8 +13891,7 @@
         "cppFunctionName": "Free",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -14041,8 +13912,7 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid",
-          "isErrorCode": false
+          "cppClassName": "GitOid"
         }
       },
       {
@@ -14063,8 +13933,7 @@
         "cppFunctionName": "Owner",
         "return": {
           "cType": "git_repository *",
-          "cppClassName": "GitRepo",
-          "isErrorCode": false
+          "cppClassName": "GitRepo"
         }
       },
       {
@@ -14085,8 +13954,7 @@
         "cppFunctionName": "Entrycount",
         "return": {
           "cType": "size_t",
-          "cppClassName": "size_t",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -14113,8 +13981,7 @@
         "cppFunctionName": "EntryByname",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry",
-          "isErrorCode": false
+          "cppClassName": "TreeEntry"
         }
       },
       {
@@ -14130,7 +13997,7 @@
           {
             "name": "idx",
             "cType": "size_t",
-            "cppClassName": "size_t",
+            "cppClassName": "Uint32",
             "jsClassName": "size_t"
           }
         ],
@@ -14141,8 +14008,7 @@
         "cppFunctionName": "EntryByindex",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry",
-          "isErrorCode": false
+          "cppClassName": "TreeEntry"
         }
       },
       {
@@ -14169,8 +14035,7 @@
         "cppFunctionName": "EntryByoid",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry",
-          "isErrorCode": false
+          "cppClassName": "TreeEntry"
         }
       },
       {
@@ -14252,8 +14117,7 @@
         "cppFunctionName": "GitTreebuilderClear",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -14273,8 +14137,7 @@
         "cppFunctionName": "GitTreebuilderEntrycount",
         "return": {
           "cType": "unsigned int",
-          "cppClassName": "Uint32",
-          "isErrorCode": false
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -14295,8 +14158,7 @@
         "cppFunctionName": "GitTreebuilderFree",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {
@@ -14322,8 +14184,7 @@
         "cppFunctionName": "GitTreebuilderGet",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "TreeEntry",
-          "isErrorCode": false
+          "cppClassName": "TreeEntry"
         }
       },
       {
@@ -14428,8 +14289,7 @@
         "cppFunctionName": "GitTreebuilderFilter",
         "return": {
           "cType": "void",
-          "cppClassName": "void",
-          "isErrorCode": false
+          "cppClassName": "void"
         }
       },
       {

@@ -84,11 +84,11 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
 
 void GitRepo::OpenWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
-  int result = git_repository_open(
+  int out = git_repository_open(
     &baton->out, 
     baton->path
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -152,12 +152,12 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
 
 void GitRepo::InitWork(uv_work_t *req) {
   InitBaton *baton = static_cast<InitBaton *>(req->data);
-  int result = git_repository_init(
+  int out = git_repository_init(
     &baton->out, 
     baton->path, 
     baton->is_bare
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -195,10 +195,12 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 Handle<Value> GitRepo::Path(const Arguments& args) {
   HandleScope scope;
 
-  const char * result = git_repository_path(
+const char *  result = git_repository_path(
+
 
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
+
 
   return scope.Close(String::New(result));
 }
@@ -206,10 +208,12 @@ Handle<Value> GitRepo::Path(const Arguments& args) {
 Handle<Value> GitRepo::Workdir(const Arguments& args) {
   HandleScope scope;
 
-  const char * result = git_repository_workdir(
+const char *  result = git_repository_workdir(
+
 
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
+
 
   return scope.Close(String::New(result));
 }

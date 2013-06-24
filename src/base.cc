@@ -25,6 +25,8 @@
 #include "../include/tree_entry.h"
 #include "../include/diff_list.h"
 #include "../include/threads.h"
+#include "../include/index.h"
+#include "../include/tag.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
@@ -34,6 +36,8 @@ extern "C" void init(Handle<v8::Object> target) {
   GitError::Initialize(target);
 
   GitReference::Initialize(target);
+  GitIndex::Initialize(target);
+  GitTag::Initialize(target);
   GitSignature::Initialize(target);
   GitTime::Initialize(target);
   GitBlob::Initialize(target);

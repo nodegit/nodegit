@@ -2,8 +2,8 @@
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
 
-#ifndef INDEX_H
-#define INDEX_H
+#ifndef GITINDEX_H
+#define GITINDEX_H
 
 #include <v8.h>
 #include <node.h>
@@ -14,7 +14,7 @@
 using namespace node;
 using namespace v8;
 
-class Index : public ObjectWrap {
+class GitIndex : public ObjectWrap {
   public:
 
     static Persistent<Function> constructor_template;
@@ -23,8 +23,8 @@ class Index : public ObjectWrap {
     git_index *GetValue();
 
   private:
-    Index(git_index *raw);
-    ~Index();
+    GitIndex(git_index *raw);
+    ~GitIndex();
 
     static Handle<Value> New(const Arguments& args);
 
@@ -41,7 +41,6 @@ class Index : public ObjectWrap {
       const char * index_path;
       Persistent<Function> callback;
     };
-    static Handle<Value> New(const Arguments& args);
     static Handle<Value> Owner(const Arguments& args);
     static Handle<Value> Read(const Arguments& args);
     static void ReadWork(uv_work_t* req);

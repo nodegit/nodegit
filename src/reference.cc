@@ -104,12 +104,12 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
 
 void GitReference::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int result = git_reference_lookup(
+  int out = git_reference_lookup(
     &baton->out, 
     baton->repo, 
     baton->name
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -174,12 +174,12 @@ Handle<Value> GitReference::OidForName(const Arguments& args) {
 
 void GitReference::OidForNameWork(uv_work_t *req) {
   OidForNameBaton *baton = static_cast<OidForNameBaton *>(req->data);
-  int result = git_reference_name_to_id(
+  int out = git_reference_name_to_id(
     baton->out, 
     baton->repo, 
     baton->name
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -234,22 +234,28 @@ Handle<Value> GitReference::CreateSymbolic(const Arguments& args) {
   }
   git_reference * out;
 
-  int result = git_reference_symbolic_create(
+int  result = git_reference_symbolic_create(
+
 &
     out
 , 
+
     ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
 , 
+
     stringArgToString(args[1]->ToString()).c_str()
 , 
+
     stringArgToString(args[2]->ToString()).c_str()
 , 
+
   (int) args[3]->ToInt32()->Value()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(GitReference::constructor_template->NewInstance(1, argv));
@@ -275,22 +281,28 @@ Handle<Value> GitReference::Create(const Arguments& args) {
   }
   git_reference * out;
 
-  int result = git_reference_create(
+int  result = git_reference_create(
+
 &
     out
 , 
+
     ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
 , 
+
     stringArgToString(args[1]->ToString()).c_str()
 , 
+
     ObjectWrap::Unwrap<GitOid>(args[2]->ToObject())->GetValue()
 , 
+
   (int) args[3]->ToInt32()->Value()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(GitReference::constructor_template->NewInstance(1, argv));
@@ -299,10 +311,12 @@ Handle<Value> GitReference::Create(const Arguments& args) {
 Handle<Value> GitReference::Oid(const Arguments& args) {
   HandleScope scope;
 
-  const git_oid * result = git_reference_target(
+const git_oid *  result = git_reference_target(
+
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
+
 
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)result) };
@@ -312,10 +326,12 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
 Handle<Value> GitReference::Name(const Arguments& args) {
   HandleScope scope;
 
-  const char * result = git_reference_symbolic_target(
+const char *  result = git_reference_symbolic_target(
+
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
+
 
   return scope.Close(String::New(result));
 }
@@ -323,10 +339,12 @@ Handle<Value> GitReference::Name(const Arguments& args) {
 Handle<Value> GitReference::Type(const Arguments& args) {
   HandleScope scope;
 
-  git_ref_t result = git_reference_type(
+git_ref_t  result = git_reference_type(
+
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
+
 
   return scope.Close(Number::New(result));
 }
@@ -352,11 +370,11 @@ Handle<Value> GitReference::Resolve(const Arguments& args) {
 
 void GitReference::ResolveWork(uv_work_t *req) {
   ResolveBaton *baton = static_cast<ResolveBaton *>(req->data);
-  int result = git_reference_resolve(
+  int out = git_reference_resolve(
     &baton->out, 
     baton->ref
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -397,18 +415,22 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   }
   git_reference * out;
 
-  int result = git_reference_symbolic_set_target(
+int  result = git_reference_symbolic_set_target(
+
 &
     out
 , 
+
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
 , 
+
     stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(GitReference::constructor_template->NewInstance(1, argv));
@@ -422,18 +444,22 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   }
   git_reference * out;
 
-  int result = git_reference_set_target(
+int  result = git_reference_set_target(
+
 &
     out
 , 
+
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
 , 
+
     ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(GitReference::constructor_template->NewInstance(1, argv));
@@ -471,13 +497,13 @@ Handle<Value> GitReference::Rename(const Arguments& args) {
 
 void GitReference::RenameWork(uv_work_t *req) {
   RenameBaton *baton = static_cast<RenameBaton *>(req->data);
-  int result = git_reference_rename(
+  int out = git_reference_rename(
     &baton->out, 
     baton->ref, 
     baton->new_name, 
     baton->force
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -573,7 +599,8 @@ void GitReference::DeleteAfterWork(uv_work_t *req) {
 Handle<Value> GitReference::IsBranch(const Arguments& args) {
   HandleScope scope;
 
-  int result = git_reference_is_branch(
+int  result = git_reference_is_branch(
+
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
@@ -581,13 +608,15 @@ Handle<Value> GitReference::IsBranch(const Arguments& args) {
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Int32::New(result));
 }
 
 Handle<Value> GitReference::IsRemote(const Arguments& args) {
   HandleScope scope;
 
-  int result = git_reference_is_remote(
+int  result = git_reference_is_remote(
+
 
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
@@ -595,6 +624,7 @@ Handle<Value> GitReference::IsRemote(const Arguments& args) {
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Int32::New(result));
 }
 
@@ -606,18 +636,22 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   }
   git_object * out;
 
-  int result = git_reference_peel(
+int  result = git_reference_peel(
+
 &
     out
 , 
+
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
 , 
+
   (git_otype) args[0]->ToInt32()->Value()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(GitObject::constructor_template->NewInstance(1, argv));
@@ -630,7 +664,8 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String refname is required.")));
   }
 
-  int result = git_reference_is_valid_name(
+int  result = git_reference_is_valid_name(
+
 
     stringArgToString(args[0]->ToString()).c_str()
   );
@@ -638,6 +673,7 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Int32::New(result));
 }
 

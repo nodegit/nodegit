@@ -66,10 +66,12 @@ git_tree_entry *GitTreeEntry::GetValue() {
 Handle<Value> GitTreeEntry::Name(const Arguments& args) {
   HandleScope scope;
 
-  const char * result = git_tree_entry_name(
+const char *  result = git_tree_entry_name(
+
 
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
+
 
   return scope.Close(String::New(result));
 }
@@ -77,10 +79,12 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
 Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   HandleScope scope;
 
-  const git_oid * result = git_tree_entry_id(
+const git_oid *  result = git_tree_entry_id(
+
 
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
+
 
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)result) };
@@ -90,10 +94,12 @@ Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
 Handle<Value> GitTreeEntry::Type(const Arguments& args) {
   HandleScope scope;
 
-  git_otype result = git_tree_entry_type(
+git_otype  result = git_tree_entry_type(
+
 
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
+
 
   return scope.Close(Number::New(result));
 }
@@ -101,10 +107,12 @@ Handle<Value> GitTreeEntry::Type(const Arguments& args) {
 Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
   HandleScope scope;
 
-  git_filemode_t result = git_tree_entry_filemode(
+git_filemode_t  result = git_tree_entry_filemode(
+
 
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
+
 
   return scope.Close(Number::New(result));
 }
@@ -135,12 +143,12 @@ Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
 
 void GitTreeEntry::GetObjectWork(uv_work_t *req) {
   GetObjectBaton *baton = static_cast<GetObjectBaton *>(req->data);
-  int result = git_tree_entry_to_object(
+  int object_out = git_tree_entry_to_object(
     &baton->object_out, 
     baton->repo, 
     baton->entry
   );
-  if (result != GIT_OK) {
+  if (object_out != GIT_OK) {
     baton->error = giterr_last();
   }
 }

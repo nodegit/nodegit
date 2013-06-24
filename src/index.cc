@@ -8,6 +8,9 @@
 #include "git2.h"
 
 #include "../include/index.h"
+#include "../include/oid.h"
+#include "../include/repo.h"
+#include "../include/tree.h"
 
 #include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
@@ -15,15 +18,15 @@
 using namespace v8;
 using namespace node;
 
-Index::Index(git_index *raw) {
+GitIndex::GitIndex(git_index *raw) {
   this->raw = raw;
 }
 
-Index::~Index() {
+GitIndex::~GitIndex() {
   git_index_free(this->raw);
 }
 
-void Index::Initialize(Handle<v8::Object> target) {
+void GitIndex::Initialize(Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
@@ -32,7 +35,6 @@ void Index::Initialize(Handle<v8::Object> target) {
   tpl->SetClassName(String::NewSymbol("Index"));
 
   NODE_SET_METHOD(tpl, "open", Open);
-  NODE_SET_METHOD(tpl, "new", New);
   NODE_SET_PROTOTYPE_METHOD(tpl, "owner", Owner);
   NODE_SET_PROTOTYPE_METHOD(tpl, "read", Read);
   NODE_SET_PROTOTYPE_METHOD(tpl, "write", Write);
@@ -54,25 +56,25 @@ void Index::Initialize(Handle<v8::Object> target) {
   target->Set(String::NewSymbol("Index"), constructor_template);
 }
 
-Handle<Value> Index::New(const Arguments& args) {
+Handle<Value> GitIndex::New(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
     return ThrowException(Exception::Error(String::New("git_index is required.")));
   }
 
-  Index* object = new Index((git_index *) External::Unwrap(args[0]));
+  GitIndex* object = new GitIndex((git_index *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
   return scope.Close(args.This());
 }
 
-git_index *Index::GetValue() {
+git_index *GitIndex::GetValue() {
   return this->raw;
 }
 
 
-Handle<Value> Index::Open(const Arguments& args) {
+Handle<Value> GitIndex::Open(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
@@ -95,25 +97,25 @@ Handle<Value> Index::Open(const Arguments& args) {
   return Undefined();
 }
 
-void Index::OpenWork(uv_work_t *req) {
+void GitIndex::OpenWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
-  int result = git_index_open(
+  int out = git_index_open(
     &baton->out, 
     baton->index_path
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
 
-void Index::OpenAfterWork(uv_work_t *req) {
+void GitIndex::OpenAfterWork(uv_work_t *req) {
   HandleScope scope;
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
   TryCatch try_catch;
   if (!baton->error) {
     Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = Index::constructor_template->NewInstance(1, argv);
+    Handle<Object> out = GitIndex::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
       out
@@ -135,37 +137,22 @@ void Index::OpenAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Handle<Value> Index::New(const Arguments& args) {
-  HandleScope scope;
-  git_index * out;
-
-  int result = git_index_new(
-&
-    out
-  );
-
-  if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
-  }
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)out) };
-  return scope.Close(Index::constructor_template->NewInstance(1, argv));
-}
-
-Handle<Value> Index::Owner(const Arguments& args) {
+Handle<Value> GitIndex::Owner(const Arguments& args) {
   HandleScope scope;
 
-  git_repository * result = git_index_owner(
+git_repository *  result = git_index_owner(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
+
 
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)result) };
   return scope.Close(GitRepo::constructor_template->NewInstance(1, argv));
 }
 
-Handle<Value> Index::Read(const Arguments& args) {
+Handle<Value> GitIndex::Read(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsFunction()) {
@@ -176,7 +163,7 @@ Handle<Value> Index::Read(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
-  baton->index = ObjectWrap::Unwrap<Index>(args.This())->GetValue();
+  baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ReadWork, (uv_after_work_cb)ReadAfterWork);
@@ -184,7 +171,7 @@ Handle<Value> Index::Read(const Arguments& args) {
   return Undefined();
 }
 
-void Index::ReadWork(uv_work_t *req) {
+void GitIndex::ReadWork(uv_work_t *req) {
   ReadBaton *baton = static_cast<ReadBaton *>(req->data);
   int result = git_index_read(
     baton->index
@@ -194,7 +181,7 @@ void Index::ReadWork(uv_work_t *req) {
   }
 }
 
-void Index::ReadAfterWork(uv_work_t *req) {
+void GitIndex::ReadAfterWork(uv_work_t *req) {
   HandleScope scope;
   ReadBaton *baton = static_cast<ReadBaton *>(req->data);
 
@@ -222,7 +209,7 @@ void Index::ReadAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Handle<Value> Index::Write(const Arguments& args) {
+Handle<Value> GitIndex::Write(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsFunction()) {
@@ -233,7 +220,7 @@ Handle<Value> Index::Write(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
-  baton->index = ObjectWrap::Unwrap<Index>(args.This())->GetValue();
+  baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, WriteWork, (uv_after_work_cb)WriteAfterWork);
@@ -241,7 +228,7 @@ Handle<Value> Index::Write(const Arguments& args) {
   return Undefined();
 }
 
-void Index::WriteWork(uv_work_t *req) {
+void GitIndex::WriteWork(uv_work_t *req) {
   WriteBaton *baton = static_cast<WriteBaton *>(req->data);
   int result = git_index_write(
     baton->index
@@ -251,7 +238,7 @@ void Index::WriteWork(uv_work_t *req) {
   }
 }
 
-void Index::WriteAfterWork(uv_work_t *req) {
+void GitIndex::WriteAfterWork(uv_work_t *req) {
   HandleScope scope;
   WriteBaton *baton = static_cast<WriteBaton *>(req->data);
 
@@ -279,7 +266,7 @@ void Index::WriteAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Handle<Value> Index::ReadTree(const Arguments& args) {
+Handle<Value> GitIndex::ReadTree(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -293,7 +280,7 @@ Handle<Value> Index::ReadTree(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
-  baton->index = ObjectWrap::Unwrap<Index>(args.This())->GetValue();
+  baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->treeReference = Persistent<Value>::New(args[0]);
   baton->tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
@@ -303,7 +290,7 @@ Handle<Value> Index::ReadTree(const Arguments& args) {
   return Undefined();
 }
 
-void Index::ReadTreeWork(uv_work_t *req) {
+void GitIndex::ReadTreeWork(uv_work_t *req) {
   ReadTreeBaton *baton = static_cast<ReadTreeBaton *>(req->data);
   int result = git_index_read_tree(
     baton->index, 
@@ -314,7 +301,7 @@ void Index::ReadTreeWork(uv_work_t *req) {
   }
 }
 
-void Index::ReadTreeAfterWork(uv_work_t *req) {
+void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
   HandleScope scope;
   ReadTreeBaton *baton = static_cast<ReadTreeBaton *>(req->data);
 
@@ -343,7 +330,7 @@ void Index::ReadTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Handle<Value> Index::WriteTree(const Arguments& args) {
+Handle<Value> GitIndex::WriteTree(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsFunction()) {
@@ -354,7 +341,7 @@ Handle<Value> Index::WriteTree(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
-  baton->index = ObjectWrap::Unwrap<Index>(args.This())->GetValue();
+  baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, WriteTreeWork, (uv_after_work_cb)WriteTreeAfterWork);
@@ -362,18 +349,18 @@ Handle<Value> Index::WriteTree(const Arguments& args) {
   return Undefined();
 }
 
-void Index::WriteTreeWork(uv_work_t *req) {
+void GitIndex::WriteTreeWork(uv_work_t *req) {
   WriteTreeBaton *baton = static_cast<WriteTreeBaton *>(req->data);
-  int result = git_index_write_tree(
+  int out = git_index_write_tree(
     baton->out, 
     baton->index
   );
-  if (result != GIT_OK) {
+  if (out != GIT_OK) {
     baton->error = giterr_last();
   }
 }
 
-void Index::WriteTreeAfterWork(uv_work_t *req) {
+void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
   HandleScope scope;
   WriteTreeBaton *baton = static_cast<WriteTreeBaton *>(req->data);
 
@@ -401,31 +388,33 @@ void Index::WriteTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Handle<Value> Index::Entrycount(const Arguments& args) {
+Handle<Value> GitIndex::Entrycount(const Arguments& args) {
   HandleScope scope;
 
-  size_t result = git_index_entrycount(
+size_t  result = git_index_entrycount(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(size_t::constructor_template->NewInstance(1, argv));
+
+  return scope.Close(Uint32::New(result));
 }
 
-Handle<Value> Index::Clear(const Arguments& args) {
+Handle<Value> GitIndex::Clear(const Arguments& args) {
   HandleScope scope;
 
-  void result = git_index_clear(
+git_index_clear(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
+
 
   return Undefined();
 }
 
-Handle<Value> Index::Remove(const Arguments& args) {
+Handle<Value> GitIndex::Remove(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
@@ -436,22 +425,26 @@ Handle<Value> Index::Remove(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
-  int result = git_index_remove(
+int  result = git_index_remove(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
 , 
+
     stringArgToString(args[0]->ToString()).c_str()
 , 
+
   (int) args[1]->ToInt32()->Value()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Int32::New(result));
 }
 
-Handle<Value> Index::RemoveDirectory(const Arguments& args) {
+Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
@@ -462,22 +455,26 @@ Handle<Value> Index::RemoveDirectory(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
-  int result = git_index_remove_directory(
+int  result = git_index_remove_directory(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
 , 
+
     stringArgToString(args[0]->ToString()).c_str()
 , 
+
   (int) args[1]->ToInt32()->Value()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Int32::New(result));
 }
 
-Handle<Value> Index::AddBypath(const Arguments& args) {
+Handle<Value> GitIndex::AddBypath(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
@@ -491,7 +488,7 @@ Handle<Value> Index::AddBypath(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
-  baton->index = ObjectWrap::Unwrap<Index>(args.This())->GetValue();
+  baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->pathReference = Persistent<Value>::New(args[0]);
   String::Utf8Value path(args[0]->ToString());
   baton->path = strdup(*path);
@@ -502,7 +499,7 @@ Handle<Value> Index::AddBypath(const Arguments& args) {
   return Undefined();
 }
 
-void Index::AddBypathWork(uv_work_t *req) {
+void GitIndex::AddBypathWork(uv_work_t *req) {
   AddBypathBaton *baton = static_cast<AddBypathBaton *>(req->data);
   int result = git_index_add_bypath(
     baton->index, 
@@ -513,7 +510,7 @@ void Index::AddBypathWork(uv_work_t *req) {
   }
 }
 
-void Index::AddBypathAfterWork(uv_work_t *req) {
+void GitIndex::AddBypathAfterWork(uv_work_t *req) {
   HandleScope scope;
   AddBypathBaton *baton = static_cast<AddBypathBaton *>(req->data);
 
@@ -543,30 +540,33 @@ void Index::AddBypathAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Handle<Value> Index::RemoveBypath(const Arguments& args) {
+Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-  int result = git_index_remove_bypath(
+int  result = git_index_remove_bypath(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
 , 
+
     stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Int32::New(result));
 }
 
-Handle<Value> Index::Find(const Arguments& args) {
+Handle<Value> GitIndex::Find(const Arguments& args) {
   HandleScope scope;
 
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  if (args.Length() == 0 || !args[0]->IsUint32()) {
     return ThrowException(Exception::Error(String::New("size_t at_pos is required.")));
   }
 
@@ -574,59 +574,70 @@ Handle<Value> Index::Find(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-  int result = git_index_find(
+int  result = git_index_find(
 
-    ObjectWrap::Unwrap<size_t>(args[0]->ToObject())->GetValue()
+
+  (size_t *) args[0]->ToUint32()->Value()
 , 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
 , 
+
     stringArgToString(args[1]->ToString()).c_str()
   );
+
 
   return scope.Close(Int32::New(result));
 }
 
-Handle<Value> Index::ConflictRemove(const Arguments& args) {
+Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-  int result = git_index_conflict_remove(
+int  result = git_index_conflict_remove(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
 , 
+
     stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   return scope.Close(Int32::New(result));
 }
 
-Handle<Value> Index::ConflictCleanup(const Arguments& args) {
+Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
   HandleScope scope;
 
-  void result = git_index_conflict_cleanup(
+git_index_conflict_cleanup(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
+
 
   return Undefined();
 }
 
-Handle<Value> Index::HasConflicts(const Arguments& args) {
+Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   HandleScope scope;
 
-  int result = git_index_has_conflicts(
+int  result = git_index_has_conflicts(
 
-    ObjectWrap::Unwrap<Index>(args.This())->GetValue()
+
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
+
 
   return scope.Close(Int32::New(result));
 }
 
 
-Persistent<Function> Index::constructor_template;
+Persistent<Function> GitIndex::constructor_template;

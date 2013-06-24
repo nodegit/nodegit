@@ -65,16 +65,19 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   git_oid * out;
   out = (git_oid *)malloc(sizeof(git_oid));
 
-  int result = git_oid_fromstr(
+int  result = git_oid_fromstr(
+
 
     out
 , 
+
     stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
+
   // XXX need to copy object?
   Handle<Value> argv[1] = { External::New((void *)out) };
   return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
@@ -83,10 +86,12 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
 Handle<Value> GitOid::Sha(const Arguments& args) {
   HandleScope scope;
 
-  char * result = git_oid_allocfmt(
+char *  result = git_oid_allocfmt(
+
 
     ObjectWrap::Unwrap<GitOid>(args.This())->GetValue()
   );
+
 
   return scope.Close(String::New(result));
 }
