@@ -1472,7 +1472,6 @@
             "jsClassName": "Number"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -1508,7 +1507,6 @@
             "jsClassName": "Number"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -1580,7 +1578,7 @@
           },
           {
             "name": "parents",
-            "cType": "(const git_commit *)[]",
+            "cType": "const git_commit **",
             "cppClassName": "Array",
             "jsClassName": "Array"
           }
@@ -1675,7 +1673,6 @@
     "jsClassName": "Common",
     "cppClassName": "Common",
     "cType": "git_common",
-    "freeFunctionName": "git_common_free",
     "functions": [
       {
         "cFunctionName": "git_libgit2_version",
@@ -3930,7 +3927,7 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "open",
@@ -3973,6 +3970,7 @@
             "jsClassName": "Index"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -4018,6 +4016,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4046,6 +4045,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4068,7 +4068,7 @@
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "read",
@@ -4090,7 +4090,7 @@
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "write",
@@ -4118,7 +4118,7 @@
             "jsClassName": "Tree"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "readTree",
@@ -4143,12 +4143,13 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "writeTree",
         "cppFunctionName": "WriteTree",
         "return": {
@@ -4180,6 +4181,7 @@
             "jsClassName": "Repository"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -4252,6 +4254,7 @@
             "jsClassName": "size_t"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4286,6 +4289,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4382,6 +4386,7 @@
             "jsClassName": "IndexEntry"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4403,6 +4408,7 @@
             "jsClassName": "IndexEntry"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -4431,10 +4437,10 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "addBypath",
+        "jsFunctionName": "addByPath",
         "cppFunctionName": "AddBypath",
         "return": {
           "cType": "int",
@@ -4462,7 +4468,7 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "removeBypath",
+        "jsFunctionName": "removeByPath",
         "cppFunctionName": "RemoveBypath",
         "return": {
           "cType": "int",
@@ -4483,7 +4489,8 @@
             "name": "index",
             "cType": "git_index *",
             "cppClassName": "Index",
-            "jsClassName": "Index"
+            "jsClassName": "Index",
+            "isSelf": true
           },
           {
             "name": "path",
@@ -4494,13 +4501,12 @@
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "find",
         "cppFunctionName": "Find",
         "return": {
           "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
+          "cppClassName": "Int32"
         }
       },
       {
@@ -4532,6 +4538,7 @@
             "jsClassName": "IndexEntry"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4577,6 +4584,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -4656,8 +4664,7 @@
         "cppFunctionName": "HasConflicts",
         "return": {
           "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
+          "cppClassName": "Int32"
         }
       },
       {
@@ -4671,6 +4678,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4704,6 +4712,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -4732,6 +4741,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4760,6 +4770,7 @@
             "jsClassName": "size_t"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4824,6 +4835,7 @@
             "jsClassName": "Oid"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4852,6 +4864,7 @@
             "jsClassName": "size_t"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4874,6 +4887,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -5721,7 +5735,6 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8182,7 +8195,8 @@
     "filename": "reference.h",
     "dependencies": [
       "../include/repo.h",
-      "../include/oid.h"
+      "../include/oid.h",
+      "../include/object.h"
     ],
     "jsClassName": "Reference",
     "cppClassName": "GitReference",
@@ -8292,7 +8306,6 @@
             "jsClassName": "Number"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -8339,7 +8352,6 @@
             "jsClassName": "Number"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -8516,12 +8528,11 @@
             "jsClassName": "String"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "gitReferenceSymbolicSetTarget",
-        "cppFunctionName": "GitReferenceSymbolicSetTarget",
+        "jsFunctionName": "setSymbolicTarget",
+        "cppFunctionName": "SetSymbolicTarget",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -8552,7 +8563,6 @@
             "jsClassName": "Oid"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8594,7 +8604,6 @@
             "jsClassName": "Number"
           }
         ],
-        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8617,7 +8626,6 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8835,7 +8843,6 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8858,7 +8865,6 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8877,14 +8883,14 @@
             "name": "buffer_out",
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char",
+            "jsClassName": "String",
             "isSelf": true
           },
           {
             "name": "buffer_size",
             "cType": "size_t",
-            "cppClassName": "size_t",
-            "jsClassName": "size_t"
+            "cppClassName": "Integer",
+            "jsClassName": "Number"
           },
           {
             "name": "name",
@@ -8931,11 +8937,10 @@
           {
             "name": "type",
             "cType": "git_otype",
-            "cppClassName": "Otype",
-            "jsClassName": "Otype"
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8957,7 +8962,6 @@
             "jsClassName": "String"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -9218,7 +9222,7 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "create",

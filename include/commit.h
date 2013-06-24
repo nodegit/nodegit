@@ -37,7 +37,9 @@ class GitCommit : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_commit * commit;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> idReference;
       const git_oid * id;
       Persistent<Function> callback;
     };
@@ -56,6 +58,7 @@ class GitCommit : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_tree * tree_out;
+      Persistent<Value> commitReference;
       const git_commit * commit;
       Persistent<Function> callback;
     };
@@ -69,10 +72,14 @@ class GitCommit : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_commit * out;
+      Persistent<Value> commitReference;
       git_commit * commit;
+      Persistent<Value> nReference;
       unsigned int n;
       Persistent<Function> callback;
     };
+    static Handle<Value> ParentId(const Arguments& args);
+    static Handle<Value> NthGenAncestor(const Arguments& args);
     git_commit *raw;
 };
 

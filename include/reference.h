@@ -37,7 +37,9 @@ class GitReference : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_reference * out;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> nameReference;
       const char * name;
       Persistent<Function> callback;
     };
@@ -49,10 +51,14 @@ class GitReference : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_oid * out;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> nameReference;
       const char * name;
       Persistent<Function> callback;
     };
+    static Handle<Value> CreateSymbolic(const Arguments& args);
+    static Handle<Value> Create(const Arguments& args);
     static Handle<Value> Oid(const Arguments& args);
     static Handle<Value> Name(const Arguments& args);
     static Handle<Value> Type(const Arguments& args);
@@ -64,9 +70,43 @@ class GitReference : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_reference * out;
+      Persistent<Value> refReference;
       const git_reference * ref;
       Persistent<Function> callback;
     };
+    static Handle<Value> SetSymbolicTarget(const Arguments& args);
+    static Handle<Value> setTarget(const Arguments& args);
+    static Handle<Value> Rename(const Arguments& args);
+    static void RenameWork(uv_work_t* req);
+    static void RenameAfterWork(uv_work_t* req);
+
+    struct RenameBaton {
+      uv_work_t request;
+      const git_error* error;
+      git_reference * out;
+      Persistent<Value> refReference;
+      git_reference * ref;
+      Persistent<Value> new_nameReference;
+      const char * new_name;
+      Persistent<Value> forceReference;
+      int force;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> Delete(const Arguments& args);
+    static void DeleteWork(uv_work_t* req);
+    static void DeleteAfterWork(uv_work_t* req);
+
+    struct DeleteBaton {
+      uv_work_t request;
+      const git_error* error;
+      Persistent<Value> refReference;
+      git_reference * ref;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> IsBranch(const Arguments& args);
+    static Handle<Value> IsRemote(const Arguments& args);
+    static Handle<Value> Peel(const Arguments& args);
+    static Handle<Value> IsValidName(const Arguments& args);
     git_reference *raw;
 };
 

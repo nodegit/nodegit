@@ -36,6 +36,7 @@ void GitObject::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "owner", Owner);
   NODE_SET_PROTOTYPE_METHOD(tpl, "peel", Peel);
 
 
@@ -80,13 +81,11 @@ Handle<Value> GitObject::Lookup(const Arguments& args) {
   LookupBaton* baton = new LookupBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->repoReference = Persistent<Value>::New(args[0]);
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->idReference = Persistent<Value>::New(args[1]);
   baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+  baton->typeReference = Persistent<Value>::New(args[2]);
   baton->type = (git_otype) args[2]->ToInt32()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
@@ -114,7 +113,6 @@ void GitObject::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->object) };
     Handle<Object> object = GitObject::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
@@ -132,7 +130,9 @@ void GitObject::LookupAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->repoReference.Dispose();
+  baton->idReference.Dispose();
+  baton->typeReference.Dispose();
   baton->callback.Dispose();
   delete baton;
 }
@@ -161,6 +161,19 @@ Handle<Value> GitObject::Type(const Arguments& args) {
   return scope.Close(Number::New(result));
 }
 
+Handle<Value> GitObject::Owner(const Arguments& args) {
+  HandleScope scope;
+
+  git_repository * result = git_object_owner(
+
+    ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
+  );
+
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)result) };
+  return scope.Close(GitRepo::constructor_template->NewInstance(1, argv));
+}
+
 Handle<Value> GitObject::Peel(const Arguments& args) {
   HandleScope scope;
 
@@ -174,8 +187,9 @@ Handle<Value> GitObject::Peel(const Arguments& args) {
   PeelBaton* baton = new PeelBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
+  baton->objectReference = Persistent<Value>::New(args.This());
   baton->object = ObjectWrap::Unwrap<GitObject>(args.This())->GetValue();
+  baton->target_typeReference = Persistent<Value>::New(args[0]);
   baton->target_type = (git_otype) args[0]->ToInt32()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -202,12 +216,11 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->peeled) };
-    Handle<Object> object = GitObject::constructor_template->NewInstance(1, argv);
+    Handle<Object> peeled = GitObject::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      peeled
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -220,7 +233,8 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->objectReference.Dispose();
+  baton->target_typeReference.Dispose();
   baton->callback.Dispose();
   delete baton;
 }

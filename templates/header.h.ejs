@@ -59,6 +59,7 @@ class <%- cppClassName %> : public ObjectWrap {
 <% if (arg.isReturn) { -%>
       <%- arg.cType.replace('**', '*') %> <%- arg.name %>;
 <% } else { -%>
+      Persistent<Value> <%- arg.name %>Reference;
       <%- arg.cType %> <%- arg.name %>;
 <% } -%>
 <% } -%>

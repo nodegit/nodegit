@@ -37,13 +37,17 @@ class GitObject : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_object * object;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> idReference;
       const git_oid * id;
+      Persistent<Value> typeReference;
       git_otype type;
       Persistent<Function> callback;
     };
     static Handle<Value> Oid(const Arguments& args);
     static Handle<Value> Type(const Arguments& args);
+    static Handle<Value> Owner(const Arguments& args);
     static Handle<Value> Peel(const Arguments& args);
     static void PeelWork(uv_work_t* req);
     static void PeelAfterWork(uv_work_t* req);
@@ -52,7 +56,9 @@ class GitObject : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_object * peeled;
+      Persistent<Value> objectReference;
       const git_object * object;
+      Persistent<Value> target_typeReference;
       git_otype target_type;
       Persistent<Function> callback;
     };

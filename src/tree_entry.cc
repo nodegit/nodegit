@@ -122,10 +122,9 @@ Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
   GetObjectBaton* baton = new GetObjectBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->repoReference = Persistent<Value>::New(args[0]);
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->entryReference = Persistent<Value>::New(args.This());
   baton->entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -152,12 +151,11 @@ void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->object_out) };
-    Handle<Object> object = GitObject::constructor_template->NewInstance(1, argv);
+    Handle<Object> object_out = GitObject::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      object_out
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -170,7 +168,8 @@ void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->repoReference.Dispose();
+  baton->entryReference.Dispose();
   baton->callback.Dispose();
   delete baton;
 }

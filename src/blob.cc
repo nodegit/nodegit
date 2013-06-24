@@ -82,12 +82,9 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   LookupBaton* baton = new LookupBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->repoReference = Persistent<Value>::New(args[0]);
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->idReference = Persistent<Value>::New(args[1]);
   baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -114,12 +111,11 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->blob) };
-    Handle<Object> object = GitBlob::constructor_template->NewInstance(1, argv);
+    Handle<Object> blob = GitBlob::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      blob
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -132,7 +128,8 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->repoReference.Dispose();
+  baton->idReference.Dispose();
   baton->callback.Dispose();
   delete baton;
 }
@@ -190,12 +187,10 @@ Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   CreateFromFileBaton* baton = new CreateFromFileBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->repoReference = Persistent<Value>::New(args[0]);
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->pathReference = Persistent<Value>::New(args[1]);
   String::Utf8Value path(args[1]->ToString());
-  // XXX FIXME remove strdup and use std::string
   baton->path = strdup(*path);
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -222,13 +217,11 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->id) };
-    Handle<Object> object = GitOid::constructor_template->NewInstance(1, argv);
-    // free((void *) baton->path);
+    Handle<Object> id = GitOid::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      id
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -241,9 +234,9 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->repoReference.Dispose();
+  baton->pathReference.Dispose();
   baton->callback.Dispose();
-
   delete baton->path;
   delete baton;
 }
@@ -267,11 +260,11 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   CreateFromBufferBaton* baton = new CreateFromBufferBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->repoReference = Persistent<Value>::New(args[0]);
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->bufferReference = Persistent<Value>::New(args[1]);
   baton->buffer = Buffer::Data(ObjectWrap::Unwrap<Buffer>(args[1]->ToObject()));
+  baton->lenReference = Persistent<Value>::New(args[2]);
   baton->len = (size_t) args[2]->ToNumber()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
@@ -299,12 +292,11 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->oid) };
-    Handle<Object> object = GitOid::constructor_template->NewInstance(1, argv);
+    Handle<Object> oid = GitOid::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      oid
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -317,7 +309,9 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->repoReference.Dispose();
+  baton->bufferReference.Dispose();
+  baton->lenReference.Dispose();
   baton->callback.Dispose();
   delete baton;
 }

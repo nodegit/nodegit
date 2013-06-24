@@ -36,8 +36,11 @@ exports.method = function(test){
 
 exports.message = function(test) {
   test.expect(3);
+  console.log(1)
   git.repo.open('../.git', function(error, repository) {
+    console.log(2, error, repository)
     repository.commit(historyCountKnownSHA, function(error, commit) {
+      console.log(3)
       var message = commit.message();
       test.equals(error, null, 'There should be no error');
       test.notEqual(message, null, 'Message should not be null');

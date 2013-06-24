@@ -37,6 +37,7 @@ class GitRepo : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_repository * out;
+      Persistent<Value> pathReference;
       const char * path;
       Persistent<Function> callback;
     };
@@ -48,7 +49,9 @@ class GitRepo : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_repository * out;
+      Persistent<Value> pathReference;
       const char * path;
+      Persistent<Value> is_bareReference;
       unsigned is_bare;
       Persistent<Function> callback;
     };

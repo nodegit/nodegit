@@ -72,9 +72,8 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   OpenBaton* baton = new OpenBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
+  baton->pathReference = Persistent<Value>::New(args[0]);
   String::Utf8Value path(args[0]->ToString());
-  // XXX FIXME remove strdup and use std::string
   baton->path = strdup(*path);
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -100,13 +99,11 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> object = GitRepo::constructor_template->NewInstance(1, argv);
-    // free((void *) baton->path);
+    Handle<Object> out = GitRepo::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      out
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -119,9 +116,8 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->pathReference.Dispose();
   baton->callback.Dispose();
-
   delete baton->path;
   delete baton;
 }
@@ -142,10 +138,10 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   InitBaton* baton = new InitBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
+  baton->pathReference = Persistent<Value>::New(args[0]);
   String::Utf8Value path(args[0]->ToString());
-  // XXX FIXME remove strdup and use std::string
   baton->path = strdup(*path);
+  baton->is_bareReference = Persistent<Value>::New(args[1]);
   baton->is_bare = (unsigned) args[1]->ToBoolean()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -172,13 +168,11 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> object = GitRepo::constructor_template->NewInstance(1, argv);
-    // free((void *) baton->path);
+    Handle<Object> out = GitRepo::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      out
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -191,9 +185,9 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->pathReference.Dispose();
+  baton->is_bareReference.Dispose();
   baton->callback.Dispose();
-
   delete baton->path;
   delete baton;
 }

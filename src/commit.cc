@@ -47,6 +47,8 @@ void GitCommit::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "treeId", TreeId);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parentCount", ParentCount);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "parentId", ParentId);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "nthGenAncestor", NthGenAncestor);
 
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -87,12 +89,9 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   LookupBaton* baton = new LookupBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->repoReference = Persistent<Value>::New(args[0]);
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  // XXX FIXME potential GC issue: if the argument gets GCd, the destructor could null out this object.
-  // Either ref the argument or copy?
+  baton->idReference = Persistent<Value>::New(args[1]);
   baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -119,12 +118,11 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->commit) };
-    Handle<Object> object = GitCommit::constructor_template->NewInstance(1, argv);
+    Handle<Object> commit = GitCommit::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      commit
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -137,7 +135,8 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->repoReference.Dispose();
+  baton->idReference.Dispose();
   baton->callback.Dispose();
   delete baton;
 }
@@ -235,7 +234,7 @@ Handle<Value> GitCommit::Tree(const Arguments& args) {
   TreeBaton* baton = new TreeBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
+  baton->commitReference = Persistent<Value>::New(args.This());
   baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
@@ -261,12 +260,11 @@ void GitCommit::TreeAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->tree_out) };
-    Handle<Object> object = GitTree::constructor_template->NewInstance(1, argv);
+    Handle<Object> tree_out = GitTree::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      tree_out
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -279,7 +277,7 @@ void GitCommit::TreeAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->commitReference.Dispose();
   baton->callback.Dispose();
   delete baton;
 }
@@ -321,8 +319,9 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
   ParentBaton* baton = new ParentBaton;
   baton->error = NULL;
   baton->request.data = baton;
-
+  baton->commitReference = Persistent<Value>::New(args.This());
   baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
+  baton->nReference = Persistent<Value>::New(args[0]);
   baton->n = (unsigned int) args[0]->ToUint32()->Value();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -349,12 +348,11 @@ void GitCommit::ParentAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-
     Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> object = GitCommit::constructor_template->NewInstance(1, argv);
+    Handle<Object> out = GitCommit::constructor_template->NewInstance(1, argv);
     Handle<Value> argv2[2] = {
       Local<Value>::New(Null()),
-      object
+      out
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
   } else {
@@ -367,9 +365,54 @@ void GitCommit::ParentAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-
+  baton->commitReference.Dispose();
+  baton->nReference.Dispose();
   baton->callback.Dispose();
   delete baton;
+}
+
+Handle<Value> GitCommit::ParentId(const Arguments& args) {
+  HandleScope scope;
+
+  if (args.Length() == 0 || !args[0]->IsUint32()) {
+    return ThrowException(Exception::Error(String::New("Number n is required.")));
+  }
+
+  const git_oid * result = git_commit_parent_id(
+
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+, 
+  (unsigned int) args[0]->ToUint32()->Value()
+  );
+
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)result) };
+  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+}
+
+Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
+  HandleScope scope;
+
+  if (args.Length() == 0 || !args[0]->IsUint32()) {
+    return ThrowException(Exception::Error(String::New("Number n is required.")));
+  }
+  git_commit * ancestor;
+
+  int result = git_commit_nth_gen_ancestor(
+&
+    ancestor
+, 
+    ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
+, 
+  (unsigned int) args[0]->ToUint32()->Value()
+  );
+
+  if (result != GIT_OK) {
+    return ThrowException(GitError::WrapError(giterr_last()));
+  }
+  // XXX need to copy object?
+  Handle<Value> argv[1] = { External::New((void *)ancestor) };
+  return scope.Close(GitCommit::constructor_template->NewInstance(1, argv));
 }
 
 

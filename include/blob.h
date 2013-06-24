@@ -37,7 +37,9 @@ class GitBlob : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_blob * blob;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> idReference;
       const git_oid * id;
       Persistent<Function> callback;
     };
@@ -52,7 +54,9 @@ class GitBlob : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_oid * id;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> pathReference;
       const char * path;
       Persistent<Function> callback;
     };
@@ -64,8 +68,11 @@ class GitBlob : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_oid * oid;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> bufferReference;
       const void * buffer;
+      Persistent<Value> lenReference;
       size_t len;
       Persistent<Function> callback;
     };

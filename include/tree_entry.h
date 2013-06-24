@@ -41,7 +41,9 @@ class GitTreeEntry : public ObjectWrap {
       uv_work_t request;
       const git_error* error;
       git_object * object_out;
+      Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Value> entryReference;
       const git_tree_entry * entry;
       Persistent<Function> callback;
     };
