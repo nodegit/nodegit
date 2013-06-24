@@ -12,7 +12,7 @@ repo.open( path.resolve( '../.git' ), function( err ) {
       commit = new git.Commit( repo );
 
   if( err ) { console.log( error.strError( err ) ); return; }
-  
+
   oid.mkstr( '2a900f56b6dc6cc285b4d25b2407d9a3dfe76002' );
 
   commit.lookup( repo, oid, function( err ) {

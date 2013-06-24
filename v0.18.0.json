@@ -11145,7 +11145,7 @@
   {
     "filename": "revwalk.h",
     "jsClassName": "Revwalk",
-    "cppClassName": "Revwalk",
+    "cppClassName": "GitRevwalk",
     "cType": "git_revwalk",
     "freeFunctionName": "git_revwalk_free",
     "functions": [
@@ -11156,7 +11156,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_revwalk **",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk"
           },
           {
@@ -11166,6 +11166,7 @@
             "jsClassName": "Repository"
           }
         ],
+        
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
@@ -11183,7 +11184,7 @@
           {
             "name": "walker",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           }
@@ -11204,7 +11205,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11232,7 +11233,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11260,7 +11261,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           }
@@ -11282,7 +11283,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11310,7 +11311,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11338,7 +11339,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           }
@@ -11360,7 +11361,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11388,7 +11389,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11423,7 +11424,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk"
           }
         ],
@@ -11444,7 +11445,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11471,7 +11472,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           },
@@ -11499,7 +11500,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk"
           }
         ],
@@ -11520,7 +11521,7 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "Revwalk",
+            "cppClassName": "GitRevwalk",
             "jsClassName": "Revwalk",
             "isSelf": true
           }
