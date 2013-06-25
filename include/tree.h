@@ -22,6 +22,8 @@ class GitTree : public ObjectWrap {
 
     git_tree *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitTree(git_tree *raw);
     ~GitTree();

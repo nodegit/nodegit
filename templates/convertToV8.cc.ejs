@@ -1,0 +1,10 @@
+<% toName = to.name || 'result' -%>
+<% if (to.cppClassName == "String") { -%>
+  to = <%- to.cppClassName %>::New(<%- toName %>);
+<% } else if (isV8Value(to.cppClassName)) { -%>
+  to = <%- to.cppClassName %>::New(<%- toName %>);
+<% } else if (to.cppClassName == "External") { -%>
+  to = External::New((void *)<%- toName %>);
+<% } else { -%>
+  to = <%- to.cppClassName %>::New((void *)<%- toName %>);
+<% } -%>

@@ -57,6 +57,12 @@ Handle<Value> GitObject::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitObject::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitObject::constructor_template->NewInstance(1, argv));
+}
+
 git_object *GitObject::GetValue() {
   return this->raw;
 }
@@ -64,8 +70,8 @@ git_object *GitObject::GetValue() {
 
 Handle<Value> GitObject::Lookup(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -74,6 +80,7 @@ Handle<Value> GitObject::Lookup(const Arguments& args) {
   if (args.Length() == 2 || !args[2]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number type is required.")));
   }
+
   if (args.Length() == 3 || !args[3]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -96,13 +103,13 @@ Handle<Value> GitObject::Lookup(const Arguments& args) {
 
 void GitObject::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int object = git_object_lookup(
+  int result = git_object_lookup(
     &baton->object, 
     baton->repo, 
     baton->id, 
     baton->type
   );
-  if (object != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -113,18 +120,19 @@ void GitObject::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->object) };
-    Handle<Object> object = GitObject::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitObject::New((void *)baton->object);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      object
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -139,53 +147,53 @@ void GitObject::LookupAfterWork(uv_work_t *req) {
 
 Handle<Value> GitObject::Oid(const Arguments& args) {
   HandleScope scope;
+  
 
   const git_oid * result = git_object_id(
-
-
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitOid::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitObject::Type(const Arguments& args) {
   HandleScope scope;
+  
 
   git_otype result = git_object_type(
-
-
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
   );
 
 
-  return scope.Close(Number::New(result));
+  Handle<Value> to;
+    to = Number::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitObject::Owner(const Arguments& args) {
   HandleScope scope;
+  
 
   git_repository * result = git_object_owner(
-
-
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitRepo::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitRepo::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitObject::Peel(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsInt32()) {
+  
+    if (args.Length() == 0 || !args[0]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number target_type is required.")));
   }
+
   if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -206,12 +214,12 @@ Handle<Value> GitObject::Peel(const Arguments& args) {
 
 void GitObject::PeelWork(uv_work_t *req) {
   PeelBaton *baton = static_cast<PeelBaton *>(req->data);
-  int peeled = git_object_peel(
+  int result = git_object_peel(
     &baton->peeled, 
     baton->object, 
     baton->target_type
   );
-  if (peeled != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -222,18 +230,19 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->peeled) };
-    Handle<Object> peeled = GitObject::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitObject::New((void *)baton->peeled);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      peeled
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -244,6 +253,5 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
-
 
 Persistent<Function> GitObject::constructor_template;

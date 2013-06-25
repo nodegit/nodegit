@@ -23,7 +23,13 @@
 #include "../include/revwalk.h"
 #include "../include/tree.h"
 #include "../include/tree_entry.h"
+#include "../include/diff_find_options.h"
+#include "../include/diff_options.h"
 #include "../include/diff_list.h"
+#include "../include/diff_range.h"
+#include "../include/diff_file.h"
+#include "../include/patch.h"
+#include "../include/delta.h"
 #include "../include/threads.h"
 #include "../include/index.h"
 #include "../include/tag.h"
@@ -50,7 +56,13 @@ extern "C" void init(Handle<v8::Object> target) {
   GitTree::Initialize(target);
   GitTreeEntry::Initialize(target);
 
+  GitDiffRange::Initialize(target);
+  GitDiffFindOptions::Initialize(target);
+  GitDiffOptions::Initialize(target);
   GitDiffList::Initialize(target);
+  GitPatch::Initialize(target);
+  GitDiffFile::Initialize(target);
+  GitDelta::Initialize(target);
 
   GitThreads::Initialize(target);
 

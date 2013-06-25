@@ -42,6 +42,13 @@ Handle<Value> Wrapper::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> Wrapper::New(void *raw) {
+  HandleScope scope;
+
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(Wrapper::constructor_template->NewInstance(1, argv));
+}
+
 void *Wrapper::GetValue() {
   return this->raw;
 }

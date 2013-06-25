@@ -22,6 +22,8 @@ class GitObject : public ObjectWrap {
 
     git_object *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitObject(git_object *raw);
     ~GitObject();

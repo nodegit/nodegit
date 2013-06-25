@@ -22,6 +22,8 @@ class GitTag : public ObjectWrap {
 
     git_tag *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitTag(git_tag *raw);
     ~GitTag();

@@ -2,8 +2,8 @@
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
 
-#ifndef GITDIFFLIST_H
-#define GITDIFFLIST_H
+#ifndef GITDIFF_H
+#define GITDIFF_H
 
 #include <v8.h>
 #include <node.h>
@@ -14,7 +14,7 @@
 using namespace node;
 using namespace v8;
 
-class GitDiffList : public ObjectWrap {
+class GitDiff : public ObjectWrap {
   public:
 
     static Persistent<Function> constructor_template;
@@ -22,11 +22,9 @@ class GitDiffList : public ObjectWrap {
 
     git_diff_list *GetValue();
 
-    static Handle<Value> New(void *raw);
-
   private:
-    GitDiffList(git_diff_list *raw);
-    ~GitDiffList();
+    GitDiff(git_diff_list *raw);
+    ~GitDiff();
 
     static Handle<Value> New(const Arguments& args);
 
@@ -101,9 +99,10 @@ class GitDiffList : public ObjectWrap {
     };
     static Handle<Value> Merge(const Arguments& args);
     static Handle<Value> FindSimilar(const Arguments& args);
-    static Handle<Value> Size(const Arguments& args);
+    static Handle<Value> StatusChar(const Arguments& args);
+    static Handle<Value> NumDeltas(const Arguments& args);
     static Handle<Value> NumDeltasOfType(const Arguments& args);
-    static Handle<Value> Patch(const Arguments& args);
+    static Handle<Value> GetPatch(const Arguments& args);
     git_diff_list *raw;
 };
 

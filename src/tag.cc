@@ -66,6 +66,12 @@ Handle<Value> GitTag::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitTag::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitTag::constructor_template->NewInstance(1, argv));
+}
+
 git_tag *GitTag::GetValue() {
   return this->raw;
 }
@@ -73,13 +79,14 @@ git_tag *GitTag::GetValue() {
 
 Handle<Value> GitTag::Lookup(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
+
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -100,12 +107,12 @@ Handle<Value> GitTag::Lookup(const Arguments& args) {
 
 void GitTag::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int out = git_tag_lookup(
+  int result = git_tag_lookup(
     &baton->out, 
     baton->repo, 
     baton->id
   );
-  if (out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -116,18 +123,19 @@ void GitTag::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = GitTag::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitTag::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -141,22 +149,22 @@ void GitTag::LookupAfterWork(uv_work_t *req) {
 
 Handle<Value> GitTag::Oid(const Arguments& args) {
   HandleScope scope;
+  
 
   const git_oid * result = git_tag_id(
-
-
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitOid::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTag::Target(const Arguments& args) {
   HandleScope scope;
-
+  
+  
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -175,11 +183,11 @@ Handle<Value> GitTag::Target(const Arguments& args) {
 
 void GitTag::TargetWork(uv_work_t *req) {
   TargetBaton *baton = static_cast<TargetBaton *>(req->data);
-  int target_out = git_tag_target(
+  int result = git_tag_target(
     &baton->target_out, 
     baton->tag
   );
-  if (target_out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -190,18 +198,19 @@ void GitTag::TargetAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->target_out) };
-    Handle<Object> target_out = GitObject::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitObject::New((void *)baton->target_out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      target_out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -214,77 +223,78 @@ void GitTag::TargetAfterWork(uv_work_t *req) {
 
 Handle<Value> GitTag::TargetId(const Arguments& args) {
   HandleScope scope;
+  
 
   const git_oid * result = git_tag_target_id(
-
-
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitOid::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTag::TargetType(const Arguments& args) {
   HandleScope scope;
+  
 
   git_otype result = git_tag_target_type(
-
-
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
 
-  return scope.Close(Int32::New(result));
+  Handle<Value> to;
+    to = Int32::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTag::Name(const Arguments& args) {
   HandleScope scope;
+  
 
   const char * result = git_tag_name(
-
-
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
 
-  return scope.Close(String::New(result));
+  Handle<Value> to;
+    to = String::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTag::Tagger(const Arguments& args) {
   HandleScope scope;
+  
 
   const git_signature * result = git_tag_tagger(
-
-
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitSignature::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitSignature::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTag::Message(const Arguments& args) {
   HandleScope scope;
+  
 
   const char * result = git_tag_message(
-
-
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
 
-  return scope.Close(String::New(result));
+  Handle<Value> to;
+    to = String::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTag::Create(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
@@ -302,6 +312,7 @@ Handle<Value> GitTag::Create(const Arguments& args) {
   if (args.Length() == 5 || !args[5]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
+
   if (args.Length() == 6 || !args[6]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -332,7 +343,7 @@ Handle<Value> GitTag::Create(const Arguments& args) {
 
 void GitTag::CreateWork(uv_work_t *req) {
   CreateBaton *baton = static_cast<CreateBaton *>(req->data);
-  int oid = git_tag_create(
+  int result = git_tag_create(
     baton->oid, 
     baton->repo, 
     baton->tag_name, 
@@ -341,7 +352,7 @@ void GitTag::CreateWork(uv_work_t *req) {
     baton->message, 
     baton->force
   );
-  if (oid != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -352,18 +363,19 @@ void GitTag::CreateAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->oid) };
-    Handle<Object> oid = GitOid::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitOid::New((void *)baton->oid);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      oid
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -383,8 +395,8 @@ void GitTag::CreateAfterWork(uv_work_t *req) {
 
 Handle<Value> GitTag::CreateLightweight(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
@@ -396,6 +408,7 @@ Handle<Value> GitTag::CreateLightweight(const Arguments& args) {
   if (args.Length() == 3 || !args[3]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
+
   if (args.Length() == 4 || !args[4]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -421,14 +434,14 @@ Handle<Value> GitTag::CreateLightweight(const Arguments& args) {
 
 void GitTag::CreateLightweightWork(uv_work_t *req) {
   CreateLightweightBaton *baton = static_cast<CreateLightweightBaton *>(req->data);
-  int oid = git_tag_create_lightweight(
+  int result = git_tag_create_lightweight(
     baton->oid, 
     baton->repo, 
     baton->tag_name, 
     baton->target, 
     baton->force
   );
-  if (oid != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -439,18 +452,19 @@ void GitTag::CreateLightweightAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->oid) };
-    Handle<Object> oid = GitOid::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitOid::New((void *)baton->oid);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      oid
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -467,56 +481,46 @@ void GitTag::CreateLightweightAfterWork(uv_work_t *req) {
 
 Handle<Value> GitTag::Delete(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
-
   if (args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("String tag_name is required.")));
   }
 
+
   int result = git_tag_delete(
-
-
     ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
-, 
-
-    stringArgToString(args[1]->ToString()).c_str()
+    , stringArgToString(args[1]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  return scope.Close(Int32::New(result));
+  return Undefined();
 }
 
 Handle<Value> GitTag::Peel(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Tag tag is required.")));
   }
-  git_object * tag_target_out;
+
+  git_object *tag_target_out = NULL;
 
   int result = git_tag_peel(
-
-&
-    tag_target_out
-, 
-
-    ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue()
+    &tag_target_out
+    , ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)tag_target_out) };
-  return scope.Close(GitObject::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitObject::New((void *)tag_target_out);
+  return scope.Close(to);
 }
-
 
 Persistent<Function> GitTag::constructor_template;

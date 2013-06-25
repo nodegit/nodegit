@@ -52,6 +52,12 @@ Handle<Value> GitTime::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitTime::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitTime::constructor_template->NewInstance(1, argv));
+}
+
 git_time *GitTime::GetValue() {
   return this->raw;
 }
@@ -59,15 +65,24 @@ git_time *GitTime::GetValue() {
 
 Handle<Value> GitTime::Time(const Arguments& args) {
   HandleScope scope;
-  git_time_t field = ObjectWrap::Unwrap<GitTime>(args.This())->GetValue()->time;
+    Handle<Value> to;
 
-  return scope.Close(Integer::New(field));
+  git_time_t time =
+    ObjectWrap::Unwrap<GitTime>(args.This())->GetValue()->time;
+
+    to = Integer::New(time);
+  return scope.Close(to);
 }
+
 Handle<Value> GitTime::Offset(const Arguments& args) {
   HandleScope scope;
-  int field = ObjectWrap::Unwrap<GitTime>(args.This())->GetValue()->offset;
+    Handle<Value> to;
 
-  return scope.Close(Int32::New(field));
+  int offset =
+    ObjectWrap::Unwrap<GitTime>(args.This())->GetValue()->offset;
+
+    to = Int32::New(offset);
+  return scope.Close(to);
 }
 
 Persistent<Function> GitTime::constructor_template;

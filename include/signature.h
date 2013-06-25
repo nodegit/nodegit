@@ -22,6 +22,8 @@ class GitSignature : public ObjectWrap {
 
     git_signature *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitSignature(git_signature *raw);
     ~GitSignature();

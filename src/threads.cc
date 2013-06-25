@@ -29,6 +29,7 @@ void GitThreads::Initialize(Handle<v8::Object> target) {
 
 Handle<Value> GitThreads::Init(const Arguments& args) {
   HandleScope scope;
+  
 
   int result = git_threads_init(
   );
@@ -37,11 +38,12 @@ Handle<Value> GitThreads::Init(const Arguments& args) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  return scope.Close(Int32::New(result));
+  return Undefined();
 }
 
 Handle<Value> GitThreads::Shutdown(const Arguments& args) {
   HandleScope scope;
+  
 
   git_threads_shutdown(
   );
@@ -49,5 +51,4 @@ Handle<Value> GitThreads::Shutdown(const Arguments& args) {
 
   return Undefined();
 }
-
 

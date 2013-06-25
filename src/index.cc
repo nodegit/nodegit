@@ -69,6 +69,12 @@ Handle<Value> GitIndex::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitIndex::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitIndex::constructor_template->NewInstance(1, argv));
+}
+
 git_index *GitIndex::GetValue() {
   return this->raw;
 }
@@ -76,10 +82,11 @@ git_index *GitIndex::GetValue() {
 
 Handle<Value> GitIndex::Open(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+  
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String index_path is required.")));
   }
+
   if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -99,11 +106,11 @@ Handle<Value> GitIndex::Open(const Arguments& args) {
 
 void GitIndex::OpenWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
-  int out = git_index_open(
+  int result = git_index_open(
     &baton->out, 
     baton->index_path
   );
-  if (out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -114,18 +121,19 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = GitIndex::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitIndex::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -139,22 +147,22 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
 
 Handle<Value> GitIndex::Owner(const Arguments& args) {
   HandleScope scope;
+  
 
   git_repository * result = git_index_owner(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitRepo::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitRepo::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitIndex::Read(const Arguments& args) {
   HandleScope scope;
-
+  
+  
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -189,16 +197,16 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
   if (!baton->error) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
-    Handle<Value> argv2[2] = {
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -211,7 +219,8 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
 
 Handle<Value> GitIndex::Write(const Arguments& args) {
   HandleScope scope;
-
+  
+  
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -246,16 +255,16 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
   if (!baton->error) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
-    Handle<Value> argv2[2] = {
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -268,10 +277,11 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
 
 Handle<Value> GitIndex::ReadTree(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Tree tree is required.")));
   }
+
   if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -309,16 +319,16 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
   if (!baton->error) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
-    Handle<Value> argv2[2] = {
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -332,7 +342,8 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
 
 Handle<Value> GitIndex::WriteTree(const Arguments& args) {
   HandleScope scope;
-
+  
+  
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -351,11 +362,11 @@ Handle<Value> GitIndex::WriteTree(const Arguments& args) {
 
 void GitIndex::WriteTreeWork(uv_work_t *req) {
   WriteTreeBaton *baton = static_cast<WriteTreeBaton *>(req->data);
-  int out = git_index_write_tree(
+  int result = git_index_write_tree(
     baton->out, 
     baton->index
   );
-  if (out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -366,18 +377,19 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = GitOid::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitOid::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -390,23 +402,23 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
 
 Handle<Value> GitIndex::Entrycount(const Arguments& args) {
   HandleScope scope;
+  
 
   size_t result = git_index_entrycount(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
 
-  return scope.Close(Uint32::New(result));
+  Handle<Value> to;
+    to = Uint32::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitIndex::Clear(const Arguments& args) {
   HandleScope scope;
+  
 
   git_index_clear(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
@@ -416,70 +428,57 @@ Handle<Value> GitIndex::Clear(const Arguments& args) {
 
 Handle<Value> GitIndex::Remove(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
-
   if (args.Length() == 1 || !args[1]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
+
   int result = git_index_remove(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
-, 
-
-    stringArgToString(args[0]->ToString()).c_str()
-, 
-
-  (int) args[1]->ToInt32()->Value()
+    , stringArgToString(args[0]->ToString()).c_str()
+    , (int) args[1]->ToInt32()->Value()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  return scope.Close(Int32::New(result));
+  return Undefined();
 }
 
 Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String dir is required.")));
   }
-
   if (args.Length() == 1 || !args[1]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
+
   int result = git_index_remove_directory(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
-, 
-
-    stringArgToString(args[0]->ToString()).c_str()
-, 
-
-  (int) args[1]->ToInt32()->Value()
+    , stringArgToString(args[0]->ToString()).c_str()
+    , (int) args[1]->ToInt32()->Value()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  return scope.Close(Int32::New(result));
+  return Undefined();
 }
 
 Handle<Value> GitIndex::AddBypath(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+  
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
+
   if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -518,16 +517,16 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
   if (!baton->error) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
-    Handle<Value> argv2[2] = {
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -542,83 +541,69 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
 
 Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
+
   int result = git_index_remove_bypath(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
-, 
-
-    stringArgToString(args[0]->ToString()).c_str()
+    , stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  return scope.Close(Int32::New(result));
+  return Undefined();
 }
 
 Handle<Value> GitIndex::Find(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsUint32()) {
+    if (args.Length() == 0 || !args[0]->IsUint32()) {
     return ThrowException(Exception::Error(String::New("Number at_pos is required.")));
   }
-
   if (args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
+
   int result = git_index_find(
-
-
-  (size_t *) args[0]->ToUint32()->Value()
-, 
-
-    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
-, 
-
-    stringArgToString(args[1]->ToString()).c_str()
+    (size_t *) args[0]->ToUint32()->Value()
+    , ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
+    , stringArgToString(args[1]->ToString()).c_str()
   );
 
 
-  return scope.Close(Int32::New(result));
+  Handle<Value> to;
+    to = Int32::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
+
   int result = git_index_conflict_remove(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
-, 
-
-    stringArgToString(args[0]->ToString()).c_str()
+    , stringArgToString(args[0]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  return scope.Close(Int32::New(result));
+  return Undefined();
 }
 
 Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
   HandleScope scope;
+  
 
   git_index_conflict_cleanup(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
@@ -628,16 +613,16 @@ Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
 
 Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   HandleScope scope;
+  
 
   int result = git_index_has_conflicts(
-
-
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
 
-  return scope.Close(Int32::New(result));
+  Handle<Value> to;
+    to = Int32::New(result);
+  return scope.Close(to);
 }
-
 
 Persistent<Function> GitIndex::constructor_template;

@@ -92,6 +92,12 @@ Handle<Value> <%- cppClassName %>::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> <%- cppClassName %>::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(<%- cppClassName %>::constructor_template->NewInstance(1, argv));
+}
+
 <%- cType %> *<%- cppClassName %>::GetValue() {
   return this->raw;
 }
@@ -121,32 +127,21 @@ void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
     var functionInfo = functions[i];
     if (functionInfo.ignore) continue;
 
-    var result = null;
+    var returns = [];
     for (var i = 0; i < functionInfo.args.length; i++) {
       var arg = functionInfo.args[i];
-      if (arg.isReturn) result = arg;
+      if (arg.isReturn) returns.push(arg);
     }
-    if (!result) result = functionInfo.return;
-    var resultName = result.name || 'result';
+    if (!returns.length && !functionInfo.return.isErrorCode && functionInfo.return.cType != "void") returns.push(functionInfo.return);
 -%>
 
 <% if (functionInfo.isAsync) { -%>
 Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
   HandleScope scope;
+  <% var jsArg; %>
+  <% include templates/guardArguments.cc.ejs -%>
 
-<%
-  for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
-    var arg = functionInfo.args[i];
-    if (arg.isReturn || arg.isSelf) continue;
--%>
-  if (args.Length() == <%- j %> || !args[<%- j %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
-    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> <%- arg.name %> is required.")));
-  }
-<%
-    j++;
-  }
--%>
-  if (args.Length() == <%- j %> || !args[<%- j %>]->IsFunction()) {
+  if (args.Length() == <%- jsArg %> || !args[<%- jsArg %>]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
@@ -154,32 +149,40 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   baton->error = NULL;
   baton->request.data = baton;
 <%
-    for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
-      var arg = functionInfo.args[i];
+    for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
+      var arg = functionInfo.args[cArg];
 -%>
 <% if (!arg.isReturn) { -%>
 <% if (arg.isSelf) { -%>
   baton-><%- arg.name %>Reference = Persistent<Value>::New(args.This());
   baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
 <% } else { -%>
-  baton-><%- arg.name %>Reference = Persistent<Value>::New(args[<%- j %>]);
+  baton-><%- arg.name %>Reference = Persistent<Value>::New(args[<%- jsArg %>]);
+<% if (arg.isOptional) { -%>
+  if (args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
+  <% } -%>
 <% if (arg.cppClassName == 'String') { -%>
-  String::Utf8Value <%- arg.name %>(args[<%- j %>]->ToString());
+  String::Utf8Value <%- arg.name %>(args[<%- jsArg %>]->ToString());
   baton-><%- arg.name %> = strdup(*<%- arg.name %>);
 <% } else if (arg.cppClassName == 'Array') { -%>
-  baton-><%- arg.name %> = Array::Cast(*args[<%- j %>]);
+  baton-><%- arg.name %> = Array::Cast(*args[<%- jsArg %>]);
 <% } else if (arg.cppClassName == 'Buffer') { -%>
-  baton-><%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- j %>]->ToObject()));
+  baton-><%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- jsArg %>]->ToObject()));
 <% } else if (isV8Value(arg.cppClassName)) { -%>
-  baton-><%- arg.name %> = (<%- arg.cType %>) args[<%- j %>]->To<%- arg.cppClassName %>()->Value();
+  baton-><%- arg.name %> = (<%- arg.cType %>) args[<%- jsArg %>]->To<%- arg.cppClassName %>()->Value();
 <% } else { -%>
-  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- j %>]->ToObject())->GetValue();
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- jsArg %>]->ToObject())->GetValue();
+<% } -%>
+<% if (arg.isOptional) { -%>
+  } else {
+    baton-><%- arg.name %> = NULL;
+  }
 <% } -%>
 <% } -%>
-<% if (!(arg.isReturn || arg.isSelf)) j++ -%>
+<% if (!(arg.isReturn || arg.isSelf)) jsArg++; -%>
 <% } -%>
 <% } -%>
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- j %>]));
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- jsArg %>]));
 
   uv_queue_work(uv_default_loop(), &baton->request, <%- functionInfo.cppFunctionName %>Work, (uv_after_work_cb)<%- functionInfo.cppFunctionName %>AfterWork);
 
@@ -188,7 +191,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 
 void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req) {
   <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
-  <%- functionInfo.return.cType %> <%- resultName %> = <%- functionInfo.cFunctionName %>(
+  <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
 <%
   for (var i = 0; i < functionInfo.args.length; i++) {
     var arg = functionInfo.args[i];
@@ -197,11 +200,11 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req
 <% } -%>
   );
 <% if (functionInfo.return.isErrorCode) { -%>
-  if (<%- resultName %> != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 <% } else { -%>
-  baton->result = <%- resultName %>;
+  baton->result = result;
 <% } -%>
 }
 
@@ -211,22 +214,35 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
 
   TryCatch try_catch;
   if (!baton->error) {
-<% if (result.isErrorCode) { %>
-    Handle<Value> <%- resultName %> = Local<Value>::New(Undefined());
+<% if (!returns.length) { %>
+    Handle<Value> result = Local<Value>::New(Undefined());
+<% } else if (returns.length == 1) { -%>
+<% var to = returns[0]; to.name = "baton->" + to.name; -%>
+  Handle<Value> to;
+  <% include templates/convertToV8.cc.ejs -%>
+  Handle<Value> result = to;
 <% } else { -%>
-    Handle<Value> argv[1] = { External::New(baton-><%- result.name %>) };
-    Handle<Object> <%- resultName %> = <%- result.cppClassName %>::constructor_template->NewInstance(1, argv);
+  Handle<Object> result = Object::New();
+  Handle<Value> to;
+<%
+  for (r in returns) {
+    var to = returns[r];
+-%>
+    <% include templates/convertToV8.cc.ejs -%>
+    result->Set(String::NewSymbol("<%- to.jsName || to.name %>"), to);
+
 <% } -%>
-    Handle<Value> argv2[2] = {
+<% } -%>
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      <%- resultName %>
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -253,51 +269,39 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
 <% } else { -%>
 Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
   HandleScope scope;
-<%
-  for (var i = 0, j = 0; i < functionInfo.args.length ; i++) {
-    var arg = functionInfo.args[i];
-    if (arg.isReturn || arg.isSelf) continue;
--%>
+  <% include templates/guardArguments.cc.ejs -%>
 
-  if (args.Length() == <%- j %> || !args[<%- j %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
-    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> <%- arg.name %> is required.")));
-  }
-<%
-    j++;
-  }
--%>
 <%
   for (var i = 0; i < functionInfo.args.length; i++) {
     var arg = functionInfo.args[i];
     if (!arg.isReturn) continue;
 -%>
-  <%- arg.cType.replace('**', '*') %> <%- arg.name %>;
 <% if (arg.shouldAlloc) { -%>
-  <%- arg.name %> = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
-<% } -%>
-<% } -%>
-
-  <% if (result.cType != "void") { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(
-<%
-  for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
-    var arg = functionInfo.args[i];
--%>
-
-<% if (/\*\*/.test(arg.cType)) { %>&<% } %>
-<% if (arg.isSelf) { -%>
-    ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()
-<% } else if (arg.isReturn) { -%>
-    <%- arg.name %>
-<% } else if (arg.cppClassName == 'String') { -%>
-    stringArgToString(args[<%- j %>]->ToString()).c_str()
-<% } else if (isV8Value(arg.cppClassName)) { -%>
-  (<%- arg.cType %>) args[<%- j %>]->To<%- arg.cppClassName %>()->Value()
+  <%- arg.cType %><%- arg.name %> = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
 <% } else { -%>
-    ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- j %>]->ToObject())->GetValue()
+  <%- arg.cType.replace('*', '') %><%- arg.name %> = NULL;
 <% } -%>
-<% if (i < functionInfo.args.length - 1) { %>, <% } -%>
+<% } -%>
+
+  <% if (returns.length || functionInfo.return.isErrorCode) { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(
 <%
-    if (!(arg.isReturn || arg.isSelf)) j++;
+  for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
+    var arg = functionInfo.args[cArg];
+-%>
+    <% if (cArg > 0) { %>, <% } -%><% if (arg.isReturn && !arg.shouldAlloc) { %>&<% } -%>
+<% if (arg.isSelf) { -%>
+ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()
+<% } else if (arg.isReturn) { -%>
+<%- arg.name %>
+<% } else if (arg.cppClassName == 'String') { -%>
+stringArgToString(args[<%- jsArg %>]->ToString()).c_str()
+<% } else if (isV8Value(arg.cppClassName)) { -%>
+(<%- arg.cType %>) args[<%- jsArg %>]->To<%- arg.cppClassName %>()->Value()
+<% } else { -%>
+ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- jsArg %>]->ToObject())->GetValue()
+<% } -%>
+<%
+    if (!(arg.isReturn || arg.isSelf)) jsArg++;
   }
 -%>
   );
@@ -308,41 +312,47 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   }
 <% } -%>
 
-<% if (result.cType == "void") { -%>
+<% if (!returns.length) { -%>
   return Undefined();
-<% } else if (isV8Value(result.cppClassName)) { -%>
-  return scope.Close(<%- result.cppClassName %>::New(<%- resultName %>));
-<% } else if (result.cppClassName == "External") { -%>
-  return scope.Close(External::New((void *)<%- resultName %>));
+<% } else if (returns.length == 1) { -%>
+<% var to = returns[0]; -%>
+  Handle<Value> to;
+  <% include templates/convertToV8.cc.ejs -%>
+  return scope.Close(to);
 <% } else { -%>
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)<%- resultName %>) };
-  return scope.Close(<%- result.cppClassName %>::constructor_template->NewInstance(1, argv));
+  Handle<Object> toReturn = Object::New();
+  Handle<Value> to;
+<%
+  for (r in returns) {
+    var to = returns[r];
+-%>
+    <% include templates/convertToV8.cc.ejs -%>
+    toReturn->Set(String::NewSymbol("<%- to.jsName || to.name %>"), to);
+
+<% } -%>
+  return scope.Close(toReturn);
 <% } -%>
 }
 <% } -%>
 <% } -%>
 <% } -%>
-
 <% if (typeof fields != 'undefined') { -%>
 <%
   for (var i in fields) {
     var fieldInfo = fields[i];
     if (fieldInfo.ignore) continue;
 -%>
+
 Handle<Value> <%- cppClassName %>::<%- fieldInfo.cppFunctionName %>(const Arguments& args) {
   HandleScope scope;
-  <%- fieldInfo.cType %> field = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()-><%- fieldInfo.name %>;
+  <% var to = fieldInfo; -%>
+  Handle<Value> to;
 
-<% if (isV8Value(fieldInfo.cppClassName)) { -%>
-  return scope.Close(<%- fieldInfo.cppClassName %>::New(field));
-<% } else if (fieldInfo.cppClassName == "External") { -%>
-  return scope.Close(External::New((void *)<% if (!/\*/.test(fieldInfo.cType)) { %>&<% } %>field));
-<% } else { -%>
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)<% if (!/\*/.test(fieldInfo.cType)) { %>&<% } %>field) };
-  return scope.Close(<%- fieldInfo.cppClassName %>::constructor_template->NewInstance(1, argv));
-<% } -%>
+  <%- fieldInfo.cType %> <% if (!isV8Value(fieldInfo.cppClassName)) { %>*<% } %><%- fieldInfo.name %> =
+    <% if (!isV8Value(fieldInfo.cppClassName)) { %>&<% } %>ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()-><%- fieldInfo.name %>;
+
+  <% include templates/convertToV8.cc.ejs -%>
+  return scope.Close(to);
 }
 <% } -%>
 <% } -%>

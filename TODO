@@ -1,4 +1,6 @@
 - replace all argv crap with Wrap static methods for tighter instantiation
-- audit memory issues - explicit malloc and frees, copies
-- look into the v88 conversions crap
 - rename all async methods getXXX
+- convert to "ignore": true for all classes
+- reorder functions so the raw api is oo-like
+- rename files remove .h
+- remove stringArgToString invocation

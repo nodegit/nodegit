@@ -22,6 +22,8 @@ class GitBlob : public ObjectWrap {
 
     git_blob *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitBlob(git_blob *raw);
     ~GitBlob();

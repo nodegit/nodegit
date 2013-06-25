@@ -22,6 +22,8 @@ class <%- cppClassName %> : public ObjectWrap {
 
 <% if (typeof cType != 'undefined') { -%>
     <%- cType %> *GetValue();
+
+    static Handle<Value> New(void *raw);
 <% } -%>
 
   private:

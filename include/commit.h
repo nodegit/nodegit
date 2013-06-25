@@ -22,6 +22,8 @@ class GitCommit : public ObjectWrap {
 
     git_commit *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitCommit(git_commit *raw);
     ~GitCommit();

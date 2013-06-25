@@ -22,6 +22,8 @@ class GitTime : public ObjectWrap {
 
     git_time *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitTime(git_time *raw);
     ~GitTime();

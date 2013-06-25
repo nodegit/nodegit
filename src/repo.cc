@@ -54,6 +54,12 @@ Handle<Value> GitRepo::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitRepo::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitRepo::constructor_template->NewInstance(1, argv));
+}
+
 git_repository *GitRepo::GetValue() {
   return this->raw;
 }
@@ -61,10 +67,11 @@ git_repository *GitRepo::GetValue() {
 
 Handle<Value> GitRepo::Open(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+  
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
+
   if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -84,11 +91,11 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
 
 void GitRepo::OpenWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
-  int out = git_repository_open(
+  int result = git_repository_open(
     &baton->out, 
     baton->path
   );
-  if (out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -99,18 +106,19 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = GitRepo::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitRepo::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -124,13 +132,14 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 
 Handle<Value> GitRepo::Init(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+  
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsBoolean()) {
     return ThrowException(Exception::Error(String::New("Boolean is_bare is required.")));
   }
+
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -152,12 +161,12 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
 
 void GitRepo::InitWork(uv_work_t *req) {
   InitBaton *baton = static_cast<InitBaton *>(req->data);
-  int out = git_repository_init(
+  int result = git_repository_init(
     &baton->out, 
     baton->path, 
     baton->is_bare
   );
-  if (out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -168,18 +177,19 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = GitRepo::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitRepo::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -194,29 +204,30 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 
 Handle<Value> GitRepo::Path(const Arguments& args) {
   HandleScope scope;
+  
 
   const char * result = git_repository_path(
-
-
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
 
 
-  return scope.Close(String::New(result));
+  Handle<Value> to;
+    to = String::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitRepo::Workdir(const Arguments& args) {
   HandleScope scope;
+  
 
   const char * result = git_repository_workdir(
-
-
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
 
 
-  return scope.Close(String::New(result));
+  Handle<Value> to;
+    to = String::New(result);
+  return scope.Close(to);
 }
-
 
 Persistent<Function> GitRepo::constructor_template;

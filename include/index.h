@@ -22,6 +22,8 @@ class GitIndex : public ObjectWrap {
 
     git_index *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitIndex(git_index *raw);
     ~GitIndex();

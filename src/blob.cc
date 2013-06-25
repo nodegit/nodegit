@@ -61,6 +61,12 @@ Handle<Value> GitBlob::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitBlob::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitBlob::constructor_template->NewInstance(1, argv));
+}
+
 git_blob *GitBlob::GetValue() {
   return this->raw;
 }
@@ -68,13 +74,14 @@ git_blob *GitBlob::GetValue() {
 
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
+
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -95,12 +102,12 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
 
 void GitBlob::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int blob = git_blob_lookup(
+  int result = git_blob_lookup(
     &baton->blob, 
     baton->repo, 
     baton->id
   );
-  if (blob != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -111,18 +118,19 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->blob) };
-    Handle<Object> blob = GitBlob::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitBlob::New((void *)baton->blob);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      blob
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -136,56 +144,56 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
 
 Handle<Value> GitBlob::Oid(const Arguments& args) {
   HandleScope scope;
+  
 
   const git_oid * result = git_blob_id(
-
-
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitOid::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitBlob::Content(const Arguments& args) {
   HandleScope scope;
+  
 
   const void * result = git_blob_rawcontent(
-
-
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(Wrapper::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = Wrapper::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitBlob::Size(const Arguments& args) {
   HandleScope scope;
+  
 
   git_off_t result = git_blob_rawsize(
-
-
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
 
-  return scope.Close(Number::New(result));
+  Handle<Value> to;
+    to = Number::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
+
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -207,12 +215,12 @@ Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
 
 void GitBlob::CreateFromFileWork(uv_work_t *req) {
   CreateFromFileBaton *baton = static_cast<CreateFromFileBaton *>(req->data);
-  int id = git_blob_create_fromdisk(
+  int result = git_blob_create_fromdisk(
     baton->id, 
     baton->repo, 
     baton->path
   );
-  if (id != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -223,18 +231,19 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->id) };
-    Handle<Object> id = GitOid::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitOid::New((void *)baton->id);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      id
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -249,8 +258,8 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
 
 Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -259,6 +268,7 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   if (args.Length() == 2 || !args[2]->IsNumber()) {
     return ThrowException(Exception::Error(String::New("Number len is required.")));
   }
+
   if (args.Length() == 3 || !args[3]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -281,13 +291,13 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
 
 void GitBlob::CreateFromBufferWork(uv_work_t *req) {
   CreateFromBufferBaton *baton = static_cast<CreateFromBufferBaton *>(req->data);
-  int oid = git_blob_create_frombuffer(
+  int result = git_blob_create_frombuffer(
     baton->oid, 
     baton->repo, 
     baton->buffer, 
     baton->len
   );
-  if (oid != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -298,18 +308,19 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->oid) };
-    Handle<Object> oid = GitOid::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitOid::New((void *)baton->oid);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      oid
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -324,10 +335,9 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
 
 Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   HandleScope scope;
+  
 
   int result = git_blob_is_binary(
-
-
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
@@ -335,8 +345,7 @@ Handle<Value> GitBlob::IsBinary(const Arguments& args) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  return scope.Close(Boolean::New(result));
+  return Undefined();
 }
-
 
 Persistent<Function> GitBlob::constructor_template;

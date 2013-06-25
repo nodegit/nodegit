@@ -60,6 +60,12 @@ Handle<Value> GitTree::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitTree::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitTree::constructor_template->NewInstance(1, argv));
+}
+
 git_tree *GitTree::GetValue() {
   return this->raw;
 }
@@ -67,13 +73,14 @@ git_tree *GitTree::GetValue() {
 
 Handle<Value> GitTree::Lookup(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+  
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
+
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -94,12 +101,12 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
 
 void GitTree::LookupWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int out = git_tree_lookup(
+  int result = git_tree_lookup(
     &baton->out, 
     baton->repo, 
     baton->id
   );
-  if (out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -110,18 +117,19 @@ void GitTree::LookupAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = GitTree::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitTree::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -135,104 +143,93 @@ void GitTree::LookupAfterWork(uv_work_t *req) {
 
 Handle<Value> GitTree::Oid(const Arguments& args) {
   HandleScope scope;
+  
 
   const git_oid * result = git_tree_id(
-
-
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitOid::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTree::Size(const Arguments& args) {
   HandleScope scope;
+  
 
   size_t result = git_tree_entrycount(
-
-
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
   );
 
 
-  return scope.Close(Uint32::New(result));
+  Handle<Value> to;
+    to = Uint32::New(result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTree::EntryByName(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String filename is required.")));
   }
 
+
   const git_tree_entry * result = git_tree_entry_byname(
-
-
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
-, 
-
-    stringArgToString(args[0]->ToString()).c_str()
+    , stringArgToString(args[0]->ToString()).c_str()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitTreeEntry::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitTreeEntry::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsUint32()) {
+    if (args.Length() == 0 || !args[0]->IsUint32()) {
     return ThrowException(Exception::Error(String::New("Number idx is required.")));
   }
 
+
   const git_tree_entry * result = git_tree_entry_byindex(
-
-
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
-, 
-
-  (size_t) args[0]->ToUint32()->Value()
+    , (size_t) args[0]->ToUint32()->Value()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitTreeEntry::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitTreeEntry::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsObject()) {
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid oid is required.")));
   }
 
+
   const git_tree_entry * result = git_tree_entry_byoid(
-
-
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
-, 
-
-    ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue()
+    , ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue()
   );
 
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)result) };
-  return scope.Close(GitTreeEntry::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitTreeEntry::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitTree::GetEntryByPath(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+  
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
+
   if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -254,12 +251,12 @@ Handle<Value> GitTree::GetEntryByPath(const Arguments& args) {
 
 void GitTree::GetEntryByPathWork(uv_work_t *req) {
   GetEntryByPathBaton *baton = static_cast<GetEntryByPathBaton *>(req->data);
-  int out = git_tree_entry_bypath(
+  int result = git_tree_entry_bypath(
     &baton->out, 
     baton->root, 
     baton->path
   );
-  if (out != GIT_OK) {
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
@@ -270,18 +267,19 @@ void GitTree::GetEntryByPathAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (!baton->error) {
-    Handle<Value> argv[1] = { External::New(baton->out) };
-    Handle<Object> out = GitTreeEntry::constructor_template->NewInstance(1, argv);
-    Handle<Value> argv2[2] = {
+  Handle<Value> to;
+    to = GitTreeEntry::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      out
+      result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
-    Handle<Value> argv2[1] = {
+    Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv2);
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   }
 
   if (try_catch.HasCaught()) {
@@ -293,6 +291,5 @@ void GitTree::GetEntryByPathAfterWork(uv_work_t *req) {
   delete baton->path;
   delete baton;
 }
-
 
 Persistent<Function> GitTree::constructor_template;

@@ -18,6 +18,7 @@ class Wrapper : public ObjectWrap {
     static void Initialize (Handle<v8::Object> target);
 
     void *GetValue();
+    static Handle<Value> New(void *raw);
 
   private:
     Wrapper(void *raw);

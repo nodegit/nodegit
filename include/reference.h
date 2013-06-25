@@ -22,6 +22,8 @@ class GitReference : public ObjectWrap {
 
     git_reference *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitReference(git_reference *raw);
     ~GitReference();

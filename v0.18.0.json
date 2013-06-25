@@ -13,7 +13,7 @@
             "name": "value_out",
             "cType": "const char **",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "repo",
@@ -58,7 +58,7 @@
             "name": "values_out",
             "cType": "const char **",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "repo",
@@ -88,7 +88,7 @@
             "name": "names",
             "cType": "const char **",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           }
         ],
         "isAsync": false,
@@ -754,7 +754,7 @@
             "isReturn": true,
             "cType": "const char **",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "ref",
@@ -836,7 +836,7 @@
             "name": "tracking_branch_name_out",
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "buffer_size",
@@ -896,7 +896,7 @@
             "name": "remote_name_out",
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "buffer_size",
@@ -1743,7 +1743,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "length",
@@ -1771,7 +1771,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "length",
@@ -1799,7 +1799,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "length",
@@ -2192,7 +2192,7 @@
             "isReturn": true,
             "cType": "const char **",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "cfg",
@@ -2769,11 +2769,513 @@
     ]
   },
   {
-    "filename": "diff.h",
-    "jsClassName": "Diff",
-    "cppClassName": "Diff",
-    "cType": "git_diff",
-    "freeFunctionName": "git_diff_free",
+    "filename": "patch.h",
+    "dependencies": ["../include/delta.h", "../include/diff_range.h"],
+    "jsClassName": "Patch",
+    "cppClassName": "GitPatch",
+    "cType": "git_diff_patch",
+    "freeFunctionName": "git_diff_patch_free",
+    "functions": [
+      {
+        "cFunctionName": "git_diff_patch_free",
+        "args": [
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "isFree": true,
+        "jsFunctionName": "patchFree",
+        "cppFunctionName": "PatchFree",
+        "return": {
+          "cType": "void",
+          "cppClassName": "void"
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_delta",
+        "args": [
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "delta",
+        "cppFunctionName": "Delta",
+        "return": {
+          "cType": "const git_diff_delta *",
+          "cppClassName": "GitDelta"
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_num_hunks",
+        "args": [
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
+        "return": {
+          "cType": "size_t",
+          "cppClassName": "Uint32"
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_line_stats",
+        "args": [
+          {
+            "name": "total_context",
+            "cType": "size_t *",
+            "cppClassName": "Integer",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "total_additions",
+            "cType": "size_t *",
+            "cppClassName": "Integer",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "total_deletions",
+            "cType": "size_t *",
+            "cppClassName": "Integer",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "patch",
+            "cType": "const git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "stats",
+        "cppFunctionName": "Stats",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_get_hunk",
+        "args": [
+          {
+            "name": "range",
+            "jsName": "range",
+            "cType": "const git_diff_range **",
+            "cppClassName": "GitDiffRange",
+            "jsClassName": "DiffRange",
+            "isReturn": true
+          },
+          {
+            "name": "header",
+            "jsName": "header",
+            "cType": "const char **",
+            "cppClassName": "String",
+            "jsClassName": "String",
+            "isReturn": true
+          },
+          {
+            "name": "header_len",
+            "jsName": "headerLength",
+            "cType": "size_t *",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "lines_in_hunk",
+            "jsName": "lines",
+            "cType": "size_t *",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          },
+          {
+            "name": "hunk_idx",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "hunk",
+        "cppFunctionName": "Hunk",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_num_lines_in_hunk",
+        "args": [
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          },
+          {
+            "name": "hunk_idx",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "lines",
+        "cppFunctionName": "Lines",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32"
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_get_line_in_hunk",
+        "args": [
+          {
+            "name": "line_origin",
+            "jsName": "lineOrigin",
+            "cType": "char *",
+            "cppClassName": "Integer",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "content",
+            "jsName": "content",
+            "cType": "const char **",
+            "cppClassName": "String",
+            "jsClassName": "String",
+            "isReturn": true
+          },
+          {
+            "name": "content_len",
+            "jsName": "length",
+            "cType": "size_t *",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "old_lineno",
+            "jsName": "oldLineNumber",
+            "cType": "int *",
+            "cppClassName": "Int32",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "new_lineno",
+            "jsName": "newLineNumber",
+            "cType": "int *",
+            "cppClassName": "Int32",
+            "jsClassName": "Number",
+            "isReturn": true
+          },
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          },
+          {
+            "name": "hunk_idx",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          },
+          {
+            "name": "line_of_hunk",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "line",
+        "cppFunctionName": "Line",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_print",
+        "args": [
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          },
+          {
+            "name": "print_cb",
+            "cType": "git_diff_data_cb",
+            "cppClassName": "DiffDataCb",
+            "jsClassName": "DiffDataCb"
+          },
+          {
+            "name": "payload",
+            "cType": "void *",
+            "cppClassName": "void",
+            "jsClassName": "void"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "patchPrint",
+        "cppFunctionName": "PatchPrint",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_diff_patch_to_str",
+        "args": [
+          {
+            "name": "string",
+            "cType": "char **",
+            "cppClassName": "String",
+            "jsClassName": "String",
+            "isReturn": true
+          },
+          {
+            "name": "patch",
+            "cType": "git_diff_patch *",
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "toString",
+        "cppFunctionName": "ToString",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      }
+    ]
+  },
+  {
+    "filename": "diff_options.h",
+    "dependencies": [],
+    "jsClassName": "DiffOptions",
+    "cppClassName": "GitDiffOptions",
+    "cType": "git_diff_options",
+    "freeFunctionName": "free",
+    "fields": []
+  },
+  {
+    "filename": "diff_find_options.h",
+    "dependencies": [],
+    "jsClassName": "DiffFindOptions",
+    "cppClassName": "GitDiffFindOptions",
+    "cType": "git_diff_find_options",
+    "freeFunctionName": "free",
+    "fields": []
+  },
+  {
+    "filename": "diff_range.h",
+    "dependencies": [],
+    "jsClassName": "DiffRange",
+    "cppClassName": "GitDiffRange",
+    "cType": "git_diff_range",
+    "freeFunctionName": "free",
+    "fields": [
+      {
+        "jsFunctionName": "oldStart",
+        "cppFunctionName": "OldStart",
+        "name": "old_start",
+        "cType": "int",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "oldLines",
+        "cppFunctionName": "OldLines",
+        "name": "old_lines",
+        "cType": "int",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "newStart",
+        "cppFunctionName": "NewStart",
+        "name": "new_start",
+        "cType": "int",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "newLines",
+        "cppFunctionName": "NewLines",
+        "name": "new_lines",
+        "cType": "int",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      }
+    ]
+  },
+  {
+    "filename": "diff_file.h",
+    "dependencies": ["../include/oid.h"],
+    "jsClassName": "DiffFile",
+    "cppClassName": "GitDiffFile",
+    "cType": "git_diff_file",
+    "fields": [
+      {
+        "jsFunctionName": "oid",
+        "cppFunctionName": "Oid",
+        "name": "oid",
+        "cType": "git_oid",
+        "cppClassName": "GitOid",
+        "jsClassName": "Oid"
+      },
+      {
+        "jsFunctionName": "path",
+        "cppFunctionName": "Path",
+        "name": "path",
+        "cType": "const char *",
+        "cppClassName": "String",
+        "jsClassName": "String"
+      },
+      {
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
+        "name": "size",
+        "cType": "git_off_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "flags",
+        "cppFunctionName": "Flags",
+        "name": "flags",
+        "cType": "uint32_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "mode",
+        "cppFunctionName": "Mode",
+        "name": "mode",
+        "cType": "uint16_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      }
+    ]
+  },
+  {
+    "filename": "delta.h",
+    "dependencies": ["../include/diff_file.h"],
+    "jsClassName": "Delta",
+    "cppClassName": "GitDelta",
+    "cType": "git_diff_delta",
+    "fields": [
+      {
+        "jsFunctionName": "oldFile",
+        "cppFunctionName": "OldFile",
+        "name": "old_file",
+        "cType": "git_diff_file",
+        "cppClassName": "GitDiffFile",
+        "jsClassName": "DiffFile"
+      },
+      {
+        "jsFunctionName": "newFile",
+        "cppFunctionName": "NewFile",
+        "name": "new_file",
+        "cType": "git_diff_file",
+        "cppClassName": "GitDiffFile",
+        "jsClassName": "DiffFile"
+      },
+      {
+        "jsFunctionName": "status",
+        "cppFunctionName": "Status",
+        "name": "status",
+        "cType": "git_delta_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "similarity",
+        "cppFunctionName": "Similarity",
+        "name": "similarity",
+        "cType": "uint32_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "flags",
+        "cppFunctionName": "Flags",
+        "name": "flags",
+        "cType": "uint32_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      }
+    ]
+  },
+  {
+    "filename": "diff_list.h",
+    "dependencies": ["../include/diff_options.h", "../include/diff_find_options.h", "../include/repo.h", "../include/tree.h", "../include/index.h", "../include/patch.h", "../include/delta.h"],
+    "jsClassName": "DiffList",
+    "cppClassName": "GitDiffList",
+    "cType": "git_diff_list",
+    "freeFunctionName": "git_diff_list_free",
     "functions": [
       {
         "cFunctionName": "git_diff_list_free",
@@ -2781,10 +3283,11 @@
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
+            "cppClassName": "GitDiffList",
             "jsClassName": "DiffList"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -2802,8 +3305,9 @@
           {
             "name": "diff",
             "cType": "git_diff_list **",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -2826,12 +3330,13 @@
           {
             "name": "opts",
             "cType": "const git_diff_options *",
-            "cppClassName": "DiffOptions",
-            "jsClassName": "DiffOptions"
+            "cppClassName": "GitDiffOptions",
+            "jsClassName": "DiffOptions",
+            "isOptional": true
           }
         ],
-        "isAsync": false,
-        "isConstructorMethod": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "treeToTree",
         "cppFunctionName": "TreeToTree",
@@ -2847,8 +3352,9 @@
           {
             "name": "diff",
             "cType": "git_diff_list **",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -2871,12 +3377,12 @@
           {
             "name": "opts",
             "cType": "const git_diff_options *",
-            "cppClassName": "DiffOptions",
+            "cppClassName": "GitDiffOptions",
             "jsClassName": "DiffOptions"
           }
         ],
-        "isAsync": false,
-        "isConstructorMethod": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "treeToIndex",
         "cppFunctionName": "TreeToIndex",
@@ -2892,8 +3398,9 @@
           {
             "name": "diff",
             "cType": "git_diff_list **",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -2910,12 +3417,12 @@
           {
             "name": "opts",
             "cType": "const git_diff_options *",
-            "cppClassName": "DiffOptions",
+            "cppClassName": "GitDiffOptions",
             "jsClassName": "DiffOptions"
           }
         ],
-        "isAsync": false,
-        "isConstructorMethod": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
         "isPrototypeMethod": false,
         "jsFunctionName": "indexToWorkdir",
         "cppFunctionName": "IndexToWorkdir",
@@ -2931,8 +3438,9 @@
           {
             "name": "diff",
             "cType": "git_diff_list **",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -2949,11 +3457,11 @@
           {
             "name": "opts",
             "cType": "const git_diff_options *",
-            "cppClassName": "DiffOptions",
+            "cppClassName": "GitDiffOptions",
             "jsClassName": "DiffOptions"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "jsFunctionName": "treeToWorkdir",
@@ -2970,19 +3478,20 @@
           {
             "name": "onto",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isSelf": true
           },
           {
             "name": "from",
             "cType": "const git_diff_list *",
-            "cppClassName": "DiffList",
+            "cppClassName": "GitDiffList",
             "jsClassName": "DiffList"
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "merge",
         "cppFunctionName": "Merge",
         "return": {
@@ -2997,19 +3506,20 @@
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isSelf": true
           },
           {
             "name": "options",
             "cType": "git_diff_find_options *",
-            "cppClassName": "DiffFindOptions",
+            "cppClassName": "GitDiffFindOptions",
             "jsClassName": "DiffFindOptions"
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "findSimilar",
         "cppFunctionName": "FindSimilar",
         "return": {
@@ -3024,7 +3534,7 @@
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
+            "cppClassName": "GitDiffList",
             "jsClassName": "DiffList"
           },
           {
@@ -3052,6 +3562,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -3069,7 +3580,7 @@
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
+            "cppClassName": "GitDiffList",
             "jsClassName": "DiffList"
           },
           {
@@ -3085,6 +3596,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -3102,10 +3614,11 @@
           {
             "name": "status",
             "cType": "git_delta_t",
-            "cppClassName": "DeltaT",
-            "jsClassName": "DeltaT"
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -3122,8 +3635,9 @@
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isSelf": true
           },
           {
             "name": "print_cb",
@@ -3138,9 +3652,10 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "printPatch",
         "cppFunctionName": "PrintPatch",
         "return": {
@@ -3155,15 +3670,16 @@
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isSelf": true
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "numDeltas",
-        "cppFunctionName": "NumDeltas",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
         "return": {
           "cType": "size_t",
           "cppClassName": "Uint32"
@@ -3175,14 +3691,14 @@
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
+            "cppClassName": "GitDiffList",
             "jsClassName": "DiffList"
           },
           {
             "name": "type",
             "cType": "git_delta_t",
-            "cppClassName": "DeltaT",
-            "jsClassName": "DeltaT"
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
           }
         ],
         "isAsync": false,
@@ -3200,21 +3716,26 @@
         "args": [
           {
             "name": "patch_out",
+            "jsName": "patch",
             "cType": "git_diff_patch **",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
+            "cppClassName": "GitPatch",
+            "jsClassName": "Patch",
+            "isReturn": true
           },
           {
             "name": "delta_out",
+            "jsName": "delta",
             "cType": "const git_diff_delta **",
-            "cppClassName": "DiffDelta",
-            "jsClassName": "DiffDelta"
+            "cppClassName": "GitDelta",
+            "jsClassName": "Delta",
+            "isReturn": true
           },
           {
             "name": "diff",
             "cType": "git_diff_list *",
-            "cppClassName": "DiffList",
-            "jsClassName": "DiffList"
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isSelf": true
           },
           {
             "name": "idx",
@@ -3225,310 +3746,9 @@
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "getPatch",
-        "cppFunctionName": "GetPatch",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_free",
-        "args": [
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "isFree": true,
-        "jsFunctionName": "patchFree",
-        "cppFunctionName": "PatchFree",
-        "return": {
-          "cType": "void",
-          "cppClassName": "void"
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_delta",
-        "args": [
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchDelta",
-        "cppFunctionName": "PatchDelta",
-        "return": {
-          "cType": "const git_diff_delta *",
-          "cppClassName": "DiffDelta"
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_num_hunks",
-        "args": [
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchNumHunks",
-        "cppFunctionName": "PatchNumHunks",
-        "return": {
-          "cType": "size_t",
-          "cppClassName": "Uint32"
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_line_stats",
-        "args": [
-          {
-            "name": "total_context",
-            "cType": "size_t *",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "total_additions",
-            "cType": "size_t *",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "total_deletions",
-            "cType": "size_t *",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "patch",
-            "cType": "const git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchLineStats",
-        "cppFunctionName": "PatchLineStats",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_get_hunk",
-        "args": [
-          {
-            "name": "range",
-            "cType": "const git_diff_range **",
-            "cppClassName": "DiffRange",
-            "jsClassName": "DiffRange"
-          },
-          {
-            "name": "header",
-            "cType": "const char **",
-            "cppClassName": "String",
-            "jsClassName": "char"
-          },
-          {
-            "name": "header_len",
-            "cType": "size_t *",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "lines_in_hunk",
-            "cType": "size_t *",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          },
-          {
-            "name": "hunk_idx",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchGetHunk",
-        "cppFunctionName": "PatchGetHunk",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_num_lines_in_hunk",
-        "args": [
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          },
-          {
-            "name": "hunk_idx",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchNumLinesInHunk",
-        "cppFunctionName": "PatchNumLinesInHunk",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_get_line_in_hunk",
-        "args": [
-          {
-            "name": "line_origin",
-            "cType": "char *",
-            "cppClassName": "String",
-            "jsClassName": "char"
-          },
-          {
-            "name": "content",
-            "cType": "const char **",
-            "cppClassName": "String",
-            "jsClassName": "char"
-          },
-          {
-            "name": "content_len",
-            "cType": "size_t *",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "old_lineno",
-            "cType": "int *",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "new_lineno",
-            "cType": "int *",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          },
-          {
-            "name": "hunk_idx",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "line_of_hunk",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchGetLineInHunk",
-        "cppFunctionName": "PatchGetLineInHunk",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_print",
-        "args": [
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          },
-          {
-            "name": "print_cb",
-            "cType": "git_diff_data_cb",
-            "cppClassName": "DiffDataCb",
-            "jsClassName": "DiffDataCb"
-          },
-          {
-            "name": "payload",
-            "cType": "void *",
-            "cppClassName": "void",
-            "jsClassName": "void"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchPrint",
-        "cppFunctionName": "PatchPrint",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_patch_to_str",
-        "args": [
-          {
-            "name": "string",
-            "cType": "char **",
-            "cppClassName": "String",
-            "jsClassName": "char"
-          },
-          {
-            "name": "patch",
-            "cType": "git_diff_patch *",
-            "cppClassName": "DiffPatch",
-            "jsClassName": "DiffPatch"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "patchToStr",
-        "cppFunctionName": "PatchToStr",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "patch",
+        "cppFunctionName": "Patch",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -3553,7 +3773,7 @@
           {
             "name": "options",
             "cType": "const git_diff_options *",
-            "cppClassName": "DiffOptions",
+            "cppClassName": "GitDiffOptions",
             "jsClassName": "DiffOptions"
           },
           {
@@ -3581,6 +3801,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -3616,7 +3837,7 @@
           {
             "name": "options",
             "cType": "const git_diff_options *",
-            "cppClassName": "DiffOptions",
+            "cppClassName": "GitDiffOptions",
             "jsClassName": "DiffOptions"
           },
           {
@@ -3644,6 +3865,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -5125,7 +5347,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "out_size",
@@ -5480,7 +5702,7 @@
             "isReturn": true,
             "cType": "const char **",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "repo",
@@ -6755,7 +6977,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "id",
@@ -6784,7 +7006,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "id",
@@ -6833,7 +7055,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "n",
@@ -9025,7 +9247,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "outlen",
@@ -9065,7 +9287,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "outlen",
@@ -10093,7 +10315,7 @@
             "name": "path_out",
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "path_size",
@@ -10698,7 +10920,7 @@
             "isReturn": true,
             "cType": "char *",
             "cppClassName": "String",
-            "jsClassName": "char"
+            "jsClassName": "String"
           },
           {
             "name": "len",

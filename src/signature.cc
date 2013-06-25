@@ -54,6 +54,12 @@ Handle<Value> GitSignature::New(const Arguments& args) {
   return scope.Close(args.This());
 }
 
+Handle<Value> GitSignature::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitSignature::constructor_template->NewInstance(1, argv));
+}
+
 git_signature *GitSignature::GetValue() {
   return this->raw;
 }
@@ -61,56 +67,61 @@ git_signature *GitSignature::GetValue() {
 
 Handle<Value> GitSignature::Now(const Arguments& args) {
   HandleScope scope;
-
-  if (args.Length() == 0 || !args[0]->IsString()) {
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String name is required.")));
   }
-
   if (args.Length() == 1 || !args[1]->IsString()) {
     return ThrowException(Exception::Error(String::New("String email is required.")));
   }
-  git_signature * out;
+
+  git_signature *out = NULL;
 
   int result = git_signature_now(
-
-&
-    out
-, 
-
-    stringArgToString(args[0]->ToString()).c_str()
-, 
-
-    stringArgToString(args[1]->ToString()).c_str()
+    &out
+    , stringArgToString(args[0]->ToString()).c_str()
+    , stringArgToString(args[1]->ToString()).c_str()
   );
 
   if (result != GIT_OK) {
     return ThrowException(GitError::WrapError(giterr_last()));
   }
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)out) };
-  return scope.Close(GitSignature::constructor_template->NewInstance(1, argv));
+  Handle<Value> to;
+    to = GitSignature::New((void *)out);
+  return scope.Close(to);
 }
 
 Handle<Value> GitSignature::Name(const Arguments& args) {
   HandleScope scope;
-  const char * field = ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->name;
+    Handle<Value> to;
 
-  return scope.Close(String::New(field));
+  const char * name =
+    ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->name;
+
+    to = String::New(name);
+  return scope.Close(to);
 }
+
 Handle<Value> GitSignature::Email(const Arguments& args) {
   HandleScope scope;
-  const char * field = ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->email;
+    Handle<Value> to;
 
-  return scope.Close(String::New(field));
+  const char * email =
+    ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->email;
+
+    to = String::New(email);
+  return scope.Close(to);
 }
+
 Handle<Value> GitSignature::Time(const Arguments& args) {
   HandleScope scope;
-  git_time field = ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->when;
+    Handle<Value> to;
 
-  // XXX need to copy object?
-  Handle<Value> argv[1] = { External::New((void *)&field) };
-  return scope.Close(GitTime::constructor_template->NewInstance(1, argv));
+  git_time *when =
+    &ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->when;
+
+    to = GitTime::New((void *)when);
+  return scope.Close(to);
 }
 
 Persistent<Function> GitSignature::constructor_template;

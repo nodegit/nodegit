@@ -22,6 +22,8 @@ class GitRepo : public ObjectWrap {
 
     git_repository *GetValue();
 
+    static Handle<Value> New(void *raw);
+
   private:
     GitRepo(git_repository *raw);
     ~GitRepo();
