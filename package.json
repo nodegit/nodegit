@@ -9,7 +9,7 @@
     "git",
     "native"
   ],
-  "license": "GPLv2",
+  "license": "MIT",
   "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
   "contributors": [
     {
