@@ -9,8 +9,6 @@
 
 #include "../include/oid.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -68,12 +66,14 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
+  String::Utf8Value str(args[0]->ToString());
+  const char * from_str = strdup(*str);
 
   int result = git_oid_fromstr(
     out
-    , stringArgToString(args[0]->ToString()).c_str()
+    , from_str
   );
-
+  delete from_str;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -90,7 +90,6 @@ Handle<Value> GitOid::Sha(const Arguments& args) {
   char * result = git_oid_allocfmt(
     ObjectWrap::Unwrap<GitOid>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = String::New(result);

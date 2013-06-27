@@ -1,0 +1,12 @@
+<% if (arg.cppClassName == 'String') { -%>
+  String::Utf8Value <%- arg.name %>(args[<%- jsArg %>]->ToString());
+  <%- arg.cType %> from_<%- arg.name %> = strdup(*<%- arg.name %>);
+<% } else if (arg.cppClassName == 'Array') { -%>
+  <%- arg.cType %> from_<%- arg.name %> = Array::Cast(*args[<%- jsArg %>]);
+<% } else if (arg.cppClassName == 'Buffer') { -%>
+  <%- arg.cType %> from_<%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- jsArg %>]->ToObject()));
+<% } else if (isV8Value(arg.cppClassName)) { -%>
+  <%- arg.cType %> from_<%- arg.name %> = (<%- arg.cType %>) args[<%- jsArg %>]->To<%- arg.cppClassName %>()->Value();
+<% } else { -%>
+  <%- arg.cType %> from_<%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- jsArg %>]->ToObject())->GetValue();
+<% } -%>

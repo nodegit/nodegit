@@ -12,8 +12,6 @@
 #include "../include/repo.h"
 #include "../include/object.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -76,7 +74,6 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = String::New(result);
   return scope.Close(to);
@@ -89,7 +86,6 @@ Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   const git_oid * result = git_tree_entry_id(
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = GitOid::New((void *)result);
@@ -104,7 +100,6 @@ Handle<Value> GitTreeEntry::Type(const Arguments& args) {
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Number::New(result);
   return scope.Close(to);
@@ -118,7 +113,6 @@ Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
     ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Number::New(result);
   return scope.Close(to);
@@ -126,8 +120,7 @@ Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
 
 Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
 
@@ -140,7 +133,8 @@ Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->entryReference = Persistent<Value>::New(args.This());
   baton->entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));

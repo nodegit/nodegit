@@ -11,8 +11,6 @@
 #include "../include/oid.h"
 #include "../include/repo.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -69,8 +67,7 @@ git_object *GitObject::GetValue() {
 
 Handle<Value> GitObject::Lookup(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -89,11 +86,14 @@ Handle<Value> GitObject::Lookup(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->idReference = Persistent<Value>::New(args[1]);
-  baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+  baton->id = from_id;
   baton->typeReference = Persistent<Value>::New(args[2]);
-  baton->type = (git_otype) args[2]->ToInt32()->Value();
+    git_otype from_type = (git_otype) args[2]->ToInt32()->Value();
+  baton->type = from_type;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
@@ -156,7 +156,6 @@ Handle<Value> GitObject::Oid(const Arguments& args) {
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -169,7 +168,6 @@ Handle<Value> GitObject::Type(const Arguments& args) {
   git_otype result = git_object_type(
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = Number::New(result);
@@ -184,7 +182,6 @@ Handle<Value> GitObject::Owner(const Arguments& args) {
     ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitRepo::New((void *)result);
   return scope.Close(to);
@@ -192,8 +189,7 @@ Handle<Value> GitObject::Owner(const Arguments& args) {
 
 Handle<Value> GitObject::Peel(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsInt32()) {
+      if (args.Length() == 0 || !args[0]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number target_type is required.")));
   }
 
@@ -208,7 +204,8 @@ Handle<Value> GitObject::Peel(const Arguments& args) {
   baton->objectReference = Persistent<Value>::New(args.This());
   baton->object = ObjectWrap::Unwrap<GitObject>(args.This())->GetValue();
   baton->target_typeReference = Persistent<Value>::New(args[0]);
-  baton->target_type = (git_otype) args[0]->ToInt32()->Value();
+    git_otype from_target_type = (git_otype) args[0]->ToInt32()->Value();
+  baton->target_type = from_target_type;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PeelWork, (uv_after_work_cb)PeelAfterWork);

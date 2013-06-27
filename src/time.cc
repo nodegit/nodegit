@@ -9,8 +9,6 @@
 
 #include "../include/time.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 

@@ -9,8 +9,6 @@
 
 #include "../include/repo.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -66,8 +64,7 @@ git_repository *GitRepo::GetValue() {
 
 Handle<Value> GitRepo::Open(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsString()) {
+      if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
@@ -80,8 +77,9 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->pathReference = Persistent<Value>::New(args[0]);
-  String::Utf8Value path(args[0]->ToString());
-  baton->path = strdup(*path);
+    String::Utf8Value path(args[0]->ToString());
+  const char * from_path = strdup(*path);
+  baton->path = from_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OpenWork, (uv_after_work_cb)OpenAfterWork);
@@ -135,8 +133,7 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
 
 Handle<Value> GitRepo::Init(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsString()) {
+      if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsBoolean()) {
@@ -152,10 +149,12 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->pathReference = Persistent<Value>::New(args[0]);
-  String::Utf8Value path(args[0]->ToString());
-  baton->path = strdup(*path);
+    String::Utf8Value path(args[0]->ToString());
+  const char * from_path = strdup(*path);
+  baton->path = from_path;
   baton->is_bareReference = Persistent<Value>::New(args[1]);
-  baton->is_bare = (unsigned) args[1]->ToBoolean()->Value();
+    unsigned from_is_bare = (unsigned) args[1]->ToBoolean()->Value();
+  baton->is_bare = from_is_bare;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, InitWork, (uv_after_work_cb)InitAfterWork);
@@ -217,7 +216,6 @@ Handle<Value> GitRepo::Path(const Arguments& args) {
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = String::New(result);
   return scope.Close(to);
@@ -230,7 +228,6 @@ Handle<Value> GitRepo::Workdir(const Arguments& args) {
   const char * result = git_repository_workdir(
     ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = String::New(result);

@@ -12,8 +12,6 @@
 #include "../include/oid.h"
 #include "../include/object.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -81,8 +79,7 @@ git_reference *GitReference::GetValue() {
 
 Handle<Value> GitReference::Lookup(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
@@ -98,10 +95,12 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->nameReference = Persistent<Value>::New(args[1]);
-  String::Utf8Value name(args[1]->ToString());
-  baton->name = strdup(*name);
+    String::Utf8Value name(args[1]->ToString());
+  const char * from_name = strdup(*name);
+  baton->name = from_name;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
@@ -157,8 +156,7 @@ void GitReference::LookupAfterWork(uv_work_t *req) {
 
 Handle<Value> GitReference::OidForName(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
@@ -174,10 +172,12 @@ Handle<Value> GitReference::OidForName(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->nameReference = Persistent<Value>::New(args[1]);
-  String::Utf8Value name(args[1]->ToString());
-  baton->name = strdup(*name);
+    String::Utf8Value name(args[1]->ToString());
+  const char * from_name = strdup(*name);
+  baton->name = from_name;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OidForNameWork, (uv_after_work_cb)OidForNameAfterWork);
@@ -247,15 +247,22 @@ Handle<Value> GitReference::CreateSymbolic(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  String::Utf8Value name(args[1]->ToString());
+  const char * from_name = strdup(*name);
+  String::Utf8Value target(args[2]->ToString());
+  const char * from_target = strdup(*target);
+  int from_force = (int) args[3]->ToInt32()->Value();
 
   int result = git_reference_symbolic_create(
     &out
-    , ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
-    , stringArgToString(args[1]->ToString()).c_str()
-    , stringArgToString(args[2]->ToString()).c_str()
-    , (int) args[3]->ToInt32()->Value()
+    , from_repo
+    , from_name
+    , from_target
+    , from_force
   );
-
+  delete from_name;
+  delete from_target;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -281,15 +288,20 @@ Handle<Value> GitReference::Create(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  String::Utf8Value name(args[1]->ToString());
+  const char * from_name = strdup(*name);
+  const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[2]->ToObject())->GetValue();
+  int from_force = (int) args[3]->ToInt32()->Value();
 
   int result = git_reference_create(
     &out
-    , ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
-    , stringArgToString(args[1]->ToString()).c_str()
-    , ObjectWrap::Unwrap<GitOid>(args[2]->ToObject())->GetValue()
-    , (int) args[3]->ToInt32()->Value()
+    , from_repo
+    , from_name
+    , from_id
+    , from_force
   );
-
+  delete from_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -307,7 +319,6 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -320,7 +331,6 @@ Handle<Value> GitReference::Name(const Arguments& args) {
   const char * result = git_reference_symbolic_target(
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = String::New(result);
@@ -335,7 +345,6 @@ Handle<Value> GitReference::Type(const Arguments& args) {
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Number::New(result);
   return scope.Close(to);
@@ -343,8 +352,7 @@ Handle<Value> GitReference::Type(const Arguments& args) {
 
 Handle<Value> GitReference::Resolve(const Arguments& args) {
   HandleScope scope;
-  
-  
+    
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -412,13 +420,15 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  String::Utf8Value target(args[0]->ToString());
+  const char * from_target = strdup(*target);
 
   int result = git_reference_symbolic_set_target(
     &out
     , ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
-    , stringArgToString(args[0]->ToString()).c_str()
+    , from_target
   );
-
+  delete from_target;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -435,13 +445,13 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
 
   int result = git_reference_set_target(
     &out
     , ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
-    , ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue()
+    , from_id
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -453,8 +463,7 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
 
 Handle<Value> GitReference::Rename(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsString()) {
+      if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String new_name is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsInt32()) {
@@ -472,10 +481,12 @@ Handle<Value> GitReference::Rename(const Arguments& args) {
   baton->refReference = Persistent<Value>::New(args.This());
   baton->ref = ObjectWrap::Unwrap<GitReference>(args.This())->GetValue();
   baton->new_nameReference = Persistent<Value>::New(args[0]);
-  String::Utf8Value new_name(args[0]->ToString());
-  baton->new_name = strdup(*new_name);
+    String::Utf8Value new_name(args[0]->ToString());
+  const char * from_new_name = strdup(*new_name);
+  baton->new_name = from_new_name;
   baton->forceReference = Persistent<Value>::New(args[1]);
-  baton->force = (int) args[1]->ToInt32()->Value();
+    int from_force = (int) args[1]->ToInt32()->Value();
+  baton->force = from_force;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, RenameWork, (uv_after_work_cb)RenameAfterWork);
@@ -533,8 +544,7 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
 
 Handle<Value> GitReference::Delete(const Arguments& args) {
   HandleScope scope;
-  
-  
+    
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -600,7 +610,6 @@ Handle<Value> GitReference::IsBranch(const Arguments& args) {
   int result = git_reference_is_branch(
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -615,7 +624,6 @@ Handle<Value> GitReference::IsRemote(const Arguments& args) {
   int result = git_reference_is_remote(
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -630,13 +638,13 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   }
 
   git_object *out = NULL;
+  git_otype from_type = (git_otype) args[0]->ToInt32()->Value();
 
   int result = git_reference_peel(
     &out
     , ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
-    , (git_otype) args[0]->ToInt32()->Value()
+    , from_type
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -652,11 +660,13 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String refname is required.")));
   }
 
+  String::Utf8Value refname(args[0]->ToString());
+  const char * from_refname = strdup(*refname);
 
   int result = git_reference_is_valid_name(
-    stringArgToString(args[0]->ToString()).c_str()
+    from_refname
   );
-
+  delete from_refname;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

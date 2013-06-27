@@ -11,8 +11,6 @@
 #include "../include/delta.h"
 #include "../include/diff_range.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -77,7 +75,6 @@ Handle<Value> GitPatch::Delta(const Arguments& args) {
     ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitDelta::New((void *)result);
   return scope.Close(to);
@@ -90,7 +87,6 @@ Handle<Value> GitPatch::Size(const Arguments& args) {
   size_t result = git_diff_patch_num_hunks(
     ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = Uint32::New(result);
@@ -110,7 +106,6 @@ Handle<Value> GitPatch::Stats(const Arguments& args) {
     , &total_deletions
     , ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -139,6 +134,7 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
   const char *header = NULL;
   size_t header_len = NULL;
   size_t lines_in_hunk = NULL;
+  size_t from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
 
   int result = git_diff_patch_get_hunk(
     &range
@@ -146,9 +142,8 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
     , &header_len
     , &lines_in_hunk
     , ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
-    , (size_t) args[0]->ToUint32()->Value()
+    , from_hunk_idx
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -176,12 +171,12 @@ Handle<Value> GitPatch::Lines(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
   }
 
+  size_t from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
 
   int result = git_diff_patch_num_lines_in_hunk(
     ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
-    , (size_t) args[0]->ToUint32()->Value()
+    , from_hunk_idx
   );
-
 
   Handle<Value> to;
     to = Int32::New(result);
@@ -202,6 +197,8 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
   size_t content_len = NULL;
   int old_lineno = NULL;
   int new_lineno = NULL;
+  size_t from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
+  size_t from_line_of_hunk = (size_t) args[1]->ToUint32()->Value();
 
   int result = git_diff_patch_get_line_in_hunk(
     &line_origin
@@ -210,10 +207,9 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
     , &old_lineno
     , &new_lineno
     , ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
-    , (size_t) args[0]->ToUint32()->Value()
-    , (size_t) args[1]->ToUint32()->Value()
+    , from_hunk_idx
+    , from_line_of_hunk
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -247,7 +243,6 @@ Handle<Value> GitPatch::ToString(const Arguments& args) {
     &string
     , ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

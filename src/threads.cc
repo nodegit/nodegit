@@ -9,8 +9,6 @@
 
 #include "../include/threads.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -32,7 +30,6 @@ Handle<Value> GitThreads::Init(const Arguments& args) {
 
   int result = git_threads_init(
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -46,7 +43,6 @@ Handle<Value> GitThreads::Shutdown(const Arguments& args) {
 
   git_threads_shutdown(
   );
-
 
   return Undefined();
 }

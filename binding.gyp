@@ -26,7 +26,6 @@
                 'src/diff_range.cc',
                 'src/threads.cc',
                 'src/wrapper.cc',
-                'src/functions/string.cc',
             ],
 
             'include_dirs': [

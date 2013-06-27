@@ -1,5 +1,3 @@
 - rename all async methods getXXX
-- convert to "ignore": true for all classes
 - reorder functions so the raw api is oo-like
 - rename files remove .h
-- remove stringArgToString invocation

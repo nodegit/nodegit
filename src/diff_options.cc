@@ -9,8 +9,6 @@
 
 #include "../include/diff_options.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 

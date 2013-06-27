@@ -13,8 +13,6 @@
 #include "../include/signature.h"
 #include "../include/tree.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -80,8 +78,7 @@ git_commit *GitCommit::GetValue() {
 
 Handle<Value> GitCommit::Lookup(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -97,9 +94,11 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->idReference = Persistent<Value>::New(args[1]);
-  baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+  baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
@@ -160,7 +159,6 @@ Handle<Value> GitCommit::Oid(const Arguments& args) {
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -173,7 +171,6 @@ Handle<Value> GitCommit::MessageEncoding(const Arguments& args) {
   const char * result = git_commit_message_encoding(
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = String::New(result);
@@ -188,7 +185,6 @@ Handle<Value> GitCommit::Message(const Arguments& args) {
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = String::New(result);
   return scope.Close(to);
@@ -201,7 +197,6 @@ Handle<Value> GitCommit::Time(const Arguments& args) {
   git_time_t result = git_commit_time(
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = Number::New(result);
@@ -216,7 +211,6 @@ Handle<Value> GitCommit::Offset(const Arguments& args) {
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Integer::New(result);
   return scope.Close(to);
@@ -229,7 +223,6 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
   const git_signature * result = git_commit_committer(
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = GitSignature::New((void *)result);
@@ -244,7 +237,6 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitSignature::New((void *)result);
   return scope.Close(to);
@@ -252,8 +244,7 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
 
 Handle<Value> GitCommit::Tree(const Arguments& args) {
   HandleScope scope;
-  
-  
+    
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -322,7 +313,6 @@ Handle<Value> GitCommit::TreeId(const Arguments& args) {
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -336,7 +326,6 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Uint32::New(result);
   return scope.Close(to);
@@ -344,8 +333,7 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
 
 Handle<Value> GitCommit::Parent(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsUint32()) {
+      if (args.Length() == 0 || !args[0]->IsUint32()) {
     return ThrowException(Exception::Error(String::New("Number n is required.")));
   }
 
@@ -360,7 +348,8 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
   baton->commitReference = Persistent<Value>::New(args.This());
   baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
   baton->nReference = Persistent<Value>::New(args[0]);
-  baton->n = (unsigned int) args[0]->ToUint32()->Value();
+    unsigned int from_n = (unsigned int) args[0]->ToUint32()->Value();
+  baton->n = from_n;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ParentWork, (uv_after_work_cb)ParentAfterWork);
@@ -419,12 +408,12 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number n is required.")));
   }
 
+  unsigned int from_n = (unsigned int) args[0]->ToUint32()->Value();
 
   const git_oid * result = git_commit_parent_id(
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
-    , (unsigned int) args[0]->ToUint32()->Value()
+    , from_n
   );
-
 
   Handle<Value> to;
     to = GitOid::New((void *)result);
@@ -438,13 +427,13 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
   }
 
   git_commit *ancestor = NULL;
+  unsigned int from_n = (unsigned int) args[0]->ToUint32()->Value();
 
   int result = git_commit_nth_gen_ancestor(
     &ancestor
     , ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
-    , (unsigned int) args[0]->ToUint32()->Value()
+    , from_n
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

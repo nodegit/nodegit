@@ -13,8 +13,6 @@
 #include "../include/wrapper.h"
 #include "node_buffer.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -73,8 +71,7 @@ git_blob *GitBlob::GetValue() {
 
 Handle<Value> GitBlob::Lookup(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -90,9 +87,11 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->idReference = Persistent<Value>::New(args[1]);
-  baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+  baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
@@ -153,7 +152,6 @@ Handle<Value> GitBlob::Oid(const Arguments& args) {
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -166,7 +164,6 @@ Handle<Value> GitBlob::Content(const Arguments& args) {
   const void * result = git_blob_rawcontent(
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = Wrapper::New((void *)result);
@@ -181,7 +178,6 @@ Handle<Value> GitBlob::Size(const Arguments& args) {
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Number::New(result);
   return scope.Close(to);
@@ -189,8 +185,7 @@ Handle<Value> GitBlob::Size(const Arguments& args) {
 
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
@@ -206,10 +201,12 @@ Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->pathReference = Persistent<Value>::New(args[1]);
-  String::Utf8Value path(args[1]->ToString());
-  baton->path = strdup(*path);
+    String::Utf8Value path(args[1]->ToString());
+  const char * from_path = strdup(*path);
+  baton->path = from_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateFromFileWork, (uv_after_work_cb)CreateFromFileAfterWork);
@@ -265,8 +262,7 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
 
 Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -285,11 +281,14 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->bufferReference = Persistent<Value>::New(args[1]);
-  baton->buffer = Buffer::Data(ObjectWrap::Unwrap<Buffer>(args[1]->ToObject()));
+    const void * from_buffer = Buffer::Data(ObjectWrap::Unwrap<Buffer>(args[1]->ToObject()));
+  baton->buffer = from_buffer;
   baton->lenReference = Persistent<Value>::New(args[2]);
-  baton->len = (size_t) args[2]->ToNumber()->Value();
+    size_t from_len = (size_t) args[2]->ToNumber()->Value();
+  baton->len = from_len;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateFromBufferWork, (uv_after_work_cb)CreateFromBufferAfterWork);
@@ -351,7 +350,6 @@ Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   int result = git_blob_is_binary(
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

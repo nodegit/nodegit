@@ -10,8 +10,6 @@
 #include "../include/diff_file.h"
 #include "../include/oid.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 

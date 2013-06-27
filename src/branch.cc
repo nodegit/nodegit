@@ -9,8 +9,6 @@
 
 #include "../include/branch.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -87,15 +85,20 @@ Handle<Value> Branch::Create(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  String::Utf8Value branch_name(args[1]->ToString());
+  const char * from_branch_name = strdup(*branch_name);
+  const git_commit * from_target = ObjectWrap::Unwrap<GitCommit>(args[2]->ToObject())->GetValue();
+  int from_force = (int) args[3]->ToInt32()->Value();
 
   int result = git_branch_create(
     &out
-    , ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
-    , stringArgToString(args[1]->ToString()).c_str()
-    , ObjectWrap::Unwrap<GitCommit>(args[2]->ToObject())->GetValue()
-    , (int) args[3]->ToInt32()->Value()
+    , from_repo
+    , from_branch_name
+    , from_target
+    , from_force
   );
-
+  delete from_branch_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -111,11 +114,11 @@ Handle<Value> Branch::Delete(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Reference branch is required.")));
   }
 
+  git_reference * from_branch = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
 
   int result = git_branch_delete(
-    ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue()
+    from_branch
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -138,14 +141,17 @@ Handle<Value> Branch::Foreach(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("void payload is required.")));
   }
 
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  unsigned int from_list_flags = (unsigned int) args[1]->ToUint32()->Value();
+  git_branch_foreach_cb from_branch_cb = ObjectWrap::Unwrap<BranchForeachCb>(args[2]->ToObject())->GetValue();
+  void * from_payload = ObjectWrap::Unwrap<void>(args[3]->ToObject())->GetValue();
 
   int result = git_branch_foreach(
-    ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
-    , (unsigned int) args[1]->ToUint32()->Value()
-    , ObjectWrap::Unwrap<BranchForeachCb>(args[2]->ToObject())->GetValue()
-    , ObjectWrap::Unwrap<void>(args[3]->ToObject())->GetValue()
+    from_repo
+    , from_list_flags
+    , from_branch_cb
+    , from_payload
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -166,14 +172,18 @@ Handle<Value> Branch::Move(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  git_reference * from_branch = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
+  String::Utf8Value new_branch_name(args[1]->ToString());
+  const char * from_new_branch_name = strdup(*new_branch_name);
+  int from_force = (int) args[2]->ToInt32()->Value();
 
   int result = git_branch_move(
     &out
-    , ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue()
-    , stringArgToString(args[1]->ToString()).c_str()
-    , (int) args[2]->ToInt32()->Value()
+    , from_branch
+    , from_new_branch_name
+    , from_force
   );
-
+  delete from_new_branch_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -196,14 +206,18 @@ Handle<Value> Branch::Lookup(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  String::Utf8Value branch_name(args[1]->ToString());
+  const char * from_branch_name = strdup(*branch_name);
+  git_branch_t from_branch_type = ObjectWrap::Unwrap<BranchT>(args[2]->ToObject())->GetValue();
 
   int result = git_branch_lookup(
     &out
-    , ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
-    , stringArgToString(args[1]->ToString()).c_str()
-    , ObjectWrap::Unwrap<BranchT>(args[2]->ToObject())->GetValue()
+    , from_repo
+    , from_branch_name
+    , from_branch_type
   );
-
+  delete from_branch_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -220,12 +234,12 @@ Handle<Value> Branch::Name(const Arguments& args) {
   }
 
   const char *out = NULL;
+  git_reference * from_ref = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
 
   int result = git_branch_name(
     &out
-    , ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue()
+    , from_ref
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -242,12 +256,12 @@ Handle<Value> Branch::Upstream(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+  git_reference * from_branch = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
 
   int result = git_branch_upstream(
     &out
-    , ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue()
+    , from_branch
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -266,12 +280,15 @@ Handle<Value> Branch::SetUpstream(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String upstream_name is required.")));
   }
 
+  git_reference * from_branch = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
+  String::Utf8Value upstream_name(args[1]->ToString());
+  const char * from_upstream_name = strdup(*upstream_name);
 
   int result = git_branch_set_upstream(
-    ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue()
-    , stringArgToString(args[1]->ToString()).c_str()
+    from_branch
+    , from_upstream_name
   );
-
+  delete from_upstream_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -294,14 +311,21 @@ Handle<Value> Branch::UpstreamName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String canonical_branch_name is required.")));
   }
 
+  String::Utf8Value tracking_branch_name_out(args[0]->ToString());
+  char * from_tracking_branch_name_out = strdup(*tracking_branch_name_out);
+  size_t from_buffer_size = (size_t) args[1]->ToUint32()->Value();
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[2]->ToObject())->GetValue();
+  String::Utf8Value canonical_branch_name(args[3]->ToString());
+  const char * from_canonical_branch_name = strdup(*canonical_branch_name);
 
   int result = git_branch_upstream_name(
-    stringArgToString(args[0]->ToString()).c_str()
-    , (size_t) args[1]->ToUint32()->Value()
-    , ObjectWrap::Unwrap<GitRepo>(args[2]->ToObject())->GetValue()
-    , stringArgToString(args[3]->ToString()).c_str()
+    from_tracking_branch_name_out
+    , from_buffer_size
+    , from_repo
+    , from_canonical_branch_name
   );
-
+  delete from_tracking_branch_name_out;
+  delete from_canonical_branch_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -315,11 +339,11 @@ Handle<Value> Branch::IsHead(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Reference branch is required.")));
   }
 
+  git_reference * from_branch = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
 
   int result = git_branch_is_head(
-    ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue()
+    from_branch
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -342,14 +366,21 @@ Handle<Value> Branch::RemoteName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String canonical_branch_name is required.")));
   }
 
+  String::Utf8Value remote_name_out(args[0]->ToString());
+  char * from_remote_name_out = strdup(*remote_name_out);
+  size_t from_buffer_size = (size_t) args[1]->ToUint32()->Value();
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[2]->ToObject())->GetValue();
+  String::Utf8Value canonical_branch_name(args[3]->ToString());
+  const char * from_canonical_branch_name = strdup(*canonical_branch_name);
 
   int result = git_branch_remote_name(
-    stringArgToString(args[0]->ToString()).c_str()
-    , (size_t) args[1]->ToUint32()->Value()
-    , ObjectWrap::Unwrap<GitRepo>(args[2]->ToObject())->GetValue()
-    , stringArgToString(args[3]->ToString()).c_str()
+    from_remote_name_out
+    , from_buffer_size
+    , from_repo
+    , from_canonical_branch_name
   );
-
+  delete from_remote_name_out;
+  delete from_canonical_branch_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

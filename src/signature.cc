@@ -10,8 +10,6 @@
 #include "../include/signature.h"
 #include "../include/time.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -74,13 +72,18 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
   }
 
   git_signature *out = NULL;
+  String::Utf8Value name(args[0]->ToString());
+  const char * from_name = strdup(*name);
+  String::Utf8Value email(args[1]->ToString());
+  const char * from_email = strdup(*email);
 
   int result = git_signature_now(
     &out
-    , stringArgToString(args[0]->ToString()).c_str()
-    , stringArgToString(args[1]->ToString()).c_str()
+    , from_name
+    , from_email
   );
-
+  delete from_name;
+  delete from_email;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

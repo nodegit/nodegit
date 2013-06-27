@@ -12,8 +12,6 @@
 #include "../include/oid.h"
 #include "../include/tree_entry.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -72,8 +70,7 @@ git_tree *GitTree::GetValue() {
 
 Handle<Value> GitTree::Lookup(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -89,9 +86,11 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->idReference = Persistent<Value>::New(args[1]);
-  baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+  baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
@@ -152,7 +151,6 @@ Handle<Value> GitTree::Oid(const Arguments& args) {
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -166,7 +164,6 @@ Handle<Value> GitTree::Size(const Arguments& args) {
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Uint32::New(result);
   return scope.Close(to);
@@ -178,12 +175,14 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String filename is required.")));
   }
 
+  String::Utf8Value filename(args[0]->ToString());
+  const char * from_filename = strdup(*filename);
 
   const git_tree_entry * result = git_tree_entry_byname(
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
-    , stringArgToString(args[0]->ToString()).c_str()
+    , from_filename
   );
-
+  delete from_filename;
 
   Handle<Value> to;
     to = GitTreeEntry::New((void *)result);
@@ -196,12 +195,12 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number idx is required.")));
   }
 
+  size_t from_idx = (size_t) args[0]->ToUint32()->Value();
 
   const git_tree_entry * result = git_tree_entry_byindex(
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
-    , (size_t) args[0]->ToUint32()->Value()
+    , from_idx
   );
-
 
   Handle<Value> to;
     to = GitTreeEntry::New((void *)result);
@@ -214,12 +213,12 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid oid is required.")));
   }
 
+  const git_oid * from_oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
 
   const git_tree_entry * result = git_tree_entry_byoid(
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
-    , ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue()
+    , from_oid
   );
-
 
   Handle<Value> to;
     to = GitTreeEntry::New((void *)result);
@@ -228,8 +227,7 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
 
 Handle<Value> GitTree::GetEntryByPath(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsString()) {
+      if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
@@ -244,8 +242,9 @@ Handle<Value> GitTree::GetEntryByPath(const Arguments& args) {
   baton->rootReference = Persistent<Value>::New(args.This());
   baton->root = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->pathReference = Persistent<Value>::New(args[0]);
-  String::Utf8Value path(args[0]->ToString());
-  baton->path = strdup(*path);
+    String::Utf8Value path(args[0]->ToString());
+  const char * from_path = strdup(*path);
+  baton->path = from_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetEntryByPathWork, (uv_after_work_cb)GetEntryByPathAfterWork);

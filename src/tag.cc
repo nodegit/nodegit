@@ -13,8 +13,6 @@
 #include "../include/object.h"
 #include "../include/signature.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -78,8 +76,7 @@ git_tag *GitTag::GetValue() {
 
 Handle<Value> GitTag::Lookup(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -95,9 +92,11 @@ Handle<Value> GitTag::Lookup(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->idReference = Persistent<Value>::New(args[1]);
-  baton->id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+  baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
@@ -158,7 +157,6 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -166,8 +164,7 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
 
 Handle<Value> GitTag::Target(const Arguments& args) {
   HandleScope scope;
-  
-  
+    
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
@@ -236,7 +233,6 @@ Handle<Value> GitTag::TargetId(const Arguments& args) {
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = GitOid::New((void *)result);
   return scope.Close(to);
@@ -249,7 +245,6 @@ Handle<Value> GitTag::TargetType(const Arguments& args) {
   git_otype result = git_tag_target_type(
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = Int32::New(result);
@@ -264,7 +259,6 @@ Handle<Value> GitTag::Name(const Arguments& args) {
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = String::New(result);
   return scope.Close(to);
@@ -277,7 +271,6 @@ Handle<Value> GitTag::Tagger(const Arguments& args) {
   const git_signature * result = git_tag_tagger(
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
-
 
   Handle<Value> to;
     to = GitSignature::New((void *)result);
@@ -292,7 +285,6 @@ Handle<Value> GitTag::Message(const Arguments& args) {
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = String::New(result);
   return scope.Close(to);
@@ -300,8 +292,7 @@ Handle<Value> GitTag::Message(const Arguments& args) {
 
 Handle<Value> GitTag::Create(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
@@ -329,19 +320,25 @@ Handle<Value> GitTag::Create(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->tag_nameReference = Persistent<Value>::New(args[1]);
-  String::Utf8Value tag_name(args[1]->ToString());
-  baton->tag_name = strdup(*tag_name);
+    String::Utf8Value tag_name(args[1]->ToString());
+  const char * from_tag_name = strdup(*tag_name);
+  baton->tag_name = from_tag_name;
   baton->targetReference = Persistent<Value>::New(args[2]);
-  baton->target = ObjectWrap::Unwrap<GitObject>(args[2]->ToObject())->GetValue();
+    const git_object * from_target = ObjectWrap::Unwrap<GitObject>(args[2]->ToObject())->GetValue();
+  baton->target = from_target;
   baton->taggerReference = Persistent<Value>::New(args[3]);
-  baton->tagger = ObjectWrap::Unwrap<GitSignature>(args[3]->ToObject())->GetValue();
+    const git_signature * from_tagger = ObjectWrap::Unwrap<GitSignature>(args[3]->ToObject())->GetValue();
+  baton->tagger = from_tagger;
   baton->messageReference = Persistent<Value>::New(args[4]);
-  String::Utf8Value message(args[4]->ToString());
-  baton->message = strdup(*message);
+    String::Utf8Value message(args[4]->ToString());
+  const char * from_message = strdup(*message);
+  baton->message = from_message;
   baton->forceReference = Persistent<Value>::New(args[5]);
-  baton->force = (int) args[5]->ToInt32()->Value();
+    int from_force = (int) args[5]->ToInt32()->Value();
+  baton->force = from_force;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[6]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateWork, (uv_after_work_cb)CreateAfterWork);
@@ -406,8 +403,7 @@ void GitTag::CreateAfterWork(uv_work_t *req) {
 
 Handle<Value> GitTag::CreateLightweight(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
@@ -429,14 +425,18 @@ Handle<Value> GitTag::CreateLightweight(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->tag_nameReference = Persistent<Value>::New(args[1]);
-  String::Utf8Value tag_name(args[1]->ToString());
-  baton->tag_name = strdup(*tag_name);
+    String::Utf8Value tag_name(args[1]->ToString());
+  const char * from_tag_name = strdup(*tag_name);
+  baton->tag_name = from_tag_name;
   baton->targetReference = Persistent<Value>::New(args[2]);
-  baton->target = ObjectWrap::Unwrap<GitObject>(args[2]->ToObject())->GetValue();
+    const git_object * from_target = ObjectWrap::Unwrap<GitObject>(args[2]->ToObject())->GetValue();
+  baton->target = from_target;
   baton->forceReference = Persistent<Value>::New(args[3]);
-  baton->force = (int) args[3]->ToInt32()->Value();
+    int from_force = (int) args[3]->ToInt32()->Value();
+  baton->force = from_force;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[4]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateLightweightWork, (uv_after_work_cb)CreateLightweightAfterWork);
@@ -503,12 +503,15 @@ Handle<Value> GitTag::Delete(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String tag_name is required.")));
   }
 
+  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  String::Utf8Value tag_name(args[1]->ToString());
+  const char * from_tag_name = strdup(*tag_name);
 
   int result = git_tag_delete(
-    ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue()
-    , stringArgToString(args[1]->ToString()).c_str()
+    from_repo
+    , from_tag_name
   );
-
+  delete from_tag_name;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -523,12 +526,12 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
   }
 
   git_object *tag_target_out = NULL;
+  const git_tag * from_tag = ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue();
 
   int result = git_tag_peel(
     &tag_target_out
-    , ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue()
+    , from_tag
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

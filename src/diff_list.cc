@@ -16,8 +16,6 @@
 #include "../include/patch.h"
 #include "../include/delta.h"
 
-#include "../include/functions/string.h"
-
 using namespace v8;
 using namespace node;
 
@@ -78,8 +76,7 @@ git_diff_list *GitDiffList::GetValue() {
 
 Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -98,14 +95,18 @@ Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->old_treeReference = Persistent<Value>::New(args[1]);
-  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+    git_tree * from_old_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+  baton->old_tree = from_old_tree;
   baton->new_treeReference = Persistent<Value>::New(args[2]);
-  baton->new_tree = ObjectWrap::Unwrap<GitTree>(args[2]->ToObject())->GetValue();
+    git_tree * from_new_tree = ObjectWrap::Unwrap<GitTree>(args[2]->ToObject())->GetValue();
+  baton->new_tree = from_new_tree;
   baton->optsReference = Persistent<Value>::New(args[3]);
   if (args[3]->IsObject()) {
-    baton->opts = ObjectWrap::Unwrap<GitDiffOptions>(args[3]->ToObject())->GetValue();
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[3]->ToObject())->GetValue();
+  baton->opts = from_opts;
   } else {
     baton->opts = NULL;
   }
@@ -167,8 +168,7 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
 
 Handle<Value> GitDiffList::TreeToIndex(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -190,13 +190,17 @@ Handle<Value> GitDiffList::TreeToIndex(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->old_treeReference = Persistent<Value>::New(args[1]);
-  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+    git_tree * from_old_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+  baton->old_tree = from_old_tree;
   baton->indexReference = Persistent<Value>::New(args[2]);
-  baton->index = ObjectWrap::Unwrap<GitIndex>(args[2]->ToObject())->GetValue();
+    git_index * from_index = ObjectWrap::Unwrap<GitIndex>(args[2]->ToObject())->GetValue();
+  baton->index = from_index;
   baton->optsReference = Persistent<Value>::New(args[3]);
-  baton->opts = ObjectWrap::Unwrap<GitDiffOptions>(args[3]->ToObject())->GetValue();
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[3]->ToObject())->GetValue();
+  baton->opts = from_opts;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[4]));
 
   uv_queue_work(uv_default_loop(), &baton->request, TreeToIndexWork, (uv_after_work_cb)TreeToIndexAfterWork);
@@ -255,8 +259,7 @@ void GitDiffList::TreeToIndexAfterWork(uv_work_t *req) {
 
 Handle<Value> GitDiffList::IndexToWorkdir(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -275,11 +278,14 @@ Handle<Value> GitDiffList::IndexToWorkdir(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->indexReference = Persistent<Value>::New(args[1]);
-  baton->index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
+    git_index * from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
+  baton->index = from_index;
   baton->optsReference = Persistent<Value>::New(args[2]);
-  baton->opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+  baton->opts = from_opts;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, IndexToWorkdirWork, (uv_after_work_cb)IndexToWorkdirAfterWork);
@@ -336,8 +342,7 @@ void GitDiffList::IndexToWorkdirAfterWork(uv_work_t *req) {
 
 Handle<Value> GitDiffList::TreeToWorkdir(const Arguments& args) {
   HandleScope scope;
-  
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -356,11 +361,14 @@ Handle<Value> GitDiffList::TreeToWorkdir(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-  baton->repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
   baton->old_treeReference = Persistent<Value>::New(args[1]);
-  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+    git_tree * from_old_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+  baton->old_tree = from_old_tree;
   baton->optsReference = Persistent<Value>::New(args[2]);
-  baton->opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+  baton->opts = from_opts;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, TreeToWorkdirWork, (uv_after_work_cb)TreeToWorkdirAfterWork);
@@ -421,12 +429,12 @@ Handle<Value> GitDiffList::Merge(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("DiffList from is required.")));
   }
 
+  const git_diff_list * from_from = ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue();
 
   int result = git_diff_merge(
     ObjectWrap::Unwrap<GitDiffList>(args.This())->GetValue()
-    , ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue()
+    , from_from
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -440,12 +448,12 @@ Handle<Value> GitDiffList::FindSimilar(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("DiffFindOptions options is required.")));
   }
 
+  git_diff_find_options * from_options = ObjectWrap::Unwrap<GitDiffFindOptions>(args[0]->ToObject())->GetValue();
 
   int result = git_diff_find_similar(
     ObjectWrap::Unwrap<GitDiffList>(args.This())->GetValue()
-    , ObjectWrap::Unwrap<GitDiffFindOptions>(args[0]->ToObject())->GetValue()
+    , from_options
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -461,7 +469,6 @@ Handle<Value> GitDiffList::Size(const Arguments& args) {
     ObjectWrap::Unwrap<GitDiffList>(args.This())->GetValue()
   );
 
-
   Handle<Value> to;
     to = Uint32::New(result);
   return scope.Close(to);
@@ -476,12 +483,13 @@ Handle<Value> GitDiffList::NumDeltasOfType(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number type is required.")));
   }
 
+  git_diff_list * from_diff = ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue();
+  git_delta_t from_type = (git_delta_t) args[1]->ToInt32()->Value();
 
   size_t result = git_diff_num_deltas_of_type(
-    ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue()
-    , (git_delta_t) args[1]->ToInt32()->Value()
+    from_diff
+    , from_type
   );
-
 
   Handle<Value> to;
     to = Uint32::New(result);
@@ -496,14 +504,14 @@ Handle<Value> GitDiffList::Patch(const Arguments& args) {
 
   git_diff_patch *patch_out = NULL;
   const git_diff_delta *delta_out = NULL;
+  size_t from_idx = (size_t) args[0]->ToUint32()->Value();
 
   int result = git_diff_get_patch(
     &patch_out
     , &delta_out
     , ObjectWrap::Unwrap<GitDiffList>(args.This())->GetValue()
-    , (size_t) args[0]->ToUint32()->Value()
+    , from_idx
   );
-
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
