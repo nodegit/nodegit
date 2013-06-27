@@ -57,6 +57,7 @@ class <%- cppClassName %> : public ObjectWrap {
 
     struct <%- functionInfo.cppFunctionName %>Baton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
 <%
   for (var i = 0; i < functionInfo.args.length; i++) {

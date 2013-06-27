@@ -1,91 +1,161 @@
-/*
- * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
-#ifndef REVWALK_H
-#define REVWALK_H
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+
+#ifndef GITREVWALK_H
+#define GITREVWALK_H
 
 #include <v8.h>
 #include <node.h>
+#include <string>
 
 #include "git2.h"
-
-#include "repo.h"
 
 using namespace node;
 using namespace v8;
 
 class GitRevWalk : public ObjectWrap {
   public:
+
     static Persistent<Function> constructor_template;
-    static void Initialize(Handle<v8::Object> target);
+    static void Initialize (Handle<v8::Object> target);
 
-    git_revwalk* GetValue();
-    void SetValue(git_revwalk* revwalk);
-    git_repository* GetRepo();
-    void SetRepo(git_repository* repository);
+    git_revwalk *GetValue();
 
-  protected:
-    GitRevWalk() {}
-    ~GitRevWalk() {}
+    static Handle<Value> New(void *raw);
+
+  private:
+    GitRevWalk(git_revwalk *raw);
+    ~GitRevWalk();
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Free(const Arguments& args);
 
+
+    static Handle<Value> Make(const Arguments& args);
     static Handle<Value> Reset(const Arguments& args);
-
-    static Handle<Value> Allocate(const Arguments& args);
-    static void AllocateWork(uv_work_t *req);
-    static void AllocateAfterWork(uv_work_t *req);
-
     static Handle<Value> Push(const Arguments& args);
-    static void PushWork(uv_work_t *req);
-    static void PushAfterWork(uv_work_t *req);
+    static void PushWork(uv_work_t* req);
+    static void PushAfterWork(uv_work_t* req);
 
+    struct PushBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Value> idReference;
+      const git_oid * id;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> PushGlob(const Arguments& args);
+    static void PushGlobWork(uv_work_t* req);
+    static void PushGlobAfterWork(uv_work_t* req);
+
+    struct PushGlobBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Value> globReference;
+      const char * glob;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> PushHead(const Arguments& args);
+    static void PushHeadWork(uv_work_t* req);
+    static void PushHeadAfterWork(uv_work_t* req);
+
+    struct PushHeadBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> Hide(const Arguments& args);
+    static void HideWork(uv_work_t* req);
+    static void HideAfterWork(uv_work_t* req);
+
+    struct HideBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Value> commit_idReference;
+      const git_oid * commit_id;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> HideGlob(const Arguments& args);
+    static void HideGlobWork(uv_work_t* req);
+    static void HideGlobAfterWork(uv_work_t* req);
+
+    struct HideGlobBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Value> globReference;
+      const char * glob;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> HideHead(const Arguments& args);
+    static void HideHeadWork(uv_work_t* req);
+    static void HideHeadAfterWork(uv_work_t* req);
+
+    struct HideHeadBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> PushRef(const Arguments& args);
+    static void PushRefWork(uv_work_t* req);
+    static void PushRefAfterWork(uv_work_t* req);
+
+    struct PushRefBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Value> refnameReference;
+      const char * refname;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> HideRef(const Arguments& args);
+    static void HideRefWork(uv_work_t* req);
+    static void HideRefAfterWork(uv_work_t* req);
+
+    struct HideRefBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
+      Persistent<Value> refnameReference;
+      const char * refname;
+      Persistent<Function> callback;
+    };
     static Handle<Value> Next(const Arguments& args);
     static void NextWork(uv_work_t* req);
     static void NextAfterWork(uv_work_t* req);
 
-    static Handle<Value> Sorting(const Arguments& args);
-
-  private:
-    git_revwalk* revwalk;
-    git_repository* repo;
-
-    struct AllocateBaton {
-      uv_work_t request;
-      const git_error* error;
-
-      GitRevWalk* revwalk;
-      git_revwalk *rawRevwalk;
-      git_repository* rawRepo;
-
-      Persistent<Function> callback;
-    };
-
-    struct PushBaton {
-      uv_work_t request;
-      const git_error* error;
-
-      git_revwalk *rawRevwalk;
-      git_oid rawOid;
-
-      Persistent<Function> callback;
-    };
-
     struct NextBaton {
       uv_work_t request;
-
+      int error_code;
       const git_error* error;
-      bool walkOver;
-
-      git_revwalk *rawRevwalk;
-      git_oid rawOid;
-
+      git_oid * out;
+      Persistent<Value> walkReference;
+      git_revwalk * walk;
       Persistent<Function> callback;
     };
+    static Handle<Value> Sorting(const Arguments& args);
+    git_revwalk *raw;
 };
 
 #endif

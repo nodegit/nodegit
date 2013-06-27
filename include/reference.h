@@ -37,6 +37,7 @@ class GitReference : public ObjectWrap {
 
     struct LookupBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_reference * out;
       Persistent<Value> repoReference;
@@ -51,6 +52,7 @@ class GitReference : public ObjectWrap {
 
     struct OidForNameBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_oid * out;
       Persistent<Value> repoReference;
@@ -70,6 +72,7 @@ class GitReference : public ObjectWrap {
 
     struct ResolveBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_reference * out;
       Persistent<Value> refReference;
@@ -84,6 +87,7 @@ class GitReference : public ObjectWrap {
 
     struct RenameBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_reference * out;
       Persistent<Value> refReference;
@@ -100,6 +104,7 @@ class GitReference : public ObjectWrap {
 
     struct DeleteBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       Persistent<Value> refReference;
       git_reference * ref;

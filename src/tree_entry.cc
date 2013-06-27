@@ -137,6 +137,7 @@ Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
   }
 
   GetObjectBaton* baton = new GetObjectBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -157,6 +158,7 @@ void GitTreeEntry::GetObjectWork(uv_work_t *req) {
     baton->repo, 
     baton->entry
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -167,7 +169,7 @@ void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
   GetObjectBaton *baton = static_cast<GetObjectBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitObject::New((void *)baton->object_out);
   Handle<Value> result = to;
@@ -176,11 +178,13 @@ void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

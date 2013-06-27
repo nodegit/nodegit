@@ -87,6 +87,7 @@ Handle<Value> GitBlob::Lookup(const Arguments& args) {
   }
 
   LookupBaton* baton = new LookupBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -107,6 +108,7 @@ void GitBlob::LookupWork(uv_work_t *req) {
     baton->repo, 
     baton->id
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -117,7 +119,7 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitBlob::New((void *)baton->blob);
   Handle<Value> result = to;
@@ -126,11 +128,13 @@ void GitBlob::LookupAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -199,6 +203,7 @@ Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   }
 
   CreateFromFileBaton* baton = new CreateFromFileBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -220,6 +225,7 @@ void GitBlob::CreateFromFileWork(uv_work_t *req) {
     baton->repo, 
     baton->path
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -230,7 +236,7 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
   CreateFromFileBaton *baton = static_cast<CreateFromFileBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitOid::New((void *)baton->id);
   Handle<Value> result = to;
@@ -239,11 +245,13 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -274,6 +282,7 @@ Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   }
 
   CreateFromBufferBaton* baton = new CreateFromBufferBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -297,6 +306,7 @@ void GitBlob::CreateFromBufferWork(uv_work_t *req) {
     baton->buffer, 
     baton->len
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -307,7 +317,7 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
   CreateFromBufferBaton *baton = static_cast<CreateFromBufferBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitOid::New((void *)baton->oid);
   Handle<Value> result = to;
@@ -316,11 +326,13 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

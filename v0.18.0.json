@@ -11366,8 +11366,9 @@
   },
   {
     "filename": "revwalk.h",
-    "jsClassName": "Revwalk",
-    "cppClassName": "GitRevwalk",
+    "dependencies": ["../include/oid.h", "../include/repo.h"],
+    "jsClassName": "RevWalk",
+    "cppClassName": "GitRevWalk",
     "cType": "git_revwalk",
     "freeFunctionName": "git_revwalk_free",
     "functions": [
@@ -11378,8 +11379,8 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_revwalk **",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk"
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk"
           },
           {
             "name": "repo",
@@ -11392,8 +11393,8 @@
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
-        "jsFunctionName": "new",
-        "cppFunctionName": "New",
+        "jsFunctionName": "make",
+        "cppFunctionName": "Make",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -11406,8 +11407,8 @@
           {
             "name": "walker",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           }
         ],
@@ -11427,8 +11428,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11438,7 +11439,7 @@
             "jsClassName": "Oid"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "push",
@@ -11455,8 +11456,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11466,7 +11467,7 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "pushGlob",
@@ -11483,12 +11484,12 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "pushHead",
@@ -11505,8 +11506,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11516,7 +11517,7 @@
             "jsClassName": "Oid"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "hide",
@@ -11533,8 +11534,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11544,7 +11545,7 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "hideGlob",
@@ -11561,12 +11562,12 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "hideHead",
@@ -11583,8 +11584,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11594,7 +11595,7 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "pushRef",
@@ -11611,8 +11612,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11622,7 +11623,7 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "hideRef",
@@ -11640,19 +11641,21 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_oid *",
+            "shouldAlloc": true,
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
           },
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk"
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
+            "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "next",
         "cppFunctionName": "Next",
         "return": {
@@ -11667,8 +11670,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11694,8 +11697,8 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           },
           {
@@ -11705,7 +11708,8 @@
             "jsClassName": "String"
           }
         ],
-        "isAsync": false,
+        "ignore": "This is in the documentation, but doesn't seem to exist!",
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "pushRange",
@@ -11722,10 +11726,11 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk"
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -11743,11 +11748,12 @@
           {
             "name": "walk",
             "cType": "git_revwalk *",
-            "cppClassName": "GitRevwalk",
-            "jsClassName": "Revwalk",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk",
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,

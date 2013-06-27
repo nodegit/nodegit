@@ -94,6 +94,7 @@ Handle<Value> GitCommit::Lookup(const Arguments& args) {
   }
 
   LookupBaton* baton = new LookupBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -114,6 +115,7 @@ void GitCommit::LookupWork(uv_work_t *req) {
     baton->repo, 
     baton->id
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -124,7 +126,7 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitCommit::New((void *)baton->commit);
   Handle<Value> result = to;
@@ -133,11 +135,13 @@ void GitCommit::LookupAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -256,6 +260,7 @@ Handle<Value> GitCommit::Tree(const Arguments& args) {
   }
 
   TreeBaton* baton = new TreeBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->commitReference = Persistent<Value>::New(args.This());
@@ -273,6 +278,7 @@ void GitCommit::TreeWork(uv_work_t *req) {
     &baton->tree_out, 
     baton->commit
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -283,7 +289,7 @@ void GitCommit::TreeAfterWork(uv_work_t *req) {
   TreeBaton *baton = static_cast<TreeBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitTree::New((void *)baton->tree_out);
   Handle<Value> result = to;
@@ -292,11 +298,13 @@ void GitCommit::TreeAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -347,6 +355,7 @@ Handle<Value> GitCommit::Parent(const Arguments& args) {
   }
 
   ParentBaton* baton = new ParentBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->commitReference = Persistent<Value>::New(args.This());
@@ -367,6 +376,7 @@ void GitCommit::ParentWork(uv_work_t *req) {
     baton->commit, 
     baton->n
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -377,7 +387,7 @@ void GitCommit::ParentAfterWork(uv_work_t *req) {
   ParentBaton *baton = static_cast<ParentBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitCommit::New((void *)baton->out);
   Handle<Value> result = to;
@@ -386,11 +396,13 @@ void GitCommit::ParentAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

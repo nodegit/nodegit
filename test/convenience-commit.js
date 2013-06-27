@@ -188,10 +188,10 @@ exports.history = function(test) {
         historyCount++;
       }).on('end', function(error, commits) {
         test.equals(null, error, 'There should be no errors');
-        test.equals(historyCount, expectedHistoryCount, 'Manual count does not match expected');
-        test.equals(commits.length, expectedHistoryCount, '"end" count does not match expected');
+        test.equals(historyCount, expectedHistoryCount);
+        test.equals(commits.length, expectedHistoryCount);
         test.done();
-      });
+      }).start();
     });
   });
 };

@@ -1,4 +1,3 @@
-- replace all argv crap with Wrap static methods for tighter instantiation
 - rename all async methods getXXX
 - convert to "ignore": true for all classes
 - reorder functions so the raw api is oo-like

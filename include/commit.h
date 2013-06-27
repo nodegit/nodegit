@@ -37,6 +37,7 @@ class GitCommit : public ObjectWrap {
 
     struct LookupBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_commit * commit;
       Persistent<Value> repoReference;
@@ -58,6 +59,7 @@ class GitCommit : public ObjectWrap {
 
     struct TreeBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_tree * tree_out;
       Persistent<Value> commitReference;
@@ -72,6 +74,7 @@ class GitCommit : public ObjectWrap {
 
     struct ParentBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_commit * out;
       Persistent<Value> commitReference;

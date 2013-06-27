@@ -37,6 +37,7 @@ class GitBlob : public ObjectWrap {
 
     struct LookupBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_blob * blob;
       Persistent<Value> repoReference;
@@ -54,6 +55,7 @@ class GitBlob : public ObjectWrap {
 
     struct CreateFromFileBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_oid * id;
       Persistent<Value> repoReference;
@@ -68,6 +70,7 @@ class GitBlob : public ObjectWrap {
 
     struct CreateFromBufferBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_oid * oid;
       Persistent<Value> repoReference;

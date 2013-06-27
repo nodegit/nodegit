@@ -37,6 +37,7 @@ class GitDiffList : public ObjectWrap {
 
     struct TreeToTreeBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_diff_list * diff;
       Persistent<Value> repoReference;
@@ -55,6 +56,7 @@ class GitDiffList : public ObjectWrap {
 
     struct TreeToIndexBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_diff_list * diff;
       Persistent<Value> repoReference;
@@ -73,6 +75,7 @@ class GitDiffList : public ObjectWrap {
 
     struct IndexToWorkdirBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_diff_list * diff;
       Persistent<Value> repoReference;
@@ -89,6 +92,7 @@ class GitDiffList : public ObjectWrap {
 
     struct TreeToWorkdirBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_diff_list * diff;
       Persistent<Value> repoReference;

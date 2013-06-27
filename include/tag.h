@@ -37,6 +37,7 @@ class GitTag : public ObjectWrap {
 
     struct LookupBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_tag * out;
       Persistent<Value> repoReference;
@@ -52,6 +53,7 @@ class GitTag : public ObjectWrap {
 
     struct TargetBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_object * target_out;
       Persistent<Value> tagReference;
@@ -69,6 +71,7 @@ class GitTag : public ObjectWrap {
 
     struct CreateBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_oid * oid;
       Persistent<Value> repoReference;
@@ -91,6 +94,7 @@ class GitTag : public ObjectWrap {
 
     struct CreateLightweightBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_oid * oid;
       Persistent<Value> repoReference;

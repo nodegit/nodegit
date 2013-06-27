@@ -86,6 +86,7 @@ Handle<Value> GitTree::Lookup(const Arguments& args) {
   }
 
   LookupBaton* baton = new LookupBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -106,6 +107,7 @@ void GitTree::LookupWork(uv_work_t *req) {
     baton->repo, 
     baton->id
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -116,7 +118,7 @@ void GitTree::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitTree::New((void *)baton->out);
   Handle<Value> result = to;
@@ -125,11 +127,13 @@ void GitTree::LookupAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -235,6 +239,7 @@ Handle<Value> GitTree::GetEntryByPath(const Arguments& args) {
   }
 
   GetEntryByPathBaton* baton = new GetEntryByPathBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->rootReference = Persistent<Value>::New(args.This());
@@ -256,6 +261,7 @@ void GitTree::GetEntryByPathWork(uv_work_t *req) {
     baton->root, 
     baton->path
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -266,7 +272,7 @@ void GitTree::GetEntryByPathAfterWork(uv_work_t *req) {
   GetEntryByPathBaton *baton = static_cast<GetEntryByPathBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitTreeEntry::New((void *)baton->out);
   Handle<Value> result = to;
@@ -275,11 +281,13 @@ void GitTree::GetEntryByPathAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

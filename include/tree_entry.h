@@ -41,6 +41,7 @@ class GitTreeEntry : public ObjectWrap {
 
     struct GetObjectBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_object * object_out;
       Persistent<Value> repoReference;

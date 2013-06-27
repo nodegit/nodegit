@@ -92,6 +92,7 @@ Handle<Value> GitTag::Lookup(const Arguments& args) {
   }
 
   LookupBaton* baton = new LookupBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -112,6 +113,7 @@ void GitTag::LookupWork(uv_work_t *req) {
     baton->repo, 
     baton->id
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -122,7 +124,7 @@ void GitTag::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitTag::New((void *)baton->out);
   Handle<Value> result = to;
@@ -131,11 +133,13 @@ void GitTag::LookupAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -170,6 +174,7 @@ Handle<Value> GitTag::Target(const Arguments& args) {
   }
 
   TargetBaton* baton = new TargetBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->tagReference = Persistent<Value>::New(args.This());
@@ -187,6 +192,7 @@ void GitTag::TargetWork(uv_work_t *req) {
     &baton->target_out, 
     baton->tag
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -197,7 +203,7 @@ void GitTag::TargetAfterWork(uv_work_t *req) {
   TargetBaton *baton = static_cast<TargetBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitObject::New((void *)baton->target_out);
   Handle<Value> result = to;
@@ -206,11 +212,13 @@ void GitTag::TargetAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -318,6 +326,7 @@ Handle<Value> GitTag::Create(const Arguments& args) {
   }
 
   CreateBaton* baton = new CreateBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -352,6 +361,7 @@ void GitTag::CreateWork(uv_work_t *req) {
     baton->message, 
     baton->force
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -362,7 +372,7 @@ void GitTag::CreateAfterWork(uv_work_t *req) {
   CreateBaton *baton = static_cast<CreateBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitOid::New((void *)baton->oid);
   Handle<Value> result = to;
@@ -371,11 +381,13 @@ void GitTag::CreateAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -414,6 +426,7 @@ Handle<Value> GitTag::CreateLightweight(const Arguments& args) {
   }
 
   CreateLightweightBaton* baton = new CreateLightweightBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -441,6 +454,7 @@ void GitTag::CreateLightweightWork(uv_work_t *req) {
     baton->target, 
     baton->force
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -451,7 +465,7 @@ void GitTag::CreateLightweightAfterWork(uv_work_t *req) {
   CreateLightweightBaton *baton = static_cast<CreateLightweightBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitOid::New((void *)baton->oid);
   Handle<Value> result = to;
@@ -460,11 +474,13 @@ void GitTag::CreateLightweightAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

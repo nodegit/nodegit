@@ -86,6 +86,7 @@ Handle<Value> GitObject::Lookup(const Arguments& args) {
   }
 
   LookupBaton* baton = new LookupBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -109,6 +110,7 @@ void GitObject::LookupWork(uv_work_t *req) {
     baton->id, 
     baton->type
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -119,7 +121,7 @@ void GitObject::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitObject::New((void *)baton->object);
   Handle<Value> result = to;
@@ -128,11 +130,13 @@ void GitObject::LookupAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -199,6 +203,7 @@ Handle<Value> GitObject::Peel(const Arguments& args) {
   }
 
   PeelBaton* baton = new PeelBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->objectReference = Persistent<Value>::New(args.This());
@@ -219,6 +224,7 @@ void GitObject::PeelWork(uv_work_t *req) {
     baton->object, 
     baton->target_type
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -229,7 +235,7 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
   PeelBaton *baton = static_cast<PeelBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitObject::New((void *)baton->peeled);
   Handle<Value> result = to;
@@ -238,11 +244,13 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

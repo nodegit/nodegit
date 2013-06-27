@@ -37,6 +37,7 @@ class GitRepo : public ObjectWrap {
 
     struct OpenBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_repository * out;
       Persistent<Value> pathReference;
@@ -49,6 +50,7 @@ class GitRepo : public ObjectWrap {
 
     struct InitBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_repository * out;
       Persistent<Value> pathReference;

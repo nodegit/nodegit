@@ -95,6 +95,7 @@ Handle<Value> GitReference::Lookup(const Arguments& args) {
   }
 
   LookupBaton* baton = new LookupBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -116,6 +117,7 @@ void GitReference::LookupWork(uv_work_t *req) {
     baton->repo, 
     baton->name
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -126,7 +128,7 @@ void GitReference::LookupAfterWork(uv_work_t *req) {
   LookupBaton *baton = static_cast<LookupBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitReference::New((void *)baton->out);
   Handle<Value> result = to;
@@ -135,11 +137,13 @@ void GitReference::LookupAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -167,6 +171,7 @@ Handle<Value> GitReference::OidForName(const Arguments& args) {
   }
 
   OidForNameBaton* baton = new OidForNameBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -188,6 +193,7 @@ void GitReference::OidForNameWork(uv_work_t *req) {
     baton->repo, 
     baton->name
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -198,7 +204,7 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
   OidForNameBaton *baton = static_cast<OidForNameBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitOid::New((void *)baton->out);
   Handle<Value> result = to;
@@ -207,11 +213,13 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -343,6 +351,7 @@ Handle<Value> GitReference::Resolve(const Arguments& args) {
   }
 
   ResolveBaton* baton = new ResolveBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->refReference = Persistent<Value>::New(args.This());
@@ -360,6 +369,7 @@ void GitReference::ResolveWork(uv_work_t *req) {
     &baton->out, 
     baton->ref
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -370,7 +380,7 @@ void GitReference::ResolveAfterWork(uv_work_t *req) {
   ResolveBaton *baton = static_cast<ResolveBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitReference::New((void *)baton->out);
   Handle<Value> result = to;
@@ -379,11 +389,13 @@ void GitReference::ResolveAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -455,6 +467,7 @@ Handle<Value> GitReference::Rename(const Arguments& args) {
   }
 
   RenameBaton* baton = new RenameBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->refReference = Persistent<Value>::New(args.This());
@@ -479,6 +492,7 @@ void GitReference::RenameWork(uv_work_t *req) {
     baton->new_name, 
     baton->force
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -489,7 +503,7 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
   RenameBaton *baton = static_cast<RenameBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitReference::New((void *)baton->out);
   Handle<Value> result = to;
@@ -498,11 +512,13 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -525,6 +541,7 @@ Handle<Value> GitReference::Delete(const Arguments& args) {
   }
 
   DeleteBaton* baton = new DeleteBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->refReference = Persistent<Value>::New(args.This());
@@ -541,6 +558,7 @@ void GitReference::DeleteWork(uv_work_t *req) {
   int result = git_reference_delete(
     baton->ref
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -551,7 +569,7 @@ void GitReference::DeleteAfterWork(uv_work_t *req) {
   DeleteBaton *baton = static_cast<DeleteBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
@@ -559,11 +577,13 @@ void GitReference::DeleteAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

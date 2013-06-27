@@ -92,6 +92,7 @@ Handle<Value> GitIndex::Open(const Arguments& args) {
   }
 
   OpenBaton* baton = new OpenBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->index_pathReference = Persistent<Value>::New(args[0]);
@@ -110,6 +111,7 @@ void GitIndex::OpenWork(uv_work_t *req) {
     &baton->out, 
     baton->index_path
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -120,7 +122,7 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitIndex::New((void *)baton->out);
   Handle<Value> result = to;
@@ -129,11 +131,13 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -168,6 +172,7 @@ Handle<Value> GitIndex::Read(const Arguments& args) {
   }
 
   ReadBaton* baton = new ReadBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
@@ -184,6 +189,7 @@ void GitIndex::ReadWork(uv_work_t *req) {
   int result = git_index_read(
     baton->index
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -194,7 +200,7 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
   ReadBaton *baton = static_cast<ReadBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
@@ -202,11 +208,13 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -226,6 +234,7 @@ Handle<Value> GitIndex::Write(const Arguments& args) {
   }
 
   WriteBaton* baton = new WriteBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
@@ -242,6 +251,7 @@ void GitIndex::WriteWork(uv_work_t *req) {
   int result = git_index_write(
     baton->index
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -252,7 +262,7 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
   WriteBaton *baton = static_cast<WriteBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
@@ -260,11 +270,13 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -287,6 +299,7 @@ Handle<Value> GitIndex::ReadTree(const Arguments& args) {
   }
 
   ReadTreeBaton* baton = new ReadTreeBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
@@ -306,6 +319,7 @@ void GitIndex::ReadTreeWork(uv_work_t *req) {
     baton->index, 
     baton->tree
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -316,7 +330,7 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
   ReadTreeBaton *baton = static_cast<ReadTreeBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
@@ -324,11 +338,13 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -349,6 +365,7 @@ Handle<Value> GitIndex::WriteTree(const Arguments& args) {
   }
 
   WriteTreeBaton* baton = new WriteTreeBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
@@ -366,6 +383,7 @@ void GitIndex::WriteTreeWork(uv_work_t *req) {
     baton->out, 
     baton->index
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -376,7 +394,7 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
   WriteTreeBaton *baton = static_cast<WriteTreeBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitOid::New((void *)baton->out);
   Handle<Value> result = to;
@@ -385,11 +403,13 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -484,6 +504,7 @@ Handle<Value> GitIndex::AddBypath(const Arguments& args) {
   }
 
   AddBypathBaton* baton = new AddBypathBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->indexReference = Persistent<Value>::New(args.This());
@@ -504,6 +525,7 @@ void GitIndex::AddBypathWork(uv_work_t *req) {
     baton->index, 
     baton->path
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -514,7 +536,7 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
   AddBypathBaton *baton = static_cast<AddBypathBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
 
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
@@ -522,11 +544,13 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

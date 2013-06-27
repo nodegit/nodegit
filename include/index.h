@@ -37,6 +37,7 @@ class GitIndex : public ObjectWrap {
 
     struct OpenBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_index * out;
       Persistent<Value> index_pathReference;
@@ -50,6 +51,7 @@ class GitIndex : public ObjectWrap {
 
     struct ReadBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       Persistent<Value> indexReference;
       git_index * index;
@@ -61,6 +63,7 @@ class GitIndex : public ObjectWrap {
 
     struct WriteBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       Persistent<Value> indexReference;
       git_index * index;
@@ -72,6 +75,7 @@ class GitIndex : public ObjectWrap {
 
     struct ReadTreeBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       Persistent<Value> indexReference;
       git_index * index;
@@ -85,6 +89,7 @@ class GitIndex : public ObjectWrap {
 
     struct WriteTreeBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_oid * out;
       Persistent<Value> indexReference;
@@ -101,6 +106,7 @@ class GitIndex : public ObjectWrap {
 
     struct AddBypathBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       Persistent<Value> indexReference;
       git_index * index;

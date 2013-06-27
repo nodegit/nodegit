@@ -77,6 +77,7 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   }
 
   OpenBaton* baton = new OpenBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->pathReference = Persistent<Value>::New(args[0]);
@@ -95,6 +96,7 @@ void GitRepo::OpenWork(uv_work_t *req) {
     &baton->out, 
     baton->path
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -105,7 +107,7 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitRepo::New((void *)baton->out);
   Handle<Value> result = to;
@@ -114,11 +116,13 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -145,6 +149,7 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   }
 
   InitBaton* baton = new InitBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->pathReference = Persistent<Value>::New(args[0]);
@@ -166,6 +171,7 @@ void GitRepo::InitWork(uv_work_t *req) {
     baton->path, 
     baton->is_bare
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -176,7 +182,7 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   InitBaton *baton = static_cast<InitBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitRepo::New((void *)baton->out);
   Handle<Value> result = to;
@@ -185,11 +191,13 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

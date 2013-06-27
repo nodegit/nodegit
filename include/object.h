@@ -37,6 +37,7 @@ class GitObject : public ObjectWrap {
 
     struct LookupBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_object * object;
       Persistent<Value> repoReference;
@@ -56,6 +57,7 @@ class GitObject : public ObjectWrap {
 
     struct PeelBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_object * peeled;
       Persistent<Value> objectReference;

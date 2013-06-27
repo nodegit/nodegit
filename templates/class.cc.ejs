@@ -146,6 +146,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   }
 
   <%- functionInfo.cppFunctionName %>Baton* baton = new <%- functionInfo.cppFunctionName %>Baton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
 <%
@@ -180,6 +181,11 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <% } -%>
 <% } -%>
 <% if (!(arg.isReturn || arg.isSelf)) jsArg++; -%>
+<% } else { -%>
+<% if (arg.shouldAlloc) { -%>
+  baton-><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));
+<% } else { -%>
+<% } -%>
 <% } -%>
 <% } -%>
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- jsArg %>]));
@@ -200,6 +206,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req
 <% } -%>
   );
 <% if (functionInfo.return.isErrorCode) { -%>
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -213,7 +220,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
   <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
 <% if (!returns.length) { %>
     Handle<Value> result = Local<Value>::New(Undefined());
 <% } else if (returns.length == 1) { -%>
@@ -238,11 +245,13 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -277,7 +286,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     if (!arg.isReturn) continue;
 -%>
 <% if (arg.shouldAlloc) { -%>
-  <%- arg.cType %><%- arg.name %> = (<%- functionInfo.args[0].cType %>)malloc(sizeof(<%- cType %>));
+  <%- arg.cType %><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));
 <% } else { -%>
   <%- arg.cType.replace('*', '') %><%- arg.name %> = NULL;
 <% } -%>

@@ -37,6 +37,7 @@ class GitTree : public ObjectWrap {
 
     struct LookupBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_tree * out;
       Persistent<Value> repoReference;
@@ -56,6 +57,7 @@ class GitTree : public ObjectWrap {
 
     struct GetEntryByPathBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
       git_tree_entry * out;
       Persistent<Value> rootReference;

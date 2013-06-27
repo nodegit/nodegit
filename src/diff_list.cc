@@ -95,6 +95,7 @@ Handle<Value> GitDiffList::TreeToTree(const Arguments& args) {
   }
 
   TreeToTreeBaton* baton = new TreeToTreeBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -125,6 +126,7 @@ void GitDiffList::TreeToTreeWork(uv_work_t *req) {
     baton->new_tree, 
     baton->opts
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -135,7 +137,7 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
   TreeToTreeBaton *baton = static_cast<TreeToTreeBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitDiffList::New((void *)baton->diff);
   Handle<Value> result = to;
@@ -144,11 +146,13 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -183,6 +187,7 @@ Handle<Value> GitDiffList::TreeToIndex(const Arguments& args) {
   }
 
   TreeToIndexBaton* baton = new TreeToIndexBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -209,6 +214,7 @@ void GitDiffList::TreeToIndexWork(uv_work_t *req) {
     baton->index, 
     baton->opts
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -219,7 +225,7 @@ void GitDiffList::TreeToIndexAfterWork(uv_work_t *req) {
   TreeToIndexBaton *baton = static_cast<TreeToIndexBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitDiffList::New((void *)baton->diff);
   Handle<Value> result = to;
@@ -228,11 +234,13 @@ void GitDiffList::TreeToIndexAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -264,6 +272,7 @@ Handle<Value> GitDiffList::IndexToWorkdir(const Arguments& args) {
   }
 
   IndexToWorkdirBaton* baton = new IndexToWorkdirBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -287,6 +296,7 @@ void GitDiffList::IndexToWorkdirWork(uv_work_t *req) {
     baton->index, 
     baton->opts
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -297,7 +307,7 @@ void GitDiffList::IndexToWorkdirAfterWork(uv_work_t *req) {
   IndexToWorkdirBaton *baton = static_cast<IndexToWorkdirBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitDiffList::New((void *)baton->diff);
   Handle<Value> result = to;
@@ -306,11 +316,13 @@ void GitDiffList::IndexToWorkdirAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {
@@ -341,6 +353,7 @@ Handle<Value> GitDiffList::TreeToWorkdir(const Arguments& args) {
   }
 
   TreeToWorkdirBaton* baton = new TreeToWorkdirBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
@@ -364,6 +377,7 @@ void GitDiffList::TreeToWorkdirWork(uv_work_t *req) {
     baton->old_tree, 
     baton->opts
   );
+  baton->error_code = result;
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
@@ -374,7 +388,7 @@ void GitDiffList::TreeToWorkdirAfterWork(uv_work_t *req) {
   TreeToWorkdirBaton *baton = static_cast<TreeToWorkdirBaton *>(req->data);
 
   TryCatch try_catch;
-  if (!baton->error) {
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     to = GitDiffList::New((void *)baton->diff);
   Handle<Value> result = to;
@@ -383,11 +397,13 @@ void GitDiffList::TreeToWorkdirAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else {
+  } else if (baton->error) {
     Handle<Value> argv[1] = {
       GitError::WrapError(baton->error)
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
 
   if (try_catch.HasCaught()) {

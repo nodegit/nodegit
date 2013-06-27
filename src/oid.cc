@@ -68,7 +68,7 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String str is required.")));
   }
 
-  git_oid *out = (git_oid *)malloc(sizeof(git_oid));
+  git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
 
   int result = git_oid_fromstr(
     out
