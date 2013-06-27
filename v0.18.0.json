@@ -1,6 +1,7 @@
 [
   {
     "filename": "attr.h",
+    "ignore": true,
     "jsClassName": "Attr",
     "cppClassName": "Attr",
     "cType": "git_attr",
@@ -136,6 +137,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -932,6 +934,7 @@
   },
   {
     "filename": "checkout.h",
+    "ignore": true,
     "jsClassName": "Checkout",
     "cppClassName": "Checkout",
     "cType": "git_checkout",
@@ -1034,6 +1037,7 @@
   },
   {
     "filename": "clone.h",
+    "ignore": true,
     "jsClassName": "Clone",
     "cppClassName": "Clone",
     "cType": "git_clone",
@@ -1655,6 +1659,7 @@
   },
   {
     "filename": "common.h",
+    "ignore": true,
     "jsClassName": "Common",
     "cppClassName": "Common",
     "cType": "git_common",
@@ -1730,6 +1735,7 @@
   },
   {
     "filename": "config.h",
+    "ignore": true,
     "jsClassName": "Config",
     "cppClassName": "Config",
     "cType": "git_config",
@@ -2716,6 +2722,7 @@
   },
   {
     "filename": "cred_helpers.h",
+    "ignore": true,
     "jsClassName": "CredHelpers",
     "cppClassName": "CredHelpers",
     "cType": "git_cred_helpers",
@@ -3880,20 +3887,22 @@
     ]
   },
   {
-    "filename": "errors.h",
-    "jsClassName": "Errors",
-    "cppClassName": "Errors",
-    "cType": "git_errors",
+    "filename": "error.h",
+    "ignore": true,
+    "jsClassName": "Error",
+    "cppClassName": "GitError",
+    "cType": "git_error",
     "freeFunctionName": "git_errors_free",
     "functions": [
       {
         "cFunctionName": "giterr_last",
         "args": [],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "giterrLast",
-        "cppFunctionName": "GiterrLast",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "lastError",
+        "cppFunctionName": "LastError",
         "return": {
           "cType": "const git_error *",
           "cppClassName": "Error"
@@ -3902,11 +3911,12 @@
       {
         "cFunctionName": "giterr_clear",
         "args": [],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
-        "jsFunctionName": "giterrClear",
-        "cppFunctionName": "GiterrClear",
+        "jsFunctionName": "clear",
+        "cppFunctionName": "Clear",
         "return": {
           "cType": "void",
           "cppClassName": "void"
@@ -3928,11 +3938,12 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
-        "jsFunctionName": "giterrSetStr",
-        "cppFunctionName": "GiterrSetStr",
+        "jsFunctionName": "setString",
+        "cppFunctionName": "SetString",
         "return": {
           "cType": "void",
           "cppClassName": "void"
@@ -3941,11 +3952,12 @@
       {
         "cFunctionName": "giterr_set_oom",
         "args": [],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
-        "jsFunctionName": "giterrSetOom",
-        "cppFunctionName": "GiterrSetOom",
+        "jsFunctionName": "setOOM",
+        "cppFunctionName": "SetOOM",
         "return": {
           "cType": "void",
           "cppClassName": "void"
@@ -3955,6 +3967,7 @@
   },
   {
     "filename": "graph.h",
+    "ignore": true,
     "jsClassName": "Graph",
     "cppClassName": "Graph",
     "cType": "git_graph",
@@ -4009,6 +4022,7 @@
   },
   {
     "filename": "ignore.h",
+    "ignore": true,
     "jsClassName": "Ignore",
     "cppClassName": "Ignore",
     "cType": "git_ignore",
@@ -5087,6 +5101,7 @@
   },
   {
     "filename": "indexer.h",
+    "ignore": true,
     "jsClassName": "Indexer",
     "cppClassName": "Indexer",
     "cType": "git_indexer",
@@ -5243,6 +5258,7 @@
   },
   {
     "filename": "inttypes.h",
+    "ignore": true,
     "jsClassName": "Inttypes",
     "cppClassName": "Inttypes",
     "cType": "git_inttypes",
@@ -5251,6 +5267,7 @@
   },
   {
     "filename": "merge.h",
+    "ignore": true,
     "jsClassName": "Merge",
     "cppClassName": "Merge",
     "cType": "git_merge",
@@ -5334,6 +5351,7 @@
   },
   {
     "filename": "message.h",
+    "ignore": true,
     "jsClassName": "Message",
     "cppClassName": "Message",
     "cType": "git_message",
@@ -5383,6 +5401,7 @@
   },
   {
     "filename": "net.h",
+    "ignore": true,
     "jsClassName": "Net",
     "cppClassName": "Net",
     "cType": "git_net",
@@ -5391,6 +5410,7 @@
   },
   {
     "filename": "notes.h",
+    "ignore": true,
     "jsClassName": "Notes",
     "cppClassName": "Notes",
     "cType": "git_notes",
@@ -6098,6 +6118,7 @@
   },
   {
     "filename": "odb.h",
+    "ignore": true,
     "jsClassName": "Odb",
     "cppClassName": "Odb",
     "cType": "git_odb",
@@ -6806,6 +6827,7 @@
   },
   {
     "filename": "odb_backend.h",
+    "ignore": true,
     "jsClassName": "OdbBackend",
     "cppClassName": "OdbBackend",
     "cType": "git_odb_backend",
@@ -7330,6 +7352,7 @@
   },
   {
     "filename": "pack.h",
+    "ignore": true,
     "jsClassName": "Pack",
     "cppClassName": "Pack",
     "cType": "git_pack",
@@ -7574,6 +7597,7 @@
   },
   {
     "filename": "push.h",
+    "ignore": true,
     "jsClassName": "Push",
     "cppClassName": "Push",
     "cType": "git_push",
@@ -7788,6 +7812,7 @@
   },
   {
     "filename": "refdb.h",
+    "ignore": true,
     "jsClassName": "Refdb",
     "cppClassName": "Refdb",
     "cType": "git_refdb",
@@ -7963,6 +7988,7 @@
   },
   {
     "filename": "refdb_backend.h",
+    "ignore": true,
     "jsClassName": "RefdbBackend",
     "cppClassName": "RefdbBackend",
     "cType": "git_refdb_backend",
@@ -8006,6 +8032,7 @@
   },
   {
     "filename": "reflog.h",
+    "ignore": true,
     "jsClassName": "Reflog",
     "cppClassName": "Reflog",
     "cType": "git_reflog",
@@ -9114,6 +9141,7 @@
   },
   {
     "filename": "refspec.h",
+    "ignore": true,
     "jsClassName": "Refspec",
     "cppClassName": "Refspec",
     "cType": "git_refspec",
@@ -11215,6 +11243,7 @@
   },
   {
     "filename": "reset.h",
+    "ignore": true,
     "jsClassName": "Reset",
     "cppClassName": "Reset",
     "cType": "git_reset",
@@ -11290,6 +11319,7 @@
   },
   {
     "filename": "revparse.h",
+    "ignore": true,
     "jsClassName": "Revparse",
     "cppClassName": "Revparse",
     "cType": "git_revparse",
@@ -11955,6 +11985,7 @@
   },
   {
     "filename": "stash.h",
+    "ignore": true,
     "jsClassName": "Stash",
     "cppClassName": "Stash",
     "cType": "git_stash",
@@ -12070,6 +12101,7 @@
   },
   {
     "filename": "status.h",
+    "ignore": true,
     "jsClassName": "Status",
     "cppClassName": "Status",
     "cType": "git_status",
@@ -12217,6 +12249,7 @@
   },
   {
     "filename": "stdint.h",
+    "ignore": true,
     "jsClassName": "Stdint",
     "cppClassName": "Stdint",
     "cType": "git_stdint",
@@ -12225,6 +12258,7 @@
   },
   {
     "filename": "strarray.h",
+    "ignore": true,
     "jsClassName": "Strarray",
     "cppClassName": "Strarray",
     "cType": "git_strarray",
@@ -12283,6 +12317,7 @@
   },
   {
     "filename": "submodule.h",
+    "ignore": true,
     "jsClassName": "Submodule",
     "cppClassName": "Submodule",
     "cType": "git_submodule",
@@ -13548,6 +13583,7 @@
   },
   {
     "filename": "trace.h",
+    "ignore": true,
     "jsClassName": "Trace",
     "cppClassName": "Trace",
     "cType": "git_trace",
@@ -13584,6 +13620,7 @@
   },
   {
     "filename": "transport.h",
+    "ignore": true,
     "jsClassName": "Transport",
     "cppClassName": "Transport",
     "cType": "git_transport",

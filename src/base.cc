@@ -14,7 +14,6 @@
 #include "../include/reference.h"
 #include "../include/signature.h"
 #include "../include/time.h"
-#include "../include/error.h"
 #include "../include/blob.h"
 #include "../include/repo.h"
 #include "../include/oid.h"
@@ -38,8 +37,6 @@ extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
 
   Wrapper::Initialize(target);
-
-  GitError::Initialize(target);
 
   GitReference::Initialize(target);
   GitIndex::Initialize(target);

@@ -16,7 +16,6 @@
 #include "../include/patch.h"
 #include "../include/delta.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -148,7 +147,7 @@ void GitDiffList::TreeToTreeAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -236,7 +235,7 @@ void GitDiffList::TreeToIndexAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -318,7 +317,7 @@ void GitDiffList::IndexToWorkdirAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -399,7 +398,7 @@ void GitDiffList::TreeToWorkdirAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -429,7 +428,7 @@ Handle<Value> GitDiffList::Merge(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();
@@ -448,7 +447,7 @@ Handle<Value> GitDiffList::FindSimilar(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();
@@ -506,7 +505,7 @@ Handle<Value> GitDiffList::Patch(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Object> toReturn = Object::New();

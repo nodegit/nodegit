@@ -12,7 +12,6 @@
 #include "../include/repo.h"
 #include "../include/tree.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -133,7 +132,7 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -210,7 +209,7 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -272,7 +271,7 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -340,7 +339,7 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -405,7 +404,7 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -463,7 +462,7 @@ Handle<Value> GitIndex::Remove(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();
@@ -486,7 +485,7 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();
@@ -546,7 +545,7 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -576,7 +575,7 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();
@@ -617,7 +616,7 @@ Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();

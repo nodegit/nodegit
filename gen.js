@@ -8,10 +8,10 @@ var idefs = JSON.parse(fs.readFileSync('v0.18.0.json')),
 
 for (var i in idefs) {
   var idef = idefs[i];
-  if (["Oid", "Blob", "Repo", "Reference", "Object", "TreeEntry", "Commit", "Signature", "Time", "Index", "Tag", "Threads", "Tree", "DiffList", "Patch", "Delta", "DiffOptions", "DiffFindOptions", "DiffFile", "DiffRange", "RevWalk"].indexOf(idef.jsClassName) > -1) {
-    fs.writeFileSync(
-      path.resolve("./include/" + idef.filename), headerTemplate(idef));
-    fs.writeFileSync(
-      path.resolve("./src/" + path.basename(idef.filename, '.h') + '.cc'), classTemplate(idef));
-  }
+  if (idef.ignore) continue;
+
+  fs.writeFileSync(
+    path.resolve("./include/" + idef.filename), headerTemplate(idef));
+  fs.writeFileSync(
+    path.resolve("./src/" + path.basename(idef.filename, '.h') + '.cc'), classTemplate(idef));
 }

@@ -39,7 +39,7 @@ exports.method = function(test){
 
   // Test invalid repository
   git.repo.open('/etc/hosts', function(error, repository) {
-    test.equals(error.code, error.codes.GITERR_REPOSITORY, error.message, 'Invalid repository error code');
+    test.equals(error.message, "The `.git` file at '/private/etc/hosts' is malformed");
 
     // Test valid repository
     git.repo.open('../.git', function(error, repository) {

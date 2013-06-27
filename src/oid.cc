@@ -9,7 +9,6 @@
 
 #include "../include/oid.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -76,7 +75,7 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;

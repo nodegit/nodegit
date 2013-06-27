@@ -6,7 +6,6 @@
                 'src/base.cc',
                 'src/blob.cc',
                 'src/commit.cc',
-                'src/error.cc',
                 'src/oid.cc',
                 'src/reference.cc',
                 'src/object.cc',
@@ -28,7 +27,6 @@
                 'src/threads.cc',
                 'src/wrapper.cc',
                 'src/functions/string.cc',
-                'src/functions/utilities.cc'
             ],
 
             'include_dirs': [

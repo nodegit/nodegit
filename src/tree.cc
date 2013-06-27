@@ -12,7 +12,6 @@
 #include "../include/oid.h"
 #include "../include/tree_entry.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -129,7 +128,7 @@ void GitTree::LookupAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -283,7 +282,7 @@ void GitTree::GetEntryByPathAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {

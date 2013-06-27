@@ -10,7 +10,6 @@
 #include "../include/signature.h"
 #include "../include/time.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -83,7 +82,7 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;

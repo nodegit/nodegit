@@ -11,7 +11,6 @@
 #include "../include/oid.h"
 #include "../include/repo.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -89,7 +88,7 @@ Handle<Value> GitRevWalk::Make(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;
@@ -162,7 +161,7 @@ void GitRevWalk::PushAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -232,7 +231,7 @@ void GitRevWalk::PushGlobAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -296,7 +295,7 @@ void GitRevWalk::PushHeadAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -364,7 +363,7 @@ void GitRevWalk::HideAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -434,7 +433,7 @@ void GitRevWalk::HideGlobAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -498,7 +497,7 @@ void GitRevWalk::HideHeadAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -567,7 +566,7 @@ void GitRevWalk::PushRefAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -638,7 +637,7 @@ void GitRevWalk::HideRefAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -705,7 +704,7 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {

@@ -12,7 +12,6 @@
 #include "../include/oid.h"
 #include "../include/object.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -139,7 +138,7 @@ void GitReference::LookupAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -215,7 +214,7 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -258,7 +257,7 @@ Handle<Value> GitReference::CreateSymbolic(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;
@@ -292,7 +291,7 @@ Handle<Value> GitReference::Create(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;
@@ -391,7 +390,7 @@ void GitReference::ResolveAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -421,7 +420,7 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;
@@ -444,7 +443,7 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;
@@ -514,7 +513,7 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -579,7 +578,7 @@ void GitReference::DeleteAfterWork(uv_work_t *req) {
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else if (baton->error) {
     Handle<Value> argv[1] = {
-      GitError::WrapError(baton->error)
+      Exception::Error(String::New(baton->error->message))
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
@@ -603,7 +602,7 @@ Handle<Value> GitReference::IsBranch(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();
@@ -618,7 +617,7 @@ Handle<Value> GitReference::IsRemote(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();
@@ -639,7 +638,7 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;
@@ -659,7 +658,7 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   return Undefined();

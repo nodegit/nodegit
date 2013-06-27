@@ -2,8 +2,7 @@ var git = require( '../' ).raw,
     path = require( 'path' );
 
 
-var repo = new git.Repo(),
-    error = new git.Error();
+var repo = new git.Repo();
 
 // Access existing repository
 repo.open( path.resolve( '../.git' ), function( err ) {

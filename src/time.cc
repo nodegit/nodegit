@@ -9,7 +9,6 @@
 
 #include "../include/time.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;

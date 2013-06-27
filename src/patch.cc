@@ -11,7 +11,6 @@
 #include "../include/delta.h"
 #include "../include/diff_range.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
@@ -113,7 +112,7 @@ Handle<Value> GitPatch::Stats(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Object> toReturn = Object::New();
@@ -151,7 +150,7 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Object> toReturn = Object::New();
@@ -216,7 +215,7 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Object> toReturn = Object::New();
@@ -250,7 +249,7 @@ Handle<Value> GitPatch::ToString(const Arguments& args) {
   );
 
   if (result != GIT_OK) {
-    return ThrowException(GitError::WrapError(giterr_last()));
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
   Handle<Value> to;

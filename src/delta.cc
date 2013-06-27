@@ -10,7 +10,6 @@
 #include "../include/delta.h"
 #include "../include/diff_file.h"
 
-#include "../include/functions/utilities.h"
 #include "../include/functions/string.h"
 
 using namespace v8;
