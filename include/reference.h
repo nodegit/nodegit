@@ -31,21 +31,6 @@ class GitReference : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
 
-    static Handle<Value> Lookup(const Arguments& args);
-    static void LookupWork(uv_work_t* req);
-    static void LookupAfterWork(uv_work_t* req);
-
-    struct LookupBaton {
-      uv_work_t request;
-      int error_code;
-      const git_error* error;
-      git_reference * out;
-      Persistent<Value> repoReference;
-      git_repository * repo;
-      Persistent<Value> nameReference;
-      const char * name;
-      Persistent<Function> callback;
-    };
     static Handle<Value> OidForName(const Arguments& args);
     static void OidForNameWork(uv_work_t* req);
     static void OidForNameAfterWork(uv_work_t* req);
@@ -61,8 +46,6 @@ class GitReference : public ObjectWrap {
       const char * name;
       Persistent<Function> callback;
     };
-    static Handle<Value> CreateSymbolic(const Arguments& args);
-    static Handle<Value> Create(const Arguments& args);
     static Handle<Value> Oid(const Arguments& args);
     static Handle<Value> Name(const Arguments& args);
     static Handle<Value> Type(const Arguments& args);

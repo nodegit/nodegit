@@ -30,7 +30,6 @@ void GitRevWalk::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("RevWalk"));
 
-  NODE_SET_METHOD(tpl, "make", Make);
   NODE_SET_PROTOTYPE_METHOD(tpl, "reset", Reset);
   NODE_SET_PROTOTYPE_METHOD(tpl, "push", Push);
   NODE_SET_PROTOTYPE_METHOD(tpl, "pushGlob", PushGlob);
@@ -71,28 +70,6 @@ git_revwalk *GitRevWalk::GetValue() {
   return this->raw;
 }
 
-
-Handle<Value> GitRevWalk::Make(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-
-  git_revwalk *out = NULL;
-  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-
-  int result = git_revwalk_new(
-    &out
-    , from_repo
-  );
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
-  Handle<Value> to;
-    to = GitRevWalk::New((void *)out);
-  return scope.Close(to);
-}
 
 Handle<Value> GitRevWalk::Reset(const Arguments& args) {
   HandleScope scope;

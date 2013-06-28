@@ -31,23 +31,6 @@ class GitObject : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
 
-    static Handle<Value> Lookup(const Arguments& args);
-    static void LookupWork(uv_work_t* req);
-    static void LookupAfterWork(uv_work_t* req);
-
-    struct LookupBaton {
-      uv_work_t request;
-      int error_code;
-      const git_error* error;
-      git_object * object;
-      Persistent<Value> repoReference;
-      git_repository * repo;
-      Persistent<Value> idReference;
-      const git_oid * id;
-      Persistent<Value> typeReference;
-      git_otype type;
-      Persistent<Function> callback;
-    };
     static Handle<Value> Oid(const Arguments& args);
     static Handle<Value> Type(const Arguments& args);
     static Handle<Value> Owner(const Arguments& args);

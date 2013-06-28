@@ -218,81 +218,6 @@
     "freeFunctionName": "git_blob_free",
     "functions": [
       {
-        "cFunctionName": "git_blob_lookup",
-        "args": [
-          {
-            "name": "blob",
-            "cType": "git_blob **",
-            "cppClassName": "GitBlob",
-            "jsClassName": "Blob",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookup",
-        "cppFunctionName": "Lookup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_blob_lookup_prefix",
-        "args": [
-          {
-            "name": "blob",
-            "cType": "git_blob **",
-            "cppClassName": "GitBlob",
-            "jsClassName": "Blob",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "len",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookupPrefix",
-        "cppFunctionName": "LookupPrefix",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_blob_free",
         "args": [
           {
@@ -1094,40 +1019,6 @@
     "freeFunctionName": "git_commit_free",
     "functions": [
       {
-        "cFunctionName": "git_commit_lookup",
-        "args": [
-          {
-            "name": "commit",
-            "cType": "git_commit **",
-            "cppClassName": "GitCommit",
-            "jsClassName": "Commit",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookup",
-        "cppFunctionName": "Lookup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_commit_lookup_prefix",
         "args": [
           {
@@ -1501,83 +1392,6 @@
         "isPrototypeMethod": true,
         "jsFunctionName": "nthGenAncestor",
         "cppFunctionName": "NthGenAncestor",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_commit_create",
-        "args": [
-          {
-            "name": "id",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "update_ref",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "author",
-            "cType": "const git_signature *",
-            "cppClassName": "GitSignature",
-            "jsClassName": "Signature"
-          },
-          {
-            "name": "committer",
-            "cType": "const git_signature *",
-            "cppClassName": "GitSignature",
-            "jsClassName": "Signature"
-          },
-          {
-            "name": "message_encoding",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "message",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "tree",
-            "cType": "const git_tree *",
-            "cppClassName": "GitTree",
-            "jsClassName": "Tree"
-          },
-          {
-            "name": "parent_count",
-            "cType": "int",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "parents",
-            "cType": "const git_commit **",
-            "cppClassName": "Array",
-            "jsClassName": "Array"
-          }
-        ],
-        "ignore": true,
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "create",
-        "cppFunctionName": "Create",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -5792,93 +5606,6 @@
     "freeFunctionName": "git_object_free",
     "functions": [
       {
-        "cFunctionName": "git_object_lookup",
-        "args": [
-          {
-            "name": "object",
-            "cType": "git_object **",
-            "cppClassName": "GitObject",
-            "jsClassName": "Object",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "type",
-            "cType": "git_otype",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookup",
-        "cppFunctionName": "Lookup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_object_lookup_prefix",
-        "args": [
-          {
-            "name": "object_out",
-            "cType": "git_object **",
-            "cppClassName": "GitObject",
-            "jsClassName": "Object",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "len",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          },
-          {
-            "name": "type",
-            "cType": "git_otype",
-            "cppClassName": "Number",
-            "jsClassName": "Number"
-          }
-        ],
-        "ignore": true,
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookupPrefix",
-        "cppFunctionName": "LookupPrefix",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_object_id",
         "args": [
           {
@@ -6976,8 +6703,8 @@
           {
             "name": "raw",
             "cType": "const unsigned char *",
-            "cppClassName": "const",
-            "jsClassName": "const"
+            "cppClassName": "String",
+            "jsClassName": "String"
           }
         ],
         "ignore": true,
@@ -7616,7 +7343,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote"
           }
         ],
@@ -7812,11 +7539,9 @@
   },
   {
     "filename": "refdb.h",
-    "ignore": true,
-    "jsClassName": "Refdb",
-    "cppClassName": "Refdb",
+    "jsClassName": "RefDb",
+    "cppClassName": "GitRefDb",
     "cType": "git_refdb",
-    "freeFunctionName": "git_refdb_free",
     "functions": [
       {
         "cFunctionName": "git_reference__alloc",
@@ -7824,8 +7549,8 @@
           {
             "name": "refdb",
             "cType": "git_refdb *",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb",
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb",
             "isSelf": true
           },
           {
@@ -7847,6 +7572,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -7858,73 +7584,18 @@
         }
       },
       {
-        "cFunctionName": "git_refdb_new",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_refdb **",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "new",
-        "cppFunctionName": "New",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_refdb_open",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_refdb **",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "open",
-        "cppFunctionName": "Open",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_refdb_compress",
         "args": [
           {
             "name": "refdb",
             "cType": "git_refdb *",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb",
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb",
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "compress",
@@ -7941,10 +7612,11 @@
           {
             "name": "refdb",
             "cType": "git_refdb *",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -7962,8 +7634,8 @@
           {
             "name": "refdb",
             "cType": "git_refdb *",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb",
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb",
             "isSelf": true
           },
           {
@@ -7973,6 +7645,7 @@
             "jsClassName": "RefdbBackend"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -7993,42 +7666,7 @@
     "cppClassName": "RefdbBackend",
     "cType": "git_refdb_backend",
     "freeFunctionName": "git_refdb_backend_free",
-    "functions": [
-      {
-        "cFunctionName": "git_refdb_backend_fs",
-        "args": [
-          {
-            "name": "backend_out",
-            "cType": "struct git_refdb_backend **",
-            "cppClassName": "RefdbBackend",
-            "jsClassName": "RefdbBackend",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "refdb",
-            "cType": "git_refdb *",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "fs",
-        "cppFunctionName": "Fs",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      }
-    ]
+    "functions": []
   },
   {
     "filename": "reflog.h",
@@ -8374,40 +8012,6 @@
     "freeFunctionName": "git_reference_free",
     "functions": [
       {
-        "cFunctionName": "git_reference_lookup",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_reference **",
-            "cppClassName": "GitReference",
-            "jsClassName": "Reference"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookup",
-        "cppFunctionName": "Lookup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_reference_name_to_id",
         "args": [
           {
@@ -8435,98 +8039,6 @@
         "isPrototypeMethod": false,
         "jsFunctionName": "oidForName",
         "cppFunctionName": "OidForName",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_reference_symbolic_create",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_reference **",
-            "cppClassName": "GitReference",
-            "jsClassName": "Reference"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "target",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "force",
-            "cType": "int",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "createSymbolic",
-        "cppFunctionName": "CreateSymbolic",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_reference_create",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_reference **",
-            "cppClassName": "GitReference",
-            "jsClassName": "Reference"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "force",
-            "cType": "int",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "create",
-        "cppFunctionName": "Create",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -9351,132 +8863,19 @@
   },
   {
     "filename": "remote.h",
+    "ignore": true,
     "jsClassName": "Remote",
-    "cppClassName": "Remote",
+    "cppClassName": "GitRemote",
     "cType": "git_remote",
     "freeFunctionName": "git_remote_free",
     "functions": [
-      {
-        "cFunctionName": "git_remote_create",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_remote **",
-            "cppClassName": "Remote",
-            "jsClassName": "Remote"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "url",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "create",
-        "cppFunctionName": "Create",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_remote_create_inmemory",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_remote **",
-            "cppClassName": "Remote",
-            "jsClassName": "Remote"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "fetch",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "url",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "createInmemory",
-        "cppFunctionName": "CreateInmemory",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_remote_load",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_remote **",
-            "cppClassName": "Remote",
-            "jsClassName": "Remote"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "load",
-        "cppFunctionName": "Load",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
       {
         "cFunctionName": "git_remote_save",
         "args": [
           {
             "name": "remote",
             "cType": "const git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9498,7 +8897,7 @@
           {
             "name": "remote",
             "cType": "const git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9519,7 +8918,7 @@
           {
             "name": "remote",
             "cType": "const git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9540,7 +8939,7 @@
           {
             "name": "remote",
             "cType": "const git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9561,15 +8960,15 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
           {
             "name": "url",
             "cType": "const char*",
-            "cppClassName": "const",
-            "jsClassName": "const"
+            "cppClassName": "String",
+            "jsClassName": "String"
           }
         ],
         "isAsync": false,
@@ -9589,15 +8988,15 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
           {
             "name": "url",
             "cType": "const char*",
-            "cppClassName": "const",
-            "jsClassName": "const"
+            "cppClassName": "String",
+            "jsClassName": "String"
           }
         ],
         "isAsync": false,
@@ -9617,7 +9016,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -9645,7 +9044,7 @@
           {
             "name": "remote",
             "cType": "const git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9666,7 +9065,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -9694,7 +9093,7 @@
           {
             "name": "remote",
             "cType": "const git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9715,7 +9114,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -9743,7 +9142,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -9777,7 +9176,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -9811,7 +9210,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9833,7 +9232,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9854,7 +9253,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9875,7 +9274,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote"
           }
         ],
@@ -9896,7 +9295,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -9939,8 +9338,8 @@
           {
             "name": "url",
             "cType": "const char*",
-            "cppClassName": "const",
-            "jsClassName": "const"
+            "cppClassName": "String",
+            "jsClassName": "String"
           }
         ],
         "isAsync": false,
@@ -9988,7 +9387,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -10015,7 +9414,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -10048,7 +9447,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -10076,7 +9475,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -10104,7 +9503,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -10138,7 +9537,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -10165,7 +9564,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -10205,7 +9604,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           }
@@ -10227,7 +9626,7 @@
           {
             "name": "remote",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote",
             "isSelf": true
           },
@@ -10273,7 +9672,7 @@
   },
   {
     "filename": "repo.h",
-    "dependencies": [],
+    "dependencies": ["../include/oid.h", "../include/commit.h", "../include/blob.h", "../include/object.h", "../include/reference.h", "../include/submodule.h", "../include/refdb.h", "../include/revwalk.h", "../include/tag.h", "../include/signature.h", "../include/tree.h"],
     "jsClassName": "Repo",
     "cppClassName": "GitRepo",
     "cType": "git_repository",
@@ -10833,8 +10232,8 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_refdb **",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb"
           },
           {
             "name": "repo",
@@ -10868,8 +10267,8 @@
           {
             "name": "refdb",
             "cType": "git_refdb *",
-            "cppClassName": "Refdb",
-            "jsClassName": "Refdb"
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb"
           }
         ],
         "ignore": true,
@@ -11150,8 +10549,8 @@
           {
             "name": "refname",
             "cType": "const char*",
-            "cppClassName": "const",
-            "jsClassName": "const"
+            "cppClassName": "String",
+            "jsClassName": "String"
           }
         ],
         "ignore": true,
@@ -11178,8 +10577,8 @@
           {
             "name": "commitish",
             "cType": "const git_oid*",
-            "cppClassName": "const",
-            "jsClassName": "const"
+            "cppClassName": "String",
+            "jsClassName": "String"
           }
         ],
         "ignore": true,
@@ -11233,6 +10632,1024 @@
         "isPrototypeMethod": true,
         "jsFunctionName": "state",
         "cppFunctionName": "State",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_blob_lookup",
+        "args": [
+          {
+            "name": "blob",
+            "cType": "git_blob **",
+            "cppClassName": "GitBlob",
+            "jsClassName": "Blob",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getBlob",
+        "cppFunctionName": "GetBlob",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_blob_lookup_prefix",
+        "args": [
+          {
+            "name": "blob",
+            "cType": "git_blob **",
+            "cppClassName": "GitBlob",
+            "jsClassName": "Blob",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          },
+          {
+            "name": "len",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getBlobByPrefix",
+        "cppFunctionName": "GetBlobByPrefix",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_commit_lookup",
+        "args": [
+          {
+            "name": "commit",
+            "cType": "git_commit **",
+            "cppClassName": "GitCommit",
+            "jsClassName": "Commit",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getCommit",
+        "cppFunctionName": "GetCommit",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_commit_create",
+        "args": [
+          {
+            "name": "id",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "update_ref",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "author",
+            "cType": "const git_signature *",
+            "cppClassName": "GitSignature",
+            "jsClassName": "Signature"
+          },
+          {
+            "name": "committer",
+            "cType": "const git_signature *",
+            "cppClassName": "GitSignature",
+            "jsClassName": "Signature"
+          },
+          {
+            "name": "message_encoding",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "message",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "tree",
+            "cType": "const git_tree *",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree"
+          },
+          {
+            "name": "parent_count",
+            "cType": "int",
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
+          },
+          {
+            "name": "parents",
+            "cType": "const git_commit **",
+            "cppClassName": "Array",
+            "jsClassName": "Array"
+          }
+        ],
+        "ignore": true,
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createCommit",
+        "cppFunctionName": "CreateCommit",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_object_lookup",
+        "args": [
+          {
+            "name": "object",
+            "cType": "git_object **",
+            "cppClassName": "GitObject",
+            "jsClassName": "Object",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          },
+          {
+            "name": "type",
+            "cType": "git_otype",
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getObject",
+        "cppFunctionName": "GetObject",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_object_lookup_prefix",
+        "args": [
+          {
+            "name": "object_out",
+            "cType": "git_object **",
+            "cppClassName": "GitObject",
+            "jsClassName": "Object",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          },
+          {
+            "name": "len",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          },
+          {
+            "name": "type",
+            "cType": "git_otype",
+            "cppClassName": "Number",
+            "jsClassName": "Number"
+          }
+        ],
+        "ignore": true,
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getObjectByPrefix",
+        "cppFunctionName": "GetObjectByPrefix",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_refdb_new",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_refdb **",
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "newRefDbWithoutBackends",
+        "cppFunctionName": "NewRefDbWithoutBackends",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_refdb_open",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_refdb **",
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "openRefDb",
+        "cppFunctionName": "OpenRefDb",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_refdb_backend_fs",
+        "args": [
+          {
+            "name": "backend_out",
+            "cType": "struct git_refdb_backend **",
+            "cppClassName": "RefdbBackend",
+            "jsClassName": "RefdbBackend",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "refdb",
+            "cType": "git_refdb *",
+            "cppClassName": "GitRefDb",
+            "jsClassName": "RefDb"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "openRefDbBackend",
+        "cppFunctionName": "OpenRefDbBackend",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_reference_lookup",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_reference **",
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getReference",
+        "cppFunctionName": "GetReference",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_reference_symbolic_create",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_reference **",
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "target",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "force",
+            "cType": "int",
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createSymbolicReference",
+        "cppFunctionName": "CreateSymbolicReference",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_reference_create",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_reference **",
+            "cppClassName": "GitReference",
+            "jsClassName": "Reference"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          },
+          {
+            "name": "force",
+            "cType": "int",
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createReference",
+        "cppFunctionName": "CreateReference",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_remote_create",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_remote **",
+            "cppClassName": "GitRemote",
+            "jsClassName": "Remote"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "url",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "ignore": true,
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "addRemote",
+        "cppFunctionName": "AddRemote",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_remote_create_inmemory",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_remote **",
+            "cppClassName": "GitRemote",
+            "jsClassName": "Remote"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "fetch",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "url",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "addRemoteInMemory",
+        "cppFunctionName": "AddRemoteInMemory",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_remote_load",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_remote **",
+            "cppClassName": "GitRemote",
+            "jsClassName": "Remote"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "loadRemote",
+        "cppFunctionName": "LoadRemote",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_revwalk_new",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_revwalk **",
+            "cppClassName": "GitRevWalk",
+            "jsClassName": "RevWalk"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          }
+        ],
+        
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createRevWalk",
+        "cppFunctionName": "CreateRevWalk",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_submodule_lookup",
+        "args": [
+          {
+            "name": "submodule",
+            "cType": "git_submodule **",
+            "cppClassName": "GitSubmodule",
+            "jsClassName": "Submodule",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getSubmodule",
+        "cppFunctionName": "GetSubmodule",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_submodule_add_setup",
+        "args": [
+          {
+            "name": "submodule",
+            "cType": "git_submodule **",
+            "cppClassName": "GitSubmodule",
+            "jsClassName": "Submodule",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "url",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "path",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "use_gitlink",
+            "cType": "int",
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "addSubmodule",
+        "cppFunctionName": "AddSubmodule",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tag_lookup",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_tag **",
+            "cppClassName": "GitTag",
+            "jsClassName": "Tag"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getTag",
+        "cppFunctionName": "GetTag",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tag_lookup_prefix",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_tag **",
+            "cppClassName": "GitTag",
+            "jsClassName": "Tag"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          },
+          {
+            "name": "len",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getTagByPrefix",
+        "cppFunctionName": "GetTagByPrefix",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tag_create",
+        "args": [
+          {
+            "name": "oid",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "tag_name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "target",
+            "cType": "const git_object *",
+            "cppClassName": "GitObject",
+            "jsClassName": "Object"
+          },
+          {
+            "name": "tagger",
+            "cType": "const git_signature *",
+            "cppClassName": "GitSignature",
+            "jsClassName": "Signature"
+          },
+          {
+            "name": "message",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "force",
+            "cType": "int",
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createTag",
+        "cppFunctionName": "CreateTag",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tag_create_lightweight",
+        "args": [
+          {
+            "name": "oid",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "tag_name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "target",
+            "cType": "const git_object *",
+            "cppClassName": "GitObject",
+            "jsClassName": "Object"
+          },
+          {
+            "name": "force",
+            "cType": "int",
+            "cppClassName": "Int32",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": true,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "createLightweightTag",
+        "cppFunctionName": "CreateLightweightTag",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tree_lookup",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_tree **",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getTree",
+        "cppFunctionName": "GetTree",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tree_lookup_prefix",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_tree **",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          },
+          {
+            "name": "len",
+            "cType": "size_t",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          }
+        ],
+        "ignore": true,
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getTreeByPrefix",
+        "cppFunctionName": "GetTreeByPrefix",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_submodule_reload_all",
+        "args": [
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "reloadSubmodules",
+        "cppFunctionName": "ReloadSubmodules",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -11402,35 +11819,6 @@
     "cType": "git_revwalk",
     "freeFunctionName": "git_revwalk_free",
     "functions": [
-      {
-        "cFunctionName": "git_revwalk_new",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_revwalk **",
-            "cppClassName": "GitRevWalk",
-            "jsClassName": "RevWalk"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          }
-        ],
-        
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "make",
-        "cppFunctionName": "Make",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
       {
         "cFunctionName": "git_revwalk_reset",
         "args": [
@@ -12317,46 +12705,11 @@
   },
   {
     "filename": "submodule.h",
-    "ignore": true,
+    "dependencies": ["../include/oid.h", "../include/repo.h"],
     "jsClassName": "Submodule",
-    "cppClassName": "Submodule",
+    "cppClassName": "GitSubmodule",
     "cType": "git_submodule",
-    "freeFunctionName": "git_submodule_free",
     "functions": [
-      {
-        "cFunctionName": "git_submodule_lookup",
-        "args": [
-          {
-            "name": "submodule",
-            "cType": "git_submodule **",
-            "cppClassName": "Submodule",
-            "jsClassName": "Submodule",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookup",
-        "cppFunctionName": "Lookup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
       {
         "cFunctionName": "git_submodule_foreach",
         "args": [
@@ -12379,6 +12732,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -12391,63 +12745,17 @@
         }
       },
       {
-        "cFunctionName": "git_submodule_add_setup",
-        "args": [
-          {
-            "name": "submodule",
-            "cType": "git_submodule **",
-            "cppClassName": "Submodule",
-            "jsClassName": "Submodule",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "url",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "path",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "use_gitlink",
-            "cType": "int",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "addSetup",
-        "cppFunctionName": "AddSetup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_submodule_add_finalize",
         "args": [
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "addFinalize",
@@ -12464,7 +12772,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           },
@@ -12475,7 +12783,7 @@
             "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "addToIndex",
@@ -12492,12 +12800,12 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "save",
@@ -12514,11 +12822,12 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -12535,7 +12844,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
@@ -12556,7 +12865,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
@@ -12577,7 +12886,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
@@ -12598,7 +12907,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           },
@@ -12626,7 +12935,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
@@ -12647,7 +12956,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
@@ -12668,11 +12977,12 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -12686,7 +12996,8 @@
       {
         "cFunctionName": "git_submodule_ignore",
         "args": [],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
         "jsFunctionName": "ignore",
@@ -12702,7 +13013,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           },
@@ -12713,6 +13024,7 @@
             "jsClassName": "SubmoduleIgnoreT"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -12725,6 +13037,7 @@
       },
       {
         "cFunctionName": "git_submodule_update",
+        "ignore": true,
         "args": [],
         "isAsync": false,
         "isConstructorMethod": false,
@@ -12742,7 +13055,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           },
@@ -12753,6 +13066,7 @@
             "jsClassName": "SubmoduleUpdateT"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -12769,11 +13083,12 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -12791,7 +13106,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           },
@@ -12802,6 +13117,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -12819,7 +13135,7 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           },
@@ -12830,7 +13146,7 @@
             "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "init",
@@ -12847,12 +13163,12 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "sync",
@@ -12870,18 +13186,20 @@
             "name": "repo",
             "cType": "git_repository **",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isReturn": true
           },
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "cppClassName": "GitSubmodule",
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "open",
         "cppFunctionName": "Open",
         "return": {
@@ -12896,37 +13214,16 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule",
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "reload",
         "cppFunctionName": "Reload",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_submodule_reload_all",
-        "args": [
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "reloadAll",
-        "cppFunctionName": "ReloadAll",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -12945,13 +13242,14 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
-            "jsClassName": "Submodule"
+            "cppClassName": "GitSubmodule",
+            "jsClassName": "Submodule",
+            "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "status",
         "cppFunctionName": "Status",
         "return": {
@@ -12972,10 +13270,11 @@
           {
             "name": "submodule",
             "cType": "git_submodule *",
-            "cppClassName": "Submodule",
+            "cppClassName": "GitSubmodule",
             "jsClassName": "Submodule"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -12997,81 +13296,6 @@
     "cType": "git_tag",
     "freeFunctionName": "git_tag_free",
     "functions": [
-      {
-        "cFunctionName": "git_tag_lookup",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_tag **",
-            "cppClassName": "GitTag",
-            "jsClassName": "Tag"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookup",
-        "cppFunctionName": "Lookup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_tag_lookup_prefix",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_tag **",
-            "cppClassName": "GitTag",
-            "jsClassName": "Tag"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "len",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookupPrefix",
-        "cppFunctionName": "LookupPrefix",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
       {
         "cFunctionName": "git_tag_free",
         "args": [
@@ -13250,64 +13474,6 @@
         }
       },
       {
-        "cFunctionName": "git_tag_create",
-        "args": [
-          {
-            "name": "oid",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "tag_name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "target",
-            "cType": "const git_object *",
-            "cppClassName": "GitObject",
-            "jsClassName": "Object"
-          },
-          {
-            "name": "tagger",
-            "cType": "const git_signature *",
-            "cppClassName": "GitSignature",
-            "jsClassName": "Signature"
-          },
-          {
-            "name": "message",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "force",
-            "cType": "int",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "create",
-        "cppFunctionName": "Create",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_tag_create_frombuffer",
         "args": [
           {
@@ -13341,52 +13507,6 @@
         "isPrototypeMethod": false,
         "jsFunctionName": "createFrombuffer",
         "cppFunctionName": "CreateFrombuffer",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_tag_create_lightweight",
-        "args": [
-          {
-            "name": "oid",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "tag_name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "target",
-            "cType": "const git_object *",
-            "cppClassName": "GitObject",
-            "jsClassName": "Object"
-          },
-          {
-            "name": "force",
-            "cType": "int",
-            "cppClassName": "Int32",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "createLightweight",
-        "cppFunctionName": "CreateLightweight",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -13673,7 +13793,7 @@
           {
             "name": "owner",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote"
           },
           {
@@ -13707,7 +13827,7 @@
           {
             "name": "owner",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote"
           },
           {
@@ -13741,7 +13861,7 @@
           {
             "name": "owner",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote"
           },
           {
@@ -13775,7 +13895,7 @@
           {
             "name": "owner",
             "cType": "git_remote *",
-            "cppClassName": "Remote",
+            "cppClassName": "GitRemote",
             "jsClassName": "Remote"
           },
           {
@@ -14065,81 +14185,6 @@
     "cType": "git_tree",
     "freeFunctionName": "git_tree_free",
     "functions": [
-      {
-        "cFunctionName": "git_tree_lookup",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_tree **",
-            "cppClassName": "GitTree",
-            "jsClassName": "Tree"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookup",
-        "cppFunctionName": "Lookup",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_tree_lookup_prefix",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_tree **",
-            "cppClassName": "GitTree",
-            "jsClassName": "Tree"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "len",
-            "cType": "size_t",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          }
-        ],
-        "ignore": true,
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "lookupPrefix",
-        "cppFunctionName": "LookupPrefix",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
       {
         "cFunctionName": "git_tree_free",
         "args": [

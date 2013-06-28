@@ -12,15 +12,15 @@
 using namespace v8;
 using namespace node;
 
-Remote::Remote(git_remote *raw) {
+GitRemote::GitRemote(git_remote *raw) {
   this->raw = raw;
 }
 
-Remote::~Remote() {
+GitRemote::~GitRemote() {
   git_remote_free(this->raw);
 }
 
-void Remote::Initialize(Handle<v8::Object> target) {
+void GitRemote::Initialize(Handle<v8::Object> target) {
   HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
@@ -28,9 +28,6 @@ void Remote::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Remote"));
 
-  NODE_SET_METHOD(tpl, "create", Create);
-  NODE_SET_METHOD(tpl, "createInmemory", CreateInmemory);
-  NODE_SET_METHOD(tpl, "load", Load);
   NODE_SET_PROTOTYPE_METHOD(tpl, "save", Save);
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(tpl, "url", Url);
@@ -69,266 +66,118 @@ void Remote::Initialize(Handle<v8::Object> target) {
   target->Set(String::NewSymbol("Remote"), constructor_template);
 }
 
-Handle<Value> Remote::New(const Arguments& args) {
+Handle<Value> GitRemote::New(const Arguments& args) {
   HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
     return ThrowException(Exception::Error(String::New("git_remote is required.")));
   }
 
-  Remote* object = new Remote((git_remote *) External::Unwrap(args[0]));
+  GitRemote* object = new GitRemote((git_remote *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
   return scope.Close(args.This());
 }
 
-Handle<Value> Remote::New(void *raw) {
+Handle<Value> GitRemote::New(void *raw) {
   HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(Remote::constructor_template->NewInstance(1, argv));
+  return scope.Close(GitRemote::constructor_template->NewInstance(1, argv));
 }
 
-git_remote *Remote::GetValue() {
+git_remote *GitRemote::GetValue() {
   return this->raw;
 }
 
 
-Handle<Value> Remote::Create(const Arguments& args) {
+Handle<Value> GitRemote::Save(const Arguments& args) {
   HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
-  }
-  if (args.Length() == 2 || !args[2]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String url is required.")));
-  }
+  
 
-  if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  int result = git_remote_save(
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
+  );
+  if (result != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
-
-  CreateBaton* baton = new CreateBaton;
-  baton->error_code = GIT_OK;
-  baton->error = NULL;
-  baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  baton->repo = from_repo;
-  baton->nameReference = Persistent<Value>::New(args[1]);
-    String::Utf8Value name(args[1]->ToString());
-  const char * from_name = strdup(*name);
-  baton->name = from_name;
-  baton->urlReference = Persistent<Value>::New(args[2]);
-    String::Utf8Value url(args[2]->ToString());
-  const char * from_url = strdup(*url);
-  baton->url = from_url;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, CreateWork, (uv_after_work_cb)CreateAfterWork);
 
   return Undefined();
 }
 
-void Remote::CreateWork(uv_work_t *req) {
-  CreateBaton *baton = static_cast<CreateBaton *>(req->data);
-  int result = git_remote_create(
-    &baton->out, 
-    baton->repo, 
-    baton->name, 
-    baton->url
+Handle<Value> GitRemote::Name(const Arguments& args) {
+  HandleScope scope;
+  
+
+  const char * result = git_remote_name(
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
-  baton->error_code = result;
-  if (result != GIT_OK) {
-    baton->error = giterr_last();
-  }
-}
 
-void Remote::CreateAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  CreateBaton *baton = static_cast<CreateBaton *>(req->data);
-
-  TryCatch try_catch;
-  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
-    to = Remote::New((void *)baton->out);
-  Handle<Value> result = to;
-    Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
-      result
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-  } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
-
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  baton->repoReference.Dispose();
-  baton->nameReference.Dispose();
-  baton->urlReference.Dispose();
-  baton->callback.Dispose();
-  delete baton->name;
-  delete baton->url;
-  delete baton;
+    to = String::New(result);
+  return scope.Close(to);
 }
 
-Handle<Value> Remote::CreateInmemory(const Arguments& args) {
+Handle<Value> GitRemote::Url(const Arguments& args) {
   HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String fetch is required.")));
-  }
-  if (args.Length() == 2 || !args[2]->IsString()) {
+  
+
+  const char * result = git_remote_url(
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
+  );
+
+  Handle<Value> to;
+    to = String::New(result);
+  return scope.Close(to);
+}
+
+Handle<Value> GitRemote::Pushurl(const Arguments& args) {
+  HandleScope scope;
+  
+
+  const char * result = git_remote_pushurl(
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
+  );
+
+  Handle<Value> to;
+    to = String::New(result);
+  return scope.Close(to);
+}
+
+Handle<Value> GitRemote::SetUrl(const Arguments& args) {
+  HandleScope scope;
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-  git_remote *out = NULL;
-  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  String::Utf8Value fetch(args[1]->ToString());
-  const char * from_fetch = strdup(*fetch);
-  String::Utf8Value url(args[2]->ToString());
-  const char * from_url = strdup(*url);
+  String::Utf8Value url(args[0]->ToString());
+  const char* from_url = strdup(*url);
 
-  int result = git_remote_create_inmemory(
-    &out
-    , from_repo
-    , from_fetch
+  int result = git_remote_set_url(
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_url
   );
-  delete from_fetch;
   delete from_url;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
 
-  Handle<Value> to;
-    to = Remote::New((void *)out);
-  return scope.Close(to);
-}
-
-Handle<Value> Remote::Load(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
-  }
-
-  git_remote *out = NULL;
-  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  String::Utf8Value name(args[1]->ToString());
-  const char * from_name = strdup(*name);
-
-  int result = git_remote_load(
-    &out
-    , from_repo
-    , from_name
-  );
-  delete from_name;
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
-  Handle<Value> to;
-    to = Remote::New((void *)out);
-  return scope.Close(to);
-}
-
-Handle<Value> Remote::Save(const Arguments& args) {
-  HandleScope scope;
-  
-
-  int result = git_remote_save(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
-  );
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
   return Undefined();
 }
 
-Handle<Value> Remote::Name(const Arguments& args) {
+Handle<Value> GitRemote::SetPushurl(const Arguments& args) {
   HandleScope scope;
-  
-
-  const char * result = git_remote_name(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
-  );
-
-  Handle<Value> to;
-    to = String::New(result);
-  return scope.Close(to);
-}
-
-Handle<Value> Remote::Url(const Arguments& args) {
-  HandleScope scope;
-  
-
-  const char * result = git_remote_url(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
-  );
-
-  Handle<Value> to;
-    to = String::New(result);
-  return scope.Close(to);
-}
-
-Handle<Value> Remote::Pushurl(const Arguments& args) {
-  HandleScope scope;
-  
-
-  const char * result = git_remote_pushurl(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
-  );
-
-  Handle<Value> to;
-    to = String::New(result);
-  return scope.Close(to);
-}
-
-Handle<Value> Remote::SetUrl(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("const url is required.")));
+    if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-  const char* from_url = ObjectWrap::Unwrap<const>(args[0]->ToObject())->GetValue();
-
-  int result = git_remote_set_url(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
-    , from_url
-  );
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
-  return Undefined();
-}
-
-Handle<Value> Remote::SetPushurl(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("const url is required.")));
-  }
-
-  const char* from_url = ObjectWrap::Unwrap<const>(args[0]->ToObject())->GetValue();
+  String::Utf8Value url(args[0]->ToString());
+  const char* from_url = strdup(*url);
 
   int result = git_remote_set_pushurl(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_url
   );
+  delete from_url;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -336,7 +185,7 @@ Handle<Value> Remote::SetPushurl(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::SetFetchspec(const Arguments& args) {
+Handle<Value> GitRemote::SetFetchspec(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String spec is required.")));
@@ -346,7 +195,7 @@ Handle<Value> Remote::SetFetchspec(const Arguments& args) {
   const char * from_spec = strdup(*spec);
 
   int result = git_remote_set_fetchspec(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_spec
   );
   delete from_spec;
@@ -357,12 +206,12 @@ Handle<Value> Remote::SetFetchspec(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::Fetchspec(const Arguments& args) {
+Handle<Value> GitRemote::Fetchspec(const Arguments& args) {
   HandleScope scope;
   
 
   const git_refspec * result = git_remote_fetchspec(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
 
   Handle<Value> to;
@@ -370,7 +219,7 @@ Handle<Value> Remote::Fetchspec(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> Remote::SetPushspec(const Arguments& args) {
+Handle<Value> GitRemote::SetPushspec(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String spec is required.")));
@@ -380,7 +229,7 @@ Handle<Value> Remote::SetPushspec(const Arguments& args) {
   const char * from_spec = strdup(*spec);
 
   int result = git_remote_set_pushspec(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_spec
   );
   delete from_spec;
@@ -391,12 +240,12 @@ Handle<Value> Remote::SetPushspec(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::Pushspec(const Arguments& args) {
+Handle<Value> GitRemote::Pushspec(const Arguments& args) {
   HandleScope scope;
   
 
   const git_refspec * result = git_remote_pushspec(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
 
   Handle<Value> to;
@@ -404,7 +253,7 @@ Handle<Value> Remote::Pushspec(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> Remote::Connect(const Arguments& args) {
+Handle<Value> GitRemote::Connect(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Direction direction is required.")));
@@ -413,7 +262,7 @@ Handle<Value> Remote::Connect(const Arguments& args) {
   git_direction from_direction = ObjectWrap::Unwrap<Direction>(args[0]->ToObject())->GetValue();
 
   int result = git_remote_connect(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_direction
   );
   if (result != GIT_OK) {
@@ -423,7 +272,7 @@ Handle<Value> Remote::Connect(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::Ls(const Arguments& args) {
+Handle<Value> GitRemote::Ls(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("HeadlistCb list_cb is required.")));
@@ -436,7 +285,7 @@ Handle<Value> Remote::Ls(const Arguments& args) {
   void * from_payload = ObjectWrap::Unwrap<void>(args[1]->ToObject())->GetValue();
 
   int result = git_remote_ls(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_list_cb
     , from_payload
   );
@@ -447,7 +296,7 @@ Handle<Value> Remote::Ls(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::Download(const Arguments& args) {
+Handle<Value> GitRemote::Download(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("TransferProgressCallback progress_cb is required.")));
@@ -460,7 +309,7 @@ Handle<Value> Remote::Download(const Arguments& args) {
   void * from_payload = ObjectWrap::Unwrap<void>(args[1]->ToObject())->GetValue();
 
   int result = git_remote_download(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_progress_cb
     , from_payload
   );
@@ -471,12 +320,12 @@ Handle<Value> Remote::Download(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::Connected(const Arguments& args) {
+Handle<Value> GitRemote::Connected(const Arguments& args) {
   HandleScope scope;
   
 
   int result = git_remote_connected(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
@@ -485,35 +334,35 @@ Handle<Value> Remote::Connected(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::Stop(const Arguments& args) {
+Handle<Value> GitRemote::Stop(const Arguments& args) {
   HandleScope scope;
   
 
   git_remote_stop(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
 
   return Undefined();
 }
 
-Handle<Value> Remote::Disconnect(const Arguments& args) {
+Handle<Value> GitRemote::Disconnect(const Arguments& args) {
   HandleScope scope;
   
 
   git_remote_disconnect(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
 
   return Undefined();
 }
 
-Handle<Value> Remote::Free(const Arguments& args) {
+Handle<Value> GitRemote::Free(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Remote remote is required.")));
   }
 
-  git_remote * from_remote = ObjectWrap::Unwrap<Remote>(args[0]->ToObject())->GetValue();
+  git_remote * from_remote = ObjectWrap::Unwrap<GitRemote>(args[0]->ToObject())->GetValue();
 
   git_remote_free(
     from_remote
@@ -522,12 +371,12 @@ Handle<Value> Remote::Free(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::UpdateTips(const Arguments& args) {
+Handle<Value> GitRemote::UpdateTips(const Arguments& args) {
   HandleScope scope;
   
 
   int result = git_remote_update_tips(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
@@ -536,7 +385,7 @@ Handle<Value> Remote::UpdateTips(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::ValidUrl(const Arguments& args) {
+Handle<Value> GitRemote::ValidUrl(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String url is required.")));
@@ -556,17 +405,19 @@ Handle<Value> Remote::ValidUrl(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::SupportedUrl(const Arguments& args) {
+Handle<Value> GitRemote::SupportedUrl(const Arguments& args) {
   HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("const url is required.")));
+    if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-  const char* from_url = ObjectWrap::Unwrap<const>(args[0]->ToObject())->GetValue();
+  String::Utf8Value url(args[0]->ToString());
+  const char* from_url = strdup(*url);
 
   int result = git_remote_supported_url(
     from_url
   );
+  delete from_url;
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -574,7 +425,7 @@ Handle<Value> Remote::SupportedUrl(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::List(const Arguments& args) {
+Handle<Value> GitRemote::List(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
@@ -596,7 +447,7 @@ Handle<Value> Remote::List(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> Remote::CheckCert(const Arguments& args) {
+Handle<Value> GitRemote::CheckCert(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number check is required.")));
@@ -605,14 +456,14 @@ Handle<Value> Remote::CheckCert(const Arguments& args) {
   int from_check = (int) args[0]->ToInt32()->Value();
 
   git_remote_check_cert(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_check
   );
 
   return Undefined();
 }
 
-Handle<Value> Remote::SetCredAcquireCb(const Arguments& args) {
+Handle<Value> GitRemote::SetCredAcquireCb(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("CredAcquireCb cred_acquire_cb is required.")));
@@ -625,7 +476,7 @@ Handle<Value> Remote::SetCredAcquireCb(const Arguments& args) {
   void * from_payload = ObjectWrap::Unwrap<void>(args[1]->ToObject())->GetValue();
 
   git_remote_set_cred_acquire_cb(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_cred_acquire_cb
     , from_payload
   );
@@ -633,7 +484,7 @@ Handle<Value> Remote::SetCredAcquireCb(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::SetTransport(const Arguments& args) {
+Handle<Value> GitRemote::SetTransport(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Transport transport is required.")));
@@ -642,7 +493,7 @@ Handle<Value> Remote::SetTransport(const Arguments& args) {
   git_transport * from_transport = ObjectWrap::Unwrap<Transport>(args[0]->ToObject())->GetValue();
 
   int result = git_remote_set_transport(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_transport
   );
   if (result != GIT_OK) {
@@ -652,7 +503,7 @@ Handle<Value> Remote::SetTransport(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::SetCallbacks(const Arguments& args) {
+Handle<Value> GitRemote::SetCallbacks(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("RemoteCallbacks callbacks is required.")));
@@ -661,7 +512,7 @@ Handle<Value> Remote::SetCallbacks(const Arguments& args) {
   git_remote_callbacks * from_callbacks = ObjectWrap::Unwrap<RemoteCallbacks>(args[0]->ToObject())->GetValue();
 
   int result = git_remote_set_callbacks(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_callbacks
   );
   if (result != GIT_OK) {
@@ -671,12 +522,12 @@ Handle<Value> Remote::SetCallbacks(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::Stats(const Arguments& args) {
+Handle<Value> GitRemote::Stats(const Arguments& args) {
   HandleScope scope;
   
 
   const git_transfer_progress * result = git_remote_stats(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
 
   Handle<Value> to;
@@ -684,7 +535,7 @@ Handle<Value> Remote::Stats(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> Remote::Autotag(const Arguments& args) {
+Handle<Value> GitRemote::Autotag(const Arguments& args) {
   HandleScope scope;
   
 
@@ -696,7 +547,7 @@ Handle<Value> Remote::Autotag(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> Remote::SetAutotag(const Arguments& args) {
+Handle<Value> GitRemote::SetAutotag(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("RemoteAutotagOptionT value is required.")));
@@ -705,14 +556,14 @@ Handle<Value> Remote::SetAutotag(const Arguments& args) {
   git_remote_autotag_option_t from_value = ObjectWrap::Unwrap<RemoteAutotagOptionT>(args[0]->ToObject())->GetValue();
 
   git_remote_set_autotag(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_value
   );
 
   return Undefined();
 }
 
-Handle<Value> Remote::Rename(const Arguments& args) {
+Handle<Value> GitRemote::Rename(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String new_name is required.")));
@@ -730,7 +581,7 @@ Handle<Value> Remote::Rename(const Arguments& args) {
   void * from_payload = ObjectWrap::Unwrap<void>(args[2]->ToObject())->GetValue();
 
   int result = git_remote_rename(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_new_name
     , from_callback
     , from_payload
@@ -743,12 +594,12 @@ Handle<Value> Remote::Rename(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::UpdateFetchhead(const Arguments& args) {
+Handle<Value> GitRemote::UpdateFetchhead(const Arguments& args) {
   HandleScope scope;
   
 
   int result = git_remote_update_fetchhead(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
@@ -757,7 +608,7 @@ Handle<Value> Remote::UpdateFetchhead(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> Remote::SetUpdateFetchhead(const Arguments& args) {
+Handle<Value> GitRemote::SetUpdateFetchhead(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsInt32()) {
     return ThrowException(Exception::Error(String::New("Number value is required.")));
@@ -766,14 +617,14 @@ Handle<Value> Remote::SetUpdateFetchhead(const Arguments& args) {
   int from_value = (int) args[0]->ToInt32()->Value();
 
   git_remote_set_update_fetchhead(
-    ObjectWrap::Unwrap<Remote>(args.This())->GetValue()
+    ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_value
   );
 
   return Undefined();
 }
 
-Handle<Value> Remote::IsValidName(const Arguments& args) {
+Handle<Value> GitRemote::IsValidName(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String remote_name is required.")));
@@ -793,4 +644,4 @@ Handle<Value> Remote::IsValidName(const Arguments& args) {
   return Undefined();
 }
 
-Persistent<Function> Remote::constructor_template;
+Persistent<Function> GitRemote::constructor_template;

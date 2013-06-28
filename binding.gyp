@@ -26,6 +26,8 @@
                 'src/diff_range.cc',
                 'src/threads.cc',
                 'src/wrapper.cc',
+                'src/refdb.cc',
+                'src/submodule.cc'
             ],
 
             'include_dirs': [

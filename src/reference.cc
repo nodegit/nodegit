@@ -31,10 +31,7 @@ void GitReference::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Reference"));
 
-  NODE_SET_METHOD(tpl, "lookup", Lookup);
   NODE_SET_METHOD(tpl, "oidForName", OidForName);
-  NODE_SET_METHOD(tpl, "createSymbolic", CreateSymbolic);
-  NODE_SET_METHOD(tpl, "create", Create);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
@@ -76,83 +73,6 @@ git_reference *GitReference::GetValue() {
   return this->raw;
 }
 
-
-Handle<Value> GitReference::Lookup(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
-  }
-
-  if (args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  LookupBaton* baton = new LookupBaton;
-  baton->error_code = GIT_OK;
-  baton->error = NULL;
-  baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  baton->repo = from_repo;
-  baton->nameReference = Persistent<Value>::New(args[1]);
-    String::Utf8Value name(args[1]->ToString());
-  const char * from_name = strdup(*name);
-  baton->name = from_name;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
-
-  return Undefined();
-}
-
-void GitReference::LookupWork(uv_work_t *req) {
-  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int result = git_reference_lookup(
-    &baton->out, 
-    baton->repo, 
-    baton->name
-  );
-  baton->error_code = result;
-  if (result != GIT_OK) {
-    baton->error = giterr_last();
-  }
-}
-
-void GitReference::LookupAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-
-  TryCatch try_catch;
-  if (baton->error_code == GIT_OK) {
-  Handle<Value> to;
-    to = GitReference::New((void *)baton->out);
-  Handle<Value> result = to;
-    Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
-      result
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-  } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
-
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  baton->repoReference.Dispose();
-  baton->nameReference.Dispose();
-  baton->callback.Dispose();
-  delete baton->name;
-  delete baton;
-}
 
 Handle<Value> GitReference::OidForName(const Arguments& args) {
   HandleScope scope;
@@ -229,86 +149,6 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton->name;
   delete baton;
-}
-
-Handle<Value> GitReference::CreateSymbolic(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
-  }
-  if (args.Length() == 2 || !args[2]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String target is required.")));
-  }
-  if (args.Length() == 3 || !args[3]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
-  }
-
-  git_reference *out = NULL;
-  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  String::Utf8Value name(args[1]->ToString());
-  const char * from_name = strdup(*name);
-  String::Utf8Value target(args[2]->ToString());
-  const char * from_target = strdup(*target);
-  int from_force = (int) args[3]->ToInt32()->Value();
-
-  int result = git_reference_symbolic_create(
-    &out
-    , from_repo
-    , from_name
-    , from_target
-    , from_force
-  );
-  delete from_name;
-  delete from_target;
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
-  Handle<Value> to;
-    to = GitReference::New((void *)out);
-  return scope.Close(to);
-}
-
-Handle<Value> GitReference::Create(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
-  }
-  if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
-  }
-  if (args.Length() == 3 || !args[3]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
-  }
-
-  git_reference *out = NULL;
-  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  String::Utf8Value name(args[1]->ToString());
-  const char * from_name = strdup(*name);
-  const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[2]->ToObject())->GetValue();
-  int from_force = (int) args[3]->ToInt32()->Value();
-
-  int result = git_reference_create(
-    &out
-    , from_repo
-    , from_name
-    , from_id
-    , from_force
-  );
-  delete from_name;
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
-  Handle<Value> to;
-    to = GitReference::New((void *)out);
-  return scope.Close(to);
 }
 
 Handle<Value> GitReference::Oid(const Arguments& args) {

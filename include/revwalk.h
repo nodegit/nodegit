@@ -31,7 +31,6 @@ class GitRevWalk : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
 
-    static Handle<Value> Make(const Arguments& args);
     static Handle<Value> Reset(const Arguments& args);
     static Handle<Value> Push(const Arguments& args);
     static void PushWork(uv_work_t* req);

@@ -24,35 +24,22 @@ var helper = {
  * Commit::Lookup
  */
 exports.lookup = function(test) {
-  test.expect(7);
+  test.expect(3);
 
   var testOid = git.Oid.fromString('cb76e3c030ab29db332aff3b297dc39451a84762');
 
-  // Test for function
-  helper.testFunction(test.equals, git.Commit.lookup, 'Commit::Lookup');
-
   git.Repo.open('../.git', function(error, repo) {
-    // Test repo argument existence
-    helper.testException(test.ok, function() {
-      git.Commit.lookup();
-    }, 'Throw an exception if no repo');
-
     // Test oid argument existence
     helper.testException(test.ok, function() {
-      git.Commit.lookup(repo);
+      repo.getCommit();
     }, 'Throw an exception if no oid');
-
-    // Test callback argument existence
-    helper.testException(test.ok, function() {
-      git.Commit.lookup(repo);
-    }, 'Throw an exception if no callback');
 
     // Test that all arguments result correctly
     helper.testException(test.ifError, function() {
-      git.Commit.lookup(repo, testOid, function() {});
+      repo.getCommit(testOid, function() {});
     }, 'No exception is thrown with proper arguments');
     // Test valid commit
-    git.Commit.lookup(repo, testOid, function(err) {
+    repo.getCommit(testOid, function(err) {
       test.equal(null, err, 'Valid commit');
       test.done();
     });

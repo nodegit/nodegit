@@ -32,6 +32,8 @@
 #include "../include/threads.h"
 #include "../include/index.h"
 #include "../include/tag.h"
+#include "../include/refdb.h"
+#include "../include/submodule.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
@@ -49,6 +51,8 @@ extern "C" void init(Handle<v8::Object> target) {
   GitRepo::Initialize(target);
   GitCommit::Initialize(target);
   GitRevWalk::Initialize(target);
+  GitRefDb::Initialize(target);
+  GitSubmodule::Initialize(target);
 
   GitTree::Initialize(target);
   GitTreeEntry::Initialize(target);

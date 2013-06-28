@@ -34,26 +34,13 @@ exports.constructor = function(test){
 
 // Blob::Lookup
 exports.lookup = function(test) {
-  test.expect(5);
+  test.expect(1);
   var testOid = git.Oid.fromString('fce88902e66c72b5b93e75bdb5ae717038b221f6');
 
   git.Repo.open('../.git', function(error, repo) {
-    // Test for function
-    helper.testFunction(test.equals, git.Blob.lookup, 'Blob::Lookup');
-
-    // Test repo argument existence
-    helper.testException(test.ok, function() {
-      git.Blob.lookup();
-    }, 'Throw an exception if no repo Object');
-
-    // Test Oid argument existence
-    helper.testException(test.ok, function() {
-      git.Blob.lookup(repo);
-    }, 'Throw an exception if no oid Object');
-
     // Test Callback argument existence
     helper.testException(test.ok, function() {
-      git.Blob.lookup(repo, testOid);
+      repo.getBlob(testOid);
     }, 'Throw an exception if no callback Object');
 
     test.done();
@@ -66,7 +53,7 @@ exports.rawContent = function(test) {
   var testOid = git.Oid.fromString('111dd657329797f6165f52f5085f61ac976dcf04');
   test.expect(3);
   git.Repo.open(path.resolve('../.git'), function(err, repo) {
-    git.Blob.lookup(repo, testOid, function(err, blob) {
+    repo.getBlob(testOid, function(err, blob) {
       // Test for function
       helper.testFunction(test.equals, blob.content, 'Blob::RawContent');
       test.equals(blob.content().toBuffer(7).toString(), "@import");

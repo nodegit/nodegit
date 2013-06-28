@@ -30,7 +30,6 @@ void GitObject::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Object"));
 
-  NODE_SET_METHOD(tpl, "lookup", Lookup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(tpl, "owner", Owner);
@@ -64,89 +63,6 @@ git_object *GitObject::GetValue() {
   return this->raw;
 }
 
-
-Handle<Value> GitObject::Lookup(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
-  }
-  if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number type is required.")));
-  }
-
-  if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  LookupBaton* baton = new LookupBaton;
-  baton->error_code = GIT_OK;
-  baton->error = NULL;
-  baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  baton->repo = from_repo;
-  baton->idReference = Persistent<Value>::New(args[1]);
-    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
-  baton->id = from_id;
-  baton->typeReference = Persistent<Value>::New(args[2]);
-    git_otype from_type = (git_otype) args[2]->ToInt32()->Value();
-  baton->type = from_type;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, LookupWork, (uv_after_work_cb)LookupAfterWork);
-
-  return Undefined();
-}
-
-void GitObject::LookupWork(uv_work_t *req) {
-  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-  int result = git_object_lookup(
-    &baton->object, 
-    baton->repo, 
-    baton->id, 
-    baton->type
-  );
-  baton->error_code = result;
-  if (result != GIT_OK) {
-    baton->error = giterr_last();
-  }
-}
-
-void GitObject::LookupAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  LookupBaton *baton = static_cast<LookupBaton *>(req->data);
-
-  TryCatch try_catch;
-  if (baton->error_code == GIT_OK) {
-  Handle<Value> to;
-    to = GitObject::New((void *)baton->object);
-  Handle<Value> result = to;
-    Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
-      result
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-  } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
-
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  baton->repoReference.Dispose();
-  baton->idReference.Dispose();
-  baton->typeReference.Dispose();
-  baton->callback.Dispose();
-  delete baton;
-}
 
 Handle<Value> GitObject::Oid(const Arguments& args) {
   HandleScope scope;

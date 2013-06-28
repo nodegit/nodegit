@@ -35,25 +35,17 @@ exports.constructor = function(test){
 // Ref::Lookup
 exports.lookup = function(test) {
 
-  test.expect(5);
-
-  // Test for function
-  helper.testFunction(test.equals, git.Reference.lookup, 'Ref::Lookup');
-
-  // Test repo argument existence
-  helper.testException(test.ok, function() {
-    git.Reference.lookup();
-  }, 'Throw an exception if no repo');
+  test.expect(2);
 
   git.Repo.open('../.git', function(error, repo) {
     // Test name argument existence
     helper.testException(test.ok, function() {
-      git.Reference.lookup(repo);
+      repo.getReference();
     }, 'Throw an exception if no name');
 
     // Test callback argument existence
     helper.testException(test.ok, function() {
-      git.Reference.lookup(repo, 'refs/heads/master');
+      repo.getReference('refs/heads/master');
     }, 'Throw an exception if no callback');
 
     // Cleanup, remove test repo directory - if it exists
