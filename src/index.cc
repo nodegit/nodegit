@@ -11,6 +11,8 @@
 #include "../include/oid.h"
 #include "../include/repo.h"
 #include "../include/tree.h"
+#include "../include/diff_list.h"
+#include "../include/diff_options.h"
 
 using namespace v8;
 using namespace node;
@@ -47,6 +49,7 @@ void GitIndex::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "conflictRemove", ConflictRemove);
   NODE_SET_PROTOTYPE_METHOD(tpl, "conflictCleanup", ConflictCleanup);
   NODE_SET_PROTOTYPE_METHOD(tpl, "hasConflicts", HasConflicts);
+  NODE_SET_METHOD(tpl, "indexToWorkdir", IndexToWorkdir);
 
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -649,6 +652,89 @@ Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   Handle<Value> to;
     to = Int32::New(result);
   return scope.Close(to);
+}
+
+Handle<Value> GitIndex::IndexToWorkdir(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Index index is required.")));
+  }
+  if (args.Length() == 2 || !args[2]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("DiffOptions opts is required.")));
+  }
+
+  if (args.Length() == 3 || !args[3]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  IndexToWorkdirBaton* baton = new IndexToWorkdirBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args[0]);
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  baton->indexReference = Persistent<Value>::New(args[1]);
+    git_index * from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
+  baton->index = from_index;
+  baton->optsReference = Persistent<Value>::New(args[2]);
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+  baton->opts = from_opts;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, IndexToWorkdirWork, (uv_after_work_cb)IndexToWorkdirAfterWork);
+
+  return Undefined();
+}
+
+void GitIndex::IndexToWorkdirWork(uv_work_t *req) {
+  IndexToWorkdirBaton *baton = static_cast<IndexToWorkdirBaton *>(req->data);
+  int result = git_diff_index_to_workdir(
+    &baton->diff, 
+    baton->repo, 
+    baton->index, 
+    baton->opts
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitIndex::IndexToWorkdirAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  IndexToWorkdirBaton *baton = static_cast<IndexToWorkdirBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    to = GitDiffList::New((void *)baton->diff);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->indexReference.Dispose();
+  baton->optsReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
 }
 
 Persistent<Function> GitIndex::constructor_template;

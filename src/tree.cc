@@ -11,6 +11,9 @@
 #include "../include/repo.h"
 #include "../include/oid.h"
 #include "../include/tree_entry.h"
+#include "../include/diff_list.h"
+#include "../include/diff_options.h"
+#include "../include/index.h"
 
 using namespace v8;
 using namespace node;
@@ -37,6 +40,9 @@ void GitTree::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByIndex", EntryByIndex);
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByOid", EntryByOid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getEntryByPath", GetEntryByPath);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "diffTree", DiffTree);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "diffIndex", DiffIndex);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "diffWorkDir", DiffWorkDir);
 
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -219,6 +225,260 @@ void GitTree::GetEntryByPathAfterWork(uv_work_t *req) {
   baton->pathReference.Dispose();
   baton->callback.Dispose();
   delete baton->path;
+  delete baton;
+}
+
+Handle<Value> GitTree::DiffTree(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Tree new_tree is required.")));
+  }
+
+  if (args.Length() == 3 || !args[3]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  DiffTreeBaton* baton = new DiffTreeBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args[0]);
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  baton->old_treeReference = Persistent<Value>::New(args.This());
+  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
+  baton->new_treeReference = Persistent<Value>::New(args[1]);
+    git_tree * from_new_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+  baton->new_tree = from_new_tree;
+  baton->optsReference = Persistent<Value>::New(args[2]);
+  if (args[2]->IsObject()) {
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+  baton->opts = from_opts;
+  } else {
+    baton->opts = NULL;
+  }
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, DiffTreeWork, (uv_after_work_cb)DiffTreeAfterWork);
+
+  return Undefined();
+}
+
+void GitTree::DiffTreeWork(uv_work_t *req) {
+  DiffTreeBaton *baton = static_cast<DiffTreeBaton *>(req->data);
+  int result = git_diff_tree_to_tree(
+    &baton->diff, 
+    baton->repo, 
+    baton->old_tree, 
+    baton->new_tree, 
+    baton->opts
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitTree::DiffTreeAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  DiffTreeBaton *baton = static_cast<DiffTreeBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    to = GitDiffList::New((void *)baton->diff);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->old_treeReference.Dispose();
+  baton->new_treeReference.Dispose();
+  baton->optsReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
+}
+
+Handle<Value> GitTree::DiffIndex(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Index index is required.")));
+  }
+  if (args.Length() == 2 || !args[2]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("DiffOptions opts is required.")));
+  }
+
+  if (args.Length() == 3 || !args[3]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  DiffIndexBaton* baton = new DiffIndexBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args[0]);
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  baton->old_treeReference = Persistent<Value>::New(args.This());
+  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
+  baton->indexReference = Persistent<Value>::New(args[1]);
+    git_index * from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
+  baton->index = from_index;
+  baton->optsReference = Persistent<Value>::New(args[2]);
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+  baton->opts = from_opts;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, DiffIndexWork, (uv_after_work_cb)DiffIndexAfterWork);
+
+  return Undefined();
+}
+
+void GitTree::DiffIndexWork(uv_work_t *req) {
+  DiffIndexBaton *baton = static_cast<DiffIndexBaton *>(req->data);
+  int result = git_diff_tree_to_index(
+    &baton->diff, 
+    baton->repo, 
+    baton->old_tree, 
+    baton->index, 
+    baton->opts
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitTree::DiffIndexAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  DiffIndexBaton *baton = static_cast<DiffIndexBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    to = GitDiffList::New((void *)baton->diff);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->old_treeReference.Dispose();
+  baton->indexReference.Dispose();
+  baton->optsReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
+}
+
+Handle<Value> GitTree::DiffWorkDir(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("DiffOptions opts is required.")));
+  }
+
+  if (args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  DiffWorkDirBaton* baton = new DiffWorkDirBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args[0]);
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  baton->old_treeReference = Persistent<Value>::New(args.This());
+  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
+  baton->optsReference = Persistent<Value>::New(args[1]);
+    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[1]->ToObject())->GetValue();
+  baton->opts = from_opts;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, DiffWorkDirWork, (uv_after_work_cb)DiffWorkDirAfterWork);
+
+  return Undefined();
+}
+
+void GitTree::DiffWorkDirWork(uv_work_t *req) {
+  DiffWorkDirBaton *baton = static_cast<DiffWorkDirBaton *>(req->data);
+  int result = git_diff_tree_to_workdir(
+    &baton->diff, 
+    baton->repo, 
+    baton->old_tree, 
+    baton->opts
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitTree::DiffWorkDirAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  DiffWorkDirBaton *baton = static_cast<DiffWorkDirBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    to = GitDiffList::New((void *)baton->diff);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->old_treeReference.Dispose();
+  baton->optsReference.Dispose();
+  baton->callback.Dispose();
   delete baton;
 }
 

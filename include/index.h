@@ -119,6 +119,23 @@ class GitIndex : public ObjectWrap {
     static Handle<Value> ConflictRemove(const Arguments& args);
     static Handle<Value> ConflictCleanup(const Arguments& args);
     static Handle<Value> HasConflicts(const Arguments& args);
+    static Handle<Value> IndexToWorkdir(const Arguments& args);
+    static void IndexToWorkdirWork(uv_work_t* req);
+    static void IndexToWorkdirAfterWork(uv_work_t* req);
+
+    struct IndexToWorkdirBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_diff_list * diff;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> indexReference;
+      git_index * index;
+      Persistent<Value> optsReference;
+      const git_diff_options * opts;
+      Persistent<Function> callback;
+    };
     git_index *raw;
 };
 

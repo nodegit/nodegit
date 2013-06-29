@@ -46,7 +46,7 @@ exports.walkingDiffs = function(test) {
       commit.parents(function(error, parents) {
         parents[0].getTree(function(error, parentTree) {
           commit.getTree(function(error, commitTree) {
-            git.diffList.treeToTree(commit.repo, parentTree, commitTree, function(error, diffList) {
+            parentTree.diff(commitTree, function(error, diffList) {
               test.equal(null, error, 'Should not error');
 
               diffList.patches().forEach(function(patch) {

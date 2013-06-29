@@ -3121,179 +3121,6 @@
         }
       },
       {
-        "cFunctionName": "git_diff_tree_to_tree",
-        "args": [
-          {
-            "name": "diff",
-            "cType": "git_diff_list **",
-            "cppClassName": "GitDiffList",
-            "jsClassName": "DiffList",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "old_tree",
-            "cType": "git_tree *",
-            "cppClassName": "GitTree",
-            "jsClassName": "Tree"
-          },
-          {
-            "name": "new_tree",
-            "cType": "git_tree *",
-            "cppClassName": "GitTree",
-            "jsClassName": "Tree"
-          },
-          {
-            "name": "opts",
-            "cType": "const git_diff_options *",
-            "cppClassName": "GitDiffOptions",
-            "jsClassName": "DiffOptions",
-            "isOptional": true
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "treeToTree",
-        "cppFunctionName": "TreeToTree",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_tree_to_index",
-        "args": [
-          {
-            "name": "diff",
-            "cType": "git_diff_list **",
-            "cppClassName": "GitDiffList",
-            "jsClassName": "DiffList",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "old_tree",
-            "cType": "git_tree *",
-            "cppClassName": "GitTree",
-            "jsClassName": "Tree"
-          },
-          {
-            "name": "index",
-            "cType": "git_index *",
-            "cppClassName": "GitIndex",
-            "jsClassName": "Index"
-          },
-          {
-            "name": "opts",
-            "cType": "const git_diff_options *",
-            "cppClassName": "GitDiffOptions",
-            "jsClassName": "DiffOptions"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "treeToIndex",
-        "cppFunctionName": "TreeToIndex",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_index_to_workdir",
-        "args": [
-          {
-            "name": "diff",
-            "cType": "git_diff_list **",
-            "cppClassName": "GitDiffList",
-            "jsClassName": "DiffList",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "index",
-            "cType": "git_index *",
-            "cppClassName": "GitIndex",
-            "jsClassName": "Index"
-          },
-          {
-            "name": "opts",
-            "cType": "const git_diff_options *",
-            "cppClassName": "GitDiffOptions",
-            "jsClassName": "DiffOptions"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": true,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "indexToWorkdir",
-        "cppFunctionName": "IndexToWorkdir",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_diff_tree_to_workdir",
-        "args": [
-          {
-            "name": "diff",
-            "cType": "git_diff_list **",
-            "cppClassName": "GitDiffList",
-            "jsClassName": "DiffList",
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "old_tree",
-            "cType": "git_tree *",
-            "cppClassName": "GitTree",
-            "jsClassName": "Tree"
-          },
-          {
-            "name": "opts",
-            "cType": "const git_diff_options *",
-            "cppClassName": "GitDiffOptions",
-            "jsClassName": "DiffOptions"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "treeToWorkdir",
-        "cppFunctionName": "TreeToWorkdir",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_diff_merge",
         "args": [
           {
@@ -3927,7 +3754,7 @@
   },
   {
     "filename": "index.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/tree.h"],
+    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/tree.h", "../include/diff_list.h", "../include/diff_options.h"],
     "jsClassName": "Index",
     "cppClassName": "GitIndex",
     "cType": "git_index",
@@ -4909,6 +4736,46 @@
         "return": {
           "cType": "void",
           "cppClassName": "void"
+        }
+      },
+      {
+        "cFunctionName": "git_diff_index_to_workdir",
+        "args": [
+          {
+            "name": "diff",
+            "cType": "git_diff_list **",
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository"
+          },
+          {
+            "name": "index",
+            "cType": "git_index *",
+            "cppClassName": "GitIndex",
+            "jsClassName": "Index"
+          },
+          {
+            "name": "opts",
+            "cType": "const git_diff_options *",
+            "cppClassName": "GitDiffOptions",
+            "jsClassName": "DiffOptions"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": true,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "indexToWorkdir",
+        "cppFunctionName": "IndexToWorkdir",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
         }
       }
     ]
@@ -14179,7 +14046,7 @@
   },
   {
     "filename": "tree.h",
-    "dependencies": ["../include/repo.h", "../include/oid.h", "../include/tree_entry.h"],
+    "dependencies": ["../include/repo.h", "../include/oid.h", "../include/tree_entry.h", "../include/diff_list.h", "../include/diff_options.h", "../include/index.h"],
     "jsClassName": "Tree",
     "cppClassName": "GitTree",
     "cType": "git_tree",
@@ -14684,6 +14551,142 @@
         "isPrototypeMethod": true,
         "jsFunctionName": "walk",
         "cppFunctionName": "Walk",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_diff_tree_to_tree",
+        "args": [
+          {
+            "name": "diff",
+            "cType": "git_diff_list **",
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository"
+          },
+          {
+            "name": "old_tree",
+            "cType": "git_tree *",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree",
+            "isSelf": true
+          },
+          {
+            "name": "new_tree",
+            "cType": "git_tree *",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree"
+          },
+          {
+            "name": "opts",
+            "cType": "const git_diff_options *",
+            "cppClassName": "GitDiffOptions",
+            "jsClassName": "DiffOptions",
+            "isOptional": true
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "diffTree",
+        "cppFunctionName": "DiffTree",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_diff_tree_to_index",
+        "args": [
+          {
+            "name": "diff",
+            "cType": "git_diff_list **",
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository"
+          },
+          {
+            "name": "old_tree",
+            "cType": "git_tree *",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree",
+            "isSelf": true
+          },
+          {
+            "name": "index",
+            "cType": "git_index *",
+            "cppClassName": "GitIndex",
+            "jsClassName": "Index"
+          },
+          {
+            "name": "opts",
+            "cType": "const git_diff_options *",
+            "cppClassName": "GitDiffOptions",
+            "jsClassName": "DiffOptions"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "diffIndex",
+        "cppFunctionName": "DiffIndex",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_diff_tree_to_workdir",
+        "args": [
+          {
+            "name": "diff",
+            "cType": "git_diff_list **",
+            "cppClassName": "GitDiffList",
+            "jsClassName": "DiffList",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository"
+          },
+          {
+            "name": "old_tree",
+            "cType": "git_tree *",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree",
+            "isSelf": true
+          },
+          {
+            "name": "opts",
+            "cType": "const git_diff_options *",
+            "cppClassName": "GitDiffOptions",
+            "jsClassName": "DiffOptions"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "diffWorkDir",
+        "cppFunctionName": "DiffWorkDir",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",

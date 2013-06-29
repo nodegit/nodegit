@@ -51,6 +51,61 @@ class GitTree : public ObjectWrap {
       const char * path;
       Persistent<Function> callback;
     };
+    static Handle<Value> DiffTree(const Arguments& args);
+    static void DiffTreeWork(uv_work_t* req);
+    static void DiffTreeAfterWork(uv_work_t* req);
+
+    struct DiffTreeBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_diff_list * diff;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> old_treeReference;
+      git_tree * old_tree;
+      Persistent<Value> new_treeReference;
+      git_tree * new_tree;
+      Persistent<Value> optsReference;
+      const git_diff_options * opts;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> DiffIndex(const Arguments& args);
+    static void DiffIndexWork(uv_work_t* req);
+    static void DiffIndexAfterWork(uv_work_t* req);
+
+    struct DiffIndexBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_diff_list * diff;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> old_treeReference;
+      git_tree * old_tree;
+      Persistent<Value> indexReference;
+      git_index * index;
+      Persistent<Value> optsReference;
+      const git_diff_options * opts;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> DiffWorkDir(const Arguments& args);
+    static void DiffWorkDirWork(uv_work_t* req);
+    static void DiffWorkDirAfterWork(uv_work_t* req);
+
+    struct DiffWorkDirBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_diff_list * diff;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> old_treeReference;
+      git_tree * old_tree;
+      Persistent<Value> optsReference;
+      const git_diff_options * opts;
+      Persistent<Function> callback;
+    };
     git_tree *raw;
 };
 
