@@ -1,3 +1,4 @@
 - rename all async methods getXXX
-- reorder functions so the raw api is oo-like
+- audit all ** methods so that all finds go through the repo in js land so that the .repo pointer is set.
 - rename files remove .h
+- Cleanup diff api

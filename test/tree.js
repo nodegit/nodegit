@@ -8,8 +8,8 @@ var fileCount = 512; // Number of blob & blob executabless
 exports.walk = function(test) {
   test.expect(515);
 
-  git.repo.open('../.git', function(error, repo) {
-    repo.commit(sha, function(error, commit) {
+  git.Repo.open('../.git', function(error, repo) {
+    repo.getCommit(sha, function(error, commit) {
       var entryCount = 0;
       commit.getTree(function(error, tree) {
         tree.walk().on('entry', function(index, entry) {

@@ -1247,11 +1247,12 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "tree",
-        "cppFunctionName": "Tree",
+        "jsFunctionName": "getTree",
+        "cppFunctionName": "GetTree",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -1325,6 +1326,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,

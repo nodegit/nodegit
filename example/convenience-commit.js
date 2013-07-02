@@ -7,7 +7,7 @@ git.repo('.git', function(error, repository) {
   if (error) throw error;
 
   // Use the master branch (a branch is the HEAD commit)
-  repository.branch('master', function(error, branch) {
+  repository.getBranch('master', function(error, branch) {
     if (error) throw error;
 
     // History returns an event, and begins walking the history

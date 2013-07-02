@@ -38,19 +38,6 @@ class GitCommit : public ObjectWrap {
     static Handle<Value> Offset(const Arguments& args);
     static Handle<Value> Committer(const Arguments& args);
     static Handle<Value> Author(const Arguments& args);
-    static Handle<Value> Tree(const Arguments& args);
-    static void TreeWork(uv_work_t* req);
-    static void TreeAfterWork(uv_work_t* req);
-
-    struct TreeBaton {
-      uv_work_t request;
-      int error_code;
-      const git_error* error;
-      git_tree * tree_out;
-      Persistent<Value> commitReference;
-      const git_commit * commit;
-      Persistent<Function> callback;
-    };
     static Handle<Value> TreeId(const Arguments& args);
     static Handle<Value> ParentCount(const Arguments& args);
     static Handle<Value> Parent(const Arguments& args);

@@ -3,11 +3,9 @@ var git = require('../');
 var sha = '5716e9757886eaf38d51c86b192258c960d9cfea';
 
 var getEntry = function(path, callback) {
-  git.repo.open('../.git', function(error, repo) {
-    repo.commit(sha, function(error, commit) {
-      commit.file(path, function(error, entry) {
-        callback(error, entry);
-      });
+  git.Repo.open('../.git', function(error, repo) {
+    repo.getCommit(sha, function(error, commit) {
+      commit.getFile(path, callback);
     });
  });
 };
@@ -46,11 +44,9 @@ exports.isFile = function(test) {
 exports.isDirectory = function(test) {
   test.expect(2);
   getEntry('example', function(error, entry) {
-    var isFile = entry.isFile();
-    test.equal(isFile, false, 'Entry is a directory');
+    test.equal(entry.isFile(), false, 'Entry is a directory');
     getEntry('README.md', function(error, entry) {
-      var isFile = entry.isFile()
-      test.equal(isFile, true, 'Entry is a file');
+      test.equal(entry.isFile(), true, 'Entry is a file');
       test.done();
     });
   });
@@ -80,7 +76,7 @@ exports.getTree = function(test) {
   test.expect(1);
   getEntry('test', function(error, entry) {
     entry.getTree(function(error, tree) {
-      test.equal(tree instanceof git.tree, true, 'Expected instance of Tree');
+      test.equal(tree instanceof git.Tree, true, 'Expected instance of Tree');
       test.done();
     });
   });

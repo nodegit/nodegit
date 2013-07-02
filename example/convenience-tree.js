@@ -6,7 +6,7 @@ git.repo('.git', function(error, repository) {
   if (error) throw error;
 
   // Use the master branch.
-  repository.branch('master', function(error, branch) {
+  repository.getBranch('master', function(error, branch) {
     if (error) throw error;
 
     // Iterate over the revision history.

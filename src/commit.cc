@@ -39,7 +39,6 @@ void GitCommit::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "offset", Offset);
   NODE_SET_PROTOTYPE_METHOD(tpl, "committer", Committer);
   NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "tree", Tree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "treeId", TreeId);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parentCount", ParentCount);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
@@ -164,69 +163,6 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
   Handle<Value> to;
     to = GitSignature::New((void *)result);
   return scope.Close(to);
-}
-
-Handle<Value> GitCommit::Tree(const Arguments& args) {
-  HandleScope scope;
-    
-  if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  TreeBaton* baton = new TreeBaton;
-  baton->error_code = GIT_OK;
-  baton->error = NULL;
-  baton->request.data = baton;
-  baton->commitReference = Persistent<Value>::New(args.This());
-  baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, TreeWork, (uv_after_work_cb)TreeAfterWork);
-
-  return Undefined();
-}
-
-void GitCommit::TreeWork(uv_work_t *req) {
-  TreeBaton *baton = static_cast<TreeBaton *>(req->data);
-  int result = git_commit_tree(
-    &baton->tree_out, 
-    baton->commit
-  );
-  baton->error_code = result;
-  if (result != GIT_OK) {
-    baton->error = giterr_last();
-  }
-}
-
-void GitCommit::TreeAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  TreeBaton *baton = static_cast<TreeBaton *>(req->data);
-
-  TryCatch try_catch;
-  if (baton->error_code == GIT_OK) {
-  Handle<Value> to;
-    to = GitTree::New((void *)baton->tree_out);
-  Handle<Value> result = to;
-    Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
-      result
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-  } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
-
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  baton->commitReference.Dispose();
-  baton->callback.Dispose();
-  delete baton;
 }
 
 Handle<Value> GitCommit::TreeId(const Arguments& args) {
