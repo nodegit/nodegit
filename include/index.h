@@ -44,7 +44,6 @@ class GitIndex : public ObjectWrap {
       const char * index_path;
       Persistent<Function> callback;
     };
-    static Handle<Value> Owner(const Arguments& args);
     static Handle<Value> Read(const Arguments& args);
     static void ReadWork(uv_work_t* req);
     static void ReadAfterWork(uv_work_t* req);
@@ -96,8 +95,9 @@ class GitIndex : public ObjectWrap {
       git_index * index;
       Persistent<Function> callback;
     };
-    static Handle<Value> Entrycount(const Arguments& args);
+    static Handle<Value> Size(const Arguments& args);
     static Handle<Value> Clear(const Arguments& args);
+    static Handle<Value> Entry(const Arguments& args);
     static Handle<Value> Remove(const Arguments& args);
     static Handle<Value> RemoveDirectory(const Arguments& args);
     static Handle<Value> AddBypath(const Arguments& args);

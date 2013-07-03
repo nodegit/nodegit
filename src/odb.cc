@@ -39,7 +39,7 @@ void GitOdb::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "readHeader", ReadHeader);
   NODE_SET_PROTOTYPE_METHOD(tpl, "exists", Exists);
   NODE_SET_PROTOTYPE_METHOD(tpl, "refresh", Refresh);
-  NODE_SET_METHOD(tpl, "write", Write);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "write", Write);
   NODE_SET_METHOD(tpl, "hash", Hash);
   NODE_SET_METHOD(tpl, "hashfile", Hashfile);
 
@@ -136,25 +136,73 @@ Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
 
 Handle<Value> GitOdb::Read(const Arguments& args) {
   HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
+      if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
 
-  git_odb_object *out = NULL;
-  const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-
-  int result = git_odb_read(
-    &out
-    , ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue()
-    , from_id
-  );
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+  if (args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
+  ReadBaton* baton = new ReadBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->dbReference = Persistent<Value>::New(args.This());
+  baton->db = ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue();
+  baton->idReference = Persistent<Value>::New(args[0]);
+    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->id = from_id;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, ReadWork, (uv_after_work_cb)ReadAfterWork);
+
+  return Undefined();
+}
+
+void GitOdb::ReadWork(uv_work_t *req) {
+  ReadBaton *baton = static_cast<ReadBaton *>(req->data);
+  int result = git_odb_read(
+    &baton->out, 
+    baton->db, 
+    baton->id
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitOdb::ReadAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  ReadBaton *baton = static_cast<ReadBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
-    to = GitOdbObject::New((void *)out);
-  return scope.Close(to);
+    to = GitOdbObject::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->dbReference.Dispose();
+  baton->idReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
 }
 
 Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
@@ -257,8 +305,8 @@ Handle<Value> GitOdb::Refresh(const Arguments& args) {
 
 Handle<Value> GitOdb::Write(const Arguments& args) {
   HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Buffer data is required.")));
+      if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String data is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsUint32()) {
     return ThrowException(Exception::Error(String::New("Number len is required.")));
@@ -267,25 +315,82 @@ Handle<Value> GitOdb::Write(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number type is required.")));
   }
 
-  git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
-  const void * from_data = Buffer::Data(ObjectWrap::Unwrap<Buffer>(args[0]->ToObject()));
-  size_t from_len = (size_t) args[1]->ToUint32()->Value();
-  git_otype from_type = (git_otype) args[2]->ToInt32()->Value();
-
-  int result = git_odb_write(
-    out
-    , ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue()
-    , from_data
-    , from_len
-    , from_type
-  );
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+  if (args.Length() == 3 || !args[3]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
+  WriteBaton* baton = new WriteBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->out = (git_oid *)malloc(sizeof(git_oid ));
+  baton->odbReference = Persistent<Value>::New(args.This());
+  baton->odb = ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue();
+  baton->dataReference = Persistent<Value>::New(args[0]);
+    String::Utf8Value data(args[0]->ToString());
+  const void * from_data = strdup(*data);
+  baton->data = from_data;
+  baton->lenReference = Persistent<Value>::New(args[1]);
+    size_t from_len = (size_t) args[1]->ToUint32()->Value();
+  baton->len = from_len;
+  baton->typeReference = Persistent<Value>::New(args[2]);
+    git_otype from_type = (git_otype) args[2]->ToInt32()->Value();
+  baton->type = from_type;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, WriteWork, (uv_after_work_cb)WriteAfterWork);
+
+  return Undefined();
+}
+
+void GitOdb::WriteWork(uv_work_t *req) {
+  WriteBaton *baton = static_cast<WriteBaton *>(req->data);
+  int result = git_odb_write(
+    baton->out, 
+    baton->odb, 
+    baton->data, 
+    baton->len, 
+    baton->type
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitOdb::WriteAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  WriteBaton *baton = static_cast<WriteBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
   Handle<Value> to;
-    to = GitOid::New((void *)out);
-  return scope.Close(to);
+    to = GitOid::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->odbReference.Dispose();
+  baton->dataReference.Dispose();
+  baton->lenReference.Dispose();
+  baton->typeReference.Dispose();
+  baton->callback.Dispose();
+  delete baton->data;
+  delete baton;
 }
 
 Handle<Value> GitOdb::Hash(const Arguments& args) {

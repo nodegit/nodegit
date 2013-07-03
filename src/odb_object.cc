@@ -30,9 +30,9 @@ void GitOdbObject::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("OdbObject"));
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "objectData", ObjectData);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "objectSize", ObjectSize);
-  NODE_SET_METHOD(tpl, "objectType", ObjectType);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "data", Data);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "size", Size);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
 
 
@@ -64,7 +64,7 @@ git_odb_object *GitOdbObject::GetValue() {
 }
 
 
-Handle<Value> GitOdbObject::ObjectData(const Arguments& args) {
+Handle<Value> GitOdbObject::Data(const Arguments& args) {
   HandleScope scope;
   
 
@@ -77,7 +77,7 @@ Handle<Value> GitOdbObject::ObjectData(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> GitOdbObject::ObjectSize(const Arguments& args) {
+Handle<Value> GitOdbObject::Size(const Arguments& args) {
   HandleScope scope;
   
 
@@ -90,7 +90,7 @@ Handle<Value> GitOdbObject::ObjectSize(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> GitOdbObject::ObjectType(const Arguments& args) {
+Handle<Value> GitOdbObject::Type(const Arguments& args) {
   HandleScope scope;
   
 

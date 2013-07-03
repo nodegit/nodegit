@@ -35,11 +35,43 @@ class GitOdb : public ObjectWrap {
     static Handle<Value> Open(const Arguments& args);
     static Handle<Value> AddDiskAlternate(const Arguments& args);
     static Handle<Value> Read(const Arguments& args);
+    static void ReadWork(uv_work_t* req);
+    static void ReadAfterWork(uv_work_t* req);
+
+    struct ReadBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_odb_object * out;
+      Persistent<Value> dbReference;
+      git_odb * db;
+      Persistent<Value> idReference;
+      const git_oid * id;
+      Persistent<Function> callback;
+    };
     static Handle<Value> ReadPrefix(const Arguments& args);
     static Handle<Value> ReadHeader(const Arguments& args);
     static Handle<Value> Exists(const Arguments& args);
     static Handle<Value> Refresh(const Arguments& args);
     static Handle<Value> Write(const Arguments& args);
+    static void WriteWork(uv_work_t* req);
+    static void WriteAfterWork(uv_work_t* req);
+
+    struct WriteBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_oid * out;
+      Persistent<Value> odbReference;
+      git_odb * odb;
+      Persistent<Value> dataReference;
+      const void * data;
+      Persistent<Value> lenReference;
+      size_t len;
+      Persistent<Value> typeReference;
+      git_otype type;
+      Persistent<Function> callback;
+    };
     static Handle<Value> Hash(const Arguments& args);
     static Handle<Value> Hashfile(const Arguments& args);
     git_odb *raw;

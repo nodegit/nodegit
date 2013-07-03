@@ -34,6 +34,7 @@ class GitSignature : public ObjectWrap {
     static Handle<Value> Email(const Arguments& args);
     static Handle<Value> Time(const Arguments& args);
 
+    static Handle<Value> Create(const Arguments& args);
     static Handle<Value> Now(const Arguments& args);
     git_signature *raw;
 };

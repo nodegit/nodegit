@@ -33,13 +33,12 @@ void GitTag::Initialize(Handle<v8::Object> target) {
   tpl->SetClassName(String::NewSymbol("Tag"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "target", Target);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "getTarget", GetTarget);
   NODE_SET_PROTOTYPE_METHOD(tpl, "targetId", TargetId);
   NODE_SET_PROTOTYPE_METHOD(tpl, "targetType", TargetType);
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(tpl, "tagger", Tagger);
   NODE_SET_PROTOTYPE_METHOD(tpl, "message", Message);
-  NODE_SET_METHOD(tpl, "delete", Delete);
   NODE_SET_PROTOTYPE_METHOD(tpl, "peel", Peel);
 
 
@@ -84,14 +83,14 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> GitTag::Target(const Arguments& args) {
+Handle<Value> GitTag::GetTarget(const Arguments& args) {
   HandleScope scope;
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  TargetBaton* baton = new TargetBaton;
+  GetTargetBaton* baton = new GetTargetBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
@@ -99,13 +98,13 @@ Handle<Value> GitTag::Target(const Arguments& args) {
   baton->tag = ObjectWrap::Unwrap<GitTag>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, TargetWork, (uv_after_work_cb)TargetAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, GetTargetWork, (uv_after_work_cb)GetTargetAfterWork);
 
   return Undefined();
 }
 
-void GitTag::TargetWork(uv_work_t *req) {
-  TargetBaton *baton = static_cast<TargetBaton *>(req->data);
+void GitTag::GetTargetWork(uv_work_t *req) {
+  GetTargetBaton *baton = static_cast<GetTargetBaton *>(req->data);
   int result = git_tag_target(
     &baton->target_out, 
     baton->tag
@@ -116,9 +115,9 @@ void GitTag::TargetWork(uv_work_t *req) {
   }
 }
 
-void GitTag::TargetAfterWork(uv_work_t *req) {
+void GitTag::GetTargetAfterWork(uv_work_t *req) {
   HandleScope scope;
-  TargetBaton *baton = static_cast<TargetBaton *>(req->data);
+  GetTargetBaton *baton = static_cast<GetTargetBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
@@ -210,31 +209,6 @@ Handle<Value> GitTag::Message(const Arguments& args) {
   Handle<Value> to;
     to = String::New(result);
   return scope.Close(to);
-}
-
-Handle<Value> GitTag::Delete(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String tag_name is required.")));
-  }
-
-  git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  String::Utf8Value tag_name(args[1]->ToString());
-  const char * from_tag_name = strdup(*tag_name);
-
-  int result = git_tag_delete(
-    from_repo
-    , from_tag_name
-  );
-  delete from_tag_name;
-  if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
-  }
-
-  return Undefined();
 }
 
 Handle<Value> GitTag::Peel(const Arguments& args) {

@@ -3755,8 +3755,66 @@
     ]
   },
   {
+    "filename": "index_time.h",
+    "jsClassName": "IndexTime",
+    "cppClassName": "GitIndexTime",
+    "cType": "git_index_time",
+    "fields": [
+      {
+        "jsFunctionName": "seconds",
+        "cppFunctionName": "Seconds",
+        "name": "seconds",
+        "cType": "git_time_t",
+        "cppClassName": "Uint32",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "nanoseconds",
+        "cppFunctionName": "Nanoseconds",
+        "name": "nanoseconds",
+        "cType": "unsigned int",
+        "cppClassName": "Uint32",
+        "jsClassName": "Number"
+      }
+    ]
+  },
+  {
+    "filename": "index_entry.h",
+    "dependencies": ["../include/index_time.h"],
+    "jsClassName": "IndexEntry",
+    "cppClassName": "GitIndexEntry",
+    "cType": "git_index_entry",
+    "freeFunctionName": "free",
+    "fields": [
+      {
+        "jsFunctionName": "ctime",
+        "cppFunctionName": "Ctime",
+        "name": "ctime",
+        "cType": "git_index_time",
+        "cppClassName": "GitIndexTime",
+        "jsClassName": "IndexTime"
+      },
+      {
+        "jsFunctionName": "mtime",
+        "cppFunctionName": "Mtime",
+        "name": "mtime",
+        "cType": "git_index_time",
+        "cppClassName": "GitIndexTime",
+        "jsClassName": "IndexTime"
+      },
+      {
+        "jsFunctionName": "path",
+        "cppFunctionName": "Path",
+        "name": "path",
+        "cType": "char *",
+        "cppClassName": "String",
+        "jsClassName": "String"
+      }
+    ]
+  },
+  {
     "filename": "index.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/tree.h", "../include/diff_list.h", "../include/diff_options.h"],
+    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/tree.h", "../include/diff_list.h", "../include/diff_options.h", "../include/index_entry.h"],
     "jsClassName": "Index",
     "cppClassName": "GitIndex",
     "cType": "git_index",
@@ -3826,7 +3884,7 @@
         "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": true,
         "jsFunctionName": "free",
         "cppFunctionName": "Free",
@@ -3846,6 +3904,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4057,8 +4116,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "entrycount",
-        "cppFunctionName": "Entrycount",
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
         "return": {
           "cType": "size_t",
           "cppClassName": "Uint32"
@@ -4102,15 +4161,14 @@
             "jsClassName": "Number"
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "getByindex",
-        "cppFunctionName": "GetByindex",
+        "jsFunctionName": "entry",
+        "cppFunctionName": "Entry",
         "return": {
           "cType": "const git_index_entry *",
-          "cppClassName": "IndexEntry"
+          "cppClassName": "GitIndexEntry"
         }
       },
       {
@@ -4140,11 +4198,11 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "getBypath",
-        "cppFunctionName": "GetBypath",
+        "jsFunctionName": "getFile",
+        "cppFunctionName": "GetFile",
         "return": {
           "cType": "const git_index_entry *",
-          "cppClassName": "IndexEntry"
+          "cppClassName": "GitIndexEntry"
         }
       },
       {
@@ -4228,7 +4286,7 @@
           {
             "name": "source_entry",
             "cType": "const git_index_entry *",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           }
         ],
@@ -4250,7 +4308,7 @@
           {
             "name": "entry",
             "cType": "const git_index_entry *",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           }
         ],
@@ -4368,19 +4426,19 @@
           {
             "name": "ancestor_entry",
             "cType": "const git_index_entry *",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           },
           {
             "name": "our_entry",
             "cType": "const git_index_entry *",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           },
           {
             "name": "their_entry",
             "cType": "const git_index_entry *",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           }
         ],
@@ -4402,19 +4460,19 @@
           {
             "name": "ancestor_out",
             "cType": "git_index_entry **",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           },
           {
             "name": "our_out",
             "cType": "git_index_entry **",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           },
           {
             "name": "their_out",
             "cType": "git_index_entry **",
-            "cppClassName": "IndexEntry",
+            "cppClassName": "GitIndexEntry",
             "jsClassName": "IndexEntry"
           },
           {
@@ -5914,7 +5972,7 @@
             "jsClassName": "Oid"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "read",
@@ -6110,8 +6168,8 @@
           {
             "name": "data",
             "cType": "const void *",
-            "cppClassName": "Buffer",
-            "jsClassName": "Buffer"
+            "cppClassName": "String",
+            "jsClassName": "String"
           },
           {
             "name": "len",
@@ -6126,9 +6184,9 @@
             "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "write",
         "cppFunctionName": "Write",
         "return": {
@@ -6354,8 +6412,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "objectData",
-        "cppFunctionName": "ObjectData",
+        "jsFunctionName": "data",
+        "cppFunctionName": "Data",
         "return": {
           "cType": "const void *",
           "cppClassName": "Wrapper"
@@ -6375,8 +6433,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "objectSize",
-        "cppFunctionName": "ObjectSize",
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
         "return": {
           "cType": "size_t",
           "cppClassName": "Uint32"
@@ -6395,9 +6453,9 @@
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "objectType",
-        "cppFunctionName": "ObjectType",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "type",
+        "cppFunctionName": "Type",
         "return": {
           "cType": "git_otype",
           "cppClassName": "Int32"
@@ -6419,8 +6477,8 @@
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "isFree": true,
-        "jsFunctionName": "objectFree",
-        "cppFunctionName": "ObjectFree",
+        "jsFunctionName": "free",
+        "cppFunctionName": "Free",
         "return": {
           "cType": "void",
           "cppClassName": "void"
@@ -8212,40 +8270,6 @@
         }
       },
       {
-        "cFunctionName": "git_reference_list",
-        "args": [
-          {
-            "name": "array",
-            "cType": "git_strarray *",
-            "cppClassName": "Strarray",
-            "jsClassName": "Strarray"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "list_flags",
-            "cType": "unsigned int",
-            "cppClassName": "Uint32",
-            "jsClassName": "Number"
-          }
-        ],
-        "ignore": true,
-        "isAsync": true,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "list",
-        "cppFunctionName": "List",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_reference_foreach",
         "args": [
           {
@@ -9569,7 +9593,7 @@
   },
   {
     "filename": "repo.h",
-    "dependencies": ["../include/oid.h", "../include/commit.h", "../include/blob.h", "../include/object.h", "../include/reference.h", "../include/submodule.h", "../include/refdb.h", "../include/revwalk.h", "../include/tag.h", "../include/signature.h", "../include/tree.h"],
+    "dependencies": ["../include/oid.h", "../include/commit.h", "../include/blob.h", "../include/object.h", "../include/reference.h", "../include/submodule.h", "../include/refdb.h", "../include/revwalk.h", "../include/tag.h", "../include/signature.h", "../include/tree.h", "../include/odb.h", "../include/index.h"],
     "jsClassName": "Repo",
     "cppClassName": "GitRepo",
     "cType": "git_repository",
@@ -10079,13 +10103,13 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "odb",
         "cppFunctionName": "Odb",
         "return": {
@@ -10193,15 +10217,15 @@
             "name": "repo",
             "cType": "git_repository *",
             "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
+            "jsClassName": "Repository",
+            "isSelf": true
           }
         ],
-        "ignore": true,
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "index",
-        "cppFunctionName": "Index",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "openIndex",
+        "cppFunctionName": "openIndex",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -11552,6 +11576,169 @@
           "cppClassName": "Int32",
           "isErrorCode": true
         }
+      },
+      {
+        "cFunctionName": "git_tag_delete",
+        "args": [
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "tag_name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "delete",
+        "cppFunctionName": "Delete",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tag_list",
+        "args": [
+          {
+            "name": "tag_names",
+            "cType": "git_strarray *",
+            "cppClassName": "Array",
+            "jsClassName": "Array",
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          }
+        ],
+        "ignore": true,
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "listTags",
+        "cppFunctionName": "ListTags",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tag_list_match",
+        "args": [
+          {
+            "name": "tag_names",
+            "cType": "git_strarray *",
+            "cppClassName": "Strarray",
+            "jsClassName": "Strarray",
+            "isReturn": true
+          },
+          {
+            "name": "pattern",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          }
+        ],
+        "ignore": true,
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "listMatch",
+        "cppFunctionName": "ListMatch",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_tag_foreach",
+        "args": [
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository"
+          },
+          {
+            "name": "callback",
+            "cType": "git_tag_foreach_cb",
+            "cppClassName": "TagForeachCb",
+            "jsClassName": "TagForeachCb"
+          },
+          {
+            "name": "payload",
+            "cType": "void *",
+            "cppClassName": "void",
+            "jsClassName": "void"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "foreach",
+        "cppFunctionName": "Foreach",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_reference_list",
+        "args": [
+          {
+            "name": "array",
+            "cType": "git_strarray *",
+            "cppClassName": "Array",
+            "jsClassName": "Array"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "list_flags",
+            "cType": "unsigned int",
+            "cppClassName": "Uint32",
+            "jsClassName": "Number"
+          }
+        ],
+        "ignore": true,
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "list",
+        "cppFunctionName": "List",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
       }
     ]
   },
@@ -12165,7 +12352,7 @@
           {
             "name": "time",
             "cType": "git_time_t",
-            "cppClassName": "Integer",
+            "cppClassName": "Int32",
             "jsClassName": "Number"
           },
           {
@@ -12175,12 +12362,11 @@
             "jsClassName": "Number"
           }
         ],
-        "ignore": true,
-        "isAsync": true,
+        "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
-        "jsFunctionName": "new",
-        "cppFunctionName": "New",
+        "jsFunctionName": "create",
+        "cppFunctionName": "Create",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -13257,8 +13443,8 @@
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "target",
-        "cppFunctionName": "Target",
+        "jsFunctionName": "getTarget",
+        "cppFunctionName": "GetTarget",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -13404,129 +13590,6 @@
         "isPrototypeMethod": false,
         "jsFunctionName": "createFrombuffer",
         "cppFunctionName": "CreateFrombuffer",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_tag_delete",
-        "args": [
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "tag_name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "delete",
-        "cppFunctionName": "Delete",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_tag_list",
-        "args": [
-          {
-            "name": "tag_names",
-            "cType": "git_strarray *",
-            "cppClassName": "Strarray",
-            "jsClassName": "Strarray"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "list",
-        "cppFunctionName": "List",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_tag_list_match",
-        "args": [
-          {
-            "name": "tag_names",
-            "cType": "git_strarray *",
-            "cppClassName": "Strarray",
-            "jsClassName": "Strarray"
-          },
-          {
-            "name": "pattern",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "listMatch",
-        "cppFunctionName": "ListMatch",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_tag_foreach",
-        "args": [
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "callback",
-            "cType": "git_tag_foreach_cb",
-            "cppClassName": "TagForeachCb",
-            "jsClassName": "TagForeachCb"
-          },
-          {
-            "name": "payload",
-            "cType": "void *",
-            "cppClassName": "void",
-            "jsClassName": "void"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "foreach",
-        "cppFunctionName": "Foreach",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -13877,7 +13940,6 @@
     "jsClassName": "TreeEntry",
     "cppClassName": "GitTreeEntry",
     "cType": "git_tree_entry",
-    "freeFunctionName": "git_tree_entry_free",
     "functions": [
       {
         "cFunctionName": "git_tree_entry_dup",
@@ -14192,7 +14254,8 @@
         "cppFunctionName": "EntryByName",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "GitTreeEntry"
+          "cppClassName": "GitTreeEntry",
+          "shouldAlloc": true
         }
       },
       {
@@ -14219,7 +14282,8 @@
         "cppFunctionName": "EntryByIndex",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "GitTreeEntry"
+          "cppClassName": "GitTreeEntry",
+          "shouldAlloc": true
         }
       },
       {
@@ -14246,7 +14310,8 @@
         "cppFunctionName": "EntryByOid",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "GitTreeEntry"
+          "cppClassName": "GitTreeEntry",
+          "shouldAlloc": true
         }
       },
       {

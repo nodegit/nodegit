@@ -32,11 +32,11 @@ class GitTag : public ObjectWrap {
 
 
     static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> Target(const Arguments& args);
-    static void TargetWork(uv_work_t* req);
-    static void TargetAfterWork(uv_work_t* req);
+    static Handle<Value> GetTarget(const Arguments& args);
+    static void GetTargetWork(uv_work_t* req);
+    static void GetTargetAfterWork(uv_work_t* req);
 
-    struct TargetBaton {
+    struct GetTargetBaton {
       uv_work_t request;
       int error_code;
       const git_error* error;
@@ -50,7 +50,6 @@ class GitTag : public ObjectWrap {
     static Handle<Value> Name(const Arguments& args);
     static Handle<Value> Tagger(const Arguments& args);
     static Handle<Value> Message(const Arguments& args);
-    static Handle<Value> Delete(const Arguments& args);
     static Handle<Value> Peel(const Arguments& args);
     git_tag *raw;
 };

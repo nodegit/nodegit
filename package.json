@@ -17,7 +17,7 @@
       "email": "mike@pagesofinterest.net"
     }
   ],
-  "main": "./lib/index.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/tbranyen/nodegit.git"

@@ -20,7 +20,6 @@ GitTreeEntry::GitTreeEntry(git_tree_entry *raw) {
 }
 
 GitTreeEntry::~GitTreeEntry() {
-  git_tree_entry_free(this->raw);
 }
 
 void GitTreeEntry::Initialize(Handle<v8::Object> target) {

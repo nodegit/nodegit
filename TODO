@@ -1,7 +1,9 @@
-- rename all async methods getXXX
 - audit all ** methods so that all finds go through the repo in js land so that the .repo pointer is set.
 - rename files remove .h
 - Cleanup diff api
 - free everything malloc'd
 - codegen documentation
 - extract out more partials
+- audit return types for things that should be copied
+- array handling
+- make normalizeOid do more work.

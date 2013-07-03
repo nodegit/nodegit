@@ -28,6 +28,7 @@ void GitSignature::Initialize(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("Signature"));
 
+  NODE_SET_METHOD(tpl, "create", Create);
   NODE_SET_METHOD(tpl, "now", Now);
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
@@ -61,6 +62,47 @@ git_signature *GitSignature::GetValue() {
   return this->raw;
 }
 
+
+Handle<Value> GitSignature::Create(const Arguments& args) {
+  HandleScope scope;
+    if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String name is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String email is required.")));
+  }
+  if (args.Length() == 2 || !args[2]->IsInt32()) {
+    return ThrowException(Exception::Error(String::New("Number time is required.")));
+  }
+  if (args.Length() == 3 || !args[3]->IsInt32()) {
+    return ThrowException(Exception::Error(String::New("Number offset is required.")));
+  }
+
+  git_signature *out = NULL;
+  String::Utf8Value name(args[0]->ToString());
+  const char * from_name = strdup(*name);
+  String::Utf8Value email(args[1]->ToString());
+  const char * from_email = strdup(*email);
+  git_time_t from_time = (git_time_t) args[2]->ToInt32()->Value();
+  int from_offset = (int) args[3]->ToInt32()->Value();
+
+  int result = git_signature_new(
+    &out
+    , from_name
+    , from_email
+    , from_time
+    , from_offset
+  );
+  delete from_name;
+  delete from_email;
+  if (result != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+  }
+
+  Handle<Value> to;
+    to = GitSignature::New((void *)out);
+  return scope.Close(to);
+}
 
 Handle<Value> GitSignature::Now(const Arguments& args) {
   HandleScope scope;

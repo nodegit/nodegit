@@ -61,6 +61,20 @@ class GitRepo : public ObjectWrap {
     };
     static Handle<Value> Path(const Arguments& args);
     static Handle<Value> Workdir(const Arguments& args);
+    static Handle<Value> Odb(const Arguments& args);
+    static Handle<Value> openIndex(const Arguments& args);
+    static void openIndexWork(uv_work_t* req);
+    static void openIndexAfterWork(uv_work_t* req);
+
+    struct openIndexBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_index * out;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Function> callback;
+    };
     static Handle<Value> GetBlob(const Arguments& args);
     static void GetBlobWork(uv_work_t* req);
     static void GetBlobAfterWork(uv_work_t* req);
@@ -210,6 +224,20 @@ class GitRepo : public ObjectWrap {
       const git_error* error;
       Persistent<Value> repoReference;
       git_repository * repo;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> Delete(const Arguments& args);
+    static void DeleteWork(uv_work_t* req);
+    static void DeleteAfterWork(uv_work_t* req);
+
+    struct DeleteBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> tag_nameReference;
+      const char * tag_name;
       Persistent<Function> callback;
     };
     git_repository *raw;

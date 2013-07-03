@@ -2,8 +2,8 @@
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
 
-#ifndef GITODBOBJECT_H
-#define GITODBOBJECT_H
+#ifndef GITINDEXTIME_H
+#define GITINDEXTIME_H
 
 #include <v8.h>
 #include <node.h>
@@ -14,28 +14,26 @@
 using namespace node;
 using namespace v8;
 
-class GitOdbObject : public ObjectWrap {
+class GitIndexTime : public ObjectWrap {
   public:
 
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
-    git_odb_object *GetValue();
+    git_index_time *GetValue();
 
     static Handle<Value> New(void *raw);
 
   private:
-    GitOdbObject(git_odb_object *raw);
-    ~GitOdbObject();
+    GitIndexTime(git_index_time *raw);
+    ~GitIndexTime();
 
     static Handle<Value> New(const Arguments& args);
 
+    static Handle<Value> Seconds(const Arguments& args);
+    static Handle<Value> Nanoseconds(const Arguments& args);
 
-    static Handle<Value> Data(const Arguments& args);
-    static Handle<Value> Size(const Arguments& args);
-    static Handle<Value> Type(const Arguments& args);
-    static Handle<Value> Oid(const Arguments& args);
-    git_odb_object *raw;
+    git_index_time *raw;
 };
 
 #endif

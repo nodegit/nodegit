@@ -1,28 +1,52 @@
-var git = require('nodegit');
+var git = require('../index.js');
 
-git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
+// **nodegit** is a javascript library for node.js that wraps libgit2, a
+// pure C implementation of the Git core. It provides an asynchronous
+// interface around any functions that do I/O, and a sychronous interface
+// around the rest.
+//
+// This file is an example of using that API in a real, JS file.
+//
+// **libgit2** (for the most part) only implements the core plumbing
+// functions, not really the higher level porcelain stuff. For a primer on
+// Git Internals that you will need to know to work with Git at this level,
+// check out [Chapter 9][pg] of the Pro Git book.
+
+// Nearly, all git operations in the context of a repository.
+// To open a repository,
+
+git.Repo.open('.git', function(error, repo) {
+  // For all of the following examples, error-handling will be performed in
+  // this naive way:  
   if (error) throw error;
+  console.log("Opened repository.");
 
   // ### SHA-1 Value Conversions
 
-  // The `git_oid` is the structure that keeps the SHA value. We will use
-  // this throughout the example for storing the value of the current SHA
-  // key we're working with.
-  var oid = git.Oid.fromString('fd6e612585290339ea8bf39c692a7ff6a29cb7c3');
+  // Objects in git (commits, blobs, etc.) are referred to by their SHA value
+  // **nodegit** uses a simple wrapper around hash values called an `Oid`.
+  // The oid validates that the SHA is well-formed.
 
-  // If you have a oid, you can easily get the hex value of the SHA as well.
-  console.log(oid.sha());
+  var oid = git.Oid.fromString('fd373a561d63bfc0a5665608fe057f2131d81fee');
+
+  // Most functions in in **nodegit** that take an oid will also take a
+  // string, so for example, you can look up a commit by a string SHA or
+  // an Oid, but but any functions that create new SHAs will always return
+  // an Oid.
+
+  // If you have a oid, you can easily get the hex value of the SHA again.
+  console.log("Sha hex string:", oid.sha());
 
   // ### Working with the Object Database
 
-  // **libgit2** provides [direct access][odb] to the object database.  The
+  // **libgit2** provides [direct access][odb] to the object database. The
   // object database is where the actual objects are stored in Git. For
   // working with raw objects, we'll need to get this structure from the
   // repository.
   var odb = repo.odb();
 
   // We can read raw objects directly from the object database if we have
-  // the oid (SHA) of the object.  This allows us to access objects without
+  // the oid (SHA) of the object. This allows us to access objects without
   // knowing thier type and inspect the raw bytes unparsed.
 
   odb.read(oid, function(error, object) {
@@ -37,19 +61,19 @@ git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
     var data = object.data(),
         type = object.type();
 
-    console.log(object.size(), object.type());
+    console.log("Object size and type:", object.size(), object.type());
   });
 
   // You can also write raw object data to Git. This is pretty cool because
-  // it gives you direct access to the key/value properties of Git.  Here
+  // it gives you direct access to the key/value properties of Git. Here
   // we'll write a new blob object that just contains a simple string.
-  // Notice that we have to specify the object type as the `git_otype` enum.
-  odb.write("test data", git.Object.Type.Blob, function(error, oid) {
+  // Notice that we have to specify the object type.
+  odb.write("test data", "test data".length, git.Object.Type.Blob, function(error, oid) {
     if (error) throw error;
 
     // Now that we've written the object, we can check out what SHA1 was
     // generated when the object was written to our database.
-    console.log(oid.sha());
+    console.log("Written Object: ", oid.sha());
   });
 
   // ### Object Parsing
@@ -64,61 +88,63 @@ git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
   // data in the commit - the author (name, email, datetime), committer
   // (same), tree, message, encoding and parent(s).
 
-  oid = git.Oid.fromString("f0877d0b841d75172ec404fc9370173dfffc20d1");
+  oid = git.Oid.fromString("698c74e817243efe441a5d1f3cbaf3998282ca86");
+
+  // Many methods in **nodegit** are asynchronous, because they do file
+  // or network I/O. By convention, all asynchronous methods are named
+  // imperatively, like `getCommit`, `open`, `read`, `write`, etc., whereas
+  // synchronous methods are named nominatively, like `type`, `size`, `name`.
+
   repo.getCommit(oid, function(error, commit) {
     if (error) throw error;
 
     // Each of the properties of the commit object are accessible via methods,
     // including commonly needed variations, such as `git_commit_time` which
     // returns the author time and `git_commit_message` which gives you the
-    // commit message (as a NUL-terminated string).
-    console.log(commit.message(), commit.author(), commit.committer(), commit.time());
+    // commit message.
+    console.log("Commit:", commit.message(), commit.author().name(), commit.date());
 
     // Commits can have zero or more parents. The first (root) commit will
     // have no parents, most commits will have one (i.e. the commit it was
-    // based on) and merge commits will have two or more.  Commits can
+    // based on) and merge commits will have two or more. Commits can
     // technically have any number, though it's rare to have more than two.
     commit.getParents(function(error, parents) {
       parents.forEach(function(parent) {
-        console.log(parent.oid());
+        console.log("Parent:", parent.oid().sha());
       });
     });
   });
 
   // #### Writing Commits
 
-  // libgit2 provides a couple of methods to create commit objects easily as
-  // well. There are four different create signatures, we'll just show one
-  // of them here.  You can read about the other ones in the [commit API
-  // docs][cd].
-  //
-  // [cd]: http://libgit2.github.com/libgit2/#HEAD/group/commit
+  // nodegit provides a couple of methods to create commit objects easily as
+  // well.
 
-  var author = new git.Signature("Scott Chacon", "schacon@gmail.com", 123456789, 60);
-  var committer = new git.Signature("Scott A Chacon", "scott@github.com", 987654321, 90);
+  var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
+  var committer = git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
 
   // Commit objects need a tree to point to and optionally one or more
-  // parents.  Here we're creating oid objects to create the commit with,
+  // parents. Here we're creating oid objects to create the commit with,
   // but you can also use existing ones:
+
   var treeId = git.Oid.fromString("28873d96b4e8f4e33ea30f4c682fd325f7ba56ac");
   var parentId = git.Oid.fromString("f0877d0b841d75172ec404fc9370173dfffc20d1");
 
   repo.getTree(treeId, function(error, tree) {
     repo.getCommit(parentId, function(error, parent) {
-
+      return "Not yet working!";
       // Here we actually create the commit object with a single call with all
-      // the values we need to create the commit.  The SHA key is written to the
+      // the values we need to create the commit. The SHA key is written to the
       // `commit_id` variable here.
       repo.createCommit(
         null /* do not update the HEAD */,
         author,
         committer,
-        null /* use default message encoding */,
         "example commit",
         tree,
-        1, parent,
+        [parent],
         function (error, commitOid) {
-          console.log(commitOid.sha());
+          console.log("New Commit:", commitOid.sha());
         });
     });
   });
@@ -129,7 +155,7 @@ git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
   // functions very similarly to the commit lookup, parsing and creation
   // methods, since the objects themselves are very similar.
 
-  var oid = git.Oid.fromString("bc422d45275aca289c51d79830b45cecebff7c3a");
+  oid = git.Oid.fromString("97f6d755647aca272e7c8003323472cefca772fc");
   repo.getTag(oid, function(error, tag) {
     if (error) throw error;
 
@@ -137,47 +163,50 @@ git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
     // generally contains: the target (usually a commit object), the type of
     // the target object (usually 'commit'), the name ('v1.0'), the tagger (a
     // git_signature - name, email, timestamp), and the tag message.
-    console.log(tag.name(), tag.type(), tag.message());
+    console.log(tag.name(), tag.targetType(), tag.message());
 
-    tag.getTarget(function (error, commit) {
+    tag.getTarget(function (error, target) {
       if (error) throw error;
-      console.log(commit);
+
+      console.log("Target is commit:", target.isCommit());
     });
   });
 
   // #### Tree Parsing
 
+  // A Tree is how Git represents the state of the filesystem
+  // at a given revision. In general, a tree corresponds to a directory,
+  // and files in that directory are either files (blobs) or directories.
+
   // [Tree parsing][tp] is a bit different than the other objects, in that
-  // we have a subtype which is the tree entry.  This is not an actual
+  // we have a subtype which is the tree entry. This is not an actual
   // object type in Git, but a useful structure for parsing and traversing
   // tree entries.
 
-  var oid = git.Oid.fromString("2a741c18ac5ff082a7caaec6e74db3075a1906b5");
+  oid = git.Oid.fromString("e1b0c7ea57bfc5e30ec279402a98168a27838ac9");
   repo.getTree(oid, function(error, tree) {
     if (error) throw error;
 
-    console.log(tree.size());
-    tree.entries().forEach(function(entry) {
-      console.log(entry.name());
-
-      if (entry.isDirectory()) {
-        entry.getTree(function(error, tree) {
-          if (error) throw error;
-
-          console.log("Recursively got tree");
-        });
-      } else {
-        entry.getBlob(function(error, blob) {
-          console.log(blob.toString());
-        });
-      }
-    });
+    console.log("Tree Size:", tree.size());
+    function dfs(error, tree) {
+      tree.entries().forEach(function(entry) {
+        if (entry.isDirectory()) {
+          entry.getTree(dfs);
+        } else if (entry.isFile()) {
+          console.log("Tree Entry:", entry.name());
+        }
+      });
+    }
+    dfs(null, tree);
 
     // You can also access tree entries by path if you know the path of the
     // entry you're looking for.
-    tree.getFile("/src/hello.c", function(error, entry) {
+    tree.getFile("example/general.js", function(error, entry) {
+      if (error) throw error;
+
+      // Entries which are files have blobs associated with them:
       entry.getBlob(function(error, blob) {
-        console.log(blob.toString());
+        console.log("Blob size:", blob.size());
       });
     });
   });
@@ -188,23 +217,21 @@ git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
   // help. Blobs are just file contents and can contain anything, there is
   // no structure to it. The main advantage to using the [simple blob
   // api][ba] is that when you're creating blobs you don't have to calculate
-  // the size of the content.  There is also a helper for reading a file
+  // the size of the content. There is also a helper for reading a file
   // from disk and writing it to the db and getting the oid back so you
   // don't have to do all those steps yourself.
 
-  var oid = git.Oid.fromString("af7574ea73f7b166f869ef1a39be126d9a186ae0");
+  oid = git.Oid.fromString("991c06b7b1ec6f939488427e4b41a4fa3e1edd5f");
   repo.getBlob(oid, function(error, blob) {
     if (error) throw error;
 
-    // You can access a buffer with the raw contents of the blob directly.
+    // You can access a node.js Buffer with the raw contents of the blob directly.
     // Note that this buffer may not be contain ASCII data for certain blobs
     // (e.g. binary files).
-
     var buffer = blob.content();
 
     // If you know that the blob is UTF-8, however, 
-
-    console.log(blob.toString());
+    console.log("Blob contents:", blob.toString().slice(0, 38));
   });
 
   // ### Revwalking
@@ -213,60 +240,62 @@ git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
   // directed graph created by the parent pointers of the commit objects.
   // Since all commits point back to the commit that came directly before
   // them, you can walk this parentage as a graph and find all the commits
-  // that were ancestors of (reachable from) a given starting point.  This
+  // that were ancestors of (reachable from) a given starting point. This
   // can allow you to create `git log` type functionality.
 
-  var oid = git.Oid.fromString("f0877d0b841d75172ec404fc9370173dfffc20d1");
+  oid = git.Oid.fromString("698c74e817243efe441a5d1f3cbaf3998282ca86");
 
   // To use the revwalker, create a new walker, tell it how you want to sort
   // the output and then push one or more starting points onto the walker.
   // If you want to emulate the output of `git log` you would push the SHA
   // of the commit that HEAD points to into the walker and then start
-  // traversing them.  You can also 'hide' commits that you want to stop at
-  // or not see any of their ancestors.  So if you want to emulate `git log
+  // traversing them. You can also 'hide' commits that you want to stop at
+  // or not see any of their ancestors. So if you want to emulate `git log
   // branch1..branch2`, you would push the oid of `branch2` and hide the oid
   // of `branch1`.
   var revWalk = repo.createRevWalk();
-  revWalk.sorting(git.RevWalk.Topological | git.RevWalkReverse);
-  revWalk.push(oid);
+  revWalk.sorting(git.RevWalk.Sort.Topological, git.RevWalk.Sort.Reverse);
+  revWalk.push(oid, function(error) {
+    if (error) throw error;
 
-  // Now that we have the starting point pushed onto the walker, we start
-  // asking for ancestors. It will return them in the sorting order we asked
-  // for as commit oids.  We can then lookup and parse the commited pointed
-  // at by the returned OID; note that this operation is specially fast
-  // since the raw contents of the commit object will be cached in memory
+    // Now that we have the starting point pushed onto the walker, we start
+    // asking for ancestors. It will return them in the sorting order we asked
+    // for as commit oids. We can then lookup and parse the commited pointed
+    // at by the returned OID; note that this operation is specially fast
+    // since the raw contents of the commit object will be cached in memory
 
-  function walk() {
-    revWalk.next(function(error, oid) {
-      if (error) throw error;
-      if (!oid) return;
-
-      repo.getCommit(oid, function(error, commit) {
+    function walk() {
+      revWalk.next(function(error, oid) {
         if (error) throw error;
+        if (!oid) return;
 
-        console.log(commit.sha());
-        walk();
+        repo.getCommit(oid, function(error, commit) {
+          if (error) throw error;
+
+          console.log("Commit:", commit.sha());
+          walk();
+        });
       });
-    });
-  }
-  walk();
+    }
+    walk();
+  });
 
   // ### Index File Manipulation
 
   // The [index file API][gi] allows you to read, traverse, update and write
   // the Git index file (sometimes thought of as the staging area).
-  repo.getIndex(function(error, index) {
+  repo.openIndex(function(error, index) {
     if (error) throw error;
 
     // For each entry in the index, you can get a bunch of information
     // including the SHA (oid), path and mode which map to the tree objects
-    // that are written out.  It also has filesystem properties to help
+    // that are written out. It also has filesystem properties to help
     // determine what to inspect for changes (ctime, mtime, dev, ino, uid,
     // gid, file_size and flags) All these properties are exported publicly in
-    // the `git_index_entry` struct
+    // the `IndexEntry` class
 
     index.entries().forEach(function(entry) {
-      console.log(entry.path(), entry.mtime(), entry.size());
+      console.log("Index Entry:", entry.path(), entry.mtime().seconds());
     });
   });
 
@@ -276,6 +305,7 @@ git.Repo.open('/opt/libgit2-test/.git', function(error, repo) {
   // references such as branches, tags and remote references (everything in
   // the .git/refs directory).
 
+  return "this doesn't yet work";
   repo.getReferences(function(error, references) {
     if (error) throw error;
 

@@ -31,6 +31,8 @@
 #include "../include/delta.h"
 #include "../include/threads.h"
 #include "../include/index.h"
+#include "../include/index_entry.h"
+#include "../include/index_time.h"
 #include "../include/tag.h"
 #include "../include/refdb.h"
 #include "../include/odb_object.h"
@@ -44,6 +46,8 @@ extern "C" void init(Handle<v8::Object> target) {
 
   GitReference::Initialize(target);
   GitIndex::Initialize(target);
+  GitIndexEntry::Initialize(target);
+  GitIndexTime::Initialize(target);
   GitTag::Initialize(target);
   GitSignature::Initialize(target);
   GitTime::Initialize(target);

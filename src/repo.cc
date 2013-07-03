@@ -19,6 +19,8 @@
 #include "../include/tag.h"
 #include "../include/signature.h"
 #include "../include/tree.h"
+#include "../include/odb.h"
+#include "../include/index.h"
 
 using namespace v8;
 using namespace node;
@@ -43,6 +45,8 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "init", Init);
   NODE_SET_PROTOTYPE_METHOD(tpl, "path", Path);
   NODE_SET_PROTOTYPE_METHOD(tpl, "workdir", Workdir);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "odb", Odb);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "openIndex", openIndex);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getBlob", GetBlob);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getCommit", GetCommit);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getObject", GetObject);
@@ -57,6 +61,7 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "createLightweightTag", CreateLightweightTag);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getTree", GetTree);
   NODE_SET_METHOD(tpl, "reloadSubmodules", ReloadSubmodules);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "delete", Delete);
 
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -257,6 +262,87 @@ Handle<Value> GitRepo::Workdir(const Arguments& args) {
   Handle<Value> to;
     to = String::New(result);
   return scope.Close(to);
+}
+
+Handle<Value> GitRepo::Odb(const Arguments& args) {
+  HandleScope scope;
+  
+  git_odb *out = NULL;
+
+  int result = git_repository_odb(
+    &out
+    , ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
+  );
+  if (result != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+  }
+
+  Handle<Value> to;
+    to = GitOdb::New((void *)out);
+  return scope.Close(to);
+}
+
+Handle<Value> GitRepo::openIndex(const Arguments& args) {
+  HandleScope scope;
+    
+  if (args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  openIndexBaton* baton = new openIndexBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, openIndexWork, (uv_after_work_cb)openIndexAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::openIndexWork(uv_work_t *req) {
+  openIndexBaton *baton = static_cast<openIndexBaton *>(req->data);
+  int result = git_repository_index(
+    &baton->out, 
+    baton->repo
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::openIndexAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  openIndexBaton *baton = static_cast<openIndexBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    to = GitIndex::New((void *)baton->out);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
 }
 
 Handle<Value> GitRepo::GetBlob(const Arguments& args) {
@@ -1101,6 +1187,77 @@ void GitRepo::ReloadSubmodulesAfterWork(uv_work_t *req) {
   }
   baton->repoReference.Dispose();
   baton->callback.Dispose();
+  delete baton;
+}
+
+Handle<Value> GitRepo::Delete(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String tag_name is required.")));
+  }
+
+  if (args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  DeleteBaton* baton = new DeleteBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->tag_nameReference = Persistent<Value>::New(args[0]);
+    String::Utf8Value tag_name(args[0]->ToString());
+  const char * from_tag_name = strdup(*tag_name);
+  baton->tag_name = from_tag_name;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, DeleteWork, (uv_after_work_cb)DeleteAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::DeleteWork(uv_work_t *req) {
+  DeleteBaton *baton = static_cast<DeleteBaton *>(req->data);
+  int result = git_tag_delete(
+    baton->repo, 
+    baton->tag_name
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::DeleteAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  DeleteBaton *baton = static_cast<DeleteBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+
+    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->tag_nameReference.Dispose();
+  baton->callback.Dispose();
+  delete baton->tag_name;
   delete baton;
 }
 

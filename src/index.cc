@@ -13,6 +13,7 @@
 #include "../include/tree.h"
 #include "../include/diff_list.h"
 #include "../include/diff_options.h"
+#include "../include/index_entry.h"
 
 using namespace v8;
 using namespace node;
@@ -34,13 +35,13 @@ void GitIndex::Initialize(Handle<v8::Object> target) {
   tpl->SetClassName(String::NewSymbol("Index"));
 
   NODE_SET_METHOD(tpl, "open", Open);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "owner", Owner);
   NODE_SET_PROTOTYPE_METHOD(tpl, "read", Read);
   NODE_SET_PROTOTYPE_METHOD(tpl, "write", Write);
   NODE_SET_PROTOTYPE_METHOD(tpl, "readTree", ReadTree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "writeTree", WriteTree);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "entrycount", Entrycount);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "size", Size);
   NODE_SET_PROTOTYPE_METHOD(tpl, "clear", Clear);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "entry", Entry);
   NODE_SET_PROTOTYPE_METHOD(tpl, "remove", Remove);
   NODE_SET_PROTOTYPE_METHOD(tpl, "removeDirectory", RemoveDirectory);
   NODE_SET_PROTOTYPE_METHOD(tpl, "addByPath", AddBypath);
@@ -147,19 +148,6 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton->index_path;
   delete baton;
-}
-
-Handle<Value> GitIndex::Owner(const Arguments& args) {
-  HandleScope scope;
-  
-
-  git_repository * result = git_index_owner(
-    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
-  );
-
-  Handle<Value> to;
-    to = GitRepo::New((void *)result);
-  return scope.Close(to);
 }
 
 Handle<Value> GitIndex::Read(const Arguments& args) {
@@ -416,7 +404,7 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Handle<Value> GitIndex::Entrycount(const Arguments& args) {
+Handle<Value> GitIndex::Size(const Arguments& args) {
   HandleScope scope;
   
 
@@ -438,6 +426,24 @@ Handle<Value> GitIndex::Clear(const Arguments& args) {
   );
 
   return Undefined();
+}
+
+Handle<Value> GitIndex::Entry(const Arguments& args) {
+  HandleScope scope;
+    if (args.Length() == 0 || !args[0]->IsUint32()) {
+    return ThrowException(Exception::Error(String::New("Number n is required.")));
+  }
+
+  size_t from_n = (size_t) args[0]->ToUint32()->Value();
+
+  const git_index_entry * result = git_index_get_byindex(
+    ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
+    , from_n
+  );
+
+  Handle<Value> to;
+    to = GitIndexEntry::New((void *)result);
+  return scope.Close(to);
 }
 
 Handle<Value> GitIndex::Remove(const Arguments& args) {
