@@ -5,12 +5,11 @@ var git = require('../'),
 var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
 
 exports.message = function(test) {
-  test.expect(3);
+  test.expect(2);
   git.Repo.open('../.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var message = commit.message();
       test.equals(error, null, 'There should be no error');
-      test.notEqual(message, null, 'Message should not be null');
       test.equals(message, 'Update README.md', 'Message should match expected value');
       test.done();
     });
@@ -18,12 +17,11 @@ exports.message = function(test) {
 };
 
 exports.sha = function(test) {
-  test.expect(3);
+  test.expect(2);
   git.Repo.open('../.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var sha = commit.sha();
       test.equals(error, null, 'There should be no error');
-      test.notEqual(sha, null, 'SHA should not be null');
       test.equals(sha, historyCountKnownSHA, 'SHA should match expected value');
       test.done();
     });
@@ -31,12 +29,11 @@ exports.sha = function(test) {
 };
 
 exports.time = function(test) {
-  test.expect(3);
+  test.expect(2);
   git.Repo.open('../.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var time = commit.timeMs();
       test.equals(error, null, 'There should be no error');
-      test.notEqual(time, null, 'Time should not be null');
       test.equals(time, 1362012884000, 'Time should match expected value');
       test.done();
     });
@@ -44,13 +41,11 @@ exports.time = function(test) {
 };
 
 exports.date = function(test) {
-  test.expect(4);
+  test.expect(2);
   git.Repo.open('../.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var date = commit.date();
       test.equals(error, null, 'There should be no error');
-      test.notEqual(date, null, 'Date should not be null');
-      test.equal(date instanceof Date, true, 'Date should be a date object');
       test.equals(date.getTime(), 1362012884000, 'Date should match expected value');
       test.done();
     });
@@ -58,12 +53,11 @@ exports.date = function(test) {
 };
 
 exports.offset = function(test) {
-  test.expect(3);
+  test.expect(2);
   git.Repo.open('../.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var offset = commit.offset();
       test.equals(error, null, 'There should be no error');
-      test.notEqual(offset, null, 'Offset should not be null');
       test.equals(offset, 780, 'Offset should match expected value');
       test.done();
     });
@@ -226,14 +220,14 @@ exports.tree = function(test) {
 };
 
 /**
- * Test that parentsDiffTrees works as expected.
+ * Test that getDiff works as expected.
  */
-exports.parentsDiffTrees = function(test) {
+exports.getDiff = function(test) {
   test.expect(1);
   git.Repo.open('../.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
-      commit.diff(function(error, parentsDiffTrees) {
-        test.equals(parentsDiffTrees.length, 1, 'Should be one item in parents diff trees');
+      commit.getDiff(function(error, diff) {
+        test.equals(diff.length, 1, 'Should be one item in parents diff trees');
         test.done();
       });
     });
