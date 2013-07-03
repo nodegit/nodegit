@@ -1,0 +1,128 @@
+Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
+  HandleScope scope;
+  <% var jsArg; -%>
+  <% include guardArguments.cc.ejs -%>
+
+  if (args.Length() == <%- jsArg %> || !args[<%- jsArg %>]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  <%- functionInfo.cppFunctionName %>Baton* baton = new <%- functionInfo.cppFunctionName %>Baton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+<%
+    for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
+      var arg = functionInfo.args[cArg];
+-%>
+<% if (!arg.isReturn) { -%>
+<% if (arg.isSelf) { -%>
+  baton-><%- arg.name %>Reference = Persistent<Value>::New(args.This());
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
+<% } else { -%>
+  baton-><%- arg.name %>Reference = Persistent<Value>::New(args[<%- jsArg %>]);
+<% if (arg.isOptional) { -%>
+  if (args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
+<% } -%>
+  <% include convertFromV8.cc.ejs -%>
+  baton-><%- arg.name %> = from_<%- arg.name %>;
+<% if (arg.isOptional) { -%>
+  } else {
+    baton-><%- arg.name %> = NULL;
+  }
+<% } -%>
+<% } -%>
+<% if (!(arg.isReturn || arg.isSelf)) jsArg++; -%>
+<% } else { -%>
+<% if (arg.shouldAlloc) { -%>
+  baton-><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));
+<% } else { -%>
+<% } -%>
+<% } -%>
+<% } -%>
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- jsArg %>]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, <%- functionInfo.cppFunctionName %>Work, (uv_after_work_cb)<%- functionInfo.cppFunctionName %>AfterWork);
+
+  return Undefined();
+}
+
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req) {
+  <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
+  <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+-%>
+    <% if (arg.isReturn && /\*\*/.test(arg.cType)) { %>&<% } %>baton-><%- arg.name %><% if (i < functionInfo.args.length - 1) { %>, <% } %>
+<% } -%>
+  );
+<% if (functionInfo.return.isErrorCode) { -%>
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+<% } else { -%>
+  baton->result = result;
+<% } -%>
+}
+
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t *req) {
+  HandleScope scope;
+  <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+<% if (!returns.length) { %>
+    Handle<Value> result = Local<Value>::New(Undefined());
+<% } else if (returns.length == 1) { -%>
+<% var to = returns[0]; to.name = "baton->" + to.name; -%>
+  Handle<Value> to;
+  <% include convertToV8.cc.ejs -%>
+  Handle<Value> result = to;
+<% } else { -%>
+  Handle<Object> result = Object::New();
+  Handle<Value> to;
+<%
+  for (r in returns) {
+    var to = returns[r];
+-%>
+    <% include convertToV8.cc.ejs -%>
+    result->Set(String::NewSymbol("<%- to.jsName || to.name %>"), to);
+<% } -%>
+<% } -%>
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+<%
+    for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
+      var arg = functionInfo.args[i];
+      if (arg.isReturn) continue;
+-%>
+  baton-><%- arg.name %>Reference.Dispose();
+<% } -%>
+  baton->callback.Dispose();
+<%
+    for (var i = 0; i < functionInfo.args.length; i++) {
+      var arg = functionInfo.args[i];
+-%>
+<% if (arg.cppClassName == 'String') { -%>
+  delete baton-><%- arg.name %>;
+<% } -%>
+<% } -%>
+  delete baton;
+}

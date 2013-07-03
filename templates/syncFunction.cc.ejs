@@ -1,0 +1,77 @@
+Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
+  HandleScope scope;
+  <% include guardArguments.cc.ejs -%>
+
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+    if (!arg.isReturn) continue;
+-%>
+<% if (arg.shouldAlloc) { -%>
+  <%- arg.cType %><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));
+<% } else { -%>
+  <%- arg.cType.replace('*', '') %><%- arg.name %> = NULL;
+<% } -%>
+<% } -%>
+<%
+  for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
+    var arg = functionInfo.args[cArg];
+    if (arg.isSelf || arg.isReturn) continue;
+-%>
+<% include convertFromV8.cc.ejs -%>
+<% jsArg++; -%>
+<% } %>
+  <% if (returns.length || functionInfo.return.isErrorCode) { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(
+<%
+  for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
+    var arg = functionInfo.args[cArg];
+-%>
+    <% if (cArg > 0) { %>, <% } -%><% if (arg.isReturn && !arg.shouldAlloc) { %>&<% } -%>
+<% if (arg.isSelf) { -%>
+ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()
+<% } else if (arg.isReturn) { -%>
+<%- arg.name %>
+<% } else { -%>
+from_<%- arg.name %>
+<% } -%>
+<%
+    if (!(arg.isReturn || arg.isSelf)) jsArg++;
+  }
+-%>
+  );
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+    if (arg.isSelf || arg.isReturn) continue;
+-%>
+<% if (arg.cppClassName == 'String') { -%>
+  delete from_<%- arg.name %>;
+<% } -%>
+<% } -%>
+<% if (functionInfo.return.isErrorCode) { -%>
+  if (result != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+  }
+<% } -%>
+
+<% if (!returns.length) { -%>
+  return Undefined();
+<% } else if (returns.length == 1) { -%>
+<% var to = returns[0]; -%>
+  Handle<Value> to;
+  <% include convertToV8.cc.ejs -%>
+  return scope.Close(to);
+<% } else { -%>
+  Handle<Object> toReturn = Object::New();
+  Handle<Value> to;
+<%
+  for (r in returns) {
+    var to = returns[r];
+-%>
+    <% include convertToV8.cc.ejs -%>
+    toReturn->Set(String::NewSymbol("<%- to.jsName || to.name %>"), to);
+
+<% } -%>
+  return scope.Close(toReturn);
+<% } -%>
+}
