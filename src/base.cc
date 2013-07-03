@@ -33,6 +33,8 @@
 #include "../include/index.h"
 #include "../include/tag.h"
 #include "../include/refdb.h"
+#include "../include/odb_object.h"
+#include "../include/odb.h"
 #include "../include/submodule.h"
 
 extern "C" void init(Handle<v8::Object> target) {
@@ -52,6 +54,8 @@ extern "C" void init(Handle<v8::Object> target) {
   GitCommit::Initialize(target);
   GitRevWalk::Initialize(target);
   GitRefDb::Initialize(target);
+  GitOdb::Initialize(target);
+  GitOdbObject::Initialize(target);
   GitSubmodule::Initialize(target);
 
   GitTree::Initialize(target);

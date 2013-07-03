@@ -5714,9 +5714,9 @@
   },
   {
     "filename": "odb.h",
-    "ignore": true,
+    "dependencies": ["../include/oid.h", "../include/odb_object.h", "node_buffer.h"],
     "jsClassName": "Odb",
-    "cppClassName": "Odb",
+    "cppClassName": "GitOdb",
     "cType": "git_odb",
     "freeFunctionName": "git_odb_free",
     "functions": [
@@ -5727,15 +5727,15 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_odb **",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           }
         ],
         "isAsync": false,
         "isConstructorMethod": true,
         "isPrototypeMethod": false,
-        "jsFunctionName": "new",
-        "cppFunctionName": "New",
+        "jsFunctionName": "create()",
+        "cppFunctionName": "Create",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -5749,7 +5749,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_odb **",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           },
           {
@@ -5776,7 +5776,7 @@
           {
             "name": "odb",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb",
             "isSelf": true
           },
@@ -5793,6 +5793,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -5810,7 +5811,7 @@
           {
             "name": "odb",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb",
             "isSelf": true
           },
@@ -5827,6 +5828,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -5844,7 +5846,7 @@
           {
             "name": "odb",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb",
             "isSelf": true
           },
@@ -5872,10 +5874,11 @@
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -5894,14 +5897,15 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_odb_object **",
-            "cppClassName": "OdbObject",
+            "cppClassName": "GitOdbObject",
             "jsClassName": "OdbObject"
           },
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "cppClassName": "GitOdb",
+            "jsClassName": "Odb",
+            "isSelf": true
           },
           {
             "name": "id",
@@ -5912,7 +5916,7 @@
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "jsFunctionName": "read",
         "cppFunctionName": "Read",
         "return": {
@@ -5928,13 +5932,13 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_odb_object **",
-            "cppClassName": "OdbObject",
+            "cppClassName": "GitOdbObject",
             "jsClassName": "OdbObject"
           },
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           },
           {
@@ -5979,7 +5983,7 @@
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           },
           {
@@ -6006,7 +6010,7 @@
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb",
             "isSelf": true
           },
@@ -6034,7 +6038,7 @@
           {
             "name": "db",
             "cType": "struct git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb",
             "isSelf": true
           }
@@ -6056,7 +6060,7 @@
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb",
             "isSelf": true
           },
@@ -6073,6 +6077,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -6090,6 +6095,7 @@
           {
             "name": "out",
             "isReturn": true,
+            "shouldAlloc": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6097,14 +6103,15 @@
           {
             "name": "odb",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
-            "jsClassName": "Odb"
+            "cppClassName": "GitOdb",
+            "jsClassName": "Odb",
+            "isSelf": true
           },
           {
             "name": "data",
             "cType": "const void *",
-            "cppClassName": "void",
-            "jsClassName": "void"
+            "cppClassName": "Buffer",
+            "jsClassName": "Buffer"
           },
           {
             "name": "len",
@@ -6137,13 +6144,13 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_odb_stream **",
-            "cppClassName": "OdbStream",
+            "cppClassName": "GitOdbStream",
             "jsClassName": "OdbStream"
           },
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           },
           {
@@ -6159,6 +6166,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -6177,13 +6185,13 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_odb_stream **",
-            "cppClassName": "OdbStream",
+            "cppClassName": "GitOdbStream",
             "jsClassName": "OdbStream"
           },
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           },
           {
@@ -6193,6 +6201,7 @@
             "jsClassName": "Oid"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -6217,7 +6226,7 @@
           {
             "name": "db",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           },
           {
@@ -6233,6 +6242,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -6250,6 +6260,7 @@
           {
             "name": "out",
             "isReturn": true,
+            "shouldAlloc": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6257,8 +6268,8 @@
           {
             "name": "data",
             "cType": "const void *",
-            "cppClassName": "void",
-            "jsClassName": "void"
+            "cppClassName": "Buffer",
+            "jsClassName": "Buffer"
           },
           {
             "name": "len",
@@ -6290,6 +6301,7 @@
           {
             "name": "out",
             "isReturn": true,
+            "shouldAlloc": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid"
@@ -6317,6 +6329,79 @@
           "cppClassName": "Int32",
           "isErrorCode": true
         }
+      }
+    ]
+  },
+  {
+    "filename": "odb_object.h",
+    "dependencies": ["../include/wrapper.h", "../include/oid.h"],
+    "jsClassName": "OdbObject",
+    "cppClassName": "GitOdbObject",
+    "cType": "git_odb_object",
+    "freeFunctionName": "git_odb_object_free",
+    "functions": [
+      {
+        "cFunctionName": "git_odb_object_data",
+        "args": [
+          {
+            "name": "object",
+            "cType": "git_odb_object *",
+            "cppClassName": "GitOdbObject",
+            "jsClassName": "OdbObject",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "objectData",
+        "cppFunctionName": "ObjectData",
+        "return": {
+          "cType": "const void *",
+          "cppClassName": "Wrapper"
+        }
+      },
+      {
+        "cFunctionName": "git_odb_object_size",
+        "args": [
+          {
+            "name": "object",
+            "cType": "git_odb_object *",
+            "cppClassName": "GitOdbObject",
+            "jsClassName": "OdbObject",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "objectSize",
+        "cppFunctionName": "ObjectSize",
+        "return": {
+          "cType": "size_t",
+          "cppClassName": "Uint32"
+        }
+      },
+      {
+        "cFunctionName": "git_odb_object_type",
+        "args": [
+          {
+            "name": "object",
+            "cType": "git_odb_object *",
+            "cppClassName": "GitOdbObject",
+            "jsClassName": "OdbObject",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "objectType",
+        "cppFunctionName": "ObjectType",
+        "return": {
+          "cType": "git_otype",
+          "cppClassName": "Int32"
+        }
       },
       {
         "cFunctionName": "git_odb_object_free",
@@ -6324,13 +6409,15 @@
           {
             "name": "object",
             "cType": "git_odb_object *",
-            "cppClassName": "OdbObject",
-            "jsClassName": "OdbObject"
+            "cppClassName": "GitOdbObject",
+            "jsClassName": "OdbObject",
+            "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
+        "isPrototypeMethod": true,
         "isFree": true,
         "jsFunctionName": "objectFree",
         "cppFunctionName": "ObjectFree",
@@ -6345,78 +6432,19 @@
           {
             "name": "object",
             "cType": "git_odb_object *",
-            "cppClassName": "OdbObject",
-            "jsClassName": "OdbObject"
+            "cppClassName": "GitOdbObject",
+            "jsClassName": "OdbObject",
+            "isSelf": true
           }
         ],
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "objectId",
-        "cppFunctionName": "ObjectId",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "oid",
+        "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
           "cppClassName": "GitOid"
-        }
-      },
-      {
-        "cFunctionName": "git_odb_object_data",
-        "args": [
-          {
-            "name": "object",
-            "cType": "git_odb_object *",
-            "cppClassName": "OdbObject",
-            "jsClassName": "OdbObject"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "objectData",
-        "cppFunctionName": "ObjectData",
-        "return": {
-          "cType": "const void *",
-          "cppClassName": "void"
-        }
-      },
-      {
-        "cFunctionName": "git_odb_object_size",
-        "args": [
-          {
-            "name": "object",
-            "cType": "git_odb_object *",
-            "cppClassName": "OdbObject",
-            "jsClassName": "OdbObject"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "objectSize",
-        "cppFunctionName": "ObjectSize",
-        "return": {
-          "cType": "size_t",
-          "cppClassName": "Uint32"
-        }
-      },
-      {
-        "cFunctionName": "git_odb_object_type",
-        "args": [
-          {
-            "name": "object",
-            "cType": "git_odb_object *",
-            "cppClassName": "OdbObject",
-            "jsClassName": "OdbObject"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "objectType",
-        "cppFunctionName": "ObjectType",
-        "return": {
-          "cType": "git_otype",
-          "cppClassName": "Int32"
         }
       }
     ]
@@ -9588,7 +9616,7 @@
           {
             "name": "odb",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           }
         ],
@@ -10044,7 +10072,7 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_odb **",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           },
           {
@@ -10079,7 +10107,7 @@
           {
             "name": "odb",
             "cType": "git_odb *",
-            "cppClassName": "Odb",
+            "cppClassName": "GitOdb",
             "jsClassName": "Odb"
           }
         ],
@@ -14248,8 +14276,8 @@
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "getEntryByPath",
-        "cppFunctionName": "GetEntryByPath",
+        "jsFunctionName": "getFile",
+        "cppFunctionName": "GetFile",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",

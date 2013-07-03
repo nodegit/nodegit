@@ -27,6 +27,8 @@
                 'src/threads.cc',
                 'src/wrapper.cc',
                 'src/refdb.cc',
+                'src/odb_object.cc',
+                'src/odb.cc',
                 'src/submodule.cc'
             ],
 

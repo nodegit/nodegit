@@ -41,7 +41,6 @@ void GitCommit::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "author", Author);
   NODE_SET_PROTOTYPE_METHOD(tpl, "treeId", TreeId);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parentCount", ParentCount);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "parent", Parent);
   NODE_SET_PROTOTYPE_METHOD(tpl, "parentId", ParentId);
   NODE_SET_PROTOTYPE_METHOD(tpl, "nthGenAncestor", NthGenAncestor);
 
@@ -189,77 +188,6 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   Handle<Value> to;
     to = Uint32::New(result);
   return scope.Close(to);
-}
-
-Handle<Value> GitCommit::Parent(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number n is required.")));
-  }
-
-  if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  ParentBaton* baton = new ParentBaton;
-  baton->error_code = GIT_OK;
-  baton->error = NULL;
-  baton->request.data = baton;
-  baton->commitReference = Persistent<Value>::New(args.This());
-  baton->commit = ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue();
-  baton->nReference = Persistent<Value>::New(args[0]);
-    unsigned int from_n = (unsigned int) args[0]->ToUint32()->Value();
-  baton->n = from_n;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, ParentWork, (uv_after_work_cb)ParentAfterWork);
-
-  return Undefined();
-}
-
-void GitCommit::ParentWork(uv_work_t *req) {
-  ParentBaton *baton = static_cast<ParentBaton *>(req->data);
-  int result = git_commit_parent(
-    &baton->out, 
-    baton->commit, 
-    baton->n
-  );
-  baton->error_code = result;
-  if (result != GIT_OK) {
-    baton->error = giterr_last();
-  }
-}
-
-void GitCommit::ParentAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  ParentBaton *baton = static_cast<ParentBaton *>(req->data);
-
-  TryCatch try_catch;
-  if (baton->error_code == GIT_OK) {
-  Handle<Value> to;
-    to = GitCommit::New((void *)baton->out);
-  Handle<Value> result = to;
-    Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
-      result
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
-  } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
-
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  baton->commitReference.Dispose();
-  baton->nReference.Dispose();
-  baton->callback.Dispose();
-  delete baton;
 }
 
 Handle<Value> GitCommit::ParentId(const Arguments& args) {

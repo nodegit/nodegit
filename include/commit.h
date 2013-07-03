@@ -40,21 +40,6 @@ class GitCommit : public ObjectWrap {
     static Handle<Value> Author(const Arguments& args);
     static Handle<Value> TreeId(const Arguments& args);
     static Handle<Value> ParentCount(const Arguments& args);
-    static Handle<Value> Parent(const Arguments& args);
-    static void ParentWork(uv_work_t* req);
-    static void ParentAfterWork(uv_work_t* req);
-
-    struct ParentBaton {
-      uv_work_t request;
-      int error_code;
-      const git_error* error;
-      git_commit * out;
-      Persistent<Value> commitReference;
-      git_commit * commit;
-      Persistent<Value> nReference;
-      unsigned int n;
-      Persistent<Function> callback;
-    };
     static Handle<Value> ParentId(const Arguments& args);
     static Handle<Value> NthGenAncestor(const Arguments& args);
     git_commit *raw;
