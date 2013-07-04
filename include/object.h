@@ -33,7 +33,6 @@ class GitObject : public ObjectWrap {
 
     static Handle<Value> Oid(const Arguments& args);
     static Handle<Value> Type(const Arguments& args);
-    static Handle<Value> Owner(const Arguments& args);
     static Handle<Value> Peel(const Arguments& args);
     static void PeelWork(uv_work_t* req);
     static void PeelAfterWork(uv_work_t* req);

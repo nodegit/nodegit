@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/diff_list.h"
 #include "../include/diff_options.h"
 #include "../include/diff_find_options.h"

@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/delta.h"
 #include "../include/diff_file.h"
 
@@ -18,6 +20,7 @@ GitDelta::GitDelta(git_diff_delta *raw) {
 }
 
 GitDelta::~GitDelta() {
+  free(this->raw);
 }
 
 void GitDelta::Initialize(Handle<v8::Object> target) {
@@ -70,7 +73,8 @@ Handle<Value> GitDelta::OldFile(const Arguments& args) {
   git_diff_file *old_file =
     &ObjectWrap::Unwrap<GitDelta>(args.This())->GetValue()->old_file;
 
-    to = GitDiffFile::New((void *)old_file);
+    old_file = (git_diff_file *)git_diff_file_dup(old_file);
+  to = GitDiffFile::New((void *)old_file);
   return scope.Close(to);
 }
 
@@ -81,7 +85,8 @@ Handle<Value> GitDelta::NewFile(const Arguments& args) {
   git_diff_file *new_file =
     &ObjectWrap::Unwrap<GitDelta>(args.This())->GetValue()->new_file;
 
-    to = GitDiffFile::New((void *)new_file);
+    new_file = (git_diff_file *)git_diff_file_dup(new_file);
+  to = GitDiffFile::New((void *)new_file);
   return scope.Close(to);
 }
 

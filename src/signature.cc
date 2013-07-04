@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/signature.h"
 #include "../include/time.h"
 
@@ -18,6 +20,7 @@ GitSignature::GitSignature(git_signature *raw) {
 }
 
 GitSignature::~GitSignature() {
+  git_signature_free(this->raw);
 }
 
 void GitSignature::Initialize(Handle<v8::Object> target) {
@@ -164,7 +167,8 @@ Handle<Value> GitSignature::Time(const Arguments& args) {
   git_time *when =
     &ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->when;
 
-    to = GitTime::New((void *)when);
+    when = (git_time *)git_time_dup(when);
+  to = GitTime::New((void *)when);
   return scope.Close(to);
 }
 

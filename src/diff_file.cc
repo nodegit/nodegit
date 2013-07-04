@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/diff_file.h"
 #include "../include/oid.h"
 
@@ -18,6 +20,7 @@ GitDiffFile::GitDiffFile(git_diff_file *raw) {
 }
 
 GitDiffFile::~GitDiffFile() {
+  free(this->raw);
 }
 
 void GitDiffFile::Initialize(Handle<v8::Object> target) {
@@ -70,7 +73,8 @@ Handle<Value> GitDiffFile::Oid(const Arguments& args) {
   git_oid *oid =
     &ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->oid;
 
-    to = GitOid::New((void *)oid);
+    oid = (git_oid *)git_oid_dup(oid);
+  to = GitOid::New((void *)oid);
   return scope.Close(to);
 }
 

@@ -5,7 +5,6 @@
     "jsClassName": "Attr",
     "cppClassName": "Attr",
     "cType": "git_attr",
-    "freeFunctionName": null,
     "functions": [
       {
         "cFunctionName": "git_attr_get",
@@ -257,7 +256,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -344,6 +344,7 @@
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid",
+            "shouldAlloc": true,
             "isReturn": true
           },
           {
@@ -424,6 +425,7 @@
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid",
+            "shouldAlloc": true,
             "isReturn": true
           },
           {
@@ -1012,7 +1014,12 @@
   },
   {
     "filename": "commit.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/signature.h", "../include/tree.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repo.h",
+      "../include/signature.h",
+      "../include/tree.h"
+    ],
     "jsClassName": "Commit",
     "cppClassName": "GitCommit",
     "cType": "git_commit",
@@ -1100,7 +1107,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -1205,7 +1213,8 @@
         "cppFunctionName": "Committer",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature"
+          "cppClassName": "GitSignature",
+          "copy": "git_signature_dup"
         }
       },
       {
@@ -1226,7 +1235,8 @@
         "cppFunctionName": "Author",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature"
+          "cppClassName": "GitSignature",
+          "copy": "git_signature_dup"
         }
       },
       {
@@ -1277,7 +1287,8 @@
         "cppFunctionName": "TreeId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -1309,8 +1320,7 @@
             "isReturn": true,
             "cType": "git_commit **",
             "cppClassName": "GitCommit",
-            "jsClassName": "Commit",
-            "isReturn": true
+            "jsClassName": "Commit"
           },
           {
             "name": "commit",
@@ -1362,7 +1372,8 @@
         "cppFunctionName": "ParentId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -1408,6 +1419,7 @@
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid",
+            "shouldAlloc": true,
             "isReturn": true
           },
           {
@@ -2593,7 +2605,10 @@
   },
   {
     "filename": "patch.h",
-    "dependencies": ["../include/delta.h", "../include/diff_range.h"],
+    "dependencies": [
+      "../include/delta.h",
+      "../include/diff_range.h"
+    ],
     "jsClassName": "Patch",
     "cppClassName": "GitPatch",
     "cType": "git_diff_patch",
@@ -2640,7 +2655,8 @@
         "cppFunctionName": "Delta",
         "return": {
           "cType": "const git_diff_delta *",
-          "cppClassName": "GitDelta"
+          "cppClassName": "GitDelta",
+          "copy": "git_diff_delta_dup"
         }
       },
       {
@@ -2996,10 +3012,13 @@
   },
   {
     "filename": "diff_file.h",
-    "dependencies": ["../include/oid.h"],
+    "dependencies": [
+      "../include/oid.h"
+    ],
     "jsClassName": "DiffFile",
     "cppClassName": "GitDiffFile",
     "cType": "git_diff_file",
+    "freeFunctionName": "free",
     "fields": [
       {
         "jsFunctionName": "oid",
@@ -3007,7 +3026,8 @@
         "name": "oid",
         "cType": "git_oid",
         "cppClassName": "GitOid",
-        "jsClassName": "Oid"
+        "jsClassName": "Oid",
+        "copy": "git_oid_dup"
       },
       {
         "jsFunctionName": "path",
@@ -3045,10 +3065,13 @@
   },
   {
     "filename": "delta.h",
-    "dependencies": ["../include/diff_file.h"],
+    "dependencies": [
+      "../include/diff_file.h"
+    ],
     "jsClassName": "Delta",
     "cppClassName": "GitDelta",
     "cType": "git_diff_delta",
+    "freeFunctionName": "free",
     "fields": [
       {
         "jsFunctionName": "oldFile",
@@ -3056,7 +3079,8 @@
         "name": "old_file",
         "cType": "git_diff_file",
         "cppClassName": "GitDiffFile",
-        "jsClassName": "DiffFile"
+        "jsClassName": "DiffFile",
+        "copy": "git_diff_file_dup"
       },
       {
         "jsFunctionName": "newFile",
@@ -3064,7 +3088,8 @@
         "name": "new_file",
         "cType": "git_diff_file",
         "cppClassName": "GitDiffFile",
-        "jsClassName": "DiffFile"
+        "jsClassName": "DiffFile",
+        "copy": "git_diff_file_dup"
       },
       {
         "jsFunctionName": "status",
@@ -3094,7 +3119,15 @@
   },
   {
     "filename": "diff_list.h",
-    "dependencies": ["../include/diff_options.h", "../include/diff_find_options.h", "../include/repo.h", "../include/tree.h", "../include/index.h", "../include/patch.h", "../include/delta.h"],
+    "dependencies": [
+      "../include/diff_options.h",
+      "../include/diff_find_options.h",
+      "../include/repo.h",
+      "../include/tree.h",
+      "../include/index.h",
+      "../include/patch.h",
+      "../include/delta.h"
+    ],
     "jsClassName": "DiffList",
     "cppClassName": "GitDiffList",
     "cType": "git_diff_list",
@@ -3548,7 +3581,8 @@
         "cppFunctionName": "LastError",
         "return": {
           "cType": "const git_error *",
-          "cppClassName": "Error"
+          "cppClassName": "Error",
+          "copy": "fixme"
         }
       },
       {
@@ -3759,6 +3793,7 @@
     "jsClassName": "IndexTime",
     "cppClassName": "GitIndexTime",
     "cType": "git_index_time",
+    "freeFunctionName": "free",
     "fields": [
       {
         "jsFunctionName": "seconds",
@@ -3780,7 +3815,9 @@
   },
   {
     "filename": "index_entry.h",
-    "dependencies": ["../include/index_time.h"],
+    "dependencies": [
+      "../include/index_time.h"
+    ],
     "jsClassName": "IndexEntry",
     "cppClassName": "GitIndexEntry",
     "cType": "git_index_entry",
@@ -3792,7 +3829,8 @@
         "name": "ctime",
         "cType": "git_index_time",
         "cppClassName": "GitIndexTime",
-        "jsClassName": "IndexTime"
+        "jsClassName": "IndexTime",
+        "copy": "git_index_time_dup"
       },
       {
         "jsFunctionName": "mtime",
@@ -3800,7 +3838,8 @@
         "name": "mtime",
         "cType": "git_index_time",
         "cppClassName": "GitIndexTime",
-        "jsClassName": "IndexTime"
+        "jsClassName": "IndexTime",
+        "copy": "git_index_time_dup"
       },
       {
         "jsFunctionName": "path",
@@ -3814,7 +3853,14 @@
   },
   {
     "filename": "index.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/tree.h", "../include/diff_list.h", "../include/diff_options.h", "../include/index_entry.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repo.h",
+      "../include/tree.h",
+      "../include/diff_list.h",
+      "../include/diff_options.h",
+      "../include/index_entry.h"
+    ],
     "jsClassName": "Index",
     "cppClassName": "GitIndex",
     "cType": "git_index",
@@ -3904,7 +3950,7 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
+        "ignore": "Never make public for memory allocation reasons",
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -4046,7 +4092,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "index",
@@ -4075,7 +4122,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "index",
@@ -4168,7 +4216,8 @@
         "cppFunctionName": "Entry",
         "return": {
           "cType": "const git_index_entry *",
-          "cppClassName": "GitIndexEntry"
+          "cppClassName": "GitIndexEntry",
+          "copy": "git_index_entry_dup"
         }
       },
       {
@@ -4202,7 +4251,8 @@
         "cppFunctionName": "GetFile",
         "return": {
           "cType": "const git_index_entry *",
-          "cppClassName": "GitIndexEntry"
+          "cppClassName": "GitIndexEntry",
+          "copy": "git_index_entry_dup"
         }
       },
       {
@@ -4651,7 +4701,8 @@
         "cppFunctionName": "ReucGetBypath",
         "return": {
           "cType": "const git_index_reuc_entry *",
-          "cppClassName": "IndexReucEntry"
+          "cppClassName": "IndexReucEntry",
+          "copy": "fixme"
         }
       },
       {
@@ -4679,7 +4730,8 @@
         "cppFunctionName": "ReucGetByindex",
         "return": {
           "cType": "const git_index_reuc_entry *",
-          "cppClassName": "IndexReucEntry"
+          "cppClassName": "IndexReucEntry",
+          "copy": "fixme"
         }
       },
       {
@@ -4971,7 +5023,8 @@
         "cppFunctionName": "StreamHash",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -5022,7 +5075,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -5062,7 +5116,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -5322,7 +5377,8 @@
         "cppFunctionName": "GitNoteOid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -5333,7 +5389,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -5526,7 +5583,10 @@
   },
   {
     "filename": "object.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repo.h"
+    ],
     "jsClassName": "Object",
     "cppClassName": "GitObject",
     "cType": "git_object",
@@ -5550,7 +5610,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -5585,6 +5646,7 @@
             "isSelf": true
           }
         ],
+        "ignore": "Never make public for memory allocation reasons",
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -5772,7 +5834,11 @@
   },
   {
     "filename": "odb.h",
-    "dependencies": ["../include/oid.h", "../include/odb_object.h", "node_buffer.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/odb_object.h",
+      "node_buffer.h"
+    ],
     "jsClassName": "Odb",
     "cppClassName": "GitOdb",
     "cType": "git_odb",
@@ -6392,7 +6458,10 @@
   },
   {
     "filename": "odb_object.h",
-    "dependencies": ["../include/wrapper.h", "../include/oid.h"],
+    "dependencies": [
+      "../include/wrapper.h",
+      "../include/oid.h"
+    ],
     "jsClassName": "OdbObject",
     "cppClassName": "GitOdbObject",
     "cType": "git_odb_object",
@@ -6502,7 +6571,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       }
     ]
@@ -6551,6 +6621,7 @@
     "jsClassName": "Oid",
     "cppClassName": "GitOid",
     "cType": "git_oid",
+    "freeFunctionName": "free",
     "functions": [
       {
         "cFunctionName": "git_oid_fromstr",
@@ -6589,7 +6660,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "str",
@@ -6618,7 +6690,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "str",
@@ -6653,7 +6726,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "raw",
@@ -6793,7 +6867,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "src",
@@ -6977,7 +7052,8 @@
         "cppFunctionName": "ShortenNew",
         "return": {
           "cType": "git_oid_shorten *",
-          "cppClassName": "OidShorten"
+          "cppClassName": "OidShorten",
+          "copy": "fixme"
         }
       },
       {
@@ -7497,6 +7573,8 @@
     "jsClassName": "RefDb",
     "cppClassName": "GitRefDb",
     "cType": "git_refdb",
+    "note": "this should be git_refdb_free, but it's not available",
+    "freeFunctionName": "free",
     "functions": [
       {
         "cFunctionName": "git_reference__alloc",
@@ -7535,7 +7613,8 @@
         "cppFunctionName": "GitReference_Alloc",
         "return": {
           "cType": "git_reference *",
-          "cppClassName": "GitReference"
+          "cppClassName": "GitReference",
+          "copy": "fixme"
         }
       },
       {
@@ -7807,6 +7886,7 @@
             "jsClassName": "Number"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -7814,7 +7894,8 @@
         "cppFunctionName": "EntryByindex",
         "return": {
           "cType": "const git_reflog_entry *",
-          "cppClassName": "ReflogEntry"
+          "cppClassName": "ReflogEntry",
+          "copy": "fixme"
         }
       },
       {
@@ -7868,7 +7949,8 @@
         "cppFunctionName": "EntryIdOld",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -7888,7 +7970,8 @@
         "cppFunctionName": "EntryIdNew",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -7908,7 +7991,8 @@
         "cppFunctionName": "EntryCommitter",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature"
+          "cppClassName": "GitSignature",
+          "copy": "git_signature_dup"
         }
       },
       {
@@ -7974,7 +8058,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -8018,7 +8103,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -8125,7 +8211,7 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
+        "ignore": "Never make public for memory allocation reasons",
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8977,7 +9063,8 @@
         "cppFunctionName": "Fetchspec",
         "return": {
           "cType": "const git_refspec *",
-          "cppClassName": "Refspec"
+          "cppClassName": "Refspec",
+          "copy": "fixme"
         }
       },
       {
@@ -9026,7 +9113,8 @@
         "cppFunctionName": "Pushspec",
         "return": {
           "cType": "const git_refspec *",
-          "cppClassName": "Refspec"
+          "cppClassName": "Refspec",
+          "copy": "fixme"
         }
       },
       {
@@ -9593,7 +9681,21 @@
   },
   {
     "filename": "repo.h",
-    "dependencies": ["../include/oid.h", "../include/commit.h", "../include/blob.h", "../include/object.h", "../include/reference.h", "../include/submodule.h", "../include/refdb.h", "../include/revwalk.h", "../include/tag.h", "../include/signature.h", "../include/tree.h", "../include/odb.h", "../include/index.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/commit.h",
+      "../include/blob.h",
+      "../include/object.h",
+      "../include/reference.h",
+      "../include/submodule.h",
+      "../include/refdb.h",
+      "../include/revwalk.h",
+      "../include/tag.h",
+      "../include/signature.h",
+      "../include/tree.h",
+      "../include/odb.h",
+      "../include/index.h"
+    ],
     "jsClassName": "Repo",
     "cppClassName": "GitRepo",
     "cType": "git_repository",
@@ -10419,7 +10521,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -10679,7 +10782,8 @@
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid",
-            "isReturn": true
+            "isReturn": true,
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -11201,7 +11305,6 @@
             "isSelf": true
           }
         ],
-        
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -11380,7 +11483,8 @@
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid",
-            "isReturn": true
+            "isReturn": true,
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -11439,7 +11543,8 @@
             "cType": "git_oid *",
             "cppClassName": "GitOid",
             "jsClassName": "Oid",
-            "isReturn": true
+            "isReturn": true,
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -11897,7 +12002,10 @@
   },
   {
     "filename": "revwalk.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repo.h"
+    ],
     "jsClassName": "RevWalk",
     "cppClassName": "GitRevWalk",
     "cType": "git_revwalk",
@@ -12255,7 +12363,7 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
+        "ignore": "Never make public for memory allocation reasons",
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -12296,10 +12404,13 @@
   },
   {
     "filename": "signature.h",
-    "dependencies": ["../include/time.h"],
+    "dependencies": [
+      "../include/time.h"
+    ],
     "jsClassName": "Signature",
     "cppClassName": "GitSignature",
     "cType": "git_signature",
+    "freeFunctionName": "git_signature_free",
     "fields": [
       {
         "jsFunctionName": "name",
@@ -12323,7 +12434,8 @@
         "name": "when",
         "cType": "git_time",
         "cppClassName": "GitTime",
-        "jsClassName": "Time"
+        "jsClassName": "Time",
+        "copy": "git_time_dup"
       }
     ],
     "functions": [
@@ -12381,8 +12493,7 @@
             "isReturn": true,
             "cType": "git_signature **",
             "cppClassName": "GitSignature",
-            "jsClassName": "Signature",
-            "isReturn": true
+            "jsClassName": "Signature"
           },
           {
             "name": "name",
@@ -12470,7 +12581,8 @@
             "isReturn": true,
             "cType": "git_oid *",
             "cppClassName": "GitOid",
-            "jsClassName": "Oid"
+            "jsClassName": "Oid",
+            "shouldAlloc": true
           },
           {
             "name": "repo",
@@ -12788,10 +12900,14 @@
   },
   {
     "filename": "submodule.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repo.h"
+    ],
     "jsClassName": "Submodule",
     "cppClassName": "GitSubmodule",
     "cType": "git_submodule",
+    "freeFunctionName": "free",
     "functions": [
       {
         "cFunctionName": "git_submodule_foreach",
@@ -12910,7 +13026,7 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
+        "ignore": "Never make public for memory allocation reasons",
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -13030,7 +13146,8 @@
         "cppFunctionName": "IndexId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -13051,7 +13168,8 @@
         "cppFunctionName": "HeadId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -13073,7 +13191,8 @@
         "cppFunctionName": "WdId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -13103,8 +13222,8 @@
           {
             "name": "ignore",
             "cType": "git_submodule_ignore_t",
-            "cppClassName": "SubmoduleIgnoreT",
-            "jsClassName": "SubmoduleIgnoreT"
+            "cppClassName": "Uint32",
+            "jsClassName": "Uint32"
           }
         ],
         "ignore": true,
@@ -13115,7 +13234,7 @@
         "cppFunctionName": "SetIgnore",
         "return": {
           "cType": "git_submodule_ignore_t",
-          "cppClassName": "SubmoduleIgnoreT"
+          "cppClassName": "Uint32"
         }
       },
       {
@@ -13145,8 +13264,8 @@
           {
             "name": "update",
             "cType": "git_submodule_update_t",
-            "cppClassName": "SubmoduleUpdateT",
-            "jsClassName": "SubmoduleUpdateT"
+            "cppClassName": "Uint32",
+            "jsClassName": "Uint32"
           }
         ],
         "ignore": true,
@@ -13373,7 +13492,12 @@
   },
   {
     "filename": "tag.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/object.h", "../include/signature.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repo.h",
+      "../include/object.h",
+      "../include/signature.h"
+    ],
     "jsClassName": "Tag",
     "cppClassName": "GitTag",
     "cType": "git_tag",
@@ -13419,7 +13543,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -13469,7 +13594,8 @@
         "cppFunctionName": "TargetId",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -13532,7 +13658,8 @@
         "cppFunctionName": "Tagger",
         "return": {
           "cType": "const git_signature *",
-          "cppClassName": "GitSignature"
+          "cppClassName": "GitSignature",
+          "copy": "git_signature_dup"
         }
       },
       {
@@ -13936,10 +14063,15 @@
   },
   {
     "filename": "tree_entry.h",
-    "dependencies": ["../include/oid.h", "../include/repo.h", "../include/object.h"],
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repo.h",
+      "../include/object.h"
+    ],
     "jsClassName": "TreeEntry",
     "cppClassName": "GitTreeEntry",
     "cType": "git_tree_entry",
+    "freeFunctionName": "git_tree_entry_free",
     "functions": [
       {
         "cFunctionName": "git_tree_entry_dup",
@@ -14025,7 +14157,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -14138,7 +14271,14 @@
   },
   {
     "filename": "tree.h",
-    "dependencies": ["../include/repo.h", "../include/oid.h", "../include/tree_entry.h", "../include/diff_list.h", "../include/diff_options.h", "../include/index.h"],
+    "dependencies": [
+      "../include/repo.h",
+      "../include/oid.h",
+      "../include/tree_entry.h",
+      "../include/diff_list.h",
+      "../include/diff_options.h",
+      "../include/index.h"
+    ],
     "jsClassName": "Tree",
     "cppClassName": "GitTree",
     "cType": "git_tree",
@@ -14184,7 +14324,8 @@
         "cppFunctionName": "Oid",
         "return": {
           "cType": "const git_oid *",
-          "cppClassName": "GitOid"
+          "cppClassName": "GitOid",
+          "copy": "git_oid_dup"
         }
       },
       {
@@ -14198,7 +14339,7 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
+        "ignore": "Never make public for memory allocation reasons",
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -14255,7 +14396,7 @@
         "return": {
           "cType": "const git_tree_entry *",
           "cppClassName": "GitTreeEntry",
-          "shouldAlloc": true
+          "copy": "git_tree_entry_dup"
         }
       },
       {
@@ -14283,7 +14424,7 @@
         "return": {
           "cType": "const git_tree_entry *",
           "cppClassName": "GitTreeEntry",
-          "shouldAlloc": true
+          "copy": "git_tree_entry_dup"
         }
       },
       {
@@ -14311,7 +14452,7 @@
         "return": {
           "cType": "const git_tree_entry *",
           "cppClassName": "GitTreeEntry",
-          "shouldAlloc": true
+          "copy": "git_tree_entry_dup"
         }
       },
       {
@@ -14466,7 +14607,8 @@
         "cppFunctionName": "GitTreebuilderGet",
         "return": {
           "cType": "const git_tree_entry *",
-          "cppClassName": "GitTreeEntry"
+          "cppClassName": "GitTreeEntry",
+          "copy": "git_tree_entry_dup"
         }
       },
       {

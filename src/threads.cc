@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/threads.h"
 
 using namespace v8;

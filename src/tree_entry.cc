@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/tree_entry.h"
 #include "../include/oid.h"
 #include "../include/repo.h"
@@ -20,6 +22,7 @@ GitTreeEntry::GitTreeEntry(git_tree_entry *raw) {
 }
 
 GitTreeEntry::~GitTreeEntry() {
+  git_tree_entry_free(this->raw);
 }
 
 void GitTreeEntry::Initialize(Handle<v8::Object> target) {
@@ -87,7 +90,8 @@ Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 

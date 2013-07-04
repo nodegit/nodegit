@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/revwalk.h"
 #include "../include/oid.h"
 #include "../include/repo.h"

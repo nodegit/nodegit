@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/refdb.h"
 
 using namespace v8;
@@ -17,6 +19,7 @@ GitRefDb::GitRefDb(git_refdb *raw) {
 }
 
 GitRefDb::~GitRefDb() {
+  free(this->raw);
 }
 
 void GitRefDb::Initialize(Handle<v8::Object> target) {

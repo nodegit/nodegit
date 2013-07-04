@@ -1,5 +1,2 @@
-- audit all ** methods so that all finds go through the repo in js land so that the .repo pointer is set.
-- free everything malloc'd, or figure out the right coding conventions for copying.
 - codegen documentation
-- audit return types for things that should be copied
 - array handling

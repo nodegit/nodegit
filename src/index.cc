@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/index.h"
 #include "../include/oid.h"
 #include "../include/repo.h"
@@ -352,6 +354,7 @@ Handle<Value> GitIndex::WriteTree(const Arguments& args) {
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
+  baton->out = (git_oid *)malloc(sizeof(git_oid ));
   baton->indexReference = Persistent<Value>::New(args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
@@ -442,7 +445,8 @@ Handle<Value> GitIndex::Entry(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitIndexEntry::New((void *)result);
+    result = (const git_index_entry * )git_index_entry_dup(result);
+  to = GitIndexEntry::New((void *)result);
   return scope.Close(to);
 }
 

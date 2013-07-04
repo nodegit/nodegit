@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/index_entry.h"
 #include "../include/index_time.h"
 
@@ -69,7 +71,8 @@ Handle<Value> GitIndexEntry::Ctime(const Arguments& args) {
   git_index_time *ctime =
     &ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->ctime;
 
-    to = GitIndexTime::New((void *)ctime);
+    ctime = (git_index_time *)git_index_time_dup(ctime);
+  to = GitIndexTime::New((void *)ctime);
   return scope.Close(to);
 }
 
@@ -80,7 +83,8 @@ Handle<Value> GitIndexEntry::Mtime(const Arguments& args) {
   git_index_time *mtime =
     &ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->mtime;
 
-    to = GitIndexTime::New((void *)mtime);
+    mtime = (git_index_time *)git_index_time_dup(mtime);
+  to = GitIndexTime::New((void *)mtime);
   return scope.Close(to);
 }
 

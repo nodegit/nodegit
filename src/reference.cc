@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/reference.h"
 #include "../include/repo.h"
 #include "../include/oid.h"
@@ -91,6 +93,7 @@ Handle<Value> GitReference::OidForName(const Arguments& args) {
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
+  baton->out = (git_oid *)malloc(sizeof(git_oid ));
   baton->repoReference = Persistent<Value>::New(args[0]);
     git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
   baton->repo = from_repo;
@@ -160,7 +163,8 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 

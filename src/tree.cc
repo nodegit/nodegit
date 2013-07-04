@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/tree.h"
 #include "../include/repo.h"
 #include "../include/oid.h"
@@ -82,7 +84,8 @@ Handle<Value> GitTree::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 
@@ -115,7 +118,8 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
   delete from_filename;
 
   Handle<Value> to;
-    to = GitTreeEntry::New((void *)result);
+    result = (const git_tree_entry * )git_tree_entry_dup(result);
+  to = GitTreeEntry::New((void *)result);
   return scope.Close(to);
 }
 
@@ -133,7 +137,8 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitTreeEntry::New((void *)result);
+    result = (const git_tree_entry * )git_tree_entry_dup(result);
+  to = GitTreeEntry::New((void *)result);
   return scope.Close(to);
 }
 
@@ -151,7 +156,8 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitTreeEntry::New((void *)result);
+    result = (const git_tree_entry * )git_tree_entry_dup(result);
+  to = GitTreeEntry::New((void *)result);
   return scope.Close(to);
 }
 

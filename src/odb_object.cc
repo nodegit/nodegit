@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/odb_object.h"
 #include "../include/wrapper.h"
 #include "../include/oid.h"
@@ -112,7 +114,8 @@ Handle<Value> GitOdbObject::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 

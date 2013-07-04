@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/tag.h"
 #include "../include/oid.h"
 #include "../include/repo.h"
@@ -79,7 +81,8 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 
@@ -155,7 +158,8 @@ Handle<Value> GitTag::TargetId(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 
@@ -194,7 +198,8 @@ Handle<Value> GitTag::Tagger(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitSignature::New((void *)result);
+    result = (const git_signature * )git_signature_dup(result);
+  to = GitSignature::New((void *)result);
   return scope.Close(to);
 }
 

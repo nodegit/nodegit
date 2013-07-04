@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/submodule.h"
 #include "../include/oid.h"
 #include "../include/repo.h"
@@ -19,6 +21,7 @@ GitSubmodule::GitSubmodule(git_submodule *raw) {
 }
 
 GitSubmodule::~GitSubmodule() {
+  free(this->raw);
 }
 
 void GitSubmodule::Initialize(Handle<v8::Object> target) {
@@ -333,7 +336,8 @@ Handle<Value> GitSubmodule::IndexId(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 
@@ -346,7 +350,8 @@ Handle<Value> GitSubmodule::HeadId(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 

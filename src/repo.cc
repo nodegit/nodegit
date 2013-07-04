@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/repo.h"
 #include "../include/oid.h"
 #include "../include/commit.h"
@@ -888,6 +890,7 @@ Handle<Value> GitRepo::CreateTag(const Arguments& args) {
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
+  baton->oid = (git_oid *)malloc(sizeof(git_oid ));
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->tag_nameReference = Persistent<Value>::New(args[0]);
@@ -989,6 +992,7 @@ Handle<Value> GitRepo::CreateLightweightTag(const Arguments& args) {
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
+  baton->oid = (git_oid *)malloc(sizeof(git_oid ));
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->tag_nameReference = Persistent<Value>::New(args[0]);

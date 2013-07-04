@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/commit.h"
 #include "../include/oid.h"
 #include "../include/repo.h"
@@ -82,7 +84,8 @@ Handle<Value> GitCommit::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 
@@ -147,7 +150,8 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitSignature::New((void *)result);
+    result = (const git_signature * )git_signature_dup(result);
+  to = GitSignature::New((void *)result);
   return scope.Close(to);
 }
 
@@ -160,7 +164,8 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitSignature::New((void *)result);
+    result = (const git_signature * )git_signature_dup(result);
+  to = GitSignature::New((void *)result);
   return scope.Close(to);
 }
 
@@ -173,7 +178,8 @@ Handle<Value> GitCommit::TreeId(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 
@@ -204,7 +210,8 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 

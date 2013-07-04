@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/oid.h"
 
 using namespace v8;
@@ -17,6 +19,7 @@ GitOid::GitOid(git_oid *raw) {
 }
 
 GitOid::~GitOid() {
+  free(this->raw);
 }
 
 void GitOid::Initialize(Handle<v8::Object> target) {

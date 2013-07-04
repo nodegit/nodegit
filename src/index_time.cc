@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/index_time.h"
 
 using namespace v8;
@@ -17,6 +19,7 @@ GitIndexTime::GitIndexTime(git_index_time *raw) {
 }
 
 GitIndexTime::~GitIndexTime() {
+  free(this->raw);
 }
 
 void GitIndexTime::Initialize(Handle<v8::Object> target) {

@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/object.h"
 #include "../include/oid.h"
 #include "../include/repo.h"
@@ -32,7 +34,6 @@ void GitObject::Initialize(Handle<v8::Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "owner", Owner);
   NODE_SET_PROTOTYPE_METHOD(tpl, "peel", Peel);
 
 
@@ -73,7 +74,8 @@ Handle<Value> GitObject::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitOid::New((void *)result);
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
   return scope.Close(to);
 }
 
@@ -87,19 +89,6 @@ Handle<Value> GitObject::Type(const Arguments& args) {
 
   Handle<Value> to;
     to = Number::New(result);
-  return scope.Close(to);
-}
-
-Handle<Value> GitObject::Owner(const Arguments& args) {
-  HandleScope scope;
-  
-
-  git_repository * result = git_object_owner(
-    ObjectWrap::Unwrap<GitObject>(args.This())->GetValue()
-  );
-
-  Handle<Value> to;
-    to = GitRepo::New((void *)result);
   return scope.Close(to);
 }
 

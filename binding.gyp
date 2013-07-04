@@ -31,7 +31,9 @@
                 'src/refdb.cc',
                 'src/odb_object.cc',
                 'src/odb.cc',
-                'src/submodule.cc'
+                'src/submodule.cc',
+                'src/functions/copy.cc',
+
             ],
 
             'include_dirs': [

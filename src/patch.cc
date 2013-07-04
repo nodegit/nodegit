@@ -7,6 +7,8 @@
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/patch.h"
 #include "../include/delta.h"
 #include "../include/diff_range.h"
@@ -76,7 +78,8 @@ Handle<Value> GitPatch::Delta(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = GitDelta::New((void *)result);
+    result = (const git_diff_delta * )git_diff_delta_dup(result);
+  to = GitDelta::New((void *)result);
   return scope.Close(to);
 }
 

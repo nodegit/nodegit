@@ -6,5 +6,8 @@
 <% } else if (to.cppClassName == "External") { -%>
   to = External::New((void *)<%- toName %>);
 <% } else { -%>
+<% if (to.copy) { -%>
+  <%- toName %> = (<%- to.cType %> <% if (!/\*/.test(to.cType)) {%>*<% } %>)<%- to.copy %>(<%- toName %>);
+<% } -%>
   to = <%- to.cppClassName %>::New((void *)<%- toName %>);
 <% } -%>
