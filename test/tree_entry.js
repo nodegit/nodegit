@@ -5,7 +5,7 @@ var sha = '5716e9757886eaf38d51c86b192258c960d9cfea';
 var getEntry = function(path, callback) {
   git.Repo.open('../.git', function(error, repo) {
     repo.getCommit(sha, function(error, commit) {
-      commit.getFile(path, callback);
+      commit.getEntry(path, callback);
     });
  });
 };

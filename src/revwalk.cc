@@ -220,7 +220,7 @@ void GitRevWalk::PushGlobAfterWork(uv_work_t *req) {
   baton->walkReference.Dispose();
   baton->globReference.Dispose();
   baton->callback.Dispose();
-  delete baton->glob;
+  free((void *)baton->glob);
   delete baton;
 }
 
@@ -421,7 +421,7 @@ void GitRevWalk::HideGlobAfterWork(uv_work_t *req) {
   baton->walkReference.Dispose();
   baton->globReference.Dispose();
   baton->callback.Dispose();
-  delete baton->glob;
+  free((void *)baton->glob);
   delete baton;
 }
 
@@ -553,7 +553,7 @@ void GitRevWalk::PushRefAfterWork(uv_work_t *req) {
   baton->walkReference.Dispose();
   baton->refnameReference.Dispose();
   baton->callback.Dispose();
-  delete baton->refname;
+  free((void *)baton->refname);
   delete baton;
 }
 
@@ -624,7 +624,7 @@ void GitRevWalk::HideRefAfterWork(uv_work_t *req) {
   baton->walkReference.Dispose();
   baton->refnameReference.Dispose();
   baton->callback.Dispose();
-  delete baton->refname;
+  free((void *)baton->refname);
   delete baton;
 }
 

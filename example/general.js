@@ -1,4 +1,5 @@
-var git = require('../index.js');
+var git = require('../'),
+    path = require('path');
 
 // **nodegit** is a javascript library for node.js that wraps libgit2, a
 // pure C implementation of the Git core. It provides an asynchronous
@@ -15,7 +16,7 @@ var git = require('../index.js');
 // Nearly, all git operations in the context of a repository.
 // To open a repository,
 
-git.Repo.open('.git', function(error, repo) {
+git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // For all of the following examples, error-handling will be performed in
   // this naive way:  
   if (error) throw error;
@@ -201,7 +202,7 @@ git.Repo.open('.git', function(error, repo) {
 
     // You can also access tree entries by path if you know the path of the
     // entry you're looking for.
-    tree.getFile("example/general.js", function(error, entry) {
+    tree.getEntry("example/general.js", function(error, entry) {
       if (error) throw error;
 
       // Entries which are files have blobs associated with them:

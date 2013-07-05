@@ -159,7 +159,7 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   }
   baton->pathReference.Dispose();
   baton->callback.Dispose();
-  delete baton->path;
+  free((void *)baton->path);
   delete baton;
 }
 
@@ -236,7 +236,7 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   baton->pathReference.Dispose();
   baton->is_bareReference.Dispose();
   baton->callback.Dispose();
-  delete baton->path;
+  free((void *)baton->path);
   delete baton;
 }
 
@@ -637,7 +637,7 @@ void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
   baton->repoReference.Dispose();
   baton->nameReference.Dispose();
   baton->callback.Dispose();
-  delete baton->name;
+  free((void *)baton->name);
   delete baton;
 }
 
@@ -967,8 +967,8 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
   baton->messageReference.Dispose();
   baton->forceReference.Dispose();
   baton->callback.Dispose();
-  delete baton->tag_name;
-  delete baton->message;
+  free((void *)baton->tag_name);
+  free((void *)baton->message);
   delete baton;
 }
 
@@ -1058,7 +1058,7 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
   baton->targetReference.Dispose();
   baton->forceReference.Dispose();
   baton->callback.Dispose();
-  delete baton->tag_name;
+  free((void *)baton->tag_name);
   delete baton;
 }
 
@@ -1261,7 +1261,7 @@ void GitRepo::DeleteAfterWork(uv_work_t *req) {
   baton->repoReference.Dispose();
   baton->tag_nameReference.Dispose();
   baton->callback.Dispose();
-  delete baton->tag_name;
+  free((void *)baton->tag_name);
   delete baton;
 }
 

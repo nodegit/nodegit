@@ -184,7 +184,7 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
   baton->repoReference.Dispose();
   baton->pathReference.Dispose();
   baton->callback.Dispose();
-  delete baton->path;
+  free((void *)baton->path);
   delete baton;
 }
 

@@ -121,7 +121,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
       var arg = functionInfo.args[i];
 -%>
 <% if (arg.cppClassName == 'String') { -%>
-  delete baton-><%- arg.name %>;
+  free((void *)baton-><%- arg.name %>);
 <% } -%>
 <% } -%>
   delete baton;

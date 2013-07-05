@@ -391,7 +391,7 @@ void GitOdb::WriteAfterWork(uv_work_t *req) {
   baton->lenReference.Dispose();
   baton->typeReference.Dispose();
   baton->callback.Dispose();
-  delete baton->data;
+  free((void *)baton->data);
   delete baton;
 }
 

@@ -37,3 +37,9 @@ const git_diff_file *git_diff_file_dup(const git_diff_file *arg) {
   *result = *arg;
   return result;
 }
+
+const git_diff_range *git_diff_range_dup(const git_diff_range *arg) {
+  git_diff_range *result = (git_diff_range *)malloc(sizeof(git_diff_range));
+  *result = *arg;
+  return result;
+}

@@ -1,13 +1,17 @@
 <% toName = to.name || 'result' -%>
 <% if (to.cppClassName == "String") { -%>
-  to = <%- to.cppClassName %>::New(<%- toName %>);
+<% if (typeof to.size != 'undefined') { -%>
+  to = String::New(<%- toName %>, <%- to.size %>);
+<% } else { -%>
+  to = String::New(<%- toName %>);
+<% } -%>
 <% } else if (isV8Value(to.cppClassName)) { -%>
   to = <%- to.cppClassName %>::New(<%- toName %>);
 <% } else if (to.cppClassName == "External") { -%>
   to = External::New((void *)<%- toName %>);
 <% } else { -%>
 <% if (to.copy) { -%>
-  <%- toName %> = (<%- to.cType %> <% if (!/\*/.test(to.cType)) {%>*<% } %>)<%- to.copy %>(<%- toName %>);
+  <%- toName %> = (<%- to.cType.replace('**', '*') %> <% if (!/\*/.test(to.cType)) {%>*<% } %>)<%- to.copy %>(<%- toName %>);
 <% } -%>
   to = <%- to.cppClassName %>::New((void *)<%- toName %>);
 <% } -%>

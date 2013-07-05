@@ -41,7 +41,7 @@ void GitTree::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByName", EntryByName);
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByIndex", EntryByIndex);
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByOid", EntryByOid);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "getFile", GetFile);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "getEntry", GetEntry);
   NODE_SET_PROTOTYPE_METHOD(tpl, "diffTree", DiffTree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "diffIndex", DiffIndex);
   NODE_SET_PROTOTYPE_METHOD(tpl, "diffWorkDir", DiffWorkDir);
@@ -161,7 +161,7 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   return scope.Close(to);
 }
 
-Handle<Value> GitTree::GetFile(const Arguments& args) {
+Handle<Value> GitTree::GetEntry(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
@@ -171,7 +171,7 @@ Handle<Value> GitTree::GetFile(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  GetFileBaton* baton = new GetFileBaton;
+  GetEntryBaton* baton = new GetEntryBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
@@ -183,13 +183,13 @@ Handle<Value> GitTree::GetFile(const Arguments& args) {
   baton->path = from_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, GetFileWork, (uv_after_work_cb)GetFileAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, GetEntryWork, (uv_after_work_cb)GetEntryAfterWork);
 
   return Undefined();
 }
 
-void GitTree::GetFileWork(uv_work_t *req) {
-  GetFileBaton *baton = static_cast<GetFileBaton *>(req->data);
+void GitTree::GetEntryWork(uv_work_t *req) {
+  GetEntryBaton *baton = static_cast<GetEntryBaton *>(req->data);
   int result = git_tree_entry_bypath(
     &baton->out, 
     baton->root, 
@@ -201,9 +201,9 @@ void GitTree::GetFileWork(uv_work_t *req) {
   }
 }
 
-void GitTree::GetFileAfterWork(uv_work_t *req) {
+void GitTree::GetEntryAfterWork(uv_work_t *req) {
   HandleScope scope;
-  GetFileBaton *baton = static_cast<GetFileBaton *>(req->data);
+  GetEntryBaton *baton = static_cast<GetEntryBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
@@ -230,7 +230,7 @@ void GitTree::GetFileAfterWork(uv_work_t *req) {
   baton->rootReference.Dispose();
   baton->pathReference.Dispose();
   baton->callback.Dispose();
-  delete baton->path;
+  free((void *)baton->path);
   delete baton;
 }
 

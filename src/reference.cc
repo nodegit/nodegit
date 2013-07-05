@@ -150,7 +150,7 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
   baton->repoReference.Dispose();
   baton->nameReference.Dispose();
   baton->callback.Dispose();
-  delete baton->name;
+  free((void *)baton->name);
   delete baton;
 }
 
@@ -382,7 +382,7 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
   baton->new_nameReference.Dispose();
   baton->forceReference.Dispose();
   baton->callback.Dispose();
-  delete baton->new_name;
+  free((void *)baton->new_name);
   delete baton;
 }
 

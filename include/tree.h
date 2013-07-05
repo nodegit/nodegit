@@ -36,11 +36,11 @@ class GitTree : public ObjectWrap {
     static Handle<Value> EntryByName(const Arguments& args);
     static Handle<Value> EntryByIndex(const Arguments& args);
     static Handle<Value> EntryByOid(const Arguments& args);
-    static Handle<Value> GetFile(const Arguments& args);
-    static void GetFileWork(uv_work_t* req);
-    static void GetFileAfterWork(uv_work_t* req);
+    static Handle<Value> GetEntry(const Arguments& args);
+    static void GetEntryWork(uv_work_t* req);
+    static void GetEntryAfterWork(uv_work_t* req);
 
-    struct GetFileBaton {
+    struct GetEntryBaton {
       uv_work_t request;
       int error_code;
       const git_error* error;

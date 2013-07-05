@@ -148,7 +148,7 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
   }
   baton->index_pathReference.Dispose();
   baton->callback.Dispose();
-  delete baton->index_path;
+  free((void *)baton->index_path);
   delete baton;
 }
 
@@ -569,7 +569,7 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
   baton->indexReference.Dispose();
   baton->pathReference.Dispose();
   baton->callback.Dispose();
-  delete baton->path;
+  free((void *)baton->path);
   delete baton;
 }
 

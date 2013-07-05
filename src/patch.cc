@@ -153,7 +153,8 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
 
   Handle<Object> toReturn = Object::New();
   Handle<Value> to;
-      to = GitDiffRange::New((void *)range);
+      range = (const git_diff_range * )git_diff_range_dup(range);
+  to = GitDiffRange::New((void *)range);
     toReturn->Set(String::NewSymbol("range"), to);
 
       to = String::New(header);
@@ -222,7 +223,7 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
       to = Integer::New(line_origin);
     toReturn->Set(String::NewSymbol("lineOrigin"), to);
 
-      to = String::New(content);
+      to = String::New(content, content_len);
     toReturn->Set(String::NewSymbol("content"), to);
 
       to = Uint32::New(content_len);

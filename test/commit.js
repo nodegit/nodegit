@@ -141,20 +141,22 @@ exports.improperCommitId = function(test) {
  * Test that retreiving walking a given commit's history works as expected.
  */
 exports.history = function(test) {
-  test.expect(368);
+  test.expect(4);
   git.Repo.open('../.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       test.equals(null, error, 'Getting latest branch commit should not error');
       var historyCount = 0;
       var expectedHistoryCount = 364;
-      commit.history().on('commit', function(error, commit) {
-        test.equals(null, error, 'There should be no errors');
+      commit.history().on('commit', function(commit) {
         historyCount++;
-      }).on('end', function(error, commits) {
+      }).on('end', function(commits) {
         test.equals(null, error, 'There should be no errors');
         test.equals(historyCount, expectedHistoryCount);
         test.equals(commits.length, expectedHistoryCount);
         test.done();
+      }).on('error', function(error) {
+        test.equals(null, error, 'There should be no errors');
+        test.ok(false, 'There should be no errors');
       }).start();
     });
   });

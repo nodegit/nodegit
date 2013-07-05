@@ -2732,7 +2732,8 @@
             "cType": "const git_diff_range **",
             "cppClassName": "GitDiffRange",
             "jsClassName": "DiffRange",
-            "isReturn": true
+            "isReturn": true,
+            "copy": "git_diff_range_dup"
           },
           {
             "name": "header",
@@ -2824,6 +2825,7 @@
           {
             "name": "content",
             "jsName": "content",
+            "size": "content_len",
             "cType": "const char **",
             "cppClassName": "String",
             "jsClassName": "String",
@@ -4247,8 +4249,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "getFile",
-        "cppFunctionName": "GetFile",
+        "jsFunctionName": "getEntry",
+        "cppFunctionName": "GetEntry",
         "return": {
           "cType": "const git_index_entry *",
           "cppClassName": "GitIndexEntry",
@@ -14482,8 +14484,8 @@
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "getFile",
-        "cppFunctionName": "GetFile",
+        "jsFunctionName": "getEntry",
+        "cppFunctionName": "GetEntry",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
