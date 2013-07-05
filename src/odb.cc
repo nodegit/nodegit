@@ -74,6 +74,9 @@ git_odb *GitOdb::GetValue() {
 }
 
 
+/**
+ * @return {Odb} out
+ */
 Handle<Value> GitOdb::Create(const Arguments& args) {
   HandleScope scope;
   
@@ -91,6 +94,10 @@ Handle<Value> GitOdb::Create(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} objects_dir
+ * @return {Odb} out
+ */
 Handle<Value> GitOdb::Open(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -115,6 +122,9 @@ Handle<Value> GitOdb::Open(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} path
+ */
 Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -136,6 +146,10 @@ Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Oid} id
+ * @param {OdbObject} callback
+ */
 Handle<Value> GitOdb::Read(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -207,6 +221,12 @@ void GitOdb::ReadAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Odb} db
+ * @param {Oid} short_id
+ * @param {Number} len
+ * @return {OdbObject} out
+ */
 Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -239,6 +259,12 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} len_out
+ * @param {Number} type_out
+ * @param {Odb} db
+ * @param {Oid} id
+ */
 Handle<Value> GitOdb::ReadHeader(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -272,6 +298,9 @@ Handle<Value> GitOdb::ReadHeader(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Oid} id
+ */
 Handle<Value> GitOdb::Exists(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -291,6 +320,8 @@ Handle<Value> GitOdb::Exists(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ */
 Handle<Value> GitOdb::Refresh(const Arguments& args) {
   HandleScope scope;
   
@@ -305,6 +336,12 @@ Handle<Value> GitOdb::Refresh(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {String} data
+ * @param {Number} len
+ * @param {Number} type
+ * @param {Oid} callback
+ */
 Handle<Value> GitOdb::Write(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -395,6 +432,12 @@ void GitOdb::WriteAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Buffer} data
+ * @param {Number} len
+ * @param {Number} type
+ * @return {Oid} out
+ */
 Handle<Value> GitOdb::Hash(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -427,6 +470,11 @@ Handle<Value> GitOdb::Hash(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} path
+ * @param {Number} type
+ * @return {Oid} out
+ */
 Handle<Value> GitOdb::Hashfile(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {

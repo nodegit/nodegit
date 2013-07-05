@@ -69,6 +69,9 @@ git_diff_patch *GitPatch::GetValue() {
 }
 
 
+/**
+ * @return {GitDelta} result
+ */
 Handle<Value> GitPatch::Delta(const Arguments& args) {
   HandleScope scope;
   
@@ -83,6 +86,9 @@ Handle<Value> GitPatch::Delta(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Uint32} result
+ */
 Handle<Value> GitPatch::Size(const Arguments& args) {
   HandleScope scope;
   
@@ -96,6 +102,11 @@ Handle<Value> GitPatch::Size(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Number} total_context
+ * @return {Number} total_additions
+ * @return {Number} total_deletions
+ */
 Handle<Value> GitPatch::Stats(const Arguments& args) {
   HandleScope scope;
   
@@ -127,6 +138,13 @@ Handle<Value> GitPatch::Stats(const Arguments& args) {
   return scope.Close(toReturn);
 }
 
+/**
+ * @param {Number} hunk_idx
+ * @return {DiffRange} range
+ * @return {String} header
+ * @return {Number} header_len
+ * @return {Number} lines_in_hunk
+ */
 Handle<Value> GitPatch::Hunk(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -169,6 +187,10 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
   return scope.Close(toReturn);
 }
 
+/**
+ * @param {Number} hunk_idx
+ * @return {Int32} result
+ */
 Handle<Value> GitPatch::Lines(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -187,6 +209,15 @@ Handle<Value> GitPatch::Lines(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} hunk_idx
+ * @param {Number} line_of_hunk
+ * @return {Number} line_origin
+ * @return {String} content
+ * @return {Number} content_len
+ * @return {Number} old_lineno
+ * @return {Number} new_lineno
+ */
 Handle<Value> GitPatch::Line(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -238,6 +269,9 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
   return scope.Close(toReturn);
 }
 
+/**
+ * @return {String} string
+ */
 Handle<Value> GitPatch::ToString(const Arguments& args) {
   HandleScope scope;
   

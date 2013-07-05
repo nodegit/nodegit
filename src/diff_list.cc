@@ -72,6 +72,9 @@ git_diff_list *GitDiffList::GetValue() {
 }
 
 
+/**
+ * @param {DiffList} from
+ */
 Handle<Value> GitDiffList::Merge(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -91,6 +94,9 @@ Handle<Value> GitDiffList::Merge(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {DiffFindOptions} options
+ */
 Handle<Value> GitDiffList::FindSimilar(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -110,6 +116,9 @@ Handle<Value> GitDiffList::FindSimilar(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @return {Uint32} result
+ */
 Handle<Value> GitDiffList::Size(const Arguments& args) {
   HandleScope scope;
   
@@ -123,6 +132,11 @@ Handle<Value> GitDiffList::Size(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {DiffList} diff
+ * @param {Number} type
+ * @return {Uint32} result
+ */
 Handle<Value> GitDiffList::NumDeltasOfType(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -145,6 +159,11 @@ Handle<Value> GitDiffList::NumDeltasOfType(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} idx
+ * @return {Patch} patch_out
+ * @return {Delta} delta_out
+ */
 Handle<Value> GitDiffList::Patch(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {

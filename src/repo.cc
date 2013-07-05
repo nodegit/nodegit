@@ -96,6 +96,10 @@ git_repository *GitRepo::GetValue() {
 }
 
 
+/**
+ * @param {String} path
+ * @param {Repository} callback
+ */
 Handle<Value> GitRepo::Open(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -165,6 +169,11 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} path
+ * @param {Boolean} is_bare
+ * @param {Repository} callback
+ */
 Handle<Value> GitRepo::Init(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -242,6 +251,9 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitRepo::Path(const Arguments& args) {
   HandleScope scope;
   
@@ -255,6 +267,9 @@ Handle<Value> GitRepo::Path(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitRepo::Workdir(const Arguments& args) {
   HandleScope scope;
   
@@ -268,6 +283,9 @@ Handle<Value> GitRepo::Workdir(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Odb} out
+ */
 Handle<Value> GitRepo::Odb(const Arguments& args) {
   HandleScope scope;
   
@@ -286,6 +304,9 @@ Handle<Value> GitRepo::Odb(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Index} callback
+ */
 Handle<Value> GitRepo::openIndex(const Arguments& args) {
   HandleScope scope;
     
@@ -349,6 +370,10 @@ void GitRepo::openIndexAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Oid} id
+ * @param {Blob} callback
+ */
 Handle<Value> GitRepo::GetBlob(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -420,6 +445,10 @@ void GitRepo::GetBlobAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Oid} id
+ * @param {Commit} callback
+ */
 Handle<Value> GitRepo::GetCommit(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -491,6 +520,17 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} update_ref
+ * @param {Signature} author
+ * @param {Signature} committer
+ * @param {String} message_encoding
+ * @param {String} message
+ * @param {Tree} tree
+ * @param {Number} parent_count
+ * @param {Array} parents
+ * @param {Oid} callback
+ */
 Handle<Value> GitRepo::CreateCommit(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 1 || !args[1]->IsObject()) {
@@ -633,6 +673,11 @@ void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Oid} id
+ * @param {Number} type
+ * @param {Object} callback
+ */
 Handle<Value> GitRepo::GetObject(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -712,6 +757,10 @@ void GitRepo::GetObjectAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} name
+ * @param {Reference} callback
+ */
 Handle<Value> GitRepo::GetReference(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -785,6 +834,12 @@ void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} name
+ * @param {String} target
+ * @param {Number} force
+ * @return {Reference} out
+ */
 Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -822,6 +877,12 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} name
+ * @param {Oid} id
+ * @param {Number} force
+ * @return {Reference} out
+ */
 Handle<Value> GitRepo::CreateReference(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -857,6 +918,9 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {RevWalk} out
+ */
 Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
   HandleScope scope;
   
@@ -875,6 +939,10 @@ Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} name
+ * @return {Submodule} submodule
+ */
 Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -900,6 +968,12 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} url
+ * @param {String} path
+ * @param {Number} use_gitlink
+ * @return {Submodule} submodule
+ */
 Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -937,6 +1011,10 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Oid} id
+ * @param {Tag} callback
+ */
 Handle<Value> GitRepo::GetTag(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -1008,6 +1086,14 @@ void GitRepo::GetTagAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} tag_name
+ * @param {Object} target
+ * @param {Signature} tagger
+ * @param {String} message
+ * @param {Number} force
+ * @param {Oid} callback
+ */
 Handle<Value> GitRepo::CreateTag(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -1116,6 +1202,12 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} tag_name
+ * @param {Object} target
+ * @param {Number} force
+ * @param {Oid} callback
+ */
 Handle<Value> GitRepo::CreateLightweightTag(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -1206,6 +1298,10 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Oid} id
+ * @param {Tree} callback
+ */
 Handle<Value> GitRepo::GetTree(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -1277,6 +1373,8 @@ void GitRepo::GetTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitRepo::ReloadSubmodules(const Arguments& args) {
   HandleScope scope;
     
@@ -1338,6 +1436,9 @@ void GitRepo::ReloadSubmodulesAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} tag_name
+ */
 Handle<Value> GitRepo::Delete(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -1409,6 +1510,10 @@ void GitRepo::DeleteAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Number} list_flags
+ * @param {Array} callback
+ */
 Handle<Value> GitRepo::GetReferences(const Arguments& args) {
   HandleScope scope;
     

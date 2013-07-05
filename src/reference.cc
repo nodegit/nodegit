@@ -76,6 +76,11 @@ git_reference *GitReference::GetValue() {
 }
 
 
+/**
+ * @param {Repository} repo
+ * @param {String} name
+ * @param {Oid} callback
+ */
 Handle<Value> GitReference::OidForName(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -154,6 +159,9 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitReference::Oid(const Arguments& args) {
   HandleScope scope;
   
@@ -168,6 +176,9 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitReference::Name(const Arguments& args) {
   HandleScope scope;
   
@@ -181,6 +192,9 @@ Handle<Value> GitReference::Name(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Number} result
+ */
 Handle<Value> GitReference::Type(const Arguments& args) {
   HandleScope scope;
   
@@ -194,6 +208,9 @@ Handle<Value> GitReference::Type(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Reference} callback
+ */
 Handle<Value> GitReference::Resolve(const Arguments& args) {
   HandleScope scope;
     
@@ -257,6 +274,10 @@ void GitReference::ResolveAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} target
+ * @return {Reference} out
+ */
 Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -282,6 +303,10 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Oid} id
+ * @return {Reference} out
+ */
 Handle<Value> GitReference::setTarget(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -305,6 +330,11 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} new_name
+ * @param {Number} force
+ * @param {Reference} callback
+ */
 Handle<Value> GitReference::Rename(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -386,6 +416,8 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitReference::Delete(const Arguments& args) {
   HandleScope scope;
     
@@ -447,6 +479,8 @@ void GitReference::DeleteAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitReference::IsBranch(const Arguments& args) {
   HandleScope scope;
   
@@ -461,6 +495,8 @@ Handle<Value> GitReference::IsBranch(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ */
 Handle<Value> GitReference::IsRemote(const Arguments& args) {
   HandleScope scope;
   
@@ -475,6 +511,10 @@ Handle<Value> GitReference::IsRemote(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Number} type
+ * @return {Object} out
+ */
 Handle<Value> GitReference::Peel(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsInt32()) {
@@ -498,6 +538,9 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} refname
+ */
 Handle<Value> GitReference::IsValidName(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {

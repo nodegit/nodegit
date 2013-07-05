@@ -65,6 +65,9 @@ git_object *GitObject::GetValue() {
 }
 
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitObject::Oid(const Arguments& args) {
   HandleScope scope;
   
@@ -79,6 +82,9 @@ Handle<Value> GitObject::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Number} result
+ */
 Handle<Value> GitObject::Type(const Arguments& args) {
   HandleScope scope;
   
@@ -92,6 +98,10 @@ Handle<Value> GitObject::Type(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} target_type
+ * @param {Object} callback
+ */
 Handle<Value> GitObject::Peel(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsInt32()) {

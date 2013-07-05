@@ -26,6 +26,8 @@ void GitThreads::Initialize(Handle<v8::Object> target) {
 }
 
 
+/**
+ */
 Handle<Value> GitThreads::Init(const Arguments& args) {
   HandleScope scope;
   
@@ -39,6 +41,8 @@ Handle<Value> GitThreads::Init(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ */
 Handle<Value> GitThreads::Shutdown(const Arguments& args) {
   HandleScope scope;
   

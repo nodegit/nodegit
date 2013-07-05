@@ -68,6 +68,9 @@ git_tree_entry *GitTreeEntry::GetValue() {
 }
 
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitTreeEntry::Name(const Arguments& args) {
   HandleScope scope;
   
@@ -81,6 +84,9 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   HandleScope scope;
   
@@ -95,6 +101,9 @@ Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Number} result
+ */
 Handle<Value> GitTreeEntry::Type(const Arguments& args) {
   HandleScope scope;
   
@@ -108,6 +117,9 @@ Handle<Value> GitTreeEntry::Type(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Number} result
+ */
 Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
   HandleScope scope;
   
@@ -121,6 +133,10 @@ Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Repository} repo
+ * @param {Object} callback
+ */
 Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {

@@ -73,6 +73,8 @@ git_revwalk *GitRevWalk::GetValue() {
 }
 
 
+/**
+ */
 Handle<Value> GitRevWalk::Reset(const Arguments& args) {
   HandleScope scope;
   
@@ -84,6 +86,9 @@ Handle<Value> GitRevWalk::Reset(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Oid} id
+ */
 Handle<Value> GitRevWalk::Push(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -153,6 +158,9 @@ void GitRevWalk::PushAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} glob
+ */
 Handle<Value> GitRevWalk::PushGlob(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -224,6 +232,8 @@ void GitRevWalk::PushGlobAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitRevWalk::PushHead(const Arguments& args) {
   HandleScope scope;
     
@@ -285,6 +295,9 @@ void GitRevWalk::PushHeadAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Oid} commit_id
+ */
 Handle<Value> GitRevWalk::Hide(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -354,6 +367,9 @@ void GitRevWalk::HideAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} glob
+ */
 Handle<Value> GitRevWalk::HideGlob(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -425,6 +441,8 @@ void GitRevWalk::HideGlobAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitRevWalk::HideHead(const Arguments& args) {
   HandleScope scope;
     
@@ -486,6 +504,9 @@ void GitRevWalk::HideHeadAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} refname
+ */
 Handle<Value> GitRevWalk::PushRef(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -557,6 +578,9 @@ void GitRevWalk::PushRefAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} refname
+ */
 Handle<Value> GitRevWalk::HideRef(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -628,6 +652,9 @@ void GitRevWalk::HideRefAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Oid} callback
+ */
 Handle<Value> GitRevWalk::Next(const Arguments& args) {
   HandleScope scope;
     
@@ -692,6 +719,9 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Number} sort_mode
+ */
 Handle<Value> GitRevWalk::Sorting(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {

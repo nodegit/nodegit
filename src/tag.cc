@@ -72,6 +72,9 @@ git_tag *GitTag::GetValue() {
 }
 
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitTag::Oid(const Arguments& args) {
   HandleScope scope;
   
@@ -86,6 +89,9 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Object} callback
+ */
 Handle<Value> GitTag::GetTarget(const Arguments& args) {
   HandleScope scope;
     
@@ -149,6 +155,9 @@ void GitTag::GetTargetAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitTag::TargetId(const Arguments& args) {
   HandleScope scope;
   
@@ -163,6 +172,9 @@ Handle<Value> GitTag::TargetId(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Int32} result
+ */
 Handle<Value> GitTag::TargetType(const Arguments& args) {
   HandleScope scope;
   
@@ -176,6 +188,9 @@ Handle<Value> GitTag::TargetType(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitTag::Name(const Arguments& args) {
   HandleScope scope;
   
@@ -189,6 +204,9 @@ Handle<Value> GitTag::Name(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {GitSignature} result
+ */
 Handle<Value> GitTag::Tagger(const Arguments& args) {
   HandleScope scope;
   
@@ -203,6 +221,9 @@ Handle<Value> GitTag::Tagger(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitTag::Message(const Arguments& args) {
   HandleScope scope;
   
@@ -216,6 +237,10 @@ Handle<Value> GitTag::Message(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Tag} tag
+ * @return {Object} tag_target_out
+ */
 Handle<Value> GitTag::Peel(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {

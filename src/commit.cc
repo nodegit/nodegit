@@ -75,6 +75,9 @@ git_commit *GitCommit::GetValue() {
 }
 
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitCommit::Oid(const Arguments& args) {
   HandleScope scope;
   
@@ -89,6 +92,9 @@ Handle<Value> GitCommit::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitCommit::MessageEncoding(const Arguments& args) {
   HandleScope scope;
   
@@ -102,6 +108,9 @@ Handle<Value> GitCommit::MessageEncoding(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitCommit::Message(const Arguments& args) {
   HandleScope scope;
   
@@ -115,6 +124,9 @@ Handle<Value> GitCommit::Message(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Number} result
+ */
 Handle<Value> GitCommit::Time(const Arguments& args) {
   HandleScope scope;
   
@@ -128,6 +140,9 @@ Handle<Value> GitCommit::Time(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Integer} result
+ */
 Handle<Value> GitCommit::Offset(const Arguments& args) {
   HandleScope scope;
   
@@ -141,6 +156,9 @@ Handle<Value> GitCommit::Offset(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {GitSignature} result
+ */
 Handle<Value> GitCommit::Committer(const Arguments& args) {
   HandleScope scope;
   
@@ -155,6 +173,9 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {GitSignature} result
+ */
 Handle<Value> GitCommit::Author(const Arguments& args) {
   HandleScope scope;
   
@@ -169,6 +190,9 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitCommit::TreeId(const Arguments& args) {
   HandleScope scope;
   
@@ -183,6 +207,9 @@ Handle<Value> GitCommit::TreeId(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Uint32} result
+ */
 Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   HandleScope scope;
   
@@ -196,6 +223,10 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} n
+ * @return {GitOid} result
+ */
 Handle<Value> GitCommit::ParentId(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -215,6 +246,10 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} n
+ * @return {Commit} ancestor
+ */
 Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {

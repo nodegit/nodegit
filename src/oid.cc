@@ -62,6 +62,10 @@ git_oid *GitOid::GetValue() {
 }
 
 
+/**
+ * @param {String} str
+ * @return {Oid} out
+ */
 Handle<Value> GitOid::FromString(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -86,6 +90,9 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitOid::Sha(const Arguments& args) {
   HandleScope scope;
   

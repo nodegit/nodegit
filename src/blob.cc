@@ -70,6 +70,9 @@ git_blob *GitBlob::GetValue() {
 }
 
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitBlob::Oid(const Arguments& args) {
   HandleScope scope;
   
@@ -84,6 +87,9 @@ Handle<Value> GitBlob::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Wrapper} result
+ */
 Handle<Value> GitBlob::Content(const Arguments& args) {
   HandleScope scope;
   
@@ -97,6 +103,9 @@ Handle<Value> GitBlob::Content(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Number} result
+ */
 Handle<Value> GitBlob::Size(const Arguments& args) {
   HandleScope scope;
   
@@ -110,6 +119,11 @@ Handle<Value> GitBlob::Size(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Repository} repo
+ * @param {String} path
+ * @param {Oid} callback
+ */
 Handle<Value> GitBlob::CreateFromFile(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -188,6 +202,12 @@ void GitBlob::CreateFromFileAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Repository} repo
+ * @param {Buffer} buffer
+ * @param {Number} len
+ * @param {Oid} callback
+ */
 Handle<Value> GitBlob::CreateFromBuffer(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -272,6 +292,8 @@ void GitBlob::CreateFromBufferAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   HandleScope scope;
   

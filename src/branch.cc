@@ -71,6 +71,13 @@ git_branch *Branch::GetValue() {
 }
 
 
+/**
+ * @param {Repository} repo
+ * @param {String} branch_name
+ * @param {Commit} target
+ * @param {Number} force
+ * @return {Reference} out
+ */
 Handle<Value> Branch::Create(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -110,6 +117,9 @@ Handle<Value> Branch::Create(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Reference} branch
+ */
 Handle<Value> Branch::Delete(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -128,6 +138,12 @@ Handle<Value> Branch::Delete(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Repository} repo
+ * @param {Number} list_flags
+ * @param {BranchForeachCb} branch_cb
+ * @param {void} payload
+ */
 Handle<Value> Branch::Foreach(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -161,6 +177,12 @@ Handle<Value> Branch::Foreach(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Reference} branch
+ * @param {String} new_branch_name
+ * @param {Number} force
+ * @return {Reference} out
+ */
 Handle<Value> Branch::Move(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -195,6 +217,12 @@ Handle<Value> Branch::Move(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Repository} repo
+ * @param {String} branch_name
+ * @param {BranchT} branch_type
+ * @return {Reference} out
+ */
 Handle<Value> Branch::Lookup(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -229,6 +257,10 @@ Handle<Value> Branch::Lookup(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Reference} ref
+ * @return {String} out
+ */
 Handle<Value> Branch::Name(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -251,6 +283,10 @@ Handle<Value> Branch::Name(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Reference} branch
+ * @return {Reference} out
+ */
 Handle<Value> Branch::Upstream(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -273,6 +309,10 @@ Handle<Value> Branch::Upstream(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Reference} branch
+ * @param {String} upstream_name
+ */
 Handle<Value> Branch::SetUpstream(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -298,6 +338,12 @@ Handle<Value> Branch::SetUpstream(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {String} tracking_branch_name_out
+ * @param {Number} buffer_size
+ * @param {Repository} repo
+ * @param {String} canonical_branch_name
+ */
 Handle<Value> Branch::UpstreamName(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -335,6 +381,9 @@ Handle<Value> Branch::UpstreamName(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Reference} branch
+ */
 Handle<Value> Branch::IsHead(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -353,6 +402,12 @@ Handle<Value> Branch::IsHead(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {String} remote_name_out
+ * @param {Number} buffer_size
+ * @param {Repository} repo
+ * @param {String} canonical_branch_name
+ */
 Handle<Value> Branch::RemoteName(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {

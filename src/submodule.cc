@@ -76,6 +76,8 @@ git_submodule *GitSubmodule::GetValue() {
 }
 
 
+/**
+ */
 Handle<Value> GitSubmodule::AddFinalize(const Arguments& args) {
   HandleScope scope;
     
@@ -137,6 +139,9 @@ void GitSubmodule::AddFinalizeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Number} write_index
+ */
 Handle<Value> GitSubmodule::AddToIndex(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsInt32()) {
@@ -206,6 +211,8 @@ void GitSubmodule::AddToIndexAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitSubmodule::Save(const Arguments& args) {
   HandleScope scope;
     
@@ -267,6 +274,9 @@ void GitSubmodule::SaveAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitSubmodule::Name(const Arguments& args) {
   HandleScope scope;
   
@@ -280,6 +290,9 @@ Handle<Value> GitSubmodule::Name(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitSubmodule::Path(const Arguments& args) {
   HandleScope scope;
   
@@ -293,6 +306,9 @@ Handle<Value> GitSubmodule::Path(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {String} result
+ */
 Handle<Value> GitSubmodule::Url(const Arguments& args) {
   HandleScope scope;
   
@@ -306,6 +322,9 @@ Handle<Value> GitSubmodule::Url(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} url
+ */
 Handle<Value> GitSubmodule::SetUrl(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -327,6 +346,9 @@ Handle<Value> GitSubmodule::SetUrl(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitSubmodule::IndexId(const Arguments& args) {
   HandleScope scope;
   
@@ -341,6 +363,9 @@ Handle<Value> GitSubmodule::IndexId(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitSubmodule::HeadId(const Arguments& args) {
   HandleScope scope;
   
@@ -355,6 +380,9 @@ Handle<Value> GitSubmodule::HeadId(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} overwrite
+ */
 Handle<Value> GitSubmodule::Init(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsInt32()) {
@@ -424,6 +452,8 @@ void GitSubmodule::InitAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitSubmodule::Sync(const Arguments& args) {
   HandleScope scope;
     
@@ -485,6 +515,9 @@ void GitSubmodule::SyncAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Repository} callback
+ */
 Handle<Value> GitSubmodule::Open(const Arguments& args) {
   HandleScope scope;
     
@@ -548,6 +581,8 @@ void GitSubmodule::OpenAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitSubmodule::Reload(const Arguments& args) {
   HandleScope scope;
     
@@ -609,6 +644,9 @@ void GitSubmodule::ReloadAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Number} status
+ */
 Handle<Value> GitSubmodule::Status(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsInt32()) {

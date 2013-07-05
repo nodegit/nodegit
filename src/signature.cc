@@ -66,6 +66,13 @@ git_signature *GitSignature::GetValue() {
 }
 
 
+/**
+ * @param {String} name
+ * @param {String} email
+ * @param {Number} time
+ * @param {Number} offset
+ * @return {Signature} out
+ */
 Handle<Value> GitSignature::Create(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -107,6 +114,11 @@ Handle<Value> GitSignature::Create(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} name
+ * @param {String} email
+ * @return {Signature} out
+ */
 Handle<Value> GitSignature::Now(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {

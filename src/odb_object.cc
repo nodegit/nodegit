@@ -66,6 +66,9 @@ git_odb_object *GitOdbObject::GetValue() {
 }
 
 
+/**
+ * @return {Wrapper} result
+ */
 Handle<Value> GitOdbObject::Data(const Arguments& args) {
   HandleScope scope;
   
@@ -79,6 +82,9 @@ Handle<Value> GitOdbObject::Data(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Uint32} result
+ */
 Handle<Value> GitOdbObject::Size(const Arguments& args) {
   HandleScope scope;
   
@@ -92,6 +98,9 @@ Handle<Value> GitOdbObject::Size(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Int32} result
+ */
 Handle<Value> GitOdbObject::Type(const Arguments& args) {
   HandleScope scope;
   
@@ -105,6 +114,9 @@ Handle<Value> GitOdbObject::Type(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitOdbObject::Oid(const Arguments& args) {
   HandleScope scope;
   

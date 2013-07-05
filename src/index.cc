@@ -83,6 +83,10 @@ git_index *GitIndex::GetValue() {
 }
 
 
+/**
+ * @param {String} index_path
+ * @param {Index} callback
+ */
 Handle<Value> GitIndex::Open(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -152,6 +156,8 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitIndex::Read(const Arguments& args) {
   HandleScope scope;
     
@@ -213,6 +219,8 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ */
 Handle<Value> GitIndex::Write(const Arguments& args) {
   HandleScope scope;
     
@@ -274,6 +282,9 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Tree} tree
+ */
 Handle<Value> GitIndex::ReadTree(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -343,6 +354,9 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Oid} callback
+ */
 Handle<Value> GitIndex::WriteTree(const Arguments& args) {
   HandleScope scope;
     
@@ -407,6 +421,9 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @return {Uint32} result
+ */
 Handle<Value> GitIndex::Size(const Arguments& args) {
   HandleScope scope;
   
@@ -420,6 +437,8 @@ Handle<Value> GitIndex::Size(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ */
 Handle<Value> GitIndex::Clear(const Arguments& args) {
   HandleScope scope;
   
@@ -431,6 +450,10 @@ Handle<Value> GitIndex::Clear(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Number} n
+ * @return {GitIndexEntry} result
+ */
 Handle<Value> GitIndex::Entry(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -450,6 +473,10 @@ Handle<Value> GitIndex::Entry(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} path
+ * @param {Number} stage
+ */
 Handle<Value> GitIndex::Remove(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -476,6 +503,10 @@ Handle<Value> GitIndex::Remove(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {String} dir
+ * @param {Number} stage
+ */
 Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -502,6 +533,9 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {String} path
+ */
 Handle<Value> GitIndex::AddBypath(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -573,6 +607,9 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {String} path
+ */
 Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -594,6 +631,11 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @param {Number} at_pos
+ * @param {String} path
+ * @return {Int32} result
+ */
 Handle<Value> GitIndex::Find(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -619,6 +661,9 @@ Handle<Value> GitIndex::Find(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} path
+ */
 Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -640,6 +685,8 @@ Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ */
 Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
   HandleScope scope;
   
@@ -651,6 +698,9 @@ Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
   return Undefined();
 }
 
+/**
+ * @return {Int32} result
+ */
 Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   HandleScope scope;
   
@@ -664,6 +714,12 @@ Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Repository} repo
+ * @param {Index} index
+ * @param {DiffOptions} opts
+ * @param {DiffList} callback
+ */
 Handle<Value> GitIndex::IndexToWorkdir(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {

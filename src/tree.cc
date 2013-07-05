@@ -75,6 +75,9 @@ git_tree *GitTree::GetValue() {
 }
 
 
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitTree::Oid(const Arguments& args) {
   HandleScope scope;
   
@@ -89,6 +92,9 @@ Handle<Value> GitTree::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @return {Uint32} result
+ */
 Handle<Value> GitTree::Size(const Arguments& args) {
   HandleScope scope;
   
@@ -102,6 +108,10 @@ Handle<Value> GitTree::Size(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} filename
+ * @return {GitTreeEntry} result
+ */
 Handle<Value> GitTree::EntryByName(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
@@ -123,6 +133,10 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Number} idx
+ * @return {GitTreeEntry} result
+ */
 Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsUint32()) {
@@ -142,6 +156,10 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {Oid} oid
+ * @return {GitTreeEntry} result
+ */
 Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -161,6 +179,10 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   return scope.Close(to);
 }
 
+/**
+ * @param {String} path
+ * @param {TreeEntry} callback
+ */
 Handle<Value> GitTree::GetEntry(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsString()) {
@@ -234,6 +256,12 @@ void GitTree::GetEntryAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Repository} repo
+ * @param {Tree} new_tree
+ * @param {DiffOptions} opts
+ * @param {DiffList} callback
+ */
 Handle<Value> GitTree::DiffTree(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -322,6 +350,12 @@ void GitTree::DiffTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Repository} repo
+ * @param {Index} index
+ * @param {DiffOptions} opts
+ * @param {DiffList} callback
+ */
 Handle<Value> GitTree::DiffIndex(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -409,6 +443,11 @@ void GitTree::DiffIndexAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+/**
+ * @param {Repository} repo
+ * @param {DiffOptions} opts
+ * @param {DiffList} callback
+ */
 Handle<Value> GitTree::DiffWorkDir(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
