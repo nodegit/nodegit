@@ -319,7 +319,7 @@ Handle<Value> GitSubmodule::SetUrl(const Arguments& args) {
     ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue()
     , from_url
   );
-  delete from_url;
+  free((void *)from_url);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

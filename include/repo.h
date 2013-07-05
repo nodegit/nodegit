@@ -105,6 +105,35 @@ class GitRepo : public ObjectWrap {
       const git_oid * id;
       Persistent<Function> callback;
     };
+    static Handle<Value> CreateCommit(const Arguments& args);
+    static void CreateCommitWork(uv_work_t* req);
+    static void CreateCommitAfterWork(uv_work_t* req);
+
+    struct CreateCommitBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_oid * id;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> update_refReference;
+      const char * update_ref;
+      Persistent<Value> authorReference;
+      const git_signature * author;
+      Persistent<Value> committerReference;
+      const git_signature * committer;
+      Persistent<Value> message_encodingReference;
+      const char * message_encoding;
+      Persistent<Value> messageReference;
+      const char * message;
+      Persistent<Value> treeReference;
+      const git_tree * tree;
+      Persistent<Value> parent_countReference;
+      int parent_count;
+      Persistent<Value> parentsReference;
+      const git_commit ** parents;
+      Persistent<Function> callback;
+    };
     static Handle<Value> GetObject(const Arguments& args);
     static void GetObjectWork(uv_work_t* req);
     static void GetObjectAfterWork(uv_work_t* req);
@@ -238,6 +267,21 @@ class GitRepo : public ObjectWrap {
       git_repository * repo;
       Persistent<Value> tag_nameReference;
       const char * tag_name;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> GetReferences(const Arguments& args);
+    static void GetReferencesWork(uv_work_t* req);
+    static void GetReferencesAfterWork(uv_work_t* req);
+
+    struct GetReferencesBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_strarray * array;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> list_flagsReference;
+      unsigned int list_flags;
       Persistent<Function> callback;
     };
     git_repository *raw;

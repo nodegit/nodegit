@@ -128,12 +128,14 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // parents. Here we're creating oid objects to create the commit with,
   // but you can also use existing ones:
 
-  var treeId = git.Oid.fromString("28873d96b4e8f4e33ea30f4c682fd325f7ba56ac");
-  var parentId = git.Oid.fromString("f0877d0b841d75172ec404fc9370173dfffc20d1");
+  var treeId = git.Oid.fromString("4170d10f19600b9cb086504e8e05fe7d863358a2");
+  var parentId = git.Oid.fromString("eebd0ead15d62eaf0ba276da53af43bbc3ce43ab");
 
   repo.getTree(treeId, function(error, tree) {
+    if (error) throw error;
+
     repo.getCommit(parentId, function(error, parent) {
-      return "Not yet working!";
+      if (error) throw error;
       // Here we actually create the commit object with a single call with all
       // the values we need to create the commit. The SHA key is written to the
       // `commit_id` variable here.
@@ -144,8 +146,8 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
         "example commit",
         tree,
         [parent],
-        function (error, commitOid) {
-          console.log("New Commit:", commitOid.sha());
+        function (error, oid) {
+          console.log("New Commit:", oid.sha());
         });
     });
   });
@@ -306,16 +308,19 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // references such as branches, tags and remote references (everything in
   // the .git/refs directory).
 
-  return "this doesn't yet work";
-  repo.getReferences(function(error, references) {
+  repo.getReferences(git.Reference.Type.Oid | git.Reference.Type.Symbolic, function(error, referenceNames) {
     if (error) throw error;
 
-    references.forEach(function(reference) {
-      if (reference.type() == git.Reference.Oid) {
-        console.log(oid.sha());
-      } else if (reference.type() == git.Reference.Symbolic) {
-        console.log(reference.symbolicTarget());
-      }
+    referenceNames.forEach(function(referenceName) {
+      repo.getReference(referenceName, function(error, reference) {
+        if (error) throw error;
+
+        if (reference.isOid()) {
+          console.log("Reference:", referenceName, reference.oid());
+        } else if (reference.isSymbolic()) {
+          console.log("Reference:", referenceName, reference.symbolicTarget());
+        }
+      });
     });
   });
 });

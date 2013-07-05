@@ -96,8 +96,8 @@ Handle<Value> GitSignature::Create(const Arguments& args) {
     , from_time
     , from_offset
   );
-  delete from_name;
-  delete from_email;
+  free((void *)from_name);
+  free((void *)from_email);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -127,8 +127,8 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
     , from_name
     , from_email
   );
-  delete from_name;
-  delete from_email;
+  free((void *)from_name);
+  free((void *)from_email);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

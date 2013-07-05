@@ -2,7 +2,14 @@
   String::Utf8Value <%- arg.name %>(args[<%- jsArg %>]->ToString());
   <%- arg.cType %> from_<%- arg.name %> = strdup(*<%- arg.name %>);
 <% } else if (arg.cppClassName == 'Array') { -%>
-  <%- arg.cType %> from_<%- arg.name %> = Array::Cast(*args[<%- jsArg %>]);
+  Array *tmp_<%- arg.name %> = Array::Cast(*args[<%- jsArg %>]);
+  <%- arg.cType %> from_<%- arg.name %> = (<%- arg.cType %>)malloc(tmp_<%- arg.name %>->Length() * sizeof(<%- arg.cType.replace('**', '*') %>));
+  for (unsigned int i = 0; i < tmp_<%- arg.name %>->Length(); i++) {
+<%
+  // FIXME: should recursively call convertFromv8.
+%>
+    from_<%- arg.name %>[i] = ObjectWrap::Unwrap<<%- arg.arrayElementCppClassName %>>(tmp_<%- arg.name %>->Get(Number::New(static_cast<double>(i)))->ToObject())->GetValue();
+  }
 <% } else if (arg.cppClassName == 'Buffer') { -%>
   <%- arg.cType %> from_<%- arg.name %> = Buffer::Data(ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- jsArg %>]->ToObject()));
 <% } else if (isV8Value(arg.cppClassName)) { -%>

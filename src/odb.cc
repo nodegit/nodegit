@@ -105,7 +105,7 @@ Handle<Value> GitOdb::Open(const Arguments& args) {
     &out
     , from_objects_dir
   );
-  delete from_objects_dir;
+  free((void *)from_objects_dir);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -128,7 +128,7 @@ Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
     ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue()
     , from_path
   );
-  delete from_path;
+  free((void *)from_path);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -446,7 +446,7 @@ Handle<Value> GitOdb::Hashfile(const Arguments& args) {
     , from_path
     , from_type
   );
-  delete from_path;
+  free((void *)from_path);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

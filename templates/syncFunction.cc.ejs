@@ -44,8 +44,12 @@ from_<%- arg.name %>
     var arg = functionInfo.args[i];
     if (arg.isSelf || arg.isReturn) continue;
 -%>
-<% if (arg.cppClassName == 'String') { -%>
-  delete from_<%- arg.name %>;
+<% if (['String', 'Array'].indexOf(arg.cppClassName) > -1) { -%>
+<% if (arg.freeFunctionName) { %>
+  <%- arg.freeFunctionName %>(from_<%- arg.name %>);
+<% } else { -%>
+  free((void *)from_<%- arg.name %>);
+<% } -%>
 <% } -%>
 <% } -%>
 <% if (functionInfo.return.isErrorCode) { -%>

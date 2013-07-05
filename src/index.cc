@@ -468,7 +468,7 @@ Handle<Value> GitIndex::Remove(const Arguments& args) {
     , from_path
     , from_stage
   );
-  delete from_path;
+  free((void *)from_path);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -494,7 +494,7 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
     , from_dir
     , from_stage
   );
-  delete from_dir;
+  free((void *)from_dir);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -586,7 +586,7 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
     , from_path
   );
-  delete from_path;
+  free((void *)from_path);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -612,7 +612,7 @@ Handle<Value> GitIndex::Find(const Arguments& args) {
     , ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
     , from_path
   );
-  delete from_path;
+  free((void *)from_path);
 
   Handle<Value> to;
     to = Int32::New(result);
@@ -632,7 +632,7 @@ Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
     , from_path
   );
-  delete from_path;
+  free((void *)from_path);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

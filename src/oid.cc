@@ -76,7 +76,7 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
     out
     , from_str
   );
-  delete from_str;
+  free((void *)from_str);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

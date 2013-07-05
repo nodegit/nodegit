@@ -10798,7 +10798,8 @@
             "name": "update_ref",
             "cType": "const char *",
             "cppClassName": "String",
-            "jsClassName": "String"
+            "jsClassName": "String",
+            "isOptional": true
           },
           {
             "name": "author",
@@ -10816,7 +10817,8 @@
             "name": "message_encoding",
             "cType": "const char *",
             "cppClassName": "String",
-            "jsClassName": "String"
+            "jsClassName": "String",
+            "isOptional": true
           },
           {
             "name": "message",
@@ -10840,10 +10842,10 @@
             "name": "parents",
             "cType": "const git_commit **",
             "cppClassName": "Array",
+            "arrayElementCppClassName": "GitCommit",
             "jsClassName": "Array"
           }
         ],
-        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -11819,7 +11821,12 @@
             "name": "array",
             "cType": "git_strarray *",
             "cppClassName": "Array",
-            "jsClassName": "Array"
+            "jsClassName": "Array",
+            "freeFunctionName": "git_strarray_free",
+            "size": "count",
+            "key": "strings",
+            "shouldAlloc": true,
+            "isReturn": true
           },
           {
             "name": "repo",
@@ -11832,15 +11839,15 @@
             "name": "list_flags",
             "cType": "unsigned int",
             "cppClassName": "Uint32",
-            "jsClassName": "Number"
+            "jsClassName": "Number",
+            "isOptional": true
           }
         ],
-        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "list",
-        "cppFunctionName": "List",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getReferences",
+        "cppFunctionName": "GetReferences",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",

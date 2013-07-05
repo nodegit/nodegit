@@ -76,7 +76,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
 <% if (!returns.length) { %>
     Handle<Value> result = Local<Value>::New(Undefined());
 <% } else if (returns.length == 1) { -%>
-<% var to = returns[0]; to.name = "baton->" + to.name; -%>
+<% var to = {}; to.__proto__ = returns[0]; to.name = "baton->" + to.name; -%>
   Handle<Value> to;
   <% include convertToV8.cc.ejs -%>
   Handle<Value> result = to;
@@ -120,8 +120,12 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
     for (var i = 0; i < functionInfo.args.length; i++) {
       var arg = functionInfo.args[i];
 -%>
-<% if (arg.cppClassName == 'String') { -%>
+<% if (['String', 'Array'].indexOf(arg.cppClassName) > -1) { -%>
+<% if (arg.freeFunctionName) { %>
+  <%- arg.freeFunctionName %>(baton-><%- arg.name %>);
+<% } else { -%>
   free((void *)baton-><%- arg.name %>);
+<% } -%>
 <% } -%>
 <% } -%>
   delete baton;

@@ -51,6 +51,7 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "openIndex", openIndex);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getBlob", GetBlob);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getCommit", GetCommit);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "createCommit", CreateCommit);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getObject", GetObject);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getReference", GetReference);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createSymbolicReference", CreateSymbolicReference);
@@ -64,6 +65,7 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "getTree", GetTree);
   NODE_SET_METHOD(tpl, "reloadSubmodules", ReloadSubmodules);
   NODE_SET_PROTOTYPE_METHOD(tpl, "delete", Delete);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "getReferences", GetReferences);
 
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -489,6 +491,148 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+Handle<Value> GitRepo::CreateCommit(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 1 || !args[1]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Signature author is required.")));
+  }
+  if (args.Length() == 2 || !args[2]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Signature committer is required.")));
+  }
+  if (args.Length() == 4 || !args[4]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String message is required.")));
+  }
+  if (args.Length() == 5 || !args[5]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Tree tree is required.")));
+  }
+  if (args.Length() == 6 || !args[6]->IsInt32()) {
+    return ThrowException(Exception::Error(String::New("Number parent_count is required.")));
+  }
+  if (args.Length() == 7 || !args[7]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Array parents is required.")));
+  }
+
+  if (args.Length() == 8 || !args[8]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  CreateCommitBaton* baton = new CreateCommitBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->id = (git_oid *)malloc(sizeof(git_oid ));
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->update_refReference = Persistent<Value>::New(args[0]);
+  if (args[0]->IsString()) {
+    String::Utf8Value update_ref(args[0]->ToString());
+  const char * from_update_ref = strdup(*update_ref);
+  baton->update_ref = from_update_ref;
+  } else {
+    baton->update_ref = NULL;
+  }
+  baton->authorReference = Persistent<Value>::New(args[1]);
+    const git_signature * from_author = ObjectWrap::Unwrap<GitSignature>(args[1]->ToObject())->GetValue();
+  baton->author = from_author;
+  baton->committerReference = Persistent<Value>::New(args[2]);
+    const git_signature * from_committer = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
+  baton->committer = from_committer;
+  baton->message_encodingReference = Persistent<Value>::New(args[3]);
+  if (args[3]->IsString()) {
+    String::Utf8Value message_encoding(args[3]->ToString());
+  const char * from_message_encoding = strdup(*message_encoding);
+  baton->message_encoding = from_message_encoding;
+  } else {
+    baton->message_encoding = NULL;
+  }
+  baton->messageReference = Persistent<Value>::New(args[4]);
+    String::Utf8Value message(args[4]->ToString());
+  const char * from_message = strdup(*message);
+  baton->message = from_message;
+  baton->treeReference = Persistent<Value>::New(args[5]);
+    const git_tree * from_tree = ObjectWrap::Unwrap<GitTree>(args[5]->ToObject())->GetValue();
+  baton->tree = from_tree;
+  baton->parent_countReference = Persistent<Value>::New(args[6]);
+    int from_parent_count = (int) args[6]->ToInt32()->Value();
+  baton->parent_count = from_parent_count;
+  baton->parentsReference = Persistent<Value>::New(args[7]);
+    Array *tmp_parents = Array::Cast(*args[7]);
+  const git_commit ** from_parents = (const git_commit **)malloc(tmp_parents->Length() * sizeof(const git_commit *));
+  for (unsigned int i = 0; i < tmp_parents->Length(); i++) {
+
+    from_parents[i] = ObjectWrap::Unwrap<GitCommit>(tmp_parents->Get(Number::New(static_cast<double>(i)))->ToObject())->GetValue();
+  }
+  baton->parents = from_parents;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[8]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, CreateCommitWork, (uv_after_work_cb)CreateCommitAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::CreateCommitWork(uv_work_t *req) {
+  CreateCommitBaton *baton = static_cast<CreateCommitBaton *>(req->data);
+  int result = git_commit_create(
+    baton->id, 
+    baton->repo, 
+    baton->update_ref, 
+    baton->author, 
+    baton->committer, 
+    baton->message_encoding, 
+    baton->message, 
+    baton->tree, 
+    baton->parent_count, 
+    baton->parents
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  CreateCommitBaton *baton = static_cast<CreateCommitBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    to = GitOid::New((void *)baton->id);
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->update_refReference.Dispose();
+  baton->authorReference.Dispose();
+  baton->committerReference.Dispose();
+  baton->message_encodingReference.Dispose();
+  baton->messageReference.Dispose();
+  baton->treeReference.Dispose();
+  baton->parent_countReference.Dispose();
+  baton->parentsReference.Dispose();
+  baton->callback.Dispose();
+  free((void *)baton->update_ref);
+  free((void *)baton->message_encoding);
+  free((void *)baton->message);
+  free((void *)baton->parents);
+  delete baton;
+}
+
 Handle<Value> GitRepo::GetObject(const Arguments& args) {
   HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsObject()) {
@@ -667,8 +811,8 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
     , from_target
     , from_force
   );
-  delete from_name;
-  delete from_target;
+  free((void *)from_name);
+  free((void *)from_target);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -703,7 +847,7 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
     , from_id
     , from_force
   );
-  delete from_name;
+  free((void *)from_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -746,7 +890,7 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
     , ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue()
     , from_name
   );
-  delete from_name;
+  free((void *)from_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -782,8 +926,8 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
     , from_path
     , from_use_gitlink
   );
-  delete from_url;
-  delete from_path;
+  free((void *)from_url);
+  free((void *)from_path);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -1262,6 +1406,86 @@ void GitRepo::DeleteAfterWork(uv_work_t *req) {
   baton->tag_nameReference.Dispose();
   baton->callback.Dispose();
   free((void *)baton->tag_name);
+  delete baton;
+}
+
+Handle<Value> GitRepo::GetReferences(const Arguments& args) {
+  HandleScope scope;
+    
+  if (args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  GetReferencesBaton* baton = new GetReferencesBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->array = (git_strarray *)malloc(sizeof(git_strarray ));
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->list_flagsReference = Persistent<Value>::New(args[0]);
+  if (args[0]->IsUint32()) {
+    unsigned int from_list_flags = (unsigned int) args[0]->ToUint32()->Value();
+  baton->list_flags = from_list_flags;
+  } else {
+    baton->list_flags = NULL;
+  }
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, GetReferencesWork, (uv_after_work_cb)GetReferencesAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::GetReferencesWork(uv_work_t *req) {
+  GetReferencesBaton *baton = static_cast<GetReferencesBaton *>(req->data);
+  int result = git_reference_list(
+    baton->array, 
+    baton->repo, 
+    baton->list_flags
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  GetReferencesBaton *baton = static_cast<GetReferencesBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+  
+  Local<Array> tmpArray = Array::New(baton->array->count);
+  for (unsigned int i = 0; i < baton->array->count; i++) {
+    tmpArray->Set(Number::New(i), String::New(baton->array->strings[i]));
+  }
+  to = tmpArray;
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->list_flagsReference.Dispose();
+  baton->callback.Dispose();
+
+  git_strarray_free(baton->array);
   delete baton;
 }
 

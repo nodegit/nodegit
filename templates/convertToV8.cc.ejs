@@ -9,6 +9,15 @@
   to = <%- to.cppClassName %>::New(<%- toName %>);
 <% } else if (to.cppClassName == "External") { -%>
   to = External::New((void *)<%- toName %>);
+<% } else if (to.cppClassName == 'Array') { -%>
+<%
+  // FIXME this is not general purpose enough.
+%>
+  Local<Array> tmpArray = Array::New(<%- toName %>-><%- to.size %>);
+  for (unsigned int i = 0; i < <%- toName %>-><%- to.size %>; i++) {
+    tmpArray->Set(Number::New(i), String::New(<%- toName %>-><%- to.key %>[i]));
+  }
+  to = tmpArray;
 <% } else { -%>
 <% if (to.copy) { -%>
   <%- toName %> = (<%- to.cType.replace('**', '*') %> <% if (!/\*/.test(to.cType)) {%>*<% } %>)<%- to.copy %>(<%- toName %>);

@@ -272,7 +272,7 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
     , ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
     , from_target
   );
-  delete from_target;
+  free((void *)from_target);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -510,7 +510,7 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
   int result = git_reference_is_valid_name(
     from_refname
   );
-  delete from_refname;
+  free((void *)from_refname);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }

@@ -115,7 +115,7 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
     , from_filename
   );
-  delete from_filename;
+  free((void *)from_filename);
 
   Handle<Value> to;
     result = (const git_tree_entry * )git_tree_entry_dup(result);

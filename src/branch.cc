@@ -100,7 +100,7 @@ Handle<Value> Branch::Create(const Arguments& args) {
     , from_target
     , from_force
   );
-  delete from_branch_name;
+  free((void *)from_branch_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -185,7 +185,7 @@ Handle<Value> Branch::Move(const Arguments& args) {
     , from_new_branch_name
     , from_force
   );
-  delete from_new_branch_name;
+  free((void *)from_new_branch_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -219,7 +219,7 @@ Handle<Value> Branch::Lookup(const Arguments& args) {
     , from_branch_name
     , from_branch_type
   );
-  delete from_branch_name;
+  free((void *)from_branch_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -290,7 +290,7 @@ Handle<Value> Branch::SetUpstream(const Arguments& args) {
     from_branch
     , from_upstream_name
   );
-  delete from_upstream_name;
+  free((void *)from_upstream_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -326,8 +326,8 @@ Handle<Value> Branch::UpstreamName(const Arguments& args) {
     , from_repo
     , from_canonical_branch_name
   );
-  delete from_tracking_branch_name_out;
-  delete from_canonical_branch_name;
+  free((void *)from_tracking_branch_name_out);
+  free((void *)from_canonical_branch_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
@@ -381,8 +381,8 @@ Handle<Value> Branch::RemoteName(const Arguments& args) {
     , from_repo
     , from_canonical_branch_name
   );
-  delete from_remote_name_out;
-  delete from_canonical_branch_name;
+  free((void *)from_remote_name_out);
+  free((void *)from_canonical_branch_name);
   if (result != GIT_OK) {
     return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
