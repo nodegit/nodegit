@@ -1,281 +1,211 @@
-/*
- * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
-
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 #include <v8.h>
 #include <node.h>
-
-#include "cvv8/v8-convert.hpp"
+#include <string.h>
 
 #include "git2.h"
 
-#include "../include/repo.h"
-#include "../include/blob.h"
-#include "../include/tree.h"
-#include "../include/oid.h"
-#include "../include/tree_entry.h"
-#include "../include/error.h"
+#include "../include/functions/copy.h"
 
-#include "../include/functions/utilities.h"
+#include "../include/tree_entry.h"
+#include "../include/oid.h"
+#include "../include/repo.h"
+#include "../include/object.h"
 
 using namespace v8;
 using namespace node;
-using namespace cvv8;
 
-namespace cvv8 {
-  template <>
-  struct NativeToJS<git_filemode_t> : NativeToJS<int32_t> {};
+GitTreeEntry::GitTreeEntry(git_tree_entry *raw) {
+  this->raw = raw;
+}
+
+GitTreeEntry::~GitTreeEntry() {
+  git_tree_entry_free(this->raw);
 }
 
 void GitTreeEntry::Initialize(Handle<v8::Object> target) {
+  HandleScope scope;
+
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(String::NewSymbol("TreeEntry"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "root", Root);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "fileMode", FileMode);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "toBlob", ToBlob);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "filemode", filemode);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "getObject", GetObject);
 
-  // Add libgit2 file modes to entry object
-  Local<Object> libgit2FileModes = Object::New();
-
-  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_NEW"), CastToJS(GIT_FILEMODE_NEW), ReadOnly);
-  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_TREE"), CastToJS(GIT_FILEMODE_TREE), ReadOnly);
-  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_BLOB"), CastToJS(GIT_FILEMODE_BLOB), ReadOnly);
-  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_BLOB_EXECUTABLE"), CastToJS(GIT_FILEMODE_BLOB_EXECUTABLE), ReadOnly);
-  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_LINK"), CastToJS(GIT_FILEMODE_LINK), ReadOnly);
-  libgit2FileModes->Set(String::NewSymbol("GIT_FILEMODE_COMMIT"), CastToJS(GIT_FILEMODE_COMMIT), ReadOnly);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  constructor_template->Set(String::NewSymbol("fileModes"), libgit2FileModes, ReadOnly);
   target->Set(String::NewSymbol("TreeEntry"), constructor_template);
-}
-
-git_tree_entry* GitTreeEntry::GetValue() {
-  return this->entry;
-}
-void GitTreeEntry::SetValue(git_tree_entry* entry) {
-  this->entry = entry;
-}
-void GitTreeEntry::SetRoot(std::string root) {
-  this->root = root;
-}
-std::string GitTreeEntry::GetRoot() {
-  return this->root;
 }
 
 Handle<Value> GitTreeEntry::New(const Arguments& args) {
   HandleScope scope;
 
-  GitTreeEntry *entry = new GitTreeEntry();
+  if (args.Length() == 0 || !args[0]->IsExternal()) {
+    return ThrowException(Exception::Error(String::New("git_tree_entry is required.")));
+  }
 
-  entry->Wrap(args.This());
+  GitTreeEntry* object = new GitTreeEntry((git_tree_entry *) External::Unwrap(args[0]));
+  object->Wrap(args.This());
 
   return scope.Close(args.This());
 }
 
-Handle<Value> GitTreeEntry::Root(const Arguments& args) {
+Handle<Value> GitTreeEntry::New(void *raw) {
   HandleScope scope;
-
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  GitTreeEntry *entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    String::New(entry->GetRoot().c_str())
-  };
-
-  TryCatch try_catch;
-  Local<Function>::Cast(args[0])->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-
-  return Undefined();
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(GitTreeEntry::constructor_template->NewInstance(1, argv));
 }
 
+git_tree_entry *GitTreeEntry::GetValue() {
+  return this->raw;
+}
+
+
+/**
+ * @return {String} result
+ */
 Handle<Value> GitTreeEntry::Name(const Arguments& args) {
   HandleScope scope;
+  
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
+  const char * result = git_tree_entry_name(
+    ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
+  );
 
-  NameBaton *baton = new NameBaton;
-  baton->request.data = baton;
-
-  GitTreeEntry *treeEntry = ObjectWrap::Unwrap<GitTreeEntry>(args.This());
-  baton->rawEntry = treeEntry->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, NameWork, (uv_after_work_cb)NameAfterWork);
-
-  return Undefined();
-}
-void GitTreeEntry::NameWork(uv_work_t* req) {
-  NameBaton *baton = static_cast<NameBaton *>(req->data);
-
-  baton->name = git_tree_entry_name(baton->rawEntry);
-}
-void GitTreeEntry::NameAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  NameBaton *baton = static_cast<NameBaton *>(req->data);
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    String::New(baton->name)
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
+  Handle<Value> to;
+    to = String::New(result);
+  return scope.Close(to);
 }
 
-Handle<Value> GitTreeEntry::FileMode(const Arguments& args) {
-  HandleScope scope;
-
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  FileModeBaton *baton = new FileModeBaton;
-  baton->request.data = baton;
-  baton->rawEntry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, FileModeWork, (uv_after_work_cb)FileModeAfterWork);
-
-  return Undefined();
-}
-void GitTreeEntry::FileModeWork(uv_work_t* req) {
-  FileModeBaton *baton = static_cast<FileModeBaton *>(req->data);
-
-  baton->fileMode = git_tree_entry_filemode(baton->rawEntry);
-}
-void GitTreeEntry::FileModeAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  FileModeBaton *baton = static_cast<FileModeBaton *>(req->data);
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    Integer::New(baton->fileMode)
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
-}
-
+/**
+ * @return {GitOid} result
+ */
 Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   HandleScope scope;
+  
 
-  if(args.Length() == 0 || !args[0]->IsFunction()) {
+  const git_oid * result = git_tree_entry_id(
+    ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
+  );
+
+  Handle<Value> to;
+    result = (const git_oid * )git_oid_dup(result);
+  to = GitOid::New((void *)result);
+  return scope.Close(to);
+}
+
+/**
+ * @return {Number} result
+ */
+Handle<Value> GitTreeEntry::Type(const Arguments& args) {
+  HandleScope scope;
+  
+
+  git_otype result = git_tree_entry_type(
+    ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
+  );
+
+  Handle<Value> to;
+    to = Number::New(result);
+  return scope.Close(to);
+}
+
+/**
+ * @return {Number} result
+ */
+Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
+  HandleScope scope;
+  
+
+  git_filemode_t result = git_tree_entry_filemode(
+    ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue()
+  );
+
+  Handle<Value> to;
+    to = Number::New(result);
+  return scope.Close(to);
+}
+
+/**
+ * @param {Repository} repo
+ * @param {Object} callback
+ */
+Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+  }
+
+  if (args.Length() == 1 || !args[1]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
-  OidBaton* baton = new OidBaton;
-  baton->request.data = baton;
-  baton->rawEntry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
-
-  uv_queue_work(uv_default_loop(), &baton->request, OidWork, (uv_after_work_cb)OidAfterWork);
-
-  return Undefined();
-}
-void GitTreeEntry::OidWork(uv_work_t* req) {
-  OidBaton *baton = static_cast<OidBaton *>(req->data);
-
-  baton->rawOid = git_tree_entry_id(const_cast<git_tree_entry *>(baton->rawEntry));
-}
-void GitTreeEntry::OidAfterWork(uv_work_t* req) {
-  HandleScope scope;
-  OidBaton *baton = static_cast<OidBaton *>(req->data);
-
-  Handle<Object> oid = GitOid::constructor_template->NewInstance();
-  GitOid* oidInstance = ObjectWrap::Unwrap<GitOid>(oid);
-  oidInstance->SetValue(*const_cast<git_oid *>(baton->rawOid));
-
-  Handle<Value> argv[2] = {
-    Local<Value>::New(Null()),
-    oid
-  };
-
-  TryCatch try_catch;
-  baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
-  }
-  delete req;
-}
-
-Handle<Value> GitTreeEntry::ToBlob(const Arguments& args) {
-  HandleScope scope;
-
-  if(args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository is required and must be an Object.")));
-  }
-
-  if(args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
-  }
-
-  ToBlobBaton* baton = new ToBlobBaton;
-  baton->request.data = baton;
+  GetObjectBaton* baton = new GetObjectBaton;
+  baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->rawRepo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  baton->rawEntry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
-  baton->rawBlob = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args[0]);
+    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  baton->entryReference = Persistent<Value>::New(args.This());
+  baton->entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, ToBlobWork, (uv_after_work_cb)ToBlobAfterWork);
+  uv_queue_work(uv_default_loop(), &baton->request, GetObjectWork, (uv_after_work_cb)GetObjectAfterWork);
 
   return Undefined();
 }
-void GitTreeEntry::ToBlobWork(uv_work_t *req) {
-  ToBlobBaton* baton = static_cast<ToBlobBaton*>(req->data);
 
-  int returnCode = git_tree_entry_to_object((git_object**)&baton->rawBlob, baton->rawRepo, baton->rawEntry);
-  if (returnCode != GIT_OK) {
+void GitTreeEntry::GetObjectWork(uv_work_t *req) {
+  GetObjectBaton *baton = static_cast<GetObjectBaton *>(req->data);
+  int result = git_tree_entry_to_object(
+    &baton->object_out, 
+    baton->repo, 
+    baton->entry
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
     baton->error = giterr_last();
   }
 }
-void GitTreeEntry::ToBlobAfterWork(uv_work_t *req) {
+
+void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
   HandleScope scope;
-  ToBlobBaton* baton = static_cast<ToBlobBaton* >(req->data);
+  GetObjectBaton *baton = static_cast<GetObjectBaton *>(req->data);
 
-  if (success(baton->error, baton->callback)) {
-    Handle<Object> blob = GitBlob::constructor_template->NewInstance();
-    GitBlob *blobInstance = ObjectWrap::Unwrap<GitBlob>(blob);
-    blobInstance->SetValue(baton->rawBlob);
-
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    to = GitObject::New((void *)baton->object_out);
+  Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
-      blob
+      result
     };
-
-    TryCatch try_catch;
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-    if (try_catch.HasCaught()) {
-      node::FatalException(try_catch);
-    }
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
   }
-  delete req;
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->entryReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
 }
 
 Persistent<Function> GitTreeEntry::constructor_template;
-

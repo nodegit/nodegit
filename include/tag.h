@@ -1,58 +1,57 @@
 /**
- * Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 
-#ifndef TAG_H
-#define TAG_H
+#ifndef GITTAG_H
+#define GITTAG_H
 
+#include <v8.h>
 #include <node.h>
+#include <string>
 
 #include "git2.h"
 
 using namespace node;
+using namespace v8;
 
-/**
- * Class: GitTag
- *   Wrapper for libgit2 git_error.
- */
 class GitTag : public ObjectWrap {
   public:
-    /**
-     * Variable: constructor_template
-     *   Used to create Node.js constructor.
-     */
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    /**
-     * Function: Initialize
-     *   Used to intialize the EventEmitter from Node.js
-     *
-     * Parameters:
-     *   target - v8::Object the Node.js global module object
-     */
-    static void Initialize(v8::Handle<v8::Object> target);
 
-  protected:
-    /**
-     * Constructor: GitTag
-     */
-    GitTag() {};
-    /**
-     * Deconstructor: GitTag
-     */
-    ~GitTag() {};
-    /**
-     * Function: New
-     *
-     * Parameters:
-     *   args v8::Arguments function call
-     *
-     * Returns:
-     *   v8::Object args.This()
-     */
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
+    static Persistent<Function> constructor_template;
+    static void Initialize (Handle<v8::Object> target);
+
+    git_tag *GetValue();
+
+    static Handle<Value> New(void *raw);
+
+  private:
+    GitTag(git_tag *raw);
+    ~GitTag();
+
+    static Handle<Value> New(const Arguments& args);
+
+
+    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> GetTarget(const Arguments& args);
+    static void GetTargetWork(uv_work_t* req);
+    static void GetTargetAfterWork(uv_work_t* req);
+
+    struct GetTargetBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_object * target_out;
+      Persistent<Value> tagReference;
+      const git_tag * tag;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> TargetId(const Arguments& args);
+    static Handle<Value> TargetType(const Arguments& args);
+    static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> Tagger(const Arguments& args);
+    static Handle<Value> Message(const Arguments& args);
+    static Handle<Value> Peel(const Arguments& args);
+    git_tag *raw;
 };
 
 #endif
