@@ -1,9 +1,6 @@
-/*
- * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 
 #ifndef GITTREE_H
 #define GITTREE_H
@@ -11,98 +8,105 @@
 #include <v8.h>
 #include <node.h>
 #include <string>
-#include <vector>
 
 #include "git2.h"
 
-#include "repo.h"
-#include "tree_entry.h"
-
-using namespace v8;
 using namespace node;
+using namespace v8;
 
-/**
- * Class wrapper for libgit2 git_tree
- */
 class GitTree : public ObjectWrap {
   public:
 
     static Persistent<Function> constructor_template;
+    static void Initialize (Handle<v8::Object> target);
 
-    static const int WALK_ENTRY_SEND_THRESHOLD = 10;
+    git_tree *GetValue();
 
-    static void Initialize(Handle<v8::Object> target);
+    static Handle<Value> New(void *raw);
 
-    git_tree* GetValue();
-    void SetValue(git_tree* tree);
-
-  protected:
-    GitTree() {};
-    ~GitTree() {};
+  private:
+    GitTree(git_tree *raw);
+    ~GitTree();
 
     static Handle<Value> New(const Arguments& args);
 
-    static Handle<Value> Lookup(const Arguments& args);
-    static void LookupWork(uv_work_t* req);
-    static void LookupAfterWork(uv_work_t* req);
 
-    static Handle<Value> Walk(const Arguments& args);
-    static void WalkWork(void* payload);
-    static int WalkWorkEntry(const char *root, const git_tree_entry *entry, void *payload);
-    static void WalkWorkSendEntry(uv_async_t *handle, int status /*UNUSED*/);
-    static void WalkWorkSendEnd(uv_async_t *handle, int status /*UNUSED*/);
+    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> Size(const Arguments& args);
+    static Handle<Value> EntryByName(const Arguments& args);
+    static Handle<Value> EntryByIndex(const Arguments& args);
+    static Handle<Value> EntryByOid(const Arguments& args);
+    static Handle<Value> GetEntry(const Arguments& args);
+    static void GetEntryWork(uv_work_t* req);
+    static void GetEntryAfterWork(uv_work_t* req);
 
-    static Handle<Value> EntryByPath(const Arguments& args);
-    static void EntryByPathWork(uv_work_t *req);
-    static void EntryByPathAfterWork(uv_work_t *req);
-
-  private:
-
-    git_tree* tree;
-
-    struct LookupBaton {
+    struct GetEntryBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
-
-      git_oid rawOid;
-      git_repository* rawRepo;
-      git_tree* rawTree;
-
+      git_tree_entry * out;
+      Persistent<Value> rootReference;
+      git_tree * root;
+      Persistent<Value> pathReference;
+      const char * path;
       Persistent<Function> callback;
     };
+    static Handle<Value> DiffTree(const Arguments& args);
+    static void DiffTreeWork(uv_work_t* req);
+    static void DiffTreeAfterWork(uv_work_t* req);
 
-    struct WalkEntry {
-        git_tree_entry* rawEntry;
-        std::string root;
-    };
-
-    struct WalkBaton {
-      uv_thread_t threadId;
-      uv_mutex_t mutex;
-      uv_async_t asyncEntry;
-      uv_async_t asyncEnd;
-
-      const git_error* error;
-
-      std::vector<WalkEntry* > rawTreeEntries;
-
-      git_tree* rawTree;
-      bool blobsOnly;
-
-      Persistent<Function> entryCallback;
-      Persistent<Function> endCallback;
-    };
-
-    struct EntryByPathBaton {
+    struct DiffTreeBaton {
       uv_work_t request;
+      int error_code;
       const git_error* error;
-
-      git_tree* rawTree;
-      std::string path;
-      git_tree_entry* rawEntry;
-
+      git_diff_list * diff;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> old_treeReference;
+      git_tree * old_tree;
+      Persistent<Value> new_treeReference;
+      git_tree * new_tree;
+      Persistent<Value> optsReference;
+      const git_diff_options * opts;
       Persistent<Function> callback;
     };
+    static Handle<Value> DiffIndex(const Arguments& args);
+    static void DiffIndexWork(uv_work_t* req);
+    static void DiffIndexAfterWork(uv_work_t* req);
+
+    struct DiffIndexBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_diff_list * diff;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> old_treeReference;
+      git_tree * old_tree;
+      Persistent<Value> indexReference;
+      git_index * index;
+      Persistent<Value> optsReference;
+      const git_diff_options * opts;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> DiffWorkDir(const Arguments& args);
+    static void DiffWorkDirWork(uv_work_t* req);
+    static void DiffWorkDirAfterWork(uv_work_t* req);
+
+    struct DiffWorkDirBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_diff_list * diff;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> old_treeReference;
+      git_tree * old_tree;
+      Persistent<Value> optsReference;
+      const git_diff_options * opts;
+      Persistent<Function> callback;
+    };
+    git_tree *raw;
 };
 
 #endif

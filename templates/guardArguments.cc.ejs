@@ -1,0 +1,13 @@
+<%
+  var cArg = 0;
+  for (cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
+    var arg = functionInfo.args[cArg];
+    if (arg.isReturn || arg.isSelf) continue;
+-%>
+<% if (!arg.isOptional) { -%>
+  if (args.Length() == <%- jsArg %> || !args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
+    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> <%- arg.name %> is required.")));
+  }
+<% } -%>
+<% jsArg++; -%>
+<% } -%>

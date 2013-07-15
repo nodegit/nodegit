@@ -1,58 +1,80 @@
 /**
- * Copyright (c) 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 
-#ifndef ODB_H
-#define ODB_H
+#ifndef GITODB_H
+#define GITODB_H
 
+#include <v8.h>
 #include <node.h>
+#include <string>
 
 #include "git2.h"
 
 using namespace node;
+using namespace v8;
 
-/**
- * Class: GitOdb
- *   Wrapper for libgit2 git_error.
- */
 class GitOdb : public ObjectWrap {
   public:
-    /**
-     * Variable: constructor_template
-     *   Used to create Node.js constructor.
-     */
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    /**
-     * Function: Initialize
-     *   Used to intialize the EventEmitter from Node.js
-     *
-     * Parameters:
-     *   target - v8::Object the Node.js global module object
-     */
-    static void Initialize(v8::Handle<v8::Object> target);
 
-  protected:
-    /**
-     * Constructor: GitOdb
-     */
-    GitOdb() {};
-    /**
-     * Deconstructor: GitOdb
-     */
-    ~GitOdb() {};
-    /**
-     * Function: New
-     *
-     * Parameters:
-     *   args v8::Arguments function call
-     *
-     * Returns:
-     *   v8::Object args.This()
-     */
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
+    static Persistent<Function> constructor_template;
+    static void Initialize (Handle<v8::Object> target);
+
+    git_odb *GetValue();
+
+    static Handle<Value> New(void *raw);
+
+  private:
+    GitOdb(git_odb *raw);
+    ~GitOdb();
+
+    static Handle<Value> New(const Arguments& args);
+
+
+    static Handle<Value> Create(const Arguments& args);
+    static Handle<Value> Open(const Arguments& args);
+    static Handle<Value> AddDiskAlternate(const Arguments& args);
+    static Handle<Value> Read(const Arguments& args);
+    static void ReadWork(uv_work_t* req);
+    static void ReadAfterWork(uv_work_t* req);
+
+    struct ReadBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_odb_object * out;
+      Persistent<Value> dbReference;
+      git_odb * db;
+      Persistent<Value> idReference;
+      const git_oid * id;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> ReadPrefix(const Arguments& args);
+    static Handle<Value> ReadHeader(const Arguments& args);
+    static Handle<Value> Exists(const Arguments& args);
+    static Handle<Value> Refresh(const Arguments& args);
+    static Handle<Value> Write(const Arguments& args);
+    static void WriteWork(uv_work_t* req);
+    static void WriteAfterWork(uv_work_t* req);
+
+    struct WriteBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_oid * out;
+      Persistent<Value> odbReference;
+      git_odb * odb;
+      Persistent<Value> dataReference;
+      const void * data;
+      Persistent<Value> lenReference;
+      size_t len;
+      Persistent<Value> typeReference;
+      git_otype type;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> Hash(const Arguments& args);
+    static Handle<Value> Hashfile(const Arguments& args);
+    git_odb *raw;
 };
 
 #endif

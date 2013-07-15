@@ -1,49 +1,22 @@
-var nodejshint = require( './nodejshint.js' ).test,
+var nodejshint = require('./nodejshint.js').test,
+    fs = require('fs'),
+    path = require('path');
 
-files = [
-  // Test convenience api
-  'lib/blob.js'
-, 'lib/commit.js'
-, 'lib/error.js'
-, 'lib/index.js'
-, 'lib/object.js'
-, 'lib/oid.js'
-, 'lib/ref.js'
-, 'lib/repo.js'
-, 'lib/revwalk.js'
-, 'lib/sig.js'
-, 'lib/tree.js'
-, 'lib/tree_entry.js'
-, 'lib/util.js'
+var files = [];
 
-  // Test unit test
-, 'test/convenience-repo.js'
-, 'test/index.js'
-, 'test/raw-blob.js'
-, 'test/raw-commit.js'
-, 'test/raw-error.js'
-, 'test/raw-object.js'
-, 'test/raw-oid.js'
-, 'test/raw-reference.js'
-, 'test/raw-repo.js'
-, 'test/raw-revwalk.js'
+['lib', 'test', 'example'].forEach(function(dir) {
+  console.log(dir);
+  fs.readdirSync(dir).forEach(function(file) {
+    if (/\.js$/.test(file)) files.push(path.join(dir, file));
+  });
+});
 
-  // Test examples
-, 'example/convenience-repo.js'
-, 'example/convenience-tree.js'
-, 'example/raw-error.js'
-, 'example/raw-oid.js'
-, 'example/raw-repo.js'
-, 'example/raw-revwalk.js'
-];
+nodejshint(files, function(failures) {
+  console.log(failures, 'failures');
 
-nodejshint( files, function( failures ) {
-  console.log( failures, 'failures' );
-
-  if( !files.length ) {
-    process.exit( 0 );
-  }
-  else {
-    process.exit( 1 );
+  if(!files.length) {
+    process.exit(0);
+  } else {
+    process.exit(1);
   }
 });
