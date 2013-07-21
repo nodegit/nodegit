@@ -35,8 +35,9 @@ void GitReference::Initialize(Handle<v8::Object> target) {
 
   NODE_SET_METHOD(tpl, "oidForName", OidForName);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "symbolicTarget", SymbolicTarget);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(tpl, "resolve", Resolve);
   NODE_SET_PROTOTYPE_METHOD(tpl, "setSymbolicTarget", SetSymbolicTarget);
   NODE_SET_PROTOTYPE_METHOD(tpl, "setTarget", setTarget);
@@ -179,7 +180,7 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
 /**
  * @return {String} result
  */
-Handle<Value> GitReference::Name(const Arguments& args) {
+Handle<Value> GitReference::SymbolicTarget(const Arguments& args) {
   HandleScope scope;
   
 
@@ -205,6 +206,22 @@ Handle<Value> GitReference::Type(const Arguments& args) {
 
   Handle<Value> to;
     to = Number::New(result);
+  return scope.Close(to);
+}
+
+/**
+ * @return {String} result
+ */
+Handle<Value> GitReference::Name(const Arguments& args) {
+  HandleScope scope;
+  
+
+  const char * result = git_reference_name(
+    ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
+  );
+
+  Handle<Value> to;
+    to = String::New(result);
   return scope.Close(to);
 }
 

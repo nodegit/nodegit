@@ -8123,8 +8123,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "name",
-        "cppFunctionName": "Name",
+        "jsFunctionName": "symbolicTarget",
+        "cppFunctionName": "SymbolicTarget",
         "return": {
           "cType": "const char *",
           "cppClassName": "String"
@@ -8162,7 +8162,6 @@
             "isSelf": true
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,

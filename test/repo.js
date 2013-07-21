@@ -11,8 +11,8 @@ exports.open = function(test){
   test.expect(2);
 
   // Test invalid repository
-  git.Repo.open('/private/etc/hosts', function(error, repository) {
-    test.equals(error.message, "The `.git` file at '/private/etc/hosts' is malformed");
+  git.Repo.open('../templates', function(error, repository) {
+    test.equals(error.message, "Could not find repository from '../templates'");
 
     // Test valid repository
     git.Repo.open('../.git', function(error, repository) {

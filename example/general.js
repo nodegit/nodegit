@@ -308,7 +308,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // references such as branches, tags and remote references (everything in
   // the .git/refs directory).
 
-  repo.getReferences(git.Reference.Type.Oid | git.Reference.Type.Symbolic, function(error, referenceNames) {
+  repo.getReferences(git.Reference.Type.All, function(error, referenceNames) {
     if (error) throw error;
 
     referenceNames.forEach(function(referenceName) {
