@@ -1,0 +1,148 @@
+<%
+  function isV8Value(cppClassName) {
+    return ["Boolean", "Number", "String", "Integer", "Int32", "Uint32", "Date", "Function"].indexOf(cppClassName) > -1;
+  }
+
+  function cppClassName2v8ValueClassName(cppClassName) {
+    if (isV8Value(cppClassName))
+      return cppClassName;
+    else
+      return 'Object';
+  }
+-%>
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+#include <v8.h>
+#include <node.h>
+#include <string.h>
+
+#include "git2.h"
+
+#include "../include/functions/copy.h"
+
+#include "../include/<%= filename %>"
+<% if (typeof dependencies != 'undefined') { -%>
+<% for (d in dependencies) { -%>
+#include "<%- dependencies[d] %>"
+<% } -%>
+<% } -%>
+
+using namespace v8;
+using namespace node;
+
+<% if (typeof cType != 'undefined') { -%>
+<%- cppClassName %>::<%- cppClassName %>(<%- cType %> *raw) {
+  this->raw = raw;
+}
+
+<%- cppClassName %>::~<%- cppClassName %>() {
+<% if (typeof freeFunctionName != 'undefined') { -%>
+  <%- freeFunctionName %>(this->raw);
+<% } -%>
+}
+
+void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
+  HandleScope scope;
+
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+
+  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->SetClassName(String::NewSymbol("<%- jsClassName %>"));
+
+<% if (typeof functions != 'undefined') { -%>
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+-%>
+<% if (functionInfo.isPrototypeMethod) { -%>
+  NODE_SET_PROTOTYPE_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
+<% } else { -%>
+  NODE_SET_METHOD(tpl, "<%- functionInfo.jsFunctionName %>", <%- functionInfo.cppFunctionName %>);
+<% } -%>
+<% } -%>
+<% } -%>
+
+<% if (typeof fields != 'undefined') { -%>
+<%
+  for (var i in fields) {
+    var fieldInfo = fields[i];
+    if (fieldInfo.ignore) continue;
+-%>
+  NODE_SET_PROTOTYPE_METHOD(tpl, "<%- fieldInfo.jsFunctionName %>", <%- fieldInfo.cppFunctionName %>);
+<% } -%>
+<% } -%>
+
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("<%- jsClassName %>"), constructor_template);
+}
+
+Handle<Value> <%- cppClassName %>::New(const Arguments& args) {
+  HandleScope scope;
+
+  if (args.Length() == 0 || !args[0]->IsExternal()) {
+    return ThrowException(Exception::Error(String::New("<%= cType %> is required.")));
+  }
+
+  <%- cppClassName %>* object = new <%- cppClassName %>((<%= cType%> *) External::Unwrap(args[0]));
+  object->Wrap(args.This());
+
+  return scope.Close(args.This());
+}
+
+Handle<Value> <%- cppClassName %>::New(void *raw) {
+  HandleScope scope;
+  Handle<Value> argv[1] = { External::New((void *)raw) };
+  return scope.Close(<%- cppClassName %>::constructor_template->NewInstance(1, argv));
+}
+
+<%- cType %> *<%- cppClassName %>::GetValue() {
+  return this->raw;
+}
+<% } else { -%>
+void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
+  HandleScope scope;
+
+  Persistent<Object> object = Persistent<Object>::New(Object::New());
+
+<% if (typeof functions != 'undefined') { -%>
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+-%>
+  object->Set(String::NewSymbol("<%- functionInfo.jsFunctionName %>"), FunctionTemplate::New(<%- functionInfo.cppFunctionName %>)->GetFunction());
+<% } -%>
+<% } -%>
+
+  target->Set(String::NewSymbol("<%- jsClassName %>"), object);
+}
+<% } -%>
+
+<% if (typeof functions != 'undefined') { -%>
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+
+    var returns = [];
+    for (var i = 0; i < functionInfo.args.length; i++) {
+      var arg = functionInfo.args[i];
+      if (arg.isReturn) returns.push(arg);
+    }
+    if (!returns.length && !functionInfo.return.isErrorCode && functionInfo.return.cType != "void") returns.push(functionInfo.return);
+-%>
+
+<% if (functionInfo.isAsync) { -%>
+<% include templates/asyncFunction.cc.ejs -%>
+<% } else { -%>
+<% include templates/syncFunction.cc.ejs -%>
+<% } -%>
+<% } -%>
+<% } -%>
+<% include templates/fields.cc.ejs -%>
+
+<% if (typeof cType != 'undefined') { -%>
+Persistent<Function> <%- cppClassName %>::constructor_template;
+<% } -%>

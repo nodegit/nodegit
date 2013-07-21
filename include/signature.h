@@ -1,45 +1,42 @@
-/*
- * Copyright 2013, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 
-#ifndef GitSignature_H
-#define GitSignature_H
+#ifndef GITSIGNATURE_H
+#define GITSIGNATURE_H
 
 #include <v8.h>
 #include <node.h>
+#include <string>
 
 #include "git2.h"
 
-#include "repo.h"
-
-using namespace v8;
 using namespace node;
+using namespace v8;
 
 class GitSignature : public ObjectWrap {
   public:
+
     static Persistent<Function> constructor_template;
+    static void Initialize (Handle<v8::Object> target);
 
-    static void Initialize(Handle<v8::Object> target);
+    git_signature *GetValue();
 
-    git_signature* GetValue();
-    void SetValue(git_signature* signature);
+    static Handle<Value> New(void *raw);
 
-  protected:
-    GitSignature() {};
-    ~GitSignature() {};
+  private:
+    GitSignature(git_signature *raw);
+    ~GitSignature();
 
     static Handle<Value> New(const Arguments& args);
-    static Handle<Value> Duplicate(const Arguments& args);
-    static Handle<Value> Free(const Arguments& args);
 
     static Handle<Value> Name(const Arguments& args);
     static Handle<Value> Email(const Arguments& args);
+    static Handle<Value> Time(const Arguments& args);
 
-  private:
-    git_signature* signature;
+    static Handle<Value> Create(const Arguments& args);
+    static Handle<Value> Now(const Arguments& args);
+    git_signature *raw;
 };
 
 #endif

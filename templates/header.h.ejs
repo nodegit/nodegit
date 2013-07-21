@@ -1,0 +1,83 @@
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+
+#ifndef <%- cppClassName.toUpperCase() %>_H
+#define <%- cppClassName.toUpperCase() %>_H
+
+#include <v8.h>
+#include <node.h>
+#include <string>
+
+#include "git2.h"
+
+using namespace node;
+using namespace v8;
+
+class <%- cppClassName %> : public ObjectWrap {
+  public:
+
+    static Persistent<Function> constructor_template;
+    static void Initialize (Handle<v8::Object> target);
+
+<% if (typeof cType != 'undefined') { -%>
+    <%- cType %> *GetValue();
+
+    static Handle<Value> New(void *raw);
+<% } -%>
+
+  private:
+<% if (typeof cType != 'undefined') { -%>
+    <%- cppClassName %>(<%- cType %> *raw);
+    ~<%- cppClassName %>();
+<% } -%>
+
+    static Handle<Value> New(const Arguments& args);
+
+<% if (typeof fields != 'undefined') { -%>
+<%
+  for (var i in fields) {
+    var fieldInfo = fields[i];
+    if (fieldInfo.ignore) continue;
+-%>
+    static Handle<Value> <%- fieldInfo.cppFunctionName %>(const Arguments& args);
+<% } -%>
+<% } -%>
+
+<% if (typeof functions != 'undefined') { -%>
+<%
+  for (var i in functions) {
+    var functionInfo = functions[i];
+    if (functionInfo.ignore) continue;
+-%>
+    static Handle<Value> <%- functionInfo.cppFunctionName %>(const Arguments& args);
+<% if (functionInfo.isAsync) { -%>
+    static void <%- functionInfo.cppFunctionName %>Work(uv_work_t* req);
+    static void <%- functionInfo.cppFunctionName %>AfterWork(uv_work_t* req);
+
+    struct <%- functionInfo.cppFunctionName %>Baton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+-%>
+<% if (arg.isReturn) { -%>
+      <%- arg.cType.replace('**', '*') %> <%- arg.name %>;
+<% } else { -%>
+      Persistent<Value> <%- arg.name %>Reference;
+      <%- arg.cType %> <%- arg.name %>;
+<% } -%>
+<% } -%>
+      Persistent<Function> callback;
+    };
+<% } -%>
+<% } -%>
+<% } -%>
+<% if (typeof cType != 'undefined') { -%>
+    <%- cType %> *raw;
+<% } -%>
+};
+
+#endif
