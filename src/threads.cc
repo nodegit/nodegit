@@ -1,54 +1,55 @@
-/*
- * Copyright 2011, Tim Branyen @tbranyen <tim@tabdeveloper.com>
- * @author Michael Robinson @codeofinterest <mike@pagesofinterest.net>
- *
- * Dual licensed under the MIT and GPL licenses.
- */
-
-#include <string.h>
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
 #include <v8.h>
 #include <node.h>
+#include <string.h>
 
 #include "git2.h"
 
+#include "../include/functions/copy.h"
+
 #include "../include/threads.h"
-#include "../include/error.h"
 
 using namespace v8;
 using namespace node;
 
-void GitThreads::Initialize(Handle<Object> target) {
+void GitThreads::Initialize(Handle<v8::Object> target) {
   HandleScope scope;
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Persistent<Object> object = Persistent<Object>::New(Object::New());
 
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Threads"));
+  object->Set(String::NewSymbol("init"), FunctionTemplate::New(Init)->GetFunction());
+  object->Set(String::NewSymbol("shutdown"), FunctionTemplate::New(Shutdown)->GetFunction());
 
-  NODE_SET_PROTOTYPE_METHOD(tpl, "init", Init);
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Threads"), constructor_template);
+  target->Set(String::NewSymbol("Threads"), object);
 }
 
-Handle<Value> GitThreads::New(const Arguments& args) {
-  HandleScope scope;
 
-  GitThreads *threads = new GitThreads();
-
-  threads->Wrap(args.This());
-
-  return scope.Close(args.This());
-}
-
+/**
+ */
 Handle<Value> GitThreads::Init(const Arguments& args) {
   HandleScope scope;
+  
 
-  int returnCode = git_threads_init();
-  if (returnCode) {
-    return GitError::WrapError(giterr_last());
+  int result = git_threads_init(
+  );
+  if (result != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
   }
-  return True();
+
+  return Undefined();
 }
 
-Persistent<Function> GitThreads::constructor_template;
+/**
+ */
+Handle<Value> GitThreads::Shutdown(const Arguments& args) {
+  HandleScope scope;
+  
+
+  git_threads_shutdown(
+  );
+
+  return Undefined();
+}
+
