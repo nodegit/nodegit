@@ -96,8 +96,14 @@ Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -152,7 +158,8 @@ Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+git_repository * from_repo;
+    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
   baton->repo = from_repo;
   baton->entryReference = Persistent<Value>::New(args.This());
   baton->entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
@@ -183,7 +190,11 @@ void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->object_out != NULL) {
     to = GitObject::New((void *)baton->object_out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),

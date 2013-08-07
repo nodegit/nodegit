@@ -23,6 +23,7 @@
 #include "../include/tree.h"
 #include "../include/odb.h"
 #include "../include/index.h"
+#include "node_buffer.h"
 
 using namespace v8;
 using namespace node;
@@ -66,6 +67,8 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "reloadSubmodules", ReloadSubmodules);
   NODE_SET_PROTOTYPE_METHOD(tpl, "delete", Delete);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getReferences", GetReferences);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "createBlobFromBuffer", CreateBlobFromBuffer);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "createBlobFromFile", CreateBlobFromFile);
 
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -115,8 +118,9 @@ Handle<Value> GitRepo::Open(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->pathReference = Persistent<Value>::New(args[0]);
+const char * from_path;
     String::Utf8Value path(args[0]->ToString());
-  const char * from_path = strdup(*path);
+  from_path = strdup(*path);
   baton->path = from_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -144,7 +148,11 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitRepo::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -192,11 +200,13 @@ Handle<Value> GitRepo::Init(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->pathReference = Persistent<Value>::New(args[0]);
+const char * from_path;
     String::Utf8Value path(args[0]->ToString());
-  const char * from_path = strdup(*path);
+  from_path = strdup(*path);
   baton->path = from_path;
   baton->is_bareReference = Persistent<Value>::New(args[1]);
-    unsigned from_is_bare = (unsigned) args[1]->ToBoolean()->Value();
+unsigned from_is_bare;
+    from_is_bare = (unsigned) args[1]->ToBoolean()->Value();
   baton->is_bare = from_is_bare;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -225,7 +235,11 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitRepo::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -300,7 +314,11 @@ Handle<Value> GitRepo::Odb(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitOdb::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -346,7 +364,11 @@ void GitRepo::openIndexAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitIndex::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -391,7 +413,8 @@ Handle<Value> GitRepo::GetBlob(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+const git_oid * from_id;
+    from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -420,7 +443,11 @@ void GitRepo::GetBlobAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->blob != NULL) {
     to = GitBlob::New((void *)baton->blob);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -466,7 +493,8 @@ Handle<Value> GitRepo::GetCommit(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+const git_oid * from_id;
+    from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -495,7 +523,11 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->commit != NULL) {
     to = GitCommit::New((void *)baton->commit);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -564,40 +596,48 @@ Handle<Value> GitRepo::CreateCommit(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->update_refReference = Persistent<Value>::New(args[0]);
+const char * from_update_ref;
   if (args[0]->IsString()) {
     String::Utf8Value update_ref(args[0]->ToString());
-  const char * from_update_ref = strdup(*update_ref);
+  from_update_ref = strdup(*update_ref);
   baton->update_ref = from_update_ref;
   } else {
     baton->update_ref = NULL;
   }
   baton->authorReference = Persistent<Value>::New(args[1]);
-    const git_signature * from_author = ObjectWrap::Unwrap<GitSignature>(args[1]->ToObject())->GetValue();
+const git_signature * from_author;
+    from_author = ObjectWrap::Unwrap<GitSignature>(args[1]->ToObject())->GetValue();
   baton->author = from_author;
   baton->committerReference = Persistent<Value>::New(args[2]);
-    const git_signature * from_committer = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
+const git_signature * from_committer;
+    from_committer = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
   baton->committer = from_committer;
   baton->message_encodingReference = Persistent<Value>::New(args[3]);
+const char * from_message_encoding;
   if (args[3]->IsString()) {
     String::Utf8Value message_encoding(args[3]->ToString());
-  const char * from_message_encoding = strdup(*message_encoding);
+  from_message_encoding = strdup(*message_encoding);
   baton->message_encoding = from_message_encoding;
   } else {
     baton->message_encoding = NULL;
   }
   baton->messageReference = Persistent<Value>::New(args[4]);
+const char * from_message;
     String::Utf8Value message(args[4]->ToString());
-  const char * from_message = strdup(*message);
+  from_message = strdup(*message);
   baton->message = from_message;
   baton->treeReference = Persistent<Value>::New(args[5]);
-    const git_tree * from_tree = ObjectWrap::Unwrap<GitTree>(args[5]->ToObject())->GetValue();
+const git_tree * from_tree;
+    from_tree = ObjectWrap::Unwrap<GitTree>(args[5]->ToObject())->GetValue();
   baton->tree = from_tree;
   baton->parent_countReference = Persistent<Value>::New(args[6]);
-    int from_parent_count = (int) args[6]->ToInt32()->Value();
+int from_parent_count;
+    from_parent_count = (int) args[6]->ToInt32()->Value();
   baton->parent_count = from_parent_count;
   baton->parentsReference = Persistent<Value>::New(args[7]);
+const git_commit ** from_parents;
     Array *tmp_parents = Array::Cast(*args[7]);
-  const git_commit ** from_parents = (const git_commit **)malloc(tmp_parents->Length() * sizeof(const git_commit *));
+  from_parents = (const git_commit **)malloc(tmp_parents->Length() * sizeof(const git_commit *));
   for (unsigned int i = 0; i < tmp_parents->Length(); i++) {
 
     from_parents[i] = ObjectWrap::Unwrap<GitCommit>(tmp_parents->Get(Number::New(static_cast<double>(i)))->ToObject())->GetValue();
@@ -637,7 +677,11 @@ void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->id != NULL) {
     to = GitOid::New((void *)baton->id);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -698,10 +742,12 @@ Handle<Value> GitRepo::GetObject(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+const git_oid * from_id;
+    from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->id = from_id;
   baton->typeReference = Persistent<Value>::New(args[1]);
-    git_otype from_type = (git_otype) args[1]->ToInt32()->Value();
+git_otype from_type;
+    from_type = (git_otype) args[1]->ToInt32()->Value();
   baton->type = from_type;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -731,7 +777,11 @@ void GitRepo::GetObjectAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->object != NULL) {
     to = GitObject::New((void *)baton->object);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -778,8 +828,9 @@ Handle<Value> GitRepo::GetReference(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->nameReference = Persistent<Value>::New(args[0]);
+const char * from_name;
     String::Utf8Value name(args[0]->ToString());
-  const char * from_name = strdup(*name);
+  from_name = strdup(*name);
   baton->name = from_name;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -808,7 +859,11 @@ void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitReference::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -853,11 +908,14 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+const char * from_name;
   String::Utf8Value name(args[0]->ToString());
-  const char * from_name = strdup(*name);
+  from_name = strdup(*name);
+const char * from_target;
   String::Utf8Value target(args[1]->ToString());
-  const char * from_target = strdup(*target);
-  int from_force = (int) args[2]->ToInt32()->Value();
+  from_target = strdup(*target);
+int from_force;
+  from_force = (int) args[2]->ToInt32()->Value();
 
   int result = git_reference_symbolic_create(
     &out
@@ -873,7 +931,11 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitReference::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -896,10 +958,13 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+const char * from_name;
   String::Utf8Value name(args[0]->ToString());
-  const char * from_name = strdup(*name);
-  const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
-  int from_force = (int) args[2]->ToInt32()->Value();
+  from_name = strdup(*name);
+const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+int from_force;
+  from_force = (int) args[2]->ToInt32()->Value();
 
   int result = git_reference_create(
     &out
@@ -914,7 +979,11 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitReference::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -935,7 +1004,11 @@ Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitRevWalk::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -950,8 +1023,9 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
   }
 
   git_submodule *submodule = NULL;
+const char * from_name;
   String::Utf8Value name(args[0]->ToString());
-  const char * from_name = strdup(*name);
+  from_name = strdup(*name);
 
   int result = git_submodule_lookup(
     &submodule
@@ -964,7 +1038,11 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (submodule != NULL) {
     to = GitSubmodule::New((void *)submodule);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -987,11 +1065,14 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
   }
 
   git_submodule *submodule = NULL;
+const char * from_url;
   String::Utf8Value url(args[0]->ToString());
-  const char * from_url = strdup(*url);
+  from_url = strdup(*url);
+const char * from_path;
   String::Utf8Value path(args[1]->ToString());
-  const char * from_path = strdup(*path);
-  int from_use_gitlink = (int) args[2]->ToInt32()->Value();
+  from_path = strdup(*path);
+int from_use_gitlink;
+  from_use_gitlink = (int) args[2]->ToInt32()->Value();
 
   int result = git_submodule_add_setup(
     &submodule
@@ -1007,7 +1088,11 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (submodule != NULL) {
     to = GitSubmodule::New((void *)submodule);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -1032,7 +1117,8 @@ Handle<Value> GitRepo::GetTag(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+const git_oid * from_id;
+    from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -1061,7 +1147,11 @@ void GitRepo::GetTagAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitTag::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -1124,21 +1214,26 @@ Handle<Value> GitRepo::CreateTag(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->tag_nameReference = Persistent<Value>::New(args[0]);
+const char * from_tag_name;
     String::Utf8Value tag_name(args[0]->ToString());
-  const char * from_tag_name = strdup(*tag_name);
+  from_tag_name = strdup(*tag_name);
   baton->tag_name = from_tag_name;
   baton->targetReference = Persistent<Value>::New(args[1]);
-    const git_object * from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
+const git_object * from_target;
+    from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
   baton->target = from_target;
   baton->taggerReference = Persistent<Value>::New(args[2]);
-    const git_signature * from_tagger = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
+const git_signature * from_tagger;
+    from_tagger = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
   baton->tagger = from_tagger;
   baton->messageReference = Persistent<Value>::New(args[3]);
+const char * from_message;
     String::Utf8Value message(args[3]->ToString());
-  const char * from_message = strdup(*message);
+  from_message = strdup(*message);
   baton->message = from_message;
   baton->forceReference = Persistent<Value>::New(args[4]);
-    int from_force = (int) args[4]->ToInt32()->Value();
+int from_force;
+    from_force = (int) args[4]->ToInt32()->Value();
   baton->force = from_force;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[5]));
 
@@ -1171,7 +1266,11 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->oid != NULL) {
     to = GitOid::New((void *)baton->oid);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -1232,14 +1331,17 @@ Handle<Value> GitRepo::CreateLightweightTag(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->tag_nameReference = Persistent<Value>::New(args[0]);
+const char * from_tag_name;
     String::Utf8Value tag_name(args[0]->ToString());
-  const char * from_tag_name = strdup(*tag_name);
+  from_tag_name = strdup(*tag_name);
   baton->tag_name = from_tag_name;
   baton->targetReference = Persistent<Value>::New(args[1]);
-    const git_object * from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
+const git_object * from_target;
+    from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
   baton->target = from_target;
   baton->forceReference = Persistent<Value>::New(args[2]);
-    int from_force = (int) args[2]->ToInt32()->Value();
+int from_force;
+    from_force = (int) args[2]->ToInt32()->Value();
   baton->force = from_force;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
@@ -1270,7 +1372,11 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->oid != NULL) {
     to = GitOid::New((void *)baton->oid);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -1319,7 +1425,8 @@ Handle<Value> GitRepo::GetTree(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+const git_oid * from_id;
+    from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
   baton->id = from_id;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -1348,7 +1455,11 @@ void GitRepo::GetTreeAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitTree::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -1456,8 +1567,9 @@ Handle<Value> GitRepo::Delete(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->tag_nameReference = Persistent<Value>::New(args[0]);
+const char * from_tag_name;
     String::Utf8Value tag_name(args[0]->ToString());
-  const char * from_tag_name = strdup(*tag_name);
+  from_tag_name = strdup(*tag_name);
   baton->tag_name = from_tag_name;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -1529,8 +1641,9 @@ Handle<Value> GitRepo::GetReferences(const Arguments& args) {
   baton->repoReference = Persistent<Value>::New(args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
   baton->list_flagsReference = Persistent<Value>::New(args[0]);
+unsigned int from_list_flags;
   if (args[0]->IsUint32()) {
-    unsigned int from_list_flags = (unsigned int) args[0]->ToUint32()->Value();
+    from_list_flags = (unsigned int) args[0]->ToUint32()->Value();
   baton->list_flags = from_list_flags;
   } else {
     baton->list_flags = NULL;
@@ -1591,6 +1704,180 @@ void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
 
   git_strarray_free(baton->array);
+  delete baton;
+}
+
+/**
+ * @param {Buffer} buffer
+ * @param {Number} len
+ * @param {Oid} callback
+ */
+Handle<Value> GitRepo::CreateBlobFromBuffer(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsObject()) {
+    return ThrowException(Exception::Error(String::New("Buffer buffer is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsNumber()) {
+    return ThrowException(Exception::Error(String::New("Number len is required.")));
+  }
+
+  if (args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  CreateBlobFromBufferBaton* baton = new CreateBlobFromBufferBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->oid = (git_oid *)malloc(sizeof(git_oid ));
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->bufferReference = Persistent<Value>::New(args[0]);
+const void * from_buffer;
+    from_buffer = Buffer::Data(args[0]->ToObject());
+  baton->buffer = from_buffer;
+  baton->lenReference = Persistent<Value>::New(args[1]);
+size_t from_len;
+    from_len = (size_t) args[1]->ToNumber()->Value();
+  baton->len = from_len;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, CreateBlobFromBufferWork, (uv_after_work_cb)CreateBlobFromBufferAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::CreateBlobFromBufferWork(uv_work_t *req) {
+  CreateBlobFromBufferBaton *baton = static_cast<CreateBlobFromBufferBaton *>(req->data);
+  int result = git_blob_create_frombuffer(
+    baton->oid, 
+    baton->repo, 
+    baton->buffer, 
+    baton->len
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::CreateBlobFromBufferAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  CreateBlobFromBufferBaton *baton = static_cast<CreateBlobFromBufferBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    if (baton->oid != NULL) {
+    to = GitOid::New((void *)baton->oid);
+  } else {
+    to = Null();
+  }
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->bufferReference.Dispose();
+  baton->lenReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
+}
+
+/**
+ * @param {String} path
+ * @param {Oid} callback
+ */
+Handle<Value> GitRepo::CreateBlobFromFile(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String path is required.")));
+  }
+
+  if (args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  CreateBlobFromFileBaton* baton = new CreateBlobFromFileBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->id = (git_oid *)malloc(sizeof(git_oid ));
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->pathReference = Persistent<Value>::New(args[0]);
+const char * from_path;
+    String::Utf8Value path(args[0]->ToString());
+  from_path = strdup(*path);
+  baton->path = from_path;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, CreateBlobFromFileWork, (uv_after_work_cb)CreateBlobFromFileAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::CreateBlobFromFileWork(uv_work_t *req) {
+  CreateBlobFromFileBaton *baton = static_cast<CreateBlobFromFileBaton *>(req->data);
+  int result = git_blob_create_fromdisk(
+    baton->id, 
+    baton->repo, 
+    baton->path
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  CreateBlobFromFileBaton *baton = static_cast<CreateBlobFromFileBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    if (baton->id != NULL) {
+    to = GitOid::New((void *)baton->id);
+  } else {
+    to = Null();
+  }
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->pathReference.Dispose();
+  baton->callback.Dispose();
+  free((void *)baton->path);
   delete baton;
 }
 

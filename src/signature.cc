@@ -89,12 +89,16 @@ Handle<Value> GitSignature::Create(const Arguments& args) {
   }
 
   git_signature *out = NULL;
+const char * from_name;
   String::Utf8Value name(args[0]->ToString());
-  const char * from_name = strdup(*name);
+  from_name = strdup(*name);
+const char * from_email;
   String::Utf8Value email(args[1]->ToString());
-  const char * from_email = strdup(*email);
-  git_time_t from_time = (git_time_t) args[2]->ToInt32()->Value();
-  int from_offset = (int) args[3]->ToInt32()->Value();
+  from_email = strdup(*email);
+git_time_t from_time;
+  from_time = (git_time_t) args[2]->ToInt32()->Value();
+int from_offset;
+  from_offset = (int) args[3]->ToInt32()->Value();
 
   int result = git_signature_new(
     &out
@@ -110,7 +114,11 @@ Handle<Value> GitSignature::Create(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitSignature::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -129,10 +137,12 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
   }
 
   git_signature *out = NULL;
+const char * from_name;
   String::Utf8Value name(args[0]->ToString());
-  const char * from_name = strdup(*name);
+  from_name = strdup(*name);
+const char * from_email;
   String::Utf8Value email(args[1]->ToString());
-  const char * from_email = strdup(*email);
+  from_email = strdup(*email);
 
   int result = git_signature_now(
     &out
@@ -146,7 +156,11 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitSignature::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -179,8 +193,14 @@ Handle<Value> GitSignature::Time(const Arguments& args) {
   git_time *when =
     &ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->when;
 
+    if (when != NULL) {
     when = (git_time *)git_time_dup(when);
-  to = GitTime::New((void *)when);
+  }
+  if (when != NULL) {
+    to = GitTime::New((void *)when);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

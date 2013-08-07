@@ -51,6 +51,7 @@ class GitTree : public ObjectWrap {
       const char * path;
       Persistent<Function> callback;
     };
+    static Handle<Value> Builder(const Arguments& args);
     static Handle<Value> DiffTree(const Arguments& args);
     static void DiffTreeWork(uv_work_t* req);
     static void DiffTreeAfterWork(uv_work_t* req);

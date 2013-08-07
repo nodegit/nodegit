@@ -73,8 +73,14 @@ Handle<Value> GitDelta::OldFile(const Arguments& args) {
   git_diff_file *old_file =
     &ObjectWrap::Unwrap<GitDelta>(args.This())->GetValue()->old_file;
 
+    if (old_file != NULL) {
     old_file = (git_diff_file *)git_diff_file_dup(old_file);
-  to = GitDiffFile::New((void *)old_file);
+  }
+  if (old_file != NULL) {
+    to = GitDiffFile::New((void *)old_file);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -85,8 +91,14 @@ Handle<Value> GitDelta::NewFile(const Arguments& args) {
   git_diff_file *new_file =
     &ObjectWrap::Unwrap<GitDelta>(args.This())->GetValue()->new_file;
 
+    if (new_file != NULL) {
     new_file = (git_diff_file *)git_diff_file_dup(new_file);
-  to = GitDiffFile::New((void *)new_file);
+  }
+  if (new_file != NULL) {
+    to = GitDiffFile::New((void *)new_file);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

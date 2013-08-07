@@ -303,162 +303,6 @@
         }
       },
       {
-        "cFunctionName": "git_blob_create_fromworkdir",
-        "args": [
-          {
-            "name": "id",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "relative_path",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "createFromworkdir",
-        "cppFunctionName": "CreateFromworkdir",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_blob_create_fromdisk",
-        "args": [
-          {
-            "name": "id",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid",
-            "shouldAlloc": true,
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "path",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "createFromFile",
-        "cppFunctionName": "CreateFromFile",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_blob_create_fromchunks",
-        "args": [
-          {
-            "name": "id",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "hintpath",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "callback",
-            "cType": "git_blob_chunk_cb",
-            "cppClassName": "BlobChunkCb",
-            "jsClassName": "BlobChunkCb"
-          },
-          {
-            "name": "payload",
-            "cType": "void *",
-            "cppClassName": "void",
-            "jsClassName": "void"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "createFromchunks",
-        "cppFunctionName": "CreateFromchunks",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_blob_create_frombuffer",
-        "args": [
-          {
-            "name": "oid",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid",
-            "shouldAlloc": true,
-            "isReturn": true
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "buffer",
-            "cType": "const void *",
-            "cppClassName": "Buffer",
-            "jsClassName": "Buffer"
-          },
-          {
-            "name": "len",
-            "cType": "size_t",
-            "cppClassName": "Number",
-            "jsClassName": "Number"
-          }
-        ],
-        "isAsync": true,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "createFromBuffer",
-        "cppFunctionName": "CreateFromBuffer",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_blob_is_binary",
         "args": [
           {
@@ -476,8 +320,7 @@
         "cppFunctionName": "IsBinary",
         "return": {
           "cType": "int",
-          "cppClassName": "Boolean",
-          "isErrorCode": true
+          "cppClassName": "Boolean"
         }
       }
     ]
@@ -9695,7 +9538,8 @@
       "../include/signature.h",
       "../include/tree.h",
       "../include/odb.h",
-      "../include/index.h"
+      "../include/index.h",
+      "node_buffer.h"
     ],
     "jsClassName": "Repo",
     "cppClassName": "GitRepo",
@@ -11847,6 +11691,170 @@
         "isPrototypeMethod": true,
         "jsFunctionName": "getReferences",
         "cppFunctionName": "GetReferences",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_blob_create_frombuffer",
+        "args": [
+          {
+            "name": "oid",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "shouldAlloc": true,
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "buffer",
+            "cType": "const void *",
+            "cppClassName": "Buffer",
+            "jsClassName": "Buffer"
+          },
+          {
+            "name": "len",
+            "cType": "size_t",
+            "cppClassName": "Number",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createBlobFromBuffer",
+        "cppFunctionName": "CreateBlobFromBuffer",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_blob_create_fromworkdir",
+        "args": [
+          {
+            "name": "id",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "shouldAlloc": true,
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "relative_path",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createBlobFromWorkdir",
+        "cppFunctionName": "CreateBlobFromWorkdir",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_blob_create_fromdisk",
+        "args": [
+          {
+            "name": "id",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "shouldAlloc": true,
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "path",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createBlobFromFile",
+        "cppFunctionName": "CreateBlobFromFile",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_blob_create_fromchunks",
+        "args": [
+          {
+            "name": "id",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "shouldAlloc": true,
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "hintpath",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "callback",
+            "cType": "git_blob_chunk_cb",
+            "cppClassName": "BlobChunkCb",
+            "jsClassName": "BlobChunkCb"
+          },
+          {
+            "name": "payload",
+            "cType": "void *",
+            "cppClassName": "void",
+            "jsClassName": "void"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "createBlobFromChunks",
+        "cppFunctionName": "CreateBlobFromChunks",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -14285,6 +14293,7 @@
       "../include/tree_entry.h",
       "../include/diff_list.h",
       "../include/diff_options.h",
+      "../include/tree_builder.h",
       "../include/index.h"
     ],
     "jsClassName": "Tree",
@@ -14505,256 +14514,22 @@
             "name": "out",
             "isReturn": true,
             "cType": "git_treebuilder **",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder"
           },
           {
             "name": "source",
             "cType": "const git_tree *",
             "cppClassName": "GitTree",
-            "jsClassName": "Tree"
+            "jsClassName": "Tree",
+            "isSelf": true
           }
         ],
-        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderCreate",
-        "cppFunctionName": "GitTreebuilderCreate",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_clear",
-        "args": [
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderClear",
-        "cppFunctionName": "GitTreebuilderClear",
-        "return": {
-          "cType": "void",
-          "cppClassName": "void"
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_entrycount",
-        "args": [
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderEntrycount",
-        "cppFunctionName": "GitTreebuilderEntrycount",
-        "return": {
-          "cType": "unsigned int",
-          "cppClassName": "Uint32"
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_free",
-        "args": [
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "isFree": true,
-        "jsFunctionName": "gitTreebuilderFree",
-        "cppFunctionName": "GitTreebuilderFree",
-        "return": {
-          "cType": "void",
-          "cppClassName": "void"
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_get",
-        "args": [
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          },
-          {
-            "name": "filename",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderGet",
-        "cppFunctionName": "GitTreebuilderGet",
-        "return": {
-          "cType": "const git_tree_entry *",
-          "cppClassName": "GitTreeEntry",
-          "copy": "git_tree_entry_dup"
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_insert",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "const git_tree_entry **",
-            "cppClassName": "GitTreeEntry",
-            "jsClassName": "TreeEntry"
-          },
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          },
-          {
-            "name": "filename",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "id",
-            "cType": "const git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "filemode",
-            "cType": "git_filemode_t",
-            "cppClassName": "FilemodeT",
-            "jsClassName": "FilemodeT"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderInsert",
-        "cppFunctionName": "GitTreebuilderInsert",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_remove",
-        "args": [
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          },
-          {
-            "name": "filename",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderRemove",
-        "cppFunctionName": "GitTreebuilderRemove",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_filter",
-        "args": [
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          },
-          {
-            "name": "filter",
-            "cType": "git_treebuilder_filter_cb",
-            "cppClassName": "TreebuilderFilterCb",
-            "jsClassName": "TreebuilderFilterCb"
-          },
-          {
-            "name": "payload",
-            "cType": "void *",
-            "cppClassName": "void",
-            "jsClassName": "void"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderFilter",
-        "cppFunctionName": "GitTreebuilderFilter",
-        "return": {
-          "cType": "void",
-          "cppClassName": "void"
-        }
-      },
-      {
-        "cFunctionName": "git_treebuilder_write",
-        "args": [
-          {
-            "name": "id",
-            "cType": "git_oid *",
-            "cppClassName": "GitOid",
-            "jsClassName": "Oid"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "bld",
-            "cType": "git_treebuilder *",
-            "cppClassName": "Treebuilder",
-            "jsClassName": "Treebuilder"
-          }
-        ],
-        "ignore": true,
-        "isAsync": true,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitTreebuilderWrite",
-        "cppFunctionName": "GitTreebuilderWrite",
+        "isPrototypeMethod": true,
+        "jsFunctionName": "builder",
+        "cppFunctionName": "Builder",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -14932,6 +14707,290 @@
         "isPrototypeMethod": true,
         "jsFunctionName": "diffWorkDir",
         "cppFunctionName": "DiffWorkDir",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      }
+    ]
+  },
+  {
+    "filename": "tree_builder.h",
+    "dependencies": [
+      "../include/repo.h",
+      "../include/oid.h",
+      "../include/tree_entry.h",
+      "../include/tree.h",
+      "../include/diff_list.h",
+      "../include/diff_options.h",
+      "../include/index.h"
+    ],
+    "jsClassName": "TreeBuilder",
+    "cppClassName": "GitTreeBuilder",
+    "cType": "git_treebuilder",
+    "freeFunctionName": "git_treebuilder_free",
+    "functions": [
+      {
+        "cFunctionName": "git_treebuilder_create",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_treebuilder **",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder"
+          },
+          {
+            "name": "source",
+            "cType": "const git_tree *",
+            "cppClassName": "GitTree",
+            "jsClassName": "Tree",
+            "isOptional": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": true,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "create",
+        "cppFunctionName": "Create",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_clear",
+        "args": [
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "clear",
+        "cppFunctionName": "Clear",
+        "return": {
+          "cType": "void",
+          "cppClassName": "void"
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_entrycount",
+        "args": [
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder",
+            "isSelf": true
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "size",
+        "cppFunctionName": "Size",
+        "return": {
+          "cType": "unsigned int",
+          "cppClassName": "Uint32"
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_free",
+        "args": [
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "isFree": true,
+        "jsFunctionName": "treebuilderFree",
+        "cppFunctionName": "GitTreebuilderFree",
+        "return": {
+          "cType": "void",
+          "cppClassName": "void"
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_get",
+        "args": [
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder",
+            "isSelf": true
+          },
+          {
+            "name": "filename",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "get",
+        "cppFunctionName": "Get",
+        "return": {
+          "cType": "const git_tree_entry *",
+          "cppClassName": "GitTreeEntry",
+          "copy": "git_tree_entry_dup"
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_insert",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "const git_tree_entry **",
+            "cppClassName": "GitTreeEntry",
+            "jsClassName": "TreeEntry",
+            "copy": "git_tree_entry_dup"
+          },
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder",
+            "isSelf": true
+          },
+          {
+            "name": "filename",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "id",
+            "cType": "const git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid"
+          },
+          {
+            "name": "filemode",
+            "cType": "git_filemode_t",
+            "cppClassName": "Number",
+            "jsClassName": "Number"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "insert",
+        "cppFunctionName": "Insert",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_remove",
+        "args": [
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder",
+            "isSelf": true
+          },
+          {
+            "name": "filename",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "gitTreebuilderRemove",
+        "cppFunctionName": "GitTreebuilderRemove",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_filter",
+        "args": [
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder",
+            "isSelf": true
+          },
+          {
+            "name": "filter",
+            "cType": "git_treebuilder_filter_cb",
+            "cppClassName": "TreebuilderFilterCb",
+            "jsClassName": "TreebuilderFilterCb"
+          },
+          {
+            "name": "payload",
+            "cType": "void *",
+            "cppClassName": "void",
+            "jsClassName": "void"
+          }
+        ],
+        "ignore": true,
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "filter",
+        "cppFunctionName": "Filter",
+        "return": {
+          "cType": "void",
+          "cppClassName": "void"
+        }
+      },
+      {
+        "cFunctionName": "git_treebuilder_write",
+        "args": [
+          {
+            "name": "id",
+            "cType": "git_oid *",
+            "cppClassName": "GitOid",
+            "jsClassName": "Oid",
+            "shouldAlloc": true,
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository"
+          },
+          {
+            "name": "bld",
+            "cType": "git_treebuilder *",
+            "cppClassName": "GitTreeBuilder",
+            "jsClassName": "TreeBuilder",
+            "isSelf": true
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "write",
+        "cppFunctionName": "Write",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",

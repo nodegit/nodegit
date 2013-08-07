@@ -25,3 +25,38 @@ exports.walk = function(test) {
     });
   });
 };
+
+exports.insert = function(test) {
+  test.expect(1);
+
+  git.Repo.open('../.git', function(error, repo) {
+    repo.getCommit('1e7bc7fba93aabc8c76ebea41918f9ad892141ed', function(error, commit) {
+      commit.getTree(function(error, tree) {
+        var text = "this is a file\n",
+            buffer = new Buffer(text);
+        repo.createBlobFromBuffer(buffer, function(error, blobId) {
+          var builder = tree.builder();
+          builder.insert("lib/baz/bar.txt", blobId, git.TreeEntry.FileMode.Blob);
+          builder.write(function(error, treeId) {
+            repo.getTree(treeId, function(error, tree) {
+              var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60),
+                  committer = git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
+              repo.createCommit(null, author, committer, "message", tree, [commit], function(error, commitId) {
+                repo.getCommit(commitId, function(error, commit) {
+                  commit.getTree(function(error, tree) {
+                    tree.getEntry('lib/baz/bar.txt', function(error, entry) {
+                      entry.getBlob(function(error, blob) {
+                        test.equals(blob.toString(), text);
+                        test.done();
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+};

@@ -71,8 +71,14 @@ Handle<Value> GitIndexEntry::Ctime(const Arguments& args) {
   git_index_time *ctime =
     &ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->ctime;
 
+    if (ctime != NULL) {
     ctime = (git_index_time *)git_index_time_dup(ctime);
-  to = GitIndexTime::New((void *)ctime);
+  }
+  if (ctime != NULL) {
+    to = GitIndexTime::New((void *)ctime);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -83,8 +89,14 @@ Handle<Value> GitIndexEntry::Mtime(const Arguments& args) {
   git_index_time *mtime =
     &ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->mtime;
 
+    if (mtime != NULL) {
     mtime = (git_index_time *)git_index_time_dup(mtime);
-  to = GitIndexTime::New((void *)mtime);
+  }
+  if (mtime != NULL) {
+    to = GitIndexTime::New((void *)mtime);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

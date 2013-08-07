@@ -18,6 +18,7 @@
                 'src/signature.cc',
                 'src/time.cc',
                 'src/tree.cc',
+                'src/tree_builder.cc',
                 'src/tree_entry.cc',
                 'src/diff_find_options.cc',
                 'src/diff_options.cc',

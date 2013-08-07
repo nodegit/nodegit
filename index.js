@@ -29,6 +29,7 @@ require('./lib/revwalk.js');
 require('./lib/tree.js');
 require('./lib/diff_list.js');
 require('./lib/tree_entry.js');
+require('./lib/tree_builder.js');
 
 // Set version
 exports.version = require('./package').version;

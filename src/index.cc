@@ -102,8 +102,9 @@ Handle<Value> GitIndex::Open(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->index_pathReference = Persistent<Value>::New(args[0]);
+const char * from_index_path;
     String::Utf8Value index_path(args[0]->ToString());
-  const char * from_index_path = strdup(*index_path);
+  from_index_path = strdup(*index_path);
   baton->index_path = from_index_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -131,7 +132,11 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitIndex::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -302,7 +307,8 @@ Handle<Value> GitIndex::ReadTree(const Arguments& args) {
   baton->indexReference = Persistent<Value>::New(args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->treeReference = Persistent<Value>::New(args[0]);
-    const git_tree * from_tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
+const git_tree * from_tree;
+    from_tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
   baton->tree = from_tree;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -397,7 +403,11 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitOid::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -460,7 +470,8 @@ Handle<Value> GitIndex::Entry(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number n is required.")));
   }
 
-  size_t from_n = (size_t) args[0]->ToUint32()->Value();
+size_t from_n;
+  from_n = (size_t) args[0]->ToUint32()->Value();
 
   const git_index_entry * result = git_index_get_byindex(
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -468,8 +479,14 @@ Handle<Value> GitIndex::Entry(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_index_entry * )git_index_entry_dup(result);
-  to = GitIndexEntry::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitIndexEntry::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -486,9 +503,11 @@ Handle<Value> GitIndex::Remove(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
+const char * from_path;
   String::Utf8Value path(args[0]->ToString());
-  const char * from_path = strdup(*path);
-  int from_stage = (int) args[1]->ToInt32()->Value();
+  from_path = strdup(*path);
+int from_stage;
+  from_stage = (int) args[1]->ToInt32()->Value();
 
   int result = git_index_remove(
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -516,9 +535,11 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number stage is required.")));
   }
 
+const char * from_dir;
   String::Utf8Value dir(args[0]->ToString());
-  const char * from_dir = strdup(*dir);
-  int from_stage = (int) args[1]->ToInt32()->Value();
+  from_dir = strdup(*dir);
+int from_stage;
+  from_stage = (int) args[1]->ToInt32()->Value();
 
   int result = git_index_remove_directory(
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -553,8 +574,9 @@ Handle<Value> GitIndex::AddBypath(const Arguments& args) {
   baton->indexReference = Persistent<Value>::New(args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
   baton->pathReference = Persistent<Value>::New(args[0]);
+const char * from_path;
     String::Utf8Value path(args[0]->ToString());
-  const char * from_path = strdup(*path);
+  from_path = strdup(*path);
   baton->path = from_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -616,8 +638,9 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
+const char * from_path;
   String::Utf8Value path(args[0]->ToString());
-  const char * from_path = strdup(*path);
+  from_path = strdup(*path);
 
   int result = git_index_remove_bypath(
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -645,9 +668,11 @@ Handle<Value> GitIndex::Find(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-  size_t * from_at_pos = (size_t *) args[0]->ToUint32()->Value();
+size_t * from_at_pos;
+  from_at_pos = (size_t *) args[0]->ToUint32()->Value();
+const char * from_path;
   String::Utf8Value path(args[1]->ToString());
-  const char * from_path = strdup(*path);
+  from_path = strdup(*path);
 
   int result = git_index_find(
     from_at_pos
@@ -670,8 +695,9 @@ Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
+const char * from_path;
   String::Utf8Value path(args[0]->ToString());
-  const char * from_path = strdup(*path);
+  from_path = strdup(*path);
 
   int result = git_index_conflict_remove(
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
@@ -741,13 +767,16 @@ Handle<Value> GitIndex::IndexToWorkdir(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+git_repository * from_repo;
+    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
   baton->repo = from_repo;
   baton->indexReference = Persistent<Value>::New(args[1]);
-    git_index * from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
+git_index * from_index;
+    from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
   baton->index = from_index;
   baton->optsReference = Persistent<Value>::New(args[2]);
-    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+const git_diff_options * from_opts;
+    from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
   baton->opts = from_opts;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
@@ -777,7 +806,11 @@ void GitIndex::IndexToWorkdirAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->diff != NULL) {
     to = GitDiffList::New((void *)baton->diff);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),

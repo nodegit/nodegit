@@ -21,7 +21,16 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     var arg = functionInfo.args[cArg];
     if (arg.isSelf || arg.isReturn) continue;
 -%>
+<%- arg.cType %> from_<%- arg.name %>;
+<% if (arg.isOptional) { -%>
+  if (args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
+<% } -%>
 <% include convertFromV8.cc.ejs -%>
+<% if (arg.isOptional) { -%>
+  } else {
+    from_<%- arg.name %> = NULL;
+  }
+<% } -%>
 <% jsArg++; -%>
 <% } %>
   <% if (returns.length || functionInfo.return.isErrorCode) { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(

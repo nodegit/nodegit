@@ -81,8 +81,14 @@ Handle<Value> GitPatch::Delta(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_diff_delta * )git_diff_delta_dup(result);
-  to = GitDelta::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitDelta::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -155,7 +161,8 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
   const char *header = NULL;
   size_t header_len = NULL;
   size_t lines_in_hunk = NULL;
-  size_t from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
+size_t from_hunk_idx;
+  from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
 
   int result = git_diff_patch_get_hunk(
     &range
@@ -171,8 +178,14 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
 
   Handle<Object> toReturn = Object::New();
   Handle<Value> to;
-      range = (const git_diff_range * )git_diff_range_dup(range);
-  to = GitDiffRange::New((void *)range);
+      if (range != NULL) {
+    range = (const git_diff_range * )git_diff_range_dup(range);
+  }
+  if (range != NULL) {
+    to = GitDiffRange::New((void *)range);
+  } else {
+    to = Null();
+  }
     toReturn->Set(String::NewSymbol("range"), to);
 
       to = String::New(header);
@@ -197,7 +210,8 @@ Handle<Value> GitPatch::Lines(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
   }
 
-  size_t from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
+size_t from_hunk_idx;
+  from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
 
   int result = git_diff_patch_num_lines_in_hunk(
     ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
@@ -232,8 +246,10 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
   size_t content_len = NULL;
   int old_lineno = NULL;
   int new_lineno = NULL;
-  size_t from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
-  size_t from_line_of_hunk = (size_t) args[1]->ToUint32()->Value();
+size_t from_hunk_idx;
+  from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
+size_t from_line_of_hunk;
+  from_line_of_hunk = (size_t) args[1]->ToUint32()->Value();
 
   int result = git_diff_patch_get_line_in_hunk(
     &line_origin

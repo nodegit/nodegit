@@ -284,6 +284,38 @@ class GitRepo : public ObjectWrap {
       unsigned int list_flags;
       Persistent<Function> callback;
     };
+    static Handle<Value> CreateBlobFromBuffer(const Arguments& args);
+    static void CreateBlobFromBufferWork(uv_work_t* req);
+    static void CreateBlobFromBufferAfterWork(uv_work_t* req);
+
+    struct CreateBlobFromBufferBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_oid * oid;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> bufferReference;
+      const void * buffer;
+      Persistent<Value> lenReference;
+      size_t len;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> CreateBlobFromFile(const Arguments& args);
+    static void CreateBlobFromFileWork(uv_work_t* req);
+    static void CreateBlobFromFileAfterWork(uv_work_t* req);
+
+    struct CreateBlobFromFileBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_oid * id;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> pathReference;
+      const char * path;
+      Persistent<Function> callback;
+    };
     git_repository *raw;
 };
 

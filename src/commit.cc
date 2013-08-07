@@ -87,8 +87,14 @@ Handle<Value> GitCommit::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -168,8 +174,14 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_signature * )git_signature_dup(result);
-  to = GitSignature::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitSignature::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -185,8 +197,14 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_signature * )git_signature_dup(result);
-  to = GitSignature::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitSignature::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -202,8 +220,14 @@ Handle<Value> GitCommit::TreeId(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -233,7 +257,8 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number n is required.")));
   }
 
-  unsigned int from_n = (unsigned int) args[0]->ToUint32()->Value();
+unsigned int from_n;
+  from_n = (unsigned int) args[0]->ToUint32()->Value();
 
   const git_oid * result = git_commit_parent_id(
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
@@ -241,8 +266,14 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -257,7 +288,8 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
   }
 
   git_commit *ancestor = NULL;
-  unsigned int from_n = (unsigned int) args[0]->ToUint32()->Value();
+unsigned int from_n;
+  from_n = (unsigned int) args[0]->ToUint32()->Value();
 
   int result = git_commit_nth_gen_ancestor(
     &ancestor
@@ -269,7 +301,11 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (ancestor != NULL) {
     to = GitCommit::New((void *)ancestor);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

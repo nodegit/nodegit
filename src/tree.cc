@@ -15,6 +15,7 @@
 #include "../include/tree_entry.h"
 #include "../include/diff_list.h"
 #include "../include/diff_options.h"
+#include "../include/tree_builder.h"
 #include "../include/index.h"
 
 using namespace v8;
@@ -42,6 +43,7 @@ void GitTree::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByIndex", EntryByIndex);
   NODE_SET_PROTOTYPE_METHOD(tpl, "entryByOid", EntryByOid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getEntry", GetEntry);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "builder", Builder);
   NODE_SET_PROTOTYPE_METHOD(tpl, "diffTree", DiffTree);
   NODE_SET_PROTOTYPE_METHOD(tpl, "diffIndex", DiffIndex);
   NODE_SET_PROTOTYPE_METHOD(tpl, "diffWorkDir", DiffWorkDir);
@@ -87,8 +89,14 @@ Handle<Value> GitTree::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -118,8 +126,9 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String filename is required.")));
   }
 
+const char * from_filename;
   String::Utf8Value filename(args[0]->ToString());
-  const char * from_filename = strdup(*filename);
+  from_filename = strdup(*filename);
 
   const git_tree_entry * result = git_tree_entry_byname(
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
@@ -128,8 +137,14 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
   free((void *)from_filename);
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_tree_entry * )git_tree_entry_dup(result);
-  to = GitTreeEntry::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitTreeEntry::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -143,7 +158,8 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number idx is required.")));
   }
 
-  size_t from_idx = (size_t) args[0]->ToUint32()->Value();
+size_t from_idx;
+  from_idx = (size_t) args[0]->ToUint32()->Value();
 
   const git_tree_entry * result = git_tree_entry_byindex(
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
@@ -151,8 +167,14 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_tree_entry * )git_tree_entry_dup(result);
-  to = GitTreeEntry::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitTreeEntry::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -166,7 +188,8 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid oid is required.")));
   }
 
-  const git_oid * from_oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+const git_oid * from_oid;
+  from_oid = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
 
   const git_tree_entry * result = git_tree_entry_byoid(
     ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
@@ -174,8 +197,14 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_tree_entry * )git_tree_entry_dup(result);
-  to = GitTreeEntry::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitTreeEntry::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -200,8 +229,9 @@ Handle<Value> GitTree::GetEntry(const Arguments& args) {
   baton->rootReference = Persistent<Value>::New(args.This());
   baton->root = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->pathReference = Persistent<Value>::New(args[0]);
+const char * from_path;
     String::Utf8Value path(args[0]->ToString());
-  const char * from_path = strdup(*path);
+  from_path = strdup(*path);
   baton->path = from_path;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -230,7 +260,11 @@ void GitTree::GetEntryAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitTreeEntry::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -257,6 +291,31 @@ void GitTree::GetEntryAfterWork(uv_work_t *req) {
 }
 
 /**
+ * @return {TreeBuilder} out
+ */
+Handle<Value> GitTree::Builder(const Arguments& args) {
+  HandleScope scope;
+  
+  git_treebuilder *out = NULL;
+
+  int result = git_treebuilder_create(
+    &out
+    , ObjectWrap::Unwrap<GitTree>(args.This())->GetValue()
+  );
+  if (result != GIT_OK) {
+    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+  }
+
+  Handle<Value> to;
+    if (out != NULL) {
+    to = GitTreeBuilder::New((void *)out);
+  } else {
+    to = Null();
+  }
+  return scope.Close(to);
+}
+
+/**
  * @param {Repository} repo
  * @param {Tree} new_tree
  * @param {DiffOptions} opts
@@ -280,16 +339,19 @@ Handle<Value> GitTree::DiffTree(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+git_repository * from_repo;
+    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
   baton->repo = from_repo;
   baton->old_treeReference = Persistent<Value>::New(args.This());
   baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->new_treeReference = Persistent<Value>::New(args[1]);
-    git_tree * from_new_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
+git_tree * from_new_tree;
+    from_new_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
   baton->new_tree = from_new_tree;
   baton->optsReference = Persistent<Value>::New(args[2]);
+const git_diff_options * from_opts;
   if (args[2]->IsObject()) {
-    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+    from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
   baton->opts = from_opts;
   } else {
     baton->opts = NULL;
@@ -323,7 +385,11 @@ void GitTree::DiffTreeAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->diff != NULL) {
     to = GitDiffList::New((void *)baton->diff);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -377,15 +443,18 @@ Handle<Value> GitTree::DiffIndex(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+git_repository * from_repo;
+    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
   baton->repo = from_repo;
   baton->old_treeReference = Persistent<Value>::New(args.This());
   baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->indexReference = Persistent<Value>::New(args[1]);
-    git_index * from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
+git_index * from_index;
+    from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
   baton->index = from_index;
   baton->optsReference = Persistent<Value>::New(args[2]);
-    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+const git_diff_options * from_opts;
+    from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
   baton->opts = from_opts;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
@@ -416,7 +485,11 @@ void GitTree::DiffIndexAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->diff != NULL) {
     to = GitDiffList::New((void *)baton->diff);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -466,12 +539,14 @@ Handle<Value> GitTree::DiffWorkDir(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+git_repository * from_repo;
+    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
   baton->repo = from_repo;
   baton->old_treeReference = Persistent<Value>::New(args.This());
   baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->optsReference = Persistent<Value>::New(args[1]);
-    const git_diff_options * from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[1]->ToObject())->GetValue();
+const git_diff_options * from_opts;
+    from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[1]->ToObject())->GetValue();
   baton->opts = from_opts;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -501,7 +576,11 @@ void GitTree::DiffWorkDirAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->diff != NULL) {
     to = GitDiffList::New((void *)baton->diff);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
