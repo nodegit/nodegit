@@ -84,8 +84,14 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -131,7 +137,11 @@ void GitTag::GetTargetAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->target_out != NULL) {
     to = GitObject::New((void *)baton->target_out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -167,8 +177,14 @@ Handle<Value> GitTag::TargetId(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -216,8 +232,14 @@ Handle<Value> GitTag::Tagger(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_signature * )git_signature_dup(result);
-  to = GitSignature::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitSignature::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -248,7 +270,8 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
   }
 
   git_object *tag_target_out = NULL;
-  const git_tag * from_tag = ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue();
+const git_tag * from_tag;
+  from_tag = ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue();
 
   int result = git_tag_peel(
     &tag_target_out
@@ -259,7 +282,11 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (tag_target_out != NULL) {
     to = GitObject::New((void *)tag_target_out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

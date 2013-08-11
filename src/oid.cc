@@ -73,8 +73,9 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
+const char * from_str;
   String::Utf8Value str(args[0]->ToString());
-  const char * from_str = strdup(*str);
+  from_str = strdup(*str);
 
   int result = git_oid_fromstr(
     out
@@ -86,7 +87,11 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitOid::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

@@ -73,8 +73,14 @@ Handle<Value> GitDiffFile::Oid(const Arguments& args) {
   git_oid *oid =
     &ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->oid;
 
+    if (oid != NULL) {
     oid = (git_oid *)git_oid_dup(oid);
-  to = GitOid::New((void *)oid);
+  }
+  if (oid != NULL) {
+    to = GitOid::New((void *)oid);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

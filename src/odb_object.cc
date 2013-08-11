@@ -78,7 +78,11 @@ Handle<Value> GitOdbObject::Data(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     to = Wrapper::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -126,8 +130,14 @@ Handle<Value> GitOdbObject::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 

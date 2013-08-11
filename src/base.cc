@@ -38,6 +38,7 @@
 #include "../include/odb_object.h"
 #include "../include/odb.h"
 #include "../include/submodule.h"
+#include "../include/tree_builder.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
@@ -64,6 +65,7 @@ extern "C" void init(Handle<v8::Object> target) {
 
   GitTree::Initialize(target);
   GitTreeEntry::Initialize(target);
+  GitTreeBuilder::Initialize(target);
 
   GitDiffRange::Initialize(target);
   GitDiffFindOptions::Initialize(target);

@@ -20,7 +20,13 @@
   to = tmpArray;
 <% } else { -%>
 <% if (to.copy) { -%>
-  <%- toName %> = (<%- to.cType.replace('**', '*') %> <% if (!/\*/.test(to.cType)) {%>*<% } %>)<%- to.copy %>(<%- toName %>);
+  if (<%- toName %> != NULL) {
+    <%- toName %> = (<%- to.cType.replace('**', '*') %> <% if (!/\*/.test(to.cType)) {%>*<% } %>)<%- to.copy %>(<%- toName %>);
+  }
 <% } -%>
-  to = <%- to.cppClassName %>::New((void *)<%- toName %>);
+  if (<%- toName %> != NULL) {
+    to = <%- to.cppClassName %>::New((void *)<%- toName %>);
+  } else {
+    to = Null();
+  }
 <% } -%>

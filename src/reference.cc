@@ -101,11 +101,13 @@ Handle<Value> GitReference::OidForName(const Arguments& args) {
   baton->request.data = baton;
   baton->out = (git_oid *)malloc(sizeof(git_oid ));
   baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+git_repository * from_repo;
+    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
   baton->repo = from_repo;
   baton->nameReference = Persistent<Value>::New(args[1]);
+const char * from_name;
     String::Utf8Value name(args[1]->ToString());
-  const char * from_name = strdup(*name);
+  from_name = strdup(*name);
   baton->name = from_name;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -134,7 +136,11 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitOid::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -172,8 +178,14 @@ Handle<Value> GitReference::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -267,7 +279,11 @@ void GitReference::ResolveAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitReference::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -302,8 +318,9 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   }
 
   git_reference *out = NULL;
+const char * from_target;
   String::Utf8Value target(args[0]->ToString());
-  const char * from_target = strdup(*target);
+  from_target = strdup(*target);
 
   int result = git_reference_symbolic_set_target(
     &out
@@ -316,7 +333,11 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitReference::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -331,7 +352,8 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   }
 
   git_reference *out = NULL;
-  const git_oid * from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
 
   int result = git_reference_set_target(
     &out
@@ -343,7 +365,11 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitReference::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -372,11 +398,13 @@ Handle<Value> GitReference::Rename(const Arguments& args) {
   baton->refReference = Persistent<Value>::New(args.This());
   baton->ref = ObjectWrap::Unwrap<GitReference>(args.This())->GetValue();
   baton->new_nameReference = Persistent<Value>::New(args[0]);
+const char * from_new_name;
     String::Utf8Value new_name(args[0]->ToString());
-  const char * from_new_name = strdup(*new_name);
+  from_new_name = strdup(*new_name);
   baton->new_name = from_new_name;
   baton->forceReference = Persistent<Value>::New(args[1]);
-    int from_force = (int) args[1]->ToInt32()->Value();
+int from_force;
+    from_force = (int) args[1]->ToInt32()->Value();
   baton->force = from_force;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
@@ -406,7 +434,11 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->out != NULL) {
     to = GitReference::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
@@ -539,7 +571,8 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   }
 
   git_object *out = NULL;
-  git_otype from_type = (git_otype) args[0]->ToInt32()->Value();
+git_otype from_type;
+  from_type = (git_otype) args[0]->ToInt32()->Value();
 
   int result = git_reference_peel(
     &out
@@ -551,7 +584,11 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   }
 
   Handle<Value> to;
+    if (out != NULL) {
     to = GitObject::New((void *)out);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -564,8 +601,9 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String refname is required.")));
   }
 
+const char * from_refname;
   String::Utf8Value refname(args[0]->ToString());
-  const char * from_refname = strdup(*refname);
+  from_refname = strdup(*refname);
 
   int result = git_reference_is_valid_name(
     from_refname

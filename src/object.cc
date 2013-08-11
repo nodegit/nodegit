@@ -77,8 +77,14 @@ Handle<Value> GitObject::Oid(const Arguments& args) {
   );
 
   Handle<Value> to;
+    if (result != NULL) {
     result = (const git_oid * )git_oid_dup(result);
-  to = GitOid::New((void *)result);
+  }
+  if (result != NULL) {
+    to = GitOid::New((void *)result);
+  } else {
+    to = Null();
+  }
   return scope.Close(to);
 }
 
@@ -119,7 +125,8 @@ Handle<Value> GitObject::Peel(const Arguments& args) {
   baton->objectReference = Persistent<Value>::New(args.This());
   baton->object = ObjectWrap::Unwrap<GitObject>(args.This())->GetValue();
   baton->target_typeReference = Persistent<Value>::New(args[0]);
-    git_otype from_target_type = (git_otype) args[0]->ToInt32()->Value();
+git_otype from_target_type;
+    from_target_type = (git_otype) args[0]->ToInt32()->Value();
   baton->target_type = from_target_type;
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
@@ -148,7 +155,11 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
+    if (baton->peeled != NULL) {
     to = GitObject::New((void *)baton->peeled);
+  } else {
+    to = Null();
+  }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
