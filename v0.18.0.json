@@ -7944,8 +7944,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "oid",
-        "cppFunctionName": "Oid",
+        "jsFunctionName": "target",
+        "cppFunctionName": "Target",
         "return": {
           "cType": "const git_oid *",
           "cppClassName": "GitOid",

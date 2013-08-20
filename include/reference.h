@@ -46,7 +46,7 @@ class GitReference : public ObjectWrap {
       const char * name;
       Persistent<Function> callback;
     };
-    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> Target(const Arguments& args);
     static Handle<Value> SymbolicTarget(const Arguments& args);
     static Handle<Value> Type(const Arguments& args);
     static Handle<Value> Name(const Arguments& args);

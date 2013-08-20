@@ -34,7 +34,7 @@ void GitReference::Initialize(Handle<v8::Object> target) {
   tpl->SetClassName(String::NewSymbol("Reference"));
 
   NODE_SET_METHOD(tpl, "oidForName", OidForName);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "target", Target);
   NODE_SET_PROTOTYPE_METHOD(tpl, "symbolicTarget", SymbolicTarget);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
@@ -169,7 +169,7 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
 /**
  * @return {GitOid} result
  */
-Handle<Value> GitReference::Oid(const Arguments& args) {
+Handle<Value> GitReference::Target(const Arguments& args) {
   HandleScope scope;
   
 
