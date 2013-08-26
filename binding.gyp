@@ -33,6 +33,7 @@
                 'src/odb_object.cc',
                 'src/odb.cc',
                 'src/submodule.cc',
+                'src/remote.cc',
                 'src/functions/copy.cc',
 
             ],

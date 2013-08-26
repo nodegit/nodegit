@@ -8714,7 +8714,8 @@
   },
   {
     "filename": "remote.h",
-    "ignore": true,
+    "dependencies": [
+      "git2/net.h"],
     "jsClassName": "Remote",
     "cppClassName": "GitRemote",
     "cType": "git_remote",
@@ -8731,6 +8732,7 @@
             "isSelf": true
           }
         ],
+        "ignore": "called automatically by git_remote_create",
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8798,8 +8800,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "pushurl",
-        "cppFunctionName": "Pushurl",
+        "jsFunctionName": "pushUrl",
+        "cppFunctionName": "PushUrl",
         "return": {
           "cType": "const char *",
           "cppClassName": "String"
@@ -8853,8 +8855,8 @@
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "setPushurl",
-        "cppFunctionName": "SetPushurl",
+        "jsFunctionName": "setPushUrl",
+        "cppFunctionName": "SetPushUrl",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",
@@ -8878,6 +8880,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8900,6 +8903,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8928,6 +8932,7 @@
             "jsClassName": "String"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8950,6 +8955,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -8974,11 +8980,11 @@
           {
             "name": "direction",
             "cType": "git_direction",
-            "cppClassName": "Direction",
-            "jsClassName": "Direction"
+            "cppClassName": "Number",
+            "jsClassName": "Number"
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "connect",
@@ -9012,6 +9018,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9046,7 +9053,8 @@
             "jsClassName": "void"
           }
         ],
-        "isAsync": false,
+        "ignore": true,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "download",
@@ -9111,7 +9119,7 @@
             "isSelf": true
           }
         ],
-        "isAsync": false,
+        "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "disconnect",
@@ -9131,6 +9139,7 @@
             "jsClassName": "Remote"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -9207,34 +9216,6 @@
         }
       },
       {
-        "cFunctionName": "git_remote_list",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_strarray *",
-            "cppClassName": "Strarray",
-            "jsClassName": "Strarray"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "list",
-        "cppFunctionName": "List",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_remote_check_cert",
         "args": [
           {
@@ -9284,6 +9265,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9311,6 +9293,7 @@
             "jsClassName": "Transport"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9339,6 +9322,7 @@
             "jsClassName": "RemoteCallbacks"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9361,6 +9345,7 @@
             "isSelf": true
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9374,6 +9359,7 @@
       {
         "cFunctionName": "git_remote_autotag",
         "args": [],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": false,
@@ -9401,6 +9387,7 @@
             "jsClassName": "RemoteAutotagOptionT"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9440,6 +9427,7 @@
             "jsClassName": "void"
           }
         ],
+        "ignore": true,
         "isAsync": false,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9539,6 +9527,7 @@
       "../include/tree.h",
       "../include/odb.h",
       "../include/index.h",
+      "../include/remote.h",
       "node_buffer.h"
     ],
     "jsClassName": "Repo",
@@ -11044,7 +11033,6 @@
             "jsClassName": "String"
           }
         ],
-        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -11860,7 +11848,40 @@
           "cppClassName": "Int32",
           "isErrorCode": true
         }
-      }
+      },
+      {
+        "cFunctionName": "git_remote_list",
+        "args": [
+          {
+            "name": "out",
+            "cType": "git_strarray *",
+            "cppClassName": "Array",
+            "jsClassName": "Array",
+            "freeFunctionName": "git_strarray_free",
+            "size": "count",
+            "key": "strings",
+            "shouldAlloc": true,
+            "isReturn": true
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getRemotes",
+        "cppFunctionName": "GetRemotes",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      }      
     ]
   },
   {

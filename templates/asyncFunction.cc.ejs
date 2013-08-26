@@ -53,7 +53,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 
 void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req) {
   <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
-  <%- functionInfo.return.cType %> result = <%- functionInfo.cFunctionName %>(
+  <% if (functionInfo.return.cType != "void" || functionInfo.return.isErrorCode) { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(
 <%
   for (var i = 0; i < functionInfo.args.length; i++) {
     var arg = functionInfo.args[i];
@@ -66,7 +66,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req
   if (result != GIT_OK) {
     baton->error = giterr_last();
   }
-<% } else { -%>
+<% } else if (functionInfo.return.cType != "void") { -%>
   baton->result = result;
 <% } -%>
 }

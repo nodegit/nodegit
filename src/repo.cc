@@ -23,6 +23,7 @@
 #include "../include/tree.h"
 #include "../include/odb.h"
 #include "../include/index.h"
+#include "../include/remote.h"
 #include "node_buffer.h"
 
 using namespace v8;
@@ -57,6 +58,7 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "getReference", GetReference);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createSymbolicReference", CreateSymbolicReference);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createReference", CreateReference);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "addRemote", AddRemote);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createRevWalk", CreateRevWalk);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getSubmodule", GetSubmodule);
   NODE_SET_PROTOTYPE_METHOD(tpl, "addSubmodule", AddSubmodule);
@@ -69,6 +71,7 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "getReferences", GetReferences);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createBlobFromBuffer", CreateBlobFromBuffer);
   NODE_SET_PROTOTYPE_METHOD(tpl, "createBlobFromFile", CreateBlobFromFile);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "getRemotes", GetRemotes);
 
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -988,6 +991,100 @@ int from_force;
 }
 
 /**
+ * @param {String} name
+ * @param {String} url
+ * @param {Remote} callback
+ */
+Handle<Value> GitRepo::AddRemote(const Arguments& args) {
+  HandleScope scope;
+      if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String name is required.")));
+  }
+  if (args.Length() == 1 || !args[1]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String url is required.")));
+  }
+
+  if (args.Length() == 2 || !args[2]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  AddRemoteBaton* baton = new AddRemoteBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->nameReference = Persistent<Value>::New(args[0]);
+const char * from_name;
+    String::Utf8Value name(args[0]->ToString());
+  from_name = strdup(*name);
+  baton->name = from_name;
+  baton->urlReference = Persistent<Value>::New(args[1]);
+const char * from_url;
+    String::Utf8Value url(args[1]->ToString());
+  from_url = strdup(*url);
+  baton->url = from_url;
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, AddRemoteWork, (uv_after_work_cb)AddRemoteAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::AddRemoteWork(uv_work_t *req) {
+  AddRemoteBaton *baton = static_cast<AddRemoteBaton *>(req->data);
+  int result = git_remote_create(
+    &baton->out, 
+    baton->repo, 
+    baton->name, 
+    baton->url
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  AddRemoteBaton *baton = static_cast<AddRemoteBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+    if (baton->out != NULL) {
+    to = GitRemote::New((void *)baton->out);
+  } else {
+    to = Null();
+  }
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->nameReference.Dispose();
+  baton->urlReference.Dispose();
+  baton->callback.Dispose();
+  free((void *)baton->name);
+  free((void *)baton->url);
+  delete baton;
+}
+
+/**
  * @return {RevWalk} out
  */
 Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
@@ -1878,6 +1975,80 @@ void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
   baton->pathReference.Dispose();
   baton->callback.Dispose();
   free((void *)baton->path);
+  delete baton;
+}
+
+/**
+ * @param {Array} callback
+ */
+Handle<Value> GitRepo::GetRemotes(const Arguments& args) {
+  HandleScope scope;
+    
+  if (args.Length() == 0 || !args[0]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  GetRemotesBaton* baton = new GetRemotesBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->out = (git_strarray *)malloc(sizeof(git_strarray ));
+  baton->repoReference = Persistent<Value>::New(args.This());
+  baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, GetRemotesWork, (uv_after_work_cb)GetRemotesAfterWork);
+
+  return Undefined();
+}
+
+void GitRepo::GetRemotesWork(uv_work_t *req) {
+  GetRemotesBaton *baton = static_cast<GetRemotesBaton *>(req->data);
+  int result = git_remote_list(
+    baton->out, 
+    baton->repo
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRepo::GetRemotesAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  GetRemotesBaton *baton = static_cast<GetRemotesBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+  Handle<Value> to;
+  
+  Local<Array> tmpArray = Array::New(baton->out->count);
+  for (unsigned int i = 0; i < baton->out->count; i++) {
+    tmpArray->Set(Number::New(i), String::New(baton->out->strings[i]));
+  }
+  to = tmpArray;
+  Handle<Value> result = to;
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->repoReference.Dispose();
+  baton->callback.Dispose();
+
+  git_strarray_free(baton->out);
   delete baton;
 }
 

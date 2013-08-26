@@ -39,6 +39,7 @@
 #include "../include/odb.h"
 #include "../include/submodule.h"
 #include "../include/tree_builder.h"
+#include "../include/remote.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;

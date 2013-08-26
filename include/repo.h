@@ -168,6 +168,23 @@ class GitRepo : public ObjectWrap {
     };
     static Handle<Value> CreateSymbolicReference(const Arguments& args);
     static Handle<Value> CreateReference(const Arguments& args);
+    static Handle<Value> AddRemote(const Arguments& args);
+    static void AddRemoteWork(uv_work_t* req);
+    static void AddRemoteAfterWork(uv_work_t* req);
+
+    struct AddRemoteBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_remote * out;
+      Persistent<Value> repoReference;
+      git_repository * repo;
+      Persistent<Value> nameReference;
+      const char * name;
+      Persistent<Value> urlReference;
+      const char * url;
+      Persistent<Function> callback;
+    };
     static Handle<Value> CreateRevWalk(const Arguments& args);
     static Handle<Value> GetSubmodule(const Arguments& args);
     static Handle<Value> AddSubmodule(const Arguments& args);
@@ -314,6 +331,19 @@ class GitRepo : public ObjectWrap {
       git_repository * repo;
       Persistent<Value> pathReference;
       const char * path;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> GetRemotes(const Arguments& args);
+    static void GetRemotesWork(uv_work_t* req);
+    static void GetRemotesAfterWork(uv_work_t* req);
+
+    struct GetRemotesBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_strarray * out;
+      Persistent<Value> repoReference;
+      git_repository * repo;
       Persistent<Function> callback;
     };
     git_repository *raw;

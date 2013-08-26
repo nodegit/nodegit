@@ -31,35 +31,43 @@ class GitRemote : public ObjectWrap {
     static Handle<Value> New(const Arguments& args);
 
 
-    static Handle<Value> Save(const Arguments& args);
     static Handle<Value> Name(const Arguments& args);
     static Handle<Value> Url(const Arguments& args);
-    static Handle<Value> Pushurl(const Arguments& args);
+    static Handle<Value> PushUrl(const Arguments& args);
     static Handle<Value> SetUrl(const Arguments& args);
-    static Handle<Value> SetPushurl(const Arguments& args);
-    static Handle<Value> SetFetchspec(const Arguments& args);
-    static Handle<Value> Fetchspec(const Arguments& args);
-    static Handle<Value> SetPushspec(const Arguments& args);
-    static Handle<Value> Pushspec(const Arguments& args);
+    static Handle<Value> SetPushUrl(const Arguments& args);
     static Handle<Value> Connect(const Arguments& args);
-    static Handle<Value> Ls(const Arguments& args);
-    static Handle<Value> Download(const Arguments& args);
+    static void ConnectWork(uv_work_t* req);
+    static void ConnectAfterWork(uv_work_t* req);
+
+    struct ConnectBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> remoteReference;
+      git_remote * remote;
+      Persistent<Value> directionReference;
+      git_direction direction;
+      Persistent<Function> callback;
+    };
     static Handle<Value> Connected(const Arguments& args);
     static Handle<Value> Stop(const Arguments& args);
     static Handle<Value> Disconnect(const Arguments& args);
-    static Handle<Value> Free(const Arguments& args);
+    static void DisconnectWork(uv_work_t* req);
+    static void DisconnectAfterWork(uv_work_t* req);
+
+    struct DisconnectBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> remoteReference;
+      git_remote * remote;
+      Persistent<Function> callback;
+    };
     static Handle<Value> UpdateTips(const Arguments& args);
     static Handle<Value> ValidUrl(const Arguments& args);
     static Handle<Value> SupportedUrl(const Arguments& args);
-    static Handle<Value> List(const Arguments& args);
     static Handle<Value> CheckCert(const Arguments& args);
-    static Handle<Value> SetCredAcquireCb(const Arguments& args);
-    static Handle<Value> SetTransport(const Arguments& args);
-    static Handle<Value> SetCallbacks(const Arguments& args);
-    static Handle<Value> Stats(const Arguments& args);
-    static Handle<Value> Autotag(const Arguments& args);
-    static Handle<Value> SetAutotag(const Arguments& args);
-    static Handle<Value> Rename(const Arguments& args);
     static Handle<Value> UpdateFetchhead(const Arguments& args);
     static Handle<Value> SetUpdateFetchhead(const Arguments& args);
     static Handle<Value> IsValidName(const Arguments& args);
