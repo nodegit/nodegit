@@ -127,7 +127,11 @@ Handle<Value> GitPatch::Stats(const Arguments& args) {
     , ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Object> toReturn = Object::New();
@@ -161,9 +165,9 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
   const char *header = NULL;
   size_t header_len = NULL;
   size_t lines_in_hunk = NULL;
-size_t from_hunk_idx;
-  from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
-
+  size_t from_hunk_idx;
+            from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
+      
   int result = git_diff_patch_get_hunk(
     &range
     , &header
@@ -173,7 +177,11 @@ size_t from_hunk_idx;
     , from_hunk_idx
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Object> toReturn = Object::New();
@@ -210,9 +218,9 @@ Handle<Value> GitPatch::Lines(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
   }
 
-size_t from_hunk_idx;
-  from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
-
+  size_t from_hunk_idx;
+            from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
+      
   int result = git_diff_patch_num_lines_in_hunk(
     ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
     , from_hunk_idx
@@ -246,11 +254,11 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
   size_t content_len = NULL;
   int old_lineno = NULL;
   int new_lineno = NULL;
-size_t from_hunk_idx;
-  from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
-size_t from_line_of_hunk;
-  from_line_of_hunk = (size_t) args[1]->ToUint32()->Value();
-
+  size_t from_hunk_idx;
+            from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
+        size_t from_line_of_hunk;
+            from_line_of_hunk = (size_t) args[1]->ToUint32()->Value();
+      
   int result = git_diff_patch_get_line_in_hunk(
     &line_origin
     , &content
@@ -262,7 +270,11 @@ size_t from_line_of_hunk;
     , from_line_of_hunk
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Object> toReturn = Object::New();
@@ -298,7 +310,11 @@ Handle<Value> GitPatch::ToString(const Arguments& args) {
     , ObjectWrap::Unwrap<GitPatch>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;

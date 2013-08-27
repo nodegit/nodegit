@@ -106,10 +106,10 @@ Handle<Value> GitRevWalk::Push(const Arguments& args) {
   baton->walkReference = Persistent<Value>::New(args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
   baton->idReference = Persistent<Value>::New(args[0]);
-const git_oid * from_id;
-    from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-  baton->id = from_id;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    const git_oid * from_id;
+            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+          baton->id = from_id;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushWork, (uv_after_work_cb)PushAfterWork);
 
@@ -179,11 +179,11 @@ Handle<Value> GitRevWalk::PushGlob(const Arguments& args) {
   baton->walkReference = Persistent<Value>::New(args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
   baton->globReference = Persistent<Value>::New(args[0]);
-const char * from_glob;
-    String::Utf8Value glob(args[0]->ToString());
-  from_glob = strdup(*glob);
-  baton->glob = from_glob;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    const char * from_glob;
+            String::Utf8Value glob(args[0]->ToString());
+      from_glob = strdup(*glob);
+          baton->glob = from_glob;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushGlobWork, (uv_after_work_cb)PushGlobAfterWork);
 
@@ -317,10 +317,10 @@ Handle<Value> GitRevWalk::Hide(const Arguments& args) {
   baton->walkReference = Persistent<Value>::New(args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
   baton->commit_idReference = Persistent<Value>::New(args[0]);
-const git_oid * from_commit_id;
-    from_commit_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-  baton->commit_id = from_commit_id;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    const git_oid * from_commit_id;
+            from_commit_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+          baton->commit_id = from_commit_id;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, HideWork, (uv_after_work_cb)HideAfterWork);
 
@@ -390,11 +390,11 @@ Handle<Value> GitRevWalk::HideGlob(const Arguments& args) {
   baton->walkReference = Persistent<Value>::New(args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
   baton->globReference = Persistent<Value>::New(args[0]);
-const char * from_glob;
-    String::Utf8Value glob(args[0]->ToString());
-  from_glob = strdup(*glob);
-  baton->glob = from_glob;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    const char * from_glob;
+            String::Utf8Value glob(args[0]->ToString());
+      from_glob = strdup(*glob);
+          baton->glob = from_glob;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, HideGlobWork, (uv_after_work_cb)HideGlobAfterWork);
 
@@ -528,11 +528,11 @@ Handle<Value> GitRevWalk::PushRef(const Arguments& args) {
   baton->walkReference = Persistent<Value>::New(args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
   baton->refnameReference = Persistent<Value>::New(args[0]);
-const char * from_refname;
-    String::Utf8Value refname(args[0]->ToString());
-  from_refname = strdup(*refname);
-  baton->refname = from_refname;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    const char * from_refname;
+            String::Utf8Value refname(args[0]->ToString());
+      from_refname = strdup(*refname);
+          baton->refname = from_refname;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushRefWork, (uv_after_work_cb)PushRefAfterWork);
 
@@ -603,11 +603,11 @@ Handle<Value> GitRevWalk::HideRef(const Arguments& args) {
   baton->walkReference = Persistent<Value>::New(args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
   baton->refnameReference = Persistent<Value>::New(args[0]);
-const char * from_refname;
-    String::Utf8Value refname(args[0]->ToString());
-  from_refname = strdup(*refname);
-  baton->refname = from_refname;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    const char * from_refname;
+            String::Utf8Value refname(args[0]->ToString());
+      from_refname = strdup(*refname);
+          baton->refname = from_refname;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, HideRefWork, (uv_after_work_cb)HideRefAfterWork);
 
@@ -738,9 +738,9 @@ Handle<Value> GitRevWalk::Sorting(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number sort_mode is required.")));
   }
 
-unsigned int from_sort_mode;
-  from_sort_mode = (unsigned int) args[0]->ToUint32()->Value();
-
+  unsigned int from_sort_mode;
+            from_sort_mode = (unsigned int) args[0]->ToUint32()->Value();
+      
   git_revwalk_sorting(
     ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue()
     , from_sort_mode

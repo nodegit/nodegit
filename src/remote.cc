@@ -37,6 +37,7 @@ void GitRemote::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "setUrl", SetUrl);
   NODE_SET_PROTOTYPE_METHOD(tpl, "setPushUrl", SetPushUrl);
   NODE_SET_PROTOTYPE_METHOD(tpl, "connect", Connect);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "download", Download);
   NODE_SET_PROTOTYPE_METHOD(tpl, "connected", Connected);
   NODE_SET_PROTOTYPE_METHOD(tpl, "stop", Stop);
   NODE_SET_PROTOTYPE_METHOD(tpl, "disconnect", Disconnect);
@@ -134,17 +135,21 @@ Handle<Value> GitRemote::SetUrl(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-const char* from_url;
-  String::Utf8Value url(args[0]->ToString());
-  from_url = strdup(*url);
-
+  const char* from_url;
+            String::Utf8Value url(args[0]->ToString());
+      from_url = strdup(*url);
+      
   int result = git_remote_set_url(
     ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_url
   );
   free((void *)from_url);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -159,17 +164,21 @@ Handle<Value> GitRemote::SetPushUrl(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-const char* from_url;
-  String::Utf8Value url(args[0]->ToString());
-  from_url = strdup(*url);
-
+  const char* from_url;
+            String::Utf8Value url(args[0]->ToString());
+      from_url = strdup(*url);
+      
   int result = git_remote_set_pushurl(
     ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_url
   );
   free((void *)from_url);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -195,10 +204,10 @@ Handle<Value> GitRemote::Connect(const Arguments& args) {
   baton->remoteReference = Persistent<Value>::New(args.This());
   baton->remote = ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue();
   baton->directionReference = Persistent<Value>::New(args[0]);
-git_direction from_direction;
-    from_direction = (git_direction) args[0]->ToNumber()->Value();
-  baton->direction = from_direction;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    git_direction from_direction;
+            from_direction = (git_direction) args[0]->ToNumber()->Value();
+          baton->direction = from_direction;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ConnectWork, (uv_after_work_cb)ConnectAfterWork);
 
@@ -249,6 +258,84 @@ void GitRemote::ConnectAfterWork(uv_work_t *req) {
 }
 
 /**
+ * @param {Function} progress_cb
+ * @param {void} payload
+ */
+Handle<Value> GitRemote::Download(const Arguments& args) {
+  HandleScope scope;
+    
+  if (args.Length() == 1 || !args[1]->IsFunction()) {
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+  }
+
+  DownloadBaton* baton = new DownloadBaton;
+  baton->error_code = GIT_OK;
+  baton->error = NULL;
+  baton->request.data = baton;
+  baton->remoteReference = Persistent<Value>::New(args.This());
+  baton->remote = ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue();
+  baton->progress_cbReference = Persistent<Value>::New(args[0]);
+    git_transfer_progress_callback from_progress_cb;
+      if (args[0]->IsFunction()) {
+            Persistent<Function>::New(Local<Function>::Cast(args[0]));
+          } else {
+      from_progress_cb = NULL;
+    }
+      baton->progress_cb = from_progress_cb;
+    baton->payloadReference = Persistent<Value>::New(args[1]);
+      baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+
+  uv_queue_work(uv_default_loop(), &baton->request, DownloadWork, (uv_after_work_cb)DownloadAfterWork);
+
+  return Undefined();
+}
+
+void GitRemote::DownloadWork(uv_work_t *req) {
+  DownloadBaton *baton = static_cast<DownloadBaton *>(req->data);
+  int result = git_remote_download(
+    baton->remote, 
+    baton->progress_cb, 
+    baton->payload
+  );
+  baton->error_code = result;
+  if (result != GIT_OK) {
+    baton->error = giterr_last();
+  }
+}
+
+void GitRemote::DownloadAfterWork(uv_work_t *req) {
+  HandleScope scope;
+  DownloadBaton *baton = static_cast<DownloadBaton *>(req->data);
+
+  TryCatch try_catch;
+  if (baton->error_code == GIT_OK) {
+
+    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> argv[2] = {
+      Local<Value>::New(Null()),
+      result
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+  } else if (baton->error) {
+    Handle<Value> argv[1] = {
+      Exception::Error(String::New(baton->error->message))
+    };
+    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+  } else {
+    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+  }
+
+  if (try_catch.HasCaught()) {
+    node::FatalException(try_catch);
+  }
+  baton->remoteReference.Dispose();
+  baton->progress_cbReference.Dispose();
+  baton->payloadReference.Dispose();
+  baton->callback.Dispose();
+  delete baton;
+}
+
+/**
  */
 Handle<Value> GitRemote::Connected(const Arguments& args) {
   HandleScope scope;
@@ -258,7 +345,11 @@ Handle<Value> GitRemote::Connected(const Arguments& args) {
     ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -346,7 +437,11 @@ Handle<Value> GitRemote::UpdateTips(const Arguments& args) {
     ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -361,16 +456,20 @@ Handle<Value> GitRemote::ValidUrl(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-const char * from_url;
-  String::Utf8Value url(args[0]->ToString());
-  from_url = strdup(*url);
-
+  const char * from_url;
+            String::Utf8Value url(args[0]->ToString());
+      from_url = strdup(*url);
+      
   int result = git_remote_valid_url(
     from_url
   );
   free((void *)from_url);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -385,16 +484,20 @@ Handle<Value> GitRemote::SupportedUrl(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-const char* from_url;
-  String::Utf8Value url(args[0]->ToString());
-  from_url = strdup(*url);
-
+  const char* from_url;
+            String::Utf8Value url(args[0]->ToString());
+      from_url = strdup(*url);
+      
   int result = git_remote_supported_url(
     from_url
   );
   free((void *)from_url);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -409,9 +512,9 @@ Handle<Value> GitRemote::CheckCert(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number check is required.")));
   }
 
-int from_check;
-  from_check = (int) args[0]->ToInt32()->Value();
-
+  int from_check;
+            from_check = (int) args[0]->ToInt32()->Value();
+      
   git_remote_check_cert(
     ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_check
@@ -430,7 +533,11 @@ Handle<Value> GitRemote::UpdateFetchhead(const Arguments& args) {
     ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -445,9 +552,9 @@ Handle<Value> GitRemote::SetUpdateFetchhead(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number value is required.")));
   }
 
-int from_value;
-  from_value = (int) args[0]->ToInt32()->Value();
-
+  int from_value;
+            from_value = (int) args[0]->ToInt32()->Value();
+      
   git_remote_set_update_fetchhead(
     ObjectWrap::Unwrap<GitRemote>(args.This())->GetValue()
     , from_value
@@ -465,16 +572,20 @@ Handle<Value> GitRemote::IsValidName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String remote_name is required.")));
   }
 
-const char * from_remote_name;
-  String::Utf8Value remote_name(args[0]->ToString());
-  from_remote_name = strdup(*remote_name);
-
+  const char * from_remote_name;
+            String::Utf8Value remote_name(args[0]->ToString());
+      from_remote_name = strdup(*remote_name);
+      
   int result = git_remote_is_valid_name(
     from_remote_name
   );
   free((void *)from_remote_name);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();

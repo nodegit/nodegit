@@ -158,10 +158,10 @@ Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->repoReference = Persistent<Value>::New(args[0]);
-git_repository * from_repo;
-    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  baton->repo = from_repo;
-  baton->entryReference = Persistent<Value>::New(args.This());
+    git_repository * from_repo;
+            from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+          baton->repo = from_repo;
+    baton->entryReference = Persistent<Value>::New(args.This());
   baton->entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 

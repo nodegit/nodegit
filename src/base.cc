@@ -40,6 +40,7 @@
 #include "../include/submodule.h"
 #include "../include/tree_builder.h"
 #include "../include/remote.h"
+#include "../include/clone_options.h"
 
 extern "C" void init(Handle<v8::Object> target) {
   HandleScope scope;
@@ -75,6 +76,9 @@ extern "C" void init(Handle<v8::Object> target) {
   GitPatch::Initialize(target);
   GitDiffFile::Initialize(target);
   GitDelta::Initialize(target);
+
+  GitRemote::Initialize(target);
+  GitCloneOptions::Initialize(target);
 
   GitThreads::Initialize(target);
 

@@ -101,15 +101,15 @@ Handle<Value> GitReference::OidForName(const Arguments& args) {
   baton->request.data = baton;
   baton->out = (git_oid *)malloc(sizeof(git_oid ));
   baton->repoReference = Persistent<Value>::New(args[0]);
-git_repository * from_repo;
-    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  baton->repo = from_repo;
-  baton->nameReference = Persistent<Value>::New(args[1]);
-const char * from_name;
-    String::Utf8Value name(args[1]->ToString());
-  from_name = strdup(*name);
-  baton->name = from_name;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+    git_repository * from_repo;
+            from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+          baton->repo = from_repo;
+    baton->nameReference = Persistent<Value>::New(args[1]);
+    const char * from_name;
+            String::Utf8Value name(args[1]->ToString());
+      from_name = strdup(*name);
+          baton->name = from_name;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OidForNameWork, (uv_after_work_cb)OidForNameAfterWork);
 
@@ -318,10 +318,10 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
   }
 
   git_reference *out = NULL;
-const char * from_target;
-  String::Utf8Value target(args[0]->ToString());
-  from_target = strdup(*target);
-
+  const char * from_target;
+            String::Utf8Value target(args[0]->ToString());
+      from_target = strdup(*target);
+      
   int result = git_reference_symbolic_set_target(
     &out
     , ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
@@ -329,7 +329,11 @@ const char * from_target;
   );
   free((void *)from_target);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -352,16 +356,20 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   }
 
   git_reference *out = NULL;
-const git_oid * from_id;
-  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-
+  const git_oid * from_id;
+            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+      
   int result = git_reference_set_target(
     &out
     , ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
     , from_id
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -398,15 +406,15 @@ Handle<Value> GitReference::Rename(const Arguments& args) {
   baton->refReference = Persistent<Value>::New(args.This());
   baton->ref = ObjectWrap::Unwrap<GitReference>(args.This())->GetValue();
   baton->new_nameReference = Persistent<Value>::New(args[0]);
-const char * from_new_name;
-    String::Utf8Value new_name(args[0]->ToString());
-  from_new_name = strdup(*new_name);
-  baton->new_name = from_new_name;
-  baton->forceReference = Persistent<Value>::New(args[1]);
-int from_force;
-    from_force = (int) args[1]->ToInt32()->Value();
-  baton->force = from_force;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+    const char * from_new_name;
+            String::Utf8Value new_name(args[0]->ToString());
+      from_new_name = strdup(*new_name);
+          baton->new_name = from_new_name;
+    baton->forceReference = Persistent<Value>::New(args[1]);
+    int from_force;
+            from_force = (int) args[1]->ToInt32()->Value();
+          baton->force = from_force;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, RenameWork, (uv_after_work_cb)RenameAfterWork);
 
@@ -538,7 +546,11 @@ Handle<Value> GitReference::IsBranch(const Arguments& args) {
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -554,7 +566,11 @@ Handle<Value> GitReference::IsRemote(const Arguments& args) {
     ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -571,16 +587,20 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
   }
 
   git_object *out = NULL;
-git_otype from_type;
-  from_type = (git_otype) args[0]->ToInt32()->Value();
-
+  git_otype from_type;
+            from_type = (git_otype) args[0]->ToInt32()->Value();
+      
   int result = git_reference_peel(
     &out
     , ObjectWrap::Unwrap<GitReference>(args.This())->GetValue()
     , from_type
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -601,16 +621,20 @@ Handle<Value> GitReference::IsValidName(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String refname is required.")));
   }
 
-const char * from_refname;
-  String::Utf8Value refname(args[0]->ToString());
-  from_refname = strdup(*refname);
-
+  const char * from_refname;
+            String::Utf8Value refname(args[0]->ToString());
+      from_refname = strdup(*refname);
+      
   int result = git_reference_is_valid_name(
     from_refname
   );
   free((void *)from_refname);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();

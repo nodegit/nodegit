@@ -125,10 +125,10 @@ Handle<Value> GitObject::Peel(const Arguments& args) {
   baton->objectReference = Persistent<Value>::New(args.This());
   baton->object = ObjectWrap::Unwrap<GitObject>(args.This())->GetValue();
   baton->target_typeReference = Persistent<Value>::New(args[0]);
-git_otype from_target_type;
-    from_target_type = (git_otype) args[0]->ToInt32()->Value();
-  baton->target_type = from_target_type;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    git_otype from_target_type;
+            from_target_type = (git_otype) args[0]->ToInt32()->Value();
+          baton->target_type = from_target_type;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PeelWork, (uv_after_work_cb)PeelAfterWork);
 

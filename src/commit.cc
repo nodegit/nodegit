@@ -257,9 +257,9 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number n is required.")));
   }
 
-unsigned int from_n;
-  from_n = (unsigned int) args[0]->ToUint32()->Value();
-
+  unsigned int from_n;
+            from_n = (unsigned int) args[0]->ToUint32()->Value();
+      
   const git_oid * result = git_commit_parent_id(
     ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
     , from_n
@@ -288,16 +288,20 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
   }
 
   git_commit *ancestor = NULL;
-unsigned int from_n;
-  from_n = (unsigned int) args[0]->ToUint32()->Value();
-
+  unsigned int from_n;
+            from_n = (unsigned int) args[0]->ToUint32()->Value();
+      
   int result = git_commit_nth_gen_ancestor(
     &ancestor
     , ObjectWrap::Unwrap<GitCommit>(args.This())->GetValue()
     , from_n
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;

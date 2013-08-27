@@ -35,7 +35,11 @@ Handle<Value> GitThreads::Init(const Arguments& args) {
   int result = git_threads_init(
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();

@@ -806,56 +806,6 @@
     ]
   },
   {
-    "filename": "clone.h",
-    "ignore": true,
-    "jsClassName": "Clone",
-    "cppClassName": "Clone",
-    "cType": "git_clone",
-    "freeFunctionName": "git_clone_free",
-    "functions": [
-      {
-        "cFunctionName": "git_clone",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_repository **",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository"
-          },
-          {
-            "name": "url",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "local_path",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          },
-          {
-            "name": "options",
-            "cType": "const git_clone_options *",
-            "cppClassName": "CloneOptions",
-            "jsClassName": "CloneOptions"
-          }
-        ],
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": false,
-        "jsFunctionName": "gitClone",
-        "cppFunctionName": "GitClone",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      }
-    ]
-  },
-  {
     "filename": "commit.h",
     "dependencies": [
       "../include/oid.h",
@@ -2794,6 +2744,15 @@
         }
       }
     ]
+  },
+  {
+    "filename": "clone_options.h",
+    "dependencies": [],
+    "jsClassName": "CloneOptions",
+    "cppClassName": "GitCloneOptions",
+    "cType": "git_clone_options",
+    "freeFunctionName": "free",
+    "fields": []
   },
   {
     "filename": "diff_options.h",
@@ -8714,8 +8673,7 @@
   },
   {
     "filename": "remote.h",
-    "dependencies": [
-      "git2/net.h"],
+    "dependencies": ["git2/net.h"],
     "jsClassName": "Remote",
     "cppClassName": "GitRemote",
     "cType": "git_remote",
@@ -9043,17 +9001,18 @@
           {
             "name": "progress_cb",
             "cType": "git_transfer_progress_callback",
-            "cppClassName": "TransferProgressCallback",
-            "jsClassName": "TransferProgressCallback"
+            "cppClassName": "Function",
+            "jsClassName": "Function",
+            "isOptional": true
           },
           {
             "name": "payload",
             "cType": "void *",
             "cppClassName": "void",
-            "jsClassName": "void"
+            "jsClassName": "void",
+            "isPayload": true
           }
         ],
-        "ignore": true,
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
@@ -9528,6 +9487,7 @@
       "../include/odb.h",
       "../include/index.h",
       "../include/remote.h",
+      "../include/clone_options.h",
       "node_buffer.h"
     ],
     "jsClassName": "Repo",
@@ -11087,42 +11047,6 @@
         }
       },
       {
-        "cFunctionName": "git_remote_load",
-        "args": [
-          {
-            "name": "out",
-            "isReturn": true,
-            "cType": "git_remote **",
-            "cppClassName": "GitRemote",
-            "jsClassName": "Remote"
-          },
-          {
-            "name": "repo",
-            "cType": "git_repository *",
-            "cppClassName": "GitRepo",
-            "jsClassName": "Repository",
-            "isSelf": true
-          },
-          {
-            "name": "name",
-            "cType": "const char *",
-            "cppClassName": "String",
-            "jsClassName": "String"
-          }
-        ],
-        "ignore": true,
-        "isAsync": false,
-        "isConstructorMethod": false,
-        "isPrototypeMethod": true,
-        "jsFunctionName": "loadRemote",
-        "cppFunctionName": "LoadRemote",
-        "return": {
-          "cType": "int",
-          "cppClassName": "Int32",
-          "isErrorCode": true
-        }
-      },
-      {
         "cFunctionName": "git_revwalk_new",
         "args": [
           {
@@ -11881,7 +11805,83 @@
           "cppClassName": "Int32",
           "isErrorCode": true
         }
-      }      
+      },
+      {
+        "cFunctionName": "git_clone",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_repository **",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository"
+          },
+          {
+            "name": "url",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "local_path",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          },
+          {
+            "name": "options",
+            "cType": "const git_clone_options *",
+            "cppClassName": "GitCloneOptions",
+            "jsClassName": "CloneOptions",
+            "isOptional": true
+          }
+        ],
+        "isAsync": true,
+        "isConstructorMethod": true,
+        "isPrototypeMethod": false,
+        "jsFunctionName": "clone",
+        "cppFunctionName": "Clone",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      },
+      {
+        "cFunctionName": "git_remote_load",
+        "args": [
+          {
+            "name": "out",
+            "isReturn": true,
+            "cType": "git_remote **",
+            "cppClassName": "GitRemote",
+            "jsClassName": "Remote"
+          },
+          {
+            "name": "repo",
+            "cType": "git_repository *",
+            "cppClassName": "GitRepo",
+            "jsClassName": "Repository",
+            "isSelf": true
+          },
+          {
+            "name": "name",
+            "cType": "const char *",
+            "cppClassName": "String",
+            "jsClassName": "String"
+          }
+        ],
+        "isAsync": false,
+        "isConstructorMethod": false,
+        "isPrototypeMethod": true,
+        "jsFunctionName": "getRemote",
+        "cppFunctionName": "GetRemote",
+        "return": {
+          "cType": "int",
+          "cppClassName": "Int32",
+          "isErrorCode": true
+        }
+      }
     ]
   },
   {

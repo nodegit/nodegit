@@ -50,6 +50,22 @@ class GitRemote : public ObjectWrap {
       git_direction direction;
       Persistent<Function> callback;
     };
+    static Handle<Value> Download(const Arguments& args);
+    static void DownloadWork(uv_work_t* req);
+    static void DownloadAfterWork(uv_work_t* req);
+
+    struct DownloadBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      Persistent<Value> remoteReference;
+      git_remote * remote;
+      Persistent<Value> progress_cbReference;
+      git_transfer_progress_callback progress_cb;
+      Persistent<Value> payloadReference;
+      void * payload;
+      Persistent<Function> callback;
+    };
     static Handle<Value> Connected(const Arguments& args);
     static Handle<Value> Stop(const Arguments& args);
     static Handle<Value> Disconnect(const Arguments& args);

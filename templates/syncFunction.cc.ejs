@@ -19,18 +19,9 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <%
   for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
     var arg = functionInfo.args[cArg];
-    if (arg.isSelf || arg.isReturn) continue;
+    if (arg.isSelf || arg.isReturn || arg.isPayload) continue;
 -%>
-<%- arg.cType %> from_<%- arg.name %>;
-<% if (arg.isOptional) { -%>
-  if (args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
-<% } -%>
 <% include convertFromV8.cc.ejs -%>
-<% if (arg.isOptional) { -%>
-  } else {
-    from_<%- arg.name %> = NULL;
-  }
-<% } -%>
 <% jsArg++; -%>
 <% } %>
   <% if (returns.length || functionInfo.return.isErrorCode) { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(
@@ -66,7 +57,11 @@ from_<%- arg.name %>
 <% } -%>
 <% if (functionInfo.return.isErrorCode) { -%>
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 <% } -%>
 

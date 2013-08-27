@@ -81,15 +81,19 @@ Handle<Value> GitDiffList::Merge(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("DiffList from is required.")));
   }
 
-const git_diff_list * from_from;
-  from_from = ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue();
-
+  const git_diff_list * from_from;
+            from_from = ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue();
+      
   int result = git_diff_merge(
     ObjectWrap::Unwrap<GitDiffList>(args.This())->GetValue()
     , from_from
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -104,15 +108,19 @@ Handle<Value> GitDiffList::FindSimilar(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("DiffFindOptions options is required.")));
   }
 
-git_diff_find_options * from_options;
-  from_options = ObjectWrap::Unwrap<GitDiffFindOptions>(args[0]->ToObject())->GetValue();
-
+  git_diff_find_options * from_options;
+            from_options = ObjectWrap::Unwrap<GitDiffFindOptions>(args[0]->ToObject())->GetValue();
+      
   int result = git_diff_find_similar(
     ObjectWrap::Unwrap<GitDiffList>(args.This())->GetValue()
     , from_options
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -148,11 +156,11 @@ Handle<Value> GitDiffList::NumDeltasOfType(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number type is required.")));
   }
 
-git_diff_list * from_diff;
-  from_diff = ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue();
-git_delta_t from_type;
-  from_type = (git_delta_t) args[1]->ToInt32()->Value();
-
+  git_diff_list * from_diff;
+            from_diff = ObjectWrap::Unwrap<GitDiffList>(args[0]->ToObject())->GetValue();
+        git_delta_t from_type;
+            from_type = (git_delta_t) args[1]->ToInt32()->Value();
+      
   size_t result = git_diff_num_deltas_of_type(
     from_diff
     , from_type
@@ -176,9 +184,9 @@ Handle<Value> GitDiffList::Patch(const Arguments& args) {
 
   git_diff_patch *patch_out = NULL;
   const git_diff_delta *delta_out = NULL;
-size_t from_idx;
-  from_idx = (size_t) args[0]->ToUint32()->Value();
-
+  size_t from_idx;
+            from_idx = (size_t) args[0]->ToUint32()->Value();
+      
   int result = git_diff_get_patch(
     &patch_out
     , &delta_out
@@ -186,7 +194,11 @@ size_t from_idx;
     , from_idx
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Object> toReturn = Object::New();

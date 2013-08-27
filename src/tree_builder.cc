@@ -82,19 +82,23 @@ Handle<Value> GitTreeBuilder::Create(const Arguments& args) {
   HandleScope scope;
   
   git_treebuilder *out = NULL;
-const git_tree * from_source;
-  if (args[0]->IsObject()) {
-  from_source = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
-  } else {
-    from_source = NULL;
-  }
-
+  const git_tree * from_source;
+      if (args[0]->IsObject()) {
+            from_source = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
+          } else {
+      from_source = NULL;
+    }
+  
   int result = git_treebuilder_create(
     &out
     , from_source
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -115,9 +119,9 @@ Handle<Value> GitTreeBuilder::Clear(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("TreeBuilder bld is required.")));
   }
 
-git_treebuilder * from_bld;
-  from_bld = ObjectWrap::Unwrap<GitTreeBuilder>(args[0]->ToObject())->GetValue();
-
+  git_treebuilder * from_bld;
+            from_bld = ObjectWrap::Unwrap<GitTreeBuilder>(args[0]->ToObject())->GetValue();
+      
   git_treebuilder_clear(
     from_bld
   );
@@ -151,10 +155,10 @@ Handle<Value> GitTreeBuilder::Get(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String filename is required.")));
   }
 
-const char * from_filename;
-  String::Utf8Value filename(args[0]->ToString());
-  from_filename = strdup(*filename);
-
+  const char * from_filename;
+            String::Utf8Value filename(args[0]->ToString());
+      from_filename = strdup(*filename);
+      
   const git_tree_entry * result = git_treebuilder_get(
     ObjectWrap::Unwrap<GitTreeBuilder>(args.This())->GetValue()
     , from_filename
@@ -192,14 +196,14 @@ Handle<Value> GitTreeBuilder::Insert(const Arguments& args) {
   }
 
   const git_tree_entry *out = NULL;
-const char * from_filename;
-  String::Utf8Value filename(args[0]->ToString());
-  from_filename = strdup(*filename);
-const git_oid * from_id;
-  from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
-git_filemode_t from_filemode;
-  from_filemode = (git_filemode_t) args[2]->ToNumber()->Value();
-
+  const char * from_filename;
+            String::Utf8Value filename(args[0]->ToString());
+      from_filename = strdup(*filename);
+        const git_oid * from_id;
+            from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+        git_filemode_t from_filemode;
+            from_filemode = (git_filemode_t) args[2]->ToNumber()->Value();
+      
   int result = git_treebuilder_insert(
     &out
     , ObjectWrap::Unwrap<GitTreeBuilder>(args.This())->GetValue()
@@ -209,7 +213,11 @@ git_filemode_t from_filemode;
   );
   free((void *)from_filename);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -233,17 +241,21 @@ Handle<Value> GitTreeBuilder::GitTreebuilderRemove(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String filename is required.")));
   }
 
-const char * from_filename;
-  String::Utf8Value filename(args[0]->ToString());
-  from_filename = strdup(*filename);
-
+  const char * from_filename;
+            String::Utf8Value filename(args[0]->ToString());
+      from_filename = strdup(*filename);
+      
   int result = git_treebuilder_remove(
     ObjectWrap::Unwrap<GitTreeBuilder>(args.This())->GetValue()
     , from_filename
   );
   free((void *)from_filename);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -269,10 +281,10 @@ Handle<Value> GitTreeBuilder::Write(const Arguments& args) {
   baton->request.data = baton;
   baton->id = (git_oid *)malloc(sizeof(git_oid ));
   baton->repoReference = Persistent<Value>::New(args[0]);
-git_repository * from_repo;
-    from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-  baton->repo = from_repo;
-  baton->bldReference = Persistent<Value>::New(args.This());
+    git_repository * from_repo;
+            from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+          baton->repo = from_repo;
+    baton->bldReference = Persistent<Value>::New(args.This());
   baton->bld = ObjectWrap::Unwrap<GitTreeBuilder>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 

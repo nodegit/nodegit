@@ -34,6 +34,7 @@
                 'src/odb.cc',
                 'src/submodule.cc',
                 'src/remote.cc',
+                'src/clone_options.cc',
                 'src/functions/copy.cc',
 
             ],

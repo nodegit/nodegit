@@ -89,17 +89,17 @@ Handle<Value> GitSignature::Create(const Arguments& args) {
   }
 
   git_signature *out = NULL;
-const char * from_name;
-  String::Utf8Value name(args[0]->ToString());
-  from_name = strdup(*name);
-const char * from_email;
-  String::Utf8Value email(args[1]->ToString());
-  from_email = strdup(*email);
-git_time_t from_time;
-  from_time = (git_time_t) args[2]->ToInt32()->Value();
-int from_offset;
-  from_offset = (int) args[3]->ToInt32()->Value();
-
+  const char * from_name;
+            String::Utf8Value name(args[0]->ToString());
+      from_name = strdup(*name);
+        const char * from_email;
+            String::Utf8Value email(args[1]->ToString());
+      from_email = strdup(*email);
+        git_time_t from_time;
+            from_time = (git_time_t) args[2]->ToInt32()->Value();
+        int from_offset;
+            from_offset = (int) args[3]->ToInt32()->Value();
+      
   int result = git_signature_new(
     &out
     , from_name
@@ -110,7 +110,11 @@ int from_offset;
   free((void *)from_name);
   free((void *)from_email);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -137,13 +141,13 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
   }
 
   git_signature *out = NULL;
-const char * from_name;
-  String::Utf8Value name(args[0]->ToString());
-  from_name = strdup(*name);
-const char * from_email;
-  String::Utf8Value email(args[1]->ToString());
-  from_email = strdup(*email);
-
+  const char * from_name;
+            String::Utf8Value name(args[0]->ToString());
+      from_name = strdup(*name);
+        const char * from_email;
+            String::Utf8Value email(args[1]->ToString());
+      from_email = strdup(*email);
+      
   int result = git_signature_now(
     &out
     , from_name
@@ -152,7 +156,11 @@ const char * from_email;
   free((void *)from_name);
   free((void *)from_email);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;

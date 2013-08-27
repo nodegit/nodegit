@@ -159,10 +159,10 @@ Handle<Value> GitSubmodule::AddToIndex(const Arguments& args) {
   baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
   baton->write_indexReference = Persistent<Value>::New(args[0]);
-int from_write_index;
-    from_write_index = (int) args[0]->ToInt32()->Value();
-  baton->write_index = from_write_index;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    int from_write_index;
+            from_write_index = (int) args[0]->ToInt32()->Value();
+          baton->write_index = from_write_index;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, AddToIndexWork, (uv_after_work_cb)AddToIndexAfterWork);
 
@@ -332,17 +332,21 @@ Handle<Value> GitSubmodule::SetUrl(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
-const char * from_url;
-  String::Utf8Value url(args[0]->ToString());
-  from_url = strdup(*url);
-
+  const char * from_url;
+            String::Utf8Value url(args[0]->ToString());
+      from_url = strdup(*url);
+      
   int result = git_submodule_set_url(
     ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue()
     , from_url
   );
   free((void *)from_url);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -414,10 +418,10 @@ Handle<Value> GitSubmodule::Init(const Arguments& args) {
   baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
   baton->overwriteReference = Persistent<Value>::New(args[0]);
-int from_overwrite;
-    from_overwrite = (int) args[0]->ToInt32()->Value();
-  baton->overwrite = from_overwrite;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    int from_overwrite;
+            from_overwrite = (int) args[0]->ToInt32()->Value();
+          baton->overwrite = from_overwrite;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, InitWork, (uv_after_work_cb)InitAfterWork);
 
@@ -681,10 +685,10 @@ Handle<Value> GitSubmodule::Status(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->statusReference = Persistent<Value>::New(args[0]);
-unsigned int * from_status;
-    from_status = (unsigned int *) args[0]->ToInt32()->Value();
-  baton->status = from_status;
-  baton->submoduleReference = Persistent<Value>::New(args.This());
+    unsigned int * from_status;
+            from_status = (unsigned int *) args[0]->ToInt32()->Value();
+          baton->status = from_status;
+    baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
   baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 

@@ -24,19 +24,12 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
   baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
 <% } else { -%>
   baton-><%- arg.name %>Reference = Persistent<Value>::New(args[<%- jsArg %>]);
-<%- arg.cType %> from_<%- arg.name %>;
-<% if (arg.isOptional) { -%>
-  if (args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
-<% } -%>
   <% include convertFromV8.cc.ejs -%>
+  <% if (!arg.isPayload) { -%>
   baton-><%- arg.name %> = from_<%- arg.name %>;
-<% if (arg.isOptional) { -%>
-  } else {
-    baton-><%- arg.name %> = NULL;
-  }
+  <% } -%>
 <% } -%>
-<% } -%>
-<% if (!(arg.isReturn || arg.isSelf)) jsArg++; -%>
+<% if (!(arg.isReturn || arg.isSelf || arg.isPayload)) jsArg++; -%>
 <% } else { -%>
 <% if (arg.shouldAlloc) { -%>
   baton-><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));

@@ -270,15 +270,19 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
   }
 
   git_object *tag_target_out = NULL;
-const git_tag * from_tag;
-  from_tag = ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue();
-
+  const git_tag * from_tag;
+            from_tag = ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue();
+      
   int result = git_tag_peel(
     &tag_target_out
     , from_tag
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;

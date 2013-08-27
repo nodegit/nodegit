@@ -73,17 +73,21 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
-const char * from_str;
-  String::Utf8Value str(args[0]->ToString());
-  from_str = strdup(*str);
-
+  const char * from_str;
+            String::Utf8Value str(args[0]->ToString());
+      from_str = strdup(*str);
+      
   int result = git_oid_fromstr(
     out
     , from_str
   );
   free((void *)from_str);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;

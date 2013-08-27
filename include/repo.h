@@ -346,6 +346,24 @@ class GitRepo : public ObjectWrap {
       git_repository * repo;
       Persistent<Function> callback;
     };
+    static Handle<Value> Clone(const Arguments& args);
+    static void CloneWork(uv_work_t* req);
+    static void CloneAfterWork(uv_work_t* req);
+
+    struct CloneBaton {
+      uv_work_t request;
+      int error_code;
+      const git_error* error;
+      git_repository * out;
+      Persistent<Value> urlReference;
+      const char * url;
+      Persistent<Value> local_pathReference;
+      const char * local_path;
+      Persistent<Value> optionsReference;
+      const git_clone_options * options;
+      Persistent<Function> callback;
+    };
+    static Handle<Value> GetRemote(const Arguments& args);
     git_repository *raw;
 };
 

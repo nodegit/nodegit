@@ -86,7 +86,11 @@ Handle<Value> GitOdb::Create(const Arguments& args) {
     &out
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -109,17 +113,21 @@ Handle<Value> GitOdb::Open(const Arguments& args) {
   }
 
   git_odb *out = NULL;
-const char * from_objects_dir;
-  String::Utf8Value objects_dir(args[0]->ToString());
-  from_objects_dir = strdup(*objects_dir);
-
+  const char * from_objects_dir;
+            String::Utf8Value objects_dir(args[0]->ToString());
+      from_objects_dir = strdup(*objects_dir);
+      
   int result = git_odb_open(
     &out
     , from_objects_dir
   );
   free((void *)from_objects_dir);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -140,17 +148,21 @@ Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-const char * from_path;
-  String::Utf8Value path(args[0]->ToString());
-  from_path = strdup(*path);
-
+  const char * from_path;
+            String::Utf8Value path(args[0]->ToString());
+      from_path = strdup(*path);
+      
   int result = git_odb_add_disk_alternate(
     ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue()
     , from_path
   );
   free((void *)from_path);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -177,10 +189,10 @@ Handle<Value> GitOdb::Read(const Arguments& args) {
   baton->dbReference = Persistent<Value>::New(args.This());
   baton->db = ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue();
   baton->idReference = Persistent<Value>::New(args[0]);
-const git_oid * from_id;
-    from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-  baton->id = from_id;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+    const git_oid * from_id;
+            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+          baton->id = from_id;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ReadWork, (uv_after_work_cb)ReadAfterWork);
 
@@ -255,13 +267,13 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
   }
 
   git_odb_object *out = NULL;
-git_odb * from_db;
-  from_db = ObjectWrap::Unwrap<GitOdb>(args[0]->ToObject())->GetValue();
-const git_oid * from_short_id;
-  from_short_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
-size_t from_len;
-  from_len = (size_t) args[2]->ToUint32()->Value();
-
+  git_odb * from_db;
+            from_db = ObjectWrap::Unwrap<GitOdb>(args[0]->ToObject())->GetValue();
+        const git_oid * from_short_id;
+            from_short_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
+        size_t from_len;
+            from_len = (size_t) args[2]->ToUint32()->Value();
+      
   int result = git_odb_read_prefix(
     &out
     , from_db
@@ -269,7 +281,11 @@ size_t from_len;
     , from_len
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -302,15 +318,15 @@ Handle<Value> GitOdb::ReadHeader(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
 
-size_t * from_len_out;
-  from_len_out = (size_t *) args[0]->ToUint32()->Value();
-git_otype * from_type_out;
-  from_type_out = (git_otype *) args[1]->ToInt32()->Value();
-git_odb * from_db;
-  from_db = ObjectWrap::Unwrap<GitOdb>(args[2]->ToObject())->GetValue();
-const git_oid * from_id;
-  from_id = ObjectWrap::Unwrap<GitOid>(args[3]->ToObject())->GetValue();
-
+  size_t * from_len_out;
+            from_len_out = (size_t *) args[0]->ToUint32()->Value();
+        git_otype * from_type_out;
+            from_type_out = (git_otype *) args[1]->ToInt32()->Value();
+        git_odb * from_db;
+            from_db = ObjectWrap::Unwrap<GitOdb>(args[2]->ToObject())->GetValue();
+        const git_oid * from_id;
+            from_id = ObjectWrap::Unwrap<GitOid>(args[3]->ToObject())->GetValue();
+      
   int result = git_odb_read_header(
     from_len_out
     , from_type_out
@@ -318,7 +334,11 @@ const git_oid * from_id;
     , from_id
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -333,15 +353,19 @@ Handle<Value> GitOdb::Exists(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
 
-const git_oid * from_id;
-  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-
+  const git_oid * from_id;
+            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+      
   int result = git_odb_exists(
     ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue()
     , from_id
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -357,7 +381,11 @@ Handle<Value> GitOdb::Refresh(const Arguments& args) {
     ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue()
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   return Undefined();
@@ -393,19 +421,19 @@ Handle<Value> GitOdb::Write(const Arguments& args) {
   baton->odbReference = Persistent<Value>::New(args.This());
   baton->odb = ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue();
   baton->dataReference = Persistent<Value>::New(args[0]);
-const void * from_data;
-    String::Utf8Value data(args[0]->ToString());
-  from_data = strdup(*data);
-  baton->data = from_data;
-  baton->lenReference = Persistent<Value>::New(args[1]);
-size_t from_len;
-    from_len = (size_t) args[1]->ToUint32()->Value();
-  baton->len = from_len;
-  baton->typeReference = Persistent<Value>::New(args[2]);
-git_otype from_type;
-    from_type = (git_otype) args[2]->ToInt32()->Value();
-  baton->type = from_type;
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+    const void * from_data;
+            String::Utf8Value data(args[0]->ToString());
+      from_data = strdup(*data);
+          baton->data = from_data;
+    baton->lenReference = Persistent<Value>::New(args[1]);
+    size_t from_len;
+            from_len = (size_t) args[1]->ToUint32()->Value();
+          baton->len = from_len;
+    baton->typeReference = Persistent<Value>::New(args[2]);
+    git_otype from_type;
+            from_type = (git_otype) args[2]->ToInt32()->Value();
+          baton->type = from_type;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, WriteWork, (uv_after_work_cb)WriteAfterWork);
 
@@ -485,13 +513,13 @@ Handle<Value> GitOdb::Hash(const Arguments& args) {
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
-const void * from_data;
-  from_data = Buffer::Data(args[0]->ToObject());
-size_t from_len;
-  from_len = (size_t) args[1]->ToUint32()->Value();
-git_otype from_type;
-  from_type = (git_otype) args[2]->ToInt32()->Value();
-
+  const void * from_data;
+            from_data = Buffer::Data(args[0]->ToObject());
+        size_t from_len;
+            from_len = (size_t) args[1]->ToUint32()->Value();
+        git_otype from_type;
+            from_type = (git_otype) args[2]->ToInt32()->Value();
+      
   int result = git_odb_hash(
     out
     , from_data
@@ -499,7 +527,11 @@ git_otype from_type;
     , from_type
   );
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
@@ -526,12 +558,12 @@ Handle<Value> GitOdb::Hashfile(const Arguments& args) {
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
-const char * from_path;
-  String::Utf8Value path(args[0]->ToString());
-  from_path = strdup(*path);
-git_otype from_type;
-  from_type = (git_otype) args[1]->ToInt32()->Value();
-
+  const char * from_path;
+            String::Utf8Value path(args[0]->ToString());
+      from_path = strdup(*path);
+        git_otype from_type;
+            from_type = (git_otype) args[1]->ToInt32()->Value();
+      
   int result = git_odb_hashfile(
     out
     , from_path
@@ -539,7 +571,11 @@ git_otype from_type;
   );
   free((void *)from_path);
   if (result != GIT_OK) {
-    return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    if (giterr_last()) {
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+    } else {
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
+    }
   }
 
   Handle<Value> to;
