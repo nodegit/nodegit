@@ -78,7 +78,7 @@ git_tree *GitTree::GetValue() {
 
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitTree::Oid(const Arguments& args) {
   HandleScope scope;
@@ -101,7 +101,7 @@ Handle<Value> GitTree::Oid(const Arguments& args) {
 }
 
 /**
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitTree::Size(const Arguments& args) {
   HandleScope scope;
@@ -118,7 +118,7 @@ Handle<Value> GitTree::Size(const Arguments& args) {
 
 /**
  * @param {String} filename
- * @return {GitTreeEntry} result
+ * @return {TreeEntry} result
  */
 Handle<Value> GitTree::EntryByName(const Arguments& args) {
   HandleScope scope;
@@ -150,7 +150,7 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
 
 /**
  * @param {Number} idx
- * @return {GitTreeEntry} result
+ * @return {TreeEntry} result
  */
 Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   HandleScope scope;
@@ -180,7 +180,7 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
 
 /**
  * @param {Oid} oid
- * @return {GitTreeEntry} result
+ * @return {TreeEntry} result
  */
 Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   HandleScope scope;

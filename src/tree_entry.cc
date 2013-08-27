@@ -85,7 +85,7 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
 }
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   HandleScope scope;

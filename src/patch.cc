@@ -70,7 +70,7 @@ git_diff_patch *GitPatch::GetValue() {
 
 
 /**
- * @return {GitDelta} result
+ * @return {Delta} result
  */
 Handle<Value> GitPatch::Delta(const Arguments& args) {
   HandleScope scope;
@@ -93,7 +93,7 @@ Handle<Value> GitPatch::Delta(const Arguments& args) {
 }
 
 /**
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitPatch::Size(const Arguments& args) {
   HandleScope scope;
@@ -210,7 +210,7 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
 
 /**
  * @param {Number} hunk_idx
- * @return {Int32} result
+ * @return {Number} result
  */
 Handle<Value> GitPatch::Lines(const Arguments& args) {
   HandleScope scope;

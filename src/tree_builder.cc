@@ -130,7 +130,7 @@ Handle<Value> GitTreeBuilder::Clear(const Arguments& args) {
 }
 
 /**
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitTreeBuilder::Size(const Arguments& args) {
   HandleScope scope;
@@ -147,7 +147,7 @@ Handle<Value> GitTreeBuilder::Size(const Arguments& args) {
 
 /**
  * @param {String} filename
- * @return {GitTreeEntry} result
+ * @return {TreeEntry} result
  */
 Handle<Value> GitTreeBuilder::Get(const Arguments& args) {
   HandleScope scope;

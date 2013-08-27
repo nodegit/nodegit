@@ -66,7 +66,7 @@ git_object *GitObject::GetValue() {
 
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitObject::Oid(const Arguments& args) {
   HandleScope scope;

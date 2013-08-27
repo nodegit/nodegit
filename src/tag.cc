@@ -73,7 +73,7 @@ git_tag *GitTag::GetValue() {
 
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitTag::Oid(const Arguments& args) {
   HandleScope scope;
@@ -166,7 +166,7 @@ void GitTag::GetTargetAfterWork(uv_work_t *req) {
 }
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitTag::TargetId(const Arguments& args) {
   HandleScope scope;
@@ -189,7 +189,7 @@ Handle<Value> GitTag::TargetId(const Arguments& args) {
 }
 
 /**
- * @return {Int32} result
+ * @return {Number} result
  */
 Handle<Value> GitTag::TargetType(const Arguments& args) {
   HandleScope scope;
@@ -221,7 +221,7 @@ Handle<Value> GitTag::Name(const Arguments& args) {
 }
 
 /**
- * @return {GitSignature} result
+ * @return {Signature} result
  */
 Handle<Value> GitTag::Tagger(const Arguments& args) {
   HandleScope scope;

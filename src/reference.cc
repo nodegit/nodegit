@@ -167,7 +167,7 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
 }
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitReference::Target(const Arguments& args) {
   HandleScope scope;

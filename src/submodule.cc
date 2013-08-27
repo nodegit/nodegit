@@ -353,7 +353,7 @@ Handle<Value> GitSubmodule::SetUrl(const Arguments& args) {
 }
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitSubmodule::IndexId(const Arguments& args) {
   HandleScope scope;
@@ -376,7 +376,7 @@ Handle<Value> GitSubmodule::IndexId(const Arguments& args) {
 }
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitSubmodule::HeadId(const Arguments& args) {
   HandleScope scope;

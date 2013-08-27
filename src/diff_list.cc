@@ -127,7 +127,7 @@ Handle<Value> GitDiffList::FindSimilar(const Arguments& args) {
 }
 
 /**
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitDiffList::Size(const Arguments& args) {
   HandleScope scope;
@@ -145,7 +145,7 @@ Handle<Value> GitDiffList::Size(const Arguments& args) {
 /**
  * @param {DiffList} diff
  * @param {Number} type
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitDiffList::NumDeltasOfType(const Arguments& args) {
   HandleScope scope;

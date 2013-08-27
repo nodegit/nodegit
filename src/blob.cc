@@ -69,7 +69,7 @@ git_blob *GitBlob::GetValue() {
 
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitBlob::Oid(const Arguments& args) {
   HandleScope scope;

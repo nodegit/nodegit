@@ -87,7 +87,7 @@ Handle<Value> GitOdbObject::Data(const Arguments& args) {
 }
 
 /**
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitOdbObject::Size(const Arguments& args) {
   HandleScope scope;
@@ -103,7 +103,7 @@ Handle<Value> GitOdbObject::Size(const Arguments& args) {
 }
 
 /**
- * @return {Int32} result
+ * @return {Number} result
  */
 Handle<Value> GitOdbObject::Type(const Arguments& args) {
   HandleScope scope;
@@ -119,7 +119,7 @@ Handle<Value> GitOdbObject::Type(const Arguments& args) {
 }
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitOdbObject::Oid(const Arguments& args) {
   HandleScope scope;

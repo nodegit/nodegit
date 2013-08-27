@@ -432,7 +432,7 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
 }
 
 /**
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitIndex::Size(const Arguments& args) {
   HandleScope scope;
@@ -462,7 +462,7 @@ Handle<Value> GitIndex::Clear(const Arguments& args) {
 
 /**
  * @param {Number} n
- * @return {GitIndexEntry} result
+ * @return {IndexEntry} result
  */
 Handle<Value> GitIndex::Entry(const Arguments& args) {
   HandleScope scope;
@@ -669,7 +669,7 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
 /**
  * @param {Number} at_pos
  * @param {String} path
- * @return {Int32} result
+ * @return {Number} result
  */
 Handle<Value> GitIndex::Find(const Arguments& args) {
   HandleScope scope;
@@ -741,7 +741,7 @@ Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
 }
 
 /**
- * @return {Int32} result
+ * @return {Number} result
  */
 Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   HandleScope scope;

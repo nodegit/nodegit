@@ -76,7 +76,7 @@ git_commit *GitCommit::GetValue() {
 
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitCommit::Oid(const Arguments& args) {
   HandleScope scope;
@@ -147,7 +147,7 @@ Handle<Value> GitCommit::Time(const Arguments& args) {
 }
 
 /**
- * @return {Integer} result
+ * @return {Number} result
  */
 Handle<Value> GitCommit::Offset(const Arguments& args) {
   HandleScope scope;
@@ -163,7 +163,7 @@ Handle<Value> GitCommit::Offset(const Arguments& args) {
 }
 
 /**
- * @return {GitSignature} result
+ * @return {Signature} result
  */
 Handle<Value> GitCommit::Committer(const Arguments& args) {
   HandleScope scope;
@@ -186,7 +186,7 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
 }
 
 /**
- * @return {GitSignature} result
+ * @return {Signature} result
  */
 Handle<Value> GitCommit::Author(const Arguments& args) {
   HandleScope scope;
@@ -209,7 +209,7 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
 }
 
 /**
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitCommit::TreeId(const Arguments& args) {
   HandleScope scope;
@@ -232,7 +232,7 @@ Handle<Value> GitCommit::TreeId(const Arguments& args) {
 }
 
 /**
- * @return {Uint32} result
+ * @return {Number} result
  */
 Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   HandleScope scope;
@@ -249,7 +249,7 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
 
 /**
  * @param {Number} n
- * @return {GitOid} result
+ * @return {Oid} result
  */
 Handle<Value> GitCommit::ParentId(const Arguments& args) {
   HandleScope scope;
