@@ -46,7 +46,7 @@
             ],
 
             'libraries': [
-                '-L<!(pwd)/vendor/libgit2/build',
+                '-Lvendor\\libgit2\\build',
                 '-lgit2'
             ],
 

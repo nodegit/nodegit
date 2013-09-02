@@ -1,30 +1,21 @@
-var async = require('async'),
-    child_process = require('child_process'),
-    spawn = child_process.spawn,
-    path = require('path'),
-    request = require('request'),
-    zlib = require('zlib'),
-    fs = require('fs-extra'),
-    tar = require('tar'),
-    exec = require('child_process').exec;
+// Core Node.js modules.
+var fs = require('fs');
+var path = require('path');
+var zlib = require('zlib');
 
-function passthru() {
-    var args = Array.prototype.slice.call(arguments);
-    var cb = args.splice(-1)[0];
-    var cmd = args.splice(0, 1)[0];
-    var opts = {};
-    if(typeof(args.slice(-1)[0]) === 'object') {
-        opts = args.splice(-1)[0];
-    }
-    var child = spawn(cmd, args, opts);
+// Third-party modules.
+var Q = require('q');
+var request = require('request');
+var tar = require('tar');
+var which = require('which');
 
-    child.stdout.pipe(process.stdout);
-    child.stderr.pipe(process.stderr);
-    child.on('exit', cb);
-}
+// Build options.
+var options = {
+  // Normalize the libgit2 build directory.
+  libgit2build: path.join(__dirname, 'vendor/libgit2/build')
+};
 
 function shpassthru() {
-    var cmd =
     passthru.apply(null, ['/bin/sh', '-c'].concat(Array.prototype.slice.call(arguments)));
 }
 
@@ -34,7 +25,7 @@ function envpassthru() {
 
 var updateSubmodules = function(mainCallback) {
     console.log('[nodegit] Downloading libgit2 dependency.');
-    async.series([
+    async.series([26
         function(callback) {
             envpassthru('git', 'submodule', 'init', callback);
         }, function(callback) {
@@ -62,10 +53,7 @@ var checkoutDependencies = function(mainCallback) {
     });
 };
 
-var libgit2BuildDirectory = path.join(__dirname, 'vendor/libgit2/build');
-
-// The python executable to use when building libgit2
-var pythonExecutable = 'python';
+Q.ninvoke(which, "python2").
 
 async.series([
     function checkPython2Exists(callback) {
