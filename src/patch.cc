@@ -319,6 +319,7 @@ Handle<Value> GitPatch::ToString(const Arguments& args) {
 
   Handle<Value> to;
     to = String::New(string);
+  free(string);
   return scope.Close(to);
 }
 

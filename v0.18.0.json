@@ -3147,7 +3147,8 @@
             "cppClassName": "String",
             "jsClassName": "String",
             "isReturn": true,
-            "comment": "Allocated string; caller must free."
+            "comment": "Allocated string; caller must free.",
+            "freeFunctionName": "free"
           },
           {
             "name": "patch",
@@ -7622,7 +7623,8 @@
           "cType": "char *",
           "cppClassName": "String",
           "comment": "the c-string; NULL if memory is exhausted. Caller must deallocate the string with git__free().",
-          "jsClassName": "String"
+          "jsClassName": "String",
+          "freeFunctionName": "free"
         },
         "description": "<p>Format a git_oid into a newly allocated c-string.</p>\n"
       },

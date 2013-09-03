@@ -5,6 +5,9 @@
 <% } else { -%>
   to = String::New(<%- toName %>);
 <% } -%>
+<% if (to.freeFunctionName) { -%>
+  <%- to.freeFunctionName %>(<%- toName %>);
+<% } -%>
 <% } else if (isV8Value(to.cppClassName)) { -%>
   to = <%- to.cppClassName %>::New(<%- toName %>);
 <% } else if (to.cppClassName == "External") { -%>

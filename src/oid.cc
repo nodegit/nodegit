@@ -112,6 +112,7 @@ Handle<Value> GitOid::Sha(const Arguments& args) {
 
   Handle<Value> to;
     to = String::New(result);
+  free(result);
   return scope.Close(to);
 }
 
