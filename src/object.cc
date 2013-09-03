@@ -166,14 +166,16 @@ void GitObject::PeelAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);

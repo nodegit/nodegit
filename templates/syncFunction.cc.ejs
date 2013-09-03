@@ -57,6 +57,13 @@ from_<%- arg.name %>
 <% } -%>
 <% if (functionInfo.return.isErrorCode) { -%>
   if (result != GIT_OK) {
+<%
+  for (var i = 0; i < functionInfo.args.length; i++) {
+    var arg = functionInfo.args[i];
+    if (!arg.shouldAlloc) continue;
+-%>
+    free(<%= arg.name %>);
+<% } -%>
     if (giterr_last()) {
       return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {

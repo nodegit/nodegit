@@ -83,6 +83,7 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   );
   free((void *)from_str);
   if (result != GIT_OK) {
+    free(out);
     if (giterr_last()) {
       return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {

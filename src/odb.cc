@@ -230,14 +230,16 @@ void GitOdb::ReadAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -473,14 +475,17 @@ void GitOdb::WriteAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->out);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -527,6 +532,7 @@ Handle<Value> GitOdb::Hash(const Arguments& args) {
     , from_type
   );
   if (result != GIT_OK) {
+    free(out);
     if (giterr_last()) {
       return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {
@@ -571,6 +577,7 @@ Handle<Value> GitOdb::Hashfile(const Arguments& args) {
   );
   free((void *)from_path);
   if (result != GIT_OK) {
+    free(out);
     if (giterr_last()) {
       return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {

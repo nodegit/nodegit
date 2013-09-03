@@ -165,14 +165,16 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -252,14 +254,16 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -385,14 +389,16 @@ void GitRepo::openIndexAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -464,14 +470,16 @@ void GitRepo::GetBlobAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -544,14 +552,16 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -698,14 +708,17 @@ void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->id);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -798,14 +811,16 @@ void GitRepo::GetObjectAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -880,14 +895,16 @@ void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1078,14 +1095,16 @@ void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1282,14 +1301,16 @@ void GitRepo::GetTagAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1401,14 +1422,17 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->oid);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1507,14 +1531,17 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->oid);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1590,14 +1617,16 @@ void GitRepo::GetTreeAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1647,21 +1676,22 @@ void GitRepo::ReloadSubmodulesAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1720,21 +1750,22 @@ void GitRepo::DeleteAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1811,14 +1842,17 @@ void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->array);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1903,14 +1937,17 @@ void GitRepo::CreateBlobFromBufferAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->oid);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -1986,14 +2023,17 @@ void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->id);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -2060,14 +2100,17 @@ void GitRepo::GetRemotesAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+        free(baton->out);
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -2159,14 +2202,16 @@ void GitRepo::CloneAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);

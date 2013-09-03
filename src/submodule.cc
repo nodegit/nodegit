@@ -115,21 +115,22 @@ void GitSubmodule::AddFinalizeAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -187,21 +188,22 @@ void GitSubmodule::AddToIndexAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -251,21 +253,22 @@ void GitSubmodule::SaveAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -446,21 +449,22 @@ void GitSubmodule::InitAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -510,21 +514,22 @@ void GitSubmodule::SyncAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -587,14 +592,16 @@ void GitSubmodule::OpenAfterWork(uv_work_t *req) {
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -643,21 +650,22 @@ void GitSubmodule::ReloadAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -715,21 +723,22 @@ void GitSubmodule::StatusAfterWork(uv_work_t *req) {
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-
     Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
       Local<Value>::New(Null()),
       result
     };
     baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-  } else if (baton->error) {
-    Handle<Value> argv[1] = {
-      Exception::Error(String::New(baton->error->message))
-    };
-    baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
   } else {
-    baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
-  }
+    if (baton->error) {
+      Handle<Value> argv[1] = {
+        Exception::Error(String::New(baton->error->message))
+      };
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+    }
+      }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
