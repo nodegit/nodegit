@@ -17,7 +17,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
           buffer = new Buffer("this is a file\n");
       
       builder.insertBlob("/lib/baz.txt", buffer, false)
-      builder.write(function(error, treeId) {
+      builder.write(repo, function(error, treeId) {
         if (error) throw error;
 
         var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
