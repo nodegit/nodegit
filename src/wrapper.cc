@@ -62,17 +62,15 @@ Handle<Value> Wrapper::ToBuffer(const Arguments& args) {
 
   int len = args[0]->ToNumber()->Value();
 
-  Buffer *slowBuffer = Buffer::New(
-    const_cast<char *>(std::string((const char *)const_cast<void *>(ObjectWrap::Unwrap<Wrapper>(args.This())->GetValue())).c_str()),
-    len);
-
   Local<Function> bufferConstructor = Local<Function>::Cast(
     Context::GetCurrent()->Global()->Get(String::New("Buffer"))); 
 
-  Handle<Value> constructorArgs[3] = { slowBuffer->handle_, Integer::New(len), Integer::New(0) };
-  Local<Object> fastBuffer = bufferConstructor->NewInstance(3, constructorArgs);
+  Handle<Value> constructorArgs[1] = { Integer::New(len) };
+  Local<Object> nodeBuffer = bufferConstructor->NewInstance(1, constructorArgs);
 
-  return scope.Close(fastBuffer);
+  memcpy(node::Buffer::Data(nodeBuffer), ObjectWrap::Unwrap<Wrapper>(args.This())->GetValue(), len);
+
+  return scope.Close(nodeBuffer);
 }
 
 
