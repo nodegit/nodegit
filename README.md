@@ -14,9 +14,7 @@ contributors](https://github.com/tbranyen/nodegit/contributors)!
 API Documentation
 ------------------------
 
-Documentation may be found here: [`nodegit` documentation](http://tbranyen.github.com/nodegit/).
-
-Nodegit aims to eventually provide native asynchronous bindings for as much of libgit2 as possible.
+Documentation may be found here: [`nodegit` documentation](http://www.nodegit.org/nodegit/).
 
 Building and installing
 -----------------------
