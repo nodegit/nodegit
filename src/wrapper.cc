@@ -4,6 +4,7 @@
 #include <v8.h>
 #include <node.h>
 #include <string>
+#include <cstring>
 
 #include "../include/wrapper.h"
 #include "node_buffer.h"
@@ -68,7 +69,7 @@ Handle<Value> Wrapper::ToBuffer(const Arguments& args) {
   Handle<Value> constructorArgs[1] = { Integer::New(len) };
   Local<Object> nodeBuffer = bufferConstructor->NewInstance(1, constructorArgs);
 
-  memcpy(node::Buffer::Data(nodeBuffer), ObjectWrap::Unwrap<Wrapper>(args.This())->GetValue(), len);
+  std::memcpy(node::Buffer::Data(nodeBuffer), ObjectWrap::Unwrap<Wrapper>(args.This())->GetValue(), len);
 
   return scope.Close(nodeBuffer);
 }
