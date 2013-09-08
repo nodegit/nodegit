@@ -161,8 +161,8 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
   }
 
-  const git_diff_range *range = 0;
-  const char *header = 0;
+  const git_diff_range * range = 0;
+  const char * header = 0;
   size_t header_len = 0;
   size_t lines_in_hunk = 0;
   size_t from_hunk_idx;
@@ -250,7 +250,7 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
   }
 
   char line_origin = 0;
-  const char *content = 0;
+  const char * content = 0;
   size_t content_len = 0;
   int old_lineno = 0;
   int new_lineno = 0;
@@ -303,7 +303,7 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
 Handle<Value> GitPatch::ToString(const Arguments& args) {
   HandleScope scope;
   
-  char *string = 0;
+  char * string = 0;
 
   int result = git_diff_patch_to_str(
     &string

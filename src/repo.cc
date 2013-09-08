@@ -313,7 +313,7 @@ Handle<Value> GitRepo::Workdir(const Arguments& args) {
 Handle<Value> GitRepo::Odb(const Arguments& args) {
   HandleScope scope;
   
-  git_odb *out = 0;
+  git_odb * out = 0;
 
   int result = git_repository_odb(
     &out
@@ -934,7 +934,7 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
 
-  git_reference *out = 0;
+  git_reference * out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);
@@ -988,7 +988,7 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
 
-  git_reference *out = 0;
+  git_reference * out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);
@@ -1124,7 +1124,7 @@ void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
 Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
   HandleScope scope;
   
-  git_revwalk *out = 0;
+  git_revwalk * out = 0;
 
   int result = git_revwalk_new(
     &out
@@ -1157,7 +1157,7 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String name is required.")));
   }
 
-  git_submodule *submodule = 0;
+  git_submodule * submodule = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);
@@ -1203,7 +1203,7 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number use_gitlink is required.")));
   }
 
-  git_submodule *submodule = 0;
+  git_submodule * submodule = 0;
   const char * from_url;
             String::Utf8Value url(args[0]->ToString());
       from_url = strdup(*url);
@@ -2235,7 +2235,7 @@ Handle<Value> GitRepo::GetRemote(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String name is required.")));
   }
 
-  git_remote *out = 0;
+  git_remote * out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);

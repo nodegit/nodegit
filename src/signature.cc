@@ -88,7 +88,7 @@ Handle<Value> GitSignature::Create(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number offset is required.")));
   }
 
-  git_signature *out = 0;
+  git_signature * out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);
@@ -140,7 +140,7 @@ Handle<Value> GitSignature::Now(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String email is required.")));
   }
 
-  git_signature *out = 0;
+  git_signature * out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);

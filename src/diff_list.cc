@@ -182,8 +182,8 @@ Handle<Value> GitDiffList::Patch(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number idx is required.")));
   }
 
-  git_diff_patch *patch_out = 0;
-  const git_diff_delta *delta_out = 0;
+  git_diff_patch * patch_out = 0;
+  const git_diff_delta * delta_out = 0;
   size_t from_idx;
             from_idx = (size_t) args[0]->ToUint32()->Value();
       

@@ -80,7 +80,7 @@ git_odb *GitOdb::GetValue() {
 Handle<Value> GitOdb::Create(const Arguments& args) {
   HandleScope scope;
   
-  git_odb *out = 0;
+  git_odb * out = 0;
 
   int result = git_odb_new(
     &out
@@ -112,7 +112,7 @@ Handle<Value> GitOdb::Open(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String objects_dir is required.")));
   }
 
-  git_odb *out = 0;
+  git_odb * out = 0;
   const char * from_objects_dir;
             String::Utf8Value objects_dir(args[0]->ToString());
       from_objects_dir = strdup(*objects_dir);
@@ -268,7 +268,7 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number len is required.")));
   }
 
-  git_odb_object *out = 0;
+  git_odb_object * out = 0;
   git_odb * from_db;
             from_db = ObjectWrap::Unwrap<GitOdb>(args[0]->ToObject())->GetValue();
         const git_oid * from_short_id;
@@ -300,38 +300,30 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
 }
 
 /**
- * @param {Number} len_out
- * @param {Number} type_out
  * @param {Odb} db
  * @param {Oid} id
+ * @return {Number} len_out
+ * @return {Number} type_out
  */
 Handle<Value> GitOdb::ReadHeader(const Arguments& args) {
   HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number len_out is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number type_out is required.")));
-  }
-  if (args.Length() == 2 || !args[2]->IsObject()) {
+    if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Odb db is required.")));
   }
-  if (args.Length() == 3 || !args[3]->IsObject()) {
+  if (args.Length() == 1 || !args[1]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
 
-  size_t * from_len_out;
-            from_len_out = (size_t *) args[0]->ToUint32()->Value();
-        git_otype * from_type_out;
-            from_type_out = (git_otype *) args[1]->ToInt32()->Value();
-        git_odb * from_db;
-            from_db = ObjectWrap::Unwrap<GitOdb>(args[2]->ToObject())->GetValue();
+  size_t len_out = 0;
+  git_otype type_out = GIT_OBJ_ANY;
+  git_odb * from_db;
+            from_db = ObjectWrap::Unwrap<GitOdb>(args[0]->ToObject())->GetValue();
         const git_oid * from_id;
-            from_id = ObjectWrap::Unwrap<GitOid>(args[3]->ToObject())->GetValue();
+            from_id = ObjectWrap::Unwrap<GitOid>(args[1]->ToObject())->GetValue();
       
   int result = git_odb_read_header(
-    from_len_out
-    , from_type_out
+    &len_out
+    , &type_out
     , from_db
     , from_id
   );
@@ -343,7 +335,15 @@ Handle<Value> GitOdb::ReadHeader(const Arguments& args) {
     }
   }
 
-  return Undefined();
+  Handle<Object> toReturn = Object::New();
+  Handle<Value> to;
+      to = Uint32::New(len_out);
+    toReturn->Set(String::NewSymbol("len_out"), to);
+
+      to = Int32::New(type_out);
+    toReturn->Set(String::NewSymbol("type_out"), to);
+
+  return scope.Close(toReturn);
 }
 
 /**
@@ -517,7 +517,7 @@ Handle<Value> GitOdb::Hash(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number type is required.")));
   }
 
-  git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
+  git_oid *out = (git_oid *)malloc(sizeof(git_oid));
   const void * from_data;
             from_data = Buffer::Data(args[0]->ToObject());
         size_t from_len;
@@ -563,7 +563,7 @@ Handle<Value> GitOdb::Hashfile(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number type is required.")));
   }
 
-  git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
+  git_oid *out = (git_oid *)malloc(sizeof(git_oid));
   const char * from_path;
             String::Utf8Value path(args[0]->ToString());
       from_path = strdup(*path);

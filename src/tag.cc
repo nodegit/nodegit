@@ -271,7 +271,7 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Tag tag is required.")));
   }
 
-  git_object *tag_target_out = 0;
+  git_object * tag_target_out = 0;
   const git_tag * from_tag;
             from_tag = ObjectWrap::Unwrap<GitTag>(args[0]->ToObject())->GetValue();
       

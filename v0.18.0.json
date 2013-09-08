@@ -4858,6 +4858,7 @@
         "args": [
           {
             "name": "at_pos",
+            "isReturn": true,
             "cType": "size_t *",
             "cppClassName": "Uint32",
             "jsClassName": "Number",
@@ -6779,6 +6780,7 @@
         "args": [
           {
             "name": "len_out",
+            "isReturn": true,
             "cType": "size_t *",
             "cppClassName": "Uint32",
             "jsClassName": "Number",
@@ -6786,6 +6788,7 @@
           },
           {
             "name": "type_out",
+            "isReturn": true,
             "cType": "git_otype *",
             "cppClassName": "Int32",
             "jsClassName": "Number",

@@ -298,7 +298,7 @@ void GitTree::GetEntryAfterWork(uv_work_t *req) {
 Handle<Value> GitTree::Builder(const Arguments& args) {
   HandleScope scope;
   
-  git_treebuilder *out = 0;
+  git_treebuilder * out = 0;
 
   int result = git_treebuilder_create(
     &out
