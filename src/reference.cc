@@ -322,7 +322,7 @@ Handle<Value> GitReference::SetSymbolicTarget(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String target is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference * out = 0;
   const char * from_target;
             String::Utf8Value target(args[0]->ToString());
       from_target = strdup(*target);
@@ -360,7 +360,7 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Oid id is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference * out = 0;
   const git_oid * from_id;
             from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
       
@@ -594,7 +594,7 @@ Handle<Value> GitReference::Peel(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number type is required.")));
   }
 
-  git_object *out = NULL;
+  git_object * out = 0;
   git_otype from_type;
             from_type = (git_otype) args[0]->ToInt32()->Value();
       

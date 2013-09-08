@@ -676,34 +676,29 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
 }
 
 /**
- * @param {Number} at_pos
  * @param {String} path
- * @return {Number} result
+ * @return {Number} at_pos
  */
 Handle<Value> GitIndex::Find(const Arguments& args) {
   HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number at_pos is required.")));
-  }
-  if (args.Length() == 1 || !args[1]->IsString()) {
+    if (args.Length() == 0 || !args[0]->IsString()) {
     return ThrowException(Exception::Error(String::New("String path is required.")));
   }
 
-  size_t * from_at_pos;
-            from_at_pos = (size_t *) args[0]->ToUint32()->Value();
-        const char * from_path;
-            String::Utf8Value path(args[1]->ToString());
+  size_t at_pos = 0;
+  const char * from_path;
+            String::Utf8Value path(args[0]->ToString());
       from_path = strdup(*path);
       
   int result = git_index_find(
-    from_at_pos
+    &at_pos
     , ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
     , from_path
   );
   free((void *)from_path);
 
   Handle<Value> to;
-    to = Int32::New(result);
+    to = Uint32::New(at_pos);
   return scope.Close(to);
 }
 

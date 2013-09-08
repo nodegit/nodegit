@@ -9,6 +9,19 @@
     else
       return 'Object';
   }
+
+  function isPointer(cType) {
+    return /\s*\*\s*$/.test(cType);
+  }
+
+  function unPointer(cType) {
+    return cType.replace(/\s*\*\s*$/,'');
+  }
+
+  function defaultValue(cType) {
+    if (cType === 'git_otype') { return 'GIT_OBJ_ANY'; }
+    else { return '0'; }
+  }
 -%>
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!

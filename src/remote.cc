@@ -280,7 +280,7 @@ Handle<Value> GitRemote::Download(const Arguments& args) {
       if (args[0]->IsFunction()) {
             Persistent<Function>::New(Local<Function>::Cast(args[0]));
           } else {
-      from_progress_cb = NULL;
+      from_progress_cb = 0;
     }
       baton->progress_cb = from_progress_cb;
     baton->payloadReference = Persistent<Value>::New(args[1]);

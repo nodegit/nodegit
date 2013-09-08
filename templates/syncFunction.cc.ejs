@@ -11,9 +11,9 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
     if (!arg.isReturn) continue;
 -%>
 <% if (arg.shouldAlloc) { -%>
-  <%- arg.cType %><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));
+  <%- arg.cType %><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- unPointer(arg.cType) %>));
 <% } else { -%>
-  <%- arg.cType.replace('*', '') %><%- arg.name %> = NULL;
+  <%- unPointer(arg.cType) %> <%- arg.name %> = <%- defaultValue(unPointer(arg.cType)) %>;
 <% } -%>
 <% } -%>
 <%
