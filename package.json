@@ -39,11 +39,12 @@
   "devDependencies": {
     "nodeunit": "",
     "rimraf": "1.0.x",
-    "ejs": "0.8.x"
+    "ejs": "0.8.x",
+    "ncp": "~0.4.2"
   },
   "scripts": {
     "install": "node install.js",
-    "test": "cd test && nodeunit *.js",
+    "test": "cd test && nodeunit nodegit.js",
     "gen": "node gen.js"
   }
 }
