@@ -7,18 +7,23 @@ var git = require('../'),
  * Ensure the repo method can handle opening repositories with async/sync
  * signatures properly.
  */
-exports.open = function(test){
-  test.expect(2);
+exports.openInvalidRepo = function(test){
+  test.expect(1);
 
   // Test invalid repository
-  git.Repo.open('../templates', function(error, repository) {
-    test.equals(error.message, "Could not find repository from '../templates'");
+  git.Repo.open('repos/nonrepo', function(error, repository) {
+    test.equals(error.message, "Could not find repository from 'repos/nonrepo'");
+    test.done();
+  });
+};
 
-    // Test valid repository
-    git.Repo.open('../.git', function(error, repository) {
-      test.equals(null, error, 'Valid repository error code');
-      test.done();
-    });
+exports.openValidRepo = function(test){
+  test.expect(1);
+  
+  // Test valid repository
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
+    test.equals(null, error, 'Valid repository error code');
+    test.done();
   });
 };
 
@@ -40,18 +45,13 @@ exports.nonexistentDirectory = function(test) {
  */
 exports.init = function(test) {
   test.expect(2);
-  // Cleanup, remove test repo directory - if it exists
-  rimraf('./test.git', function() {
-    // Create bare repo and test for creation
-    git.Repo.init('./test.git', true, function(error, path, isBare) {
-      test.equals(null, error, 'Successfully created bare repository');
-      // Verify repo exists
-      git.Repo.open('./test.git', function(error, path, repo) {
-        test.equals(null, error, 'Valid repository created');
-
-        // Cleanup, remove test repo directory
-        rimraf('./test.git', test.done);
-      });
+  // Create bare repo and test for creation
+  git.Repo.init('repos/newrepo', true, function(error, path, isBare) {
+    test.equals(null, error, 'Successfully created bare repository');
+    // Verify repo exists
+    git.Repo.open('repos/newrepo', function(error, path, repo) {
+      test.equals(null, error, 'Valid repository created');
+      test.done();
     });
   });
 };

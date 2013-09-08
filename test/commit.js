@@ -6,7 +6,7 @@ var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
 
 exports.message = function(test) {
   test.expect(2);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var message = commit.message();
       test.equals(error, null, 'There should be no error');
@@ -18,7 +18,7 @@ exports.message = function(test) {
 
 exports.sha = function(test) {
   test.expect(2);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var sha = commit.sha();
       test.equals(error, null, 'There should be no error');
@@ -30,7 +30,7 @@ exports.sha = function(test) {
 
 exports.time = function(test) {
   test.expect(2);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var time = commit.timeMs();
       test.equals(error, null, 'There should be no error');
@@ -42,7 +42,7 @@ exports.time = function(test) {
 
 exports.date = function(test) {
   test.expect(2);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var date = commit.date();
       test.equals(error, null, 'There should be no error');
@@ -54,7 +54,7 @@ exports.date = function(test) {
 
 exports.offset = function(test) {
   test.expect(2);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var offset = commit.offset();
       test.equals(error, null, 'There should be no error');
@@ -66,7 +66,7 @@ exports.offset = function(test) {
 
 exports.author = function(test) {
   test.expect(2);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var author = commit.author();
       test.equals(error, null, 'There should be no error');
@@ -78,7 +78,7 @@ exports.author = function(test) {
 
 exports.authorName = function(test) {
   test.expect(1);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var author = commit.author();
       var name = author.name();
@@ -90,7 +90,7 @@ exports.authorName = function(test) {
 
 exports.authorEmail = function(test) {
   test.expect(1);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var author = commit.author();
       var email = author.email();
@@ -102,7 +102,7 @@ exports.authorEmail = function(test) {
 
 exports.committerName = function(test) {
   test.expect(1);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var committer = commit.committer();
       var name = committer.name();
@@ -114,7 +114,7 @@ exports.committerName = function(test) {
 
 exports.committerEmail = function(test) {
   test.expect(1);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var committer = commit.committer();
       var email = committer.email();
@@ -129,7 +129,7 @@ exports.committerEmail = function(test) {
  */
 exports.improperCommitId = function(test) {
   test.expect(1);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit('not a proper commit sha', function(error, commit) {
       test.notEqual(error, null, 'Error should occur');
       test.done();
@@ -142,7 +142,7 @@ exports.improperCommitId = function(test) {
  */
 exports.history = function(test) {
   test.expect(4);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       test.equals(null, error, 'Getting latest branch commit should not error');
       var historyCount = 0;
@@ -167,7 +167,7 @@ exports.history = function(test) {
  */
 exports.masterHead = function(test) {
   test.expect(1);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getBranch('master', function(error, branch) {
       var sha = branch.sha();
       repository.getCommit(sha, function(error, commit) {
@@ -185,7 +185,7 @@ exports.masterHead = function(test) {
  */
 exports.parents = function(test) {
   test.expect(3);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       commit.getParents(function(error, parents) {
         test.equals(parents.length, 1, 'Commit should have exactly one parent');
@@ -203,7 +203,7 @@ exports.parents = function(test) {
  */
 exports.tree = function(test) {
   test.expect(2);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       test.equals(error, null, 'Getting latest branch commit should not error');
 
@@ -226,7 +226,7 @@ exports.tree = function(test) {
  */
 exports.getDiff = function(test) {
   test.expect(1);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       commit.getDiff(function(error, diff) {
         test.equals(diff.length, 1, 'Should be one item in parents diff trees');
