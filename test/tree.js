@@ -8,7 +8,7 @@ var fileCount = 512; // Number of blob & blob executabless
 exports.walk = function(test) {
   test.expect(515);
 
-  git.Repo.open('../.git', function(error, repo) {
+  git.Repo.open('repos/workdir/.git', function(error, repo) {
     repo.getCommit(sha, function(error, commit) {
       var entryCount = 0;
       commit.getTree(function(error, tree) {
@@ -29,8 +29,8 @@ exports.walk = function(test) {
 exports.insert = function(test) {
   test.expect(1);
 
-  git.Repo.open('../.git', function(error, repo) {
-    repo.getCommit('1e7bc7fba93aabc8c76ebea41918f9ad892141ed', function(error, commit) {
+  git.Repo.open('repos/workdir/.git', function(error, repo) {
+    repo.getCommit(sha, function(error, commit) {
       commit.getTree(function(error, tree) {
         var text = "this is a file\n",
             buffer = new Buffer(text);

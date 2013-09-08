@@ -11,7 +11,7 @@ var historyCountKnownSHA = 'fce88902e66c72b5b93e75bdb5ae717038b221f6';
  */
 exports.walkingDiffs = function(test) {
   test.expect(16);
-  git.Repo.open('../.git', function(error, repository) {
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       commit.getDiff(function(error, diffList) {
         test.equal(null, error, 'Should not error');
