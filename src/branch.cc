@@ -93,7 +93,7 @@ Handle<Value> Branch::Create(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference *out = 0;
   git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
         const char * from_branch_name;
@@ -220,7 +220,7 @@ Handle<Value> Branch::Move(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference *out = 0;
   git_reference * from_branch;
             from_branch = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
         const char * from_new_branch_name;
@@ -271,7 +271,7 @@ Handle<Value> Branch::Lookup(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("BranchT branch_type is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference *out = 0;
   git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
         const char * from_branch_name;
@@ -314,7 +314,7 @@ Handle<Value> Branch::Name(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Reference ref is required.")));
   }
 
-  const char *out = NULL;
+  const char *out = 0;
   git_reference * from_ref;
             from_ref = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
       
@@ -345,7 +345,7 @@ Handle<Value> Branch::Upstream(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Reference branch is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference *out = 0;
   git_reference * from_branch;
             from_branch = ObjectWrap::Unwrap<GitReference>(args[0]->ToObject())->GetValue();
       

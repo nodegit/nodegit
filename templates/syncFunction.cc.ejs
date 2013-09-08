@@ -13,7 +13,7 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <% if (arg.shouldAlloc) { -%>
   <%- arg.cType %><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));
 <% } else { -%>
-  <%- arg.cType.replace('*', '') %><%- arg.name %> = NULL;
+  <%- arg.cType.replace('*', '') %><%- arg.name %> = 0;
 <% } -%>
 <% } -%>
 <%

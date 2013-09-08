@@ -80,7 +80,7 @@ git_odb *GitOdb::GetValue() {
 Handle<Value> GitOdb::Create(const Arguments& args) {
   HandleScope scope;
   
-  git_odb *out = NULL;
+  git_odb *out = 0;
 
   int result = git_odb_new(
     &out
@@ -112,7 +112,7 @@ Handle<Value> GitOdb::Open(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String objects_dir is required.")));
   }
 
-  git_odb *out = NULL;
+  git_odb *out = 0;
   const char * from_objects_dir;
             String::Utf8Value objects_dir(args[0]->ToString());
       from_objects_dir = strdup(*objects_dir);
@@ -268,7 +268,7 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number len is required.")));
   }
 
-  git_odb_object *out = NULL;
+  git_odb_object *out = 0;
   git_odb * from_db;
             from_db = ObjectWrap::Unwrap<GitOdb>(args[0]->ToObject())->GetValue();
         const git_oid * from_short_id;

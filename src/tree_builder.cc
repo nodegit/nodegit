@@ -81,12 +81,12 @@ git_treebuilder *GitTreeBuilder::GetValue() {
 Handle<Value> GitTreeBuilder::Create(const Arguments& args) {
   HandleScope scope;
   
-  git_treebuilder *out = NULL;
+  git_treebuilder *out = 0;
   const git_tree * from_source;
       if (args[0]->IsObject()) {
             from_source = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
           } else {
-      from_source = NULL;
+      from_source = 0;
     }
   
   int result = git_treebuilder_create(
@@ -195,7 +195,7 @@ Handle<Value> GitTreeBuilder::Insert(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number filemode is required.")));
   }
 
-  const git_tree_entry *out = NULL;
+  const git_tree_entry *out = 0;
   const char * from_filename;
             String::Utf8Value filename(args[0]->ToString());
       from_filename = strdup(*filename);

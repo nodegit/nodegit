@@ -313,7 +313,7 @@ Handle<Value> GitRepo::Workdir(const Arguments& args) {
 Handle<Value> GitRepo::Odb(const Arguments& args) {
   HandleScope scope;
   
-  git_odb *out = NULL;
+  git_odb *out = 0;
 
   int result = git_repository_odb(
     &out
@@ -621,7 +621,7 @@ Handle<Value> GitRepo::CreateCommit(const Arguments& args) {
             String::Utf8Value update_ref(args[0]->ToString());
       from_update_ref = strdup(*update_ref);
           } else {
-      from_update_ref = NULL;
+      from_update_ref = 0;
     }
       baton->update_ref = from_update_ref;
     baton->authorReference = Persistent<Value>::New(args[1]);
@@ -638,7 +638,7 @@ Handle<Value> GitRepo::CreateCommit(const Arguments& args) {
             String::Utf8Value message_encoding(args[3]->ToString());
       from_message_encoding = strdup(*message_encoding);
           } else {
-      from_message_encoding = NULL;
+      from_message_encoding = 0;
     }
       baton->message_encoding = from_message_encoding;
     baton->messageReference = Persistent<Value>::New(args[4]);
@@ -934,7 +934,7 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference *out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);
@@ -988,7 +988,7 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number force is required.")));
   }
 
-  git_reference *out = NULL;
+  git_reference *out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);
@@ -1124,7 +1124,7 @@ void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
 Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
   HandleScope scope;
   
-  git_revwalk *out = NULL;
+  git_revwalk *out = 0;
 
   int result = git_revwalk_new(
     &out
@@ -1157,7 +1157,7 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String name is required.")));
   }
 
-  git_submodule *submodule = NULL;
+  git_submodule *submodule = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);
@@ -1203,7 +1203,7 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number use_gitlink is required.")));
   }
 
-  git_submodule *submodule = NULL;
+  git_submodule *submodule = 0;
   const char * from_url;
             String::Utf8Value url(args[0]->ToString());
       from_url = strdup(*url);
@@ -1800,7 +1800,7 @@ Handle<Value> GitRepo::GetReferences(const Arguments& args) {
       if (args[0]->IsUint32()) {
             from_list_flags = (unsigned int) args[0]->ToUint32()->Value();
           } else {
-      from_list_flags = NULL;
+      from_list_flags = 0;
     }
       baton->list_flags = from_list_flags;
     baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
@@ -2160,7 +2160,7 @@ Handle<Value> GitRepo::Clone(const Arguments& args) {
       if (args[2]->IsObject()) {
             from_options = ObjectWrap::Unwrap<GitCloneOptions>(args[2]->ToObject())->GetValue();
           } else {
-      from_options = NULL;
+      from_options = 0;
     }
       baton->options = from_options;
     baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
@@ -2235,7 +2235,7 @@ Handle<Value> GitRepo::GetRemote(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String name is required.")));
   }
 
-  git_remote *out = NULL;
+  git_remote *out = 0;
   const char * from_name;
             String::Utf8Value name(args[0]->ToString());
       from_name = strdup(*name);

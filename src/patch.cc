@@ -116,9 +116,9 @@ Handle<Value> GitPatch::Size(const Arguments& args) {
 Handle<Value> GitPatch::Stats(const Arguments& args) {
   HandleScope scope;
   
-  size_t total_context = NULL;
-  size_t total_additions = NULL;
-  size_t total_deletions = NULL;
+  size_t total_context = 0;
+  size_t total_additions = 0;
+  size_t total_deletions = 0;
 
   int result = git_diff_patch_line_stats(
     &total_context
@@ -161,10 +161,10 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
   }
 
-  const git_diff_range *range = NULL;
-  const char *header = NULL;
-  size_t header_len = NULL;
-  size_t lines_in_hunk = NULL;
+  const git_diff_range *range = 0;
+  const char *header = 0;
+  size_t header_len = 0;
+  size_t lines_in_hunk = 0;
   size_t from_hunk_idx;
             from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
       
@@ -249,11 +249,11 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number line_of_hunk is required.")));
   }
 
-  char line_origin = NULL;
-  const char *content = NULL;
-  size_t content_len = NULL;
-  int old_lineno = NULL;
-  int new_lineno = NULL;
+  char line_origin = 0;
+  const char *content = 0;
+  size_t content_len = 0;
+  int old_lineno = 0;
+  int new_lineno = 0;
   size_t from_hunk_idx;
             from_hunk_idx = (size_t) args[0]->ToUint32()->Value();
         size_t from_line_of_hunk;
@@ -303,7 +303,7 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
 Handle<Value> GitPatch::ToString(const Arguments& args) {
   HandleScope scope;
   
-  char *string = NULL;
+  char *string = 0;
 
   int result = git_diff_patch_to_str(
     &string

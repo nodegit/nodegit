@@ -287,7 +287,7 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("Number n is required.")));
   }
 
-  git_commit *ancestor = NULL;
+  git_commit *ancestor = 0;
   unsigned int from_n;
             from_n = (unsigned int) args[0]->ToUint32()->Value();
       

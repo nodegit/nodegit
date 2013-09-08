@@ -298,7 +298,7 @@ void GitTree::GetEntryAfterWork(uv_work_t *req) {
 Handle<Value> GitTree::Builder(const Arguments& args) {
   HandleScope scope;
   
-  git_treebuilder *out = NULL;
+  git_treebuilder *out = 0;
 
   int result = git_treebuilder_create(
     &out
@@ -359,7 +359,7 @@ Handle<Value> GitTree::DiffTree(const Arguments& args) {
       if (args[2]->IsObject()) {
             from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
           } else {
-      from_opts = NULL;
+      from_opts = 0;
     }
       baton->opts = from_opts;
     baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
