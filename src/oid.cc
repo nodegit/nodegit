@@ -72,7 +72,7 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
     return ThrowException(Exception::Error(String::New("String str is required.")));
   }
 
-  git_oid *out = (git_oid *)malloc(sizeof(git_oid ));
+  git_oid *out = (git_oid *)malloc(sizeof(git_oid));
   const char * from_str;
             String::Utf8Value str(args[0]->ToString());
       from_str = strdup(*str);
