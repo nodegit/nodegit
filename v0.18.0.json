@@ -4142,7 +4142,8 @@
   {
     "filename": "index_entry.h",
     "dependencies": [
-      "../include/index_time.h"
+      "../include/index_time.h",
+      "../include/oid.h"
     ],
     "jsClassName": "IndexEntry",
     "cppClassName": "GitIndexEntry",
@@ -4166,6 +4167,79 @@
         "cppClassName": "GitIndexTime",
         "jsClassName": "IndexTime",
         "copy": "git_index_time_dup"
+      },
+      {
+        "jsFunctionName": "dev",
+        "cppFunctionName": "Dev",
+        "name": "dev",
+        "cType": "unsigned int",
+        "cppClassName": "Uint32",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "ino",
+        "cppFunctionName": "Ino",
+        "name": "ino",
+        "cType": "unsigned int",
+        "cppClassName": "Uint32",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "mode",
+        "cppFunctionName": "Mode",
+        "name": "mode",
+        "cType": "uint16_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "uid",
+        "cppFunctionName": "Uid",
+        "name": "uid",
+        "cType": "unsigned int",
+        "cppClassName": "Uint32",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "gid",
+        "cppFunctionName": "gid",
+        "name": "gid",
+        "cType": "unsigned int",
+        "cppClassName": "Uint32",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "file_size",
+        "cppFunctionName": "FileSize",
+        "name": "file_size",
+        "cType": "unsigned int",
+        "cppClassName": "Uint32",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "oid",
+        "cppFunctionName": "Oid",
+        "name": "oid",
+        "cType": "git_oid",
+        "cppClassName": "GitOid",
+        "jsClassName": "Oid",
+        "copy": "git_oid_dup"
+      },
+      {
+        "jsFunctionName": "flags",
+        "cppFunctionName": "Flags",
+        "name": "flags",
+        "cType": "uint16_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
+      },
+      {
+        "jsFunctionName": "flags_extended",
+        "cppFunctionName": "FlagsExtended",
+        "name": "flags_extended",
+        "cType": "uint16_t",
+        "cppClassName": "Integer",
+        "jsClassName": "Number"
       },
       {
         "jsFunctionName": "path",

@@ -32,6 +32,15 @@ class GitIndexEntry : public ObjectWrap {
 
     static Handle<Value> Ctime(const Arguments& args);
     static Handle<Value> Mtime(const Arguments& args);
+    static Handle<Value> Dev(const Arguments& args);
+    static Handle<Value> Ino(const Arguments& args);
+    static Handle<Value> Mode(const Arguments& args);
+    static Handle<Value> Uid(const Arguments& args);
+    static Handle<Value> gid(const Arguments& args);
+    static Handle<Value> FileSize(const Arguments& args);
+    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> Flags(const Arguments& args);
+    static Handle<Value> FlagsExtended(const Arguments& args);
     static Handle<Value> Path(const Arguments& args);
 
     git_index_entry *raw;
