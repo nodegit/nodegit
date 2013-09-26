@@ -11,6 +11,7 @@
 
 #include "../include/index_entry.h"
 #include "../include/index_time.h"
+#include "../include/oid.h"
 
 using namespace v8;
 using namespace node;
@@ -34,6 +35,15 @@ void GitIndexEntry::Initialize(Handle<v8::Object> target) {
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "ctime", Ctime);
   NODE_SET_PROTOTYPE_METHOD(tpl, "mtime", Mtime);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "dev", Dev);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "ino", Ino);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "mode", Mode);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "uid", Uid);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "gid", gid);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "file_size", FileSize);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "flags", Flags);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "flags_extended", FlagsExtended);
   NODE_SET_PROTOTYPE_METHOD(tpl, "path", Path);
 
   constructor_template = Persistent<Function>::New(tpl->GetFunction());
@@ -97,6 +107,112 @@ Handle<Value> GitIndexEntry::Mtime(const Arguments& args) {
   } else {
     to = Null();
   }
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::Dev(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  unsigned int dev =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->dev;
+
+    to = Uint32::New(dev);
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::Ino(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  unsigned int ino =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->ino;
+
+    to = Uint32::New(ino);
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::Mode(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  uint16_t mode =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->mode;
+
+    to = Integer::New(mode);
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::Uid(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  unsigned int uid =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->uid;
+
+    to = Uint32::New(uid);
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::gid(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  unsigned int gid =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->gid;
+
+    to = Uint32::New(gid);
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::FileSize(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  unsigned int file_size =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->file_size;
+
+    to = Uint32::New(file_size);
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::Oid(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  git_oid *oid =
+    &ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->oid;
+
+    if (oid != NULL) {
+    oid = (git_oid *)git_oid_dup(oid);
+  }
+  if (oid != NULL) {
+    to = GitOid::New((void *)oid);
+  } else {
+    to = Null();
+  }
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::Flags(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  uint16_t flags =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->flags;
+
+    to = Integer::New(flags);
+  return scope.Close(to);
+}
+
+Handle<Value> GitIndexEntry::FlagsExtended(const Arguments& args) {
+  HandleScope scope;
+    Handle<Value> to;
+
+  uint16_t flags_extended =
+    ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->flags_extended;
+
+    to = Integer::New(flags_extended);
   return scope.Close(to);
 }
 
