@@ -21,7 +21,7 @@ Building and installing
 
 ### Dependencies ###
 
-To install `nodegit` you need `Node.js`, `python` and `cmake`.
+To install `nodegit` you need `Node.js`, `python` and `cmake` (>=2.8).
 
 ### Easy install (Recommended) ###
 This will install and configure everything you need to use `nodegit`.
