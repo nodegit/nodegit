@@ -158,7 +158,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // functions very similarly to the commit lookup, parsing and creation
   // methods, since the objects themselves are very similar.
 
-  oid = git.Oid.fromString("97f6d755647aca272e7c8003323472cefca772fc");
+  oid = git.Oid.fromString("43f0ac7359e30b769f6b1714e0adbaf51bedbb65");
   repo.getTag(oid, function(error, tag) {
     if (error) throw error;
 
