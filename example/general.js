@@ -28,7 +28,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // **nodegit** uses a simple wrapper around hash values called an `Oid`.
   // The oid validates that the SHA is well-formed.
 
-  var oid = git.Oid.fromString('fd373a561d63bfc0a5665608fe057f2131d81fee');
+  var oid = git.Oid.fromString('c27d9c35e3715539d941254f2ce57042b978c49c');
 
   // Most functions in in **nodegit** that take an oid will also take a
   // string, so for example, you can look up a commit by a string SHA or
@@ -175,6 +175,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
     });
   });
 
+
   // #### Tree Parsing
 
   // A Tree is how Git represents the state of the filesystem
@@ -315,8 +316,8 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
       repo.getReference(referenceName, function(error, reference) {
         if (error) throw error;
 
-        if (reference.isOid()) {
-          console.log("Reference:", referenceName, reference.oid());
+        if (reference.isConcrete()) {
+          console.log("Reference:", referenceName, reference.target());
         } else if (reference.isSymbolic()) {
           console.log("Reference:", referenceName, reference.symbolicTarget());
         }
