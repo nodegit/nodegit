@@ -28,7 +28,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // **nodegit** uses a simple wrapper around hash values called an `Oid`.
   // The oid validates that the SHA is well-formed.
 
-  var oid = git.Oid.fromString('fd373a561d63bfc0a5665608fe057f2131d81fee');
+  var oid = git.Oid.fromString('c27d9c35e3715539d941254f2ce57042b978c49c');
 
   // Most functions in in **nodegit** that take an oid will also take a
   // string, so for example, you can look up a commit by a string SHA or
@@ -158,7 +158,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   // functions very similarly to the commit lookup, parsing and creation
   // methods, since the objects themselves are very similar.
 
-  oid = git.Oid.fromString("97f6d755647aca272e7c8003323472cefca772fc");
+  oid = git.Oid.fromString("43f0ac7359e30b769f6b1714e0adbaf51bedbb65");
   repo.getTag(oid, function(error, tag) {
     if (error) throw error;
 
@@ -174,6 +174,7 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
       console.log("Target is commit:", target.isCommit());
     });
   });
+
 
   // #### Tree Parsing
 
@@ -315,8 +316,8 @@ git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
       repo.getReference(referenceName, function(error, reference) {
         if (error) throw error;
 
-        if (reference.isOid()) {
-          console.log("Reference:", referenceName, reference.oid());
+        if (reference.isConcrete()) {
+          console.log("Reference:", referenceName, reference.target());
         } else if (reference.isSymbolic()) {
           console.log("Reference:", referenceName, reference.symbolicTarget());
         }

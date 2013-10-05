@@ -7,7 +7,7 @@ var git = require('../'),
 git.Repo.open(path.resolve(__dirname, '../.git'), function(error, repo) {
   if (error) throw error;
 
-  repo.getCommit('0a70ef1237bc1ea50dbccd395e1a114201b75a68', function(error, commit) {
+  repo.getCommit('eebd0ead15d62eaf0ba276da53af43bbc3ce43ab', function(error, commit) {
     if (error) throw error;
 
     commit.getTree(function(error, tree) {

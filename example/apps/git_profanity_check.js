@@ -8,7 +8,7 @@
 var git = require('../../');
 
 var curses = ['add', 'swears', 'here'],
-    path = './.git',
+    path = '../../.git',
     branchName = 'master',
     reCurse = new RegExp('\\b(?:' + curses.join('|') + ')\\b', 'gi');
 
