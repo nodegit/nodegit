@@ -17064,6 +17064,7 @@
             "cType": "const git_diff_options *",
             "cppClassName": "GitDiffOptions",
             "jsClassName": "DiffOptions",
+            "isOptional": true,
             "comment": "Structure with options to influence diff or NULL for defaults."
           }
         ],
