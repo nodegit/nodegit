@@ -208,6 +208,8 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} path
  * @param {TreeEntry} callback
@@ -249,7 +251,7 @@ void GitTree::GetEntryWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -321,6 +323,8 @@ Handle<Value> GitTree::Builder(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Repository} repo
  * @param {Tree} new_tree
@@ -380,7 +384,7 @@ void GitTree::DiffTreeWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -423,6 +427,8 @@ void GitTree::DiffTreeAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Repository} repo
@@ -484,7 +490,7 @@ void GitTree::DiffIndexWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -527,6 +533,8 @@ void GitTree::DiffIndexAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Repository} repo
@@ -578,7 +586,7 @@ void GitTree::DiffWorkDirWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

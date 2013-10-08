@@ -104,6 +104,8 @@ Handle<Value> GitObject::Type(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Number} target_type
  * @param {Object} callback
@@ -144,7 +146,7 @@ void GitObject::PeelWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

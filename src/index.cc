@@ -83,6 +83,8 @@ git_index *GitIndex::GetValue() {
 }
 
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} index_path
  * @param {Index} callback
@@ -121,7 +123,7 @@ void GitIndex::OpenWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -163,6 +165,8 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitIndex::Read(const Arguments& args) {
@@ -192,7 +196,7 @@ void GitIndex::ReadWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -227,6 +231,8 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitIndex::Write(const Arguments& args) {
@@ -256,7 +262,7 @@ void GitIndex::WriteWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -290,6 +296,8 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Tree} tree
@@ -329,7 +337,7 @@ void GitIndex::ReadTreeWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -365,6 +373,8 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Oid} callback
  */
@@ -397,7 +407,7 @@ void GitIndex::WriteTreeWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -570,6 +580,8 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
   return Undefined();
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} path
  */
@@ -609,7 +621,7 @@ void GitIndex::AddBypathWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -760,6 +772,8 @@ Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Repository} repo
  * @param {Index} index
@@ -815,7 +829,7 @@ void GitIndex::IndexToWorkdirWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

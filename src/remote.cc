@@ -184,6 +184,8 @@ Handle<Value> GitRemote::SetPushUrl(const Arguments& args) {
   return Undefined();
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Number} direction
  */
@@ -222,7 +224,7 @@ void GitRemote::ConnectWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -257,6 +259,8 @@ void GitRemote::ConnectAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Function} progress_cb
@@ -300,7 +304,7 @@ void GitRemote::DownloadWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -369,6 +373,8 @@ Handle<Value> GitRemote::Stop(const Arguments& args) {
 
   return Undefined();
 }
+
+#include "../include/functions/copy.h"
 
 /**
  */
