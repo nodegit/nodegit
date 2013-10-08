@@ -17010,6 +17010,7 @@
             "cType": "git_index *",
             "cppClassName": "GitIndex",
             "jsClassName": "Index",
+            "isOptional": true,
             "comment": "The index to diff with; repo index used if NULL."
           },
           {
@@ -17017,6 +17018,7 @@
             "cType": "const git_diff_options *",
             "cppClassName": "GitDiffOptions",
             "jsClassName": "DiffOptions",
+            "isOptional": true,
             "comment": "Structure with options to influence diff or NULL for defaults."
           }
         ],
