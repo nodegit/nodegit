@@ -435,12 +435,6 @@ Handle<Value> GitTree::DiffIndex(const Arguments& args) {
       if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
-  if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Index index is required.")));
-  }
-  if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("DiffOptions opts is required.")));
-  }
 
   if (args.Length() == 3 || !args[3]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
@@ -458,12 +452,20 @@ Handle<Value> GitTree::DiffIndex(const Arguments& args) {
   baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->indexReference = Persistent<Value>::New(args[1]);
     git_index * from_index;
+      if (args[1]->IsObject()) {
             from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
-          baton->index = from_index;
+          } else {
+      from_index = 0;
+    }
+      baton->index = from_index;
     baton->optsReference = Persistent<Value>::New(args[2]);
     const git_diff_options * from_opts;
+      if (args[2]->IsObject()) {
             from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
-          baton->opts = from_opts;
+          } else {
+      from_opts = 0;
+    }
+      baton->opts = from_opts;
     baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, DiffIndexWork, (uv_after_work_cb)DiffIndexAfterWork);
@@ -536,9 +538,6 @@ Handle<Value> GitTree::DiffWorkDir(const Arguments& args) {
       if (args.Length() == 0 || !args[0]->IsObject()) {
     return ThrowException(Exception::Error(String::New("Repository repo is required.")));
   }
-  if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("DiffOptions opts is required.")));
-  }
 
   if (args.Length() == 2 || !args[2]->IsFunction()) {
     return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
@@ -556,8 +555,12 @@ Handle<Value> GitTree::DiffWorkDir(const Arguments& args) {
   baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
   baton->optsReference = Persistent<Value>::New(args[1]);
     const git_diff_options * from_opts;
+      if (args[1]->IsObject()) {
             from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[1]->ToObject())->GetValue();
-          baton->opts = from_opts;
+          } else {
+      from_opts = 0;
+    }
+      baton->opts = from_opts;
     baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, DiffWorkDirWork, (uv_after_work_cb)DiffWorkDirAfterWork);
