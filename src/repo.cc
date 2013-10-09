@@ -144,7 +144,7 @@ void GitRepo::OpenWork(uv_work_t *req) {
     baton->path
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -173,6 +173,9 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -235,7 +238,7 @@ void GitRepo::InitWork(uv_work_t *req) {
     baton->is_bare
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -264,6 +267,9 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -372,7 +378,7 @@ void GitRepo::openIndexWork(uv_work_t *req) {
     baton->repo
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -401,6 +407,9 @@ void GitRepo::openIndexAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -455,7 +464,7 @@ void GitRepo::GetBlobWork(uv_work_t *req) {
     baton->id
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -484,6 +493,9 @@ void GitRepo::GetBlobAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -539,7 +551,7 @@ void GitRepo::GetCommitWork(uv_work_t *req) {
     baton->id
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -568,6 +580,9 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -697,7 +712,7 @@ void GitRepo::CreateCommitWork(uv_work_t *req) {
     baton->parents
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -726,6 +741,9 @@ void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -802,7 +820,7 @@ void GitRepo::GetObjectWork(uv_work_t *req) {
     baton->type
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -831,6 +849,9 @@ void GitRepo::GetObjectAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -888,7 +909,7 @@ void GitRepo::GetReferenceWork(uv_work_t *req) {
     baton->name
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -917,6 +938,9 @@ void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1090,7 +1114,7 @@ void GitRepo::AddRemoteWork(uv_work_t *req) {
     baton->url
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1119,6 +1143,9 @@ void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1298,7 +1325,7 @@ void GitRepo::GetTagWork(uv_work_t *req) {
     baton->id
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1327,6 +1354,9 @@ void GitRepo::GetTagAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1421,7 +1451,7 @@ void GitRepo::CreateTagWork(uv_work_t *req) {
     baton->force
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1450,6 +1480,9 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1532,7 +1565,7 @@ void GitRepo::CreateLightweightTagWork(uv_work_t *req) {
     baton->force
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1561,6 +1594,9 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1620,7 +1656,7 @@ void GitRepo::GetTreeWork(uv_work_t *req) {
     baton->id
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1649,6 +1685,9 @@ void GitRepo::GetTreeAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1693,7 +1732,7 @@ void GitRepo::ReloadSubmodulesWork(uv_work_t *req) {
     baton->repo
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1716,6 +1755,9 @@ void GitRepo::ReloadSubmodulesAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1769,7 +1811,7 @@ void GitRepo::DeleteWork(uv_work_t *req) {
     baton->tag_name
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1792,6 +1834,9 @@ void GitRepo::DeleteAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1850,7 +1895,7 @@ void GitRepo::GetReferencesWork(uv_work_t *req) {
     baton->list_flags
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1880,6 +1925,9 @@ void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -1948,7 +1996,7 @@ void GitRepo::CreateBlobFromBufferWork(uv_work_t *req) {
     baton->len
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -1977,6 +2025,9 @@ void GitRepo::CreateBlobFromBufferAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -2036,7 +2087,7 @@ void GitRepo::CreateBlobFromFileWork(uv_work_t *req) {
     baton->path
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -2065,6 +2116,9 @@ void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -2114,7 +2168,7 @@ void GitRepo::GetRemotesWork(uv_work_t *req) {
     baton->repo
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -2144,6 +2198,9 @@ void GitRepo::GetRemotesAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -2219,7 +2276,7 @@ void GitRepo::CloneWork(uv_work_t *req) {
     baton->options
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -2248,6 +2305,9 @@ void GitRepo::CloneAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }

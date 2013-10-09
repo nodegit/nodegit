@@ -122,7 +122,7 @@ void GitIndex::OpenWork(uv_work_t *req) {
     baton->index_path
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -151,6 +151,9 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -195,7 +198,7 @@ void GitIndex::ReadWork(uv_work_t *req) {
     baton->index
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -218,6 +221,9 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -261,7 +267,7 @@ void GitIndex::WriteWork(uv_work_t *req) {
     baton->index
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -284,6 +290,9 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -336,7 +345,7 @@ void GitIndex::ReadTreeWork(uv_work_t *req) {
     baton->tree
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -359,6 +368,9 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -406,7 +418,7 @@ void GitIndex::WriteTreeWork(uv_work_t *req) {
     baton->index
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -435,6 +447,9 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -620,7 +635,7 @@ void GitIndex::AddBypathWork(uv_work_t *req) {
     baton->path
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -643,6 +658,9 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -828,7 +846,7 @@ void GitIndex::IndexToWorkdirWork(uv_work_t *req) {
     baton->opts
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -857,6 +875,9 @@ void GitIndex::IndexToWorkdirAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }

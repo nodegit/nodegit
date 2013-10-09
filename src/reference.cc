@@ -126,7 +126,7 @@ void GitReference::OidForNameWork(uv_work_t *req) {
     baton->name
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -155,6 +155,9 @@ void GitReference::OidForNameAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -274,7 +277,7 @@ void GitReference::ResolveWork(uv_work_t *req) {
     baton->ref
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -303,6 +306,9 @@ void GitReference::ResolveAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -441,7 +447,7 @@ void GitReference::RenameWork(uv_work_t *req) {
     baton->force
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -470,6 +476,9 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -516,7 +525,7 @@ void GitReference::DeleteWork(uv_work_t *req) {
     baton->ref
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -539,6 +548,9 @@ void GitReference::DeleteAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }

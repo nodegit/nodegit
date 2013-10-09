@@ -223,7 +223,7 @@ void GitRemote::ConnectWork(uv_work_t *req) {
     baton->direction
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -246,6 +246,9 @@ void GitRemote::ConnectAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -303,7 +306,7 @@ void GitRemote::DownloadWork(uv_work_t *req) {
     baton->payload
   );
   baton->error_code = result;
-  if (result != GIT_OK) {
+  if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 }
@@ -326,6 +329,9 @@ void GitRemote::DownloadAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
@@ -423,6 +429,9 @@ void GitRemote::DisconnectAfterWork(uv_work_t *req) {
         Exception::Error(String::New(baton->error->message))
       };
       baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
     } else {
       baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
