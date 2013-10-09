@@ -168,6 +168,8 @@ Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
   return Undefined();
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Oid} id
  * @param {OdbObject} callback
@@ -208,7 +210,7 @@ void GitOdb::ReadWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -393,6 +395,8 @@ Handle<Value> GitOdb::Refresh(const Arguments& args) {
   return Undefined();
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} data
  * @param {Number} len
@@ -453,7 +457,7 @@ void GitOdb::WriteWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

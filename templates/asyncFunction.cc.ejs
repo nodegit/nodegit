@@ -1,3 +1,5 @@
+#include "../include/functions/copy.h"
+
 /**
 <% include doc.cc.ejs -%>
  */
@@ -57,7 +59,7 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req
 <% if (functionInfo.return.isErrorCode) { -%>
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 <% } else if (functionInfo.return.cType != "void") { -%>
   baton->result = result;

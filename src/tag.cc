@@ -95,6 +95,8 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Object} callback
  */
@@ -126,7 +128,7 @@ void GitTag::GetTargetWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

@@ -77,6 +77,8 @@ git_reference *GitReference::GetValue() {
 }
 
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Repository} repo
  * @param {String} name
@@ -125,7 +127,7 @@ void GitReference::OidForNameWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -240,6 +242,8 @@ Handle<Value> GitReference::Name(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Reference} callback
  */
@@ -271,7 +275,7 @@ void GitReference::ResolveWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -386,6 +390,8 @@ Handle<Value> GitReference::setTarget(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} new_name
  * @param {Number} force
@@ -436,7 +442,7 @@ void GitReference::RenameWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -480,6 +486,8 @@ void GitReference::RenameAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitReference::Delete(const Arguments& args) {
@@ -509,7 +517,7 @@ void GitReference::DeleteWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

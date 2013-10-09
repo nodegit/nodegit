@@ -105,6 +105,8 @@ git_repository *GitRepo::GetValue() {
 }
 
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} path
  * @param {Repository} callback
@@ -143,7 +145,7 @@ void GitRepo::OpenWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -184,6 +186,8 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   free((void *)baton->path);
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {String} path
@@ -232,7 +236,7 @@ void GitRepo::InitWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -336,6 +340,8 @@ Handle<Value> GitRepo::Odb(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Index} callback
  */
@@ -367,7 +373,7 @@ void GitRepo::openIndexWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -407,6 +413,8 @@ void GitRepo::openIndexAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Oid} id
@@ -448,7 +456,7 @@ void GitRepo::GetBlobWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -490,6 +498,8 @@ void GitRepo::GetBlobAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Oid} id
  * @param {Commit} callback
@@ -530,7 +540,7 @@ void GitRepo::GetCommitWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -571,6 +581,8 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {String} update_ref
@@ -686,7 +698,7 @@ void GitRepo::CreateCommitWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -740,6 +752,8 @@ void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Oid} id
  * @param {Number} type
@@ -789,7 +803,7 @@ void GitRepo::GetObjectWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -832,6 +846,8 @@ void GitRepo::GetObjectAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} name
  * @param {Reference} callback
@@ -873,7 +889,7 @@ void GitRepo::GetReferenceWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1022,6 +1038,8 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} name
  * @param {String} url
@@ -1073,7 +1091,7 @@ void GitRepo::AddRemoteWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1239,6 +1257,8 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Oid} id
  * @param {Tag} callback
@@ -1279,7 +1299,7 @@ void GitRepo::GetTagWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1320,6 +1340,8 @@ void GitRepo::GetTagAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {String} tag_name
@@ -1400,7 +1422,7 @@ void GitRepo::CreateTagWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1448,6 +1470,8 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
   free((void *)baton->message);
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {String} tag_name
@@ -1509,7 +1533,7 @@ void GitRepo::CreateLightweightTagWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1555,6 +1579,8 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Oid} id
  * @param {Tree} callback
@@ -1595,7 +1621,7 @@ void GitRepo::GetTreeWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1637,6 +1663,8 @@ void GitRepo::GetTreeAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitRepo::ReloadSubmodules(const Arguments& args) {
@@ -1666,7 +1694,7 @@ void GitRepo::ReloadSubmodulesWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1700,6 +1728,8 @@ void GitRepo::ReloadSubmodulesAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {String} tag_name
@@ -1740,7 +1770,7 @@ void GitRepo::DeleteWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1776,6 +1806,8 @@ void GitRepo::DeleteAfterWork(uv_work_t *req) {
   free((void *)baton->tag_name);
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Number} list_flags
@@ -1819,7 +1851,7 @@ void GitRepo::GetReferencesWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1864,6 +1896,8 @@ void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
   git_strarray_free(baton->array);
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Buffer} buffer
@@ -1915,7 +1949,7 @@ void GitRepo::CreateBlobFromBufferWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -1959,6 +1993,8 @@ void GitRepo::CreateBlobFromBufferAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {String} path
  * @param {Oid} callback
@@ -2001,7 +2037,7 @@ void GitRepo::CreateBlobFromFileWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -2045,6 +2081,8 @@ void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Array} callback
  */
@@ -2077,7 +2115,7 @@ void GitRepo::GetRemotesWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -2121,6 +2159,8 @@ void GitRepo::GetRemotesAfterWork(uv_work_t *req) {
   git_strarray_free(baton->out);
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {String} url
@@ -2180,7 +2220,7 @@ void GitRepo::CloneWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

@@ -261,6 +261,8 @@ Handle<Value> GitTreeBuilder::GitTreebuilderRemove(const Arguments& args) {
   return Undefined();
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Repository} repo
  * @param {Oid} callback
@@ -302,7 +304,7 @@ void GitTreeBuilder::WriteWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 

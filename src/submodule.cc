@@ -76,6 +76,8 @@ git_submodule *GitSubmodule::GetValue() {
 }
 
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitSubmodule::AddFinalize(const Arguments& args) {
@@ -105,7 +107,7 @@ void GitSubmodule::AddFinalizeWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -139,6 +141,8 @@ void GitSubmodule::AddFinalizeAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Number} write_index
@@ -178,7 +182,7 @@ void GitSubmodule::AddToIndexWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -214,6 +218,8 @@ void GitSubmodule::AddToIndexAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitSubmodule::Save(const Arguments& args) {
@@ -243,7 +249,7 @@ void GitSubmodule::SaveWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -401,6 +407,8 @@ Handle<Value> GitSubmodule::HeadId(const Arguments& args) {
   return scope.Close(to);
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Number} overwrite
  */
@@ -439,7 +447,7 @@ void GitSubmodule::InitWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -475,6 +483,8 @@ void GitSubmodule::InitAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitSubmodule::Sync(const Arguments& args) {
@@ -504,7 +514,7 @@ void GitSubmodule::SyncWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -539,6 +549,8 @@ void GitSubmodule::SyncAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  * @param {Repository} callback
  */
@@ -570,7 +582,7 @@ void GitSubmodule::OpenWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -611,6 +623,8 @@ void GitSubmodule::OpenAfterWork(uv_work_t *req) {
   delete baton;
 }
 
+#include "../include/functions/copy.h"
+
 /**
  */
 Handle<Value> GitSubmodule::Reload(const Arguments& args) {
@@ -640,7 +654,7 @@ void GitSubmodule::ReloadWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
@@ -674,6 +688,8 @@ void GitSubmodule::ReloadAfterWork(uv_work_t *req) {
   baton->callback.Dispose();
   delete baton;
 }
+
+#include "../include/functions/copy.h"
 
 /**
  * @param {Number} status
@@ -713,7 +729,7 @@ void GitSubmodule::StatusWork(uv_work_t *req) {
   );
   baton->error_code = result;
   if (result != GIT_OK) {
-    baton->error = giterr_last();
+    baton->error = git_error_dup(giterr_last());
   }
 }
 
