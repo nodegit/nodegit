@@ -10,7 +10,12 @@ if (~os.type().indexOf('CYGWIN') && !~path.indexOf(root)) {
 }
 
 // Assign raw api to module
-var rawApi = require('./build/Release/nodegit');
+var rawApi;
+try {
+  rawApi = require('./build/Release/nodegit');
+} catch (e) {
+  rawApi = require('./build/Debug/nodegit');
+}
 for (var key in rawApi) {
   exports[key] = rawApi[key];
 }
