@@ -3689,6 +3689,7 @@
             "name": "delta_out",
             "jsName": "delta",
             "cType": "const git_diff_delta **",
+            "copy": "git_diff_delta_dup",
             "cppClassName": "GitDelta",
             "jsClassName": "Delta",
             "isReturn": true,

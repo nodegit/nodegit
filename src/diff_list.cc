@@ -211,6 +211,9 @@ Handle<Value> GitDiffList::Patch(const Arguments& args) {
     toReturn->Set(String::NewSymbol("patch"), to);
 
       if (delta_out != NULL) {
+    delta_out = (const git_diff_delta * )git_diff_delta_dup(delta_out);
+  }
+  if (delta_out != NULL) {
     to = GitDelta::New((void *)delta_out);
   } else {
     to = Null();
