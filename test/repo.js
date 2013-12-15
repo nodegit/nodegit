@@ -12,7 +12,7 @@ exports.openInvalidRepo = function(test){
 
   // Test invalid repository
   git.Repo.open('repos/nonrepo', function(error, repository) {
-    test.equals(error.message, "Could not find repository from 'repos/nonrepo'");
+    test.equals(error.message, "Failed to resolve path 'repos/nonrepo': No such file or directory");
     test.done();
   });
 };
