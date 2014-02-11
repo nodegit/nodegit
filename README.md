@@ -35,6 +35,12 @@ $ npm run-script gen && npm install && npm test
 #### Install `nodegit` by cloning source from GitHub and running `node install`: ####
 
 ```` bash
+# Install system dependencies
+$ brew install cmake libzip
+$ npm install -g node-gyp
+````
+
+```` bash
 $ git clone git://github.com/tbranyen/nodegit.git
 $ cd nodegit
 $ npm run-script gen && npm install
