@@ -41,7 +41,8 @@
 
             'include_dirs': [
                 'vendor/libv8-convert',
-                'vendor/libgit2/include'
+                'vendor/libgit2/include',
+                "<!(node -e \"require('nan')\")"
             ],
 
             'libraries': [
