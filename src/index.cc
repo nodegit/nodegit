@@ -29,12 +29,12 @@ GitIndex::~GitIndex() {
 }
 
 void GitIndex::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Index"));
+  tpl->SetClassName(NanSymbol("Index"));
 
   NODE_SET_METHOD(tpl, "open", Open);
   NODE_SET_PROTOTYPE_METHOD(tpl, "read", Read);
@@ -54,28 +54,30 @@ void GitIndex::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "hasConflicts", HasConflicts);
   NODE_SET_METHOD(tpl, "indexToWorkdir", IndexToWorkdir);
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Index"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("Index"), tpl->GetFunction());
 }
 
-Handle<Value> GitIndex::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_index is required.")));
+    return NanThrowError(String::New("git_index is required."));
   }
 
-  GitIndex* object = new GitIndex((git_index *) External::Unwrap(args[0]));
+  GitIndex* object = new GitIndex((git_index *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitIndex::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitIndex::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_index *GitIndex::GetValue() {
@@ -89,30 +91,30 @@ git_index *GitIndex::GetValue() {
  * @param {String} index_path
  * @param {Index} callback
  */
-Handle<Value> GitIndex::Open(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Open) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String index_path is required.")));
+    return NanThrowError(String::New("String index_path is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   OpenBaton* baton = new OpenBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->index_pathReference = Persistent<Value>::New(args[0]);
-    const char * from_index_path;
-            String::Utf8Value index_path(args[0]->ToString());
-      from_index_path = strdup(*index_path);
-          baton->index_path = from_index_path;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->index_pathReference, args[0]);
+  const char * from_index_path;
+  String::Utf8Value index_path(args[0]->ToString());
+  from_index_path = strdup(*index_path);
+  baton->index_path = from_index_path;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OpenWork, (uv_after_work_cb)OpenAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitIndex::OpenWork(uv_work_t *req) {
@@ -128,7 +130,7 @@ void GitIndex::OpenWork(uv_work_t *req) {
 }
 
 void GitIndex::OpenAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
   TryCatch try_catch;
@@ -141,21 +143,21 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -172,24 +174,24 @@ void GitIndex::OpenAfterWork(uv_work_t *req) {
 
 /**
  */
-Handle<Value> GitIndex::Read(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Read) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   ReadBaton* baton = new ReadBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->indexReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->indexReference, args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ReadWork, (uv_after_work_cb)ReadAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitIndex::ReadWork(uv_work_t *req) {
@@ -204,28 +206,28 @@ void GitIndex::ReadWork(uv_work_t *req) {
 }
 
 void GitIndex::ReadAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   ReadBaton *baton = static_cast<ReadBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -241,24 +243,24 @@ void GitIndex::ReadAfterWork(uv_work_t *req) {
 
 /**
  */
-Handle<Value> GitIndex::Write(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Write) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   WriteBaton* baton = new WriteBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->indexReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->indexReference, args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, WriteWork, (uv_after_work_cb)WriteAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitIndex::WriteWork(uv_work_t *req) {
@@ -273,28 +275,28 @@ void GitIndex::WriteWork(uv_work_t *req) {
 }
 
 void GitIndex::WriteAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   WriteBaton *baton = static_cast<WriteBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -311,31 +313,31 @@ void GitIndex::WriteAfterWork(uv_work_t *req) {
 /**
  * @param {Tree} tree
  */
-Handle<Value> GitIndex::ReadTree(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::ReadTree) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Tree tree is required.")));
+    return NanThrowError(String::New("Tree tree is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   ReadTreeBaton* baton = new ReadTreeBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->indexReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->indexReference, args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
-  baton->treeReference = Persistent<Value>::New(args[0]);
-    const git_tree * from_tree;
-            from_tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
-          baton->tree = from_tree;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->treeReference, args[0]);
+  const git_tree * from_tree;
+  from_tree = ObjectWrap::Unwrap<GitTree>(args[0]->ToObject())->GetValue();
+  baton->tree = from_tree;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ReadTreeWork, (uv_after_work_cb)ReadTreeAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitIndex::ReadTreeWork(uv_work_t *req) {
@@ -351,30 +353,30 @@ void GitIndex::ReadTreeWork(uv_work_t *req) {
 }
 
 void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   ReadTreeBaton *baton = static_cast<ReadTreeBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -390,11 +392,11 @@ void GitIndex::ReadTreeAfterWork(uv_work_t *req) {
 /**
  * @param {Oid} callback
  */
-Handle<Value> GitIndex::WriteTree(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::WriteTree) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   WriteTreeBaton* baton = new WriteTreeBaton;
@@ -402,13 +404,13 @@ Handle<Value> GitIndex::WriteTree(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->out = (git_oid *)malloc(sizeof(git_oid ));
-  baton->indexReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->indexReference, args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, WriteTreeWork, (uv_after_work_cb)WriteTreeAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitIndex::WriteTreeWork(uv_work_t *req) {
@@ -424,7 +426,7 @@ void GitIndex::WriteTreeWork(uv_work_t *req) {
 }
 
 void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   WriteTreeBaton *baton = static_cast<WriteTreeBaton *>(req->data);
 
   TryCatch try_catch;
@@ -437,24 +439,24 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-        free(baton->out);
-      }
+    free(baton->out);
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -467,8 +469,8 @@ void GitIndex::WriteTreeAfterWork(uv_work_t *req) {
 /**
  * @return {Number} result
  */
-Handle<Value> GitIndex::Size(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Size) {
+  NanScope();
   
 
   size_t result = git_index_entrycount(
@@ -477,30 +479,30 @@ Handle<Value> GitIndex::Size(const Arguments& args) {
 
   Handle<Value> to;
     to = Uint32::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  */
-Handle<Value> GitIndex::Clear(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Clear) {
+  NanScope();
   
 
   git_index_clear(
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  * @param {Number} n
  * @return {IndexEntry} result
  */
-Handle<Value> GitIndex::Entry(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Entry) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number n is required.")));
+    return NanThrowError(String::New("Number n is required."));
   }
 
   size_t from_n;
@@ -520,20 +522,20 @@ Handle<Value> GitIndex::Entry(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} path
  * @param {Number} stage
  */
-Handle<Value> GitIndex::Remove(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Remove) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError(String::New("String path is required."));
   }
   if (args.Length() == 1 || !args[1]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number stage is required.")));
+    return NanThrowError(String::New("Number stage is required."));
   }
 
   const char * from_path;
@@ -550,26 +552,26 @@ Handle<Value> GitIndex::Remove(const Arguments& args) {
   free((void *)from_path);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  * @param {String} dir
  * @param {Number} stage
  */
-Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::RemoveDirectory) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String dir is required.")));
+    return NanThrowError(String::New("String dir is required."));
   }
   if (args.Length() == 1 || !args[1]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number stage is required.")));
+    return NanThrowError(String::New("Number stage is required."));
   }
 
   const char * from_dir;
@@ -586,13 +588,13 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
   free((void *)from_dir);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 #include "../include/functions/copy.h"
@@ -600,32 +602,32 @@ Handle<Value> GitIndex::RemoveDirectory(const Arguments& args) {
 /**
  * @param {String} path
  */
-Handle<Value> GitIndex::AddBypath(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::AddBypath) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError(String::New("String path is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   AddBypathBaton* baton = new AddBypathBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->indexReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->indexReference, args.This());
   baton->index = ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue();
-  baton->pathReference = Persistent<Value>::New(args[0]);
-    const char * from_path;
-            String::Utf8Value path(args[0]->ToString());
-      from_path = strdup(*path);
-          baton->path = from_path;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->pathReference, args[0]);
+  const char * from_path;
+  String::Utf8Value path(args[0]->ToString());
+  from_path = strdup(*path);
+  baton->path = from_path;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, AddBypathWork, (uv_after_work_cb)AddBypathAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitIndex::AddBypathWork(uv_work_t *req) {
@@ -641,28 +643,28 @@ void GitIndex::AddBypathWork(uv_work_t *req) {
 }
 
 void GitIndex::AddBypathAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   AddBypathBaton *baton = static_cast<AddBypathBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -679,10 +681,10 @@ void GitIndex::AddBypathAfterWork(uv_work_t *req) {
 /**
  * @param {String} path
  */
-Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::RemoveBypath) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError(String::New("String path is required."));
   }
 
   const char * from_path;
@@ -696,23 +698,23 @@ Handle<Value> GitIndex::RemoveBypath(const Arguments& args) {
   free((void *)from_path);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  * @param {String} path
  * @return {Number} at_pos
  */
-Handle<Value> GitIndex::Find(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::Find) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError(String::New("String path is required."));
   }
 
   size_t at_pos = 0;
@@ -729,16 +731,16 @@ Handle<Value> GitIndex::Find(const Arguments& args) {
 
   Handle<Value> to;
     to = Uint32::New(at_pos);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} path
  */
-Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::ConflictRemove) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError(String::New("String path is required."));
   }
 
   const char * from_path;
@@ -752,33 +754,33 @@ Handle<Value> GitIndex::ConflictRemove(const Arguments& args) {
   free((void *)from_path);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  */
-Handle<Value> GitIndex::ConflictCleanup(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::ConflictCleanup) {
+  NanScope();
   
 
   git_index_conflict_cleanup(
     ObjectWrap::Unwrap<GitIndex>(args.This())->GetValue()
   );
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::HasConflicts) {
+  NanScope();
   
 
   int result = git_index_has_conflicts(
@@ -787,7 +789,7 @@ Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
 
   Handle<Value> to;
     to = Int32::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -798,45 +800,45 @@ Handle<Value> GitIndex::HasConflicts(const Arguments& args) {
  * @param {DiffOptions} opts
  * @param {DiffList} callback
  */
-Handle<Value> GitIndex::IndexToWorkdir(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndex::IndexToWorkdir) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError(String::New("Repository repo is required."));
   }
 
   if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   IndexToWorkdirBaton* baton = new IndexToWorkdirBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo;
-            from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-          baton->repo = from_repo;
-    baton->indexReference = Persistent<Value>::New(args[1]);
-    git_index * from_index;
-      if (args[1]->IsObject()) {
-            from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
-          } else {
-      from_index = 0;
-    }
-      baton->index = from_index;
-    baton->optsReference = Persistent<Value>::New(args[2]);
-    const git_diff_options * from_opts;
-      if (args[2]->IsObject()) {
-            from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
-          } else {
-      from_opts = 0;
-    }
-      baton->opts = from_opts;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+  NanAssignPersistent(Value, baton->repoReference, args[0]);
+  git_repository * from_repo;
+  from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  NanAssignPersistent(Value, baton->indexReference, args[1]);
+  git_index * from_index;
+  if (args[1]->IsObject()) {
+    from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
+  } else {
+    from_index = 0;
+  }
+  baton->index = from_index;
+  NanAssignPersistent(Value, baton->optsReference, args[2]);
+  const git_diff_options * from_opts;
+  if (args[2]->IsObject()) {
+    from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
+  } else {
+    from_opts = 0;
+  }
+  baton->opts = from_opts;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, IndexToWorkdirWork, (uv_after_work_cb)IndexToWorkdirAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitIndex::IndexToWorkdirWork(uv_work_t *req) {
@@ -854,7 +856,7 @@ void GitIndex::IndexToWorkdirWork(uv_work_t *req) {
 }
 
 void GitIndex::IndexToWorkdirAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   IndexToWorkdirBaton *baton = static_cast<IndexToWorkdirBaton *>(req->data);
 
   TryCatch try_catch;
@@ -867,21 +869,21 @@ void GitIndex::IndexToWorkdirAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -895,4 +897,4 @@ void GitIndex::IndexToWorkdirAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Persistent<Function> GitIndex::constructor_template;
+Persistent<FunctionTemplate> GitIndex::constructor_template;

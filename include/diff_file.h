@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitDiffFile : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_diff_file *GetValue();
@@ -28,13 +30,13 @@ class GitDiffFile : public ObjectWrap {
     GitDiffFile(git_diff_file *raw);
     ~GitDiffFile();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> Path(const Arguments& args);
-    static Handle<Value> Size(const Arguments& args);
-    static Handle<Value> Flags(const Arguments& args);
-    static Handle<Value> Mode(const Arguments& args);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(Path);
+    static NAN_METHOD(Size);
+    static NAN_METHOD(Flags);
+    static NAN_METHOD(Mode);
 
     git_diff_file *raw;
 };

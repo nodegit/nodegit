@@ -23,36 +23,38 @@ GitDiffOptions::~GitDiffOptions() {
 }
 
 void GitDiffOptions::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("DiffOptions"));
+  tpl->SetClassName(NanSymbol("DiffOptions"));
 
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("DiffOptions"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("DiffOptions"), tpl->GetFunction());
 }
 
-Handle<Value> GitDiffOptions::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffOptions::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_diff_options is required.")));
+    return NanThrowError(String::New("git_diff_options is required."));
   }
 
-  GitDiffOptions* object = new GitDiffOptions((git_diff_options *) External::Unwrap(args[0]));
+  GitDiffOptions* object = new GitDiffOptions((git_diff_options *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitDiffOptions::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitDiffOptions::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_diff_options *GitDiffOptions::GetValue() {
@@ -60,4 +62,4 @@ git_diff_options *GitDiffOptions::GetValue() {
 }
 
 
-Persistent<Function> GitDiffOptions::constructor_template;
+Persistent<FunctionTemplate> GitDiffOptions::constructor_template;

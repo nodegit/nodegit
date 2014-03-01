@@ -8,13 +8,15 @@
 #include <v8.h>
 #include <node.h>
 
+#include "nan.h"
+
 using namespace node;
 using namespace v8;
 
 class Wrapper : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     void *GetValue();
@@ -23,8 +25,8 @@ class Wrapper : public ObjectWrap {
   private:
     Wrapper(void *raw);
 
-    static Handle<Value> New(const Arguments& args);
-    static Handle<Value> ToBuffer(const Arguments& args);
+    static NAN_METHOD(New);
+    static NAN_METHOD(ToBuffer);
 
     void *raw;
 };

@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitDiffList : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_diff_list *GetValue();
@@ -27,15 +29,15 @@ class GitDiffList : public ObjectWrap {
   private:
     GitDiffList(git_diff_list *raw);
     ~GitDiffList();
+    
+    static NAN_METHOD(New);
+    
+    static NAN_METHOD(Merge);
+    static NAN_METHOD(FindSimilar);
+    static NAN_METHOD(Size);
+    static NAN_METHOD(NumDeltasOfType);
+    static NAN_METHOD(Patch);
 
-    static Handle<Value> New(const Arguments& args);
-
-
-    static Handle<Value> Merge(const Arguments& args);
-    static Handle<Value> FindSimilar(const Arguments& args);
-    static Handle<Value> Size(const Arguments& args);
-    static Handle<Value> NumDeltasOfType(const Arguments& args);
-    static Handle<Value> Patch(const Arguments& args);
     git_diff_list *raw;
 };
 

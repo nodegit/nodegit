@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,17 +19,15 @@ using namespace v8;
 class GitThreads : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
 
   private:
+    static NAN_METHOD(New);
 
-    static Handle<Value> New(const Arguments& args);
-
-
-    static Handle<Value> Init(const Arguments& args);
-    static Handle<Value> Shutdown(const Arguments& args);
+    static NAN_METHOD(Init);
+    static NAN_METHOD(Shutdown);
 };
 
 #endif
