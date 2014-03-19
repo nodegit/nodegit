@@ -25,12 +25,12 @@ GitRevWalk::~GitRevWalk() {
 }
 
 void GitRevWalk::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("RevWalk"));
+  tpl->SetClassName(NanSymbol("RevWalk"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "reset", Reset);
   NODE_SET_PROTOTYPE_METHOD(tpl, "push", Push);
@@ -45,27 +45,29 @@ void GitRevWalk::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "sorting", Sorting);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("RevWalk"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("RevWalk"), tpl->GetFunction());
 }
-
-Handle<Value> GitRevWalk::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRevWalk::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_revwalk is required.")));
+    return NanThrowError(String::New("git_revwalk is required."));
   }
 
-  GitRevWalk* object = new GitRevWalk((git_revwalk *) External::Unwrap(args[0]));
+  GitRevWalk* object = new GitRevWalk((git_revwalk *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitRevWalk::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitRevWalk::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_revwalk *GitRevWalk::GetValue() {
@@ -75,15 +77,15 @@ git_revwalk *GitRevWalk::GetValue() {
 
 /**
  */
-Handle<Value> GitRevWalk::Reset(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRevWalk::Reset) {
+  NanScope();
   
 
   git_revwalk_reset(
     ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue()
   );
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 #include "../include/functions/copy.h"
@@ -91,31 +93,31 @@ Handle<Value> GitRevWalk::Reset(const Arguments& args) {
 /**
  * @param {Oid} id
  */
-Handle<Value> GitRevWalk::Push(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRevWalk::Push) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+    return NanThrowError(String::New("Oid id is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   PushBaton* baton = new PushBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id;
-            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-          baton->id = from_id;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->idReference, args[0]);
+  const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->id = from_id;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushWork, (uv_after_work_cb)PushAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::PushWork(uv_work_t *req) {
@@ -131,28 +133,28 @@ void GitRevWalk::PushWork(uv_work_t *req) {
 }
 
 void GitRevWalk::PushAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   PushBaton *baton = static_cast<PushBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -170,32 +172,32 @@ void GitRevWalk::PushAfterWork(uv_work_t *req) {
 /**
  * @param {String} glob
  */
-Handle<Value> GitRevWalk::PushGlob(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String glob is required.")));
+NAN_METHOD(GitRevWalk::PushGlob) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String glob is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   PushGlobBaton* baton = new PushGlobBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->globReference = Persistent<Value>::New(args[0]);
-    const char * from_glob;
-            String::Utf8Value glob(args[0]->ToString());
-      from_glob = strdup(*glob);
-          baton->glob = from_glob;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->globReference, args[0]);
+  const char * from_glob;
+  String::Utf8Value glob(args[0]->ToString());
+  from_glob = strdup(*glob);
+  baton->glob = from_glob;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushGlobWork, (uv_after_work_cb)PushGlobAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::PushGlobWork(uv_work_t *req) {
@@ -211,28 +213,28 @@ void GitRevWalk::PushGlobWork(uv_work_t *req) {
 }
 
 void GitRevWalk::PushGlobAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   PushGlobBaton *baton = static_cast<PushGlobBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -250,24 +252,24 @@ void GitRevWalk::PushGlobAfterWork(uv_work_t *req) {
 
 /**
  */
-Handle<Value> GitRevWalk::PushHead(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRevWalk::PushHead) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   PushHeadBaton* baton = new PushHeadBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushHeadWork, (uv_after_work_cb)PushHeadAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::PushHeadWork(uv_work_t *req) {
@@ -282,28 +284,28 @@ void GitRevWalk::PushHeadWork(uv_work_t *req) {
 }
 
 void GitRevWalk::PushHeadAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   PushHeadBaton *baton = static_cast<PushHeadBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -320,31 +322,31 @@ void GitRevWalk::PushHeadAfterWork(uv_work_t *req) {
 /**
  * @param {Oid} commit_id
  */
-Handle<Value> GitRevWalk::Hide(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid commit_id is required.")));
+NAN_METHOD(GitRevWalk::Hide) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return NanThrowError(String::New("Oid commit_id is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   HideBaton* baton = new HideBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->commit_idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_commit_id;
-            from_commit_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-          baton->commit_id = from_commit_id;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->commit_idReference, args[0]);
+  const git_oid * from_commit_id;
+  from_commit_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->commit_id = from_commit_id;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, HideWork, (uv_after_work_cb)HideAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::HideWork(uv_work_t *req) {
@@ -360,28 +362,28 @@ void GitRevWalk::HideWork(uv_work_t *req) {
 }
 
 void GitRevWalk::HideAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   HideBaton *baton = static_cast<HideBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -399,32 +401,32 @@ void GitRevWalk::HideAfterWork(uv_work_t *req) {
 /**
  * @param {String} glob
  */
-Handle<Value> GitRevWalk::HideGlob(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String glob is required.")));
+NAN_METHOD(GitRevWalk::HideGlob) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String glob is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   HideGlobBaton* baton = new HideGlobBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->globReference = Persistent<Value>::New(args[0]);
-    const char * from_glob;
-            String::Utf8Value glob(args[0]->ToString());
-      from_glob = strdup(*glob);
-          baton->glob = from_glob;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->globReference, args[0]);
+  const char * from_glob;
+  String::Utf8Value glob(args[0]->ToString());
+  from_glob = strdup(*glob);
+  baton->glob = from_glob;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, HideGlobWork, (uv_after_work_cb)HideGlobAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::HideGlobWork(uv_work_t *req) {
@@ -440,28 +442,28 @@ void GitRevWalk::HideGlobWork(uv_work_t *req) {
 }
 
 void GitRevWalk::HideGlobAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   HideGlobBaton *baton = static_cast<HideGlobBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -479,24 +481,24 @@ void GitRevWalk::HideGlobAfterWork(uv_work_t *req) {
 
 /**
  */
-Handle<Value> GitRevWalk::HideHead(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRevWalk::HideHead) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   HideHeadBaton* baton = new HideHeadBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, HideHeadWork, (uv_after_work_cb)HideHeadAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::HideHeadWork(uv_work_t *req) {
@@ -511,30 +513,30 @@ void GitRevWalk::HideHeadWork(uv_work_t *req) {
 }
 
 void GitRevWalk::HideHeadAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   HideHeadBaton *baton = static_cast<HideHeadBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -549,32 +551,32 @@ void GitRevWalk::HideHeadAfterWork(uv_work_t *req) {
 /**
  * @param {String} refname
  */
-Handle<Value> GitRevWalk::PushRef(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String refname is required.")));
+NAN_METHOD(GitRevWalk::PushRef) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String refname is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   PushRefBaton* baton = new PushRefBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->refnameReference = Persistent<Value>::New(args[0]);
-    const char * from_refname;
-            String::Utf8Value refname(args[0]->ToString());
-      from_refname = strdup(*refname);
-          baton->refname = from_refname;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->refnameReference, args[0]);
+  const char * from_refname;
+  String::Utf8Value refname(args[0]->ToString());
+  from_refname = strdup(*refname);
+  baton->refname = from_refname;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, PushRefWork, (uv_after_work_cb)PushRefAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::PushRefWork(uv_work_t *req) {
@@ -590,30 +592,30 @@ void GitRevWalk::PushRefWork(uv_work_t *req) {
 }
 
 void GitRevWalk::PushRefAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   PushRefBaton *baton = static_cast<PushRefBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -630,32 +632,32 @@ void GitRevWalk::PushRefAfterWork(uv_work_t *req) {
 /**
  * @param {String} refname
  */
-Handle<Value> GitRevWalk::HideRef(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String refname is required.")));
+NAN_METHOD(GitRevWalk::HideRef) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String refname is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   HideRefBaton* baton = new HideRefBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->refnameReference = Persistent<Value>::New(args[0]);
-    const char * from_refname;
-            String::Utf8Value refname(args[0]->ToString());
-      from_refname = strdup(*refname);
-          baton->refname = from_refname;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->refnameReference, args[0]);
+  const char * from_refname;
+  String::Utf8Value refname(args[0]->ToString());
+  from_refname = strdup(*refname);
+  baton->refname = from_refname;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, HideRefWork, (uv_after_work_cb)HideRefAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::HideRefWork(uv_work_t *req) {
@@ -671,30 +673,30 @@ void GitRevWalk::HideRefWork(uv_work_t *req) {
 }
 
 void GitRevWalk::HideRefAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   HideRefBaton *baton = static_cast<HideRefBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -711,11 +713,11 @@ void GitRevWalk::HideRefAfterWork(uv_work_t *req) {
 /**
  * @param {Oid} callback
  */
-Handle<Value> GitRevWalk::Next(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRevWalk::Next) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   NextBaton* baton = new NextBaton;
@@ -723,13 +725,13 @@ Handle<Value> GitRevWalk::Next(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->out = (git_oid *)malloc(sizeof(git_oid ));
-  baton->walkReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->walkReference, args.This());
   baton->walk = ObjectWrap::Unwrap<GitRevWalk>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, NextWork, (uv_after_work_cb)NextAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRevWalk::NextWork(uv_work_t *req) {
@@ -745,7 +747,7 @@ void GitRevWalk::NextWork(uv_work_t *req) {
 }
 
 void GitRevWalk::NextAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   NextBaton *baton = static_cast<NextBaton *>(req->data);
 
   TryCatch try_catch;
@@ -758,21 +760,21 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->out);
       }
@@ -788,10 +790,10 @@ void GitRevWalk::NextAfterWork(uv_work_t *req) {
 /**
  * @param {Number} sort_mode
  */
-Handle<Value> GitRevWalk::Sorting(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number sort_mode is required.")));
+NAN_METHOD(GitRevWalk::Sorting) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsUint32()) {
+    return NanThrowError(String::New("Number sort_mode is required."));
   }
 
   unsigned int from_sort_mode;
@@ -802,7 +804,7 @@ Handle<Value> GitRevWalk::Sorting(const Arguments& args) {
     , from_sort_mode
   );
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
-Persistent<Function> GitRevWalk::constructor_template;
+Persistent<FunctionTemplate> GitRevWalk::constructor_template;

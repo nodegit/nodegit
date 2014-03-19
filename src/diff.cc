@@ -24,12 +24,12 @@ GitDiff::~GitDiff() {
 }
 
 void GitDiff::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Diff"));
+  tpl->SetClassName(NanSymbol("Diff"));
 
   NODE_SET_METHOD(tpl, "treeToTree", TreeToTree);
   NODE_SET_METHOD(tpl, "treeToIndex", TreeToIndex);
@@ -42,9 +42,8 @@ void GitDiff::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "numDeltasOfType", NumDeltasOfType);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getPatch", GetPatch);
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Diff"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("Diff"), tpl->GetFunction());
 }
 
 Handle<Value> GitDiff::New(const Arguments& args) {

@@ -8,6 +8,7 @@
 #include <v8.h>
 #include <node.h>
 #include <string>
+#include "nan.h"
 
 #include "git2.h"
 
@@ -17,7 +18,7 @@ using namespace v8;
 class GitBlob : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_blob *GetValue();
@@ -28,13 +29,12 @@ class GitBlob : public ObjectWrap {
     GitBlob(git_blob *raw);
     ~GitBlob();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> Content(const Arguments& args);
-    static Handle<Value> Size(const Arguments& args);
-    static Handle<Value> IsBinary(const Arguments& args);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(Content);
+    static NAN_METHOD(Size);
+    static NAN_METHOD(IsBinary);
     git_blob *raw;
 };
 

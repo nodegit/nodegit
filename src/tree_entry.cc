@@ -26,41 +26,43 @@ GitTreeEntry::~GitTreeEntry() {
 }
 
 void GitTreeEntry::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("TreeEntry"));
-
+  tpl->SetClassName(NanSymbol("TreeEntry"));
+  
   NODE_SET_PROTOTYPE_METHOD(tpl, "name", Name);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(tpl, "filemode", filemode);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getObject", GetObject);
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("TreeEntry"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("TreeEntry"), tpl->GetFunction());
 }
 
-Handle<Value> GitTreeEntry::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeEntry::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_tree_entry is required.")));
+    return NanThrowError(String::New("git_tree_entry is required."));
   }
 
-  GitTreeEntry* object = new GitTreeEntry((git_tree_entry *) External::Unwrap(args[0]));
+  GitTreeEntry* object = new GitTreeEntry((git_tree_entry *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitTreeEntry::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitTreeEntry::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_tree_entry *GitTreeEntry::GetValue() {
@@ -71,8 +73,8 @@ git_tree_entry *GitTreeEntry::GetValue() {
 /**
  * @return {String} result
  */
-Handle<Value> GitTreeEntry::Name(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeEntry::Name) {
+  NanScope();
   
 
   const char * result = git_tree_entry_name(
@@ -81,14 +83,14 @@ Handle<Value> GitTreeEntry::Name(const Arguments& args) {
 
   Handle<Value> to;
     to = String::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Oid} result
  */
-Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeEntry::Oid) {
+  NanScope();
   
 
   const git_oid * result = git_tree_entry_id(
@@ -104,14 +106,14 @@ Handle<Value> GitTreeEntry::Oid(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitTreeEntry::Type(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeEntry::Type) {
+  NanScope();
   
 
   git_otype result = git_tree_entry_type(
@@ -120,14 +122,14 @@ Handle<Value> GitTreeEntry::Type(const Arguments& args) {
 
   Handle<Value> to;
     to = Number::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeEntry::filemode) {
+  NanScope();
   
 
   git_filemode_t result = git_tree_entry_filemode(
@@ -136,7 +138,7 @@ Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
 
   Handle<Value> to;
     to = Number::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -145,31 +147,31 @@ Handle<Value> GitTreeEntry::filemode(const Arguments& args) {
  * @param {Repository} repo
  * @param {Object} callback
  */
-Handle<Value> GitTreeEntry::GetObject(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeEntry::GetObject) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError(String::New("Repository repo is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetObjectBaton* baton = new GetObjectBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo;
-            from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-          baton->repo = from_repo;
-    baton->entryReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args[0]);
+  git_repository * from_repo;
+  from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  NanAssignPersistent(Value, baton->entryReference, args.This());
   baton->entry = ObjectWrap::Unwrap<GitTreeEntry>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetObjectWork, (uv_after_work_cb)GetObjectAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitTreeEntry::GetObjectWork(uv_work_t *req) {
@@ -186,7 +188,7 @@ void GitTreeEntry::GetObjectWork(uv_work_t *req) {
 }
 
 void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetObjectBaton *baton = static_cast<GetObjectBaton *>(req->data);
 
   TryCatch try_catch;
@@ -199,21 +201,21 @@ void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -226,4 +228,4 @@ void GitTreeEntry::GetObjectAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Persistent<Function> GitTreeEntry::constructor_template;
+Persistent<FunctionTemplate> GitTreeEntry::constructor_template;

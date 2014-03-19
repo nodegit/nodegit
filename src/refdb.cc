@@ -23,36 +23,38 @@ GitRefDb::~GitRefDb() {
 }
 
 void GitRefDb::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("RefDb"));
+  tpl->SetClassName(NanSymbol("RefDb"));
 
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("RefDb"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("RefDb"), tpl->GetFunction());
 }
 
-Handle<Value> GitRefDb::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRefDb::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_refdb is required.")));
+    return NanThrowError(String::New("git_refdb is required."));
   }
 
-  GitRefDb* object = new GitRefDb((git_refdb *) External::Unwrap(args[0]));
+  GitRefDb* object = new GitRefDb((git_refdb *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitRefDb::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitRefDb::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_refdb *GitRefDb::GetValue() {
@@ -60,4 +62,4 @@ git_refdb *GitRefDb::GetValue() {
 }
 
 
-Persistent<Function> GitRefDb::constructor_template;
+Persistent<FunctionTemplate> GitRefDb::constructor_template;

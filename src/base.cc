@@ -43,7 +43,7 @@
 #include "../include/clone_options.h"
 
 extern "C" void init(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Wrapper::Initialize(target);
 

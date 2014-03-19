@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitCommit : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_commit *GetValue();
@@ -28,20 +30,19 @@ class GitCommit : public ObjectWrap {
     GitCommit(git_commit *raw);
     ~GitCommit();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> MessageEncoding(const Arguments& args);
-    static Handle<Value> Message(const Arguments& args);
-    static Handle<Value> Time(const Arguments& args);
-    static Handle<Value> Offset(const Arguments& args);
-    static Handle<Value> Committer(const Arguments& args);
-    static Handle<Value> Author(const Arguments& args);
-    static Handle<Value> TreeId(const Arguments& args);
-    static Handle<Value> ParentCount(const Arguments& args);
-    static Handle<Value> ParentId(const Arguments& args);
-    static Handle<Value> NthGenAncestor(const Arguments& args);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(MessageEncoding);
+    static NAN_METHOD(Message);
+    static NAN_METHOD(Time);
+    static NAN_METHOD(Offset);
+    static NAN_METHOD(Committer);
+    static NAN_METHOD(Author);
+    static NAN_METHOD(TreeId);
+    static NAN_METHOD(ParentCount);
+    static NAN_METHOD(ParentId);
+    static NAN_METHOD(NthGenAncestor);
     git_commit *raw;
 };
 

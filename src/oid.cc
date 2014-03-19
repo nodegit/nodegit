@@ -23,38 +23,40 @@ GitOid::~GitOid() {
 }
 
 void GitOid::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Oid"));
+  tpl->SetClassName(NanSymbol("Oid"));
 
   NODE_SET_METHOD(tpl, "fromString", FromString);
   NODE_SET_PROTOTYPE_METHOD(tpl, "sha", Sha);
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Oid"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("Oid"), tpl->GetFunction());
 }
 
-Handle<Value> GitOid::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOid::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_oid is required.")));
+    return NanThrowError(String::New("git_oid is required."));
   }
 
-  GitOid* object = new GitOid((git_oid *) External::Unwrap(args[0]));
+  GitOid* object = new GitOid((git_oid *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitOid::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitOid::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_oid *GitOid::GetValue() {
@@ -66,10 +68,10 @@ git_oid *GitOid::GetValue() {
  * @param {String} str
  * @return {Oid} out
  */
-Handle<Value> GitOid::FromString(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOid::FromString) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String str is required.")));
+    return NanThrowError(String::New("String str is required."));
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid));
@@ -85,9 +87,9 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   if (result != GIT_OK) {
     free(out);
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -97,14 +99,14 @@ Handle<Value> GitOid::FromString(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {String} result
  */
-Handle<Value> GitOid::Sha(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOid::Sha) {
+  NanScope();
   
 
   char * result = git_oid_allocfmt(
@@ -114,7 +116,7 @@ Handle<Value> GitOid::Sha(const Arguments& args) {
   Handle<Value> to;
     to = String::New(result);
   free(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
-Persistent<Function> GitOid::constructor_template;
+Persistent<FunctionTemplate> GitOid::constructor_template;

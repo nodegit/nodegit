@@ -39,7 +39,7 @@ GitRepo::~GitRepo() {
 }
 
 void GitRepo::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
@@ -76,28 +76,32 @@ void GitRepo::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "clone", Clone);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getRemote", GetRemote);
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Repo"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("Repo"), tpl->GetFunction());
 }
 
-Handle<Value> GitRepo::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_repository is required.")));
+    return NanThrowError(String::New("git_repository is required."));
   }
 
-  GitRepo* object = new GitRepo((git_repository *) External::Unwrap(args[0]));
+  GitRepo* object = new GitRepo((git_repository *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitRepo::New(void *raw) {
-  HandleScope scope;
+  NanScope();
+
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitRepo::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  
+  return scope.Close(instance);
 }
 
 git_repository *GitRepo::GetValue() {
@@ -111,30 +115,30 @@ git_repository *GitRepo::GetValue() {
  * @param {String} path
  * @param {Repository} callback
  */
-Handle<Value> GitRepo::Open(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::Open) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError(String::New("String path is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   OpenBaton* baton = new OpenBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->pathReference = Persistent<Value>::New(args[0]);
-    const char * from_path;
-            String::Utf8Value path(args[0]->ToString());
-      from_path = strdup(*path);
-          baton->path = from_path;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->pathReference, args[0]);
+  const char * from_path;
+  String::Utf8Value path(args[0]->ToString());
+  from_path = strdup(*path);
+  baton->path = from_path;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OpenWork, (uv_after_work_cb)OpenAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::OpenWork(uv_work_t *req) {
@@ -150,7 +154,7 @@ void GitRepo::OpenWork(uv_work_t *req) {
 }
 
 void GitRepo::OpenAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
   TryCatch try_catch;
@@ -163,23 +167,23 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -197,37 +201,37 @@ void GitRepo::OpenAfterWork(uv_work_t *req) {
  * @param {Boolean} is_bare
  * @param {Repository} callback
  */
-Handle<Value> GitRepo::Init(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+NAN_METHOD(GitRepo::Init) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String path is required."));
   }
   if (args.Length() == 1 || !args[1]->IsBoolean()) {
-    return ThrowException(Exception::Error(String::New("Boolean is_bare is required.")));
+    return NanThrowError(String::New("Boolean is_bare is required."));
   }
 
   if (args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   InitBaton* baton = new InitBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->pathReference = Persistent<Value>::New(args[0]);
-    const char * from_path;
-            String::Utf8Value path(args[0]->ToString());
-      from_path = strdup(*path);
-          baton->path = from_path;
-    baton->is_bareReference = Persistent<Value>::New(args[1]);
-    unsigned from_is_bare;
-            from_is_bare = (unsigned) args[1]->ToBoolean()->Value();
-          baton->is_bare = from_is_bare;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+  NanAssignPersistent(Value, baton->pathReference, args[0]);
+  const char * from_path;
+  String::Utf8Value path(args[0]->ToString());
+  from_path = strdup(*path);
+  baton->path = from_path;
+  NanAssignPersistent(Value, baton->is_bareReference, args[1]);
+  unsigned from_is_bare;
+  from_is_bare = (unsigned) args[1]->ToBoolean()->Value();
+  baton->is_bare = from_is_bare;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, InitWork, (uv_after_work_cb)InitAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::InitWork(uv_work_t *req) {
@@ -244,7 +248,7 @@ void GitRepo::InitWork(uv_work_t *req) {
 }
 
 void GitRepo::InitAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   InitBaton *baton = static_cast<InitBaton *>(req->data);
 
   TryCatch try_catch;
@@ -257,23 +261,23 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -288,8 +292,8 @@ void GitRepo::InitAfterWork(uv_work_t *req) {
 /**
  * @return {String} result
  */
-Handle<Value> GitRepo::Path(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::Path) {
+  NanScope();
   
 
   const char * result = git_repository_path(
@@ -298,14 +302,14 @@ Handle<Value> GitRepo::Path(const Arguments& args) {
 
   Handle<Value> to;
     to = String::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {String} result
  */
-Handle<Value> GitRepo::Workdir(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::Workdir) {
+  NanScope();
   
 
   const char * result = git_repository_workdir(
@@ -314,14 +318,14 @@ Handle<Value> GitRepo::Workdir(const Arguments& args) {
 
   Handle<Value> to;
     to = String::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Odb} out
  */
-Handle<Value> GitRepo::Odb(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::Odb) {
+  NanScope();
   
   git_odb * out = 0;
 
@@ -331,9 +335,9 @@ Handle<Value> GitRepo::Odb(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -343,7 +347,7 @@ Handle<Value> GitRepo::Odb(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -351,24 +355,24 @@ Handle<Value> GitRepo::Odb(const Arguments& args) {
 /**
  * @param {Index} callback
  */
-Handle<Value> GitRepo::openIndex(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::openIndex) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   openIndexBaton* baton = new openIndexBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, openIndexWork, (uv_after_work_cb)openIndexAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::openIndexWork(uv_work_t *req) {
@@ -384,7 +388,7 @@ void GitRepo::openIndexWork(uv_work_t *req) {
 }
 
 void GitRepo::openIndexAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   openIndexBaton *baton = static_cast<openIndexBaton *>(req->data);
 
   TryCatch try_catch;
@@ -397,23 +401,23 @@ void GitRepo::openIndexAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -429,31 +433,31 @@ void GitRepo::openIndexAfterWork(uv_work_t *req) {
  * @param {Oid} id
  * @param {Blob} callback
  */
-Handle<Value> GitRepo::GetBlob(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+NAN_METHOD(GitRepo::GetBlob) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return NanThrowError(String::New("Oid id is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetBlobBaton* baton = new GetBlobBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id;
-            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-          baton->id = from_id;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->idReference, args[0]);
+  const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->id = from_id;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetBlobWork, (uv_after_work_cb)GetBlobAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetBlobWork(uv_work_t *req) {
@@ -470,7 +474,7 @@ void GitRepo::GetBlobWork(uv_work_t *req) {
 }
 
 void GitRepo::GetBlobAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetBlobBaton *baton = static_cast<GetBlobBaton *>(req->data);
 
   TryCatch try_catch;
@@ -483,21 +487,21 @@ void GitRepo::GetBlobAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -516,31 +520,31 @@ void GitRepo::GetBlobAfterWork(uv_work_t *req) {
  * @param {Oid} id
  * @param {Commit} callback
  */
-Handle<Value> GitRepo::GetCommit(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+NAN_METHOD(GitRepo::GetCommit) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return NanThrowError(String::New("Oid id is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetCommitBaton* baton = new GetCommitBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id;
-            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-          baton->id = from_id;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->idReference, args[0]);
+  const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->id = from_id;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetCommitWork, (uv_after_work_cb)GetCommitAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetCommitWork(uv_work_t *req) {
@@ -557,7 +561,7 @@ void GitRepo::GetCommitWork(uv_work_t *req) {
 }
 
 void GitRepo::GetCommitAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetCommitBaton *baton = static_cast<GetCommitBaton *>(req->data);
 
   TryCatch try_catch;
@@ -570,23 +574,23 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -610,29 +614,29 @@ void GitRepo::GetCommitAfterWork(uv_work_t *req) {
  * @param {Array} parents
  * @param {Oid} callback
  */
-Handle<Value> GitRepo::CreateCommit(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Signature author is required.")));
+NAN_METHOD(GitRepo::CreateCommit) {
+  NanScope();
+  if (args.Length() == 1 || !args[1]->IsObject()) {
+    return NanThrowError(String::New("Signature author is required."));
   }
   if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Signature committer is required.")));
+    return NanThrowError(String::New("Signature committer is required."));
   }
   if (args.Length() == 4 || !args[4]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String message is required.")));
+    return NanThrowError(String::New("String message is required."));
   }
   if (args.Length() == 5 || !args[5]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Tree tree is required.")));
+    return NanThrowError(String::New("Tree tree is required."));
   }
   if (args.Length() == 6 || !args[6]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number parent_count is required.")));
+    return NanThrowError(String::New("Number parent_count is required."));
   }
   if (args.Length() == 7 || !args[7]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Array parents is required.")));
+    return NanThrowError(String::New("Array parents is required."));
   }
 
   if (args.Length() == 8 || !args[8]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   CreateCommitBaton* baton = new CreateCommitBaton;
@@ -640,61 +644,60 @@ Handle<Value> GitRepo::CreateCommit(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->id = (git_oid *)malloc(sizeof(git_oid ));
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->update_refReference = Persistent<Value>::New(args[0]);
-    const char * from_update_ref;
-      if (args[0]->IsString()) {
-            String::Utf8Value update_ref(args[0]->ToString());
-      from_update_ref = strdup(*update_ref);
-          } else {
-      from_update_ref = 0;
-    }
-      baton->update_ref = from_update_ref;
-    baton->authorReference = Persistent<Value>::New(args[1]);
-    const git_signature * from_author;
-            from_author = ObjectWrap::Unwrap<GitSignature>(args[1]->ToObject())->GetValue();
-          baton->author = from_author;
-    baton->committerReference = Persistent<Value>::New(args[2]);
-    const git_signature * from_committer;
-            from_committer = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
-          baton->committer = from_committer;
-    baton->message_encodingReference = Persistent<Value>::New(args[3]);
-    const char * from_message_encoding;
-      if (args[3]->IsString()) {
-            String::Utf8Value message_encoding(args[3]->ToString());
-      from_message_encoding = strdup(*message_encoding);
-          } else {
-      from_message_encoding = 0;
-    }
-      baton->message_encoding = from_message_encoding;
-    baton->messageReference = Persistent<Value>::New(args[4]);
-    const char * from_message;
-            String::Utf8Value message(args[4]->ToString());
-      from_message = strdup(*message);
-          baton->message = from_message;
-    baton->treeReference = Persistent<Value>::New(args[5]);
-    const git_tree * from_tree;
-            from_tree = ObjectWrap::Unwrap<GitTree>(args[5]->ToObject())->GetValue();
-          baton->tree = from_tree;
-    baton->parent_countReference = Persistent<Value>::New(args[6]);
-    int from_parent_count;
-            from_parent_count = (int) args[6]->ToInt32()->Value();
-          baton->parent_count = from_parent_count;
-    baton->parentsReference = Persistent<Value>::New(args[7]);
-    const git_commit ** from_parents;
-            Array *tmp_parents = Array::Cast(*args[7]);
-      from_parents = (const git_commit **)malloc(tmp_parents->Length() * sizeof(const git_commit *));
-      for (unsigned int i = 0; i < tmp_parents->Length(); i++) {
-    
-        from_parents[i] = ObjectWrap::Unwrap<GitCommit>(tmp_parents->Get(Number::New(static_cast<double>(i)))->ToObject())->GetValue();
-      }
-          baton->parents = from_parents;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[8]));
+  NanAssignPersistent(Value, baton->update_refReference, args[0]);
+  const char * from_update_ref;
+  if (args[0]->IsString()) {
+    String::Utf8Value update_ref(args[0]->ToString());
+    from_update_ref = strdup(*update_ref);
+  } else {
+    from_update_ref = 0;
+  }
+  baton->update_ref = from_update_ref;
+  NanAssignPersistent(Value, baton->authorReference, args[1]);
+  const git_signature * from_author;
+  from_author = ObjectWrap::Unwrap<GitSignature>(args[1]->ToObject())->GetValue();
+  baton->author = from_author;
+  NanAssignPersistent(Value, baton->committerReference, args[2]);
+  const git_signature * from_committer;
+  from_committer = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
+  baton->committer = from_committer;
+  NanAssignPersistent(Value, baton->message_encodingReference, args[3]);
+  const char * from_message_encoding;
+  if (args[3]->IsString()) {
+    String::Utf8Value message_encoding(args[3]->ToString());
+  from_message_encoding = strdup(*message_encoding);
+  } else {
+    from_message_encoding = 0;
+  }
+  baton->message_encoding = from_message_encoding;
+  NanAssignPersistent(Value, baton->messageReference, args[4]);
+  const char * from_message;
+  String::Utf8Value message(args[4]->ToString());
+  from_message = strdup(*message);
+  baton->message = from_message;
+  NanAssignPersistent(Value, baton->treeReference, args[5]);
+  const git_tree * from_tree;
+  from_tree = ObjectWrap::Unwrap<GitTree>(args[5]->ToObject())->GetValue();
+  baton->tree = from_tree;
+  NanAssignPersistent(Value, baton->parent_countReference, args[6]);
+  int from_parent_count;
+  from_parent_count = (int) args[6]->ToInt32()->Value();
+  baton->parent_count = from_parent_count;
+  NanAssignPersistent(Value, baton->parentsReference, args[7]);
+  const git_commit ** from_parents;
+  Array *tmp_parents = Array::Cast(*args[7]);
+  from_parents = (const git_commit **)malloc(tmp_parents->Length() * sizeof(const git_commit *));
+  for (unsigned int i = 0; i < tmp_parents->Length(); i++) {  
+    from_parents[i] = ObjectWrap::Unwrap<GitCommit>(tmp_parents->Get(Number::New(static_cast<double>(i)))->ToObject())->GetValue();
+  }
+  baton->parents = from_parents;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[8]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateCommitWork, (uv_after_work_cb)CreateCommitAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::CreateCommitWork(uv_work_t *req) {
@@ -718,7 +721,7 @@ void GitRepo::CreateCommitWork(uv_work_t *req) {
 }
 
 void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   CreateCommitBaton *baton = static_cast<CreateCommitBaton *>(req->data);
 
   TryCatch try_catch;
@@ -731,24 +734,24 @@ void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-        free(baton->id);
-      }
+    free(baton->id);
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -777,38 +780,39 @@ void GitRepo::CreateCommitAfterWork(uv_work_t *req) {
  * @param {Number} type
  * @param {Object} callback
  */
-Handle<Value> GitRepo::GetObject(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+NAN_METHOD(GitRepo::GetObject) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return NanThrowError(String::New("Oid id is required."));
   }
   if (args.Length() == 1 || !args[1]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number type is required.")));
+    return NanThrowError(String::New("Number type is required."));
   }
 
   if (args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetObjectBaton* baton = new GetObjectBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id;
-            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-          baton->id = from_id;
-    baton->typeReference = Persistent<Value>::New(args[1]);
-    git_otype from_type;
-            from_type = (git_otype) args[1]->ToInt32()->Value();
-          baton->type = from_type;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+  NanAssignPersistent(Value, baton->idReference, args[0]);
+  const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->id = from_id;
+  NanAssignPersistent(Value, baton->typeReference, args[1]);
+
+  git_otype from_type;
+  from_type = (git_otype) args[1]->ToInt32()->Value();
+  baton->type = from_type;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetObjectWork, (uv_after_work_cb)GetObjectAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetObjectWork(uv_work_t *req) {
@@ -826,7 +830,7 @@ void GitRepo::GetObjectWork(uv_work_t *req) {
 }
 
 void GitRepo::GetObjectAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetObjectBaton *baton = static_cast<GetObjectBaton *>(req->data);
 
   TryCatch try_catch;
@@ -839,21 +843,21 @@ void GitRepo::GetObjectAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -873,32 +877,32 @@ void GitRepo::GetObjectAfterWork(uv_work_t *req) {
  * @param {String} name
  * @param {Reference} callback
  */
-Handle<Value> GitRepo::GetReference(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
+NAN_METHOD(GitRepo::GetReference) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String name is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetReferenceBaton* baton = new GetReferenceBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->nameReference = Persistent<Value>::New(args[0]);
-    const char * from_name;
-            String::Utf8Value name(args[0]->ToString());
-      from_name = strdup(*name);
-          baton->name = from_name;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->nameReference, args[0]);
+  const char * from_name;
+  String::Utf8Value name(args[0]->ToString());
+  from_name = strdup(*name);
+  baton->name = from_name;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetReferenceWork, (uv_after_work_cb)GetReferenceAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetReferenceWork(uv_work_t *req) {
@@ -915,7 +919,7 @@ void GitRepo::GetReferenceWork(uv_work_t *req) {
 }
 
 void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetReferenceBaton *baton = static_cast<GetReferenceBaton *>(req->data);
 
   TryCatch try_catch;
@@ -928,21 +932,21 @@ void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -962,16 +966,16 @@ void GitRepo::GetReferenceAfterWork(uv_work_t *req) {
  * @param {Number} force
  * @return {Reference} out
  */
-Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
+NAN_METHOD(GitRepo::CreateSymbolicReference) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String name is required."));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String target is required.")));
+    return NanThrowError(String::New("String target is required."));
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
+    return NanThrowError(String::New("Number force is required."));
   }
 
   git_reference * out = 0;
@@ -995,9 +999,9 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
   free((void *)from_target);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -1007,7 +1011,7 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
@@ -1016,16 +1020,16 @@ Handle<Value> GitRepo::CreateSymbolicReference(const Arguments& args) {
  * @param {Number} force
  * @return {Reference} out
  */
-Handle<Value> GitRepo::CreateReference(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
+NAN_METHOD(GitRepo::CreateReference) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String name is required."));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+    return NanThrowError(String::New("Oid id is required."));
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
+    return NanThrowError(String::New("Number force is required."));
   }
 
   git_reference * out = 0;
@@ -1047,9 +1051,9 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
   free((void *)from_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -1059,7 +1063,7 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -1069,40 +1073,40 @@ Handle<Value> GitRepo::CreateReference(const Arguments& args) {
  * @param {String} url
  * @param {Remote} callback
  */
-Handle<Value> GitRepo::AddRemote(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
+NAN_METHOD(GitRepo::AddRemote) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String name is required."));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String url is required.")));
+    return NanThrowError(String::New("String url is required."));
   }
 
   if (args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   AddRemoteBaton* baton = new AddRemoteBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->nameReference = Persistent<Value>::New(args[0]);
-    const char * from_name;
-            String::Utf8Value name(args[0]->ToString());
-      from_name = strdup(*name);
-          baton->name = from_name;
-    baton->urlReference = Persistent<Value>::New(args[1]);
-    const char * from_url;
-            String::Utf8Value url(args[1]->ToString());
-      from_url = strdup(*url);
-          baton->url = from_url;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+  NanAssignPersistent(Value, baton->nameReference, args[0]);
+  const char * from_name;
+  String::Utf8Value name(args[0]->ToString());
+  from_name = strdup(*name);
+  baton->name = from_name;
+  NanAssignPersistent(Value, baton->urlReference, args[1]);
+  const char * from_url;
+  String::Utf8Value url(args[1]->ToString());
+  from_url = strdup(*url);
+  baton->url = from_url;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, AddRemoteWork, (uv_after_work_cb)AddRemoteAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::AddRemoteWork(uv_work_t *req) {
@@ -1120,7 +1124,7 @@ void GitRepo::AddRemoteWork(uv_work_t *req) {
 }
 
 void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   AddRemoteBaton *baton = static_cast<AddRemoteBaton *>(req->data);
 
   TryCatch try_catch;
@@ -1133,21 +1137,21 @@ void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -1166,8 +1170,8 @@ void GitRepo::AddRemoteAfterWork(uv_work_t *req) {
 /**
  * @return {RevWalk} out
  */
-Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::CreateRevWalk) {
+  NanScope();
   
   git_revwalk * out = 0;
 
@@ -1177,9 +1181,9 @@ Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -1189,17 +1193,17 @@ Handle<Value> GitRepo::CreateRevWalk(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} name
  * @return {Submodule} submodule
  */
-Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
+NAN_METHOD(GitRepo::GetSubmodule) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String name is required."));
   }
 
   git_submodule * submodule = 0;
@@ -1215,9 +1219,9 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
   free((void *)from_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -1227,7 +1231,7 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
@@ -1236,16 +1240,16 @@ Handle<Value> GitRepo::GetSubmodule(const Arguments& args) {
  * @param {Number} use_gitlink
  * @return {Submodule} submodule
  */
-Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String url is required.")));
+NAN_METHOD(GitRepo::AddSubmodule) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String url is required."));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError(String::New("String path is required."));
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number use_gitlink is required.")));
+    return NanThrowError(String::New("Number use_gitlink is required."));
   }
 
   git_submodule * submodule = 0;
@@ -1269,9 +1273,9 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
   free((void *)from_path);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -1281,7 +1285,7 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -1290,31 +1294,31 @@ Handle<Value> GitRepo::AddSubmodule(const Arguments& args) {
  * @param {Oid} id
  * @param {Tag} callback
  */
-Handle<Value> GitRepo::GetTag(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+NAN_METHOD(GitRepo::GetTag) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return NanThrowError(String::New("Oid id is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetTagBaton* baton = new GetTagBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id;
-            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-          baton->id = from_id;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->idReference, args[0]);
+  const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->id = from_id;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetTagWork, (uv_after_work_cb)GetTagAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetTagWork(uv_work_t *req) {
@@ -1331,7 +1335,7 @@ void GitRepo::GetTagWork(uv_work_t *req) {
 }
 
 void GitRepo::GetTagAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetTagBaton *baton = static_cast<GetTagBaton *>(req->data);
 
   TryCatch try_catch;
@@ -1344,21 +1348,21 @@ void GitRepo::GetTagAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -1381,26 +1385,26 @@ void GitRepo::GetTagAfterWork(uv_work_t *req) {
  * @param {Number} force
  * @param {Oid} callback
  */
-Handle<Value> GitRepo::CreateTag(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String tag_name is required.")));
+NAN_METHOD(GitRepo::CreateTag) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String tag_name is required."));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Object target is required.")));
+    return NanThrowError(String::New("Object target is required."));
   }
   if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Signature tagger is required.")));
+    return NanThrowError(String::New("Signature tagger is required."));
   }
   if (args.Length() == 3 || !args[3]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String message is required.")));
+    return NanThrowError(String::New("String message is required."));
   }
   if (args.Length() == 4 || !args[4]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
+    return NanThrowError(String::New("Number force is required."));
   }
 
   if (args.Length() == 5 || !args[5]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   CreateTagBaton* baton = new CreateTagBaton;
@@ -1408,35 +1412,35 @@ Handle<Value> GitRepo::CreateTag(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->oid = (git_oid *)malloc(sizeof(git_oid ));
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->tag_nameReference = Persistent<Value>::New(args[0]);
-    const char * from_tag_name;
-            String::Utf8Value tag_name(args[0]->ToString());
-      from_tag_name = strdup(*tag_name);
-          baton->tag_name = from_tag_name;
-    baton->targetReference = Persistent<Value>::New(args[1]);
-    const git_object * from_target;
-            from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
-          baton->target = from_target;
-    baton->taggerReference = Persistent<Value>::New(args[2]);
-    const git_signature * from_tagger;
-            from_tagger = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
-          baton->tagger = from_tagger;
-    baton->messageReference = Persistent<Value>::New(args[3]);
-    const char * from_message;
-            String::Utf8Value message(args[3]->ToString());
-      from_message = strdup(*message);
-          baton->message = from_message;
-    baton->forceReference = Persistent<Value>::New(args[4]);
-    int from_force;
-            from_force = (int) args[4]->ToInt32()->Value();
-          baton->force = from_force;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[5]));
+  NanAssignPersistent(Value, baton->tag_nameReference, args[0]);
+  const char * from_tag_name;
+  String::Utf8Value tag_name(args[0]->ToString());
+  from_tag_name = strdup(*tag_name);
+  baton->tag_name = from_tag_name;
+  NanAssignPersistent(Value, baton->targetReference, args[1]);
+  const git_object * from_target;
+  from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
+  baton->target = from_target;
+  NanAssignPersistent(Value, baton->taggerReference, args[2]);
+  const git_signature * from_tagger;
+  from_tagger = ObjectWrap::Unwrap<GitSignature>(args[2]->ToObject())->GetValue();
+  baton->tagger = from_tagger;
+  NanAssignPersistent(Value, baton->messageReference, args[3]);
+  const char * from_message;
+  String::Utf8Value message(args[3]->ToString());
+  from_message = strdup(*message);
+  baton->message = from_message;
+  NanAssignPersistent(Value, baton->forceReference, args[4]);
+  int from_force;
+  from_force = (int) args[4]->ToInt32()->Value();
+  baton->force = from_force;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[5]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateTagWork, (uv_after_work_cb)CreateTagAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::CreateTagWork(uv_work_t *req) {
@@ -1457,7 +1461,7 @@ void GitRepo::CreateTagWork(uv_work_t *req) {
 }
 
 void GitRepo::CreateTagAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   CreateTagBaton *baton = static_cast<CreateTagBaton *>(req->data);
 
   TryCatch try_catch;
@@ -1470,21 +1474,21 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->oid);
       }
@@ -1512,20 +1516,20 @@ void GitRepo::CreateTagAfterWork(uv_work_t *req) {
  * @param {Number} force
  * @param {Oid} callback
  */
-Handle<Value> GitRepo::CreateLightweightTag(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String tag_name is required.")));
+NAN_METHOD(GitRepo::CreateLightweightTag) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String tag_name is required."));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Object target is required.")));
+    return NanThrowError(String::New("Object target is required."));
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
+    return NanThrowError(String::New("Number force is required."));
   }
 
   if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   CreateLightweightTagBaton* baton = new CreateLightweightTagBaton;
@@ -1533,26 +1537,26 @@ Handle<Value> GitRepo::CreateLightweightTag(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->oid = (git_oid *)malloc(sizeof(git_oid ));
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->tag_nameReference = Persistent<Value>::New(args[0]);
-    const char * from_tag_name;
-            String::Utf8Value tag_name(args[0]->ToString());
-      from_tag_name = strdup(*tag_name);
-          baton->tag_name = from_tag_name;
-    baton->targetReference = Persistent<Value>::New(args[1]);
-    const git_object * from_target;
-            from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
-          baton->target = from_target;
-    baton->forceReference = Persistent<Value>::New(args[2]);
-    int from_force;
-            from_force = (int) args[2]->ToInt32()->Value();
-          baton->force = from_force;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+  NanAssignPersistent(Value, baton->tag_nameReference, args[0]);
+  const char * from_tag_name;
+  String::Utf8Value tag_name(args[0]->ToString());
+  from_tag_name = strdup(*tag_name);
+  baton->tag_name = from_tag_name;
+  NanAssignPersistent(Value, baton->targetReference, args[1]);
+  const git_object * from_target;
+  from_target = ObjectWrap::Unwrap<GitObject>(args[1]->ToObject())->GetValue();
+  baton->target = from_target;
+  NanAssignPersistent(Value, baton->forceReference, args[2]);
+  int from_force;
+  from_force = (int) args[2]->ToInt32()->Value();
+  baton->force = from_force;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateLightweightTagWork, (uv_after_work_cb)CreateLightweightTagAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::CreateLightweightTagWork(uv_work_t *req) {
@@ -1571,7 +1575,7 @@ void GitRepo::CreateLightweightTagWork(uv_work_t *req) {
 }
 
 void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   CreateLightweightTagBaton *baton = static_cast<CreateLightweightTagBaton *>(req->data);
 
   TryCatch try_catch;
@@ -1584,21 +1588,21 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->oid);
       }
@@ -1621,31 +1625,31 @@ void GitRepo::CreateLightweightTagAfterWork(uv_work_t *req) {
  * @param {Oid} id
  * @param {Tree} callback
  */
-Handle<Value> GitRepo::GetTree(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+NAN_METHOD(GitRepo::GetTree) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return NanThrowError(String::New("Oid id is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetTreeBaton* baton = new GetTreeBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->idReference = Persistent<Value>::New(args[0]);
-    const git_oid * from_id;
-            from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
-          baton->id = from_id;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->idReference, args[0]);
+  const git_oid * from_id;
+  from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
+  baton->id = from_id;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetTreeWork, (uv_after_work_cb)GetTreeAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetTreeWork(uv_work_t *req) {
@@ -1662,7 +1666,7 @@ void GitRepo::GetTreeWork(uv_work_t *req) {
 }
 
 void GitRepo::GetTreeAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetTreeBaton *baton = static_cast<GetTreeBaton *>(req->data);
 
   TryCatch try_catch;
@@ -1675,21 +1679,21 @@ void GitRepo::GetTreeAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -1706,24 +1710,24 @@ void GitRepo::GetTreeAfterWork(uv_work_t *req) {
 
 /**
  */
-Handle<Value> GitRepo::ReloadSubmodules(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::ReloadSubmodules) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   ReloadSubmodulesBaton* baton = new ReloadSubmodulesBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ReloadSubmodulesWork, (uv_after_work_cb)ReloadSubmodulesAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::ReloadSubmodulesWork(uv_work_t *req) {
@@ -1738,28 +1742,28 @@ void GitRepo::ReloadSubmodulesWork(uv_work_t *req) {
 }
 
 void GitRepo::ReloadSubmodulesAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   ReloadSubmodulesBaton *baton = static_cast<ReloadSubmodulesBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -1776,32 +1780,32 @@ void GitRepo::ReloadSubmodulesAfterWork(uv_work_t *req) {
 /**
  * @param {String} tag_name
  */
-Handle<Value> GitRepo::Delete(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String tag_name is required.")));
+NAN_METHOD(GitRepo::Delete) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String tag_name is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   DeleteBaton* baton = new DeleteBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->tag_nameReference = Persistent<Value>::New(args[0]);
-    const char * from_tag_name;
-            String::Utf8Value tag_name(args[0]->ToString());
-      from_tag_name = strdup(*tag_name);
-          baton->tag_name = from_tag_name;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->tag_nameReference, args[0]);
+  const char * from_tag_name;
+  String::Utf8Value tag_name(args[0]->ToString());
+  from_tag_name = strdup(*tag_name);
+  baton->tag_name = from_tag_name;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, DeleteWork, (uv_after_work_cb)DeleteAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::DeleteWork(uv_work_t *req) {
@@ -1817,28 +1821,28 @@ void GitRepo::DeleteWork(uv_work_t *req) {
 }
 
 void GitRepo::DeleteAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   DeleteBaton *baton = static_cast<DeleteBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanNewLocal<Value>(Undefined());
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -1858,11 +1862,11 @@ void GitRepo::DeleteAfterWork(uv_work_t *req) {
  * @param {Number} list_flags
  * @param {Array} callback
  */
-Handle<Value> GitRepo::GetReferences(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::GetReferences) {
+  NanScope();
     
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetReferencesBaton* baton = new GetReferencesBaton;
@@ -1870,21 +1874,21 @@ Handle<Value> GitRepo::GetReferences(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->array = (git_strarray *)malloc(sizeof(git_strarray ));
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->list_flagsReference = Persistent<Value>::New(args[0]);
-    unsigned int from_list_flags;
-      if (args[0]->IsUint32()) {
-            from_list_flags = (unsigned int) args[0]->ToUint32()->Value();
-          } else {
-      from_list_flags = 0;
-    }
-      baton->list_flags = from_list_flags;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->list_flagsReference, args[0]);
+  unsigned int from_list_flags;
+  if (args[0]->IsUint32()) {
+    from_list_flags = (unsigned int) args[0]->ToUint32()->Value();
+  } else {
+    from_list_flags = 0;
+  }
+  baton->list_flags = from_list_flags;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetReferencesWork, (uv_after_work_cb)GetReferencesAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetReferencesWork(uv_work_t *req) {
@@ -1901,7 +1905,7 @@ void GitRepo::GetReferencesWork(uv_work_t *req) {
 }
 
 void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetReferencesBaton *baton = static_cast<GetReferencesBaton *>(req->data);
 
   TryCatch try_catch;
@@ -1915,21 +1919,21 @@ void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
   to = tmpArray;
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->array);
       }
@@ -1952,17 +1956,17 @@ void GitRepo::GetReferencesAfterWork(uv_work_t *req) {
  * @param {Number} len
  * @param {Oid} callback
  */
-Handle<Value> GitRepo::CreateBlobFromBuffer(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Buffer buffer is required.")));
+NAN_METHOD(GitRepo::CreateBlobFromBuffer) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsObject()) {
+    return NanThrowError(String::New("Buffer buffer is required."));
   }
   if (args.Length() == 1 || !args[1]->IsNumber()) {
-    return ThrowException(Exception::Error(String::New("Number len is required.")));
+    return NanThrowError(String::New("Number len is required."));
   }
 
   if (args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   CreateBlobFromBufferBaton* baton = new CreateBlobFromBufferBaton;
@@ -1970,21 +1974,21 @@ Handle<Value> GitRepo::CreateBlobFromBuffer(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->oid = (git_oid *)malloc(sizeof(git_oid ));
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->bufferReference = Persistent<Value>::New(args[0]);
-    const void * from_buffer;
-            from_buffer = Buffer::Data(args[0]->ToObject());
-          baton->buffer = from_buffer;
-    baton->lenReference = Persistent<Value>::New(args[1]);
-    size_t from_len;
-            from_len = (size_t) args[1]->ToNumber()->Value();
-          baton->len = from_len;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+  NanAssignPersistent(Value, baton->bufferReference, args[0]);
+  const void * from_buffer;
+  from_buffer = Buffer::Data(args[0]->ToObject());
+  baton->buffer = from_buffer;
+  NanAssignPersistent(Value, baton->lenReference, args[1]);
+  size_t from_len;
+  from_len = (size_t) args[1]->ToNumber()->Value();
+  baton->len = from_len;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[2]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateBlobFromBufferWork, (uv_after_work_cb)CreateBlobFromBufferAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::CreateBlobFromBufferWork(uv_work_t *req) {
@@ -2002,7 +2006,7 @@ void GitRepo::CreateBlobFromBufferWork(uv_work_t *req) {
 }
 
 void GitRepo::CreateBlobFromBufferAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   CreateBlobFromBufferBaton *baton = static_cast<CreateBlobFromBufferBaton *>(req->data);
 
   TryCatch try_catch;
@@ -2015,21 +2019,21 @@ void GitRepo::CreateBlobFromBufferAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->oid);
       }
@@ -2050,14 +2054,14 @@ void GitRepo::CreateBlobFromBufferAfterWork(uv_work_t *req) {
  * @param {String} path
  * @param {Oid} callback
  */
-Handle<Value> GitRepo::CreateBlobFromFile(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+NAN_METHOD(GitRepo::CreateBlobFromFile) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String path is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   CreateBlobFromFileBaton* baton = new CreateBlobFromFileBaton;
@@ -2065,18 +2069,18 @@ Handle<Value> GitRepo::CreateBlobFromFile(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->id = (git_oid *)malloc(sizeof(git_oid ));
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->pathReference = Persistent<Value>::New(args[0]);
-    const char * from_path;
-            String::Utf8Value path(args[0]->ToString());
-      from_path = strdup(*path);
-          baton->path = from_path;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Value, baton->pathReference, args[0]);
+  const char * from_path;
+  String::Utf8Value path(args[0]->ToString());
+  from_path = strdup(*path);
+  baton->path = from_path;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CreateBlobFromFileWork, (uv_after_work_cb)CreateBlobFromFileAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::CreateBlobFromFileWork(uv_work_t *req) {
@@ -2093,7 +2097,7 @@ void GitRepo::CreateBlobFromFileWork(uv_work_t *req) {
 }
 
 void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   CreateBlobFromFileBaton *baton = static_cast<CreateBlobFromFileBaton *>(req->data);
 
   TryCatch try_catch;
@@ -2106,21 +2110,21 @@ void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->id);
       }
@@ -2140,11 +2144,11 @@ void GitRepo::CreateBlobFromFileAfterWork(uv_work_t *req) {
 /**
  * @param {Array} callback
  */
-Handle<Value> GitRepo::GetRemotes(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitRepo::GetRemotes) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetRemotesBaton* baton = new GetRemotesBaton;
@@ -2152,13 +2156,13 @@ Handle<Value> GitRepo::GetRemotes(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->out = (git_strarray *)malloc(sizeof(git_strarray ));
-  baton->repoReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args.This());
   baton->repo = ObjectWrap::Unwrap<GitRepo>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetRemotesWork, (uv_after_work_cb)GetRemotesAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::GetRemotesWork(uv_work_t *req) {
@@ -2174,7 +2178,7 @@ void GitRepo::GetRemotesWork(uv_work_t *req) {
 }
 
 void GitRepo::GetRemotesAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetRemotesBaton *baton = static_cast<GetRemotesBaton *>(req->data);
 
   TryCatch try_catch;
@@ -2188,21 +2192,21 @@ void GitRepo::GetRemotesAfterWork(uv_work_t *req) {
   to = tmpArray;
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->out);
       }
@@ -2225,46 +2229,46 @@ void GitRepo::GetRemotesAfterWork(uv_work_t *req) {
  * @param {CloneOptions} options
  * @param {Repository} callback
  */
-Handle<Value> GitRepo::Clone(const Arguments& args) {
-  HandleScope scope;
-      if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String url is required.")));
+NAN_METHOD(GitRepo::Clone) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String url is required."));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String local_path is required.")));
+    return NanThrowError(String::New("String local_path is required."));
   }
 
   if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   CloneBaton* baton = new CloneBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->urlReference = Persistent<Value>::New(args[0]);
-    const char * from_url;
-            String::Utf8Value url(args[0]->ToString());
-      from_url = strdup(*url);
-          baton->url = from_url;
-    baton->local_pathReference = Persistent<Value>::New(args[1]);
-    const char * from_local_path;
-            String::Utf8Value local_path(args[1]->ToString());
-      from_local_path = strdup(*local_path);
-          baton->local_path = from_local_path;
-    baton->optionsReference = Persistent<Value>::New(args[2]);
-    const git_clone_options * from_options;
-      if (args[2]->IsObject()) {
-            from_options = ObjectWrap::Unwrap<GitCloneOptions>(args[2]->ToObject())->GetValue();
-          } else {
-      from_options = 0;
-    }
-      baton->options = from_options;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+  NanAssignPersistent(Value, baton->urlReference, args[0]);
+  const char * from_url;
+  String::Utf8Value url(args[0]->ToString());
+  from_url = strdup(*url);
+  baton->url = from_url;
+  NanAssignPersistent(Value, baton->local_pathReference, args[1]);
+  const char * from_local_path;
+  String::Utf8Value local_path(args[1]->ToString());
+  from_local_path = strdup(*local_path);
+  baton->local_path = from_local_path;
+  NanAssignPersistent(Value, baton->optionsReference, args[2]);
+  const git_clone_options * from_options;
+  if (args[2]->IsObject()) {
+    from_options = ObjectWrap::Unwrap<GitCloneOptions>(args[2]->ToObject())->GetValue();
+  } else {
+    from_options = 0;
+  }
+  baton->options = from_options;
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[3]));
 
   uv_queue_work(uv_default_loop(), &baton->request, CloneWork, (uv_after_work_cb)CloneAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitRepo::CloneWork(uv_work_t *req) {
@@ -2282,7 +2286,7 @@ void GitRepo::CloneWork(uv_work_t *req) {
 }
 
 void GitRepo::CloneAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   CloneBaton *baton = static_cast<CloneBaton *>(req->data);
 
   TryCatch try_catch;
@@ -2295,23 +2299,23 @@ void GitRepo::CloneAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
-      }
+  }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
@@ -2329,16 +2333,16 @@ void GitRepo::CloneAfterWork(uv_work_t *req) {
  * @param {String} name
  * @return {Remote} out
  */
-Handle<Value> GitRepo::GetRemote(const Arguments& args) {
-  HandleScope scope;
-    if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String name is required.")));
+NAN_METHOD(GitRepo::GetRemote) {
+  NanScope();
+  if (args.Length() == 0 || !args[0]->IsString()) {
+    return NanThrowError(String::New("String name is required."));
   }
 
   git_remote * out = 0;
   const char * from_name;
-            String::Utf8Value name(args[0]->ToString());
-      from_name = strdup(*name);
+  String::Utf8Value name(args[0]->ToString());
+  from_name = strdup(*name);
       
   int result = git_remote_load(
     &out
@@ -2348,9 +2352,9 @@ Handle<Value> GitRepo::GetRemote(const Arguments& args) {
   free((void *)from_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -2360,7 +2364,7 @@ Handle<Value> GitRepo::GetRemote(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
-Persistent<Function> GitRepo::constructor_template;
+Persistent<FunctionTemplate> GitRepo::constructor_template;

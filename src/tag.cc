@@ -27,12 +27,12 @@ GitTag::~GitTag() {
 }
 
 void GitTag::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Tag"));
+  tpl->SetClassName(NanSymbol("Tag"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "getTarget", GetTarget);
@@ -44,27 +44,30 @@ void GitTag::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "peel", Peel);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Tag"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("Tag"), tpl->GetFunction());
 }
 
-Handle<Value> GitTag::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_tag is required.")));
+    return NanThrowError(String::New("git_tag is required."));
   }
 
-  GitTag* object = new GitTag((git_tag *) External::Unwrap(args[0]));
+  GitTag* object = new GitTag((git_tag *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitTag::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitTag::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_tag *GitTag::GetValue() {
@@ -75,8 +78,8 @@ git_tag *GitTag::GetValue() {
 /**
  * @return {Oid} result
  */
-Handle<Value> GitTag::Oid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::Oid) {
+  NanScope();
   
 
   const git_oid * result = git_tag_id(
@@ -92,7 +95,7 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -100,24 +103,24 @@ Handle<Value> GitTag::Oid(const Arguments& args) {
 /**
  * @param {Object} callback
  */
-Handle<Value> GitTag::GetTarget(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::GetTarget) {
+  NanScope();
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   GetTargetBaton* baton = new GetTargetBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  baton->tagReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->tagReference, args.This());
   baton->tag = ObjectWrap::Unwrap<GitTag>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, GetTargetWork, (uv_after_work_cb)GetTargetAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitTag::GetTargetWork(uv_work_t *req) {
@@ -133,7 +136,7 @@ void GitTag::GetTargetWork(uv_work_t *req) {
 }
 
 void GitTag::GetTargetAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   GetTargetBaton *baton = static_cast<GetTargetBaton *>(req->data);
 
   TryCatch try_catch;
@@ -146,21 +149,21 @@ void GitTag::GetTargetAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -175,9 +178,8 @@ void GitTag::GetTargetAfterWork(uv_work_t *req) {
 /**
  * @return {Oid} result
  */
-Handle<Value> GitTag::TargetId(const Arguments& args) {
-  HandleScope scope;
-  
+NAN_METHOD(GitTag::TargetId) {
+  NanScope();
 
   const git_oid * result = git_tag_target_id(
     ObjectWrap::Unwrap<GitTag>(args.This())->GetValue()
@@ -192,14 +194,14 @@ Handle<Value> GitTag::TargetId(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitTag::TargetType(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::TargetType) {
+  NanScope();
   
 
   git_otype result = git_tag_target_type(
@@ -208,14 +210,14 @@ Handle<Value> GitTag::TargetType(const Arguments& args) {
 
   Handle<Value> to;
     to = Int32::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {String} result
  */
-Handle<Value> GitTag::Name(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::Name) {
+  NanScope();
   
 
   const char * result = git_tag_name(
@@ -224,14 +226,14 @@ Handle<Value> GitTag::Name(const Arguments& args) {
 
   Handle<Value> to;
     to = String::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Signature} result
  */
-Handle<Value> GitTag::Tagger(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::Tagger) {
+  NanScope();
   
 
   const git_signature * result = git_tag_tagger(
@@ -247,14 +249,14 @@ Handle<Value> GitTag::Tagger(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {String} result
  */
-Handle<Value> GitTag::Message(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::Message) {
+  NanScope();
   
 
   const char * result = git_tag_message(
@@ -263,17 +265,17 @@ Handle<Value> GitTag::Message(const Arguments& args) {
 
   Handle<Value> to;
     to = String::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Tag} tag
  * @return {Object} tag_target_out
  */
-Handle<Value> GitTag::Peel(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTag::Peel) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Tag tag is required.")));
+    return NanThrowError(String::New("Tag tag is required."));
   }
 
   git_object * tag_target_out = 0;
@@ -286,9 +288,9 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -298,7 +300,7 @@ Handle<Value> GitTag::Peel(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
-Persistent<Function> GitTag::constructor_template;
+Persistent<FunctionTemplate> GitTag::constructor_template;

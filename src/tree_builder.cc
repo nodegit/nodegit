@@ -30,13 +30,13 @@ GitTreeBuilder::~GitTreeBuilder() {
 }
 
 void GitTreeBuilder::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("TreeBuilder"));
-
+  tpl->SetClassName(NanSymbol("TreeBuilder"));
+  
   NODE_SET_METHOD(tpl, "create", Create);
   NODE_SET_PROTOTYPE_METHOD(tpl, "clear", Clear);
   NODE_SET_METHOD(tpl, "size", Size);
@@ -45,28 +45,30 @@ void GitTreeBuilder::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "gitTreebuilderRemove", GitTreebuilderRemove);
   NODE_SET_PROTOTYPE_METHOD(tpl, "write", Write);
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("TreeBuilder"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("TreeBuilder"), tpl->GetFunction());
 }
 
-Handle<Value> GitTreeBuilder::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_treebuilder is required.")));
+    return NanThrowError(String::New("git_treebuilder is required."));
   }
 
-  GitTreeBuilder* object = new GitTreeBuilder((git_treebuilder *) External::Unwrap(args[0]));
+  GitTreeBuilder* object = new GitTreeBuilder((git_treebuilder *) External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitTreeBuilder::New(void *raw) {
-  HandleScope scope;
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitTreeBuilder::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 git_treebuilder *GitTreeBuilder::GetValue() {
@@ -78,8 +80,8 @@ git_treebuilder *GitTreeBuilder::GetValue() {
  * @param {Tree} source
  * @return {TreeBuilder} out
  */
-Handle<Value> GitTreeBuilder::Create(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::Create) {
+  NanScope();
   
   git_treebuilder * out = 0;
   const git_tree * from_source;
@@ -95,9 +97,9 @@ Handle<Value> GitTreeBuilder::Create(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -107,16 +109,16 @@ Handle<Value> GitTreeBuilder::Create(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {TreeBuilder} bld
  */
-Handle<Value> GitTreeBuilder::Clear(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::Clear) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("TreeBuilder bld is required.")));
+    return NanThrowError(String::New("TreeBuilder bld is required."));
   }
 
   git_treebuilder * from_bld;
@@ -126,14 +128,14 @@ Handle<Value> GitTreeBuilder::Clear(const Arguments& args) {
     from_bld
   );
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitTreeBuilder::Size(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::Size) {
+  NanScope();
   
 
   unsigned int result = git_treebuilder_entrycount(
@@ -142,17 +144,17 @@ Handle<Value> GitTreeBuilder::Size(const Arguments& args) {
 
   Handle<Value> to;
     to = Uint32::New(result);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} filename
  * @return {TreeEntry} result
  */
-Handle<Value> GitTreeBuilder::Get(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::Get) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String filename is required.")));
+    return NanThrowError(String::New("String filename is required."));
   }
 
   const char * from_filename;
@@ -174,7 +176,7 @@ Handle<Value> GitTreeBuilder::Get(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
@@ -183,16 +185,16 @@ Handle<Value> GitTreeBuilder::Get(const Arguments& args) {
  * @param {Number} filemode
  * @return {TreeEntry} out
  */
-Handle<Value> GitTreeBuilder::Insert(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::Insert) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String filename is required.")));
+    return NanThrowError(String::New("String filename is required."));
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+    return NanThrowError(String::New("Oid id is required."));
   }
   if (args.Length() == 2 || !args[2]->IsNumber()) {
-    return ThrowException(Exception::Error(String::New("Number filemode is required.")));
+    return NanThrowError(String::New("Number filemode is required."));
   }
 
   const git_tree_entry * out = 0;
@@ -214,9 +216,9 @@ Handle<Value> GitTreeBuilder::Insert(const Arguments& args) {
   free((void *)from_filename);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
@@ -229,16 +231,16 @@ Handle<Value> GitTreeBuilder::Insert(const Arguments& args) {
   } else {
     to = Null();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} filename
  */
-Handle<Value> GitTreeBuilder::GitTreebuilderRemove(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::GitTreebuilderRemove) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String filename is required.")));
+    return NanThrowError(String::New("String filename is required."));
   }
 
   const char * from_filename;
@@ -252,13 +254,13 @@ Handle<Value> GitTreeBuilder::GitTreebuilderRemove(const Arguments& args) {
   free((void *)from_filename);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(String::New(giterr_last()->message));
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError(String::New("Unkown Error"));
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 #include "../include/functions/copy.h"
@@ -267,14 +269,14 @@ Handle<Value> GitTreeBuilder::GitTreebuilderRemove(const Arguments& args) {
  * @param {Repository} repo
  * @param {Oid} callback
  */
-Handle<Value> GitTreeBuilder::Write(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTreeBuilder::Write) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError(String::New("Repository repo is required."));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError(String::New("Callback is required and must be a Function."));
   }
 
   WriteBaton* baton = new WriteBaton;
@@ -282,17 +284,17 @@ Handle<Value> GitTreeBuilder::Write(const Arguments& args) {
   baton->error = NULL;
   baton->request.data = baton;
   baton->id = (git_oid *)malloc(sizeof(git_oid ));
-  baton->repoReference = Persistent<Value>::New(args[0]);
-    git_repository * from_repo;
-            from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
-          baton->repo = from_repo;
-    baton->bldReference = Persistent<Value>::New(args.This());
+  NanAssignPersistent(Value, baton->repoReference, args[0]);
+  git_repository * from_repo;
+  from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
+  baton->repo = from_repo;
+  NanAssignPersistent(Value, baton->bldReference, args.This());
   baton->bld = ObjectWrap::Unwrap<GitTreeBuilder>(args.This())->GetValue();
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, WriteWork, (uv_after_work_cb)WriteAfterWork);
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 void GitTreeBuilder::WriteWork(uv_work_t *req) {
@@ -309,7 +311,7 @@ void GitTreeBuilder::WriteWork(uv_work_t *req) {
 }
 
 void GitTreeBuilder::WriteAfterWork(uv_work_t *req) {
-  HandleScope scope;
+  NanScope();
   WriteBaton *baton = static_cast<WriteBaton *>(req->data);
 
   TryCatch try_catch;
@@ -322,21 +324,21 @@ void GitTreeBuilder::WriteAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNewLocal<Value>(Null()),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
         free(baton->id);
       }
@@ -350,4 +352,4 @@ void GitTreeBuilder::WriteAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Persistent<Function> GitTreeBuilder::constructor_template;
+Persistent<FunctionTemplate> GitTreeBuilder::constructor_template;

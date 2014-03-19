@@ -23,12 +23,12 @@ Branch::~Branch() {
 }
 
 void Branch::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Branch"));
+  tpl->SetClassName(NanSymbol("Branch"));
 
   NODE_SET_METHOD(tpl, "create", Create);
   NODE_SET_METHOD(tpl, "delete", Delete);
@@ -42,9 +42,8 @@ void Branch::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "isHead", IsHead);
   NODE_SET_METHOD(tpl, "remoteName", RemoteName);
 
-
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Branch"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("Branch"), tpl->GetFunction());
 }
 
 Handle<Value> Branch::New(const Arguments& args) {

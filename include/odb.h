@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitOdb : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_odb *GetValue();
@@ -28,13 +30,13 @@ class GitOdb : public ObjectWrap {
     GitOdb(git_odb *raw);
     ~GitOdb();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
+    static NAN_METHOD(Create);
+    static NAN_METHOD(Open);
+    static NAN_METHOD(AddDiskAlternate);
+    static NAN_METHOD(Read);
 
-    static Handle<Value> Create(const Arguments& args);
-    static Handle<Value> Open(const Arguments& args);
-    static Handle<Value> AddDiskAlternate(const Arguments& args);
-    static Handle<Value> Read(const Arguments& args);
     static void ReadWork(uv_work_t* req);
     static void ReadAfterWork(uv_work_t* req);
 
@@ -49,11 +51,11 @@ class GitOdb : public ObjectWrap {
       const git_oid * id;
       Persistent<Function> callback;
     };
-    static Handle<Value> ReadPrefix(const Arguments& args);
-    static Handle<Value> ReadHeader(const Arguments& args);
-    static Handle<Value> Exists(const Arguments& args);
-    static Handle<Value> Refresh(const Arguments& args);
-    static Handle<Value> Write(const Arguments& args);
+    static NAN_METHOD(ReadPrefix);
+    static NAN_METHOD(ReadHeader);
+    static NAN_METHOD(Exists);
+    static NAN_METHOD(Refresh);
+    static NAN_METHOD(Write);
     static void WriteWork(uv_work_t* req);
     static void WriteAfterWork(uv_work_t* req);
 
@@ -72,8 +74,8 @@ class GitOdb : public ObjectWrap {
       git_otype type;
       Persistent<Function> callback;
     };
-    static Handle<Value> Hash(const Arguments& args);
-    static Handle<Value> Hashfile(const Arguments& args);
+    static NAN_METHOD(Hash);
+    static NAN_METHOD(Hashfile);
     git_odb *raw;
 };
 

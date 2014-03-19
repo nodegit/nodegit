@@ -17,48 +17,50 @@ Wrapper::Wrapper(void *raw) {
 }
 
 void Wrapper::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Wrapper"));
-
+  tpl->SetClassName(NanSymbol("Wrapper"));
+  
   NODE_SET_PROTOTYPE_METHOD(tpl, "toBuffer", ToBuffer);
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Wrapper"), constructor_template);
+  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
+  target->Set(String::NewSymbol("Wrapper"), tpl->GetFunction());
 }
 
-Handle<Value> Wrapper::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Wrapper::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("void * is required.")));
+    return NanThrowError(String::New("void * is required."));
   }
 
-  Wrapper* object = new Wrapper(External::Unwrap(args[0]));
+  Wrapper* object = new Wrapper(External::Cast(*args[0])->Value());
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> Wrapper::New(void *raw) {
-  HandleScope scope;
-
+  NanScope();
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(Wrapper::constructor_template->NewInstance(1, argv));
+  Local<Object> instance;
+  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
+  return scope.Close(instance);
 }
 
 void *Wrapper::GetValue() {
   return this->raw;
 }
 
-Handle<Value> Wrapper::ToBuffer(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Wrapper::ToBuffer) {
+  NanScope();
 
   if(args.Length() == 0 || !args[0]->IsNumber()) {
-    return ThrowException(Exception::Error(String::New("Number is required.")));
+    return NanThrowError(String::New("Number is required."));
   }
 
   int len = args[0]->ToNumber()->Value();
@@ -71,8 +73,8 @@ Handle<Value> Wrapper::ToBuffer(const Arguments& args) {
 
   std::memcpy(node::Buffer::Data(nodeBuffer), ObjectWrap::Unwrap<Wrapper>(args.This())->GetValue(), len);
 
-  return scope.Close(nodeBuffer);
+  NanReturnValue(nodeBuffer);
 }
 
 
-Persistent<Function> Wrapper::constructor_template;
+Persistent<FunctionTemplate> Wrapper::constructor_template;

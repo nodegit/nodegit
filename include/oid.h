@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitOid : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_oid *GetValue();
@@ -28,11 +30,11 @@ class GitOid : public ObjectWrap {
     GitOid(git_oid *raw);
     ~GitOid();
 
-    static Handle<Value> New(const Arguments& args);
-
-
-    static Handle<Value> FromString(const Arguments& args);
-    static Handle<Value> Sha(const Arguments& args);
+    static NAN_METHOD(New);
+    
+    static NAN_METHOD(FromString);
+    static NAN_METHOD(Sha);
+    
     git_oid *raw;
 };
 

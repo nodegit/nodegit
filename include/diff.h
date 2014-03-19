@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitDiff : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_diff_list *GetValue();
@@ -26,10 +28,10 @@ class GitDiff : public ObjectWrap {
     GitDiff(git_diff_list *raw);
     ~GitDiff();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
+    static NAN_METHOD(TreeToTree);
 
-    static Handle<Value> TreeToTree(const Arguments& args);
     static void TreeToTreeWork(uv_work_t* req);
     static void TreeToTreeAfterWork(uv_work_t* req);
 
@@ -47,7 +49,7 @@ class GitDiff : public ObjectWrap {
       const git_diff_options * opts;
       Persistent<Function> callback;
     };
-    static Handle<Value> TreeToIndex(const Arguments& args);
+    static NAN_METHOD(TreeToIndex);
     static void TreeToIndexWork(uv_work_t* req);
     static void TreeToIndexAfterWork(uv_work_t* req);
 
@@ -65,7 +67,7 @@ class GitDiff : public ObjectWrap {
       const git_diff_options * opts;
       Persistent<Function> callback;
     };
-    static Handle<Value> IndexToWorkdir(const Arguments& args);
+    static NAN_METHOD(IndexToWorkdir);
     static void IndexToWorkdirWork(uv_work_t* req);
     static void IndexToWorkdirAfterWork(uv_work_t* req);
 
@@ -81,7 +83,7 @@ class GitDiff : public ObjectWrap {
       const git_diff_options * opts;
       Persistent<Function> callback;
     };
-    static Handle<Value> TreeToWorkdir(const Arguments& args);
+    static NAN_METHOD(TreeToWorkdir);
     static void TreeToWorkdirWork(uv_work_t* req);
     static void TreeToWorkdirAfterWork(uv_work_t* req);
 
@@ -97,12 +99,12 @@ class GitDiff : public ObjectWrap {
       const git_diff_options * opts;
       Persistent<Function> callback;
     };
-    static Handle<Value> Merge(const Arguments& args);
-    static Handle<Value> FindSimilar(const Arguments& args);
-    static Handle<Value> StatusChar(const Arguments& args);
-    static Handle<Value> NumDeltas(const Arguments& args);
-    static Handle<Value> NumDeltasOfType(const Arguments& args);
-    static Handle<Value> GetPatch(const Arguments& args);
+    static NAN_METHOD(Merge);
+    static NAN_METHOD(FindSimilar);
+    static NAN_METHOD(StatusChar);
+    static NAN_METHOD(NumDeltas);
+    static NAN_METHOD(NumDeltasOfType);
+    static NAN_METHOD(GetPatch);
     git_diff_list *raw;
 };
 

@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitTreeEntry : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_tree_entry *GetValue();
@@ -28,14 +30,14 @@ class GitTreeEntry : public ObjectWrap {
     GitTreeEntry(git_tree_entry *raw);
     ~GitTreeEntry();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
+    static NAN_METHOD(Name);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(Type);
+    static NAN_METHOD(filemode);
+    static NAN_METHOD(GetObject);
 
-    static Handle<Value> Name(const Arguments& args);
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> Type(const Arguments& args);
-    static Handle<Value> filemode(const Arguments& args);
-    static Handle<Value> GetObject(const Arguments& args);
     static void GetObjectWork(uv_work_t* req);
     static void GetObjectAfterWork(uv_work_t* req);
 

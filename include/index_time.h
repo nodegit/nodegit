@@ -9,6 +9,8 @@
 #include <node.h>
 #include <string>
 
+#include "nan.h"
+
 #include "git2.h"
 
 using namespace node;
@@ -17,7 +19,7 @@ using namespace v8;
 class GitIndexTime : public ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
+    static Persistent<FunctionTemplate> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_index_time *GetValue();
@@ -28,11 +30,10 @@ class GitIndexTime : public ObjectWrap {
     GitIndexTime(git_index_time *raw);
     ~GitIndexTime();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-    static Handle<Value> Seconds(const Arguments& args);
-    static Handle<Value> Nanoseconds(const Arguments& args);
-
+    static NAN_METHOD(Seconds);
+    static NAN_METHOD(Nanoseconds);
     git_index_time *raw;
 };
 
