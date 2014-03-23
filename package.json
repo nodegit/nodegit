@@ -45,7 +45,8 @@
     "nodeunit": "~0.8.6",
     "rimraf": "~2.2.6",
     "ejs": "~1.0.0",
-    "ncp": "~0.5.0"
+    "ncp": "~0.5.0",
+    "async": "~0.2.10"
   },
   "scripts": {
     "lint": "jshint src",
