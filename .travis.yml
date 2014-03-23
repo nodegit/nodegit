@@ -4,6 +4,9 @@ node_js:
   - "0.10"
 git:
   depth: 1
+branches:
+  only:
+    - master
 matrix:
   fast_finish: true
   allow_failures:
