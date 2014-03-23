@@ -162,7 +162,7 @@ var dependencies = Q.allSettled([
   console.info('[nodegit] Building native node module.');
 
   return Q.nfcall(exec, systemPath([
-    '.', 'node_modules', '.bin', 'node-gyp build ' + python
+    '.', 'node_modules', '.bin', 'node-gyp build'
   ]), {
     cwd: '.'
   });
