@@ -45,6 +45,12 @@ $ git clone git://github.com/tbranyen/nodegit.git
 $ cd nodegit
 $ npm run-script gen && npm install
 ````
+### Ubuntu ###
+
+```` bash
+# Install system dependencies as root
+$ sudo apt-get install libzip-dev
+````
 
 ### Windows via Cygwin ###
 
