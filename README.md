@@ -43,7 +43,7 @@ $ npm install -g node-gyp
 ```` bash
 $ git clone git://github.com/tbranyen/nodegit.git
 $ cd nodegit
-$ npm run-script gen && npm install
+$ npm install ejs && npm run-script gen && npm install
 ````
 ### Ubuntu ###
 
