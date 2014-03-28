@@ -65,7 +65,7 @@ sudo apt-get install cmake libzip-dev build-essential
 ### Emulating git log: ###
 
 ``` javascript
-var open = require("/home/tim/git/nodegit/nodegit").Repo.open;
+var open = require("nodegit").Repo.open;
 
 // Open the repository directory.
 open("tmp", function(err, repo) {
@@ -117,7 +117,7 @@ open("tmp", function(err, repo) {
 ### Cloning a repository and reading a file: ###
 
 ``` javascript
-var clone = require("/home/tim/git/nodegit/nodegit").Repo.clone;
+var clone = require("nodegit").Repo.clone;
 
 // Clone a given repository into a specific folder.
 clone("https://github.com/nodegit/nodegit", "tmp", null, function(err, repo) {
