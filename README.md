@@ -62,6 +62,52 @@ sudo apt-get install cmake libzip-dev build-essential
 
 ## API examples. ##
 
+### Cloning a repository and reading a file: ###
+
+``` javascript
+var clone = require("nodegit").Repo.clone;
+
+// Clone a given repository into a specific folder.
+clone("https://github.com/nodegit/nodegit", "tmp", null, function(err, repo) {
+  if (err) {
+    throw err;
+  }
+
+  // Use a known commit sha from this repository.
+  var sha = "59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5";
+
+  // Look up this known commit.
+  repo.getCommit(sha, function(err, commit) {
+    if (err) {
+      throw error;
+    }
+
+    // Look up a specific file within that commit.
+    commit.getEntry("README.md", function(err, entry) {
+      if (err) {
+        throw error;
+      }
+
+      // Get the blob contents from the file.
+      entry.getBlob(function(err, blob) {
+        if (err) {
+          throw err;
+        }
+
+        // Show the name, sha, and filesize in byes.
+        console.log(entry.name() + entry.sha() + blob.size() + "b");
+
+        // Show a spacer.
+        console.log(Array(72).join("=") + "\n\n");
+
+        // Show the entire file.
+        console.log(String(blob));
+      });
+    });
+  });
+});
+```
+
 ### Emulating git log: ###
 
 ``` javascript
@@ -110,52 +156,6 @@ open("tmp", function(err, repo) {
 
     // Start emitting events.
     history.start();
-  });
-});
-```
-
-### Cloning a repository and reading a file: ###
-
-``` javascript
-var clone = require("nodegit").Repo.clone;
-
-// Clone a given repository into a specific folder.
-clone("https://github.com/nodegit/nodegit", "tmp", null, function(err, repo) {
-  if (err) {
-    throw err;
-  }
-
-  // Use a known commit sha from this repository.
-  var sha = "59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5";
-
-  // Look up this known commit.
-  repo.getCommit(sha, function(err, commit) {
-    if (err) {
-      throw error;
-    }
-
-    // Look up a specific file within that commit.
-    commit.getEntry("README.md", function(err, entry) {
-      if (err) {
-        throw error;
-      }
-
-      // Get the blob contents from the file.
-      entry.getBlob(function(err, blob) {
-        if (err) {
-          throw err;
-        }
-
-        // Show the name, sha, and filesize in byes.
-        console.log(entry.name() + entry.sha() + blob.size() + "b");
-
-        // Show a spacer.
-        console.log(Array(72).join("=") + "\n\n");
-
-        // Show the entire file.
-        console.log(String(blob));
-      });
-    });
   });
 });
 ```
