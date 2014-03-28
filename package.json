@@ -38,12 +38,14 @@
     "nan": "0.8.0"
   },
   "devDependencies": {
-    "nodeunit": "",
-    "rimraf": "1.0.x",
-    "ejs": "0.8.x",
-    "ncp": "~0.4.2"
+    "jshint": "~2.4.4",
+    "nodeunit": "~0.8.6",
+    "rimraf": "~2.2.6",
+    "ejs": "~1.0.0",
+    "ncp": "~0.5.0"
   },
   "scripts": {
+    "lint": "jshint src",
     "install": "node install.js",
     "test": "cd test && nodeunit nodegit.js",
     "codegen": "node build/codegen/generate.js"
