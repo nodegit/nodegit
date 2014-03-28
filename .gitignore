@@ -1,15 +1,6 @@
-# Files
-.DS_Store
-/sftp-config.json
-
-# Directories
-/build
-/example/stress/test
-/doc
-!doc/Theme.css
+/build/*
+!/build/codegen/
+/doc/*
+!/doc/Theme.css
 /node_modules
-/testing.js
-/out
-/test.git
 /test/.reposCache
-.idea

@@ -46,6 +46,6 @@
   "scripts": {
     "install": "node install.js",
     "test": "cd test && nodeunit nodegit.js",
-    "gen": "node gen.js"
+    "codegen": "node build/codegen/generate.js"
   }
 }

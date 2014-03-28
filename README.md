@@ -1,123 +1,169 @@
-nodegit
-=======
+NodeGit
+-------
 
-> Node.js libgit2 bindings
+> Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
-**v0.1.1** [![Build
-Status](https://travis-ci.org/nodegit/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
+**Stable: 0.1.1**
+
+[![Build
+Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
 
 Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael
-Robinson [@codeofinterest](http://twitter.com/codeofinterest), and Nick Kallen [@nk](http://twitter.com/nk), with help from
-[awesome
+Robinson [@codeofinterest](http://twitter.com/codeofinterest), and Nick Kallen
+[@nk](http://twitter.com/nk), with help from [awesome
 contributors](https://github.com/tbranyen/nodegit/contributors)!
 
-API Documentation
-------------------------
+## API Documentation. ##
 
-Documentation may be found here: [`nodegit` documentation](http://www.nodegit.org/nodegit/).
+http://www.nodegit.org/nodegit/
 
-Building and installing
------------------------
+## Building and Installing. ##
 
-### Dependencies ###
+Dependencies:
 
-To install `nodegit` you need `Node.js`, `python` and `cmake` (>=2.8).
+* [Python 2](https://www.python.org/)
+* [CMake >= 2.8](http://www.cmake.org/)
 
-### Easy install (Recommended) ###
-This will install and configure everything you need to use `nodegit`.
+``` bash
+npm install nodegit
+```
 
-```` bash
-$ npm run-script gen && npm install && npm test
-````
+### Building manually: ###
 
-### Mac OS X/Linux/Unix ###
+If you wish to help contribute to nodegit it is useful to build locally.
 
-#### Install `nodegit` by cloning source from GitHub and running `node install`: ####
+``` bash
+# Fetch this project.
+git clone git://github.com/tbranyen/nodegit.git
 
-```` bash
-# Install system dependencies
-$ brew install cmake libzip
-$ npm install -g node-gyp
-````
+# Enter the repository.
+cd nodegit
 
-```` bash
-$ git clone git://github.com/tbranyen/nodegit.git
-$ cd nodegit
-$ npm install ejs && npm run-script gen && npm install
-````
-### Ubuntu ###
+# Install the template engine, run the code generation script, and install.
+npm install ejs && npm run codegen && npm install
+```
 
-```` bash
-# Install system dependencies as root
-$ sudo apt-get install libzip-dev
-````
+If you encounter errors, you most likely have not configured the dependencies
+correctly.
 
-### Windows via Cygwin ###
+### Installing dependencies: ###
 
-#### `nodegit` has been compiled and tested to work with the setup required to build and run `Node.js` itself. ####
+Using Brew on OS X:
 
-Instructions on compiling `Node.js` on a Windows platform can be found here:
-[https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-(Windows)](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29)
+``` bash
+brew install cmake libzip
+```
 
-API Example Usage
------------------
+Using APT on Ubuntu:
 
-Below are two examples. [There are several more](https://github.com/nodegit/nodegit/tree/master/example).
+``` bash
+sudo apt-get install cmake libzip-dev build-essential
+```
 
-### Git Log Emulation ###
+## API examples. ##
 
-```JavaScript
-var git = require('../'),
-    path = require('path');
+### Emulating git log: ###
 
-git.Repo.open(path.resolve(__dirname, '/tmp/repo/.git'), function(error, repo) {
-  if (error) throw error;
+``` javascript
+var open = require("/home/tim/git/nodegit/nodegit").Repo.open;
 
-  repo.getMaster(function(error, branch) {
-    if (error) throw error;
+// Open the repository directory.
+open("tmp", function(err, repo) {
+  if (err) {
+    throw err;
+  }
 
-    // History returns an event.
+  // Open the master branch.
+  repo.getMaster(function(err, branch) {
+    if (err) {
+      throw err;
+    }
+
+    // Create a new history event emitter.
     var history = branch.history();
 
-    // History emits 'commit' event for each commit in the branch's history
-    history.on('commit', function(commit) {
-      console.log('commit ' + commit.sha());
-      console.log('Author:', commit.author().name() + ' <' + commit.author().email() + '>');
-      console.log('Date:', commit.date());
-      console.log('\n    ' + commit.message());
+    // Create a counter to only show up to 9 entries.
+    var count = 0;
+
+    // Listen for commit events from the history.
+    history.on("commit", function(commit) {
+      // Disregard commits past 9.
+      if (++count >= 9) {
+        return;
+      }
+
+      // Show the commit sha.
+      console.log("commit " + commit.sha());
+
+      // Store the author object.
+      var author = commit.author();
+
+      // Display author information.
+      console.log("Author:\t" + author.name() + " <", author.email() + ">");
+
+      // Show the commit date.
+      console.log("Date:\t" + commit.date());
+
+      // Give some space and show the message.
+      console.log("\n    " + commit.message());
     });
 
-    // Don't forget to call `start()`!
+    // Start emitting events.
     history.start();
   });
 });
-
 ```
 
-### Clone a repo and read a file ###
+### Cloning a repository and reading a file: ###
 
-```JavaScript
-git.Repo.clone("https://github.com/nodegit/nodegit.git", path, null, function(error, repo) {
-  if (error) throw error;
+``` javascript
+var clone = require("/home/tim/git/nodegit/nodegit").Repo.clone;
 
-  repo.getCommit('59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5', function(error, commit) {
-    if (error) throw error;
+// Clone a given repository into a specific folder.
+clone("https://github.com/nodegit/nodegit", "tmp", null, function(err, repo) {
+  if (err) {
+    throw err;
+  }
 
-    commit.getEntry('README.md', function(error, entry) {
-      if (error) throw error;
+  // Use a known commit sha from this repository.
+  var sha = "59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5";
 
-      entry.getBlob(function(error, blob) {
-        if (error) throw error;
+  // Look up this known commit.
+  repo.getCommit(sha, function(err, commit) {
+    if (err) {
+      throw error;
+    }
 
-        console.log(entry.name(), entry.sha(), blob.size() + 'b');
-        console.log('========================================================\n\n');
-        var firstTenLines = blob.toString().split('\n').slice(0, 10).join('\n');
-        console.log(firstTenLines);
-        console.log('...');
+    // Look up a specific file within that commit.
+    commit.getEntry("README.md", function(err, entry) {
+      if (err) {
+        throw error;
+      }
+
+      // Get the blob contents from the file.
+      entry.getBlob(function(err, blob) {
+        if (err) {
+          throw err;
+        }
+
+        // Show the name, sha, and filesize in byes.
+        console.log(entry.name() + entry.sha() + blob.size() + "b");
+
+        // Show a spacer.
+        console.log(Array(72).join("=") + "\n\n");
+
+        // Show the entire file.
+        console.log(String(blob));
       });
     });
   });
 });
 ```
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a81b20d9f61dbcdc7c68002c6a564b5b "githalytics.com")](http://githalytics.com/tbranyen/nodegit)
+## Unit tests. ##
+
+You will need to build locally before running the tests.  See above.
+
+``` bash
+npm test
+```
