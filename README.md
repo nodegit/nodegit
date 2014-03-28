@@ -3,10 +3,10 @@ NodeGit
 
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
-**Stable: 0.1.1**
-
 [![Build
 Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
+
+**Stable: 0.1.1**
 
 Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael
 Robinson [@codeofinterest](http://twitter.com/codeofinterest), and Nick Kallen
