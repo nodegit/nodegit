@@ -16,9 +16,9 @@ try {
 } catch (e) {
   rawApi = require('./build/Debug/nodegit');
 }
-for (var key in rawApi) {
-  exports[key] = rawApi[key];
-}
+
+// Set the exports prototype to the raw API.
+exports.__proto__ = rawApi;
 
 // Import extensions
 require('./lib/commit.js');
