@@ -48,7 +48,8 @@
     "request": "~2.36.0",
     "rimraf": "~2.2.8",
     "tar": "~0.1.19",
-    "which": "~1.0.5"
+    "which": "~1.0.5",
+    "promisify-node": "~0.1.2"
   },
   "devDependencies": {
     "jshint": "~2.5.1",
