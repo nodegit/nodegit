@@ -38,12 +38,12 @@
     "q": "~0.9.6",
     "node-gyp": "~0.8.2",
     "fs-extra": "0.6.0",
-    "nan": "0.8.0"
+    "nan": "0.8.0",
+    "rimraf": "~2.2.6"
   },
   "devDependencies": {
     "jshint": "~2.4.4",
     "nodeunit": "~0.8.6",
-    "rimraf": "~2.2.6",
     "ejs": "~1.0.0",
     "async": "~0.2.10"
   },
