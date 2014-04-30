@@ -5,8 +5,7 @@ NodeGit
 
 [![Build
 Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
-[![Build
-status](https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2)](https://ci.appveyor.com/project/TimBranyen/nodegit)
+<a href="https://ci.appveyor.com/project/TimBranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2/branch/master" alt="Build Status: Windows" height="18" /></a>
 
 **Stable: 0.1.1**
 
