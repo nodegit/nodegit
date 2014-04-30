@@ -179,7 +179,8 @@ var dependencies = Q.allSettled([
 // Display a warning message about failing to build native node module.
 .fail(function(message) {
   console.info('[nodegit] Failed to build nodegit.');
-  console.info(message);
+  console.info(message.message);
+  console.info(message.stack);
 
   throw new Error(message);
 })
