@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitTag : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_tag *GetValue();
@@ -30,10 +28,11 @@ class GitTag : public ObjectWrap {
     GitTag(git_tag *raw);
     ~GitTag();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(Oid);
-    static NAN_METHOD(GetTarget);
+
+    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> GetTarget(const Arguments& args);
     static void GetTargetWork(uv_work_t* req);
     static void GetTargetAfterWork(uv_work_t* req);
 
@@ -46,12 +45,12 @@ class GitTag : public ObjectWrap {
       const git_tag * tag;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(TargetId);
-    static NAN_METHOD(TargetType);
-    static NAN_METHOD(Name);
-    static NAN_METHOD(Tagger);
-    static NAN_METHOD(Message);
-    static NAN_METHOD(Peel);
+    static Handle<Value> TargetId(const Arguments& args);
+    static Handle<Value> TargetType(const Arguments& args);
+    static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> Tagger(const Arguments& args);
+    static Handle<Value> Message(const Arguments& args);
+    static Handle<Value> Peel(const Arguments& args);
     git_tag *raw;
 };
 

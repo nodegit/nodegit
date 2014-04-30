@@ -15,47 +15,45 @@ using namespace v8;
 using namespace node;
 
 void GitThreads::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
-  Persistent<Object> object;
+  Persistent<Object> object = Persistent<Object>::New(Object::New());
 
-  NanAssignPersistent(Object, object, Object::New());
+  object->Set(String::NewSymbol("init"), FunctionTemplate::New(Init)->GetFunction());
+  object->Set(String::NewSymbol("shutdown"), FunctionTemplate::New(Shutdown)->GetFunction());
 
-  NanPersistentToLocal(object)->Set(String::NewSymbol("init"), FunctionTemplate::New(Init)->GetFunction());
-  NanPersistentToLocal(object)->Set(String::NewSymbol("shutdown"), FunctionTemplate::New(Shutdown)->GetFunction());
-
-  target->Set(String::NewSymbol("Threads"), NanPersistentToLocal(object));
+  target->Set(String::NewSymbol("Threads"), object);
 }
 
 
 /**
  */
-NAN_METHOD(GitThreads::Init) {
-  NanScope();
+Handle<Value> GitThreads::Init(const Arguments& args) {
+  HandleScope scope;
   
 
   int result = git_threads_init(
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return NanThrowError(String::New(giterr_last()->message));
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {
-      return NanThrowError(String::New("Unkown Error"));
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
     }
   }
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 /**
  */
-NAN_METHOD(GitThreads::Shutdown) {
-  NanScope();
+Handle<Value> GitThreads::Shutdown(const Arguments& args) {
+  HandleScope scope;
   
 
   git_threads_shutdown(
   );
 
-  NanReturnUndefined();
+  return Undefined();
 }
 

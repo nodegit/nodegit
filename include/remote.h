@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitRemote : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_remote *GetValue();
@@ -30,14 +28,15 @@ class GitRemote : public ObjectWrap {
     GitRemote(git_remote *raw);
     ~GitRemote();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(Name);
-    static NAN_METHOD(Url);
-    static NAN_METHOD(PushUrl);
-    static NAN_METHOD(SetUrl);
-    static NAN_METHOD(SetPushUrl);
-    static NAN_METHOD(Connect);
+
+    static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> Url(const Arguments& args);
+    static Handle<Value> PushUrl(const Arguments& args);
+    static Handle<Value> SetUrl(const Arguments& args);
+    static Handle<Value> SetPushUrl(const Arguments& args);
+    static Handle<Value> Connect(const Arguments& args);
     static void ConnectWork(uv_work_t* req);
     static void ConnectAfterWork(uv_work_t* req);
 
@@ -51,7 +50,7 @@ class GitRemote : public ObjectWrap {
       git_direction direction;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Download);
+    static Handle<Value> Download(const Arguments& args);
     static void DownloadWork(uv_work_t* req);
     static void DownloadAfterWork(uv_work_t* req);
 
@@ -67,9 +66,9 @@ class GitRemote : public ObjectWrap {
       void * payload;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Connected);
-    static NAN_METHOD(Stop);
-    static NAN_METHOD(Disconnect);
+    static Handle<Value> Connected(const Arguments& args);
+    static Handle<Value> Stop(const Arguments& args);
+    static Handle<Value> Disconnect(const Arguments& args);
     static void DisconnectWork(uv_work_t* req);
     static void DisconnectAfterWork(uv_work_t* req);
 
@@ -81,13 +80,13 @@ class GitRemote : public ObjectWrap {
       git_remote * remote;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(UpdateTips);
-    static NAN_METHOD(ValidUrl);
-    static NAN_METHOD(SupportedUrl);
-    static NAN_METHOD(CheckCert);
-    static NAN_METHOD(UpdateFetchhead);
-    static NAN_METHOD(SetUpdateFetchhead);
-    static NAN_METHOD(IsValidName);
+    static Handle<Value> UpdateTips(const Arguments& args);
+    static Handle<Value> ValidUrl(const Arguments& args);
+    static Handle<Value> SupportedUrl(const Arguments& args);
+    static Handle<Value> CheckCert(const Arguments& args);
+    static Handle<Value> UpdateFetchhead(const Arguments& args);
+    static Handle<Value> SetUpdateFetchhead(const Arguments& args);
+    static Handle<Value> IsValidName(const Arguments& args);
     git_remote *raw;
 };
 

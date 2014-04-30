@@ -23,12 +23,12 @@ Branch::~Branch() {
 }
 
 void Branch::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("Branch"));
+  tpl->SetClassName(String::NewSymbol("Branch"));
 
   NODE_SET_METHOD(tpl, "create", Create);
   NODE_SET_METHOD(tpl, "delete", Delete);
@@ -42,8 +42,9 @@ void Branch::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "isHead", IsHead);
   NODE_SET_METHOD(tpl, "remoteName", RemoteName);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("Branch"), tpl->GetFunction());
+
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Branch"), constructor_template);
 }
 
 Handle<Value> Branch::New(const Arguments& args) {
@@ -101,7 +102,7 @@ Handle<Value> Branch::Create(const Arguments& args) {
         const git_commit * from_target;
             from_target = ObjectWrap::Unwrap<GitCommit>(args[2]->ToObject())->GetValue();
         int from_force;
-            from_force = (int) args[3]->ToInt32()->Value();
+            from_force = (int)   args[3]->ToInt32()->Value();
       
   int result = git_branch_create(
     &out
@@ -178,7 +179,7 @@ Handle<Value> Branch::Foreach(const Arguments& args) {
   git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
         unsigned int from_list_flags;
-            from_list_flags = (unsigned int) args[1]->ToUint32()->Value();
+            from_list_flags = (unsigned int)   args[1]->ToUint32()->Value();
         git_branch_foreach_cb from_branch_cb;
             from_branch_cb = ObjectWrap::Unwrap<BranchForeachCb>(args[2]->ToObject())->GetValue();
         void * from_payload;
@@ -226,7 +227,7 @@ Handle<Value> Branch::Move(const Arguments& args) {
             String::Utf8Value new_branch_name(args[1]->ToString());
       from_new_branch_name = strdup(*new_branch_name);
         int from_force;
-            from_force = (int) args[2]->ToInt32()->Value();
+            from_force = (int)   args[2]->ToInt32()->Value();
       
   int result = git_branch_move(
     &out
@@ -429,7 +430,7 @@ Handle<Value> Branch::UpstreamName(const Arguments& args) {
             String::Utf8Value tracking_branch_name_out(args[0]->ToString());
       from_tracking_branch_name_out = strdup(*tracking_branch_name_out);
         size_t from_buffer_size;
-            from_buffer_size = (size_t) args[1]->ToUint32()->Value();
+            from_buffer_size = (size_t)   args[1]->ToUint32()->Value();
         git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[2]->ToObject())->GetValue();
         const char * from_canonical_branch_name;
@@ -506,7 +507,7 @@ Handle<Value> Branch::RemoteName(const Arguments& args) {
             String::Utf8Value remote_name_out(args[0]->ToString());
       from_remote_name_out = strdup(*remote_name_out);
         size_t from_buffer_size;
-            from_buffer_size = (size_t) args[1]->ToUint32()->Value();
+            from_buffer_size = (size_t)   args[1]->ToUint32()->Value();
         git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[2]->ToObject())->GetValue();
         const char * from_canonical_branch_name;

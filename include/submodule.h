@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitSubmodule : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_submodule *GetValue();
@@ -30,9 +28,10 @@ class GitSubmodule : public ObjectWrap {
     GitSubmodule(git_submodule *raw);
     ~GitSubmodule();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(AddFinalize);
+
+    static Handle<Value> AddFinalize(const Arguments& args);
     static void AddFinalizeWork(uv_work_t* req);
     static void AddFinalizeAfterWork(uv_work_t* req);
 
@@ -44,7 +43,7 @@ class GitSubmodule : public ObjectWrap {
       git_submodule * submodule;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(AddToIndex);
+    static Handle<Value> AddToIndex(const Arguments& args);
     static void AddToIndexWork(uv_work_t* req);
     static void AddToIndexAfterWork(uv_work_t* req);
 
@@ -58,7 +57,7 @@ class GitSubmodule : public ObjectWrap {
       int write_index;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Save);
+    static Handle<Value> Save(const Arguments& args);
     static void SaveWork(uv_work_t* req);
     static void SaveAfterWork(uv_work_t* req);
 
@@ -70,13 +69,13 @@ class GitSubmodule : public ObjectWrap {
       git_submodule * submodule;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Name);
-    static NAN_METHOD(Path);
-    static NAN_METHOD(Url);
-    static NAN_METHOD(SetUrl);
-    static NAN_METHOD(IndexId);
-    static NAN_METHOD(HeadId);
-    static NAN_METHOD(Init);
+    static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> Path(const Arguments& args);
+    static Handle<Value> Url(const Arguments& args);
+    static Handle<Value> SetUrl(const Arguments& args);
+    static Handle<Value> IndexId(const Arguments& args);
+    static Handle<Value> HeadId(const Arguments& args);
+    static Handle<Value> Init(const Arguments& args);
     static void InitWork(uv_work_t* req);
     static void InitAfterWork(uv_work_t* req);
 
@@ -90,7 +89,7 @@ class GitSubmodule : public ObjectWrap {
       int overwrite;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Sync);
+    static Handle<Value> Sync(const Arguments& args);
     static void SyncWork(uv_work_t* req);
     static void SyncAfterWork(uv_work_t* req);
 
@@ -102,7 +101,7 @@ class GitSubmodule : public ObjectWrap {
       git_submodule * submodule;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Open);
+    static Handle<Value> Open(const Arguments& args);
     static void OpenWork(uv_work_t* req);
     static void OpenAfterWork(uv_work_t* req);
 
@@ -115,7 +114,7 @@ class GitSubmodule : public ObjectWrap {
       git_submodule * submodule;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Reload);
+    static Handle<Value> Reload(const Arguments& args);
     static void ReloadWork(uv_work_t* req);
     static void ReloadAfterWork(uv_work_t* req);
 
@@ -127,7 +126,7 @@ class GitSubmodule : public ObjectWrap {
       git_submodule * submodule;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Status);
+    static Handle<Value> Status(const Arguments& args);
     static void StatusWork(uv_work_t* req);
     static void StatusAfterWork(uv_work_t* req);
 

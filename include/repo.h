@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitRepo : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_repository *GetValue();
@@ -30,10 +28,10 @@ class GitRepo : public ObjectWrap {
     GitRepo(git_repository *raw);
     ~GitRepo();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(Open);
 
+    static Handle<Value> Open(const Arguments& args);
     static void OpenWork(uv_work_t* req);
     static void OpenAfterWork(uv_work_t* req);
 
@@ -46,7 +44,7 @@ class GitRepo : public ObjectWrap {
       const char * path;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Init);
+    static Handle<Value> Init(const Arguments& args);
     static void InitWork(uv_work_t* req);
     static void InitAfterWork(uv_work_t* req);
 
@@ -61,10 +59,10 @@ class GitRepo : public ObjectWrap {
       unsigned is_bare;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Path);
-    static NAN_METHOD(Workdir);
-    static NAN_METHOD(Odb);
-    static NAN_METHOD(openIndex);
+    static Handle<Value> Path(const Arguments& args);
+    static Handle<Value> Workdir(const Arguments& args);
+    static Handle<Value> Odb(const Arguments& args);
+    static Handle<Value> openIndex(const Arguments& args);
     static void openIndexWork(uv_work_t* req);
     static void openIndexAfterWork(uv_work_t* req);
 
@@ -77,7 +75,7 @@ class GitRepo : public ObjectWrap {
       git_repository * repo;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetBlob);
+    static Handle<Value> GetBlob(const Arguments& args);
     static void GetBlobWork(uv_work_t* req);
     static void GetBlobAfterWork(uv_work_t* req);
 
@@ -92,7 +90,7 @@ class GitRepo : public ObjectWrap {
       const git_oid * id;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetCommit);
+    static Handle<Value> GetCommit(const Arguments& args);
     static void GetCommitWork(uv_work_t* req);
     static void GetCommitAfterWork(uv_work_t* req);
 
@@ -107,7 +105,7 @@ class GitRepo : public ObjectWrap {
       const git_oid * id;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(CreateCommit);
+    static Handle<Value> CreateCommit(const Arguments& args);
     static void CreateCommitWork(uv_work_t* req);
     static void CreateCommitAfterWork(uv_work_t* req);
 
@@ -136,7 +134,7 @@ class GitRepo : public ObjectWrap {
       const git_commit ** parents;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetObject);
+    static Handle<Value> GetObject(const Arguments& args);
     static void GetObjectWork(uv_work_t* req);
     static void GetObjectAfterWork(uv_work_t* req);
 
@@ -153,7 +151,7 @@ class GitRepo : public ObjectWrap {
       git_otype type;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetReference);
+    static Handle<Value> GetReference(const Arguments& args);
     static void GetReferenceWork(uv_work_t* req);
     static void GetReferenceAfterWork(uv_work_t* req);
 
@@ -168,9 +166,9 @@ class GitRepo : public ObjectWrap {
       const char * name;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(CreateSymbolicReference);
-    static NAN_METHOD(CreateReference);
-    static NAN_METHOD(AddRemote);
+    static Handle<Value> CreateSymbolicReference(const Arguments& args);
+    static Handle<Value> CreateReference(const Arguments& args);
+    static Handle<Value> AddRemote(const Arguments& args);
     static void AddRemoteWork(uv_work_t* req);
     static void AddRemoteAfterWork(uv_work_t* req);
 
@@ -187,10 +185,10 @@ class GitRepo : public ObjectWrap {
       const char * url;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(CreateRevWalk);
-    static NAN_METHOD(GetSubmodule);
-    static NAN_METHOD(AddSubmodule);
-    static NAN_METHOD(GetTag);
+    static Handle<Value> CreateRevWalk(const Arguments& args);
+    static Handle<Value> GetSubmodule(const Arguments& args);
+    static Handle<Value> AddSubmodule(const Arguments& args);
+    static Handle<Value> GetTag(const Arguments& args);
     static void GetTagWork(uv_work_t* req);
     static void GetTagAfterWork(uv_work_t* req);
 
@@ -205,7 +203,7 @@ class GitRepo : public ObjectWrap {
       const git_oid * id;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(CreateTag);
+    static Handle<Value> CreateTag(const Arguments& args);
     static void CreateTagWork(uv_work_t* req);
     static void CreateTagAfterWork(uv_work_t* req);
 
@@ -228,7 +226,7 @@ class GitRepo : public ObjectWrap {
       int force;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(CreateLightweightTag);
+    static Handle<Value> CreateLightweightTag(const Arguments& args);
     static void CreateLightweightTagWork(uv_work_t* req);
     static void CreateLightweightTagAfterWork(uv_work_t* req);
 
@@ -247,7 +245,7 @@ class GitRepo : public ObjectWrap {
       int force;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetTree);
+    static Handle<Value> GetTree(const Arguments& args);
     static void GetTreeWork(uv_work_t* req);
     static void GetTreeAfterWork(uv_work_t* req);
 
@@ -262,7 +260,7 @@ class GitRepo : public ObjectWrap {
       const git_oid * id;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(ReloadSubmodules);
+    static Handle<Value> ReloadSubmodules(const Arguments& args);
     static void ReloadSubmodulesWork(uv_work_t* req);
     static void ReloadSubmodulesAfterWork(uv_work_t* req);
 
@@ -274,7 +272,7 @@ class GitRepo : public ObjectWrap {
       git_repository * repo;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Delete);
+    static Handle<Value> Delete(const Arguments& args);
     static void DeleteWork(uv_work_t* req);
     static void DeleteAfterWork(uv_work_t* req);
 
@@ -288,7 +286,7 @@ class GitRepo : public ObjectWrap {
       const char * tag_name;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetReferences);
+    static Handle<Value> GetReferences(const Arguments& args);
     static void GetReferencesWork(uv_work_t* req);
     static void GetReferencesAfterWork(uv_work_t* req);
 
@@ -303,7 +301,7 @@ class GitRepo : public ObjectWrap {
       unsigned int list_flags;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(CreateBlobFromBuffer);
+    static Handle<Value> CreateBlobFromBuffer(const Arguments& args);
     static void CreateBlobFromBufferWork(uv_work_t* req);
     static void CreateBlobFromBufferAfterWork(uv_work_t* req);
 
@@ -320,7 +318,7 @@ class GitRepo : public ObjectWrap {
       size_t len;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(CreateBlobFromFile);
+    static Handle<Value> CreateBlobFromFile(const Arguments& args);
     static void CreateBlobFromFileWork(uv_work_t* req);
     static void CreateBlobFromFileAfterWork(uv_work_t* req);
 
@@ -335,7 +333,7 @@ class GitRepo : public ObjectWrap {
       const char * path;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetRemotes);
+    static Handle<Value> GetRemotes(const Arguments& args);
     static void GetRemotesWork(uv_work_t* req);
     static void GetRemotesAfterWork(uv_work_t* req);
 
@@ -348,7 +346,7 @@ class GitRepo : public ObjectWrap {
       git_repository * repo;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Clone);
+    static Handle<Value> Clone(const Arguments& args);
     static void CloneWork(uv_work_t* req);
     static void CloneAfterWork(uv_work_t* req);
 
@@ -365,7 +363,7 @@ class GitRepo : public ObjectWrap {
       const git_clone_options * options;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(GetRemote);
+    static Handle<Value> GetRemote(const Arguments& args);
     git_repository *raw;
 };
 

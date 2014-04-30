@@ -24,12 +24,13 @@ GitDelta::~GitDelta() {
 }
 
 void GitDelta::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("Delta"));
+  tpl->SetClassName(String::NewSymbol("Delta"));
+
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oldFile", OldFile);
   NODE_SET_PROTOTYPE_METHOD(tpl, "newFile", NewFile);
@@ -37,38 +38,36 @@ void GitDelta::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "similarity", Similarity);
   NODE_SET_PROTOTYPE_METHOD(tpl, "flags", Flags);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("Delta"), tpl->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Delta"), constructor_template);
 }
 
-NAN_METHOD(GitDelta::New) {
-  NanScope();
+Handle<Value> GitDelta::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_diff_delta is required."));
+    return ThrowException(Exception::Error(String::New("git_diff_delta is required.")));
   }
 
-  GitDelta* object = new GitDelta((git_diff_delta *) External::Cast(*args[0])->Value());
+  GitDelta* object = new GitDelta((git_diff_delta *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitDelta::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitDelta::constructor_template->NewInstance(1, argv));
 }
 
 git_diff_delta *GitDelta::GetValue() {
   return this->raw;
 }
 
-NAN_METHOD(GitDelta::OldFile) {
-  NanScope();
+
+Handle<Value> GitDelta::OldFile(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_diff_file *old_file =
@@ -82,11 +81,11 @@ NAN_METHOD(GitDelta::OldFile) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDelta::NewFile) {
-  NanScope();
+Handle<Value> GitDelta::NewFile(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_diff_file *new_file =
@@ -100,40 +99,40 @@ NAN_METHOD(GitDelta::NewFile) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDelta::Status) {
-  NanScope();
+Handle<Value> GitDelta::Status(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_delta_t status =
     ObjectWrap::Unwrap<GitDelta>(args.This())->GetValue()->status;
 
     to = Integer::New(status);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDelta::Similarity) {
-  NanScope();
+Handle<Value> GitDelta::Similarity(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   uint32_t similarity =
     ObjectWrap::Unwrap<GitDelta>(args.This())->GetValue()->similarity;
 
     to = Integer::New(similarity);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDelta::Flags) {
-  NanScope();
+Handle<Value> GitDelta::Flags(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   uint32_t flags =
     ObjectWrap::Unwrap<GitDelta>(args.This())->GetValue()->flags;
 
     to = Integer::New(flags);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitDelta::constructor_template;
+Persistent<Function> GitDelta::constructor_template;

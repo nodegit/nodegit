@@ -23,39 +23,36 @@ GitDiffFindOptions::~GitDiffFindOptions() {
 }
 
 void GitDiffFindOptions::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("DiffFindOptions"));
+  tpl->SetClassName(String::NewSymbol("DiffFindOptions"));
 
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("DiffFindOptions"), tpl->GetFunction());
+
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("DiffFindOptions"), constructor_template);
 }
 
-NAN_METHOD(GitDiffFindOptions::New) {
-  NanScope();
+Handle<Value> GitDiffFindOptions::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_diff_find_options is required."));
+    return ThrowException(Exception::Error(String::New("git_diff_find_options is required.")));
   }
 
-  GitDiffFindOptions* object = new GitDiffFindOptions((git_diff_find_options *) External::Cast(*args[0])->Value());
+  GitDiffFindOptions* object = new GitDiffFindOptions((git_diff_find_options *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
-
 Handle<Value> GitDiffFindOptions::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitDiffFindOptions::constructor_template->NewInstance(1, argv));
 }
 
 git_diff_find_options *GitDiffFindOptions::GetValue() {
@@ -63,4 +60,4 @@ git_diff_find_options *GitDiffFindOptions::GetValue() {
 }
 
 
-Persistent<FunctionTemplate> GitDiffFindOptions::constructor_template;
+Persistent<Function> GitDiffFindOptions::constructor_template;

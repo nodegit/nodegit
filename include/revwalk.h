@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitRevWalk : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_revwalk *GetValue();
@@ -30,11 +28,11 @@ class GitRevWalk : public ObjectWrap {
     GitRevWalk(git_revwalk *raw);
     ~GitRevWalk();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(Reset);
-    static NAN_METHOD(Push);
 
+    static Handle<Value> Reset(const Arguments& args);
+    static Handle<Value> Push(const Arguments& args);
     static void PushWork(uv_work_t* req);
     static void PushAfterWork(uv_work_t* req);
 
@@ -48,7 +46,7 @@ class GitRevWalk : public ObjectWrap {
       const git_oid * id;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(PushGlob);
+    static Handle<Value> PushGlob(const Arguments& args);
     static void PushGlobWork(uv_work_t* req);
     static void PushGlobAfterWork(uv_work_t* req);
 
@@ -62,7 +60,7 @@ class GitRevWalk : public ObjectWrap {
       const char * glob;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(PushHead);
+    static Handle<Value> PushHead(const Arguments& args);
     static void PushHeadWork(uv_work_t* req);
     static void PushHeadAfterWork(uv_work_t* req);
 
@@ -74,7 +72,7 @@ class GitRevWalk : public ObjectWrap {
       git_revwalk * walk;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Hide);
+    static Handle<Value> Hide(const Arguments& args);
     static void HideWork(uv_work_t* req);
     static void HideAfterWork(uv_work_t* req);
 
@@ -88,7 +86,7 @@ class GitRevWalk : public ObjectWrap {
       const git_oid * commit_id;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(HideGlob);
+    static Handle<Value> HideGlob(const Arguments& args);
     static void HideGlobWork(uv_work_t* req);
     static void HideGlobAfterWork(uv_work_t* req);
 
@@ -102,7 +100,7 @@ class GitRevWalk : public ObjectWrap {
       const char * glob;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(HideHead);
+    static Handle<Value> HideHead(const Arguments& args);
     static void HideHeadWork(uv_work_t* req);
     static void HideHeadAfterWork(uv_work_t* req);
 
@@ -114,7 +112,7 @@ class GitRevWalk : public ObjectWrap {
       git_revwalk * walk;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(PushRef);
+    static Handle<Value> PushRef(const Arguments& args);
     static void PushRefWork(uv_work_t* req);
     static void PushRefAfterWork(uv_work_t* req);
 
@@ -128,7 +126,7 @@ class GitRevWalk : public ObjectWrap {
       const char * refname;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(HideRef);
+    static Handle<Value> HideRef(const Arguments& args);
     static void HideRefWork(uv_work_t* req);
     static void HideRefAfterWork(uv_work_t* req);
 
@@ -142,7 +140,7 @@ class GitRevWalk : public ObjectWrap {
       const char * refname;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Next);
+    static Handle<Value> Next(const Arguments& args);
     static void NextWork(uv_work_t* req);
     static void NextAfterWork(uv_work_t* req);
 
@@ -155,7 +153,7 @@ class GitRevWalk : public ObjectWrap {
       git_revwalk * walk;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Sorting);
+    static Handle<Value> Sorting(const Arguments& args);
     git_revwalk *raw;
 };
 

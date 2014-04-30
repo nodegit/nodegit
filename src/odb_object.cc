@@ -25,42 +25,40 @@ GitOdbObject::~GitOdbObject() {
 }
 
 void GitOdbObject::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("OdbObject"));
+  tpl->SetClassName(String::NewSymbol("OdbObject"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "data", Data);
   NODE_SET_PROTOTYPE_METHOD(tpl, "size", Size);
   NODE_SET_PROTOTYPE_METHOD(tpl, "type", Type);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("OdbObject"), tpl->GetFunction());
+
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("OdbObject"), constructor_template);
 }
 
-NAN_METHOD(GitOdbObject::New) {
-  NanScope();
+Handle<Value> GitOdbObject::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_odb_object is required."));
+    return ThrowException(Exception::Error(String::New("git_odb_object is required.")));
   }
 
-  GitOdbObject* object = new GitOdbObject((git_odb_object *) External::Cast(*args[0])->Value());
+  GitOdbObject* object = new GitOdbObject((git_odb_object *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitOdbObject::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitOdbObject::constructor_template->NewInstance(1, argv));
 }
 
 git_odb_object *GitOdbObject::GetValue() {
@@ -71,8 +69,8 @@ git_odb_object *GitOdbObject::GetValue() {
 /**
  * @return {Wrapper} result
  */
-NAN_METHOD(GitOdbObject::Data) {
-  NanScope();
+Handle<Value> GitOdbObject::Data(const Arguments& args) {
+  HandleScope scope;
   
 
   const void * result = git_odb_object_data(
@@ -85,14 +83,14 @@ NAN_METHOD(GitOdbObject::Data) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {Number} result
  */
-NAN_METHOD(GitOdbObject::Size) {
-  NanScope();
+Handle<Value> GitOdbObject::Size(const Arguments& args) {
+  HandleScope scope;
   
 
   size_t result = git_odb_object_size(
@@ -101,14 +99,14 @@ NAN_METHOD(GitOdbObject::Size) {
 
   Handle<Value> to;
     to = Uint32::New(result);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {Number} result
  */
-NAN_METHOD(GitOdbObject::Type) {
-  NanScope();
+Handle<Value> GitOdbObject::Type(const Arguments& args) {
+  HandleScope scope;
   
 
   git_otype result = git_odb_object_type(
@@ -117,14 +115,14 @@ NAN_METHOD(GitOdbObject::Type) {
 
   Handle<Value> to;
     to = Int32::New(result);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {Oid} result
  */
-NAN_METHOD(GitOdbObject::Oid) {
-  NanScope();
+Handle<Value> GitOdbObject::Oid(const Arguments& args) {
+  HandleScope scope;
   
 
   const git_oid * result = git_odb_object_id(
@@ -140,7 +138,7 @@ NAN_METHOD(GitOdbObject::Oid) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitOdbObject::constructor_template;
+Persistent<Function> GitOdbObject::constructor_template;

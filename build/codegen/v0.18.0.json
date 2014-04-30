@@ -10380,7 +10380,8 @@
             "cType": "git_direction",
             "cppClassName": "Number",
             "jsClassName": "Number",
-            "comment": "GIT_DIRECTION_FETCH if you want to fetch or GIT_DIRECTION_PUSH if you want to push"
+            "comment": "GIT_DIRECTION_FETCH if you want to fetch or GIT_DIRECTION_PUSH if you want to push",
+            "additionalCast": "(int)"
           }
         ],
         "isAsync": true,
@@ -17283,7 +17284,8 @@
             "cType": "git_filemode_t",
             "cppClassName": "Number",
             "jsClassName": "Number",
-            "comment": "Folder attributes of the entry. This parameter must be valued with one of the following entries: 0040000, 0100644, 0100755, 0120000 or 0160000."
+            "comment": "Folder attributes of the entry. This parameter must be valued with one of the following entries: 0040000, 0100644, 0100755, 0120000 or 0160000.",
+            "additionalCast": "(int)"
           }
         ],
         "isAsync": false,

@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitCloneOptions : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_clone_options *GetValue();
@@ -30,7 +28,8 @@ class GitCloneOptions : public ObjectWrap {
     GitCloneOptions(git_clone_options *raw);
     ~GitCloneOptions();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
+
 
     git_clone_options *raw;
 };

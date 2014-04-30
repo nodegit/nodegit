@@ -1,132 +1,189 @@
-var async = require('async'),
-    child_process = require('child_process'),
-    spawn = child_process.spawn,
-    path = require('path'),
-    request = require('request'),
-    zlib = require('zlib'),
-    fs = require('fs-extra'),
-    tar = require('tar'),
-    exec = require('child_process').exec;
+// Core Node.js modules.
+var fs = require('fs');
+var path = require('path');
+var zlib = require('zlib');
+var exec = require('child_process').exec;
 
-function passthru() {
-    var args = Array.prototype.slice.call(arguments);
-    var cb = args.splice(-1)[0];
-    var cmd = args.splice(0, 1)[0];
-    var opts = {};
-    if(typeof(args.slice(-1)[0]) === 'object') {
-        opts = args.splice(-1)[0];
+// Third-party modules.
+var Q = require('q');
+var request = require('request');
+var tar = require('tar');
+var which = require('which');
+var rimraf = require('rimraf');
+
+// This will take in an object and find any matching keys in the environment
+// to use as overrides.
+//
+// ENV variables:
+//
+// PKG: Location of `package.json` sans `.json`.
+// LIBGIT2: Location of libgit2 source. 
+// BUILD: Location of nodegit build directory.
+function envOverride(obj) {
+  // Look through all keys.
+  return Object.keys(obj).reduce(function(obj, key) {
+    var normalize = key.toUpperCase();
+
+    // Check for process environment existence.
+    if (normalize in process.env) {
+      obj[key] = process.env[normalize];
     }
-    var child = spawn(cmd, args, opts);
 
-    child.stdout.pipe(process.stdout);
-    child.stderr.pipe(process.stderr);
-    child.on('exit', cb);
+    return obj;
+  }, obj);
 }
 
-function shpassthru() {
-    var cmd =
-    passthru.apply(null, ['/bin/sh', '-c'].concat(Array.prototype.slice.call(arguments)));
+// Convert to the correct system path.
+function systemPath(parts) {
+  return parts.join(path.sep);
 }
 
-function envpassthru() {
-    passthru.apply(null, ['/usr/bin/env'].concat(Array.prototype.slice.call(arguments)));
-}
+// Will be used near the end to configure `node-gyp`.
+var python, cmake;
 
-var updateSubmodules = function(mainCallback) {
-    console.log('[nodegit] Downloading libgit2 dependency.');
-    async.series([
-        function(callback) {
-            envpassthru('git', 'submodule', 'init', callback);
-        }, function(callback) {
-            envpassthru('git', 'submodule', 'update', callback);
-        }
-        ], function(error) {
-            if (error) process.exit(error);
-            mainCallback();
-        });
-};
+// Common reusable paths that can be overwritten by environment variables.
+var paths = envOverride({
+  pkg: __dirname + '/package',
+  libgit2: __dirname + '/vendor/libgit2/',
+  build: __dirname + '/vendor/libgit2/build/',
+});
 
-var checkoutDependencies = function(mainCallback) {
-    console.log('[nodegit] Downloading libgit2 dependency.');
-    var commit = 'e953c1606d0d7aea680c9b19db0b955b34ae63c2';
+// Load the package.json.
+var pkg = require(paths.pkg);
 
-    var url = 'https://github.com/libgit2/libgit2/tarball/'+ commit;
-    var path = __dirname + '/vendor/libgit2/';
-    request({
-        url: url
-    }).pipe(zlib.createUnzip()).pipe(tar.Extract({
-        path: path,
-        strip: true
-    })).on('end', function() {
-        mainCallback();
-    });
-};
+// Ensure all dependencies are available.
+var dependencies = Q.allSettled([
+  // This will prioritize `python2` over `python`, because we always want to
+  // work with Python 2.* if it's available.
+  Q.nfcall(which, 'python2'),
+  Q.nfcall(which, 'python'),
+  
+  // Check for any version of CMake.
+  Q.nfcall(which, 'cmake'),
+])
 
-var libgit2BuildDirectory = path.join(__dirname, 'vendor/libgit2/build');
+// Determine if all the dependency requirements are met.
+.then(function(results) {
+  console.info('[nodegit] Determining dependencies.');
 
-// The python executable to use when building libgit2
-var pythonExecutable = 'python';
+  // Assign to reusable variables.
+  python = results[0].value || results[1].value;
+  cmake = results[2].value;
 
-async.series([
-    function checkPython2Exists(callback) {
-        exec('which python2',
-          function (error) {
-            if (!error) {
-                pythonExecutable = 'python2';
-                callback();
-                return;
-            }
-            // python2 is not available, check for python
-            exec('which python', function(error) {
-                if (error) {
-                    throw new Error('Python is required to build libgit2');
-                }
-                callback();
-            });
-        });
+  // Missing Python.
+  if (!python) {
+    throw new Error('Python is required to build libgit2.');
+  }
+  
+  // Missing CMake.
+  if (!cmake) {
+    throw new Error('CMake is required to build libgit2.');
+  }
 
-    },
-    function prepareLibgit2Repository(callback) {
-        // Check for presence of .git folder
-        fs.exists(__dirname + '/.git', function(exists) {
-            if (exists) {
-                updateSubmodules(callback);
-            } else {
-                checkoutDependencies(callback);
-            }
-        });
-    },
-    function deleteExistingLibgit2BuildFolder(callback) {
-        // fs.exists(libgit2BuildDirectory, function(exists) {
-        //     if (exists) {
-        //         fs.remove(libgit2BuildDirectory, callback);
-        //     } else {
-                callback();
-            // }
-        // });
-    },
-    function createLibgit2BuildDirectory(callback) {
-        console.log('[nodegit] Building libgit2 dependency.');
-        fs.mkdirs(libgit2BuildDirectory, callback);
-    },
-    function configureLibgit2(callback) {
-        envpassthru('cmake', '-DTHREADSAFE=1', '-DBUILD_CLAR=0', '..', {
-            cwd: libgit2BuildDirectory
-        }, callback);
-    },
-    function buildLibgit2(callback) {
-        envpassthru('cmake', '--build', '.', {
-            cwd: libgit2BuildDirectory
-        }, callback);
-    },
-    function configureNodegit(callback) {
-        console.log('[nodegit] Building native module.');
-        // shpassthru('node-gyp configure --python python2 --debug', callback);
-        shpassthru('node-gyp configure --python ' + pythonExecutable, callback);
-    },
-    function buildNodegit(callback) {
-        shpassthru('node-gyp build', callback);
+  // Now lets check the Python version to ensure it's < 3.
+  return Q.nfcall(exec, python + ' --version').then(function(version) {
+    if (version[1].indexOf('Python 3') === 0) {
+      throw new Error('Incorrect version of Python, gyp requires < 3.');
     }
-], function handleError(error) {
-    if(error) process.exit(error);
+  });
+})
+
+// Display a warning message about missing dependencies.
+.fail(function(message) {
+  console.info('[nodegit] Failed to build nodegit.');
+  console.info(message);
+
+  throw new Error(message);
+})
+
+// Successfully found all dependencies.  First step is to clean the vendor
+// directory.
+.then(function() {
+  console.info('[nodegit] Removing vendor/libgit2.');
+
+  return Q.ninvoke(rimraf, null, paths.libgit2);
+})
+
+// Now fetch the libgit2 source from GitHub.
+.then(function() {
+  console.info('[nodegit] Fetching vendor/libgit2.');
+
+  var url = 'https://github.com/libgit2/libgit2/tarball/'+ pkg.libgit2;
+  
+  var extract = tar.Extract({
+    path: paths.libgit2,
+    strip: true
+  });
+
+  // First extract from Zlib and then extract from Tar.
+  var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
+
+  return Q.ninvoke(expand, 'on', 'end');
+})
+
+// Fetch completed successfully.
+.then(function() {
+  console.info('[nodegit] Creating vendor/libgit2/build.');
+
+  return Q.ninvoke(fs, 'mkdir', paths.build);
+})
+
+// Configure libgit2.
+.then(function() {
+  console.info('[nodegit] Configuring libgit2.');
+
+  var flags = '-DTHREADSAFE=1 -DBUILD_CLAR=0';
+
+  // Windows flags.
+  if (process.platform.indexOf("win") > -1) {
+    flags = '-DSTDCALL=OFF -DBUILD_CLAR=OFF -DTHREADSAFE=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_BUILD_TYPE=RelWithDebInfo';
+  }
+
+  return Q.nfcall(exec, 'cmake .. ' + flags, {
+    cwd: paths.build
+  });
+}).fail(function(err) {
+  console.error(err);
+})
+
+// Build libgit2.
+.then(function() {
+  console.info('[nodegit] Building libgit2.');
+
+  return Q.nfcall(exec, 'cmake --build .', {
+    cwd: paths.build
+  });
+})
+
+// Configure the Node native module.
+.then(function() {
+  console.info('[nodegit] Configuring native node module.');
+
+  return Q.nfcall(exec, systemPath([
+    '.', 'node_modules', '.bin', 'node-gyp configure --python ' + python
+  ]), {
+    cwd: '.'
+  });
+})
+
+.then(function() {
+  console.info('[nodegit] Building native node module.');
+
+  return Q.nfcall(exec, systemPath([
+    '.', 'node_modules', '.bin', 'node-gyp build'
+  ]), {
+    cwd: '.'
+  });
+})
+
+// Display a warning message about failing to build native node module.
+.fail(function(message) {
+  console.info('[nodegit] Failed to build nodegit.');
+  console.info(message);
+
+  throw new Error(message);
+})
+
+.then(function() {
+  console.info('[nodegit] Completed installation successfully.');
 });

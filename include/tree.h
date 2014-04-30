@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitTree : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_tree *GetValue();
@@ -30,15 +28,15 @@ class GitTree : public ObjectWrap {
     GitTree(git_tree *raw);
     ~GitTree();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(Oid);
-    static NAN_METHOD(Size);
-    static NAN_METHOD(EntryByName);
-    static NAN_METHOD(EntryByIndex);
-    static NAN_METHOD(EntryByOid);
-    static NAN_METHOD(GetEntry);
 
+    static Handle<Value> Oid(const Arguments& args);
+    static Handle<Value> Size(const Arguments& args);
+    static Handle<Value> EntryByName(const Arguments& args);
+    static Handle<Value> EntryByIndex(const Arguments& args);
+    static Handle<Value> EntryByOid(const Arguments& args);
+    static Handle<Value> GetEntry(const Arguments& args);
     static void GetEntryWork(uv_work_t* req);
     static void GetEntryAfterWork(uv_work_t* req);
 
@@ -53,8 +51,8 @@ class GitTree : public ObjectWrap {
       const char * path;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Builder);
-    static NAN_METHOD(DiffTree);
+    static Handle<Value> Builder(const Arguments& args);
+    static Handle<Value> DiffTree(const Arguments& args);
     static void DiffTreeWork(uv_work_t* req);
     static void DiffTreeAfterWork(uv_work_t* req);
 
@@ -73,7 +71,7 @@ class GitTree : public ObjectWrap {
       const git_diff_options * opts;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(DiffIndex);
+    static Handle<Value> DiffIndex(const Arguments& args);
     static void DiffIndexWork(uv_work_t* req);
     static void DiffIndexAfterWork(uv_work_t* req);
 
@@ -92,7 +90,7 @@ class GitTree : public ObjectWrap {
       const git_diff_options * opts;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(DiffWorkDir);
+    static Handle<Value> DiffWorkDir(const Arguments& args);
     static void DiffWorkDirWork(uv_work_t* req);
     static void DiffWorkDirAfterWork(uv_work_t* req);
 

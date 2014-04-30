@@ -23,90 +23,89 @@ GitDiffRange::~GitDiffRange() {
 }
 
 void GitDiffRange::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("DiffRange"));
+  tpl->SetClassName(String::NewSymbol("DiffRange"));
+
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oldStart", OldStart);
   NODE_SET_PROTOTYPE_METHOD(tpl, "oldLines", OldLines);
   NODE_SET_PROTOTYPE_METHOD(tpl, "newStart", NewStart);
   NODE_SET_PROTOTYPE_METHOD(tpl, "newLines", NewLines);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("DiffRange"), tpl->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("DiffRange"), constructor_template);
 }
 
-NAN_METHOD(GitDiffRange::New) {
-  NanScope();
+Handle<Value> GitDiffRange::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_diff_range is required."));
+    return ThrowException(Exception::Error(String::New("git_diff_range is required.")));
   }
 
-  GitDiffRange* object = new GitDiffRange((git_diff_range *) External::Cast(*args[0])->Value());
+  GitDiffRange* object = new GitDiffRange((git_diff_range *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitDiffRange::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitDiffRange::constructor_template->NewInstance(1, argv));
 }
 
 git_diff_range *GitDiffRange::GetValue() {
   return this->raw;
 }
 
-NAN_METHOD(GitDiffRange::OldStart) {
-  NanScope();
+
+Handle<Value> GitDiffRange::OldStart(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   int old_start =
     ObjectWrap::Unwrap<GitDiffRange>(args.This())->GetValue()->old_start;
 
     to = Integer::New(old_start);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDiffRange::OldLines) {
-  NanScope();
+Handle<Value> GitDiffRange::OldLines(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   int old_lines =
     ObjectWrap::Unwrap<GitDiffRange>(args.This())->GetValue()->old_lines;
 
     to = Integer::New(old_lines);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDiffRange::NewStart) {
-  NanScope();
+Handle<Value> GitDiffRange::NewStart(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   int new_start =
     ObjectWrap::Unwrap<GitDiffRange>(args.This())->GetValue()->new_start;
 
     to = Integer::New(new_start);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDiffRange::NewLines) {
-  NanScope();
+Handle<Value> GitDiffRange::NewLines(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   int new_lines =
     ObjectWrap::Unwrap<GitDiffRange>(args.This())->GetValue()->new_lines;
 
     to = Integer::New(new_lines);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitDiffRange::constructor_template;
+Persistent<Function> GitDiffRange::constructor_template;
