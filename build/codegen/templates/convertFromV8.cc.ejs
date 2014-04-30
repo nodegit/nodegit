@@ -20,7 +20,7 @@
     <% } else if (arg.cppClassName == 'Buffer') { -%>
       from_<%- arg.name %> = Buffer::Data(args[<%- jsArg %>]->ToObject());
     <% } else if (isV8Value(arg.cppClassName)) { -%>
-      from_<%- arg.name %> = (<%- arg.cType %>) args[<%- jsArg %>]->To<%- arg.cppClassName %>()->Value();
+      from_<%- arg.name %> = (<%- arg.cType %>) <%- arg.additionalCast %> <%- arg.cast %> args[<%- jsArg %>]->To<%- arg.cppClassName %>()->Value();
     <% } else { -%>
       from_<%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args[<%- jsArg %>]->ToObject())->GetValue();
     <% } -%>

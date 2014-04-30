@@ -54,60 +54,26 @@
       ],
 
       "conditions": [
-        ['OS=="win"', {
-          "link_settings": {
+        [
+          "OS=='win'", {
             "libraries": [
-              "-lgit2.lib",
+              "-l../vendor/libgit2/build/Debug/git2.lib"
+            ],
+          }, { # 'OS!="win"'
+            "libraries": [
+             "-L<!(pwd)/vendor/libgit2/build",
+              "-lgit2"
             ]
-          },
-          "configurations": {
-            "Release": {
-              "msvs_settings": {
-                "VCCLCompilerTool": {
-                  "RuntimeLibrary": 0,
-                  "Optimization": 3,
-                  "FavorSizeOrSpeed": 1,
-                  "InlineFunctionExpansion": 2,
-                  "WholeProgramOptimization": "true",
-                  "OmitFramePointers": "true",
-                  "EnableFunctionLevelLinking": "true",
-                  "EnableIntrinsicFunctions": "true",
-                  "RuntimeTypeInfo": "false",
-                  "ExceptionHandling": "0",
-                  "GenerateDebugInformation": "true",
-                  "AdditionalOptions": [
-                    "/MP /EHsc"
-                  ]
-                },
-                "VCLibrarianTool": {
-                  "AdditionalOptions": [
-                    "/LTCG"
-                  ]
-                },
-                "VCLinkerTool": {
-                  "LinkTimeCodeGeneration": 1,
-                  "OptimizeReferences": 2,
-                  "EnableCOMDATFolding": 2,
-                  "LinkIncremental": 1,
-                  "AdditionalLibraryDirectories": [
-                    "../vendor/libgit2/build/debug"
-                  ]
-                }
-              }
+          }
+        ],
+
+        [
+          "OS=='mac'", {
+            "xcode_settings": {
+              "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
             }
           }
-        }, { # Not Windows.
-          "libraries": [
-           "-L<!(pwd)/vendor/libgit2/build",
-            "-lgit2"
-          ]
-        }],
-
-        ['OS=="mac"', {
-          "xcode_settings": {
-            "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
-          }
-        }]
+        ]
       ]
     }
   ]

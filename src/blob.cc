@@ -27,42 +27,40 @@ GitBlob::~GitBlob() {
 }
 
 void GitBlob::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("Blob"));
+  tpl->SetClassName(String::NewSymbol("Blob"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "content", Content);
   NODE_SET_PROTOTYPE_METHOD(tpl, "size", Size);
   NODE_SET_PROTOTYPE_METHOD(tpl, "isBinary", IsBinary);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("Blob"), tpl->GetFunction());
+
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Blob"), constructor_template);
 }
 
-NAN_METHOD(GitBlob::New) {
-  NanScope();
+Handle<Value> GitBlob::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_blob is required."));
+    return ThrowException(Exception::Error(String::New("git_blob is required.")));
   }
 
-  GitBlob* object = new GitBlob((git_blob *) External::Cast(*args[0])->Value());
+  GitBlob* object = new GitBlob((git_blob *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitBlob::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitBlob::constructor_template->NewInstance(1, argv));
 }
 
 git_blob *GitBlob::GetValue() {
@@ -73,8 +71,9 @@ git_blob *GitBlob::GetValue() {
 /**
  * @return {Oid} result
  */
-NAN_METHOD(GitBlob::Oid) {
-  NanScope();
+Handle<Value> GitBlob::Oid(const Arguments& args) {
+  HandleScope scope;
+  
 
   const git_oid * result = git_blob_id(
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
@@ -89,14 +88,15 @@ NAN_METHOD(GitBlob::Oid) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {Wrapper} result
  */
-NAN_METHOD(GitBlob::Content) {
-  NanScope();
+Handle<Value> GitBlob::Content(const Arguments& args) {
+  HandleScope scope;
+  
 
   const void * result = git_blob_rawcontent(
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
@@ -108,14 +108,15 @@ NAN_METHOD(GitBlob::Content) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {Number} result
  */
-NAN_METHOD(GitBlob::Size) {
-  NanScope();
+Handle<Value> GitBlob::Size(const Arguments& args) {
+  HandleScope scope;
+  
 
   git_off_t result = git_blob_rawsize(
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
@@ -123,14 +124,15 @@ NAN_METHOD(GitBlob::Size) {
 
   Handle<Value> to;
     to = Number::New(result);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {Boolean} result
  */
-NAN_METHOD(GitBlob::IsBinary) {
-  NanScope();
+Handle<Value> GitBlob::IsBinary(const Arguments& args) {
+  HandleScope scope;
+  
 
   int result = git_blob_is_binary(
     ObjectWrap::Unwrap<GitBlob>(args.This())->GetValue()
@@ -138,7 +140,7 @@ NAN_METHOD(GitBlob::IsBinary) {
 
   Handle<Value> to;
     to = Boolean::New(result);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitBlob::constructor_template;
+Persistent<Function> GitBlob::constructor_template;

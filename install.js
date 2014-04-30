@@ -132,7 +132,14 @@ var dependencies = Q.allSettled([
 .then(function() {
   console.info('[nodegit] Configuring libgit2.');
 
-  return Q.nfcall(exec, 'cmake -DTHREADSAFE=1 -DBUILD_CLAR=0 ..', {
+  var flags = '-DTHREADSAFE=1 -DBUILD_CLAR=0';
+
+  // Windows flags.
+  if (process.platform.indexOf("win") > -1) {
+    flags = '-DSTDCALL=OFF -DBUILD_CLAR=OFF -DTHREADSAFE=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_BUILD_TYPE=RelWithDebInfo';
+  }
+
+  return Q.nfcall(exec, 'cmake .. ' + flags, {
     cwd: paths.build
   });
 }).fail(function(err) {
@@ -148,6 +155,7 @@ var dependencies = Q.allSettled([
   });
 })
 
+// Configure the Node native module.
 .then(function() {
   console.info('[nodegit] Configuring native node module.');
 

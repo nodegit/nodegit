@@ -24,12 +24,12 @@ GitSignature::~GitSignature() {
 }
 
 void GitSignature::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("Signature"));
+  tpl->SetClassName(String::NewSymbol("Signature"));
 
   NODE_SET_METHOD(tpl, "create", Create);
   NODE_SET_METHOD(tpl, "now", Now);
@@ -38,30 +38,27 @@ void GitSignature::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "email", Email);
   NODE_SET_PROTOTYPE_METHOD(tpl, "time", Time);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("Signature"), tpl->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Signature"), constructor_template);
 }
 
-NAN_METHOD(GitSignature::New) {
-  NanScope();
+Handle<Value> GitSignature::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_signature is required."));
+    return ThrowException(Exception::Error(String::New("git_signature is required.")));
   }
 
-  GitSignature* object = new GitSignature((git_signature *) External::Cast(*args[0])->Value());
+  GitSignature* object = new GitSignature((git_signature *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitSignature::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitSignature::constructor_template->NewInstance(1, argv));
 }
 
 git_signature *GitSignature::GetValue() {
@@ -76,19 +73,19 @@ git_signature *GitSignature::GetValue() {
  * @param {Number} offset
  * @return {Signature} out
  */
-NAN_METHOD(GitSignature::Create) {
-  NanScope();
-  if (args.Length() == 0 || !args[0]->IsString()) {
-    return NanThrowError(String::New("String name is required."));
+Handle<Value> GitSignature::Create(const Arguments& args) {
+  HandleScope scope;
+    if (args.Length() == 0 || !args[0]->IsString()) {
+    return ThrowException(Exception::Error(String::New("String name is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return NanThrowError(String::New("String email is required."));
+    return ThrowException(Exception::Error(String::New("String email is required.")));
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return NanThrowError(String::New("Number time is required."));
+    return ThrowException(Exception::Error(String::New("Number time is required.")));
   }
   if (args.Length() == 3 || !args[3]->IsInt32()) {
-    return NanThrowError(String::New("Number offset is required."));
+    return ThrowException(Exception::Error(String::New("Number offset is required.")));
   }
 
   git_signature * out = 0;
@@ -99,9 +96,9 @@ NAN_METHOD(GitSignature::Create) {
             String::Utf8Value email(args[1]->ToString());
       from_email = strdup(*email);
         git_time_t from_time;
-            from_time = (git_time_t) args[2]->ToInt32()->Value();
+            from_time = (git_time_t)   args[2]->ToInt32()->Value();
         int from_offset;
-            from_offset = (int) args[3]->ToInt32()->Value();
+            from_offset = (int)   args[3]->ToInt32()->Value();
       
   int result = git_signature_new(
     &out
@@ -114,9 +111,9 @@ NAN_METHOD(GitSignature::Create) {
   free((void *)from_email);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return NanThrowError(String::New(giterr_last()->message));
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {
-      return NanThrowError(String::New("Unkown Error"));
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
     }
   }
 
@@ -126,7 +123,7 @@ NAN_METHOD(GitSignature::Create) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
@@ -134,13 +131,13 @@ NAN_METHOD(GitSignature::Create) {
  * @param {String} email
  * @return {Signature} out
  */
-NAN_METHOD(GitSignature::Now) {
-  NanScope();
+Handle<Value> GitSignature::Now(const Arguments& args) {
+  HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return NanThrowError(String::New("String name is required."));
+    return ThrowException(Exception::Error(String::New("String name is required.")));
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return NanThrowError(String::New("String email is required."));
+    return ThrowException(Exception::Error(String::New("String email is required.")));
   }
 
   git_signature * out = 0;
@@ -160,9 +157,9 @@ NAN_METHOD(GitSignature::Now) {
   free((void *)from_email);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return NanThrowError(String::New(giterr_last()->message));
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {
-      return NanThrowError(String::New("Unkown Error"));
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
     }
   }
 
@@ -172,32 +169,33 @@ NAN_METHOD(GitSignature::Now) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
-NAN_METHOD(GitSignature::Name) {
-  NanScope();
+
+Handle<Value> GitSignature::Name(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   const char * name =
     ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->name;
 
     to = String::New(name);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitSignature::Email) {
-  NanScope();
+Handle<Value> GitSignature::Email(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   const char * email =
     ObjectWrap::Unwrap<GitSignature>(args.This())->GetValue()->email;
 
     to = String::New(email);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitSignature::Time) {
-  NanScope();
+Handle<Value> GitSignature::Time(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_time *when =
@@ -211,7 +209,7 @@ NAN_METHOD(GitSignature::Time) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitSignature::constructor_template;
+Persistent<Function> GitSignature::constructor_template;

@@ -23,66 +23,65 @@ GitTime::~GitTime() {
 }
 
 void GitTime::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("Time"));
-  
+  tpl->SetClassName(String::NewSymbol("Time"));
+
+
   NODE_SET_PROTOTYPE_METHOD(tpl, "time", Time);
   NODE_SET_PROTOTYPE_METHOD(tpl, "offset", Offset);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("Time"), tpl->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Time"), constructor_template);
 }
 
-NAN_METHOD(GitTime::New) {
-  NanScope();
+Handle<Value> GitTime::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_time is required."));
+    return ThrowException(Exception::Error(String::New("git_time is required.")));
   }
 
-  GitTime* object = new GitTime((git_time *) External::Cast(*args[0])->Value());
+  GitTime* object = new GitTime((git_time *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitTime::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitTime::constructor_template->NewInstance(1, argv));
 }
 
 git_time *GitTime::GetValue() {
   return this->raw;
 }
 
-NAN_METHOD(GitTime::Time) {
-  NanScope();
+
+Handle<Value> GitTime::Time(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_time_t time =
     ObjectWrap::Unwrap<GitTime>(args.This())->GetValue()->time;
 
     to = Integer::New(time);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitTime::Offset) {
-  NanScope();
+Handle<Value> GitTime::Offset(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   int offset =
     ObjectWrap::Unwrap<GitTime>(args.This())->GetValue()->offset;
 
     to = Int32::New(offset);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitTime::constructor_template;
+Persistent<Function> GitTime::constructor_template;

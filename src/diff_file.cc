@@ -24,12 +24,13 @@ GitDiffFile::~GitDiffFile() {
 }
 
 void GitDiffFile::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("DiffFile"));
+  tpl->SetClassName(String::NewSymbol("DiffFile"));
+
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "path", Path);
@@ -37,38 +38,36 @@ void GitDiffFile::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "flags", Flags);
   NODE_SET_PROTOTYPE_METHOD(tpl, "mode", Mode);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("DiffFile"), tpl->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("DiffFile"), constructor_template);
 }
 
-NAN_METHOD(GitDiffFile::New) {
-  NanScope();
+Handle<Value> GitDiffFile::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_diff_file is required."));
+    return ThrowException(Exception::Error(String::New("git_diff_file is required.")));
   }
 
-  GitDiffFile* object = new GitDiffFile((git_diff_file *) External::Cast(*args[0])->Value());
+  GitDiffFile* object = new GitDiffFile((git_diff_file *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitDiffFile::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitDiffFile::constructor_template->NewInstance(1, argv));
 }
 
 git_diff_file *GitDiffFile::GetValue() {
   return this->raw;
 }
 
-NAN_METHOD(GitDiffFile::Oid) {
-  NanScope();
+
+Handle<Value> GitDiffFile::Oid(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_oid *oid =
@@ -82,51 +81,51 @@ NAN_METHOD(GitDiffFile::Oid) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDiffFile::Path) {
-  NanScope();
+Handle<Value> GitDiffFile::Path(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   const char * path =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->path;
 
     to = String::New(path);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDiffFile::Size) {
-  NanScope();
+Handle<Value> GitDiffFile::Size(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_off_t size =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->size;
 
     to = Integer::New(size);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDiffFile::Flags) {
-  NanScope();
+Handle<Value> GitDiffFile::Flags(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   uint32_t flags =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->flags;
 
     to = Integer::New(flags);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitDiffFile::Mode) {
-  NanScope();
+Handle<Value> GitDiffFile::Mode(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   uint16_t mode =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->mode;
 
     to = Integer::New(mode);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitDiffFile::constructor_template;
+Persistent<Function> GitDiffFile::constructor_template;

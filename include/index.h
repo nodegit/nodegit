@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitIndex : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_index *GetValue();
@@ -30,9 +28,10 @@ class GitIndex : public ObjectWrap {
     GitIndex(git_index *raw);
     ~GitIndex();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(Open);
+
+    static Handle<Value> Open(const Arguments& args);
     static void OpenWork(uv_work_t* req);
     static void OpenAfterWork(uv_work_t* req);
 
@@ -45,7 +44,7 @@ class GitIndex : public ObjectWrap {
       const char * index_path;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Read);
+    static Handle<Value> Read(const Arguments& args);
     static void ReadWork(uv_work_t* req);
     static void ReadAfterWork(uv_work_t* req);
 
@@ -57,7 +56,7 @@ class GitIndex : public ObjectWrap {
       git_index * index;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Write);
+    static Handle<Value> Write(const Arguments& args);
     static void WriteWork(uv_work_t* req);
     static void WriteAfterWork(uv_work_t* req);
 
@@ -69,7 +68,7 @@ class GitIndex : public ObjectWrap {
       git_index * index;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(ReadTree);
+    static Handle<Value> ReadTree(const Arguments& args);
     static void ReadTreeWork(uv_work_t* req);
     static void ReadTreeAfterWork(uv_work_t* req);
 
@@ -83,7 +82,7 @@ class GitIndex : public ObjectWrap {
       const git_tree * tree;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(WriteTree);
+    static Handle<Value> WriteTree(const Arguments& args);
     static void WriteTreeWork(uv_work_t* req);
     static void WriteTreeAfterWork(uv_work_t* req);
 
@@ -96,12 +95,12 @@ class GitIndex : public ObjectWrap {
       git_index * index;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(Size);
-    static NAN_METHOD(Clear);
-    static NAN_METHOD(Entry);
-    static NAN_METHOD(Remove);
-    static NAN_METHOD(RemoveDirectory);
-    static NAN_METHOD(AddBypath);
+    static Handle<Value> Size(const Arguments& args);
+    static Handle<Value> Clear(const Arguments& args);
+    static Handle<Value> Entry(const Arguments& args);
+    static Handle<Value> Remove(const Arguments& args);
+    static Handle<Value> RemoveDirectory(const Arguments& args);
+    static Handle<Value> AddBypath(const Arguments& args);
     static void AddBypathWork(uv_work_t* req);
     static void AddBypathAfterWork(uv_work_t* req);
 
@@ -115,12 +114,12 @@ class GitIndex : public ObjectWrap {
       const char * path;
       Persistent<Function> callback;
     };
-    static NAN_METHOD(RemoveBypath);
-    static NAN_METHOD(Find);
-    static NAN_METHOD(ConflictRemove);
-    static NAN_METHOD(ConflictCleanup);
-    static NAN_METHOD(HasConflicts);
-    static NAN_METHOD(IndexToWorkdir);
+    static Handle<Value> RemoveBypath(const Arguments& args);
+    static Handle<Value> Find(const Arguments& args);
+    static Handle<Value> ConflictRemove(const Arguments& args);
+    static Handle<Value> ConflictCleanup(const Arguments& args);
+    static Handle<Value> HasConflicts(const Arguments& args);
+    static Handle<Value> IndexToWorkdir(const Arguments& args);
     static void IndexToWorkdirWork(uv_work_t* req);
     static void IndexToWorkdirAfterWork(uv_work_t* req);
 

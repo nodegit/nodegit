@@ -25,12 +25,12 @@ GitSubmodule::~GitSubmodule() {
 }
 
 void GitSubmodule::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("Submodule"));
+  tpl->SetClassName(String::NewSymbol("Submodule"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "addFinalize", AddFinalize);
   NODE_SET_PROTOTYPE_METHOD(tpl, "addToIndex", AddToIndex);
@@ -48,30 +48,27 @@ void GitSubmodule::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "status", Status);
 
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("Submodule"), tpl->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("Submodule"), constructor_template);
 }
 
-NAN_METHOD(GitSubmodule::New) {
-  NanScope();
+Handle<Value> GitSubmodule::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_submodule is required."));
+    return ThrowException(Exception::Error(String::New("git_submodule is required.")));
   }
 
-  GitSubmodule* object = new GitSubmodule((git_submodule *) External::Cast(*args[0])->Value());
+  GitSubmodule* object = new GitSubmodule((git_submodule *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitSubmodule::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitSubmodule::constructor_template->NewInstance(1, argv));
 }
 
 git_submodule *GitSubmodule::GetValue() {
@@ -83,24 +80,24 @@ git_submodule *GitSubmodule::GetValue() {
 
 /**
  */
-NAN_METHOD(GitSubmodule::AddFinalize) {
-  NanScope();
+Handle<Value> GitSubmodule::AddFinalize(const Arguments& args) {
+  HandleScope scope;
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   AddFinalizeBaton* baton = new AddFinalizeBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, AddFinalizeWork, (uv_after_work_cb)AddFinalizeAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::AddFinalizeWork(uv_work_t *req) {
@@ -115,28 +112,28 @@ void GitSubmodule::AddFinalizeWork(uv_work_t *req) {
 }
 
 void GitSubmodule::AddFinalizeAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   AddFinalizeBaton *baton = static_cast<AddFinalizeBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = NanNewLocal<Value>(Undefined());
+    Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -153,31 +150,31 @@ void GitSubmodule::AddFinalizeAfterWork(uv_work_t *req) {
 /**
  * @param {Number} write_index
  */
-NAN_METHOD(GitSubmodule::AddToIndex) {
-  NanScope();
+Handle<Value> GitSubmodule::AddToIndex(const Arguments& args) {
+  HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsInt32()) {
-    return NanThrowError(String::New("Number write_index is required."));
+    return ThrowException(Exception::Error(String::New("Number write_index is required.")));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   AddToIndexBaton* baton = new AddToIndexBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Value, baton->write_indexReference, args[0]);
-  int from_write_index;
-  from_write_index = (int) args[0]->ToInt32()->Value();
-  baton->write_index = from_write_index;
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
+  baton->write_indexReference = Persistent<Value>::New(args[0]);
+    int from_write_index;
+            from_write_index = (int)   args[0]->ToInt32()->Value();
+          baton->write_index = from_write_index;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, AddToIndexWork, (uv_after_work_cb)AddToIndexAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::AddToIndexWork(uv_work_t *req) {
@@ -193,28 +190,28 @@ void GitSubmodule::AddToIndexWork(uv_work_t *req) {
 }
 
 void GitSubmodule::AddToIndexAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   AddToIndexBaton *baton = static_cast<AddToIndexBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = NanNewLocal<Value>(Undefined());
+    Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -231,24 +228,24 @@ void GitSubmodule::AddToIndexAfterWork(uv_work_t *req) {
 
 /**
  */
-NAN_METHOD(GitSubmodule::Save) {
-  NanScope();
+Handle<Value> GitSubmodule::Save(const Arguments& args) {
+  HandleScope scope;
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   SaveBaton* baton = new SaveBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, SaveWork, (uv_after_work_cb)SaveAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::SaveWork(uv_work_t *req) {
@@ -263,28 +260,28 @@ void GitSubmodule::SaveWork(uv_work_t *req) {
 }
 
 void GitSubmodule::SaveAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   SaveBaton *baton = static_cast<SaveBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = NanNewLocal<Value>(Undefined());
+    Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -299,8 +296,8 @@ void GitSubmodule::SaveAfterWork(uv_work_t *req) {
 /**
  * @return {String} result
  */
-NAN_METHOD(GitSubmodule::Name) {
-  NanScope();
+Handle<Value> GitSubmodule::Name(const Arguments& args) {
+  HandleScope scope;
   
 
   const char * result = git_submodule_name(
@@ -309,14 +306,14 @@ NAN_METHOD(GitSubmodule::Name) {
 
   Handle<Value> to;
     to = String::New(result);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {String} result
  */
-NAN_METHOD(GitSubmodule::Path) {
-  NanScope();
+Handle<Value> GitSubmodule::Path(const Arguments& args) {
+  HandleScope scope;
   
 
   const char * result = git_submodule_path(
@@ -325,14 +322,14 @@ NAN_METHOD(GitSubmodule::Path) {
 
   Handle<Value> to;
     to = String::New(result);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {String} result
  */
-NAN_METHOD(GitSubmodule::Url) {
-  NanScope();
+Handle<Value> GitSubmodule::Url(const Arguments& args) {
+  HandleScope scope;
   
 
   const char * result = git_submodule_url(
@@ -341,16 +338,16 @@ NAN_METHOD(GitSubmodule::Url) {
 
   Handle<Value> to;
     to = String::New(result);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @param {String} url
  */
-NAN_METHOD(GitSubmodule::SetUrl) {
-  NanScope();
+Handle<Value> GitSubmodule::SetUrl(const Arguments& args) {
+  HandleScope scope;
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return NanThrowError(String::New("String url is required."));
+    return ThrowException(Exception::Error(String::New("String url is required.")));
   }
 
   const char * from_url;
@@ -364,20 +361,20 @@ NAN_METHOD(GitSubmodule::SetUrl) {
   free((void *)from_url);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return NanThrowError(String::New(giterr_last()->message));
+      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
     } else {
-      return NanThrowError(String::New("Unkown Error"));
+      return ThrowException(Exception::Error(String::New("Unkown Error")));
     }
   }
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 /**
  * @return {Oid} result
  */
-NAN_METHOD(GitSubmodule::IndexId) {
-  NanScope();
+Handle<Value> GitSubmodule::IndexId(const Arguments& args) {
+  HandleScope scope;
   
 
   const git_oid * result = git_submodule_index_id(
@@ -393,14 +390,14 @@ NAN_METHOD(GitSubmodule::IndexId) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 /**
  * @return {Oid} result
  */
-NAN_METHOD(GitSubmodule::HeadId) {
-  NanScope();
+Handle<Value> GitSubmodule::HeadId(const Arguments& args) {
+  HandleScope scope;
   
 
   const git_oid * result = git_submodule_head_id(
@@ -416,7 +413,7 @@ NAN_METHOD(GitSubmodule::HeadId) {
   } else {
     to = Null();
   }
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
 #include "../include/functions/copy.h"
@@ -424,31 +421,31 @@ NAN_METHOD(GitSubmodule::HeadId) {
 /**
  * @param {Number} overwrite
  */
-NAN_METHOD(GitSubmodule::Init) {
-  NanScope();
+Handle<Value> GitSubmodule::Init(const Arguments& args) {
+  HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsInt32()) {
-    return NanThrowError(String::New("Number overwrite is required."));
+    return ThrowException(Exception::Error(String::New("Number overwrite is required.")));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   InitBaton* baton = new InitBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Value, baton->overwriteReference, args[0]);
-  int from_overwrite;
-  from_overwrite = (int) args[0]->ToInt32()->Value();
-  baton->overwrite = from_overwrite;
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
+  baton->overwriteReference = Persistent<Value>::New(args[0]);
+    int from_overwrite;
+            from_overwrite = (int)   args[0]->ToInt32()->Value();
+          baton->overwrite = from_overwrite;
+    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, InitWork, (uv_after_work_cb)InitAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::InitWork(uv_work_t *req) {
@@ -464,28 +461,28 @@ void GitSubmodule::InitWork(uv_work_t *req) {
 }
 
 void GitSubmodule::InitAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   InitBaton *baton = static_cast<InitBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = NanNewLocal<Value>(Undefined());
+    Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -502,24 +499,24 @@ void GitSubmodule::InitAfterWork(uv_work_t *req) {
 
 /**
  */
-NAN_METHOD(GitSubmodule::Sync) {
-  NanScope();
+Handle<Value> GitSubmodule::Sync(const Arguments& args) {
+  HandleScope scope;
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   SyncBaton* baton = new SyncBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, SyncWork, (uv_after_work_cb)SyncAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::SyncWork(uv_work_t *req) {
@@ -534,28 +531,28 @@ void GitSubmodule::SyncWork(uv_work_t *req) {
 }
 
 void GitSubmodule::SyncAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   SyncBaton *baton = static_cast<SyncBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = NanNewLocal<Value>(Undefined());
+    Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -572,24 +569,24 @@ void GitSubmodule::SyncAfterWork(uv_work_t *req) {
 /**
  * @param {Repository} callback
  */
-NAN_METHOD(GitSubmodule::Open) {
-  NanScope();
+Handle<Value> GitSubmodule::Open(const Arguments& args) {
+  HandleScope scope;
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   OpenBaton* baton = new OpenBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, OpenWork, (uv_after_work_cb)OpenAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::OpenWork(uv_work_t *req) {
@@ -605,7 +602,7 @@ void GitSubmodule::OpenWork(uv_work_t *req) {
 }
 
 void GitSubmodule::OpenAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   OpenBaton *baton = static_cast<OpenBaton *>(req->data);
 
   TryCatch try_catch;
@@ -618,21 +615,21 @@ void GitSubmodule::OpenAfterWork(uv_work_t *req) {
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -648,24 +645,24 @@ void GitSubmodule::OpenAfterWork(uv_work_t *req) {
 
 /**
  */
-NAN_METHOD(GitSubmodule::Reload) {
-  NanScope();
+Handle<Value> GitSubmodule::Reload(const Arguments& args) {
+  HandleScope scope;
     
   if (args.Length() == 0 || !args[0]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   ReloadBaton* baton = new ReloadBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[0]));
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[0]));
 
   uv_queue_work(uv_default_loop(), &baton->request, ReloadWork, (uv_after_work_cb)ReloadAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::ReloadWork(uv_work_t *req) {
@@ -680,28 +677,28 @@ void GitSubmodule::ReloadWork(uv_work_t *req) {
 }
 
 void GitSubmodule::ReloadAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   ReloadBaton *baton = static_cast<ReloadBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = NanNewLocal<Value>(Undefined());
+    Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -718,31 +715,31 @@ void GitSubmodule::ReloadAfterWork(uv_work_t *req) {
 /**
  * @param {Number} status
  */
-NAN_METHOD(GitSubmodule::Status) {
-  NanScope();
+Handle<Value> GitSubmodule::Status(const Arguments& args) {
+  HandleScope scope;
       if (args.Length() == 0 || !args[0]->IsInt32()) {
-    return NanThrowError(String::New("Number status is required."));
+    return ThrowException(Exception::Error(String::New("Number status is required.")));
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return NanThrowError(String::New("Callback is required and must be a Function."));
+    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
   }
 
   StatusBaton* baton = new StatusBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->request.data = baton;
-  NanAssignPersistent(Value, baton->statusReference, args[0]);
-  unsigned int * from_status;
-  from_status = (unsigned int *) args[0]->ToInt32()->Value();
-  baton->status = from_status;
-  NanAssignPersistent(Value, baton->submoduleReference, args.This());
+  baton->statusReference = Persistent<Value>::New(args[0]);
+    unsigned int * from_status;
+            from_status = (unsigned int *)   args[0]->ToInt32()->Value();
+          baton->status = from_status;
+    baton->submoduleReference = Persistent<Value>::New(args.This());
   baton->submodule = ObjectWrap::Unwrap<GitSubmodule>(args.This())->GetValue();
-  NanAssignPersistent(Function, baton->callback, Local<Function>::Cast(args[1]));
+  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
 
   uv_queue_work(uv_default_loop(), &baton->request, StatusWork, (uv_after_work_cb)StatusAfterWork);
 
-  NanReturnUndefined();
+  return Undefined();
 }
 
 void GitSubmodule::StatusWork(uv_work_t *req) {
@@ -758,28 +755,28 @@ void GitSubmodule::StatusWork(uv_work_t *req) {
 }
 
 void GitSubmodule::StatusAfterWork(uv_work_t *req) {
-  NanScope();
+  HandleScope scope;
   StatusBaton *baton = static_cast<StatusBaton *>(req->data);
 
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    Handle<Value> result = NanNewLocal<Value>(Undefined());
+    Handle<Value> result = Local<Value>::New(Undefined());
     Handle<Value> argv[2] = {
-      NanNewLocal<Value>(Null()),
+      Local<Value>::New(Null()),
       result
     };
-    NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 2, argv);
+    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
         Exception::Error(String::New(baton->error->message))
       };
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      NanPersistentToLocal(baton->callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
     }
       }
 
@@ -792,4 +789,4 @@ void GitSubmodule::StatusAfterWork(uv_work_t *req) {
   delete baton;
 }
 
-Persistent<FunctionTemplate> GitSubmodule::constructor_template;
+Persistent<Function> GitSubmodule::constructor_template;

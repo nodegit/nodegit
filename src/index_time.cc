@@ -23,66 +23,65 @@ GitIndexTime::~GitIndexTime() {
 }
 
 void GitIndexTime::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("IndexTime"));
+  tpl->SetClassName(String::NewSymbol("IndexTime"));
+
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "seconds", Seconds);
   NODE_SET_PROTOTYPE_METHOD(tpl, "nanoseconds", Nanoseconds);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("IndexTime"), tpl->GetFunction());
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("IndexTime"), constructor_template);
 }
 
-NAN_METHOD(GitIndexTime::New) {
-  NanScope();
+Handle<Value> GitIndexTime::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_index_time is required."));
+    return ThrowException(Exception::Error(String::New("git_index_time is required.")));
   }
 
-  GitIndexTime* object = new GitIndexTime((git_index_time *) External::Cast(*args[0])->Value());
+  GitIndexTime* object = new GitIndexTime((git_index_time *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitIndexTime::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitIndexTime::constructor_template->NewInstance(1, argv));
 }
 
 git_index_time *GitIndexTime::GetValue() {
   return this->raw;
 }
 
-NAN_METHOD(GitIndexTime::Seconds) {
-  NanScope();
+
+Handle<Value> GitIndexTime::Seconds(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   git_time_t seconds =
     ObjectWrap::Unwrap<GitIndexTime>(args.This())->GetValue()->seconds;
 
     to = Uint32::New(seconds);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-NAN_METHOD(GitIndexTime::Nanoseconds) {
-  NanScope();
+Handle<Value> GitIndexTime::Nanoseconds(const Arguments& args) {
+  HandleScope scope;
     Handle<Value> to;
 
   unsigned int nanoseconds =
     ObjectWrap::Unwrap<GitIndexTime>(args.This())->GetValue()->nanoseconds;
 
     to = Uint32::New(nanoseconds);
-  NanReturnValue(to);
+  return scope.Close(to);
 }
 
-Persistent<FunctionTemplate> GitIndexTime::constructor_template;
+Persistent<Function> GitIndexTime::constructor_template;

@@ -23,38 +23,36 @@ GitCloneOptions::~GitCloneOptions() {
 }
 
 void GitCloneOptions::Initialize(Handle<v8::Object> target) {
-  NanScope();
+  HandleScope scope;
 
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("CloneOptions"));
+  tpl->SetClassName(String::NewSymbol("CloneOptions"));
 
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("CloneOptions"), tpl->GetFunction());
+
+  constructor_template = Persistent<Function>::New(tpl->GetFunction());
+  target->Set(String::NewSymbol("CloneOptions"), constructor_template);
 }
 
-NAN_METHOD(GitCloneOptions::New) {
-  NanScope();
+Handle<Value> GitCloneOptions::New(const Arguments& args) {
+  HandleScope scope;
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("git_clone_options is required."));
+    return ThrowException(Exception::Error(String::New("git_clone_options is required.")));
   }
 
-  GitCloneOptions* object = new GitCloneOptions((git_clone_options *) External::Cast(*args[0])->Value());
+  GitCloneOptions* object = new GitCloneOptions((git_clone_options *) External::Unwrap(args[0]));
   object->Wrap(args.This());
 
-  NanReturnValue(args.This());
+  return scope.Close(args.This());
 }
 
 Handle<Value> GitCloneOptions::New(void *raw) {
-  NanScope();
+  HandleScope scope;
   Handle<Value> argv[1] = { External::New((void *)raw) };
-  Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
-  instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  return scope.Close(GitCloneOptions::constructor_template->NewInstance(1, argv));
 }
 
 git_clone_options *GitCloneOptions::GetValue() {
@@ -62,4 +60,4 @@ git_clone_options *GitCloneOptions::GetValue() {
 }
 
 
-Persistent<FunctionTemplate> GitCloneOptions::constructor_template;
+Persistent<Function> GitCloneOptions::constructor_template;

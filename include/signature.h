@@ -9,8 +9,6 @@
 #include <node.h>
 #include <string>
 
-#include "nan.h"
-
 #include "git2.h"
 
 using namespace node;
@@ -19,7 +17,7 @@ using namespace v8;
 class GitSignature : public ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
     git_signature *GetValue();
@@ -30,24 +28,14 @@ class GitSignature : public ObjectWrap {
     GitSignature(git_signature *raw);
     ~GitSignature();
 
-    static NAN_METHOD(New);
+    static Handle<Value> New(const Arguments& args);
 
-    static NAN_METHOD(Name);
-    static NAN_METHOD(Email);
-    static NAN_METHOD(Time);
+    static Handle<Value> Name(const Arguments& args);
+    static Handle<Value> Email(const Arguments& args);
+    static Handle<Value> Time(const Arguments& args);
 
-    static NAN_METHOD(Create);
-    static NAN_METHOD(Now);
-
-
-    // static Handle<Value> New(const Arguments& args);
-
-    // static Handle<Value> Name(const Arguments& args);
-    // static Handle<Value> Email(const Arguments& args);
-    // static Handle<Value> Time(const Arguments& args);
-
-    // static Handle<Value> Create(const Arguments& args);
-    // static Handle<Value> Now(const Arguments& args);
+    static Handle<Value> Create(const Arguments& args);
+    static Handle<Value> Now(const Arguments& args);
     git_signature *raw;
 };
 
