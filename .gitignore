@@ -1,7 +1,9 @@
 /build/*
 !/build/codegen/
-/node_modules/
-/vendor/libgit2/
+
 /doc/*
 !/doc/Theme.css
-/test/.reposCache
+
+/node_modules/
+/vendor/libgit2/
+/test/repos/

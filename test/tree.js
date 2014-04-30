@@ -1,6 +1,7 @@
 var git = require('../'),
     rimraf = require('rimraf'),
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 var sha = '5716e9757886eaf38d51c86b192258c960d9cfea';
 var fileCount = 512; // Number of blob & blob executabless
@@ -36,7 +37,7 @@ exports.insert = function(test) {
             buffer = new Buffer(text);
         repo.createBlobFromBuffer(buffer, function(error, blobId) {
           var builder = tree.builder();
-          builder.insert("lib/baz/bar.txt", blobId, git.TreeEntry.FileMode.Blob);
+          builder.insert(path.join("lib", "baz", "bar.txt"), blobId, git.TreeEntry.FileMode.Blob);
           builder.write(function(error, treeId) {
             repo.getTree(treeId, function(error, tree) {
               var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60),
