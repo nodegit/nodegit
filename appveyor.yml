@@ -23,7 +23,10 @@ matrix:
 # Get the latest stable version of Node 0.STABLE.latest
 install:
   - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version)
-  - npm install --verbose
+  - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
+  - cmd: SET PATH=c:\python27;%PATH%
+  - cmd: npm install -g node-gyp
+  - npm install
 
 test_script:
   - node --version
