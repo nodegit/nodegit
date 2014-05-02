@@ -88,14 +88,6 @@ var dependencies = Q.allSettled([
   });
 })
 
-// Display a warning message about missing dependencies.
-.fail(function(message) {
-  console.info('[nodegit] Failed to build nodegit.');
-  console.info(message);
-
-  throw new Error(message);
-})
-
 // Successfully found all dependencies.  First step is to clean the vendor
 // directory.
 .then(function() {
@@ -108,7 +100,7 @@ var dependencies = Q.allSettled([
 .then(function() {
   console.info('[nodegit] Fetching vendor/libgit2.');
 
-  var url = 'https://github.com/libgit2/libgit2/tarball/'+ pkg.libgit2;
+  var url = 'https://github.com/libgit2/libgit2/tarball/' + pkg.libgit2;
   
   var extract = tar.Extract({
     path: paths.libgit2,
@@ -128,25 +120,29 @@ var dependencies = Q.allSettled([
   return Q.ninvoke(fs, 'mkdir', paths.build);
 })
 
-// Configure libgit2.
+// Configure libgit2 using cmake.
 .then(function() {
   console.info('[nodegit] Configuring libgit2.');
 
-  var flags = '-DTHREADSAFE=1 -DBUILD_CLAR=0';
+  // Minimum flags necessary to configure in sane environments.
+  var flags = ['-DTHREADSAFE=ON', '-DBUILD_CLAR=OFF'];
 
   // Windows flags.
-  if (process.platform.indexOf("win") > -1) {
-    flags = '-DSTDCALL=OFF -DBUILD_CLAR=OFF -DTHREADSAFE=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_BUILD_TYPE=RelWithDebInfo';
+  if (process.platform.indexOf('win') > -1) {
+    flags.push.apply(flags, [
+      '-DSTDCALL=OFF',
+      '-DBUILD_SHARED_LIBS=OFF',
+      '-DCMAKE_C_FLAGS=-fPIC',
+      '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+    ]);
   }
 
-  return Q.nfcall(exec, 'cmake .. ' + flags, {
+  return Q.nfcall(exec, 'cmake .. ' + flags.join(' '), {
     cwd: paths.build
   });
-}).fail(function(err) {
-  console.error(err);
 })
 
-// Build libgit2.
+// Build libgit2 using cmake.
 .then(function() {
   console.info('[nodegit] Building libgit2.');
 
@@ -155,7 +151,7 @@ var dependencies = Q.allSettled([
   });
 })
 
-// Configure the Node native module.
+// Configure the native module using node-gyp.
 .then(function() {
   console.info('[nodegit] Configuring native node module.');
 
@@ -166,6 +162,7 @@ var dependencies = Q.allSettled([
   });
 })
 
+// Build the native module using node-gyp.
 .then(function() {
   console.info('[nodegit] Building native node module.');
 
@@ -176,15 +173,14 @@ var dependencies = Q.allSettled([
   });
 })
 
+// Display a success message.
+.then(function() {
+  console.info('[nodegit] Completed installation successfully.');
+})
+
 // Display a warning message about failing to build native node module.
 .fail(function(message) {
   console.info('[nodegit] Failed to build nodegit.');
   console.info(message.message);
   console.info(message.stack);
-
-  throw new Error(message);
-})
-
-.then(function() {
-  console.info('[nodegit] Completed installation successfully.');
 });
