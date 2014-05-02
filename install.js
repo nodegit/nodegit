@@ -129,7 +129,7 @@ var dependencies = Q.allSettled([
   var flags = ['-DTHREADSAFE=ON', '-DBUILD_CLAR=OFF'];
 
   // Windows flags.
-  if (process.platform.indexOf('win') > -1) {
+  if (process.platform === 'win32') {
     flags.push.apply(flags, [
       '-DSTDCALL=OFF',
       '-DBUILD_SHARED_LIBS=OFF',
