@@ -1,4 +1,5 @@
 // Core Node.js modules.
+var os = require('os');
 var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
@@ -135,6 +136,11 @@ var dependencies = Q.allSettled([
       '-DCMAKE_C_FLAGS=-fPIC',
       '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
     ]);
+
+    // If the architecture is 64bit, have to change the generator.
+    if (os.arch() === 'x64') {
+      flags.push('-G "Visual Studio 12 Win64"');
+    }
   }
 
   return Q.nfcall(exec, 'cmake .. ' + flags.join(' '), {
@@ -169,7 +175,8 @@ var dependencies = Q.allSettled([
   return Q.nfcall(exec, systemPath([
     '.', 'node_modules', '.bin', 'node-gyp build'
   ]), {
-    cwd: '.'
+    cwd: '.',
+    maxBuffer: Number.MAX_VALUE
   });
 })
 

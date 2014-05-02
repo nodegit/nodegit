@@ -32,11 +32,10 @@
   },
   "dependencies": {
     "request": "~2.25.0",
-    "node-gyp": "~0.10.9",
+    "node-gyp": "~0.13.0",
     "tar": "~0.1.18",
     "which": "~1.0.5",
     "q": "~0.9.6",
-    "node-gyp": "~0.8.2",
     "fs-extra": "0.6.0",
     "nan": "0.8.0",
     "rimraf": "~2.2.6"

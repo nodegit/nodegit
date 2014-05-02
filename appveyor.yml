@@ -26,7 +26,7 @@ install:
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
   - cmd: SET PATH=c:\python27;%PATH%
   - cmd: npm install -g node-gyp
-  - npm install
+  - npm install --msvs_version=2013
 
 test_script:
   - node --version

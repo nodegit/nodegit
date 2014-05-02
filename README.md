@@ -20,7 +20,7 @@ http://www.nodegit.org/nodegit/
 
 ## Building and Installing. ##
 
-Dependencies:
+Minimum dependencies:
 
 * [Python 2](https://www.python.org/)
 * [CMake >= 2.8](http://www.cmake.org/)
@@ -49,16 +49,44 @@ correctly.
 
 ### Installing dependencies: ###
 
-Using Brew on OS X:
+#### OS X ####
+
+Using Brew:
 
 ``` bash
 brew install cmake libzip
 ```
 
-Using APT on Ubuntu:
+#### Linux ####
+
+Using APT in Ubuntu:
 
 ``` bash
 sudo apt-get install cmake libzip-dev build-essential
+```
+
+Using Pacman in Arch Linux:
+
+``` bash
+sudo pacman -S cmake libzip base-devel
+```
+
+#### Windows ####
+
+For Windows users, you will have to install Visual Studio Express.  You may
+have to add a build flag to the installation process to successfully install.
+Try first without, if the build fails, try again with the flag.
+
+*Allegedly the order in which you install Visual Studio could trigger this
+error.*
+
+- [Download and install CMake](http://www.cmake.org/cmake/resources/software.html).
+- [Download and install Python](https://www.python.org/download/windows)
+- [Download and install VS Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop)
+
+``` bash
+npm install nodegit --msvs_version=2013
+# Or whatever version you've installed.
 ```
 
 ## API examples. ##
