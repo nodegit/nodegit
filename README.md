@@ -7,7 +7,7 @@ NodeGit
 Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
 <a href="https://ci.appveyor.com/project/TimBranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2/branch/master" alt="Build Status: Windows" height="18" /></a>
 
-**Stable: 0.1.1**
+**Stable: 0.1.2**
 
 Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael
 Robinson [@codeofinterest](http://twitter.com/codeofinterest), and Nick Kallen
