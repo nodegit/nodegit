@@ -23,7 +23,7 @@ http://www.nodegit.org/nodegit/
 Minimum dependencies:
 
 * [Python 2](https://www.python.org/)
-* [CMake >= 2.8](http://www.cmake.org/)
+* [CMake 2.8](http://www.cmake.org/)
 
 ``` bash
 npm install nodegit
