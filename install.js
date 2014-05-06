@@ -105,49 +105,6 @@ var dependencies = Q.allSettled([
   return Q.ninvoke(expand, 'on', 'end');
 })
 
-// Fetch completed successfully.
-.then(function() {
-  console.info('[nodegit] Creating vendor/libgit2/build.');
-
-  return Q.ninvoke(fs, 'mkdir', paths.build);
-})
-
-// Configure libgit2 using cmake.
-.then(function() {
-  console.info('[nodegit] Configuring libgit2.');
-
-  // Minimum flags necessary to configure in sane environments.
-  var flags = ['-DTHREADSAFE=ON', '-DBUILD_CLAR=OFF'];
-
-  // Windows flags.
-  if (process.platform === 'win32') {
-    flags.push.apply(flags, [
-      '-DSTDCALL=OFF',
-      '-DBUILD_SHARED_LIBS=OFF',
-      '-DCMAKE_C_FLAGS=-fPIC',
-      '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
-    ]);
-
-    // If the architecture is 64bit, have to change the generator.
-    if (os.arch() === 'x64') {
-      flags.push('-G "Visual Studio 12 Win64"');
-    }
-  }
-
-  return Q.nfcall(exec, 'cmake .. ' + flags.join(' '), {
-    cwd: paths.build
-  });
-})
-
-// Build libgit2 using cmake.
-.then(function() {
-  console.info('[nodegit] Building libgit2.');
-
-  return Q.nfcall(exec, 'cmake --build .', {
-    cwd: paths.build
-  });
-})
-
 // Configure the native module using node-gyp.
 .then(function() {
   console.info('[nodegit] Configuring native node module.');
