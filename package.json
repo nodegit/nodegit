@@ -2,7 +2,10 @@
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.1.2",
-  "libgit2": "e953c1606d0d7aea680c9b19db0b955b34ae63c2",
+  "libgit2": {
+    "sha": "e953c1606d0d7aea680c9b19db0b955b34ae63c2",
+    "version": "0.20.0"
+  },
   "homepage": "https://github.com/tbranyen/nodegit",
   "keywords": [
     "libgit2",
@@ -44,12 +47,14 @@
     "jshint": "~2.4.4",
     "nodeunit": "~0.8.6",
     "ejs": "~1.0.0",
-    "async": "~0.2.10"
+    "async": "~0.2.10",
+    "pattern-watcher": "0.0.3"
   },
   "scripts": {
     "lint": "jshint src",
     "install": "node install.js",
     "test": "cd test && nodeunit nodegit.js",
-    "codegen": "node build/codegen/generate.js"
+    "codegen": "node build/codegen/generate.js",
+    "watch": "watcher --path build/codegen --command 'clear ; node build/codegen/t.js ; node install'"
   }
 }
