@@ -1,8 +1,9 @@
+// https://github.com/nodegit/nodegit/issues/94
 const fs = require("fs");
 const ejs = require("ejs");
 const path = require("path");
 
-var idefs = require("./v0.18.0.json");
+var idefs = require("./idefs");
 
 var classTemplate = ejs.compile(
   "" + fs.readFileSync(String(__dirname + "/templates/class.cc.ejs")), {

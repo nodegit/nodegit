@@ -37,7 +37,7 @@ class <%- cppClassName %> : public ObjectWrap {
 <%
   for (var i in fields) {
     var fieldInfo = fields[i];
-    if (fieldInfo.ignore) continue;
+    if (fieldInfo.ignore || !fieldInfo.cppFunctionName) continue;
 -%>
     static NAN_METHOD(<%- fieldInfo.cppFunctionName %>);
 <% } -%>
@@ -46,7 +46,7 @@ class <%- cppClassName %> : public ObjectWrap {
 <%
   for (var i in functions) {
     var functionInfo = functions[i];
-    if (functionInfo.ignore) continue;
+    if (functionInfo.ignore || !functionInfo.cppFunctionName) continue;
 -%>
 <% if (functionInfo.isAsync) { -%>
 
