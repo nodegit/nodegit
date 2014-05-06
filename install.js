@@ -10,7 +10,6 @@ var Q = require('q');
 var request = require('request');
 var tar = require('tar');
 var which = require('which');
-var rimraf = require('rimraf');
 
 // This will take in an object and find any matching keys in the environment
 // to use as overrides.
@@ -89,19 +88,20 @@ var dependencies = Q.allSettled([
   });
 })
 
-// Successfully found all dependencies.  First step is to clean the vendor
+// Successfully found all dependencies.  First step is to detect the vendor
 // directory.
 .then(function() {
-  console.info('[nodegit] Removing vendor/libgit2.');
+  console.info('[nodegit] Detecting vendor/libgit2.');
 
-  return Q.ninvoke(rimraf, null, paths.libgit2);
+  return Q.ninvoke(fs, 'stat', paths.libgit2);
 })
 
-// Now fetch the libgit2 source from GitHub.
-.then(function() {
+// If the directory already exists, no need to refetch.
+.fail(function() {
+  // Otherwise fetch the libgit2 source from GitHub.
   console.info('[nodegit] Fetching vendor/libgit2.');
 
-  var url = 'https://github.com/libgit2/libgit2/tarball/' + pkg.libgit2;
+  var url = 'https://github.com/libgit2/libgit2/tarball/' + pkg.libgit2.sha;
   
   var extract = tar.Extract({
     path: paths.libgit2,
@@ -111,10 +111,10 @@ var dependencies = Q.allSettled([
   // First extract from Zlib and then extract from Tar.
   var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
 
-  return Q.ninvoke(expand, 'on', 'end');
+  return Q.ninvoke(expand, 'on', 'end')
 })
 
-// Fetch completed successfully.
+// Fetch completed, make the build directory.
 .then(function() {
   console.info('[nodegit] Creating vendor/libgit2/build.');
 
@@ -155,6 +155,11 @@ var dependencies = Q.allSettled([
   return Q.nfcall(exec, 'cmake --build .', {
     cwd: paths.build
   });
+})
+
+.fail(function() {
+  console.info('[nodegit] libgit2 already built');
+  return true;
 })
 
 // Configure the native module using node-gyp.
