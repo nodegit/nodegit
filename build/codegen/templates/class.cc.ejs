@@ -43,7 +43,7 @@
 using namespace v8;
 using namespace node;
 
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
 <%- cppClassName %>::<%- cppClassName %>(<%- cType %> *raw) {
   this->raw = raw;
 }

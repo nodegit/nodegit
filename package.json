@@ -7,7 +7,7 @@
   },
   "version": "0.1.3",
   "libgit2": {
-    "sha": "e953c1606d0d7aea680c9b19db0b955b34ae63c2",
+    "sha": "43cb8b32428b1b29994874349ec22eb5372e152c",
     "version": "0.20.0"
   },
   "homepage": "https://github.com/tbranyen/nodegit",
@@ -55,9 +55,7 @@
     "async": "~0.9.0",
     "aws-sdk": "~2.0.0-rc.20",
     "ejs": "~1.0.0",
-    "jshint": "~2.5.1",
-    "nodeunit": "~0.9.0",
-    "pattern-watcher": "0.0.3"
+    "nodeunit": "~0.9.0"
   },
   "binary": {
     "module_name": "nodegit",
@@ -68,8 +66,7 @@
     "lint": "jshint src",
     "install": "npm run codegen && node install.js",
     "test": "cd test && nodeunit nodegit.js",
-    "codegen": "node build/codegen/generate.js",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
-    "watch": "watcher --path build/codegen --command 'clear ; node build/codegen/t.js ; node install'"
+    "codegen": "node build/codegen/t.js && node build/codegen/generate.js"
   }
 }

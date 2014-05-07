@@ -19,14 +19,14 @@ class <%- cppClassName %> : public ObjectWrap {
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
     <%- cType %> *GetValue();
 
     static Handle<Value> New(void *raw);
 <% } -%>
 
   private:
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
     <%- cppClassName %>(<%- cType %> *raw);
     ~<%- cppClassName %>();
 <% } -%>
@@ -82,7 +82,7 @@ class <%- cppClassName %> : public ObjectWrap {
     static NAN_METHOD(<%- functionInfo.cppFunctionName %>);
 <% } -%>
 <% } -%>
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
     <%- cType %> *raw;
 <% } -%>
 };

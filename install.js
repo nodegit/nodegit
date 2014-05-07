@@ -39,12 +39,18 @@ function systemPath(parts) {
 // Will be used near the end to configure `node-gyp`.
 var python;
 
+var local = path.join.bind(path, __dirname);
+
 // Common reusable paths that can be overwritten by environment variables.
 var paths = envOverride({
-  pkg: __dirname + '/package',
-  libgit2: __dirname + '/vendor/libgit2/',
-  build: __dirname + '/vendor/libgit2/build/',
-  release: __dirname + '/build/Release'
+  pkg: local('package'),
+  libgit2: local('vendor/libgit2'),
+  sys: {
+    include: local('include/sys'),
+    src: local('src/sys'),
+    build: local('build/Release/obj.target/src/sys')
+  },
+  release: local('build/Release')
 });
 
 // Load the package.json.
@@ -64,6 +70,11 @@ var dependencies = Q.allSettled([
 
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
+
+  // Missing Python.
+  if (!python) {
+    throw new Error('Python is required to build libgit2.');
+  }
   
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {

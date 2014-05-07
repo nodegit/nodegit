@@ -10985,7 +10985,7 @@
     ]
   },
   {
-    "filename": "repo.h",
+    "filename": "repository.h",
     "dependencies": [
       "../include/oid.h",
       "../include/commit.h",
