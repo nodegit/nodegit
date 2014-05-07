@@ -93,6 +93,32 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     file.jsClassName = file.jsClassName.slice(3);
   }
 
+  var uniqueTypes = [];
+
+  var addType = function(arg) {
+    if (!arg.type) { return; }
+    if (arg.type.indexOf("git") === 0) {
+      var val = arg.type.split(" ")[0].slice(4);
+
+      if (uniqueTypes.indexOf(val) === -1 && descriptor[val]) {
+        uniqueTypes.push(val);
+      }
+    }
+  };
+
+  libgit2.files[index].functions.forEach(function(functionName) {
+    var funcDescriptor = libgit2.functions[functionName];
+
+    var args = funcDescriptor.args || [];
+
+    args.forEach(addType);
+    addType(funcDescriptor.return.type);
+  });
+
+  file.dependencies = uniqueTypes.map(function(file) {
+    return "../include/" + file + ".h"; 
+  });
+
   /*
 
   // Add to the type's list if it's new.

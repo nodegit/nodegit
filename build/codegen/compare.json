@@ -4,7 +4,10 @@
     "cType": null,
     "filename": "attr.h",
     "cppClassName": "GitAttr",
-    "jsClassName": "Attr"
+    "jsClassName": "Attr",
+    "dependencies": [
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
@@ -12,7 +15,11 @@
     "cppClassName": "GitBlame",
     "jsClassName": "Blame",
     "cType": "git_blame",
-    "freeFunctionName": "git_blame_free"
+    "freeFunctionName": "git_blame_free",
+    "dependencies": [
+      "../include/blame.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
@@ -20,35 +27,52 @@
     "cppClassName": "GitBlob",
     "jsClassName": "Blob",
     "cType": "git_blob",
-    "freeFunctionName": "git_blob_free"
+    "freeFunctionName": "git_blob_free",
+    "dependencies": [
+      "../include/blob.h",
+      "../include/repository.h",
+      "../include/oid.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "branch.h",
     "cppClassName": "GitBranch",
-    "jsClassName": "Branch"
+    "jsClassName": "Branch",
+    "dependencies": [
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "buffer.h",
     "cppClassName": "GitBuffer",
     "jsClassName": "Buffer",
-    "cType": "git_buf"
+    "cType": "git_buf",
+    "dependencies": []
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "checkout.h",
     "cppClassName": "GitCheckout",
-    "jsClassName": "Checkout"
+    "jsClassName": "Checkout",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/index.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "clone.h",
     "cppClassName": "GitClone",
-    "jsClassName": "Clone"
+    "jsClassName": "Clone",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/remote.h"
+    ]
   },
   {
     "ignore": false,
@@ -56,14 +80,21 @@
     "cppClassName": "GitCommit",
     "jsClassName": "Commit",
     "cType": "git_commit",
-    "freeFunctionName": "git_commit_free"
+    "freeFunctionName": "git_commit_free",
+    "dependencies": [
+      "../include/commit.h",
+      "../include/repository.h",
+      "../include/tree.h",
+      "../include/oid.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "common.h",
     "cppClassName": "GitCommon",
-    "jsClassName": "Common"
+    "jsClassName": "Common",
+    "dependencies": []
   },
   {
     "ignore": false,
@@ -71,14 +102,18 @@
     "cppClassName": "GitConfig",
     "jsClassName": "Config",
     "cType": "git_config",
-    "freeFunctionName": "git_config_free"
+    "freeFunctionName": "git_config_free",
+    "dependencies": [
+      "../include/config.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "cred_helpers.h",
     "cppClassName": "GitCredHelpers",
     "jsClassName": "CredHelpers",
-    "cType": "git_cred"
+    "cType": "git_cred",
+    "dependencies": []
   },
   {
     "ignore": false,
@@ -86,35 +121,52 @@
     "cppClassName": "GitDiff",
     "jsClassName": "Diff",
     "cType": "git_diff",
-    "freeFunctionName": "git_diff_free"
+    "freeFunctionName": "git_diff_free",
+    "dependencies": [
+      "../include/diff.h",
+      "../include/repository.h",
+      "../include/tree.h",
+      "../include/index.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "errors.h",
     "cppClassName": "GitErrors",
-    "jsClassName": "Errors"
+    "jsClassName": "Errors",
+    "dependencies": []
   },
   {
     "ignore": false,
     "filename": "filter.h",
     "cppClassName": "GitFilter",
     "jsClassName": "Filter",
-    "cType": "git_filter"
+    "cType": "git_filter",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/blob.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "graph.h",
     "cppClassName": "GitGraph",
-    "jsClassName": "Graph"
+    "jsClassName": "Graph",
+    "dependencies": [
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "ignore.h",
     "cppClassName": "GitIgnore",
-    "jsClassName": "Ignore"
+    "jsClassName": "Ignore",
+    "dependencies": [
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
@@ -122,7 +174,12 @@
     "cppClassName": "GitIndex",
     "jsClassName": "Index",
     "cType": "git_index",
-    "freeFunctionName": "git_index_free"
+    "freeFunctionName": "git_index_free",
+    "dependencies": [
+      "../include/index.h",
+      "../include/oid.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
@@ -130,42 +187,58 @@
     "cppClassName": "GitIndexer",
     "jsClassName": "Indexer",
     "cType": "git_indexer",
-    "freeFunctionName": "git_indexer_free"
+    "freeFunctionName": "git_indexer_free",
+    "dependencies": [
+      "../include/indexer.h",
+      "../include/odb.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "inttypes.h",
     "cppClassName": "GitInttypes",
-    "jsClassName": "Inttypes"
+    "jsClassName": "Inttypes",
+    "dependencies": []
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "merge.h",
     "cppClassName": "GitMerge",
-    "jsClassName": "Merge"
+    "jsClassName": "Merge",
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repository.h",
+      "../include/index.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "message.h",
     "cppClassName": "GitMessage",
-    "jsClassName": "Message"
+    "jsClassName": "Message",
+    "dependencies": []
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "net.h",
     "cppClassName": "GitNet",
-    "jsClassName": "Net"
+    "jsClassName": "Net",
+    "dependencies": []
   },
   {
     "ignore": false,
     "filename": "notes.h",
     "cppClassName": "GitNotes",
     "jsClassName": "Notes",
-    "cType": "git_note"
+    "cType": "git_note",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/oid.h"
+    ]
   },
   {
     "ignore": false,
@@ -173,7 +246,11 @@
     "cppClassName": "GitObject",
     "jsClassName": "Object",
     "cType": "git_object",
-    "freeFunctionName": "git_object_free"
+    "freeFunctionName": "git_object_free",
+    "dependencies": [
+      "../include/object.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
@@ -181,28 +258,42 @@
     "cppClassName": "GitOdb",
     "jsClassName": "Odb",
     "cType": "git_odb",
-    "freeFunctionName": "git_odb_free"
+    "freeFunctionName": "git_odb_free",
+    "dependencies": [
+      "../include/odb.h",
+      "../include/oid.h",
+      "../include/odb_backend.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "odb_backend.h",
     "cppClassName": "GitOdbBackend",
     "jsClassName": "OdbBackend",
-    "cType": "git_odb"
+    "cType": "git_odb",
+    "dependencies": [
+      "../include/odb_backend.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "oid.h",
     "cppClassName": "GitOid",
     "jsClassName": "Oid",
-    "cType": "git_oid"
+    "cType": "git_oid",
+    "dependencies": [
+      "../include/oid.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "pack.h",
     "cppClassName": "GitPack",
     "jsClassName": "Pack",
-    "cType": "git_packbuilder"
+    "cType": "git_packbuilder",
+    "dependencies": [
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
@@ -210,7 +301,11 @@
     "cppClassName": "GitPatch",
     "jsClassName": "Patch",
     "cType": "git_patch",
-    "freeFunctionName": "git_patch_free"
+    "freeFunctionName": "git_patch_free",
+    "dependencies": [
+      "../include/patch.h",
+      "../include/diff.h"
+    ]
   },
   {
     "ignore": false,
@@ -218,7 +313,14 @@
     "cppClassName": "GitPathspec",
     "jsClassName": "Pathspec",
     "cType": "git_pathspec",
-    "freeFunctionName": "git_pathspec_free"
+    "freeFunctionName": "git_pathspec_free",
+    "dependencies": [
+      "../include/pathspec.h",
+      "../include/repository.h",
+      "../include/index.h",
+      "../include/tree.h",
+      "../include/diff.h"
+    ]
   },
   {
     "ignore": false,
@@ -226,7 +328,11 @@
     "cppClassName": "GitPush",
     "jsClassName": "Push",
     "cType": "git_push",
-    "freeFunctionName": "git_push_free"
+    "freeFunctionName": "git_push_free",
+    "dependencies": [
+      "../include/push.h",
+      "../include/remote.h"
+    ]
   },
   {
     "ignore": false,
@@ -234,28 +340,42 @@
     "cppClassName": "GitRefdb",
     "jsClassName": "Refdb",
     "cType": "git_refdb",
-    "freeFunctionName": "git_refdb_free"
+    "freeFunctionName": "git_refdb_free",
+    "dependencies": [
+      "../include/refdb.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "refs.h",
     "cppClassName": "GitRefs",
     "jsClassName": "Refs",
-    "cType": "git_reflog"
+    "cType": "git_reflog",
+    "dependencies": [
+      "../include/reflog.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "reflog.h",
     "cppClassName": "GitReflog",
     "jsClassName": "Reflog",
-    "cType": "git_reference"
+    "cType": "git_reference",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/oid.h",
+      "../include/object.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "refspec.h",
     "cppClassName": "GitRefspec",
     "jsClassName": "Refspec",
-    "cType": "git_refspec"
+    "cType": "git_refspec",
+    "dependencies": []
   },
   {
     "ignore": false,
@@ -263,7 +383,12 @@
     "cppClassName": "GitRemote",
     "jsClassName": "Remote",
     "cType": "git_remote",
-    "freeFunctionName": "git_remote_free"
+    "freeFunctionName": "git_remote_free",
+    "dependencies": [
+      "../include/remote.h",
+      "../include/repository.h",
+      "../include/transport.h"
+    ]
   },
   {
     "ignore": false,
@@ -271,21 +396,37 @@
     "cppClassName": "GitRepository",
     "jsClassName": "Repository",
     "cType": "git_repository",
-    "freeFunctionName": "git_repository_free"
+    "freeFunctionName": "git_repository_free",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/odb.h",
+      "../include/config.h",
+      "../include/refdb.h",
+      "../include/index.h",
+      "../include/oid.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "reset.h",
     "cppClassName": "GitReset",
-    "jsClassName": "Reset"
+    "jsClassName": "Reset",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/object.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "revparse.h",
     "cppClassName": "GitRevparse",
-    "jsClassName": "Revparse"
+    "jsClassName": "Revparse",
+    "dependencies": [
+      "../include/object.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
@@ -293,7 +434,12 @@
     "cppClassName": "GitRevwalk",
     "jsClassName": "Revwalk",
     "cType": "git_revwalk",
-    "freeFunctionName": "git_revwalk_free"
+    "freeFunctionName": "git_revwalk_free",
+    "dependencies": [
+      "../include/revwalk.h",
+      "../include/repository.h",
+      "../include/oid.h"
+    ]
   },
   {
     "ignore": false,
@@ -301,90 +447,127 @@
     "cppClassName": "GitSignature",
     "jsClassName": "Signature",
     "cType": "git_signature",
-    "freeFunctionName": "git_signature_free"
+    "freeFunctionName": "git_signature_free",
+    "dependencies": [
+      "../include/signature.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "stash.h",
     "cppClassName": "GitStash",
-    "jsClassName": "Stash"
+    "jsClassName": "Stash",
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "status.h",
     "cppClassName": "GitStatus",
-    "jsClassName": "Status"
+    "jsClassName": "Status",
+    "dependencies": [
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "stdint.h",
     "cppClassName": "GitStdint",
-    "jsClassName": "Stdint"
+    "jsClassName": "Stdint",
+    "dependencies": []
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "stdarray.h",
     "cppClassName": "GitStdarray",
-    "jsClassName": "Stdarray"
+    "jsClassName": "Stdarray",
+    "dependencies": []
   },
   {
     "ignore": false,
     "filename": "submodule.h",
     "cppClassName": "GitSubmodule",
     "jsClassName": "Submodule",
-    "cType": "git_submodule"
+    "cType": "git_submodule",
+    "dependencies": [
+      "../include/submodule.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "tag.h",
     "cppClassName": "GitTag",
     "jsClassName": "Tag",
-    "cType": "git_commit"
+    "cType": "git_commit",
+    "dependencies": [
+      "../include/oid.h",
+      "../include/repository.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "threads.h",
     "cppClassName": "GitThreads",
     "jsClassName": "Threads",
-    "cType": "git_config"
+    "cType": "git_config",
+    "dependencies": [
+      "../include/config.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "trace.h",
     "cppClassName": "GitTrace",
     "jsClassName": "Trace",
-    "cType": "git_filter"
+    "cType": "git_filter",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/filter.h"
+    ]
   },
   {
     "ignore": false,
     "filename": "transport.h",
     "cppClassName": "GitTransport",
     "jsClassName": "Transport",
-    "cType": "git_index"
+    "cType": "git_index",
+    "dependencies": [
+      "../include/index.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "tree.h",
     "cppClassName": "GitTree",
-    "jsClassName": "Tree"
+    "jsClassName": "Tree",
+    "dependencies": []
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "types.h",
     "cppClassName": "GitTypes",
-    "jsClassName": "Types"
+    "jsClassName": "Types",
+    "dependencies": [
+      "../include/repository.h",
+      "../include/refdb.h"
+    ]
   },
   {
     "ignore": false,
     "cType": null,
     "filename": "version.h",
     "cppClassName": "GitVersion",
-    "jsClassName": "Version"
+    "jsClassName": "Version",
+    "dependencies": []
   }
 ]
