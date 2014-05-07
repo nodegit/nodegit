@@ -39,13 +39,19 @@ function systemPath(parts) {
 }
 
 // Will be used near the end to configure `node-gyp`.
-var python, cmake;
+var python;
+
+var local = path.join.bind(path, __dirname);
 
 // Common reusable paths that can be overwritten by environment variables.
 var paths = envOverride({
-  pkg: __dirname + '/package',
-  libgit2: __dirname + '/vendor/libgit2/',
-  build: __dirname + '/vendor/libgit2/build/',
+  pkg: local('package'),
+  libgit2: local('vendor/libgit2/'),
+  sys: {
+    include: local('include/sys'),
+    src: local('src/sys'),
+    build: local('build/Release/obj.target/src/sys')
+  }
 });
 
 // Load the package.json.
@@ -57,9 +63,6 @@ var dependencies = Q.allSettled([
   // work with Python 2.* if it's available.
   Q.nfcall(which, 'python2'),
   Q.nfcall(which, 'python'),
-  
-  // Check for any version of CMake.
-  Q.nfcall(which, 'cmake'),
 ])
 
 // Determine if all the dependency requirements are met.
@@ -68,18 +71,12 @@ var dependencies = Q.allSettled([
 
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
-  cmake = results[2].value;
 
   // Missing Python.
   if (!python) {
     throw new Error('Python is required to build libgit2.');
   }
   
-  // Missing CMake.
-  if (!cmake) {
-    throw new Error('CMake is required to build libgit2.');
-  }
-
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {
     if (version[1].indexOf('Python 3') === 0) {

@@ -1,419 +1,233 @@
 {
   "attr": {
-    "cppClassName": "Attr",
-    "cType": "git_attr"
+    "cType": null
   },
 
   "blame": {
-    "cppClassName": "GitBlame"
+    "ignore": false
   },
 
   "blob": {
-    "dependencies": [
-      "../include/repo.h",
-      "../include/oid.h",
-      "../include/wrapper.h",
-      "node_buffer.h"
-    ],
-    "cppClassName": "GitBlob",
-    "cType": "git_blob",
-    "freeFunctionName": "git_blob_free"
+    "ignore": false
   },
 
   "branch": {
-    "cppClassName": "Branch",
-    "cType": "git_branch",
-    "freeFunctionName": "git_branch_free"
+    "ignore": false,
+    "cType": null
   },
 
   "buffer": {
-    "cppClassName": "GitBuffer"
+    "ignore": false
   },
 
   "checkout": {
-    "cppClassName": "Checkout",
-    "cType": "git_checkout",
-    "freeFunctionName": "git_checkout_free"
+    "ignore": false,
+    "cType": null
   },
 
   "clone": {
-    "cppClassName": "GitClone"
+    "ignore": false,
+    "cType": null
   },
 
   "commit": {
-    "dependencies": [
-      "../include/oid.h",
-      "../include/repo.h",
-      "../include/signature.h",
-      "../include/tree.h"
-    ],
-    "cppClassName": "GitCommit",
-    "cType": "git_commit",
-    "freeFunctionName": "git_commit_free"
+    "ignore": false
   },
 
   "common": {
-    "ignore": true,
-    "cppClassName": "Common",
-    "cType": "git_common"
+    "ignore": false,
+    "cType": null
   },
 
   "config": {
-    "ignore": true,
-    "cppClassName": "Config",
-    "cType": "git_config",
-    "freeFunctionName": "git_config_free"
+    "ignore": false
   },
 
   "cred_helpers": {
-    "ignore": true,
-    "cppClassName": "CredHelpers",
-    "cType": "git_cred_helpers",
-    "freeFunctionName": "git_cred_helpers_free"
+    "ignore": false
   },
 
   "diff": {
-    "cppClassName": "GitDiff"
+    "ignore": false
   },
 
   "errors": {
-    "ignore": true,
-    "cppClassName": "GitError",
-    "cType": "git_error"
+    "ignore": false,
+    "cType": null
   },
 
   "filter": {
-    "filename": "graph.h",
-    "ignore": true,
-    "jsClassName": "Graph",
-    "cppClassName": "Graph",
-    "cType": "git_graph",
-    "freeFunctionName": "git_graph_free"
+    "ignore": false
   },
 
   "graph": {
-    "ignore": true,
-    "cppClassName": "Graph",
-    "cType": "git_graph",
-    "freeFunctionName": "git_graph_free"
+    "ignore": false,
+    "cType": null
   },
 
   "ignore": {
-    "ignore": true,
-    "cppClassName": "Ignore",
-    "cType": "git_ignore",
-    "freeFunctionName": "git_ignore_free"
+    "ignore": false,
+    "cType": null
   },
 
   "index": {
-    "filename": "index.h",
-    "dependencies": [
-      "../include/oid.h",
-      "../include/repo.h",
-      "../include/tree.h",
-      "../include/diff_list.h",
-      "../include/diff_options.h",
-      "../include/index_entry.h"
-    ],
-    "cppClassName": "GitIndex",
-    "cType": "git_index",
-    "freeFunctionName": "git_index_free"
+    "ignore": false
   },
 
   "indexer": {
-    "ignore": true,
-    "cppClassName": "Indexer",
-    "cType": "git_indexer",
-    "freeFunctionName": "git_indexer_free"
+    "ignore": false
   },
 
   "inttypes": {
-    "ignore": true,
-    "cppClassName": "Inttypes",
-    "cType": "git_inttypes",
-    "freeFunctionName": "git_inttypes_free"
+    "ignore": false,
+    "cType": null
   },
 
   "merge": {
-    "ignore": true,
-    "cppClassName": "Merge",
-    "cType": "git_merge",
-    "freeFunctionName": "git_merge_free"
+    "ignore": false,
+    "cType": null
   },
 
   "message": {
-    "ignore": true,
-    "cppClassName": "Message",
-    "cType": "git_message",
-    "freeFunctionName": "git_message_free"
+    "ignore": false,
+    "cType": null
   },
 
   "net": {
-    "ignore": true,
-    "cppClassName": "Net",
-    "cType": "git_net",
-    "freeFunctionName": "git_net_free"
+    "ignore": false,
+    "cType": null
   },
 
   "notes": {
-    "ignore": true,
-    "cppClassName": "Notes",
-    "cType": "git_notes",
-    "freeFunctionName": "git_notes_free"
+    "ignore": false
   },
 
   "object": {
-    "dependencies": [
-      "../include/oid.h",
-      "../include/repo.h"
-    ],
-    "cppClassName": "GitObject",
-    "cType": "git_object",
-    "freeFunctionName": "git_object_free"
+    "ignore": false
   },
 
   "odb": {
-    "dependencies": [
-      "../include/oid.h",
-      "../include/odb_object.h",
-      "node_buffer.h"
-    ],
-    "cppClassName": "GitOdb",
-    "cType": "git_odb",
-    "freeFunctionName": "git_odb_free"
+    "ignore": false
   },
 
   "odb_backend": {
-    "ignore": true,
-    "cppClassName": "OdbBackend",
-    "cType": "git_odb_backend",
-    "freeFunctionName": "git_odb_backend_free"
+    "ignore": false
   },
 
   "oid": {
-    "dependencies": [],
-    "cppClassName": "GitOid",
-    "cType": "git_oid",
-    "freeFunctionName": "free"
+    "ignore": false
   },
 
   "pack": {
-    "ignore": true,
-    "cppClassName": "Pack",
-    "cType": "git_pack",
-    "freeFunctionName": "git_pack_free"
+    "ignore": false
   },
 
   "patch": {
-    "dependencies": [
-      "../include/delta.h",
-      "../include/diff_range.h"
-    ],
-    "cppClassName": "GitPatch",
-    "cType": "git_diff_patch",
-    "freeFunctionName": "git_diff_patch_free"
+    "ignore": false
   },
 
   "pathspec": {
-    "cppClassName": "GitPathSpec"
+    "ignore": false
   },
 
   "push": {
-    "ignore": true,
-    "cppClassName": "Push",
-    "cType": "git_push",
-    "freeFunctionName": "git_push_free"
+    "ignore": false
   },
 
   "refdb": {
-    "cppClassName": "GitRefDb",
-    "cType": "git_refdb",
-    "note": "git_refdb_free",
-    "freeFunctionName": "free"
+    "ignore": false
   },
 
   "refs": {
-    "cppClassName": "GitRefs"
+    "ignore": false
+  },
+
+  "reflog": {
+    "ignore": false
   },
 
   "refspec": {
-    "ignore": true,
-    "cppClassName": "Refspec",
-    "cType": "git_refspec",
-    "freeFunctionName": "git_refspec_free"
+    "ignore": false
   },
 
   "remote": {
-    "dependencies": [
-      "git2/net.h"
-    ],
-    "cppClassName": "GitRemote",
-    "cType": "git_remote",
-    "freeFunctionName": "git_remote_free"
+    "ignore": false
   },
 
   "repository": {
-    "cppClassName": "GitRepository"
+    "ignore": false
   },
 
   "reset": {
-    "ignore": true,
-    "cppClassName": "Reset",
-    "cType": "git_reset",
-    "freeFunctionName": "git_reset_free"
+    "ignore": false,
+    "cType": null
   },
 
   "revparse": {
-    "ignore": true,
-    "cppClassName": "Revparse",
-    "cType": "git_revparse",
-    "freeFunctionName": "git_revparse_free"
+    "ignore": false,
+    "cType": null
   },
 
   "revwalk": {
-    "dependencies": [
-      "../include/oid.h",
-      "../include/repo.h"
-    ],
-    "cppClassName": "GitRevWalk",
-    "cType": "git_revwalk",
-    "freeFunctionName": "git_revwalk_free"
+    "ignore": false
   },
 
   "signature": {
-    "dependencies": [
-      "../include/time.h"
-    ],
-    "cppClassName": "GitSignature",
-    "cType": "git_signature",
-    "freeFunctionName": "git_signature_free"
+    "ignore": false
   },
 
   "stash": {
-    "ignore": true,
-    "cppClassName": "Stash",
-    "cType": "git_stash",
-    "freeFunctionName": "git_stash_free"
+    "ignore": false,
+    "cType": null
   },
 
   "status": {
-    "ignore": true,
-    "cppClassName": "Status",
-    "cType": "git_status",
-    "freeFunctionName": "git_status_free"
+    "ignore": false,
+    "cType": null
   },
 
   "stdint": {
-    "ignore": true,
-    "cppClassName": "Stdint",
-    "cType": "git_stdint",
-    "freeFunctionName": "git_stdint_free"
+    "ignore": false,
+    "cType": null
   },
 
   "stdarray": {
-    "ignore": true,
-    "cppClassName": "Strarray",
-    "cType": "git_strarray",
-    "freeFunctionName": "git_strarray_free"
+    "ignore": false,
+    "cType": null
   },
 
   "submodule": {
-    "dependencies": [
-      "../include/oid.h",
-      "../include/repo.h"
-    ],
-    "cppClassName": "GitSubmodule",
-    "cType": "git_submodule",
-    "freeFunctionName": "free"
-  },
-
-  "sys/commit": {
-    "cppClassName": "GitSysCommit"
-  },
-
-  "sys/config": {
-    "cppClassName": "GitSysConfig"
-  },
-
-  "sys/filter": {
-    "cppClassName": "GitSysFilter"
-  },
-
-  "sys/index": {
-    "cppClassName": "GitSysIndex"
-  },
-
-  "sys/odb_backend": {
-    "cppClassName": "GitSysOdbBackend"
-  },
-
-  "sys/refdb_backend": {
-    "cppClassName": "GitSysRefdbBackend"
-  },
-
-  "sys/reflog": {
-    "cppClassName": "GitSysReflog"
-  },
-
-  "sys/refs": {
-    "cppClassName": "GitSysRefs"
-  },
-
-  "sys/repository": {
-    "cppClassName": "GitSysRepository"
+    "ignore": false
   },
 
   "tag": {
-    "dependencies": [
-      "../include/oid.h",
-      "../include/repo.h",
-      "../include/object.h",
-      "../include/signature.h"
-    ],
-    "cppClassName": "GitTag",
-    "cType": "git_tag",
-    "freeFunctionName": "git_tag_free"
+    "ignore": false
   },
 
   "threads": {
-    "dependencies": [],
-    "cppClassName": "GitThreads"
+    "ignore": false
   },
 
   "trace": {
-    "ignore": true,
-    "cppClassName": "Trace",
-    "cType": "git_trace",
-    "freeFunctionName": "git_trace_free"
+    "ignore": false
   },
 
   "transport": {
-    "ignore": true,
-    "cppClassName": "Transport",
-    "cType": "git_transport",
-    "freeFunctionName": "git_transport_free"
+    "ignore": false
   },
 
   "tree": {
-    "dependencies": [
-      "../include/repo.h",
-      "../include/oid.h",
-      "../include/tree_entry.h",
-      "../include/diff_list.h",
-      "../include/diff_options.h",
-      "../include/tree_builder.h",
-      "../include/index.h"
-    ],
-    "cppClassName": "GitTree",
-    "cType": "git_tree",
-    "freeFunctionName": "git_tree_free"
+    "ignore": false,
+    "cType": null
   },
 
   "types": {
-    "cppClassName": "GitTypes"
+    "ignore": false,
+    "cType": null
   },
 
   "version": {
-    "cppClassName": "GitVersion"
+    "ignore": false,
+    "cType": null
   }
 }
