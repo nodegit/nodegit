@@ -1,8 +1,8 @@
 [
   {
+    "ignore": false,
     "cType": null,
     "filename": "attr.h",
-    "ignore": true,
     "cppClassName": "GitAttr",
     "jsClassName": "Attr"
   },
