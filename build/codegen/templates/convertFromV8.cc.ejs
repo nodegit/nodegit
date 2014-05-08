@@ -5,7 +5,7 @@
   <% } -%>
     <% if (arg.cppClassName == 'String') { -%>
       String::Utf8Value <%- arg.name %>(args[<%- jsArg %>]->ToString());
-      from_<%- arg.name %> = strdup(*<%- arg.name %>);
+      from_<%- arg.name %> = (<%- arg.cType %>) strdup(*<%- arg.name %>);
     <% } else if (arg.cppClassName == 'Array') { -%>
       Array *tmp_<%- arg.name %> = Array::Cast(*args[<%- jsArg %>]);
       from_<%- arg.name %> = (<%- arg.cType %>)malloc(tmp_<%- arg.name %>->Length() * sizeof(<%- arg.cType.replace('**', '*') %>));
