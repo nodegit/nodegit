@@ -1,0 +1,6 @@
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+
+<% files.forEach(function(file) { %>
+exports.<%- file.jsClassName %> = require('./<%- file.filename.slice(0, -2) %>'); <% }); %>

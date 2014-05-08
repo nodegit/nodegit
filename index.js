@@ -14,23 +14,27 @@ var rawApi;
 try {
   rawApi = require('./build/Release/nodegit');
 } catch (e) {
-  rawApi = require('./build/Debug/nodegit');
+  try {
+    rawApi = require('./build/Debug/nodegit');
+  } catch(e) {
+    rawApi = require('./build/emscripten/nodegit');
+  }
 }
 
 // Set the exports prototype to the raw API.
 exports.__proto__ = rawApi;
 
 // Import extensions
-require('./lib/commit.js');
-require('./lib/blob.js');
-require('./lib/object.js');
-require('./lib/signature.js');
-require('./lib/odb.js');
-require('./lib/oid.js');
-require('./lib/index.js');
-require('./lib/repository.js');
-require('./lib/reference.js');
-require('./lib/revwalk.js');
+//require('./lib/commit.js');
+//require('./lib/blob.js');
+//require('./lib/object.js');
+//require('./lib/signature.js');
+//require('./lib/odb.js');
+//require('./lib/oid.js');
+//require('./lib/index.js');
+//require('./lib/repository.js');
+//require('./lib/reference.js');
+//require('./lib/revwalk.js');
 //require('./lib/tree.js');
 
 // Set version

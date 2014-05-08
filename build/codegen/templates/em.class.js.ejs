@@ -1,0 +1,24 @@
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+
+// Emscripten build.
+var Module = require("../libgit2.min");
+
+// NodeGit internal constructors.
+<% if (typeof ctor.dependencies != 'undefined') { -%>
+<% for (d in ctor.dependencies) { -%>
+var <%- typeMap['git_' +ctor.dependencies[d].slice(11, -2)].js %> = require('./<%- ctor.dependencies[d].slice(11, -2) %>');
+<% } -%>
+<% } -%>
+
+/**
+ * Represents a <%- ctor.jsClassName %>.
+ */<% if (ctor.cType == null) { %>
+var <%- ctor.jsClassName %> = {};
+<% } else { %>
+function <%- ctor.jsClassName %>() {
+
+}
+<% } %>
+module.exports = <%- ctor.jsClassName %>;

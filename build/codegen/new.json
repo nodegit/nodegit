@@ -233,7 +233,6 @@
   {
     "filename": "blob.h",
     "dependencies": [
-      "../include/repo.h",
       "../include/oid.h",
       "../include/wrapper.h",
       "node_buffer.h"
