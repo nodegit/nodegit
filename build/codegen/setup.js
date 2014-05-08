@@ -119,7 +119,6 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     return "../include/" + file + ".h"; 
   });
 
-  /*
 
   // Add to the type's list if it's new.
   typeMap["const " + "git_" + fileName + " *"] =
@@ -134,13 +133,18 @@ Object.keys(descriptor).forEach(function(fileName, index) {
   file.functions = libgit2.files[index].functions.map(function(functionName, index) {
     var funcDescriptor = libgit2.functions[functionName];
     var descriptor = legacyFile.functions ? legacyFile.functions[index] || {} : {};
-    var cType = file.cType || "";
+    var cType = file.cType || "git";
 
     if (!functionName || !funcDescriptor) { return; }
 
     descriptor.cFunctionName = functionName;
+    descriptor.ignore = true;
 
     var trimmedName = functionName.slice(cType.length + 1);
+
+    if (trimmedName === "new") {
+      trimmedName = "new2";
+    }
 
     descriptor.cppFunctionName = titleCase(trimmedName);
     descriptor.jsFunctionName = camelCase(trimmedName);
@@ -154,9 +158,9 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     };
 
     var retVal = descriptor.return = {};
-    retVal.ctype = funcDescriptor.return.type;
+    retVal.cType = funcDescriptor.return.type;
 
-    var type = typeMap[retVal.ctype];
+    var type = typeMap[retVal.cType];
     retVal.cppClassName = type.cpp;
     retVal.jsClassName = type.js;
 
@@ -185,9 +189,11 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     return descriptor;
   });
 
-  */
   files.push(file);
 });
+
+fs.writeFileSync(path.join(__dirname, "types.json"), 
+  JSON.stringify(typeMap, null, 2));
 
 fs.writeFileSync(path.join(__dirname, "idefs.json"), 
   JSON.stringify(files, null, 2));
