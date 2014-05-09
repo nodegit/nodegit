@@ -1,15 +1,15 @@
 {
   "git_attr_get": {
-    "js": "get",
-    "cpp": "Get"
+    "cpp": "AttrGet",
+    "js": "attrGet"
   },
   "const char **": {
     "js": "String",
     "cpp": "String"
   },
   "git_repository *": {
-    "js": "Repository",
-    "cpp": "GitRepo"
+    "cpp": "GitRepository",
+    "js": "Repository"
   },
   "uint32_t": {
     "js": "Uint32",
@@ -24,16 +24,16 @@
     "cpp": "Number"
   },
   "git_attr_get_many": {
-    "js": "getMany",
-    "cpp": "GetMany"
+    "cpp": "AttrGetMany",
+    "js": "attrGetMany"
   },
   "size_t": {
     "js": "Number",
     "cpp": "Uint32"
   },
   "git_attr_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "AttrForeach",
+    "js": "attrForeach"
   },
   "git_attr_foreach_cb": {
     "js": "AttrForeachCb",
@@ -44,72 +44,72 @@
     "cpp": "void"
   },
   "git_attr_cache_flush": {
-    "js": "cacheFlush",
-    "cpp": "CacheFlush"
+    "cpp": "AttrCacheFlush",
+    "js": "attrCacheFlush"
   },
   "void": {
     "js": "void",
     "cpp": "void"
   },
   "git_attr_add_macro": {
-    "js": "addMacro",
-    "cpp": "AddMacro"
+    "cpp": "AttrAddMacro",
+    "js": "attrAddMacro"
   },
   "git_blob_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_blob *": {
-    "js": "Blob",
-    "cpp": "GitBlob"
+    "cpp": "GitBlob",
+    "js": "Blob"
   },
   "git_blob_id": {
-    "js": "oid",
-    "cpp": "Oid"
+    "cpp": "Id",
+    "js": "id"
   },
   "const git_blob *": {
-    "js": "Blob",
-    "cpp": "GitBlob"
+    "cpp": "GitBlob",
+    "js": "Blob"
   },
   "const git_oid *": {
-    "js": "Oid",
-    "cpp": "GitOid"
+    "cpp": "GitOid",
+    "js": "Oid"
   },
   "git_blob_rawcontent": {
-    "js": "content",
-    "cpp": "Content"
+    "cpp": "Rawcontent",
+    "js": "rawcontent"
   },
   "const void *": {
     "js": "Buffer",
     "cpp": "Buffer"
   },
   "git_blob_rawsize": {
-    "js": "size",
-    "cpp": "Size"
+    "cpp": "Rawsize",
+    "js": "rawsize"
   },
   "git_off_t": {
     "js": "Number",
     "cpp": "Number"
   },
   "git_blob_is_binary": {
-    "js": "isBinary",
-    "cpp": "IsBinary"
+    "cpp": "IsBinary",
+    "js": "isBinary"
   },
   "git_branch_create": {
-    "js": "create",
-    "cpp": "Create"
+    "cpp": "BranchCreate",
+    "js": "branchCreate"
   },
   "git_reference **": {
     "js": "Reference",
     "cpp": "GitReference"
   },
   "const git_commit *": {
-    "js": "Commit",
-    "cpp": "GitCommit"
+    "cpp": "GitCommit",
+    "js": "Commit"
   },
   "git_branch_delete": {
-    "js": "delete",
-    "cpp": "Delete"
+    "cpp": "BranchDelete",
+    "js": "branchDelete"
   },
   "git_reference *": {
     "js": "Reference",
@@ -128,268 +128,268 @@
     "cpp": "BranchForeachCb"
   },
   "git_branch_move": {
-    "js": "move",
-    "cpp": "Move"
+    "cpp": "BranchMove",
+    "js": "branchMove"
   },
   "git_branch_lookup": {
-    "js": "lookup",
-    "cpp": "Lookup"
+    "cpp": "BranchLookup",
+    "js": "branchLookup"
   },
   "git_branch_t": {
     "js": "BranchT",
     "cpp": "BranchT"
   },
   "git_branch_name": {
-    "js": "name",
-    "cpp": "Name"
+    "cpp": "BranchName",
+    "js": "branchName"
   },
   "git_branch_upstream": {
-    "js": "upstream",
-    "cpp": "Upstream"
+    "cpp": "BranchUpstream",
+    "js": "branchUpstream"
   },
   "git_branch_set_upstream": {
-    "js": "setUpstream",
-    "cpp": "SetUpstream"
+    "cpp": "BranchSetUpstream",
+    "js": "branchSetUpstream"
   },
   "git_branch_upstream_name": {
-    "js": "upstreamName",
-    "cpp": "UpstreamName"
+    "cpp": "BranchUpstreamName",
+    "js": "branchUpstreamName"
   },
   "char *": {
     "js": "String",
     "cpp": "String"
   },
   "git_branch_is_head": {
-    "js": "isHead",
-    "cpp": "IsHead"
+    "cpp": "BranchIsHead",
+    "js": "branchIsHead"
   },
   "git_branch_remote_name": {
-    "js": "remoteName",
-    "cpp": "RemoteName"
+    "cpp": "BranchRemoteName",
+    "js": "branchRemoteName"
   },
   "git_checkout_head": {
-    "js": "head",
-    "cpp": "Head"
+    "cpp": "CheckoutHead",
+    "js": "checkoutHead"
   },
   "git_checkout_opts *": {
     "js": "CheckoutOpts",
     "cpp": "CheckoutOpts"
   },
   "git_checkout_index": {
-    "js": "index",
-    "cpp": "Index"
+    "cpp": "CheckoutIndex",
+    "js": "checkoutIndex"
   },
   "git_index *": {
-    "js": "Index",
-    "cpp": "GitIndex"
+    "cpp": "GitIndex",
+    "js": "Index"
   },
   "git_checkout_tree": {
-    "js": "tree",
-    "cpp": "Tree"
+    "cpp": "CheckoutTree",
+    "js": "checkoutTree"
   },
   "const git_object *": {
-    "js": "Object",
-    "cpp": "GitObject"
+    "cpp": "GitObject",
+    "js": "Object"
   },
   "git_commit_lookup_prefix": {
-    "js": "lookupPrefix",
-    "cpp": "LookupPrefix"
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
   },
   "git_commit **": {
-    "js": "Commit",
-    "cpp": "GitCommit"
+    "cpp": "GitCommit",
+    "js": "Commit"
   },
   "git_commit_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_commit *": {
-    "js": "Commit",
-    "cpp": "GitCommit"
+    "cpp": "GitCommit",
+    "js": "Commit"
   },
   "git_commit_id": {
-    "js": "oid",
-    "cpp": "Oid"
+    "cpp": "Id",
+    "js": "id"
   },
   "git_commit_message_encoding": {
-    "js": "messageEncoding",
-    "cpp": "MessageEncoding"
+    "cpp": "MessageEncoding",
+    "js": "messageEncoding"
   },
   "git_commit_message": {
-    "js": "message",
-    "cpp": "Message"
+    "cpp": "Message",
+    "js": "message"
   },
   "git_commit_time": {
-    "js": "time",
-    "cpp": "Time"
+    "cpp": "Time",
+    "js": "time"
   },
   "git_time_t": {
     "js": "Number",
     "cpp": "Int32"
   },
   "git_commit_time_offset": {
-    "js": "offset",
-    "cpp": "Offset"
+    "cpp": "TimeOffset",
+    "js": "timeOffset"
   },
   "git_commit_committer": {
-    "js": "committer",
-    "cpp": "Committer"
+    "cpp": "Committer",
+    "js": "committer"
   },
   "const git_signature *": {
-    "js": "GitSignature",
-    "cpp": "Signature"
+    "cpp": "GitSignature",
+    "js": "Signature"
   },
   "git_commit_author": {
-    "js": "author",
-    "cpp": "Author"
+    "cpp": "Author",
+    "js": "author"
   },
   "git_commit_tree": {
-    "js": "getTree",
-    "cpp": "GetTree"
+    "cpp": "Tree",
+    "js": "tree"
   },
   "git_tree **": {
-    "js": "Tree",
-    "cpp": "GitTree"
+    "cpp": "GitTree",
+    "js": "Tree"
   },
   "git_commit_tree_id": {
-    "js": "treeId",
-    "cpp": "TreeId"
+    "cpp": "TreeId",
+    "js": "treeId"
   },
   "git_commit_parentcount": {
-    "js": "parentCount",
-    "cpp": "ParentCount"
+    "cpp": "Parentcount",
+    "js": "parentcount"
   },
   "git_commit_parent": {
-    "js": "parent",
-    "cpp": "Parent"
+    "cpp": "Parent",
+    "js": "parent"
   },
   "git_commit_parent_id": {
-    "js": "parentId",
-    "cpp": "ParentId"
+    "cpp": "ParentId",
+    "js": "parentId"
   },
   "git_commit_nth_gen_ancestor": {
-    "js": "nthGenAncestor",
-    "cpp": "NthGenAncestor"
+    "cpp": "NthGenAncestor",
+    "js": "nthGenAncestor"
   },
   "git_commit_create_v": {
-    "js": "createV",
-    "cpp": "CreateV"
+    "cpp": "CreateV",
+    "js": "createV"
   },
   "git_oid *": {
-    "js": "Oid",
-    "cpp": "GitOid"
+    "cpp": "GitOid",
+    "js": "Oid"
   },
   "const git_tree *": {
-    "js": "Tree",
-    "cpp": "GitTree"
+    "cpp": "GitTree",
+    "js": "Tree"
   },
   "git_libgit2_version": {
-    "js": "gitLibgit2Version",
-    "cpp": "GitLibgit2Version"
+    "cpp": "Libgit2Version",
+    "js": "libgit2Version"
   },
   "int *": {
     "js": "Number",
     "cpp": "Int32"
   },
   "git_libgit2_capabilities": {
-    "js": "gitLibgit2Capabilities",
-    "cpp": "GitLibgit2Capabilities"
+    "cpp": "Libgit2Capabilities",
+    "js": "libgit2Capabilities"
   },
   "git_libgit2_opts": {
-    "js": "gitLibgit2Opts",
-    "cpp": "GitLibgit2Opts"
+    "cpp": "Libgit2Opts",
+    "js": "libgit2Opts"
   },
   "git_config_find_global": {
-    "js": "findGlobal",
-    "cpp": "FindGlobal"
+    "cpp": "FindGlobal",
+    "js": "findGlobal"
   },
   "git_config_find_xdg": {
-    "js": "findXdg",
-    "cpp": "FindXdg"
+    "cpp": "FindXdg",
+    "js": "findXdg"
   },
   "git_config_find_system": {
-    "js": "findSystem",
-    "cpp": "FindSystem"
+    "cpp": "FindSystem",
+    "js": "findSystem"
   },
   "git_config_open_default": {
-    "js": "openDefault",
-    "cpp": "OpenDefault"
+    "cpp": "OpenDefault",
+    "js": "openDefault"
   },
   "git_config **": {
-    "js": "Config",
-    "cpp": "Config"
+    "cpp": "GitConfig",
+    "js": "Config"
   },
   "git_config_new": {
-    "js": "new",
-    "cpp": "New"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_config_add_backend": {
-    "js": "addBackend",
-    "cpp": "AddBackend"
+    "cpp": "AddBackend",
+    "js": "addBackend"
   },
   "git_config *": {
-    "js": "Config",
-    "cpp": "Config"
+    "cpp": "GitConfig",
+    "js": "Config"
   },
   "git_config_backend *": {
     "js": "ConfigBackend",
     "cpp": "ConfigBackend"
   },
   "git_config_add_file_ondisk": {
-    "js": "addFileOndisk",
-    "cpp": "AddFileOndisk"
+    "cpp": "AddFileOndisk",
+    "js": "addFileOndisk"
   },
   "git_config_open_ondisk": {
-    "js": "openOndisk",
-    "cpp": "OpenOndisk"
+    "cpp": "OpenOndisk",
+    "js": "openOndisk"
   },
   "git_config_open_level": {
-    "js": "openLevel",
-    "cpp": "OpenLevel"
+    "cpp": "OpenLevel",
+    "js": "openLevel"
   },
   "const git_config *": {
-    "js": "Config",
-    "cpp": "Config"
+    "cpp": "GitConfig",
+    "js": "Config"
   },
   "git_config_refresh": {
-    "js": "refresh",
-    "cpp": "Refresh"
+    "cpp": "Refresh",
+    "js": "refresh"
   },
   "git_config_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_config_get_entry": {
-    "js": "getEntry",
-    "cpp": "GetEntry"
+    "cpp": "GetEntry",
+    "js": "getEntry"
   },
   "const git_config_entry **": {
     "js": "ConfigEntry",
     "cpp": "ConfigEntry"
   },
   "git_config_get_int32": {
-    "js": "getInt32",
-    "cpp": "GetInt32"
+    "cpp": "GetInt32",
+    "js": "getInt32"
   },
   "int32_t *": {
     "js": "int32_t",
     "cpp": "int32_t"
   },
   "git_config_get_int64": {
-    "js": "getInt64",
-    "cpp": "GetInt64"
+    "cpp": "GetInt64",
+    "js": "getInt64"
   },
   "int64_t *": {
     "js": "int64_t",
     "cpp": "int64_t"
   },
   "git_config_get_bool": {
-    "js": "getBool",
-    "cpp": "GetBool"
+    "cpp": "GetBool",
+    "js": "getBool"
   },
   "git_config_get_string": {
-    "js": "getString",
-    "cpp": "GetString"
+    "cpp": "GetString",
+    "js": "getString"
   },
   "git_config_get_multivar": {
     "js": "getMultivar",
@@ -400,72 +400,72 @@
     "cpp": "ConfigForeachCb"
   },
   "git_config_set_int32": {
-    "js": "setInt32",
-    "cpp": "SetInt32"
+    "cpp": "SetInt32",
+    "js": "setInt32"
   },
   "int32_t": {
     "js": "int32_t",
     "cpp": "int32_t"
   },
   "git_config_set_int64": {
-    "js": "setInt64",
-    "cpp": "SetInt64"
+    "cpp": "SetInt64",
+    "js": "setInt64"
   },
   "int64_t": {
     "js": "int64_t",
     "cpp": "int64_t"
   },
   "git_config_set_bool": {
-    "js": "setBool",
-    "cpp": "SetBool"
+    "cpp": "SetBool",
+    "js": "setBool"
   },
   "git_config_set_string": {
-    "js": "setString",
-    "cpp": "SetString"
+    "cpp": "SetString",
+    "js": "setString"
   },
   "git_config_set_multivar": {
-    "js": "setMultivar",
-    "cpp": "SetMultivar"
+    "cpp": "SetMultivar",
+    "js": "setMultivar"
   },
   "git_config_delete_entry": {
-    "js": "deleteEntry",
-    "cpp": "DeleteEntry"
+    "cpp": "DeleteEntry",
+    "js": "deleteEntry"
   },
   "git_config_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_config_foreach_match": {
-    "js": "foreachMatch",
-    "cpp": "ForeachMatch"
+    "cpp": "ForeachMatch",
+    "js": "foreachMatch"
   },
   "git_config_get_mapped": {
-    "js": "getMapped",
-    "cpp": "GetMapped"
+    "cpp": "GetMapped",
+    "js": "getMapped"
   },
   "const git_cvar_map *": {
     "js": "CvarMap",
     "cpp": "CvarMap"
   },
   "git_config_lookup_map_value": {
-    "js": "lookupMapValue",
-    "cpp": "LookupMapValue"
+    "cpp": "LookupMapValue",
+    "js": "lookupMapValue"
   },
   "git_config_parse_bool": {
-    "js": "parseBool",
-    "cpp": "ParseBool"
+    "cpp": "ParseBool",
+    "js": "parseBool"
   },
   "git_config_parse_int32": {
-    "js": "parseInt32",
-    "cpp": "ParseInt32"
+    "cpp": "ParseInt32",
+    "js": "parseInt32"
   },
   "git_config_parse_int64": {
-    "js": "parseInt64",
-    "cpp": "ParseInt64"
+    "cpp": "ParseInt64",
+    "js": "parseInt64"
   },
   "git_cred_userpass": {
-    "js": "gitCredUserpass",
-    "cpp": "GitCredUserpass"
+    "cpp": "Userpass",
+    "js": "userpass"
   },
   "git_cred **": {
     "js": "Cred",
@@ -544,24 +544,24 @@
     "cpp": "GitDiffList"
   },
   "git_diff_merge": {
-    "js": "merge",
-    "cpp": "Merge"
+    "cpp": "Merge",
+    "js": "merge"
   },
   "const git_diff_list *": {
     "js": "DiffList",
     "cpp": "GitDiffList"
   },
   "git_diff_find_similar": {
-    "js": "findSimilar",
-    "cpp": "FindSimilar"
+    "cpp": "FindSimilar",
+    "js": "findSimilar"
   },
   "git_diff_find_options *": {
     "js": "DiffFindOptions",
     "cpp": "GitDiffFindOptions"
   },
   "git_diff_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_diff_file_cb": {
     "js": "DiffFileCb",
@@ -576,8 +576,8 @@
     "cpp": "PrintCompact"
   },
   "git_diff_status_char": {
-    "js": "statusChar",
-    "cpp": "StatusChar"
+    "cpp": "StatusChar",
+    "js": "statusChar"
   },
   "git_delta_t": {
     "js": "Number",
@@ -592,12 +592,12 @@
     "cpp": "PrintPatch"
   },
   "git_diff_num_deltas": {
-    "js": "size",
-    "cpp": "Size"
+    "cpp": "NumDeltas",
+    "js": "numDeltas"
   },
   "git_diff_num_deltas_of_type": {
-    "js": "numDeltasOfType",
-    "cpp": "NumDeltasOfType"
+    "cpp": "NumDeltasOfType",
+    "js": "numDeltasOfType"
   },
   "git_diff_get_patch": {
     "js": "patch",
@@ -612,210 +612,210 @@
     "cpp": "GitDelta"
   },
   "git_diff_blobs": {
-    "js": "blobs",
-    "cpp": "Blobs"
+    "cpp": "Blobs",
+    "js": "blobs"
   },
   "const git_diff_options *": {
     "js": "DiffOptions",
     "cpp": "GitDiffOptions"
   },
   "git_diff_blob_to_buffer": {
-    "js": "blobToBuffer",
-    "cpp": "BlobToBuffer"
+    "cpp": "BlobToBuffer",
+    "js": "blobToBuffer"
   },
   "giterr_last": {
-    "js": "lastError",
-    "cpp": "LastError"
+    "cpp": "RrLast",
+    "js": "rrLast"
   },
   "const git_error *": {
     "js": "Error"
   },
   "giterr_clear": {
-    "js": "clear",
-    "cpp": "Clear"
+    "cpp": "RrClear",
+    "js": "rrClear"
   },
   "giterr_set_str": {
-    "js": "setString",
-    "cpp": "SetString"
+    "cpp": "RrSetStr",
+    "js": "rrSetStr"
   },
   "giterr_set_oom": {
-    "js": "setOOM",
-    "cpp": "SetOOM"
+    "cpp": "RrSetOom",
+    "js": "rrSetOom"
   },
   "git_graph_ahead_behind": {
-    "js": "aheadBehind",
-    "cpp": "AheadBehind"
+    "cpp": "GraphAheadBehind",
+    "js": "graphAheadBehind"
   },
   "git_ignore_add_rule": {
-    "js": "addRule",
-    "cpp": "AddRule"
+    "cpp": "IgnoreAddRule",
+    "js": "ignoreAddRule"
   },
   "git_ignore_clear_internal_rules": {
-    "js": "clearInternalRules",
-    "cpp": "ClearInternalRules"
+    "cpp": "IgnoreClearInternalRules",
+    "js": "ignoreClearInternalRules"
   },
   "git_ignore_path_is_ignored": {
-    "js": "pathIsIgnored",
-    "cpp": "PathIsIgnored"
+    "cpp": "IgnorePathIsIgnored",
+    "js": "ignorePathIsIgnored"
   },
   "git_index_open": {
-    "js": "open",
-    "cpp": "Open"
+    "cpp": "Open",
+    "js": "open"
   },
   "git_index **": {
-    "js": "Index",
-    "cpp": "GitIndex"
+    "cpp": "GitIndex",
+    "js": "Index"
   },
   "git_index_new": {
-    "js": "new",
-    "cpp": "New"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_index_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_index_owner": {
-    "js": "owner",
-    "cpp": "Owner"
+    "cpp": "Owner",
+    "js": "owner"
   },
   "const git_index *": {
-    "js": "Index",
-    "cpp": "GitIndex"
+    "cpp": "GitIndex",
+    "js": "Index"
   },
   "git_index_caps": {
-    "js": "caps",
-    "cpp": "Caps"
+    "cpp": "Caps",
+    "js": "caps"
   },
   "git_index_set_caps": {
-    "js": "setCaps",
-    "cpp": "SetCaps"
+    "cpp": "SetCaps",
+    "js": "setCaps"
   },
   "git_index_read": {
-    "js": "read",
-    "cpp": "Read"
+    "cpp": "Read",
+    "js": "read"
   },
   "git_index_write": {
-    "js": "write",
-    "cpp": "Write"
+    "cpp": "Write",
+    "js": "write"
   },
   "git_index_read_tree": {
-    "js": "readTree",
-    "cpp": "ReadTree"
+    "cpp": "ReadTree",
+    "js": "readTree"
   },
   "git_index_write_tree": {
-    "js": "writeTree",
-    "cpp": "WriteTree"
+    "cpp": "WriteTree",
+    "js": "writeTree"
   },
   "git_index_write_tree_to": {
-    "js": "writeTreeTo",
-    "cpp": "WriteTreeTo"
+    "cpp": "WriteTreeTo",
+    "js": "writeTreeTo"
   },
   "git_index_entrycount": {
-    "js": "size",
-    "cpp": "Size"
+    "cpp": "Entrycount",
+    "js": "entrycount"
   },
   "git_index_clear": {
-    "js": "clear",
-    "cpp": "Clear"
+    "cpp": "Clear",
+    "js": "clear"
   },
   "git_index_get_byindex": {
-    "js": "entry",
-    "cpp": "Entry"
+    "cpp": "GetByindex",
+    "js": "getByindex"
   },
   "const git_index_entry *": {
     "js": "IndexEntry",
     "cpp": "GitIndexEntry"
   },
   "git_index_get_bypath": {
-    "js": "getEntry",
-    "cpp": "GetEntry"
+    "cpp": "GetBypath",
+    "js": "getBypath"
   },
   "git_index_remove": {
-    "js": "remove",
-    "cpp": "Remove"
+    "cpp": "Remove",
+    "js": "remove"
   },
   "git_index_remove_directory": {
-    "js": "removeDirectory",
-    "cpp": "RemoveDirectory"
+    "cpp": "RemoveDirectory",
+    "js": "removeDirectory"
   },
   "git_index_add": {
-    "js": "add",
-    "cpp": "Add"
+    "cpp": "Add",
+    "js": "add"
   },
   "git_index_entry_stage": {
-    "js": "entryStage",
-    "cpp": "EntryStage"
+    "cpp": "EntryStage",
+    "js": "entryStage"
   },
   "git_index_add_bypath": {
-    "js": "addByPath",
-    "cpp": "AddBypath"
+    "cpp": "AddBypath",
+    "js": "addBypath"
   },
   "git_index_remove_bypath": {
-    "js": "removeByPath",
-    "cpp": "RemoveBypath"
+    "cpp": "RemoveBypath",
+    "js": "removeBypath"
   },
   "git_index_find": {
-    "js": "find",
-    "cpp": "Find"
+    "cpp": "Find",
+    "js": "find"
   },
   "git_index_conflict_add": {
-    "js": "conflictAdd",
-    "cpp": "ConflictAdd"
+    "cpp": "ConflictAdd",
+    "js": "conflictAdd"
   },
   "git_index_conflict_get": {
-    "js": "conflictGet",
-    "cpp": "ConflictGet"
+    "cpp": "ConflictGet",
+    "js": "conflictGet"
   },
   "git_index_entry **": {
     "js": "IndexEntry",
     "cpp": "GitIndexEntry"
   },
   "git_index_conflict_remove": {
-    "js": "conflictRemove",
-    "cpp": "ConflictRemove"
+    "cpp": "ConflictRemove",
+    "js": "conflictRemove"
   },
   "git_index_conflict_cleanup": {
-    "js": "conflictCleanup",
-    "cpp": "ConflictCleanup"
+    "cpp": "ConflictCleanup",
+    "js": "conflictCleanup"
   },
   "git_index_has_conflicts": {
-    "js": "hasConflicts",
-    "cpp": "HasConflicts"
+    "cpp": "HasConflicts",
+    "js": "hasConflicts"
   },
   "git_index_reuc_entrycount": {
-    "js": "reucEntrycount",
-    "cpp": "ReucEntrycount"
+    "cpp": "ReucEntrycount",
+    "js": "reucEntrycount"
   },
   "git_index_reuc_find": {
-    "js": "reucFind",
-    "cpp": "ReucFind"
+    "cpp": "ReucFind",
+    "js": "reucFind"
   },
   "git_index_reuc_get_bypath": {
-    "js": "reucGetBypath",
-    "cpp": "ReucGetBypath"
+    "cpp": "ReucGetBypath",
+    "js": "reucGetBypath"
   },
   "const git_index_reuc_entry *": {
     "js": "IndexReucEntry"
   },
   "git_index_reuc_get_byindex": {
-    "js": "reucGetByindex",
-    "cpp": "ReucGetByindex"
+    "cpp": "ReucGetByindex",
+    "js": "reucGetByindex"
   },
   "git_index_reuc_add": {
-    "js": "reucAdd",
-    "cpp": "ReucAdd"
+    "cpp": "ReucAdd",
+    "js": "reucAdd"
   },
   "git_index_reuc_remove": {
-    "js": "reucRemove",
-    "cpp": "ReucRemove"
+    "cpp": "ReucRemove",
+    "js": "reucRemove"
   },
   "git_index_reuc_clear": {
-    "js": "reucClear",
-    "cpp": "ReucClear"
+    "cpp": "ReucClear",
+    "js": "reucClear"
   },
   "git_diff_index_to_workdir": {
-    "js": "indexToWorkdir",
-    "cpp": "IndexToWorkdir"
+    "cpp": "IndexToWorkdir",
+    "js": "indexToWorkdir"
   },
   "git_diff_list **": {
     "js": "DiffList",
@@ -862,704 +862,704 @@
     "cpp": "StreamFree"
   },
   "git_merge_base": {
-    "js": "base",
-    "cpp": "Base"
+    "cpp": "MergeBase",
+    "js": "mergeBase"
   },
   "git_merge_base_many": {
-    "js": "baseMany",
-    "cpp": "BaseMany"
+    "cpp": "MergeBaseMany",
+    "js": "mergeBaseMany"
   },
   "git_message_prettify": {
-    "js": "prettify",
-    "cpp": "Prettify"
+    "cpp": "MessagePrettify",
+    "js": "messagePrettify"
   },
   "git_note_iterator_new": {
-    "js": "gitNoteIteratorNew",
-    "cpp": "GitNoteIteratorNew"
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
   },
   "git_note_iterator **": {
     "js": "NoteIterator",
     "cpp": "NoteIterator"
   },
   "git_note_iterator_free": {
-    "js": "gitNoteIteratorFree",
-    "cpp": "GitNoteIteratorFree"
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
   },
   "git_note_iterator *": {
     "js": "NoteIterator",
     "cpp": "NoteIterator"
   },
   "git_note_next": {
-    "js": "gitNoteNext",
-    "cpp": "GitNoteNext"
+    "cpp": "Next",
+    "js": "next"
   },
   "git_oid*": {
     "js": "Oid*",
     "cpp": "Oid*"
   },
   "git_note_read": {
-    "js": "gitNoteRead",
-    "cpp": "GitNoteRead"
+    "cpp": "Read",
+    "js": "read"
   },
   "git_note **": {
     "js": "Note",
     "cpp": "Note"
   },
   "git_note_message": {
-    "js": "gitNoteMessage",
-    "cpp": "GitNoteMessage"
+    "cpp": "Message",
+    "js": "message"
   },
   "const git_note *": {
     "js": "Note",
     "cpp": "Note"
   },
   "git_note_oid": {
-    "js": "gitNoteOid",
-    "cpp": "GitNoteOid"
+    "cpp": "Oid",
+    "js": "oid"
   },
   "git_note_create": {
-    "js": "gitNoteCreate",
-    "cpp": "GitNoteCreate"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_note_remove": {
-    "js": "gitNoteRemove",
-    "cpp": "GitNoteRemove"
+    "cpp": "Remove",
+    "js": "remove"
   },
   "git_note_free": {
-    "js": "gitNoteFree",
-    "cpp": "GitNoteFree"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_note *": {
     "js": "Note",
     "cpp": "Note"
   },
   "git_note_default_ref": {
-    "js": "gitNoteDefaultRef",
-    "cpp": "GitNoteDefaultRef"
+    "cpp": "DefaultRef",
+    "js": "defaultRef"
   },
   "git_note_foreach": {
-    "js": "gitNoteForeach",
-    "cpp": "GitNoteForeach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_note_foreach_cb": {
     "js": "NoteForeachCb",
     "cpp": "NoteForeachCb"
   },
   "git_object_id": {
-    "js": "oid",
-    "cpp": "Oid"
+    "cpp": "Id",
+    "js": "id"
   },
   "git_object_type": {
-    "js": "type",
-    "cpp": "Type"
+    "cpp": "Type",
+    "js": "type"
   },
   "git_otype": {
     "js": "Number",
     "cpp": "Number"
   },
   "git_object_owner": {
-    "js": "owner",
-    "cpp": "Owner"
+    "cpp": "Owner",
+    "js": "owner"
   },
   "git_object_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_object *": {
-    "js": "Object",
-    "cpp": "GitObject"
+    "cpp": "GitObject",
+    "js": "Object"
   },
   "git_object_type2string": {
-    "js": "type2string",
-    "cpp": "Type2string"
+    "cpp": "Type2string",
+    "js": "type2string"
   },
   "git_object_string2type": {
-    "js": "string2type",
-    "cpp": "String2type"
+    "cpp": "String2type",
+    "js": "string2type"
   },
   "git_object_typeisloose": {
-    "js": "typeisloose",
-    "cpp": "Typeisloose"
+    "cpp": "Typeisloose",
+    "js": "typeisloose"
   },
   "git_object__size": {
-    "js": "Size",
-    "cpp": "Size"
+    "cpp": "Size",
+    "js": "Size"
   },
   "git_object_peel": {
-    "js": "peel",
-    "cpp": "Peel"
+    "cpp": "Peel",
+    "js": "peel"
   },
   "git_object **": {
-    "js": "Object",
-    "cpp": "GitObject"
+    "cpp": "GitObject",
+    "js": "Object"
   },
   "git_object_dup": {
-    "js": "dup",
-    "cpp": "Dup"
+    "cpp": "Dup",
+    "js": "dup"
   },
   "git_odb_new": {
-    "js": "create()",
-    "cpp": "Create"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_odb **": {
-    "js": "Odb",
-    "cpp": "GitOdb"
+    "cpp": "GitOdb",
+    "js": "Odb"
   },
   "git_odb_open": {
-    "js": "open",
-    "cpp": "Open"
+    "cpp": "Open",
+    "js": "open"
   },
   "git_odb_add_backend": {
-    "js": "addBackend",
-    "cpp": "AddBackend"
+    "cpp": "AddBackend",
+    "js": "addBackend"
   },
   "git_odb *": {
-    "js": "Odb",
-    "cpp": "GitOdb"
+    "cpp": "GitOdb",
+    "js": "Odb"
   },
   "git_odb_backend *": {
-    "js": "OdbBackend",
-    "cpp": "OdbBackend"
+    "cpp": "GitOdbBackend",
+    "js": "OdbBackend"
   },
   "git_odb_add_alternate": {
-    "js": "addAlternate",
-    "cpp": "AddAlternate"
+    "cpp": "AddAlternate",
+    "js": "addAlternate"
   },
   "git_odb_add_disk_alternate": {
-    "js": "addDiskAlternate",
-    "cpp": "AddDiskAlternate"
+    "cpp": "AddDiskAlternate",
+    "js": "addDiskAlternate"
   },
   "git_odb_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_odb_read": {
-    "js": "read",
-    "cpp": "Read"
+    "cpp": "Read",
+    "js": "read"
   },
   "git_odb_object **": {
     "js": "OdbObject",
     "cpp": "GitOdbObject"
   },
   "git_odb_read_prefix": {
-    "js": "readPrefix",
-    "cpp": "ReadPrefix"
+    "cpp": "ReadPrefix",
+    "js": "readPrefix"
   },
   "git_odb_read_header": {
-    "js": "readHeader",
-    "cpp": "ReadHeader"
+    "cpp": "ReadHeader",
+    "js": "readHeader"
   },
   "git_otype *": {
     "js": "Number",
     "cpp": "Int32"
   },
   "git_odb_exists": {
-    "js": "exists",
-    "cpp": "Exists"
+    "cpp": "Exists",
+    "js": "exists"
   },
   "git_odb_refresh": {
-    "js": "refresh",
-    "cpp": "Refresh"
+    "cpp": "Refresh",
+    "js": "refresh"
   },
   "struct git_odb *": {
     "js": "Odb",
     "cpp": "GitOdb"
   },
   "git_odb_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_odb_foreach_cb": {
     "js": "OdbForeachCb",
     "cpp": "OdbForeachCb"
   },
   "git_odb_write": {
-    "js": "write",
-    "cpp": "Write"
+    "cpp": "Write",
+    "js": "write"
   },
   "git_odb_open_wstream": {
-    "js": "openWstream",
-    "cpp": "OpenWstream"
+    "cpp": "OpenWstream",
+    "js": "openWstream"
   },
   "git_odb_stream **": {
     "js": "OdbStream",
     "cpp": "GitOdbStream"
   },
   "git_odb_open_rstream": {
-    "js": "openRstream",
-    "cpp": "OpenRstream"
+    "cpp": "OpenRstream",
+    "js": "openRstream"
   },
   "git_odb_write_pack": {
-    "js": "writePack",
-    "cpp": "WritePack"
+    "cpp": "WritePack",
+    "js": "writePack"
   },
   "git_odb_writepack **": {
     "js": "OdbWritepack",
     "cpp": "OdbWritepack"
   },
   "git_odb_hash": {
-    "js": "hash",
-    "cpp": "Hash"
+    "cpp": "Hash",
+    "js": "hash"
   },
   "git_odb_hashfile": {
-    "js": "hashfile",
-    "cpp": "Hashfile"
+    "cpp": "Hashfile",
+    "js": "hashfile"
   },
   "git_odb_object_data": {
-    "js": "data",
-    "cpp": "Data"
+    "cpp": "ObjectData",
+    "js": "objectData"
   },
   "git_odb_object *": {
     "js": "OdbObject",
     "cpp": "GitOdbObject"
   },
   "git_odb_object_size": {
-    "js": "size",
-    "cpp": "Size"
+    "cpp": "ObjectSize",
+    "js": "objectSize"
   },
   "git_odb_object_type": {
-    "js": "type",
-    "cpp": "Type"
+    "cpp": "ObjectType",
+    "js": "objectType"
   },
   "git_odb_object_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "ObjectFree",
+    "js": "objectFree"
   },
   "git_odb_object_id": {
-    "js": "oid",
-    "cpp": "Oid"
+    "cpp": "ObjectId",
+    "js": "objectId"
   },
   "git_odb_backend_pack": {
-    "js": "pack",
-    "cpp": "Pack"
+    "cpp": "BackendPack",
+    "js": "backendPack"
   },
   "git_odb_backend **": {
-    "js": "OdbBackend",
-    "cpp": "OdbBackend"
+    "cpp": "GitOdbBackend",
+    "js": "OdbBackend"
   },
   "git_oid_fromstr": {
-    "js": "fromString",
-    "cpp": "FromString"
+    "cpp": "Fromstr",
+    "js": "fromstr"
   },
   "git_oid_fromstrp": {
-    "js": "fromstrp",
-    "cpp": "Fromstrp"
+    "cpp": "Fromstrp",
+    "js": "fromstrp"
   },
   "git_oid_fromstrn": {
-    "js": "fromstrn",
-    "cpp": "Fromstrn"
+    "cpp": "Fromstrn",
+    "js": "fromstrn"
   },
   "git_oid_fromraw": {
-    "js": "fromraw",
-    "cpp": "Fromraw"
+    "cpp": "Fromraw",
+    "js": "fromraw"
   },
   "const unsigned char *": {
     "js": "String",
     "cpp": "String"
   },
   "git_oid_fmt": {
-    "js": "fmt",
-    "cpp": "Fmt"
+    "cpp": "Fmt",
+    "js": "fmt"
   },
   "git_oid_pathfmt": {
-    "js": "pathfmt",
-    "cpp": "Pathfmt"
+    "cpp": "Pathfmt",
+    "js": "pathfmt"
   },
   "git_oid_allocfmt": {
-    "js": "sha",
-    "cpp": "Sha"
+    "cpp": "Allocfmt",
+    "js": "allocfmt"
   },
   "git_oid_tostr": {
-    "js": "sha",
-    "cpp": "Sha"
+    "cpp": "Tostr",
+    "js": "tostr"
   },
   "git_oid_cpy": {
-    "js": "cpy",
-    "cpp": "Cpy"
+    "cpp": "Cpy",
+    "js": "cpy"
   },
   "git_oid_cmp": {
-    "js": "cmp",
-    "cpp": "Cmp"
+    "cpp": "Cmp",
+    "js": "cmp"
   },
   "git_oid_equal": {
-    "js": "equal",
-    "cpp": "Equal"
+    "cpp": "Equal",
+    "js": "equal"
   },
   "git_oid_ncmp": {
-    "js": "ncmp",
-    "cpp": "Ncmp"
+    "cpp": "Ncmp",
+    "js": "ncmp"
   },
   "git_oid_streq": {
-    "js": "streq",
-    "cpp": "Streq"
+    "cpp": "Streq",
+    "js": "streq"
   },
   "git_oid_iszero": {
-    "js": "iszero",
-    "cpp": "Iszero"
+    "cpp": "Iszero",
+    "js": "iszero"
   },
   "git_oid_shorten_new": {
-    "js": "shortenNew",
-    "cpp": "ShortenNew"
+    "cpp": "ShortenNew",
+    "js": "shortenNew"
   },
   "git_oid_shorten *": {
     "js": "OidShorten",
     "cpp": "OidShorten"
   },
   "git_oid_shorten_add": {
-    "js": "shortenAdd",
-    "cpp": "ShortenAdd"
+    "cpp": "ShortenAdd",
+    "js": "shortenAdd"
   },
   "git_oid_shorten_free": {
-    "js": "shortenFree",
-    "cpp": "ShortenFree"
+    "cpp": "ShortenFree",
+    "js": "shortenFree"
   },
   "git_packbuilder_new": {
-    "js": "gitPackbuilderNew",
-    "cpp": "GitPackbuilderNew"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_packbuilder **": {
     "js": "Packbuilder",
     "cpp": "Packbuilder"
   },
   "git_packbuilder_set_threads": {
-    "js": "gitPackbuilderSetThreads",
-    "cpp": "GitPackbuilderSetThreads"
+    "cpp": "SetThreads",
+    "js": "setThreads"
   },
   "git_packbuilder *": {
     "js": "Packbuilder",
     "cpp": "Packbuilder"
   },
   "git_packbuilder_insert": {
-    "js": "gitPackbuilderInsert",
-    "cpp": "GitPackbuilderInsert"
+    "cpp": "Insert",
+    "js": "insert"
   },
   "git_packbuilder_insert_tree": {
-    "js": "gitPackbuilderInsertTree",
-    "cpp": "GitPackbuilderInsertTree"
+    "cpp": "InsertTree",
+    "js": "insertTree"
   },
   "git_packbuilder_write": {
-    "js": "gitPackbuilderWrite",
-    "cpp": "GitPackbuilderWrite"
+    "cpp": "Write",
+    "js": "write"
   },
   "git_packbuilder_foreach": {
-    "js": "gitPackbuilderForeach",
-    "cpp": "GitPackbuilderForeach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_packbuilder_foreach_cb": {
     "js": "PackbuilderForeachCb",
     "cpp": "PackbuilderForeachCb"
   },
   "git_packbuilder_object_count": {
-    "js": "gitPackbuilderObjectCount",
-    "cpp": "GitPackbuilderObjectCount"
+    "cpp": "ObjectCount",
+    "js": "objectCount"
   },
   "git_packbuilder_written": {
-    "js": "gitPackbuilderWritten",
-    "cpp": "GitPackbuilderWritten"
+    "cpp": "Written",
+    "js": "written"
   },
   "git_packbuilder_free": {
-    "js": "gitPackbuilderFree",
-    "cpp": "GitPackbuilderFree"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_push_new": {
-    "js": "new",
-    "cpp": "New"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_push **": {
-    "js": "Push",
-    "cpp": "Push"
+    "cpp": "GitPush",
+    "js": "Push"
   },
   "git_remote *": {
-    "js": "Remote",
-    "cpp": "GitRemote"
+    "cpp": "GitRemote",
+    "js": "Remote"
   },
   "git_push_set_options": {
-    "js": "setOptions",
-    "cpp": "SetOptions"
+    "cpp": "SetOptions",
+    "js": "setOptions"
   },
   "git_push *": {
-    "js": "Push",
-    "cpp": "Push"
+    "cpp": "GitPush",
+    "js": "Push"
   },
   "const git_push_options *": {
     "js": "PushOptions",
     "cpp": "PushOptions"
   },
   "git_push_add_refspec": {
-    "js": "addRefspec",
-    "cpp": "AddRefspec"
+    "cpp": "AddRefspec",
+    "js": "addRefspec"
   },
   "git_push_update_tips": {
-    "js": "updateTips",
-    "cpp": "UpdateTips"
+    "cpp": "UpdateTips",
+    "js": "updateTips"
   },
   "git_push_finish": {
-    "js": "finish",
-    "cpp": "Finish"
+    "cpp": "Finish",
+    "js": "finish"
   },
   "git_push_unpack_ok": {
-    "js": "unpackOk",
-    "cpp": "UnpackOk"
+    "cpp": "UnpackOk",
+    "js": "unpackOk"
   },
   "git_push_status_foreach": {
-    "js": "statusForeach",
-    "cpp": "StatusForeach"
+    "cpp": "StatusForeach",
+    "js": "statusForeach"
   },
   "int (*)(const char *ref, const char *msg, void *data)": {
     "js": "Number",
     "cpp": "Int32"
   },
   "git_push_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_reference__alloc": {
     "js": "gitReference_Alloc",
     "cpp": "GitReference_Alloc"
   },
   "git_refdb *": {
-    "js": "RefDb",
-    "cpp": "GitRefDb"
+    "cpp": "GitRefdb",
+    "js": "Refdb"
   },
   "git_refdb_compress": {
-    "js": "compress",
-    "cpp": "Compress"
+    "cpp": "Compress",
+    "js": "compress"
   },
   "git_refdb_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_refdb_set_backend": {
-    "js": "setBackend",
-    "cpp": "SetBackend"
+    "cpp": "RefdbSetBackend",
+    "js": "refdbSetBackend"
   },
   "git_refdb_backend *": {
     "js": "RefdbBackend",
     "cpp": "RefdbBackend"
   },
   "git_reflog_read": {
-    "js": "read",
-    "cpp": "Read"
+    "cpp": "Read",
+    "js": "read"
   },
   "git_reflog **": {
-    "js": "Reflog",
-    "cpp": "Reflog"
+    "cpp": "GitReflog",
+    "js": "Reflog"
   },
   "const git_reference *": {
     "js": "Reference",
     "cpp": "GitReference"
   },
   "git_reflog_write": {
-    "js": "write",
-    "cpp": "Write"
+    "cpp": "Write",
+    "js": "write"
   },
   "git_reflog *": {
-    "js": "Reflog",
-    "cpp": "Reflog"
+    "cpp": "GitReflog",
+    "js": "Reflog"
   },
   "git_reflog_append": {
-    "js": "append",
-    "cpp": "Append"
+    "cpp": "Append",
+    "js": "append"
   },
   "git_reflog_rename": {
-    "js": "rename",
-    "cpp": "Rename"
+    "cpp": "Rename",
+    "js": "rename"
   },
   "git_reflog_delete": {
-    "js": "delete",
-    "cpp": "Delete"
+    "cpp": "Delete",
+    "js": "delete"
   },
   "git_reflog_entrycount": {
-    "js": "entrycount",
-    "cpp": "Entrycount"
+    "cpp": "Entrycount",
+    "js": "entrycount"
   },
   "git_reflog_entry_byindex": {
-    "js": "entryByindex",
-    "cpp": "EntryByindex"
+    "cpp": "EntryByindex",
+    "js": "entryByindex"
   },
   "const git_reflog_entry *": {
     "js": "ReflogEntry",
     "cpp": "ReflogEntry"
   },
   "git_reflog_drop": {
-    "js": "drop",
-    "cpp": "Drop"
+    "cpp": "Drop",
+    "js": "drop"
   },
   "git_reflog_entry_id_old": {
-    "js": "entryIdOld",
-    "cpp": "EntryIdOld"
+    "cpp": "EntryIdOld",
+    "js": "entryIdOld"
   },
   "git_reflog_entry_id_new": {
-    "js": "entryIdNew",
-    "cpp": "EntryIdNew"
+    "cpp": "EntryIdNew",
+    "js": "entryIdNew"
   },
   "git_reflog_entry_committer": {
-    "js": "entryCommitter",
-    "cpp": "EntryCommitter"
+    "cpp": "EntryCommitter",
+    "js": "entryCommitter"
   },
   "git_reflog_entry_message": {
-    "js": "entryMessage",
-    "cpp": "EntryMessage"
+    "cpp": "EntryMessage",
+    "js": "entryMessage"
   },
   "git_reflog_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_reference_name_to_id": {
-    "js": "oidForName",
-    "cpp": "OidForName"
+    "cpp": "NameToId",
+    "js": "nameToId"
   },
   "git_reference_target": {
-    "js": "target",
-    "cpp": "Target"
+    "cpp": "Target",
+    "js": "target"
   },
   "git_reference_symbolic_target": {
-    "js": "symbolicTarget",
-    "cpp": "SymbolicTarget"
+    "cpp": "SymbolicTarget",
+    "js": "symbolicTarget"
   },
   "git_reference_type": {
-    "js": "type",
-    "cpp": "Type"
+    "cpp": "Type",
+    "js": "type"
   },
   "git_ref_t": {
     "js": "Number",
     "cpp": "Number"
   },
   "git_reference_name": {
-    "js": "name",
-    "cpp": "Name"
+    "cpp": "Name",
+    "js": "name"
   },
   "git_reference_resolve": {
-    "js": "resolve",
-    "cpp": "Resolve"
+    "cpp": "Resolve",
+    "js": "resolve"
   },
   "git_reference_owner": {
-    "js": "owner",
-    "cpp": "owner"
+    "cpp": "Owner",
+    "js": "owner"
   },
   "git_reference_symbolic_set_target": {
-    "js": "setSymbolicTarget",
-    "cpp": "SetSymbolicTarget"
+    "cpp": "SymbolicSetTarget",
+    "js": "symbolicSetTarget"
   },
   "git_reference_set_target": {
-    "js": "setTarget",
-    "cpp": "setTarget"
+    "cpp": "SetTarget",
+    "js": "setTarget"
   },
   "git_reference_rename": {
-    "js": "rename",
-    "cpp": "Rename"
+    "cpp": "Rename",
+    "js": "rename"
   },
   "git_reference_delete": {
-    "js": "delete",
-    "cpp": "Delete"
+    "cpp": "Delete",
+    "js": "delete"
   },
   "git_reference_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_reference_foreach_cb": {
     "js": "ReferenceForeachCb",
     "cpp": "ReferenceForeachCb"
   },
   "git_reference_free": {
-    "js": "gitReferenceFree",
-    "cpp": "GitReferenceFree"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_reference_cmp": {
-    "js": "compare",
-    "cpp": "Compare"
+    "cpp": "Cmp",
+    "js": "cmp"
   },
   "git_reference_foreach_glob": {
-    "js": "foreachGlob",
-    "cpp": "ForeachGlob"
+    "cpp": "ForeachGlob",
+    "js": "foreachGlob"
   },
   "git_reference_has_log": {
-    "js": "hasLog",
-    "cpp": "HasLog"
+    "cpp": "HasLog",
+    "js": "hasLog"
   },
   "git_reference_is_branch": {
-    "js": "isBranch",
-    "cpp": "IsBranch"
+    "cpp": "IsBranch",
+    "js": "isBranch"
   },
   "git_reference_is_remote": {
-    "js": "isRemote",
-    "cpp": "IsRemote"
+    "cpp": "IsRemote",
+    "js": "isRemote"
   },
   "git_reference_normalize_name": {
-    "js": "normalizeName",
-    "cpp": "NormalizeName"
+    "cpp": "NormalizeName",
+    "js": "normalizeName"
   },
   "git_reference_peel": {
-    "js": "peel",
-    "cpp": "Peel"
+    "cpp": "Peel",
+    "js": "peel"
   },
   "git_reference_is_valid_name": {
-    "js": "isValidName",
-    "cpp": "IsValidName"
+    "cpp": "IsValidName",
+    "js": "isValidName"
   },
   "git_refspec_src": {
-    "js": "src",
-    "cpp": "Src"
+    "cpp": "Src",
+    "js": "src"
   },
   "const git_refspec *": {
-    "js": "Refspec",
-    "cpp": "Refspec"
+    "cpp": "GitRefspec",
+    "js": "Refspec"
   },
   "git_refspec_dst": {
-    "js": "dst",
-    "cpp": "Dst"
+    "cpp": "Dst",
+    "js": "dst"
   },
   "git_refspec_force": {
-    "js": "force",
-    "cpp": "Force"
+    "cpp": "Force",
+    "js": "force"
   },
   "git_refspec_src_matches": {
-    "js": "srcMatches",
-    "cpp": "SrcMatches"
+    "cpp": "SrcMatches",
+    "js": "srcMatches"
   },
   "git_refspec_dst_matches": {
-    "js": "dstMatches",
-    "cpp": "DstMatches"
+    "cpp": "DstMatches",
+    "js": "dstMatches"
   },
   "git_refspec_transform": {
-    "js": "transform",
-    "cpp": "Transform"
+    "cpp": "Transform",
+    "js": "transform"
   },
   "git_refspec_rtransform": {
-    "js": "rtransform",
-    "cpp": "Rtransform"
+    "cpp": "Rtransform",
+    "js": "rtransform"
   },
   "git_remote_save": {
-    "js": "save",
-    "cpp": "Save"
+    "cpp": "Save",
+    "js": "save"
   },
   "const git_remote *": {
-    "js": "Remote",
-    "cpp": "GitRemote"
+    "cpp": "GitRemote",
+    "js": "Remote"
   },
   "git_remote_name": {
-    "js": "name",
-    "cpp": "Name"
+    "cpp": "Name",
+    "js": "name"
   },
   "git_remote_url": {
-    "js": "url",
-    "cpp": "Url"
+    "cpp": "Url",
+    "js": "url"
   },
   "git_remote_pushurl": {
-    "js": "pushUrl",
-    "cpp": "PushUrl"
+    "cpp": "Pushurl",
+    "js": "pushurl"
   },
   "git_remote_set_url": {
-    "js": "setUrl",
-    "cpp": "SetUrl"
+    "cpp": "SetUrl",
+    "js": "setUrl"
   },
   "const char*": {
     "js": "String",
     "cpp": "String"
   },
   "git_remote_set_pushurl": {
-    "js": "setPushUrl",
-    "cpp": "SetPushUrl"
+    "cpp": "SetPushurl",
+    "js": "setPushurl"
   },
   "git_remote_set_fetchspec": {
     "js": "setFetchspec",
@@ -1578,56 +1578,56 @@
     "cpp": "Pushspec"
   },
   "git_remote_connect": {
-    "js": "connect",
-    "cpp": "Connect"
+    "cpp": "Connect",
+    "js": "connect"
   },
   "git_direction": {
     "js": "Number",
     "cpp": "Number"
   },
   "git_remote_ls": {
-    "js": "ls",
-    "cpp": "Ls"
+    "cpp": "Ls",
+    "js": "ls"
   },
   "git_headlist_cb": {
     "js": "HeadlistCb",
     "cpp": "HeadlistCb"
   },
   "git_remote_download": {
-    "js": "download",
-    "cpp": "Download"
+    "cpp": "Download",
+    "js": "download"
   },
   "git_remote_connected": {
-    "js": "connected",
-    "cpp": "Connected"
+    "cpp": "Connected",
+    "js": "connected"
   },
   "git_remote_stop": {
-    "js": "stop",
-    "cpp": "Stop"
+    "cpp": "Stop",
+    "js": "stop"
   },
   "git_remote_disconnect": {
-    "js": "disconnect",
-    "cpp": "Disconnect"
+    "cpp": "Disconnect",
+    "js": "disconnect"
   },
   "git_remote_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_remote_update_tips": {
-    "js": "updateTips",
-    "cpp": "UpdateTips"
+    "cpp": "UpdateTips",
+    "js": "updateTips"
   },
   "git_remote_valid_url": {
-    "js": "validUrl",
-    "cpp": "ValidUrl"
+    "cpp": "ValidUrl",
+    "js": "validUrl"
   },
   "git_remote_supported_url": {
-    "js": "supportedUrl",
-    "cpp": "SupportedUrl"
+    "cpp": "SupportedUrl",
+    "js": "supportedUrl"
   },
   "git_remote_check_cert": {
-    "js": "checkCert",
-    "cpp": "CheckCert"
+    "cpp": "CheckCert",
+    "js": "checkCert"
   },
   "git_remote_set_cred_acquire_cb": {
     "js": "setCredAcquireCb",
@@ -1638,327 +1638,327 @@
     "cpp": "CredAcquireCb"
   },
   "git_remote_set_transport": {
-    "js": "setTransport",
-    "cpp": "SetTransport"
+    "cpp": "SetTransport",
+    "js": "setTransport"
   },
   "git_transport *": {
-    "js": "Transport",
-    "cpp": "Transport"
+    "cpp": "GitTransport",
+    "js": "Transport"
   },
   "git_remote_set_callbacks": {
-    "js": "setCallbacks",
-    "cpp": "SetCallbacks"
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
   },
   "git_remote_callbacks *": {
     "js": "RemoteCallbacks",
     "cpp": "RemoteCallbacks"
   },
   "git_remote_stats": {
-    "js": "stats",
-    "cpp": "Stats"
+    "cpp": "Stats",
+    "js": "stats"
   },
   "const git_transfer_progress *": {
     "js": "TransferProgress",
     "cpp": "TransferProgress"
   },
   "git_remote_autotag": {
-    "js": "autotag",
-    "cpp": "Autotag"
+    "cpp": "Autotag",
+    "js": "autotag"
   },
   "GIT_EXTERN(": {
     "js": "GIT_EXTERN("
   },
   "git_remote_set_autotag": {
-    "js": "setAutotag",
-    "cpp": "SetAutotag"
+    "cpp": "SetAutotag",
+    "js": "setAutotag"
   },
   "git_remote_autotag_option_t": {
     "js": "RemoteAutotagOptionT",
     "cpp": "RemoteAutotagOptionT"
   },
   "git_remote_rename": {
-    "js": "rename",
-    "cpp": "Rename"
+    "cpp": "Rename",
+    "js": "rename"
   },
   "git_remote_rename_problem_cb": {
     "js": "RemoteRenameProblemCb",
     "cpp": "RemoteRenameProblemCb"
   },
   "git_remote_update_fetchhead": {
-    "js": "updateFetchhead",
-    "cpp": "UpdateFetchhead"
+    "cpp": "UpdateFetchhead",
+    "js": "updateFetchhead"
   },
   "git_remote_set_update_fetchhead": {
-    "js": "setUpdateFetchhead",
-    "cpp": "SetUpdateFetchhead"
+    "cpp": "SetUpdateFetchhead",
+    "js": "setUpdateFetchhead"
   },
   "git_remote_is_valid_name": {
-    "js": "isValidName",
-    "cpp": "IsValidName"
+    "cpp": "IsValidName",
+    "js": "isValidName"
   },
   "git_repository_open": {
-    "js": "open",
-    "cpp": "Open"
+    "cpp": "Open",
+    "js": "open"
   },
   "git_repository **": {
-    "js": "Repository",
-    "cpp": "GitRepo"
+    "cpp": "GitRepository",
+    "js": "Repository"
   },
   "git_repository_wrap_odb": {
-    "js": "wrapOdb",
-    "cpp": "WrapOdb"
+    "cpp": "WrapOdb",
+    "js": "wrapOdb"
   },
   "git_repository_discover": {
-    "js": "discover",
-    "cpp": "Discover"
+    "cpp": "Discover",
+    "js": "discover"
   },
   "git_repository_open_ext": {
-    "js": "openExt",
-    "cpp": "OpenExt"
+    "cpp": "OpenExt",
+    "js": "openExt"
   },
   "git_repository_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_repository_init": {
-    "js": "init",
-    "cpp": "Init"
+    "cpp": "Init",
+    "js": "init"
   },
   "unsigned": {
     "js": "Boolean",
     "cpp": "Boolean"
   },
   "git_repository_init_ext": {
-    "js": "initExt",
-    "cpp": "InitExt"
+    "cpp": "InitExt",
+    "js": "initExt"
   },
   "git_repository_init_options *": {
     "js": "RepositoryInitOptions",
     "cpp": "RepositoryInitOptions"
   },
   "git_repository_head": {
-    "js": "head",
-    "cpp": "Head"
+    "cpp": "Head",
+    "js": "head"
   },
   "git_repository_head_detached": {
-    "js": "headDetached",
-    "cpp": "HeadDetached"
+    "cpp": "HeadDetached",
+    "js": "headDetached"
   },
   "git_repository_head_orphan": {
     "js": "headOrphan",
     "cpp": "HeadOrphan"
   },
   "git_repository_is_empty": {
-    "js": "isEmpty",
-    "cpp": "IsEmpty"
+    "cpp": "IsEmpty",
+    "js": "isEmpty"
   },
   "git_repository_path": {
-    "js": "path",
-    "cpp": "Path"
+    "cpp": "Path",
+    "js": "path"
   },
   "git_repository_workdir": {
-    "js": "workdir",
-    "cpp": "Workdir"
+    "cpp": "Workdir",
+    "js": "workdir"
   },
   "git_repository_set_workdir": {
-    "js": "setWorkdir",
-    "cpp": "SetWorkdir"
+    "cpp": "SetWorkdir",
+    "js": "setWorkdir"
   },
   "git_repository_is_bare": {
-    "js": "isBare",
-    "cpp": "IsBare"
+    "cpp": "IsBare",
+    "js": "isBare"
   },
   "git_repository_config": {
-    "js": "config",
-    "cpp": "Config"
+    "cpp": "Config",
+    "js": "config"
   },
   "git_repository_set_config": {
     "js": "setConfig",
     "cpp": "SetConfig"
   },
   "git_repository_odb": {
-    "js": "odb",
-    "cpp": "Odb"
+    "cpp": "Odb",
+    "js": "odb"
   },
   "git_repository_set_odb": {
     "js": "setOdb",
     "cpp": "SetOdb"
   },
   "git_repository_refdb": {
-    "js": "refdb",
-    "cpp": "Refdb"
+    "cpp": "Refdb",
+    "js": "refdb"
   },
   "git_refdb **": {
-    "js": "RefDb",
-    "cpp": "GitRefDb"
+    "cpp": "GitRefdb",
+    "js": "Refdb"
   },
   "git_repository_set_refdb": {
     "js": "setRefdb",
     "cpp": "SetRefdb"
   },
   "git_repository_index": {
-    "js": "openIndex",
-    "cpp": "openIndex"
+    "cpp": "Index",
+    "js": "index"
   },
   "git_repository_set_index": {
     "js": "setIndex",
     "cpp": "SetIndex"
   },
   "git_repository_message": {
-    "js": "message",
-    "cpp": "Message"
+    "cpp": "Message",
+    "js": "message"
   },
   "git_repository_message_remove": {
-    "js": "messageRemove",
-    "cpp": "MessageRemove"
+    "cpp": "MessageRemove",
+    "js": "messageRemove"
   },
   "git_repository_merge_cleanup": {
-    "js": "mergeCleanup",
-    "cpp": "MergeCleanup"
+    "cpp": "MergeCleanup",
+    "js": "mergeCleanup"
   },
   "git_repository_fetchhead_foreach": {
-    "js": "fetchheadForeach",
-    "cpp": "FetchheadForeach"
+    "cpp": "FetchheadForeach",
+    "js": "fetchheadForeach"
   },
   "git_repository_fetchhead_foreach_cb": {
     "js": "RepositoryFetchheadForeachCb",
     "cpp": "RepositoryFetchheadForeachCb"
   },
   "git_repository_mergehead_foreach": {
-    "js": "mergeheadForeach",
-    "cpp": "MergeheadForeach"
+    "cpp": "MergeheadForeach",
+    "js": "mergeheadForeach"
   },
   "git_repository_mergehead_foreach_cb": {
     "js": "RepositoryMergeheadForeachCb",
     "cpp": "RepositoryMergeheadForeachCb"
   },
   "git_repository_hashfile": {
-    "js": "hashfile",
-    "cpp": "Hashfile"
+    "cpp": "Hashfile",
+    "js": "hashfile"
   },
   "git_repository_set_head": {
-    "js": "setHead",
-    "cpp": "SetHead"
+    "cpp": "SetHead",
+    "js": "setHead"
   },
   "git_repository*": {
     "js": "Repository*",
     "cpp": "Repository*"
   },
   "git_repository_set_head_detached": {
-    "js": "setHeadDetached",
-    "cpp": "SetHeadDetached"
+    "cpp": "SetHeadDetached",
+    "js": "setHeadDetached"
   },
   "const git_oid*": {
     "js": "String",
     "cpp": "String"
   },
   "git_repository_detach_head": {
-    "js": "detachHead",
-    "cpp": "DetachHead"
+    "cpp": "DetachHead",
+    "js": "detachHead"
   },
   "git_repository_state": {
-    "js": "state",
-    "cpp": "State"
+    "cpp": "State",
+    "js": "state"
   },
   "git_blob_lookup": {
-    "js": "getBlob",
-    "cpp": "GetBlob"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_blob **": {
-    "js": "Blob",
-    "cpp": "GitBlob"
+    "cpp": "GitBlob",
+    "js": "Blob"
   },
   "git_blob_lookup_prefix": {
-    "js": "getBlobByPrefix",
-    "cpp": "GetBlobByPrefix"
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
   },
   "git_commit_lookup": {
-    "js": "getCommit",
-    "cpp": "GetCommit"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_commit_create": {
-    "js": "createCommit",
-    "cpp": "CreateCommit"
+    "cpp": "Create",
+    "js": "create"
   },
   "const git_commit **": {
-    "js": "Array",
-    "cpp": "Array"
+    "cpp": "GitCommit",
+    "js": "Commit"
   },
   "git_object_lookup": {
-    "js": "getObject",
-    "cpp": "GetObject"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_object_lookup_prefix": {
-    "js": "getObjectByPrefix",
-    "cpp": "GetObjectByPrefix"
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
   },
   "git_refdb_new": {
-    "js": "newRefDbWithoutBackends",
-    "cpp": "NewRefDbWithoutBackends"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_refdb_open": {
-    "js": "openRefDb",
-    "cpp": "OpenRefDb"
+    "cpp": "Open",
+    "js": "open"
   },
   "git_refdb_backend_fs": {
-    "js": "openRefDbBackend",
-    "cpp": "OpenRefDbBackend"
+    "cpp": "RefdbBackendFs",
+    "js": "refdbBackendFs"
   },
   "struct git_refdb_backend **": {
     "js": "RefdbBackend",
     "cpp": "RefdbBackend"
   },
   "git_reference_lookup": {
-    "js": "getReference",
-    "cpp": "GetReference"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_reference_symbolic_create": {
-    "js": "createSymbolicReference",
-    "cpp": "CreateSymbolicReference"
+    "cpp": "SymbolicCreate",
+    "js": "symbolicCreate"
   },
   "git_reference_create": {
-    "js": "createReference",
-    "cpp": "CreateReference"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_remote_create": {
-    "js": "addRemote",
-    "cpp": "AddRemote"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_remote **": {
-    "js": "Remote",
-    "cpp": "GitRemote"
+    "cpp": "GitRemote",
+    "js": "Remote"
   },
   "git_remote_create_inmemory": {
-    "js": "addRemoteInMemory",
-    "cpp": "AddRemoteInMemory"
+    "cpp": "CreateInmemory",
+    "js": "createInmemory"
   },
   "git_revwalk_new": {
-    "js": "createRevWalk",
-    "cpp": "CreateRevWalk"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_revwalk **": {
-    "js": "RevWalk",
-    "cpp": "GitRevWalk"
+    "cpp": "GitRevwalk",
+    "js": "Revwalk"
   },
   "git_submodule_lookup": {
-    "js": "getSubmodule",
-    "cpp": "GetSubmodule"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_submodule **": {
-    "js": "Submodule",
-    "cpp": "GitSubmodule"
+    "cpp": "GitSubmodule",
+    "js": "Submodule"
   },
   "git_submodule_add_setup": {
-    "js": "addSubmodule",
-    "cpp": "AddSubmodule"
+    "cpp": "AddSetup",
+    "js": "addSetup"
   },
   "git_tag_lookup": {
     "js": "getTag",
     "cpp": "GetTag"
   },
   "git_tag **": {
-    "js": "Tag",
-    "cpp": "GitTag"
+    "cpp": "GitTag",
+    "js": "Tag"
   },
   "git_tag_lookup_prefix": {
     "js": "getTagByPrefix",
@@ -1981,8 +1981,8 @@
     "cpp": "GetTreeByPrefix"
   },
   "git_submodule_reload_all": {
-    "js": "reloadSubmodules",
-    "cpp": "ReloadSubmodules"
+    "cpp": "ReloadAll",
+    "js": "reloadAll"
   },
   "git_tag_delete": {
     "js": "delete",
@@ -2009,339 +2009,339 @@
     "cpp": "TagForeachCb"
   },
   "git_reference_list": {
-    "js": "getReferences",
-    "cpp": "GetReferences"
+    "cpp": "List",
+    "js": "list"
   },
   "git_blob_create_frombuffer": {
-    "js": "createBlobFromBuffer",
-    "cpp": "CreateBlobFromBuffer"
+    "cpp": "CreateFrombuffer",
+    "js": "createFrombuffer"
   },
   "git_blob_create_fromworkdir": {
-    "js": "createBlobFromWorkdir",
-    "cpp": "CreateBlobFromWorkdir"
+    "cpp": "CreateFromworkdir",
+    "js": "createFromworkdir"
   },
   "git_blob_create_fromdisk": {
-    "js": "createBlobFromFile",
-    "cpp": "CreateBlobFromFile"
+    "cpp": "CreateFromdisk",
+    "js": "createFromdisk"
   },
   "git_blob_create_fromchunks": {
-    "js": "createBlobFromChunks",
-    "cpp": "CreateBlobFromChunks"
+    "cpp": "CreateFromchunks",
+    "js": "createFromchunks"
   },
   "git_blob_chunk_cb": {
     "js": "BlobChunkCb",
     "cpp": "BlobChunkCb"
   },
   "git_remote_list": {
-    "js": "getRemotes",
-    "cpp": "GetRemotes"
+    "cpp": "List",
+    "js": "list"
   },
   "git_clone": {
-    "js": "clone",
-    "cpp": "Clone"
+    "cpp": "Clone",
+    "js": "clone"
   },
   "const git_clone_options *": {
     "js": "CloneOptions",
     "cpp": "GitCloneOptions"
   },
   "git_remote_load": {
-    "js": "getRemote",
-    "cpp": "GetRemote"
+    "cpp": "Load",
+    "js": "load"
   },
   "git_reset": {
-    "js": "gitReset",
-    "cpp": "GitReset"
+    "cpp": "Reset",
+    "js": "reset"
   },
   "git_reset_t": {
     "js": "ResetT",
     "cpp": "ResetT"
   },
   "git_reset_default": {
-    "js": "default",
-    "cpp": "Default"
+    "cpp": "ResetDefault",
+    "js": "resetDefault"
   },
   "git_strarray*": {
     "js": "Strarray*",
     "cpp": "Strarray*"
   },
   "git_revparse_single": {
-    "js": "single",
-    "cpp": "Single"
+    "cpp": "RevparseSingle",
+    "js": "revparseSingle"
   },
   "git_revparse": {
-    "js": "gitRevparse",
-    "cpp": "GitRevparse"
+    "cpp": "Revparse",
+    "js": "revparse"
   },
   "git_revspec *": {
     "js": "Revspec",
     "cpp": "Revspec"
   },
   "git_revwalk_reset": {
-    "js": "reset",
-    "cpp": "Reset"
+    "cpp": "Reset",
+    "js": "reset"
   },
   "git_revwalk *": {
-    "js": "RevWalk",
-    "cpp": "GitRevWalk"
+    "cpp": "GitRevwalk",
+    "js": "Revwalk"
   },
   "git_revwalk_push": {
-    "js": "push",
-    "cpp": "Push"
+    "cpp": "Push",
+    "js": "push"
   },
   "git_revwalk_push_glob": {
-    "js": "pushGlob",
-    "cpp": "PushGlob"
+    "cpp": "PushGlob",
+    "js": "pushGlob"
   },
   "git_revwalk_push_head": {
-    "js": "pushHead",
-    "cpp": "PushHead"
+    "cpp": "PushHead",
+    "js": "pushHead"
   },
   "git_revwalk_hide": {
-    "js": "hide",
-    "cpp": "Hide"
+    "cpp": "Hide",
+    "js": "hide"
   },
   "git_revwalk_hide_glob": {
-    "js": "hideGlob",
-    "cpp": "HideGlob"
+    "cpp": "HideGlob",
+    "js": "hideGlob"
   },
   "git_revwalk_hide_head": {
-    "js": "hideHead",
-    "cpp": "HideHead"
+    "cpp": "HideHead",
+    "js": "hideHead"
   },
   "git_revwalk_push_ref": {
-    "js": "pushRef",
-    "cpp": "PushRef"
+    "cpp": "PushRef",
+    "js": "pushRef"
   },
   "git_revwalk_hide_ref": {
-    "js": "hideRef",
-    "cpp": "HideRef"
+    "cpp": "HideRef",
+    "js": "hideRef"
   },
   "git_revwalk_next": {
-    "js": "next",
-    "cpp": "Next"
+    "cpp": "Next",
+    "js": "next"
   },
   "git_revwalk_sorting": {
-    "js": "sorting",
-    "cpp": "Sorting"
+    "cpp": "Sorting",
+    "js": "sorting"
   },
   "git_revwalk_push_range": {
-    "js": "pushRange",
-    "cpp": "PushRange"
+    "cpp": "PushRange",
+    "js": "pushRange"
   },
   "git_revwalk_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_revwalk_repository": {
-    "js": "repository",
-    "cpp": "Repository"
+    "cpp": "Repository",
+    "js": "repository"
   },
   "git_signature_new": {
-    "js": "create",
-    "cpp": "Create"
+    "cpp": "New2",
+    "js": "new2"
   },
   "git_signature **": {
-    "js": "Signature",
-    "cpp": "GitSignature"
+    "cpp": "GitSignature",
+    "js": "Signature"
   },
   "git_signature_now": {
-    "js": "now",
-    "cpp": "Now"
+    "cpp": "Now",
+    "js": "now"
   },
   "git_signature_dup": {
-    "js": "dup",
-    "cpp": "Dup"
+    "cpp": "Dup",
+    "js": "dup"
   },
   "git_signature *": {
-    "js": "Signature",
-    "cpp": "GitSignature"
+    "cpp": "GitSignature",
+    "js": "Signature"
   },
   "git_signature_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_stash_save": {
-    "js": "save",
-    "cpp": "Save"
+    "cpp": "StashSave",
+    "js": "stashSave"
   },
   "git_stash_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "StashForeach",
+    "js": "stashForeach"
   },
   "git_stash_cb": {
     "js": "StashCb",
     "cpp": "StashCb"
   },
   "git_stash_drop": {
-    "js": "drop",
-    "cpp": "Drop"
+    "cpp": "StashDrop",
+    "js": "stashDrop"
   },
   "git_status_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "StatusForeach",
+    "js": "statusForeach"
   },
   "git_status_cb": {
     "js": "StatusCb",
     "cpp": "StatusCb"
   },
   "git_status_foreach_ext": {
-    "js": "foreachExt",
-    "cpp": "ForeachExt"
+    "cpp": "StatusForeachExt",
+    "js": "statusForeachExt"
   },
   "const git_status_options *": {
     "js": "StatusOptions",
     "cpp": "StatusOptions"
   },
   "git_status_file": {
-    "js": "file",
-    "cpp": "File"
+    "cpp": "StatusFile",
+    "js": "statusFile"
   },
   "unsigned int *": {
     "js": "Number",
     "cpp": "Int32"
   },
   "git_status_should_ignore": {
-    "js": "shouldIgnore",
-    "cpp": "ShouldIgnore"
+    "cpp": "StatusShouldIgnore",
+    "js": "statusShouldIgnore"
   },
   "git_strarray_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "StrarrayFree",
+    "js": "strarrayFree"
   },
   "git_strarray_copy": {
-    "js": "copy",
-    "cpp": "Copy"
+    "cpp": "StrarrayCopy",
+    "js": "strarrayCopy"
   },
   "const git_strarray *": {
     "js": "Strarray",
     "cpp": "Strarray"
   },
   "git_submodule_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "int (*)(git_submodule *sm, const char *name, void *payload)": {
     "js": "Number",
     "cpp": "Int32"
   },
   "git_submodule_add_finalize": {
-    "js": "addFinalize",
-    "cpp": "AddFinalize"
+    "cpp": "AddFinalize",
+    "js": "addFinalize"
   },
   "git_submodule *": {
-    "js": "Submodule",
-    "cpp": "GitSubmodule"
+    "cpp": "GitSubmodule",
+    "js": "Submodule"
   },
   "git_submodule_add_to_index": {
-    "js": "addToIndex",
-    "cpp": "AddToIndex"
+    "cpp": "AddToIndex",
+    "js": "addToIndex"
   },
   "git_submodule_save": {
-    "js": "save",
-    "cpp": "Save"
+    "cpp": "Save",
+    "js": "save"
   },
   "git_submodule_owner": {
-    "js": "owner",
-    "cpp": "Owner"
+    "cpp": "Owner",
+    "js": "owner"
   },
   "git_submodule_name": {
-    "js": "name",
-    "cpp": "Name"
+    "cpp": "Name",
+    "js": "name"
   },
   "git_submodule_path": {
-    "js": "path",
-    "cpp": "Path"
+    "cpp": "Path",
+    "js": "path"
   },
   "git_submodule_url": {
-    "js": "url",
-    "cpp": "Url"
+    "cpp": "Url",
+    "js": "url"
   },
   "git_submodule_set_url": {
-    "js": "setUrl",
-    "cpp": "SetUrl"
+    "cpp": "SetUrl",
+    "js": "setUrl"
   },
   "git_submodule_index_id": {
-    "js": "indexId",
-    "cpp": "IndexId"
+    "cpp": "IndexId",
+    "js": "indexId"
   },
   "git_submodule_head_id": {
-    "js": "headId",
-    "cpp": "HeadId"
+    "cpp": "HeadId",
+    "js": "headId"
   },
   "git_submodule_wd_id": {
-    "js": "wdId",
-    "cpp": "WdId"
+    "cpp": "WdId",
+    "js": "wdId"
   },
   "git_submodule_ignore": {
-    "js": "ignore",
-    "cpp": "Ignore"
+    "cpp": "Ignore",
+    "js": "ignore"
   },
   "git_submodule_set_ignore": {
-    "js": "setIgnore",
-    "cpp": "SetIgnore"
+    "cpp": "SetIgnore",
+    "js": "setIgnore"
   },
   "git_submodule_ignore_t": {
     "js": "Uint32",
     "cpp": "Number"
   },
   "git_submodule_update": {
-    "js": "update",
-    "cpp": "Update"
+    "cpp": "Update",
+    "js": "update"
   },
   "git_submodule_set_update": {
-    "js": "setUpdate",
-    "cpp": "SetUpdate"
+    "cpp": "SetUpdate",
+    "js": "setUpdate"
   },
   "git_submodule_update_t": {
     "js": "SubmoduleUpdateT"
   },
   "git_submodule_fetch_recurse_submodules": {
-    "js": "fetchRecurseSubmodules",
-    "cpp": "FetchRecurseSubmodules"
+    "cpp": "FetchRecurseSubmodules",
+    "js": "fetchRecurseSubmodules"
   },
   "git_submodule_set_fetch_recurse_submodules": {
-    "js": "setFetchRecurseSubmodules",
-    "cpp": "SetFetchRecurseSubmodules"
+    "cpp": "SetFetchRecurseSubmodules",
+    "js": "setFetchRecurseSubmodules"
   },
   "git_submodule_init": {
-    "js": "init",
-    "cpp": "Init"
+    "cpp": "Init",
+    "js": "init"
   },
   "git_submodule_sync": {
-    "js": "sync",
-    "cpp": "Sync"
+    "cpp": "Sync",
+    "js": "sync"
   },
   "git_submodule_open": {
-    "js": "open",
-    "cpp": "Open"
+    "cpp": "Open",
+    "js": "open"
   },
   "git_submodule_reload": {
-    "js": "reload",
-    "cpp": "Reload"
+    "cpp": "Reload",
+    "js": "reload"
   },
   "git_submodule_status": {
-    "js": "status",
-    "cpp": "Status"
+    "cpp": "Status",
+    "js": "status"
   },
   "git_submodule_location": {
-    "js": "location",
-    "cpp": "Location"
+    "cpp": "Location",
+    "js": "location"
   },
   "git_tag_free": {
     "js": "free",
     "cpp": "Free"
   },
   "git_tag *": {
-    "js": "Tag",
-    "cpp": "GitTag"
+    "cpp": "GitTag",
+    "js": "Tag"
   },
   "git_tag_id": {
     "js": "oid",
     "cpp": "Oid"
   },
   "const git_tag *": {
-    "js": "Tag",
-    "cpp": "GitTag"
+    "cpp": "GitTag",
+    "js": "Tag"
   },
   "git_tag_target": {
     "js": "getTarget",
@@ -2404,8 +2404,8 @@
     "cpp": "New"
   },
   "git_transport **": {
-    "js": "Transport",
-    "cpp": "Transport"
+    "cpp": "GitTransport",
+    "js": "Transport"
   },
   "git_transport_dummy": {
     "js": "dummy",
@@ -2484,8 +2484,8 @@
     "cpp": "Free"
   },
   "git_tree *": {
-    "js": "Tree",
-    "cpp": "GitTree"
+    "cpp": "GitTree",
+    "js": "Tree"
   },
   "git_tree_id": {
     "js": "oid",
@@ -2540,16 +2540,16 @@
     "cpp": "TreewalkCb"
   },
   "git_diff_tree_to_tree": {
-    "js": "diffTree",
-    "cpp": "DiffTree"
+    "cpp": "TreeToTree",
+    "js": "treeToTree"
   },
   "git_diff_tree_to_index": {
-    "js": "diffIndex",
-    "cpp": "DiffIndex"
+    "cpp": "TreeToIndex",
+    "js": "treeToIndex"
   },
   "git_diff_tree_to_workdir": {
-    "js": "diffWorkDir",
-    "cpp": "DiffWorkDir"
+    "cpp": "TreeToWorkdir",
+    "js": "treeToWorkdir"
   },
   "git_treebuilder_clear": {
     "js": "clear",
@@ -2595,7 +2595,5753 @@
     "js": "write",
     "cpp": "Write"
   },
-  "git_blame_hunk": {
-    
+  "git_blame_hunk": {},
+  "git_attr": {
+    "cpp": "GitAttr",
+    "js": "Attr"
+  },
+  "git_attr **": {
+    "cpp": "GitAttr",
+    "js": "Attr"
+  },
+  "git_attr *": {
+    "cpp": "GitAttr",
+    "js": "Attr"
+  },
+  "const git_attr **": {
+    "cpp": "GitAttr",
+    "js": "Attr"
+  },
+  "const git_attr *": {
+    "cpp": "GitAttr",
+    "js": "Attr"
+  },
+  "git_attr_get *": {
+    "cpp": "AttrGet",
+    "js": "attrGet"
+  },
+  "const git_attr_get *": {
+    "cpp": "AttrGet",
+    "js": "attrGet"
+  },
+  "git_attr_get_many *": {
+    "cpp": "AttrGetMany",
+    "js": "attrGetMany"
+  },
+  "const git_attr_get_many *": {
+    "cpp": "AttrGetMany",
+    "js": "attrGetMany"
+  },
+  "git_attr_foreach *": {
+    "cpp": "AttrForeach",
+    "js": "attrForeach"
+  },
+  "const git_attr_foreach *": {
+    "cpp": "AttrForeach",
+    "js": "attrForeach"
+  },
+  "git_attr_cache_flush *": {
+    "cpp": "AttrCacheFlush",
+    "js": "attrCacheFlush"
+  },
+  "const git_attr_cache_flush *": {
+    "cpp": "AttrCacheFlush",
+    "js": "attrCacheFlush"
+  },
+  "git_attr_add_macro *": {
+    "cpp": "AttrAddMacro",
+    "js": "attrAddMacro"
+  },
+  "const git_attr_add_macro *": {
+    "cpp": "AttrAddMacro",
+    "js": "attrAddMacro"
+  },
+  "git_blame": {
+    "cpp": "GitBlame",
+    "js": "Blame"
+  },
+  "git_blame **": {
+    "cpp": "GitBlame",
+    "js": "Blame"
+  },
+  "git_blame *": {
+    "cpp": "GitBlame",
+    "js": "Blame"
+  },
+  "const git_blame **": {
+    "cpp": "GitBlame",
+    "js": "Blame"
+  },
+  "const git_blame *": {
+    "cpp": "GitBlame",
+    "js": "Blame"
+  },
+  "git_blame_get_hunk_count": {
+    "cpp": "GetHunkCount",
+    "js": "getHunkCount"
+  },
+  "git_blame_get_hunk_count *": {
+    "cpp": "GetHunkCount",
+    "js": "getHunkCount"
+  },
+  "const git_blame_get_hunk_count *": {
+    "cpp": "GetHunkCount",
+    "js": "getHunkCount"
+  },
+  "git_blame_get_hunk_byindex": {
+    "cpp": "GetHunkByindex",
+    "js": "getHunkByindex"
+  },
+  "git_blame_get_hunk_byindex *": {
+    "cpp": "GetHunkByindex",
+    "js": "getHunkByindex"
+  },
+  "const git_blame_get_hunk_byindex *": {
+    "cpp": "GetHunkByindex",
+    "js": "getHunkByindex"
+  },
+  "git_blame_get_hunk_byline": {
+    "cpp": "GetHunkByline",
+    "js": "getHunkByline"
+  },
+  "git_blame_get_hunk_byline *": {
+    "cpp": "GetHunkByline",
+    "js": "getHunkByline"
+  },
+  "const git_blame_get_hunk_byline *": {
+    "cpp": "GetHunkByline",
+    "js": "getHunkByline"
+  },
+  "git_blame_file": {
+    "cpp": "File",
+    "js": "file"
+  },
+  "git_blame_file *": {
+    "cpp": "File",
+    "js": "file"
+  },
+  "const git_blame_file *": {
+    "cpp": "File",
+    "js": "file"
+  },
+  "git_blame_buffer": {
+    "cpp": "Buffer",
+    "js": "buffer"
+  },
+  "git_blame_buffer *": {
+    "cpp": "Buffer",
+    "js": "buffer"
+  },
+  "const git_blame_buffer *": {
+    "cpp": "Buffer",
+    "js": "buffer"
+  },
+  "git_blame_free": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_blame_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_blame_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_blob": {
+    "cpp": "GitBlob",
+    "js": "Blob"
+  },
+  "const git_blob **": {
+    "cpp": "GitBlob",
+    "js": "Blob"
+  },
+  "git_blob_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_blob_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_blob_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "const git_blob_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "git_blob_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_blob_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_blob_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "const git_blob_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "git_blob_owner": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_blob_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_blob_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_blob_rawcontent *": {
+    "cpp": "Rawcontent",
+    "js": "rawcontent"
+  },
+  "const git_blob_rawcontent *": {
+    "cpp": "Rawcontent",
+    "js": "rawcontent"
+  },
+  "git_blob_rawsize *": {
+    "cpp": "Rawsize",
+    "js": "rawsize"
+  },
+  "const git_blob_rawsize *": {
+    "cpp": "Rawsize",
+    "js": "rawsize"
+  },
+  "git_blob_filtered_content": {
+    "cpp": "FilteredContent",
+    "js": "filteredContent"
+  },
+  "git_blob_filtered_content *": {
+    "cpp": "FilteredContent",
+    "js": "filteredContent"
+  },
+  "const git_blob_filtered_content *": {
+    "cpp": "FilteredContent",
+    "js": "filteredContent"
+  },
+  "git_blob_create_fromworkdir *": {
+    "cpp": "CreateFromworkdir",
+    "js": "createFromworkdir"
+  },
+  "const git_blob_create_fromworkdir *": {
+    "cpp": "CreateFromworkdir",
+    "js": "createFromworkdir"
+  },
+  "git_blob_create_fromdisk *": {
+    "cpp": "CreateFromdisk",
+    "js": "createFromdisk"
+  },
+  "const git_blob_create_fromdisk *": {
+    "cpp": "CreateFromdisk",
+    "js": "createFromdisk"
+  },
+  "git_blob_create_fromchunks *": {
+    "cpp": "CreateFromchunks",
+    "js": "createFromchunks"
+  },
+  "const git_blob_create_fromchunks *": {
+    "cpp": "CreateFromchunks",
+    "js": "createFromchunks"
+  },
+  "git_blob_create_frombuffer *": {
+    "cpp": "CreateFrombuffer",
+    "js": "createFrombuffer"
+  },
+  "const git_blob_create_frombuffer *": {
+    "cpp": "CreateFrombuffer",
+    "js": "createFrombuffer"
+  },
+  "git_blob_is_binary *": {
+    "cpp": "IsBinary",
+    "js": "isBinary"
+  },
+  "const git_blob_is_binary *": {
+    "cpp": "IsBinary",
+    "js": "isBinary"
+  },
+  "git_branch": {
+    "cpp": "GitBranch",
+    "js": "Branch"
+  },
+  "git_branch **": {
+    "cpp": "GitBranch",
+    "js": "Branch"
+  },
+  "git_branch *": {
+    "cpp": "GitBranch",
+    "js": "Branch"
+  },
+  "const git_branch **": {
+    "cpp": "GitBranch",
+    "js": "Branch"
+  },
+  "const git_branch *": {
+    "cpp": "GitBranch",
+    "js": "Branch"
+  },
+  "git_branch_create *": {
+    "cpp": "BranchCreate",
+    "js": "branchCreate"
+  },
+  "const git_branch_create *": {
+    "cpp": "BranchCreate",
+    "js": "branchCreate"
+  },
+  "git_branch_delete *": {
+    "cpp": "BranchDelete",
+    "js": "branchDelete"
+  },
+  "const git_branch_delete *": {
+    "cpp": "BranchDelete",
+    "js": "branchDelete"
+  },
+  "git_branch_iterator_new": {
+    "cpp": "BranchIteratorNew",
+    "js": "branchIteratorNew"
+  },
+  "git_branch_iterator_new *": {
+    "cpp": "BranchIteratorNew",
+    "js": "branchIteratorNew"
+  },
+  "const git_branch_iterator_new *": {
+    "cpp": "BranchIteratorNew",
+    "js": "branchIteratorNew"
+  },
+  "git_branch_next": {
+    "cpp": "BranchNext",
+    "js": "branchNext"
+  },
+  "git_branch_next *": {
+    "cpp": "BranchNext",
+    "js": "branchNext"
+  },
+  "const git_branch_next *": {
+    "cpp": "BranchNext",
+    "js": "branchNext"
+  },
+  "git_branch_iterator_free": {
+    "cpp": "BranchIteratorFree",
+    "js": "branchIteratorFree"
+  },
+  "git_branch_iterator_free *": {
+    "cpp": "BranchIteratorFree",
+    "js": "branchIteratorFree"
+  },
+  "const git_branch_iterator_free *": {
+    "cpp": "BranchIteratorFree",
+    "js": "branchIteratorFree"
+  },
+  "git_branch_move *": {
+    "cpp": "BranchMove",
+    "js": "branchMove"
+  },
+  "const git_branch_move *": {
+    "cpp": "BranchMove",
+    "js": "branchMove"
+  },
+  "git_branch_lookup *": {
+    "cpp": "BranchLookup",
+    "js": "branchLookup"
+  },
+  "const git_branch_lookup *": {
+    "cpp": "BranchLookup",
+    "js": "branchLookup"
+  },
+  "git_branch_name *": {
+    "cpp": "BranchName",
+    "js": "branchName"
+  },
+  "const git_branch_name *": {
+    "cpp": "BranchName",
+    "js": "branchName"
+  },
+  "git_branch_upstream *": {
+    "cpp": "BranchUpstream",
+    "js": "branchUpstream"
+  },
+  "const git_branch_upstream *": {
+    "cpp": "BranchUpstream",
+    "js": "branchUpstream"
+  },
+  "git_branch_set_upstream *": {
+    "cpp": "BranchSetUpstream",
+    "js": "branchSetUpstream"
+  },
+  "const git_branch_set_upstream *": {
+    "cpp": "BranchSetUpstream",
+    "js": "branchSetUpstream"
+  },
+  "git_branch_upstream_name *": {
+    "cpp": "BranchUpstreamName",
+    "js": "branchUpstreamName"
+  },
+  "const git_branch_upstream_name *": {
+    "cpp": "BranchUpstreamName",
+    "js": "branchUpstreamName"
+  },
+  "git_branch_is_head *": {
+    "cpp": "BranchIsHead",
+    "js": "branchIsHead"
+  },
+  "const git_branch_is_head *": {
+    "cpp": "BranchIsHead",
+    "js": "branchIsHead"
+  },
+  "git_branch_remote_name *": {
+    "cpp": "BranchRemoteName",
+    "js": "branchRemoteName"
+  },
+  "const git_branch_remote_name *": {
+    "cpp": "BranchRemoteName",
+    "js": "branchRemoteName"
+  },
+  "git_buffer": {
+    "cpp": "GitBuffer",
+    "js": "Buffer"
+  },
+  "git_buffer **": {
+    "cpp": "GitBuffer",
+    "js": "Buffer"
+  },
+  "git_buffer *": {
+    "cpp": "GitBuffer",
+    "js": "Buffer"
+  },
+  "const git_buffer **": {
+    "cpp": "GitBuffer",
+    "js": "Buffer"
+  },
+  "const git_buffer *": {
+    "cpp": "GitBuffer",
+    "js": "Buffer"
+  },
+  "git_buf_free": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_buf_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_buf_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_buf_grow": {
+    "cpp": "Grow",
+    "js": "grow"
+  },
+  "git_buf_grow *": {
+    "cpp": "Grow",
+    "js": "grow"
+  },
+  "const git_buf_grow *": {
+    "cpp": "Grow",
+    "js": "grow"
+  },
+  "git_buf_set": {
+    "cpp": "Set",
+    "js": "set"
+  },
+  "git_buf_set *": {
+    "cpp": "Set",
+    "js": "set"
+  },
+  "const git_buf_set *": {
+    "cpp": "Set",
+    "js": "set"
+  },
+  "git_checkout": {
+    "cpp": "GitCheckout",
+    "js": "Checkout"
+  },
+  "git_checkout **": {
+    "cpp": "GitCheckout",
+    "js": "Checkout"
+  },
+  "git_checkout *": {
+    "cpp": "GitCheckout",
+    "js": "Checkout"
+  },
+  "const git_checkout **": {
+    "cpp": "GitCheckout",
+    "js": "Checkout"
+  },
+  "const git_checkout *": {
+    "cpp": "GitCheckout",
+    "js": "Checkout"
+  },
+  "git_checkout_head *": {
+    "cpp": "CheckoutHead",
+    "js": "checkoutHead"
+  },
+  "const git_checkout_head *": {
+    "cpp": "CheckoutHead",
+    "js": "checkoutHead"
+  },
+  "git_checkout_index *": {
+    "cpp": "CheckoutIndex",
+    "js": "checkoutIndex"
+  },
+  "const git_checkout_index *": {
+    "cpp": "CheckoutIndex",
+    "js": "checkoutIndex"
+  },
+  "git_checkout_tree *": {
+    "cpp": "CheckoutTree",
+    "js": "checkoutTree"
+  },
+  "const git_checkout_tree *": {
+    "cpp": "CheckoutTree",
+    "js": "checkoutTree"
+  },
+  "git_clone **": {
+    "cpp": "GitClone",
+    "js": "Clone"
+  },
+  "git_clone *": {
+    "cpp": "Clone",
+    "js": "clone"
+  },
+  "const git_clone **": {
+    "cpp": "GitClone",
+    "js": "Clone"
+  },
+  "const git_clone *": {
+    "cpp": "Clone",
+    "js": "clone"
+  },
+  "git_clone_into": {
+    "cpp": "CloneInto",
+    "js": "cloneInto"
+  },
+  "git_clone_into *": {
+    "cpp": "CloneInto",
+    "js": "cloneInto"
+  },
+  "const git_clone_into *": {
+    "cpp": "CloneInto",
+    "js": "cloneInto"
+  },
+  "git_commit": {
+    "cpp": "GitCommit",
+    "js": "Commit"
+  },
+  "git_commit_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_commit_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_commit_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "const git_commit_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "git_commit_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_commit_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_commit_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "const git_commit_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "git_commit_owner": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_commit_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_commit_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_commit_message_encoding *": {
+    "cpp": "MessageEncoding",
+    "js": "messageEncoding"
+  },
+  "const git_commit_message_encoding *": {
+    "cpp": "MessageEncoding",
+    "js": "messageEncoding"
+  },
+  "git_commit_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "const git_commit_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "git_commit_message_raw": {
+    "cpp": "MessageRaw",
+    "js": "messageRaw"
+  },
+  "git_commit_message_raw *": {
+    "cpp": "MessageRaw",
+    "js": "messageRaw"
+  },
+  "const git_commit_message_raw *": {
+    "cpp": "MessageRaw",
+    "js": "messageRaw"
+  },
+  "git_commit_time *": {
+    "cpp": "Time",
+    "js": "time"
+  },
+  "const git_commit_time *": {
+    "cpp": "Time",
+    "js": "time"
+  },
+  "git_commit_time_offset *": {
+    "cpp": "TimeOffset",
+    "js": "timeOffset"
+  },
+  "const git_commit_time_offset *": {
+    "cpp": "TimeOffset",
+    "js": "timeOffset"
+  },
+  "git_commit_committer *": {
+    "cpp": "Committer",
+    "js": "committer"
+  },
+  "const git_commit_committer *": {
+    "cpp": "Committer",
+    "js": "committer"
+  },
+  "git_commit_author *": {
+    "cpp": "Author",
+    "js": "author"
+  },
+  "const git_commit_author *": {
+    "cpp": "Author",
+    "js": "author"
+  },
+  "git_commit_raw_header": {
+    "cpp": "RawHeader",
+    "js": "rawHeader"
+  },
+  "git_commit_raw_header *": {
+    "cpp": "RawHeader",
+    "js": "rawHeader"
+  },
+  "const git_commit_raw_header *": {
+    "cpp": "RawHeader",
+    "js": "rawHeader"
+  },
+  "git_commit_tree *": {
+    "cpp": "Tree",
+    "js": "tree"
+  },
+  "const git_commit_tree *": {
+    "cpp": "Tree",
+    "js": "tree"
+  },
+  "git_commit_tree_id *": {
+    "cpp": "TreeId",
+    "js": "treeId"
+  },
+  "const git_commit_tree_id *": {
+    "cpp": "TreeId",
+    "js": "treeId"
+  },
+  "git_commit_parentcount *": {
+    "cpp": "Parentcount",
+    "js": "parentcount"
+  },
+  "const git_commit_parentcount *": {
+    "cpp": "Parentcount",
+    "js": "parentcount"
+  },
+  "git_commit_parent *": {
+    "cpp": "Parent",
+    "js": "parent"
+  },
+  "const git_commit_parent *": {
+    "cpp": "Parent",
+    "js": "parent"
+  },
+  "git_commit_parent_id *": {
+    "cpp": "ParentId",
+    "js": "parentId"
+  },
+  "const git_commit_parent_id *": {
+    "cpp": "ParentId",
+    "js": "parentId"
+  },
+  "git_commit_nth_gen_ancestor *": {
+    "cpp": "NthGenAncestor",
+    "js": "nthGenAncestor"
+  },
+  "const git_commit_nth_gen_ancestor *": {
+    "cpp": "NthGenAncestor",
+    "js": "nthGenAncestor"
+  },
+  "git_commit_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "const git_commit_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "git_commit_create_v *": {
+    "cpp": "CreateV",
+    "js": "createV"
+  },
+  "const git_commit_create_v *": {
+    "cpp": "CreateV",
+    "js": "createV"
+  },
+  "git_common": {
+    "cpp": "GitCommon",
+    "js": "Common"
+  },
+  "git_common **": {
+    "cpp": "GitCommon",
+    "js": "Common"
+  },
+  "git_common *": {
+    "cpp": "GitCommon",
+    "js": "Common"
+  },
+  "const git_common **": {
+    "cpp": "GitCommon",
+    "js": "Common"
+  },
+  "const git_common *": {
+    "cpp": "GitCommon",
+    "js": "Common"
+  },
+  "git_libgit2_version *": {
+    "cpp": "Libgit2Version",
+    "js": "libgit2Version"
+  },
+  "const git_libgit2_version *": {
+    "cpp": "Libgit2Version",
+    "js": "libgit2Version"
+  },
+  "git_libgit2_capabilities *": {
+    "cpp": "Libgit2Capabilities",
+    "js": "libgit2Capabilities"
+  },
+  "const git_libgit2_capabilities *": {
+    "cpp": "Libgit2Capabilities",
+    "js": "libgit2Capabilities"
+  },
+  "git_libgit2_opts *": {
+    "cpp": "Libgit2Opts",
+    "js": "libgit2Opts"
+  },
+  "const git_libgit2_opts *": {
+    "cpp": "Libgit2Opts",
+    "js": "libgit2Opts"
+  },
+  "git_config": {
+    "cpp": "GitConfig",
+    "js": "Config"
+  },
+  "const git_config **": {
+    "cpp": "GitConfig",
+    "js": "Config"
+  },
+  "git_config_find_global *": {
+    "cpp": "FindGlobal",
+    "js": "findGlobal"
+  },
+  "const git_config_find_global *": {
+    "cpp": "FindGlobal",
+    "js": "findGlobal"
+  },
+  "git_config_find_xdg *": {
+    "cpp": "FindXdg",
+    "js": "findXdg"
+  },
+  "const git_config_find_xdg *": {
+    "cpp": "FindXdg",
+    "js": "findXdg"
+  },
+  "git_config_find_system *": {
+    "cpp": "FindSystem",
+    "js": "findSystem"
+  },
+  "const git_config_find_system *": {
+    "cpp": "FindSystem",
+    "js": "findSystem"
+  },
+  "git_config_open_default *": {
+    "cpp": "OpenDefault",
+    "js": "openDefault"
+  },
+  "const git_config_open_default *": {
+    "cpp": "OpenDefault",
+    "js": "openDefault"
+  },
+  "git_config_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_config_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_config_add_file_ondisk *": {
+    "cpp": "AddFileOndisk",
+    "js": "addFileOndisk"
+  },
+  "const git_config_add_file_ondisk *": {
+    "cpp": "AddFileOndisk",
+    "js": "addFileOndisk"
+  },
+  "git_config_open_ondisk *": {
+    "cpp": "OpenOndisk",
+    "js": "openOndisk"
+  },
+  "const git_config_open_ondisk *": {
+    "cpp": "OpenOndisk",
+    "js": "openOndisk"
+  },
+  "git_config_open_level *": {
+    "cpp": "OpenLevel",
+    "js": "openLevel"
+  },
+  "const git_config_open_level *": {
+    "cpp": "OpenLevel",
+    "js": "openLevel"
+  },
+  "git_config_open_global": {
+    "cpp": "OpenGlobal",
+    "js": "openGlobal"
+  },
+  "git_config_open_global *": {
+    "cpp": "OpenGlobal",
+    "js": "openGlobal"
+  },
+  "const git_config_open_global *": {
+    "cpp": "OpenGlobal",
+    "js": "openGlobal"
+  },
+  "git_config_refresh *": {
+    "cpp": "Refresh",
+    "js": "refresh"
+  },
+  "const git_config_refresh *": {
+    "cpp": "Refresh",
+    "js": "refresh"
+  },
+  "git_config_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_config_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_config_get_entry *": {
+    "cpp": "GetEntry",
+    "js": "getEntry"
+  },
+  "const git_config_get_entry *": {
+    "cpp": "GetEntry",
+    "js": "getEntry"
+  },
+  "git_config_get_int32 *": {
+    "cpp": "GetInt32",
+    "js": "getInt32"
+  },
+  "const git_config_get_int32 *": {
+    "cpp": "GetInt32",
+    "js": "getInt32"
+  },
+  "git_config_get_int64 *": {
+    "cpp": "GetInt64",
+    "js": "getInt64"
+  },
+  "const git_config_get_int64 *": {
+    "cpp": "GetInt64",
+    "js": "getInt64"
+  },
+  "git_config_get_bool *": {
+    "cpp": "GetBool",
+    "js": "getBool"
+  },
+  "const git_config_get_bool *": {
+    "cpp": "GetBool",
+    "js": "getBool"
+  },
+  "git_config_get_string *": {
+    "cpp": "GetString",
+    "js": "getString"
+  },
+  "const git_config_get_string *": {
+    "cpp": "GetString",
+    "js": "getString"
+  },
+  "git_config_get_multivar_foreach": {
+    "cpp": "GetMultivarForeach",
+    "js": "getMultivarForeach"
+  },
+  "git_config_get_multivar_foreach *": {
+    "cpp": "GetMultivarForeach",
+    "js": "getMultivarForeach"
+  },
+  "const git_config_get_multivar_foreach *": {
+    "cpp": "GetMultivarForeach",
+    "js": "getMultivarForeach"
+  },
+  "git_config_multivar_iterator_new": {
+    "cpp": "MultivarIteratorNew",
+    "js": "multivarIteratorNew"
+  },
+  "git_config_multivar_iterator_new *": {
+    "cpp": "MultivarIteratorNew",
+    "js": "multivarIteratorNew"
+  },
+  "const git_config_multivar_iterator_new *": {
+    "cpp": "MultivarIteratorNew",
+    "js": "multivarIteratorNew"
+  },
+  "git_config_next": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "git_config_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "const git_config_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "git_config_iterator_free": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "git_config_iterator_free *": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "const git_config_iterator_free *": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "git_config_set_int32 *": {
+    "cpp": "SetInt32",
+    "js": "setInt32"
+  },
+  "const git_config_set_int32 *": {
+    "cpp": "SetInt32",
+    "js": "setInt32"
+  },
+  "git_config_set_int64 *": {
+    "cpp": "SetInt64",
+    "js": "setInt64"
+  },
+  "const git_config_set_int64 *": {
+    "cpp": "SetInt64",
+    "js": "setInt64"
+  },
+  "git_config_set_bool *": {
+    "cpp": "SetBool",
+    "js": "setBool"
+  },
+  "const git_config_set_bool *": {
+    "cpp": "SetBool",
+    "js": "setBool"
+  },
+  "git_config_set_string *": {
+    "cpp": "SetString",
+    "js": "setString"
+  },
+  "const git_config_set_string *": {
+    "cpp": "SetString",
+    "js": "setString"
+  },
+  "git_config_set_multivar *": {
+    "cpp": "SetMultivar",
+    "js": "setMultivar"
+  },
+  "const git_config_set_multivar *": {
+    "cpp": "SetMultivar",
+    "js": "setMultivar"
+  },
+  "git_config_delete_entry *": {
+    "cpp": "DeleteEntry",
+    "js": "deleteEntry"
+  },
+  "const git_config_delete_entry *": {
+    "cpp": "DeleteEntry",
+    "js": "deleteEntry"
+  },
+  "git_config_delete_multivar": {
+    "cpp": "DeleteMultivar",
+    "js": "deleteMultivar"
+  },
+  "git_config_delete_multivar *": {
+    "cpp": "DeleteMultivar",
+    "js": "deleteMultivar"
+  },
+  "const git_config_delete_multivar *": {
+    "cpp": "DeleteMultivar",
+    "js": "deleteMultivar"
+  },
+  "git_config_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_config_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_config_iterator_new": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "git_config_iterator_new *": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "const git_config_iterator_new *": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "git_config_iterator_glob_new": {
+    "cpp": "IteratorGlobNew",
+    "js": "iteratorGlobNew"
+  },
+  "git_config_iterator_glob_new *": {
+    "cpp": "IteratorGlobNew",
+    "js": "iteratorGlobNew"
+  },
+  "const git_config_iterator_glob_new *": {
+    "cpp": "IteratorGlobNew",
+    "js": "iteratorGlobNew"
+  },
+  "git_config_foreach_match *": {
+    "cpp": "ForeachMatch",
+    "js": "foreachMatch"
+  },
+  "const git_config_foreach_match *": {
+    "cpp": "ForeachMatch",
+    "js": "foreachMatch"
+  },
+  "git_config_get_mapped *": {
+    "cpp": "GetMapped",
+    "js": "getMapped"
+  },
+  "const git_config_get_mapped *": {
+    "cpp": "GetMapped",
+    "js": "getMapped"
+  },
+  "git_config_lookup_map_value *": {
+    "cpp": "LookupMapValue",
+    "js": "lookupMapValue"
+  },
+  "const git_config_lookup_map_value *": {
+    "cpp": "LookupMapValue",
+    "js": "lookupMapValue"
+  },
+  "git_config_parse_bool *": {
+    "cpp": "ParseBool",
+    "js": "parseBool"
+  },
+  "const git_config_parse_bool *": {
+    "cpp": "ParseBool",
+    "js": "parseBool"
+  },
+  "git_config_parse_int32 *": {
+    "cpp": "ParseInt32",
+    "js": "parseInt32"
+  },
+  "const git_config_parse_int32 *": {
+    "cpp": "ParseInt32",
+    "js": "parseInt32"
+  },
+  "git_config_parse_int64 *": {
+    "cpp": "ParseInt64",
+    "js": "parseInt64"
+  },
+  "const git_config_parse_int64 *": {
+    "cpp": "ParseInt64",
+    "js": "parseInt64"
+  },
+  "git_config_backend_foreach_match": {
+    "cpp": "BackendForeachMatch",
+    "js": "backendForeachMatch"
+  },
+  "git_config_backend_foreach_match *": {
+    "cpp": "BackendForeachMatch",
+    "js": "backendForeachMatch"
+  },
+  "const git_config_backend_foreach_match *": {
+    "cpp": "BackendForeachMatch",
+    "js": "backendForeachMatch"
+  },
+  "git_cred_helpers": {
+    "cpp": "GitCredHelpers",
+    "js": "CredHelpers"
+  },
+  "git_cred_helpers **": {
+    "cpp": "GitCredHelpers",
+    "js": "CredHelpers"
+  },
+  "git_cred_helpers *": {
+    "cpp": "GitCredHelpers",
+    "js": "CredHelpers"
+  },
+  "const git_cred_helpers **": {
+    "cpp": "GitCredHelpers",
+    "js": "CredHelpers"
+  },
+  "const git_cred_helpers *": {
+    "cpp": "GitCredHelpers",
+    "js": "CredHelpers"
+  },
+  "git_cred_userpass *": {
+    "cpp": "Userpass",
+    "js": "userpass"
+  },
+  "const git_cred_userpass *": {
+    "cpp": "Userpass",
+    "js": "userpass"
+  },
+  "git_diff": {
+    "cpp": "GitDiff",
+    "js": "Diff"
+  },
+  "git_diff **": {
+    "cpp": "GitDiff",
+    "js": "Diff"
+  },
+  "git_diff *": {
+    "cpp": "GitDiff",
+    "js": "Diff"
+  },
+  "const git_diff **": {
+    "cpp": "GitDiff",
+    "js": "Diff"
+  },
+  "const git_diff *": {
+    "cpp": "GitDiff",
+    "js": "Diff"
+  },
+  "git_diff_free": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_diff_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_diff_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_diff_tree_to_tree *": {
+    "cpp": "TreeToTree",
+    "js": "treeToTree"
+  },
+  "const git_diff_tree_to_tree *": {
+    "cpp": "TreeToTree",
+    "js": "treeToTree"
+  },
+  "git_diff_tree_to_index *": {
+    "cpp": "TreeToIndex",
+    "js": "treeToIndex"
+  },
+  "const git_diff_tree_to_index *": {
+    "cpp": "TreeToIndex",
+    "js": "treeToIndex"
+  },
+  "git_diff_index_to_workdir *": {
+    "cpp": "IndexToWorkdir",
+    "js": "indexToWorkdir"
+  },
+  "const git_diff_index_to_workdir *": {
+    "cpp": "IndexToWorkdir",
+    "js": "indexToWorkdir"
+  },
+  "git_diff_tree_to_workdir *": {
+    "cpp": "TreeToWorkdir",
+    "js": "treeToWorkdir"
+  },
+  "const git_diff_tree_to_workdir *": {
+    "cpp": "TreeToWorkdir",
+    "js": "treeToWorkdir"
+  },
+  "git_diff_tree_to_workdir_with_index": {
+    "cpp": "TreeToWorkdirWithIndex",
+    "js": "treeToWorkdirWithIndex"
+  },
+  "git_diff_tree_to_workdir_with_index *": {
+    "cpp": "TreeToWorkdirWithIndex",
+    "js": "treeToWorkdirWithIndex"
+  },
+  "const git_diff_tree_to_workdir_with_index *": {
+    "cpp": "TreeToWorkdirWithIndex",
+    "js": "treeToWorkdirWithIndex"
+  },
+  "git_diff_merge *": {
+    "cpp": "Merge",
+    "js": "merge"
+  },
+  "const git_diff_merge *": {
+    "cpp": "Merge",
+    "js": "merge"
+  },
+  "git_diff_find_similar *": {
+    "cpp": "FindSimilar",
+    "js": "findSimilar"
+  },
+  "const git_diff_find_similar *": {
+    "cpp": "FindSimilar",
+    "js": "findSimilar"
+  },
+  "git_diff_options_init": {
+    "cpp": "OptionsInit",
+    "js": "optionsInit"
+  },
+  "git_diff_options_init *": {
+    "cpp": "OptionsInit",
+    "js": "optionsInit"
+  },
+  "const git_diff_options_init *": {
+    "cpp": "OptionsInit",
+    "js": "optionsInit"
+  },
+  "git_diff_num_deltas *": {
+    "cpp": "NumDeltas",
+    "js": "numDeltas"
+  },
+  "const git_diff_num_deltas *": {
+    "cpp": "NumDeltas",
+    "js": "numDeltas"
+  },
+  "git_diff_num_deltas_of_type *": {
+    "cpp": "NumDeltasOfType",
+    "js": "numDeltasOfType"
+  },
+  "const git_diff_num_deltas_of_type *": {
+    "cpp": "NumDeltasOfType",
+    "js": "numDeltasOfType"
+  },
+  "git_diff_get_delta": {
+    "cpp": "GetDelta",
+    "js": "getDelta"
+  },
+  "git_diff_get_delta *": {
+    "cpp": "GetDelta",
+    "js": "getDelta"
+  },
+  "const git_diff_get_delta *": {
+    "cpp": "GetDelta",
+    "js": "getDelta"
+  },
+  "git_diff_is_sorted_icase": {
+    "cpp": "IsSortedIcase",
+    "js": "isSortedIcase"
+  },
+  "git_diff_is_sorted_icase *": {
+    "cpp": "IsSortedIcase",
+    "js": "isSortedIcase"
+  },
+  "const git_diff_is_sorted_icase *": {
+    "cpp": "IsSortedIcase",
+    "js": "isSortedIcase"
+  },
+  "git_diff_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_diff_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_diff_status_char *": {
+    "cpp": "StatusChar",
+    "js": "statusChar"
+  },
+  "const git_diff_status_char *": {
+    "cpp": "StatusChar",
+    "js": "statusChar"
+  },
+  "git_diff_print": {
+    "cpp": "Print",
+    "js": "print"
+  },
+  "git_diff_print *": {
+    "cpp": "Print",
+    "js": "print"
+  },
+  "const git_diff_print *": {
+    "cpp": "Print",
+    "js": "print"
+  },
+  "git_diff_blobs *": {
+    "cpp": "Blobs",
+    "js": "blobs"
+  },
+  "const git_diff_blobs *": {
+    "cpp": "Blobs",
+    "js": "blobs"
+  },
+  "git_diff_blob_to_buffer *": {
+    "cpp": "BlobToBuffer",
+    "js": "blobToBuffer"
+  },
+  "const git_diff_blob_to_buffer *": {
+    "cpp": "BlobToBuffer",
+    "js": "blobToBuffer"
+  },
+  "git_errors": {
+    "cpp": "GitErrors",
+    "js": "Errors"
+  },
+  "git_errors **": {
+    "cpp": "GitErrors",
+    "js": "Errors"
+  },
+  "git_errors *": {
+    "cpp": "GitErrors",
+    "js": "Errors"
+  },
+  "const git_errors **": {
+    "cpp": "GitErrors",
+    "js": "Errors"
+  },
+  "const git_errors *": {
+    "cpp": "GitErrors",
+    "js": "Errors"
+  },
+  "giterr_last *": {
+    "cpp": "RrLast",
+    "js": "rrLast"
+  },
+  "const giterr_last *": {
+    "cpp": "RrLast",
+    "js": "rrLast"
+  },
+  "giterr_clear *": {
+    "cpp": "RrClear",
+    "js": "rrClear"
+  },
+  "const giterr_clear *": {
+    "cpp": "RrClear",
+    "js": "rrClear"
+  },
+  "giterr_detach": {
+    "cpp": "RrDetach",
+    "js": "rrDetach"
+  },
+  "giterr_detach *": {
+    "cpp": "RrDetach",
+    "js": "rrDetach"
+  },
+  "const giterr_detach *": {
+    "cpp": "RrDetach",
+    "js": "rrDetach"
+  },
+  "giterr_set_str *": {
+    "cpp": "RrSetStr",
+    "js": "rrSetStr"
+  },
+  "const giterr_set_str *": {
+    "cpp": "RrSetStr",
+    "js": "rrSetStr"
+  },
+  "giterr_set_oom *": {
+    "cpp": "RrSetOom",
+    "js": "rrSetOom"
+  },
+  "const giterr_set_oom *": {
+    "cpp": "RrSetOom",
+    "js": "rrSetOom"
+  },
+  "git_filter": {
+    "cpp": "GitFilter",
+    "js": "Filter"
+  },
+  "git_filter **": {
+    "cpp": "GitFilter",
+    "js": "Filter"
+  },
+  "git_filter *": {
+    "cpp": "GitFilter",
+    "js": "Filter"
+  },
+  "const git_filter **": {
+    "cpp": "GitFilter",
+    "js": "Filter"
+  },
+  "const git_filter *": {
+    "cpp": "GitFilter",
+    "js": "Filter"
+  },
+  "git_filter_list_load": {
+    "cpp": "ListLoad",
+    "js": "listLoad"
+  },
+  "git_filter_list_load *": {
+    "cpp": "ListLoad",
+    "js": "listLoad"
+  },
+  "const git_filter_list_load *": {
+    "cpp": "ListLoad",
+    "js": "listLoad"
+  },
+  "git_filter_list_apply_to_data": {
+    "cpp": "ListApplyToData",
+    "js": "listApplyToData"
+  },
+  "git_filter_list_apply_to_data *": {
+    "cpp": "ListApplyToData",
+    "js": "listApplyToData"
+  },
+  "const git_filter_list_apply_to_data *": {
+    "cpp": "ListApplyToData",
+    "js": "listApplyToData"
+  },
+  "git_filter_list_apply_to_file": {
+    "cpp": "ListApplyToFile",
+    "js": "listApplyToFile"
+  },
+  "git_filter_list_apply_to_file *": {
+    "cpp": "ListApplyToFile",
+    "js": "listApplyToFile"
+  },
+  "const git_filter_list_apply_to_file *": {
+    "cpp": "ListApplyToFile",
+    "js": "listApplyToFile"
+  },
+  "git_filter_list_apply_to_blob": {
+    "cpp": "ListApplyToBlob",
+    "js": "listApplyToBlob"
+  },
+  "git_filter_list_apply_to_blob *": {
+    "cpp": "ListApplyToBlob",
+    "js": "listApplyToBlob"
+  },
+  "const git_filter_list_apply_to_blob *": {
+    "cpp": "ListApplyToBlob",
+    "js": "listApplyToBlob"
+  },
+  "git_filter_list_free": {
+    "cpp": "ListFree",
+    "js": "listFree"
+  },
+  "git_filter_list_free *": {
+    "cpp": "ListFree",
+    "js": "listFree"
+  },
+  "const git_filter_list_free *": {
+    "cpp": "ListFree",
+    "js": "listFree"
+  },
+  "git_graph": {
+    "cpp": "GitGraph",
+    "js": "Graph"
+  },
+  "git_graph **": {
+    "cpp": "GitGraph",
+    "js": "Graph"
+  },
+  "git_graph *": {
+    "cpp": "GitGraph",
+    "js": "Graph"
+  },
+  "const git_graph **": {
+    "cpp": "GitGraph",
+    "js": "Graph"
+  },
+  "const git_graph *": {
+    "cpp": "GitGraph",
+    "js": "Graph"
+  },
+  "git_graph_ahead_behind *": {
+    "cpp": "GraphAheadBehind",
+    "js": "graphAheadBehind"
+  },
+  "const git_graph_ahead_behind *": {
+    "cpp": "GraphAheadBehind",
+    "js": "graphAheadBehind"
+  },
+  "git_ignore": {
+    "cpp": "GitIgnore",
+    "js": "Ignore"
+  },
+  "git_ignore **": {
+    "cpp": "GitIgnore",
+    "js": "Ignore"
+  },
+  "git_ignore *": {
+    "cpp": "GitIgnore",
+    "js": "Ignore"
+  },
+  "const git_ignore **": {
+    "cpp": "GitIgnore",
+    "js": "Ignore"
+  },
+  "const git_ignore *": {
+    "cpp": "GitIgnore",
+    "js": "Ignore"
+  },
+  "git_ignore_add_rule *": {
+    "cpp": "IgnoreAddRule",
+    "js": "ignoreAddRule"
+  },
+  "const git_ignore_add_rule *": {
+    "cpp": "IgnoreAddRule",
+    "js": "ignoreAddRule"
+  },
+  "git_ignore_clear_internal_rules *": {
+    "cpp": "IgnoreClearInternalRules",
+    "js": "ignoreClearInternalRules"
+  },
+  "const git_ignore_clear_internal_rules *": {
+    "cpp": "IgnoreClearInternalRules",
+    "js": "ignoreClearInternalRules"
+  },
+  "git_ignore_path_is_ignored *": {
+    "cpp": "IgnorePathIsIgnored",
+    "js": "ignorePathIsIgnored"
+  },
+  "const git_ignore_path_is_ignored *": {
+    "cpp": "IgnorePathIsIgnored",
+    "js": "ignorePathIsIgnored"
+  },
+  "git_index": {
+    "cpp": "GitIndex",
+    "js": "Index"
+  },
+  "const git_index **": {
+    "cpp": "GitIndex",
+    "js": "Index"
+  },
+  "git_index_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "const git_index_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "git_index_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_index_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_index_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_index_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_index_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_index_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_index_caps *": {
+    "cpp": "Caps",
+    "js": "caps"
+  },
+  "const git_index_caps *": {
+    "cpp": "Caps",
+    "js": "caps"
+  },
+  "git_index_set_caps *": {
+    "cpp": "SetCaps",
+    "js": "setCaps"
+  },
+  "const git_index_set_caps *": {
+    "cpp": "SetCaps",
+    "js": "setCaps"
+  },
+  "git_index_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "const git_index_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "git_index_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "const git_index_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "git_index_path": {
+    "cpp": "Path",
+    "js": "path"
+  },
+  "git_index_path *": {
+    "cpp": "Path",
+    "js": "path"
+  },
+  "const git_index_path *": {
+    "cpp": "Path",
+    "js": "path"
+  },
+  "git_index_read_tree *": {
+    "cpp": "ReadTree",
+    "js": "readTree"
+  },
+  "const git_index_read_tree *": {
+    "cpp": "ReadTree",
+    "js": "readTree"
+  },
+  "git_index_write_tree *": {
+    "cpp": "WriteTree",
+    "js": "writeTree"
+  },
+  "const git_index_write_tree *": {
+    "cpp": "WriteTree",
+    "js": "writeTree"
+  },
+  "git_index_write_tree_to *": {
+    "cpp": "WriteTreeTo",
+    "js": "writeTreeTo"
+  },
+  "const git_index_write_tree_to *": {
+    "cpp": "WriteTreeTo",
+    "js": "writeTreeTo"
+  },
+  "git_index_entrycount *": {
+    "cpp": "Entrycount",
+    "js": "entrycount"
+  },
+  "const git_index_entrycount *": {
+    "cpp": "Entrycount",
+    "js": "entrycount"
+  },
+  "git_index_clear *": {
+    "cpp": "Clear",
+    "js": "clear"
+  },
+  "const git_index_clear *": {
+    "cpp": "Clear",
+    "js": "clear"
+  },
+  "git_index_get_byindex *": {
+    "cpp": "GetByindex",
+    "js": "getByindex"
+  },
+  "const git_index_get_byindex *": {
+    "cpp": "GetByindex",
+    "js": "getByindex"
+  },
+  "git_index_get_bypath *": {
+    "cpp": "GetBypath",
+    "js": "getBypath"
+  },
+  "const git_index_get_bypath *": {
+    "cpp": "GetBypath",
+    "js": "getBypath"
+  },
+  "git_index_remove *": {
+    "cpp": "Remove",
+    "js": "remove"
+  },
+  "const git_index_remove *": {
+    "cpp": "Remove",
+    "js": "remove"
+  },
+  "git_index_remove_directory *": {
+    "cpp": "RemoveDirectory",
+    "js": "removeDirectory"
+  },
+  "const git_index_remove_directory *": {
+    "cpp": "RemoveDirectory",
+    "js": "removeDirectory"
+  },
+  "git_index_add *": {
+    "cpp": "Add",
+    "js": "add"
+  },
+  "const git_index_add *": {
+    "cpp": "Add",
+    "js": "add"
+  },
+  "git_index_entry_stage *": {
+    "cpp": "EntryStage",
+    "js": "entryStage"
+  },
+  "const git_index_entry_stage *": {
+    "cpp": "EntryStage",
+    "js": "entryStage"
+  },
+  "git_index_add_bypath *": {
+    "cpp": "AddBypath",
+    "js": "addBypath"
+  },
+  "const git_index_add_bypath *": {
+    "cpp": "AddBypath",
+    "js": "addBypath"
+  },
+  "git_index_remove_bypath *": {
+    "cpp": "RemoveBypath",
+    "js": "removeBypath"
+  },
+  "const git_index_remove_bypath *": {
+    "cpp": "RemoveBypath",
+    "js": "removeBypath"
+  },
+  "git_index_add_all": {
+    "cpp": "AddAll",
+    "js": "addAll"
+  },
+  "git_index_add_all *": {
+    "cpp": "AddAll",
+    "js": "addAll"
+  },
+  "const git_index_add_all *": {
+    "cpp": "AddAll",
+    "js": "addAll"
+  },
+  "git_index_remove_all": {
+    "cpp": "RemoveAll",
+    "js": "removeAll"
+  },
+  "git_index_remove_all *": {
+    "cpp": "RemoveAll",
+    "js": "removeAll"
+  },
+  "const git_index_remove_all *": {
+    "cpp": "RemoveAll",
+    "js": "removeAll"
+  },
+  "git_index_update_all": {
+    "cpp": "UpdateAll",
+    "js": "updateAll"
+  },
+  "git_index_update_all *": {
+    "cpp": "UpdateAll",
+    "js": "updateAll"
+  },
+  "const git_index_update_all *": {
+    "cpp": "UpdateAll",
+    "js": "updateAll"
+  },
+  "git_index_find *": {
+    "cpp": "Find",
+    "js": "find"
+  },
+  "const git_index_find *": {
+    "cpp": "Find",
+    "js": "find"
+  },
+  "git_index_conflict_add *": {
+    "cpp": "ConflictAdd",
+    "js": "conflictAdd"
+  },
+  "const git_index_conflict_add *": {
+    "cpp": "ConflictAdd",
+    "js": "conflictAdd"
+  },
+  "git_index_conflict_get *": {
+    "cpp": "ConflictGet",
+    "js": "conflictGet"
+  },
+  "const git_index_conflict_get *": {
+    "cpp": "ConflictGet",
+    "js": "conflictGet"
+  },
+  "git_index_conflict_remove *": {
+    "cpp": "ConflictRemove",
+    "js": "conflictRemove"
+  },
+  "const git_index_conflict_remove *": {
+    "cpp": "ConflictRemove",
+    "js": "conflictRemove"
+  },
+  "git_index_conflict_cleanup *": {
+    "cpp": "ConflictCleanup",
+    "js": "conflictCleanup"
+  },
+  "const git_index_conflict_cleanup *": {
+    "cpp": "ConflictCleanup",
+    "js": "conflictCleanup"
+  },
+  "git_index_has_conflicts *": {
+    "cpp": "HasConflicts",
+    "js": "hasConflicts"
+  },
+  "const git_index_has_conflicts *": {
+    "cpp": "HasConflicts",
+    "js": "hasConflicts"
+  },
+  "git_index_conflict_iterator_new": {
+    "cpp": "ConflictIteratorNew",
+    "js": "conflictIteratorNew"
+  },
+  "git_index_conflict_iterator_new *": {
+    "cpp": "ConflictIteratorNew",
+    "js": "conflictIteratorNew"
+  },
+  "const git_index_conflict_iterator_new *": {
+    "cpp": "ConflictIteratorNew",
+    "js": "conflictIteratorNew"
+  },
+  "git_index_conflict_next": {
+    "cpp": "ConflictNext",
+    "js": "conflictNext"
+  },
+  "git_index_conflict_next *": {
+    "cpp": "ConflictNext",
+    "js": "conflictNext"
+  },
+  "const git_index_conflict_next *": {
+    "cpp": "ConflictNext",
+    "js": "conflictNext"
+  },
+  "git_index_conflict_iterator_free": {
+    "cpp": "ConflictIteratorFree",
+    "js": "conflictIteratorFree"
+  },
+  "git_index_conflict_iterator_free *": {
+    "cpp": "ConflictIteratorFree",
+    "js": "conflictIteratorFree"
+  },
+  "const git_index_conflict_iterator_free *": {
+    "cpp": "ConflictIteratorFree",
+    "js": "conflictIteratorFree"
+  },
+  "git_indexer": {
+    "cpp": "GitIndexer",
+    "js": "Indexer"
+  },
+  "git_indexer **": {
+    "cpp": "GitIndexer",
+    "js": "Indexer"
+  },
+  "git_indexer *": {
+    "cpp": "GitIndexer",
+    "js": "Indexer"
+  },
+  "const git_indexer **": {
+    "cpp": "GitIndexer",
+    "js": "Indexer"
+  },
+  "const git_indexer *": {
+    "cpp": "GitIndexer",
+    "js": "Indexer"
+  },
+  "git_indexer_new": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_indexer_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_indexer_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_indexer_append": {
+    "cpp": "Append",
+    "js": "append"
+  },
+  "git_indexer_append *": {
+    "cpp": "Append",
+    "js": "append"
+  },
+  "const git_indexer_append *": {
+    "cpp": "Append",
+    "js": "append"
+  },
+  "git_indexer_commit": {
+    "cpp": "Commit",
+    "js": "commit"
+  },
+  "git_indexer_commit *": {
+    "cpp": "Commit",
+    "js": "commit"
+  },
+  "const git_indexer_commit *": {
+    "cpp": "Commit",
+    "js": "commit"
+  },
+  "git_indexer_hash": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "git_indexer_hash *": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "const git_indexer_hash *": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "git_indexer_free": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_indexer_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_indexer_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_inttypes": {
+    "cpp": "GitInttypes",
+    "js": "Inttypes"
+  },
+  "git_inttypes **": {
+    "cpp": "GitInttypes",
+    "js": "Inttypes"
+  },
+  "git_inttypes *": {
+    "cpp": "GitInttypes",
+    "js": "Inttypes"
+  },
+  "const git_inttypes **": {
+    "cpp": "GitInttypes",
+    "js": "Inttypes"
+  },
+  "const git_inttypes *": {
+    "cpp": "GitInttypes",
+    "js": "Inttypes"
+  },
+  "git_merge": {
+    "cpp": "Merge",
+    "js": "merge"
+  },
+  "git_merge **": {
+    "cpp": "GitMerge",
+    "js": "Merge"
+  },
+  "git_merge *": {
+    "cpp": "Merge",
+    "js": "merge"
+  },
+  "const git_merge **": {
+    "cpp": "GitMerge",
+    "js": "Merge"
+  },
+  "const git_merge *": {
+    "cpp": "Merge",
+    "js": "merge"
+  },
+  "git_merge_base *": {
+    "cpp": "MergeBase",
+    "js": "mergeBase"
+  },
+  "const git_merge_base *": {
+    "cpp": "MergeBase",
+    "js": "mergeBase"
+  },
+  "git_merge_base_many *": {
+    "cpp": "MergeBaseMany",
+    "js": "mergeBaseMany"
+  },
+  "const git_merge_base_many *": {
+    "cpp": "MergeBaseMany",
+    "js": "mergeBaseMany"
+  },
+  "git_merge_head_from_ref": {
+    "cpp": "MergeHeadFromRef",
+    "js": "mergeHeadFromRef"
+  },
+  "git_merge_head_from_ref *": {
+    "cpp": "MergeHeadFromRef",
+    "js": "mergeHeadFromRef"
+  },
+  "const git_merge_head_from_ref *": {
+    "cpp": "MergeHeadFromRef",
+    "js": "mergeHeadFromRef"
+  },
+  "git_merge_head_from_fetchhead": {
+    "cpp": "MergeHeadFromFetchhead",
+    "js": "mergeHeadFromFetchhead"
+  },
+  "git_merge_head_from_fetchhead *": {
+    "cpp": "MergeHeadFromFetchhead",
+    "js": "mergeHeadFromFetchhead"
+  },
+  "const git_merge_head_from_fetchhead *": {
+    "cpp": "MergeHeadFromFetchhead",
+    "js": "mergeHeadFromFetchhead"
+  },
+  "git_merge_head_from_oid": {
+    "cpp": "MergeHeadFromOid",
+    "js": "mergeHeadFromOid"
+  },
+  "git_merge_head_from_oid *": {
+    "cpp": "MergeHeadFromOid",
+    "js": "mergeHeadFromOid"
+  },
+  "const git_merge_head_from_oid *": {
+    "cpp": "MergeHeadFromOid",
+    "js": "mergeHeadFromOid"
+  },
+  "git_merge_head_free": {
+    "cpp": "MergeHeadFree",
+    "js": "mergeHeadFree"
+  },
+  "git_merge_head_free *": {
+    "cpp": "MergeHeadFree",
+    "js": "mergeHeadFree"
+  },
+  "const git_merge_head_free *": {
+    "cpp": "MergeHeadFree",
+    "js": "mergeHeadFree"
+  },
+  "git_merge_trees": {
+    "cpp": "MergeTrees",
+    "js": "mergeTrees"
+  },
+  "git_merge_trees *": {
+    "cpp": "MergeTrees",
+    "js": "mergeTrees"
+  },
+  "const git_merge_trees *": {
+    "cpp": "MergeTrees",
+    "js": "mergeTrees"
+  },
+  "git_merge_result_is_uptodate": {
+    "cpp": "MergeResultIsUptodate",
+    "js": "mergeResultIsUptodate"
+  },
+  "git_merge_result_is_uptodate *": {
+    "cpp": "MergeResultIsUptodate",
+    "js": "mergeResultIsUptodate"
+  },
+  "const git_merge_result_is_uptodate *": {
+    "cpp": "MergeResultIsUptodate",
+    "js": "mergeResultIsUptodate"
+  },
+  "git_merge_result_is_fastforward": {
+    "cpp": "MergeResultIsFastforward",
+    "js": "mergeResultIsFastforward"
+  },
+  "git_merge_result_is_fastforward *": {
+    "cpp": "MergeResultIsFastforward",
+    "js": "mergeResultIsFastforward"
+  },
+  "const git_merge_result_is_fastforward *": {
+    "cpp": "MergeResultIsFastforward",
+    "js": "mergeResultIsFastforward"
+  },
+  "git_merge_result_fastforward_oid": {
+    "cpp": "MergeResultFastforwardOid",
+    "js": "mergeResultFastforwardOid"
+  },
+  "git_merge_result_fastforward_oid *": {
+    "cpp": "MergeResultFastforwardOid",
+    "js": "mergeResultFastforwardOid"
+  },
+  "const git_merge_result_fastforward_oid *": {
+    "cpp": "MergeResultFastforwardOid",
+    "js": "mergeResultFastforwardOid"
+  },
+  "git_message": {
+    "cpp": "GitMessage",
+    "js": "Message"
+  },
+  "git_message **": {
+    "cpp": "GitMessage",
+    "js": "Message"
+  },
+  "git_message *": {
+    "cpp": "GitMessage",
+    "js": "Message"
+  },
+  "const git_message **": {
+    "cpp": "GitMessage",
+    "js": "Message"
+  },
+  "const git_message *": {
+    "cpp": "GitMessage",
+    "js": "Message"
+  },
+  "git_message_prettify *": {
+    "cpp": "MessagePrettify",
+    "js": "messagePrettify"
+  },
+  "const git_message_prettify *": {
+    "cpp": "MessagePrettify",
+    "js": "messagePrettify"
+  },
+  "git_net": {
+    "cpp": "GitNet",
+    "js": "Net"
+  },
+  "git_net **": {
+    "cpp": "GitNet",
+    "js": "Net"
+  },
+  "git_net *": {
+    "cpp": "GitNet",
+    "js": "Net"
+  },
+  "const git_net **": {
+    "cpp": "GitNet",
+    "js": "Net"
+  },
+  "const git_net *": {
+    "cpp": "GitNet",
+    "js": "Net"
+  },
+  "git_notes": {
+    "cpp": "GitNotes",
+    "js": "Notes"
+  },
+  "git_notes **": {
+    "cpp": "GitNotes",
+    "js": "Notes"
+  },
+  "git_notes *": {
+    "cpp": "GitNotes",
+    "js": "Notes"
+  },
+  "const git_notes **": {
+    "cpp": "GitNotes",
+    "js": "Notes"
+  },
+  "const git_notes *": {
+    "cpp": "GitNotes",
+    "js": "Notes"
+  },
+  "git_note_iterator_new *": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "const git_note_iterator_new *": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "git_note_iterator_free *": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "const git_note_iterator_free *": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "git_note_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "const git_note_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "git_note_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "const git_note_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "git_note_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "const git_note_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "git_note_oid *": {
+    "cpp": "Oid",
+    "js": "oid"
+  },
+  "const git_note_oid *": {
+    "cpp": "Oid",
+    "js": "oid"
+  },
+  "git_note_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "const git_note_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "git_note_remove *": {
+    "cpp": "Remove",
+    "js": "remove"
+  },
+  "const git_note_remove *": {
+    "cpp": "Remove",
+    "js": "remove"
+  },
+  "git_note_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_note_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_note_default_ref *": {
+    "cpp": "DefaultRef",
+    "js": "defaultRef"
+  },
+  "const git_note_default_ref *": {
+    "cpp": "DefaultRef",
+    "js": "defaultRef"
+  },
+  "git_note_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_note_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_object": {
+    "cpp": "GitObject",
+    "js": "Object"
+  },
+  "const git_object **": {
+    "cpp": "GitObject",
+    "js": "Object"
+  },
+  "git_object_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_object_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_object_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "const git_object_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "git_object_lookup_bypath": {
+    "cpp": "LookupBypath",
+    "js": "lookupBypath"
+  },
+  "git_object_lookup_bypath *": {
+    "cpp": "LookupBypath",
+    "js": "lookupBypath"
+  },
+  "const git_object_lookup_bypath *": {
+    "cpp": "LookupBypath",
+    "js": "lookupBypath"
+  },
+  "git_object_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "const git_object_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "git_object_type *": {
+    "cpp": "Type",
+    "js": "type"
+  },
+  "const git_object_type *": {
+    "cpp": "Type",
+    "js": "type"
+  },
+  "git_object_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_object_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_object_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_object_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_object_type2string *": {
+    "cpp": "Type2string",
+    "js": "type2string"
+  },
+  "const git_object_type2string *": {
+    "cpp": "Type2string",
+    "js": "type2string"
+  },
+  "git_object_string2type *": {
+    "cpp": "String2type",
+    "js": "string2type"
+  },
+  "const git_object_string2type *": {
+    "cpp": "String2type",
+    "js": "string2type"
+  },
+  "git_object_typeisloose *": {
+    "cpp": "Typeisloose",
+    "js": "typeisloose"
+  },
+  "const git_object_typeisloose *": {
+    "cpp": "Typeisloose",
+    "js": "typeisloose"
+  },
+  "git_object__size *": {
+    "cpp": "Size",
+    "js": "Size"
+  },
+  "const git_object__size *": {
+    "cpp": "Size",
+    "js": "Size"
+  },
+  "git_object_peel *": {
+    "cpp": "Peel",
+    "js": "peel"
+  },
+  "const git_object_peel *": {
+    "cpp": "Peel",
+    "js": "peel"
+  },
+  "git_object_dup *": {
+    "cpp": "Dup",
+    "js": "dup"
+  },
+  "const git_object_dup *": {
+    "cpp": "Dup",
+    "js": "dup"
+  },
+  "git_odb": {
+    "cpp": "GitOdb",
+    "js": "Odb"
+  },
+  "const git_odb **": {
+    "cpp": "GitOdb",
+    "js": "Odb"
+  },
+  "const git_odb *": {
+    "cpp": "GitOdb",
+    "js": "Odb"
+  },
+  "git_odb_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_odb_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_odb_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "const git_odb_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "git_odb_add_disk_alternate *": {
+    "cpp": "AddDiskAlternate",
+    "js": "addDiskAlternate"
+  },
+  "const git_odb_add_disk_alternate *": {
+    "cpp": "AddDiskAlternate",
+    "js": "addDiskAlternate"
+  },
+  "git_odb_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_odb_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_odb_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "const git_odb_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "git_odb_read_prefix *": {
+    "cpp": "ReadPrefix",
+    "js": "readPrefix"
+  },
+  "const git_odb_read_prefix *": {
+    "cpp": "ReadPrefix",
+    "js": "readPrefix"
+  },
+  "git_odb_read_header *": {
+    "cpp": "ReadHeader",
+    "js": "readHeader"
+  },
+  "const git_odb_read_header *": {
+    "cpp": "ReadHeader",
+    "js": "readHeader"
+  },
+  "git_odb_exists *": {
+    "cpp": "Exists",
+    "js": "exists"
+  },
+  "const git_odb_exists *": {
+    "cpp": "Exists",
+    "js": "exists"
+  },
+  "git_odb_refresh *": {
+    "cpp": "Refresh",
+    "js": "refresh"
+  },
+  "const git_odb_refresh *": {
+    "cpp": "Refresh",
+    "js": "refresh"
+  },
+  "git_odb_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_odb_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_odb_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "const git_odb_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "git_odb_open_wstream *": {
+    "cpp": "OpenWstream",
+    "js": "openWstream"
+  },
+  "const git_odb_open_wstream *": {
+    "cpp": "OpenWstream",
+    "js": "openWstream"
+  },
+  "git_odb_stream_write": {
+    "cpp": "StreamWrite",
+    "js": "streamWrite"
+  },
+  "git_odb_stream_write *": {
+    "cpp": "StreamWrite",
+    "js": "streamWrite"
+  },
+  "const git_odb_stream_write *": {
+    "cpp": "StreamWrite",
+    "js": "streamWrite"
+  },
+  "git_odb_stream_finalize_write": {
+    "cpp": "StreamFinalizeWrite",
+    "js": "streamFinalizeWrite"
+  },
+  "git_odb_stream_finalize_write *": {
+    "cpp": "StreamFinalizeWrite",
+    "js": "streamFinalizeWrite"
+  },
+  "const git_odb_stream_finalize_write *": {
+    "cpp": "StreamFinalizeWrite",
+    "js": "streamFinalizeWrite"
+  },
+  "git_odb_stream_read": {
+    "cpp": "StreamRead",
+    "js": "streamRead"
+  },
+  "git_odb_stream_read *": {
+    "cpp": "StreamRead",
+    "js": "streamRead"
+  },
+  "const git_odb_stream_read *": {
+    "cpp": "StreamRead",
+    "js": "streamRead"
+  },
+  "git_odb_stream_free": {
+    "cpp": "StreamFree",
+    "js": "streamFree"
+  },
+  "git_odb_stream_free *": {
+    "cpp": "StreamFree",
+    "js": "streamFree"
+  },
+  "const git_odb_stream_free *": {
+    "cpp": "StreamFree",
+    "js": "streamFree"
+  },
+  "git_odb_open_rstream *": {
+    "cpp": "OpenRstream",
+    "js": "openRstream"
+  },
+  "const git_odb_open_rstream *": {
+    "cpp": "OpenRstream",
+    "js": "openRstream"
+  },
+  "git_odb_write_pack *": {
+    "cpp": "WritePack",
+    "js": "writePack"
+  },
+  "const git_odb_write_pack *": {
+    "cpp": "WritePack",
+    "js": "writePack"
+  },
+  "git_odb_hash *": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "const git_odb_hash *": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "git_odb_hashfile *": {
+    "cpp": "Hashfile",
+    "js": "hashfile"
+  },
+  "const git_odb_hashfile *": {
+    "cpp": "Hashfile",
+    "js": "hashfile"
+  },
+  "git_odb_object_dup": {
+    "cpp": "ObjectDup",
+    "js": "objectDup"
+  },
+  "git_odb_object_dup *": {
+    "cpp": "ObjectDup",
+    "js": "objectDup"
+  },
+  "const git_odb_object_dup *": {
+    "cpp": "ObjectDup",
+    "js": "objectDup"
+  },
+  "git_odb_object_free *": {
+    "cpp": "ObjectFree",
+    "js": "objectFree"
+  },
+  "const git_odb_object_free *": {
+    "cpp": "ObjectFree",
+    "js": "objectFree"
+  },
+  "git_odb_object_id *": {
+    "cpp": "ObjectId",
+    "js": "objectId"
+  },
+  "const git_odb_object_id *": {
+    "cpp": "ObjectId",
+    "js": "objectId"
+  },
+  "git_odb_object_data *": {
+    "cpp": "ObjectData",
+    "js": "objectData"
+  },
+  "const git_odb_object_data *": {
+    "cpp": "ObjectData",
+    "js": "objectData"
+  },
+  "git_odb_object_size *": {
+    "cpp": "ObjectSize",
+    "js": "objectSize"
+  },
+  "const git_odb_object_size *": {
+    "cpp": "ObjectSize",
+    "js": "objectSize"
+  },
+  "git_odb_object_type *": {
+    "cpp": "ObjectType",
+    "js": "objectType"
+  },
+  "const git_odb_object_type *": {
+    "cpp": "ObjectType",
+    "js": "objectType"
+  },
+  "git_odb_add_backend *": {
+    "cpp": "AddBackend",
+    "js": "addBackend"
+  },
+  "const git_odb_add_backend *": {
+    "cpp": "AddBackend",
+    "js": "addBackend"
+  },
+  "git_odb_add_alternate *": {
+    "cpp": "AddAlternate",
+    "js": "addAlternate"
+  },
+  "const git_odb_add_alternate *": {
+    "cpp": "AddAlternate",
+    "js": "addAlternate"
+  },
+  "git_odb_num_backends": {
+    "cpp": "NumBackends",
+    "js": "numBackends"
+  },
+  "git_odb_num_backends *": {
+    "cpp": "NumBackends",
+    "js": "numBackends"
+  },
+  "const git_odb_num_backends *": {
+    "cpp": "NumBackends",
+    "js": "numBackends"
+  },
+  "git_odb_get_backend": {
+    "cpp": "GetBackend",
+    "js": "getBackend"
+  },
+  "git_odb_get_backend *": {
+    "cpp": "GetBackend",
+    "js": "getBackend"
+  },
+  "const git_odb_get_backend *": {
+    "cpp": "GetBackend",
+    "js": "getBackend"
+  },
+  "git_odb_backend": {
+    "cpp": "GitOdbBackend",
+    "js": "OdbBackend"
+  },
+  "const git_odb_backend **": {
+    "cpp": "GitOdbBackend",
+    "js": "OdbBackend"
+  },
+  "const git_odb_backend *": {
+    "cpp": "GitOdbBackend",
+    "js": "OdbBackend"
+  },
+  "git_odb_backend_pack *": {
+    "cpp": "BackendPack",
+    "js": "backendPack"
+  },
+  "const git_odb_backend_pack *": {
+    "cpp": "BackendPack",
+    "js": "backendPack"
+  },
+  "git_odb_backend_loose": {
+    "cpp": "BackendLoose",
+    "js": "backendLoose"
+  },
+  "git_odb_backend_loose *": {
+    "cpp": "BackendLoose",
+    "js": "backendLoose"
+  },
+  "const git_odb_backend_loose *": {
+    "cpp": "BackendLoose",
+    "js": "backendLoose"
+  },
+  "git_odb_backend_one_pack": {
+    "cpp": "BackendOnePack",
+    "js": "backendOnePack"
+  },
+  "git_odb_backend_one_pack *": {
+    "cpp": "BackendOnePack",
+    "js": "backendOnePack"
+  },
+  "const git_odb_backend_one_pack *": {
+    "cpp": "BackendOnePack",
+    "js": "backendOnePack"
+  },
+  "git_oid": {
+    "cpp": "GitOid",
+    "js": "Oid"
+  },
+  "git_oid **": {
+    "cpp": "GitOid",
+    "js": "Oid"
+  },
+  "const git_oid **": {
+    "cpp": "GitOid",
+    "js": "Oid"
+  },
+  "git_oid_fromstr *": {
+    "cpp": "Fromstr",
+    "js": "fromstr"
+  },
+  "const git_oid_fromstr *": {
+    "cpp": "Fromstr",
+    "js": "fromstr"
+  },
+  "git_oid_fromstrp *": {
+    "cpp": "Fromstrp",
+    "js": "fromstrp"
+  },
+  "const git_oid_fromstrp *": {
+    "cpp": "Fromstrp",
+    "js": "fromstrp"
+  },
+  "git_oid_fromstrn *": {
+    "cpp": "Fromstrn",
+    "js": "fromstrn"
+  },
+  "const git_oid_fromstrn *": {
+    "cpp": "Fromstrn",
+    "js": "fromstrn"
+  },
+  "git_oid_fromraw *": {
+    "cpp": "Fromraw",
+    "js": "fromraw"
+  },
+  "const git_oid_fromraw *": {
+    "cpp": "Fromraw",
+    "js": "fromraw"
+  },
+  "git_oid_fmt *": {
+    "cpp": "Fmt",
+    "js": "fmt"
+  },
+  "const git_oid_fmt *": {
+    "cpp": "Fmt",
+    "js": "fmt"
+  },
+  "git_oid_nfmt": {
+    "cpp": "Nfmt",
+    "js": "nfmt"
+  },
+  "git_oid_nfmt *": {
+    "cpp": "Nfmt",
+    "js": "nfmt"
+  },
+  "const git_oid_nfmt *": {
+    "cpp": "Nfmt",
+    "js": "nfmt"
+  },
+  "git_oid_pathfmt *": {
+    "cpp": "Pathfmt",
+    "js": "pathfmt"
+  },
+  "const git_oid_pathfmt *": {
+    "cpp": "Pathfmt",
+    "js": "pathfmt"
+  },
+  "git_oid_allocfmt *": {
+    "cpp": "Allocfmt",
+    "js": "allocfmt"
+  },
+  "const git_oid_allocfmt *": {
+    "cpp": "Allocfmt",
+    "js": "allocfmt"
+  },
+  "git_oid_tostr *": {
+    "cpp": "Tostr",
+    "js": "tostr"
+  },
+  "const git_oid_tostr *": {
+    "cpp": "Tostr",
+    "js": "tostr"
+  },
+  "git_oid_cpy *": {
+    "cpp": "Cpy",
+    "js": "cpy"
+  },
+  "const git_oid_cpy *": {
+    "cpp": "Cpy",
+    "js": "cpy"
+  },
+  "git_oid_cmp *": {
+    "cpp": "Cmp",
+    "js": "cmp"
+  },
+  "const git_oid_cmp *": {
+    "cpp": "Cmp",
+    "js": "cmp"
+  },
+  "git_oid_equal *": {
+    "cpp": "Equal",
+    "js": "equal"
+  },
+  "const git_oid_equal *": {
+    "cpp": "Equal",
+    "js": "equal"
+  },
+  "git_oid_ncmp *": {
+    "cpp": "Ncmp",
+    "js": "ncmp"
+  },
+  "const git_oid_ncmp *": {
+    "cpp": "Ncmp",
+    "js": "ncmp"
+  },
+  "git_oid_streq *": {
+    "cpp": "Streq",
+    "js": "streq"
+  },
+  "const git_oid_streq *": {
+    "cpp": "Streq",
+    "js": "streq"
+  },
+  "git_oid_strcmp": {
+    "cpp": "Strcmp",
+    "js": "strcmp"
+  },
+  "git_oid_strcmp *": {
+    "cpp": "Strcmp",
+    "js": "strcmp"
+  },
+  "const git_oid_strcmp *": {
+    "cpp": "Strcmp",
+    "js": "strcmp"
+  },
+  "git_oid_iszero *": {
+    "cpp": "Iszero",
+    "js": "iszero"
+  },
+  "const git_oid_iszero *": {
+    "cpp": "Iszero",
+    "js": "iszero"
+  },
+  "git_oid_shorten_new *": {
+    "cpp": "ShortenNew",
+    "js": "shortenNew"
+  },
+  "const git_oid_shorten_new *": {
+    "cpp": "ShortenNew",
+    "js": "shortenNew"
+  },
+  "git_oid_shorten_add *": {
+    "cpp": "ShortenAdd",
+    "js": "shortenAdd"
+  },
+  "const git_oid_shorten_add *": {
+    "cpp": "ShortenAdd",
+    "js": "shortenAdd"
+  },
+  "git_oid_shorten_free *": {
+    "cpp": "ShortenFree",
+    "js": "shortenFree"
+  },
+  "const git_oid_shorten_free *": {
+    "cpp": "ShortenFree",
+    "js": "shortenFree"
+  },
+  "git_pack": {
+    "cpp": "GitPack",
+    "js": "Pack"
+  },
+  "git_pack **": {
+    "cpp": "GitPack",
+    "js": "Pack"
+  },
+  "git_pack *": {
+    "cpp": "GitPack",
+    "js": "Pack"
+  },
+  "const git_pack **": {
+    "cpp": "GitPack",
+    "js": "Pack"
+  },
+  "const git_pack *": {
+    "cpp": "GitPack",
+    "js": "Pack"
+  },
+  "git_packbuilder_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_packbuilder_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_packbuilder_set_threads *": {
+    "cpp": "SetThreads",
+    "js": "setThreads"
+  },
+  "const git_packbuilder_set_threads *": {
+    "cpp": "SetThreads",
+    "js": "setThreads"
+  },
+  "git_packbuilder_insert *": {
+    "cpp": "Insert",
+    "js": "insert"
+  },
+  "const git_packbuilder_insert *": {
+    "cpp": "Insert",
+    "js": "insert"
+  },
+  "git_packbuilder_insert_tree *": {
+    "cpp": "InsertTree",
+    "js": "insertTree"
+  },
+  "const git_packbuilder_insert_tree *": {
+    "cpp": "InsertTree",
+    "js": "insertTree"
+  },
+  "git_packbuilder_insert_commit": {
+    "cpp": "InsertCommit",
+    "js": "insertCommit"
+  },
+  "git_packbuilder_insert_commit *": {
+    "cpp": "InsertCommit",
+    "js": "insertCommit"
+  },
+  "const git_packbuilder_insert_commit *": {
+    "cpp": "InsertCommit",
+    "js": "insertCommit"
+  },
+  "git_packbuilder_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "const git_packbuilder_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "git_packbuilder_hash": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "git_packbuilder_hash *": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "const git_packbuilder_hash *": {
+    "cpp": "Hash",
+    "js": "hash"
+  },
+  "git_packbuilder_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_packbuilder_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_packbuilder_object_count *": {
+    "cpp": "ObjectCount",
+    "js": "objectCount"
+  },
+  "const git_packbuilder_object_count *": {
+    "cpp": "ObjectCount",
+    "js": "objectCount"
+  },
+  "git_packbuilder_written *": {
+    "cpp": "Written",
+    "js": "written"
+  },
+  "const git_packbuilder_written *": {
+    "cpp": "Written",
+    "js": "written"
+  },
+  "git_packbuilder_set_callbacks": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "git_packbuilder_set_callbacks *": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "const git_packbuilder_set_callbacks *": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "git_packbuilder_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_packbuilder_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_patch": {
+    "cpp": "GitPatch",
+    "js": "Patch"
+  },
+  "git_patch **": {
+    "cpp": "GitPatch",
+    "js": "Patch"
+  },
+  "git_patch *": {
+    "cpp": "GitPatch",
+    "js": "Patch"
+  },
+  "const git_patch **": {
+    "cpp": "GitPatch",
+    "js": "Patch"
+  },
+  "const git_patch *": {
+    "cpp": "GitPatch",
+    "js": "Patch"
+  },
+  "git_patch_from_diff": {
+    "cpp": "FromDiff",
+    "js": "fromDiff"
+  },
+  "git_patch_from_diff *": {
+    "cpp": "FromDiff",
+    "js": "fromDiff"
+  },
+  "const git_patch_from_diff *": {
+    "cpp": "FromDiff",
+    "js": "fromDiff"
+  },
+  "git_patch_from_blobs": {
+    "cpp": "FromBlobs",
+    "js": "fromBlobs"
+  },
+  "git_patch_from_blobs *": {
+    "cpp": "FromBlobs",
+    "js": "fromBlobs"
+  },
+  "const git_patch_from_blobs *": {
+    "cpp": "FromBlobs",
+    "js": "fromBlobs"
+  },
+  "git_patch_from_blob_and_buffer": {
+    "cpp": "FromBlobAndBuffer",
+    "js": "fromBlobAndBuffer"
+  },
+  "git_patch_from_blob_and_buffer *": {
+    "cpp": "FromBlobAndBuffer",
+    "js": "fromBlobAndBuffer"
+  },
+  "const git_patch_from_blob_and_buffer *": {
+    "cpp": "FromBlobAndBuffer",
+    "js": "fromBlobAndBuffer"
+  },
+  "git_patch_free": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_patch_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_patch_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_patch_get_delta": {
+    "cpp": "GetDelta",
+    "js": "getDelta"
+  },
+  "git_patch_get_delta *": {
+    "cpp": "GetDelta",
+    "js": "getDelta"
+  },
+  "const git_patch_get_delta *": {
+    "cpp": "GetDelta",
+    "js": "getDelta"
+  },
+  "git_patch_num_hunks": {
+    "cpp": "NumHunks",
+    "js": "numHunks"
+  },
+  "git_patch_num_hunks *": {
+    "cpp": "NumHunks",
+    "js": "numHunks"
+  },
+  "const git_patch_num_hunks *": {
+    "cpp": "NumHunks",
+    "js": "numHunks"
+  },
+  "git_patch_line_stats": {
+    "cpp": "LineStats",
+    "js": "lineStats"
+  },
+  "git_patch_line_stats *": {
+    "cpp": "LineStats",
+    "js": "lineStats"
+  },
+  "const git_patch_line_stats *": {
+    "cpp": "LineStats",
+    "js": "lineStats"
+  },
+  "git_patch_get_hunk": {
+    "cpp": "GetHunk",
+    "js": "getHunk"
+  },
+  "git_patch_get_hunk *": {
+    "cpp": "GetHunk",
+    "js": "getHunk"
+  },
+  "const git_patch_get_hunk *": {
+    "cpp": "GetHunk",
+    "js": "getHunk"
+  },
+  "git_patch_num_lines_in_hunk": {
+    "cpp": "NumLinesInHunk",
+    "js": "numLinesInHunk"
+  },
+  "git_patch_num_lines_in_hunk *": {
+    "cpp": "NumLinesInHunk",
+    "js": "numLinesInHunk"
+  },
+  "const git_patch_num_lines_in_hunk *": {
+    "cpp": "NumLinesInHunk",
+    "js": "numLinesInHunk"
+  },
+  "git_patch_get_line_in_hunk": {
+    "cpp": "GetLineInHunk",
+    "js": "getLineInHunk"
+  },
+  "git_patch_get_line_in_hunk *": {
+    "cpp": "GetLineInHunk",
+    "js": "getLineInHunk"
+  },
+  "const git_patch_get_line_in_hunk *": {
+    "cpp": "GetLineInHunk",
+    "js": "getLineInHunk"
+  },
+  "git_patch_size": {
+    "cpp": "Size",
+    "js": "size"
+  },
+  "git_patch_size *": {
+    "cpp": "Size",
+    "js": "size"
+  },
+  "const git_patch_size *": {
+    "cpp": "Size",
+    "js": "size"
+  },
+  "git_patch_print": {
+    "cpp": "Print",
+    "js": "print"
+  },
+  "git_patch_print *": {
+    "cpp": "Print",
+    "js": "print"
+  },
+  "const git_patch_print *": {
+    "cpp": "Print",
+    "js": "print"
+  },
+  "git_patch_to_str": {
+    "cpp": "ToStr",
+    "js": "toStr"
+  },
+  "git_patch_to_str *": {
+    "cpp": "ToStr",
+    "js": "toStr"
+  },
+  "const git_patch_to_str *": {
+    "cpp": "ToStr",
+    "js": "toStr"
+  },
+  "git_pathspec": {
+    "cpp": "GitPathspec",
+    "js": "Pathspec"
+  },
+  "git_pathspec **": {
+    "cpp": "GitPathspec",
+    "js": "Pathspec"
+  },
+  "git_pathspec *": {
+    "cpp": "GitPathspec",
+    "js": "Pathspec"
+  },
+  "const git_pathspec **": {
+    "cpp": "GitPathspec",
+    "js": "Pathspec"
+  },
+  "const git_pathspec *": {
+    "cpp": "GitPathspec",
+    "js": "Pathspec"
+  },
+  "git_pathspec_new": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_pathspec_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_pathspec_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_pathspec_free": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_pathspec_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_pathspec_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_pathspec_matches_path": {
+    "cpp": "MatchesPath",
+    "js": "matchesPath"
+  },
+  "git_pathspec_matches_path *": {
+    "cpp": "MatchesPath",
+    "js": "matchesPath"
+  },
+  "const git_pathspec_matches_path *": {
+    "cpp": "MatchesPath",
+    "js": "matchesPath"
+  },
+  "git_pathspec_match_workdir": {
+    "cpp": "MatchWorkdir",
+    "js": "matchWorkdir"
+  },
+  "git_pathspec_match_workdir *": {
+    "cpp": "MatchWorkdir",
+    "js": "matchWorkdir"
+  },
+  "const git_pathspec_match_workdir *": {
+    "cpp": "MatchWorkdir",
+    "js": "matchWorkdir"
+  },
+  "git_pathspec_match_index": {
+    "cpp": "MatchIndex",
+    "js": "matchIndex"
+  },
+  "git_pathspec_match_index *": {
+    "cpp": "MatchIndex",
+    "js": "matchIndex"
+  },
+  "const git_pathspec_match_index *": {
+    "cpp": "MatchIndex",
+    "js": "matchIndex"
+  },
+  "git_pathspec_match_tree": {
+    "cpp": "MatchTree",
+    "js": "matchTree"
+  },
+  "git_pathspec_match_tree *": {
+    "cpp": "MatchTree",
+    "js": "matchTree"
+  },
+  "const git_pathspec_match_tree *": {
+    "cpp": "MatchTree",
+    "js": "matchTree"
+  },
+  "git_pathspec_match_diff": {
+    "cpp": "MatchDiff",
+    "js": "matchDiff"
+  },
+  "git_pathspec_match_diff *": {
+    "cpp": "MatchDiff",
+    "js": "matchDiff"
+  },
+  "const git_pathspec_match_diff *": {
+    "cpp": "MatchDiff",
+    "js": "matchDiff"
+  },
+  "git_pathspec_match_list_free": {
+    "cpp": "MatchListFree",
+    "js": "matchListFree"
+  },
+  "git_pathspec_match_list_free *": {
+    "cpp": "MatchListFree",
+    "js": "matchListFree"
+  },
+  "const git_pathspec_match_list_free *": {
+    "cpp": "MatchListFree",
+    "js": "matchListFree"
+  },
+  "git_pathspec_match_list_entrycount": {
+    "cpp": "MatchListEntrycount",
+    "js": "matchListEntrycount"
+  },
+  "git_pathspec_match_list_entrycount *": {
+    "cpp": "MatchListEntrycount",
+    "js": "matchListEntrycount"
+  },
+  "const git_pathspec_match_list_entrycount *": {
+    "cpp": "MatchListEntrycount",
+    "js": "matchListEntrycount"
+  },
+  "git_pathspec_match_list_entry": {
+    "cpp": "MatchListEntry",
+    "js": "matchListEntry"
+  },
+  "git_pathspec_match_list_entry *": {
+    "cpp": "MatchListEntry",
+    "js": "matchListEntry"
+  },
+  "const git_pathspec_match_list_entry *": {
+    "cpp": "MatchListEntry",
+    "js": "matchListEntry"
+  },
+  "git_pathspec_match_list_diff_entry": {
+    "cpp": "MatchListDiffEntry",
+    "js": "matchListDiffEntry"
+  },
+  "git_pathspec_match_list_diff_entry *": {
+    "cpp": "MatchListDiffEntry",
+    "js": "matchListDiffEntry"
+  },
+  "const git_pathspec_match_list_diff_entry *": {
+    "cpp": "MatchListDiffEntry",
+    "js": "matchListDiffEntry"
+  },
+  "git_pathspec_match_list_failed_entrycount": {
+    "cpp": "MatchListFailedEntrycount",
+    "js": "matchListFailedEntrycount"
+  },
+  "git_pathspec_match_list_failed_entrycount *": {
+    "cpp": "MatchListFailedEntrycount",
+    "js": "matchListFailedEntrycount"
+  },
+  "const git_pathspec_match_list_failed_entrycount *": {
+    "cpp": "MatchListFailedEntrycount",
+    "js": "matchListFailedEntrycount"
+  },
+  "git_pathspec_match_list_failed_entry": {
+    "cpp": "MatchListFailedEntry",
+    "js": "matchListFailedEntry"
+  },
+  "git_pathspec_match_list_failed_entry *": {
+    "cpp": "MatchListFailedEntry",
+    "js": "matchListFailedEntry"
+  },
+  "const git_pathspec_match_list_failed_entry *": {
+    "cpp": "MatchListFailedEntry",
+    "js": "matchListFailedEntry"
+  },
+  "git_push": {
+    "cpp": "GitPush",
+    "js": "Push"
+  },
+  "const git_push **": {
+    "cpp": "GitPush",
+    "js": "Push"
+  },
+  "const git_push *": {
+    "cpp": "GitPush",
+    "js": "Push"
+  },
+  "git_push_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_push_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_push_set_options *": {
+    "cpp": "SetOptions",
+    "js": "setOptions"
+  },
+  "const git_push_set_options *": {
+    "cpp": "SetOptions",
+    "js": "setOptions"
+  },
+  "git_push_set_callbacks": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "git_push_set_callbacks *": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "const git_push_set_callbacks *": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "git_push_add_refspec *": {
+    "cpp": "AddRefspec",
+    "js": "addRefspec"
+  },
+  "const git_push_add_refspec *": {
+    "cpp": "AddRefspec",
+    "js": "addRefspec"
+  },
+  "git_push_update_tips *": {
+    "cpp": "UpdateTips",
+    "js": "updateTips"
+  },
+  "const git_push_update_tips *": {
+    "cpp": "UpdateTips",
+    "js": "updateTips"
+  },
+  "git_push_finish *": {
+    "cpp": "Finish",
+    "js": "finish"
+  },
+  "const git_push_finish *": {
+    "cpp": "Finish",
+    "js": "finish"
+  },
+  "git_push_unpack_ok *": {
+    "cpp": "UnpackOk",
+    "js": "unpackOk"
+  },
+  "const git_push_unpack_ok *": {
+    "cpp": "UnpackOk",
+    "js": "unpackOk"
+  },
+  "git_push_status_foreach *": {
+    "cpp": "StatusForeach",
+    "js": "statusForeach"
+  },
+  "const git_push_status_foreach *": {
+    "cpp": "StatusForeach",
+    "js": "statusForeach"
+  },
+  "git_push_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_push_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_refdb": {
+    "cpp": "GitRefdb",
+    "js": "Refdb"
+  },
+  "const git_refdb **": {
+    "cpp": "GitRefdb",
+    "js": "Refdb"
+  },
+  "const git_refdb *": {
+    "cpp": "GitRefdb",
+    "js": "Refdb"
+  },
+  "git_refdb_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_refdb_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_refdb_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "const git_refdb_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "git_refdb_compress *": {
+    "cpp": "Compress",
+    "js": "compress"
+  },
+  "const git_refdb_compress *": {
+    "cpp": "Compress",
+    "js": "compress"
+  },
+  "git_refdb_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_refdb_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_refs": {
+    "cpp": "GitRefs",
+    "js": "Refs"
+  },
+  "git_refs **": {
+    "cpp": "GitRefs",
+    "js": "Refs"
+  },
+  "git_refs *": {
+    "cpp": "GitRefs",
+    "js": "Refs"
+  },
+  "const git_refs **": {
+    "cpp": "GitRefs",
+    "js": "Refs"
+  },
+  "const git_refs *": {
+    "cpp": "GitRefs",
+    "js": "Refs"
+  },
+  "git_reflog_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "const git_reflog_read *": {
+    "cpp": "Read",
+    "js": "read"
+  },
+  "git_reflog_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "const git_reflog_write *": {
+    "cpp": "Write",
+    "js": "write"
+  },
+  "git_reflog_append *": {
+    "cpp": "Append",
+    "js": "append"
+  },
+  "const git_reflog_append *": {
+    "cpp": "Append",
+    "js": "append"
+  },
+  "git_reflog_append_to": {
+    "cpp": "AppendTo",
+    "js": "appendTo"
+  },
+  "git_reflog_append_to *": {
+    "cpp": "AppendTo",
+    "js": "appendTo"
+  },
+  "const git_reflog_append_to *": {
+    "cpp": "AppendTo",
+    "js": "appendTo"
+  },
+  "git_reflog_rename *": {
+    "cpp": "Rename",
+    "js": "rename"
+  },
+  "const git_reflog_rename *": {
+    "cpp": "Rename",
+    "js": "rename"
+  },
+  "git_reflog_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "const git_reflog_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "git_reflog_entrycount *": {
+    "cpp": "Entrycount",
+    "js": "entrycount"
+  },
+  "const git_reflog_entrycount *": {
+    "cpp": "Entrycount",
+    "js": "entrycount"
+  },
+  "git_reflog_entry_byindex *": {
+    "cpp": "EntryByindex",
+    "js": "entryByindex"
+  },
+  "const git_reflog_entry_byindex *": {
+    "cpp": "EntryByindex",
+    "js": "entryByindex"
+  },
+  "git_reflog_drop *": {
+    "cpp": "Drop",
+    "js": "drop"
+  },
+  "const git_reflog_drop *": {
+    "cpp": "Drop",
+    "js": "drop"
+  },
+  "git_reflog_entry_id_old *": {
+    "cpp": "EntryIdOld",
+    "js": "entryIdOld"
+  },
+  "const git_reflog_entry_id_old *": {
+    "cpp": "EntryIdOld",
+    "js": "entryIdOld"
+  },
+  "git_reflog_entry_id_new *": {
+    "cpp": "EntryIdNew",
+    "js": "entryIdNew"
+  },
+  "const git_reflog_entry_id_new *": {
+    "cpp": "EntryIdNew",
+    "js": "entryIdNew"
+  },
+  "git_reflog_entry_committer *": {
+    "cpp": "EntryCommitter",
+    "js": "entryCommitter"
+  },
+  "const git_reflog_entry_committer *": {
+    "cpp": "EntryCommitter",
+    "js": "entryCommitter"
+  },
+  "git_reflog_entry_message *": {
+    "cpp": "EntryMessage",
+    "js": "entryMessage"
+  },
+  "const git_reflog_entry_message *": {
+    "cpp": "EntryMessage",
+    "js": "entryMessage"
+  },
+  "git_reflog_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_reflog_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_reflog": {
+    "cpp": "GitReflog",
+    "js": "Reflog"
+  },
+  "const git_reflog **": {
+    "cpp": "GitReflog",
+    "js": "Reflog"
+  },
+  "const git_reflog *": {
+    "cpp": "GitReflog",
+    "js": "Reflog"
+  },
+  "git_reference_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_reference_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_reference_name_to_id *": {
+    "cpp": "NameToId",
+    "js": "nameToId"
+  },
+  "const git_reference_name_to_id *": {
+    "cpp": "NameToId",
+    "js": "nameToId"
+  },
+  "git_reference_dwim": {
+    "cpp": "Dwim",
+    "js": "dwim"
+  },
+  "git_reference_dwim *": {
+    "cpp": "Dwim",
+    "js": "dwim"
+  },
+  "const git_reference_dwim *": {
+    "cpp": "Dwim",
+    "js": "dwim"
+  },
+  "git_reference_symbolic_create *": {
+    "cpp": "SymbolicCreate",
+    "js": "symbolicCreate"
+  },
+  "const git_reference_symbolic_create *": {
+    "cpp": "SymbolicCreate",
+    "js": "symbolicCreate"
+  },
+  "git_reference_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "const git_reference_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "git_reference_target *": {
+    "cpp": "Target",
+    "js": "target"
+  },
+  "const git_reference_target *": {
+    "cpp": "Target",
+    "js": "target"
+  },
+  "git_reference_target_peel": {
+    "cpp": "TargetPeel",
+    "js": "targetPeel"
+  },
+  "git_reference_target_peel *": {
+    "cpp": "TargetPeel",
+    "js": "targetPeel"
+  },
+  "const git_reference_target_peel *": {
+    "cpp": "TargetPeel",
+    "js": "targetPeel"
+  },
+  "git_reference_symbolic_target *": {
+    "cpp": "SymbolicTarget",
+    "js": "symbolicTarget"
+  },
+  "const git_reference_symbolic_target *": {
+    "cpp": "SymbolicTarget",
+    "js": "symbolicTarget"
+  },
+  "git_reference_type *": {
+    "cpp": "Type",
+    "js": "type"
+  },
+  "const git_reference_type *": {
+    "cpp": "Type",
+    "js": "type"
+  },
+  "git_reference_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "const git_reference_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "git_reference_resolve *": {
+    "cpp": "Resolve",
+    "js": "resolve"
+  },
+  "const git_reference_resolve *": {
+    "cpp": "Resolve",
+    "js": "resolve"
+  },
+  "git_reference_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_reference_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_reference_symbolic_set_target *": {
+    "cpp": "SymbolicSetTarget",
+    "js": "symbolicSetTarget"
+  },
+  "const git_reference_symbolic_set_target *": {
+    "cpp": "SymbolicSetTarget",
+    "js": "symbolicSetTarget"
+  },
+  "git_reference_set_target *": {
+    "cpp": "SetTarget",
+    "js": "setTarget"
+  },
+  "const git_reference_set_target *": {
+    "cpp": "SetTarget",
+    "js": "setTarget"
+  },
+  "git_reference_rename *": {
+    "cpp": "Rename",
+    "js": "rename"
+  },
+  "const git_reference_rename *": {
+    "cpp": "Rename",
+    "js": "rename"
+  },
+  "git_reference_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "const git_reference_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "git_reference_list *": {
+    "cpp": "List",
+    "js": "list"
+  },
+  "const git_reference_list *": {
+    "cpp": "List",
+    "js": "list"
+  },
+  "git_reference_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_reference_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_reference_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_reference_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_reference_cmp *": {
+    "cpp": "Cmp",
+    "js": "cmp"
+  },
+  "const git_reference_cmp *": {
+    "cpp": "Cmp",
+    "js": "cmp"
+  },
+  "git_reference_iterator_new": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "git_reference_iterator_new *": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "const git_reference_iterator_new *": {
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
+  },
+  "git_reference_iterator_glob_new": {
+    "cpp": "IteratorGlobNew",
+    "js": "iteratorGlobNew"
+  },
+  "git_reference_iterator_glob_new *": {
+    "cpp": "IteratorGlobNew",
+    "js": "iteratorGlobNew"
+  },
+  "const git_reference_iterator_glob_new *": {
+    "cpp": "IteratorGlobNew",
+    "js": "iteratorGlobNew"
+  },
+  "git_reference_next": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "git_reference_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "const git_reference_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "git_reference_iterator_free": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "git_reference_iterator_free *": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "const git_reference_iterator_free *": {
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
+  },
+  "git_reference_foreach_glob *": {
+    "cpp": "ForeachGlob",
+    "js": "foreachGlob"
+  },
+  "const git_reference_foreach_glob *": {
+    "cpp": "ForeachGlob",
+    "js": "foreachGlob"
+  },
+  "git_reference_has_log *": {
+    "cpp": "HasLog",
+    "js": "hasLog"
+  },
+  "const git_reference_has_log *": {
+    "cpp": "HasLog",
+    "js": "hasLog"
+  },
+  "git_reference_is_branch *": {
+    "cpp": "IsBranch",
+    "js": "isBranch"
+  },
+  "const git_reference_is_branch *": {
+    "cpp": "IsBranch",
+    "js": "isBranch"
+  },
+  "git_reference_is_remote *": {
+    "cpp": "IsRemote",
+    "js": "isRemote"
+  },
+  "const git_reference_is_remote *": {
+    "cpp": "IsRemote",
+    "js": "isRemote"
+  },
+  "git_reference_is_tag": {
+    "cpp": "IsTag",
+    "js": "isTag"
+  },
+  "git_reference_is_tag *": {
+    "cpp": "IsTag",
+    "js": "isTag"
+  },
+  "const git_reference_is_tag *": {
+    "cpp": "IsTag",
+    "js": "isTag"
+  },
+  "git_reference_normalize_name *": {
+    "cpp": "NormalizeName",
+    "js": "normalizeName"
+  },
+  "const git_reference_normalize_name *": {
+    "cpp": "NormalizeName",
+    "js": "normalizeName"
+  },
+  "git_reference_peel *": {
+    "cpp": "Peel",
+    "js": "peel"
+  },
+  "const git_reference_peel *": {
+    "cpp": "Peel",
+    "js": "peel"
+  },
+  "git_reference_is_valid_name *": {
+    "cpp": "IsValidName",
+    "js": "isValidName"
+  },
+  "const git_reference_is_valid_name *": {
+    "cpp": "IsValidName",
+    "js": "isValidName"
+  },
+  "git_reference_shorthand": {
+    "cpp": "Shorthand",
+    "js": "shorthand"
+  },
+  "git_reference_shorthand *": {
+    "cpp": "Shorthand",
+    "js": "shorthand"
+  },
+  "const git_reference_shorthand *": {
+    "cpp": "Shorthand",
+    "js": "shorthand"
+  },
+  "git_refspec": {
+    "cpp": "GitRefspec",
+    "js": "Refspec"
+  },
+  "git_refspec **": {
+    "cpp": "GitRefspec",
+    "js": "Refspec"
+  },
+  "git_refspec *": {
+    "cpp": "GitRefspec",
+    "js": "Refspec"
+  },
+  "const git_refspec **": {
+    "cpp": "GitRefspec",
+    "js": "Refspec"
+  },
+  "git_refspec_src *": {
+    "cpp": "Src",
+    "js": "src"
+  },
+  "const git_refspec_src *": {
+    "cpp": "Src",
+    "js": "src"
+  },
+  "git_refspec_dst *": {
+    "cpp": "Dst",
+    "js": "dst"
+  },
+  "const git_refspec_dst *": {
+    "cpp": "Dst",
+    "js": "dst"
+  },
+  "git_refspec_string": {
+    "cpp": "String",
+    "js": "string"
+  },
+  "git_refspec_string *": {
+    "cpp": "String",
+    "js": "string"
+  },
+  "const git_refspec_string *": {
+    "cpp": "String",
+    "js": "string"
+  },
+  "git_refspec_force *": {
+    "cpp": "Force",
+    "js": "force"
+  },
+  "const git_refspec_force *": {
+    "cpp": "Force",
+    "js": "force"
+  },
+  "git_refspec_direction": {
+    "cpp": "Direction",
+    "js": "direction"
+  },
+  "git_refspec_direction *": {
+    "cpp": "Direction",
+    "js": "direction"
+  },
+  "const git_refspec_direction *": {
+    "cpp": "Direction",
+    "js": "direction"
+  },
+  "git_refspec_src_matches *": {
+    "cpp": "SrcMatches",
+    "js": "srcMatches"
+  },
+  "const git_refspec_src_matches *": {
+    "cpp": "SrcMatches",
+    "js": "srcMatches"
+  },
+  "git_refspec_dst_matches *": {
+    "cpp": "DstMatches",
+    "js": "dstMatches"
+  },
+  "const git_refspec_dst_matches *": {
+    "cpp": "DstMatches",
+    "js": "dstMatches"
+  },
+  "git_refspec_transform *": {
+    "cpp": "Transform",
+    "js": "transform"
+  },
+  "const git_refspec_transform *": {
+    "cpp": "Transform",
+    "js": "transform"
+  },
+  "git_refspec_rtransform *": {
+    "cpp": "Rtransform",
+    "js": "rtransform"
+  },
+  "const git_refspec_rtransform *": {
+    "cpp": "Rtransform",
+    "js": "rtransform"
+  },
+  "git_remote": {
+    "cpp": "GitRemote",
+    "js": "Remote"
+  },
+  "const git_remote **": {
+    "cpp": "GitRemote",
+    "js": "Remote"
+  },
+  "git_remote_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "const git_remote_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "git_remote_create_with_fetchspec": {
+    "cpp": "CreateWithFetchspec",
+    "js": "createWithFetchspec"
+  },
+  "git_remote_create_with_fetchspec *": {
+    "cpp": "CreateWithFetchspec",
+    "js": "createWithFetchspec"
+  },
+  "const git_remote_create_with_fetchspec *": {
+    "cpp": "CreateWithFetchspec",
+    "js": "createWithFetchspec"
+  },
+  "git_remote_create_inmemory *": {
+    "cpp": "CreateInmemory",
+    "js": "createInmemory"
+  },
+  "const git_remote_create_inmemory *": {
+    "cpp": "CreateInmemory",
+    "js": "createInmemory"
+  },
+  "git_remote_load *": {
+    "cpp": "Load",
+    "js": "load"
+  },
+  "const git_remote_load *": {
+    "cpp": "Load",
+    "js": "load"
+  },
+  "git_remote_save *": {
+    "cpp": "Save",
+    "js": "save"
+  },
+  "const git_remote_save *": {
+    "cpp": "Save",
+    "js": "save"
+  },
+  "git_remote_owner": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_remote_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_remote_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_remote_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "const git_remote_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "git_remote_url *": {
+    "cpp": "Url",
+    "js": "url"
+  },
+  "const git_remote_url *": {
+    "cpp": "Url",
+    "js": "url"
+  },
+  "git_remote_pushurl *": {
+    "cpp": "Pushurl",
+    "js": "pushurl"
+  },
+  "const git_remote_pushurl *": {
+    "cpp": "Pushurl",
+    "js": "pushurl"
+  },
+  "git_remote_set_url *": {
+    "cpp": "SetUrl",
+    "js": "setUrl"
+  },
+  "const git_remote_set_url *": {
+    "cpp": "SetUrl",
+    "js": "setUrl"
+  },
+  "git_remote_set_pushurl *": {
+    "cpp": "SetPushurl",
+    "js": "setPushurl"
+  },
+  "const git_remote_set_pushurl *": {
+    "cpp": "SetPushurl",
+    "js": "setPushurl"
+  },
+  "git_remote_add_fetch": {
+    "cpp": "AddFetch",
+    "js": "addFetch"
+  },
+  "git_remote_add_fetch *": {
+    "cpp": "AddFetch",
+    "js": "addFetch"
+  },
+  "const git_remote_add_fetch *": {
+    "cpp": "AddFetch",
+    "js": "addFetch"
+  },
+  "git_remote_get_fetch_refspecs": {
+    "cpp": "GetFetchRefspecs",
+    "js": "getFetchRefspecs"
+  },
+  "git_remote_get_fetch_refspecs *": {
+    "cpp": "GetFetchRefspecs",
+    "js": "getFetchRefspecs"
+  },
+  "const git_remote_get_fetch_refspecs *": {
+    "cpp": "GetFetchRefspecs",
+    "js": "getFetchRefspecs"
+  },
+  "git_remote_set_fetch_refspecs": {
+    "cpp": "SetFetchRefspecs",
+    "js": "setFetchRefspecs"
+  },
+  "git_remote_set_fetch_refspecs *": {
+    "cpp": "SetFetchRefspecs",
+    "js": "setFetchRefspecs"
+  },
+  "const git_remote_set_fetch_refspecs *": {
+    "cpp": "SetFetchRefspecs",
+    "js": "setFetchRefspecs"
+  },
+  "git_remote_add_push": {
+    "cpp": "AddPush",
+    "js": "addPush"
+  },
+  "git_remote_add_push *": {
+    "cpp": "AddPush",
+    "js": "addPush"
+  },
+  "const git_remote_add_push *": {
+    "cpp": "AddPush",
+    "js": "addPush"
+  },
+  "git_remote_get_push_refspecs": {
+    "cpp": "GetPushRefspecs",
+    "js": "getPushRefspecs"
+  },
+  "git_remote_get_push_refspecs *": {
+    "cpp": "GetPushRefspecs",
+    "js": "getPushRefspecs"
+  },
+  "const git_remote_get_push_refspecs *": {
+    "cpp": "GetPushRefspecs",
+    "js": "getPushRefspecs"
+  },
+  "git_remote_set_push_refspecs": {
+    "cpp": "SetPushRefspecs",
+    "js": "setPushRefspecs"
+  },
+  "git_remote_set_push_refspecs *": {
+    "cpp": "SetPushRefspecs",
+    "js": "setPushRefspecs"
+  },
+  "const git_remote_set_push_refspecs *": {
+    "cpp": "SetPushRefspecs",
+    "js": "setPushRefspecs"
+  },
+  "git_remote_clear_refspecs": {
+    "cpp": "ClearRefspecs",
+    "js": "clearRefspecs"
+  },
+  "git_remote_clear_refspecs *": {
+    "cpp": "ClearRefspecs",
+    "js": "clearRefspecs"
+  },
+  "const git_remote_clear_refspecs *": {
+    "cpp": "ClearRefspecs",
+    "js": "clearRefspecs"
+  },
+  "git_remote_refspec_count": {
+    "cpp": "RefspecCount",
+    "js": "refspecCount"
+  },
+  "git_remote_refspec_count *": {
+    "cpp": "RefspecCount",
+    "js": "refspecCount"
+  },
+  "const git_remote_refspec_count *": {
+    "cpp": "RefspecCount",
+    "js": "refspecCount"
+  },
+  "git_remote_get_refspec": {
+    "cpp": "GetRefspec",
+    "js": "getRefspec"
+  },
+  "git_remote_get_refspec *": {
+    "cpp": "GetRefspec",
+    "js": "getRefspec"
+  },
+  "const git_remote_get_refspec *": {
+    "cpp": "GetRefspec",
+    "js": "getRefspec"
+  },
+  "git_remote_connect *": {
+    "cpp": "Connect",
+    "js": "connect"
+  },
+  "const git_remote_connect *": {
+    "cpp": "Connect",
+    "js": "connect"
+  },
+  "git_remote_ls *": {
+    "cpp": "Ls",
+    "js": "ls"
+  },
+  "const git_remote_ls *": {
+    "cpp": "Ls",
+    "js": "ls"
+  },
+  "git_remote_download *": {
+    "cpp": "Download",
+    "js": "download"
+  },
+  "const git_remote_download *": {
+    "cpp": "Download",
+    "js": "download"
+  },
+  "git_remote_connected *": {
+    "cpp": "Connected",
+    "js": "connected"
+  },
+  "const git_remote_connected *": {
+    "cpp": "Connected",
+    "js": "connected"
+  },
+  "git_remote_stop *": {
+    "cpp": "Stop",
+    "js": "stop"
+  },
+  "const git_remote_stop *": {
+    "cpp": "Stop",
+    "js": "stop"
+  },
+  "git_remote_disconnect *": {
+    "cpp": "Disconnect",
+    "js": "disconnect"
+  },
+  "const git_remote_disconnect *": {
+    "cpp": "Disconnect",
+    "js": "disconnect"
+  },
+  "git_remote_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_remote_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_remote_update_tips *": {
+    "cpp": "UpdateTips",
+    "js": "updateTips"
+  },
+  "const git_remote_update_tips *": {
+    "cpp": "UpdateTips",
+    "js": "updateTips"
+  },
+  "git_remote_fetch": {
+    "cpp": "Fetch",
+    "js": "fetch"
+  },
+  "git_remote_fetch *": {
+    "cpp": "Fetch",
+    "js": "fetch"
+  },
+  "const git_remote_fetch *": {
+    "cpp": "Fetch",
+    "js": "fetch"
+  },
+  "git_remote_valid_url *": {
+    "cpp": "ValidUrl",
+    "js": "validUrl"
+  },
+  "const git_remote_valid_url *": {
+    "cpp": "ValidUrl",
+    "js": "validUrl"
+  },
+  "git_remote_supported_url *": {
+    "cpp": "SupportedUrl",
+    "js": "supportedUrl"
+  },
+  "const git_remote_supported_url *": {
+    "cpp": "SupportedUrl",
+    "js": "supportedUrl"
+  },
+  "git_remote_list *": {
+    "cpp": "List",
+    "js": "list"
+  },
+  "const git_remote_list *": {
+    "cpp": "List",
+    "js": "list"
+  },
+  "git_remote_check_cert *": {
+    "cpp": "CheckCert",
+    "js": "checkCert"
+  },
+  "const git_remote_check_cert *": {
+    "cpp": "CheckCert",
+    "js": "checkCert"
+  },
+  "git_remote_set_transport *": {
+    "cpp": "SetTransport",
+    "js": "setTransport"
+  },
+  "const git_remote_set_transport *": {
+    "cpp": "SetTransport",
+    "js": "setTransport"
+  },
+  "git_remote_set_callbacks *": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "const git_remote_set_callbacks *": {
+    "cpp": "SetCallbacks",
+    "js": "setCallbacks"
+  },
+  "git_remote_stats *": {
+    "cpp": "Stats",
+    "js": "stats"
+  },
+  "const git_remote_stats *": {
+    "cpp": "Stats",
+    "js": "stats"
+  },
+  "git_remote_autotag *": {
+    "cpp": "Autotag",
+    "js": "autotag"
+  },
+  "const git_remote_autotag *": {
+    "cpp": "Autotag",
+    "js": "autotag"
+  },
+  "git_remote_set_autotag *": {
+    "cpp": "SetAutotag",
+    "js": "setAutotag"
+  },
+  "const git_remote_set_autotag *": {
+    "cpp": "SetAutotag",
+    "js": "setAutotag"
+  },
+  "git_remote_rename *": {
+    "cpp": "Rename",
+    "js": "rename"
+  },
+  "const git_remote_rename *": {
+    "cpp": "Rename",
+    "js": "rename"
+  },
+  "git_remote_update_fetchhead *": {
+    "cpp": "UpdateFetchhead",
+    "js": "updateFetchhead"
+  },
+  "const git_remote_update_fetchhead *": {
+    "cpp": "UpdateFetchhead",
+    "js": "updateFetchhead"
+  },
+  "git_remote_set_update_fetchhead *": {
+    "cpp": "SetUpdateFetchhead",
+    "js": "setUpdateFetchhead"
+  },
+  "const git_remote_set_update_fetchhead *": {
+    "cpp": "SetUpdateFetchhead",
+    "js": "setUpdateFetchhead"
+  },
+  "git_remote_is_valid_name *": {
+    "cpp": "IsValidName",
+    "js": "isValidName"
+  },
+  "const git_remote_is_valid_name *": {
+    "cpp": "IsValidName",
+    "js": "isValidName"
+  },
+  "git_repository": {
+    "cpp": "GitRepository",
+    "js": "Repository"
+  },
+  "const git_repository **": {
+    "cpp": "GitRepository",
+    "js": "Repository"
+  },
+  "const git_repository *": {
+    "cpp": "GitRepository",
+    "js": "Repository"
+  },
+  "git_repository_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "const git_repository_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "git_repository_wrap_odb *": {
+    "cpp": "WrapOdb",
+    "js": "wrapOdb"
+  },
+  "const git_repository_wrap_odb *": {
+    "cpp": "WrapOdb",
+    "js": "wrapOdb"
+  },
+  "git_repository_discover *": {
+    "cpp": "Discover",
+    "js": "discover"
+  },
+  "const git_repository_discover *": {
+    "cpp": "Discover",
+    "js": "discover"
+  },
+  "git_repository_open_ext *": {
+    "cpp": "OpenExt",
+    "js": "openExt"
+  },
+  "const git_repository_open_ext *": {
+    "cpp": "OpenExt",
+    "js": "openExt"
+  },
+  "git_repository_open_bare": {
+    "cpp": "OpenBare",
+    "js": "openBare"
+  },
+  "git_repository_open_bare *": {
+    "cpp": "OpenBare",
+    "js": "openBare"
+  },
+  "const git_repository_open_bare *": {
+    "cpp": "OpenBare",
+    "js": "openBare"
+  },
+  "git_repository_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_repository_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_repository_init *": {
+    "cpp": "Init",
+    "js": "init"
+  },
+  "const git_repository_init *": {
+    "cpp": "Init",
+    "js": "init"
+  },
+  "git_repository_init_ext *": {
+    "cpp": "InitExt",
+    "js": "initExt"
+  },
+  "const git_repository_init_ext *": {
+    "cpp": "InitExt",
+    "js": "initExt"
+  },
+  "git_repository_head *": {
+    "cpp": "Head",
+    "js": "head"
+  },
+  "const git_repository_head *": {
+    "cpp": "Head",
+    "js": "head"
+  },
+  "git_repository_head_detached *": {
+    "cpp": "HeadDetached",
+    "js": "headDetached"
+  },
+  "const git_repository_head_detached *": {
+    "cpp": "HeadDetached",
+    "js": "headDetached"
+  },
+  "git_repository_head_unborn": {
+    "cpp": "HeadUnborn",
+    "js": "headUnborn"
+  },
+  "git_repository_head_unborn *": {
+    "cpp": "HeadUnborn",
+    "js": "headUnborn"
+  },
+  "const git_repository_head_unborn *": {
+    "cpp": "HeadUnborn",
+    "js": "headUnborn"
+  },
+  "git_repository_is_empty *": {
+    "cpp": "IsEmpty",
+    "js": "isEmpty"
+  },
+  "const git_repository_is_empty *": {
+    "cpp": "IsEmpty",
+    "js": "isEmpty"
+  },
+  "git_repository_path *": {
+    "cpp": "Path",
+    "js": "path"
+  },
+  "const git_repository_path *": {
+    "cpp": "Path",
+    "js": "path"
+  },
+  "git_repository_workdir *": {
+    "cpp": "Workdir",
+    "js": "workdir"
+  },
+  "const git_repository_workdir *": {
+    "cpp": "Workdir",
+    "js": "workdir"
+  },
+  "git_repository_set_workdir *": {
+    "cpp": "SetWorkdir",
+    "js": "setWorkdir"
+  },
+  "const git_repository_set_workdir *": {
+    "cpp": "SetWorkdir",
+    "js": "setWorkdir"
+  },
+  "git_repository_is_bare *": {
+    "cpp": "IsBare",
+    "js": "isBare"
+  },
+  "const git_repository_is_bare *": {
+    "cpp": "IsBare",
+    "js": "isBare"
+  },
+  "git_repository_config *": {
+    "cpp": "Config",
+    "js": "config"
+  },
+  "const git_repository_config *": {
+    "cpp": "Config",
+    "js": "config"
+  },
+  "git_repository_odb *": {
+    "cpp": "Odb",
+    "js": "odb"
+  },
+  "const git_repository_odb *": {
+    "cpp": "Odb",
+    "js": "odb"
+  },
+  "git_repository_refdb *": {
+    "cpp": "Refdb",
+    "js": "refdb"
+  },
+  "const git_repository_refdb *": {
+    "cpp": "Refdb",
+    "js": "refdb"
+  },
+  "git_repository_index *": {
+    "cpp": "Index",
+    "js": "index"
+  },
+  "const git_repository_index *": {
+    "cpp": "Index",
+    "js": "index"
+  },
+  "git_repository_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "const git_repository_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "git_repository_message_remove *": {
+    "cpp": "MessageRemove",
+    "js": "messageRemove"
+  },
+  "const git_repository_message_remove *": {
+    "cpp": "MessageRemove",
+    "js": "messageRemove"
+  },
+  "git_repository_merge_cleanup *": {
+    "cpp": "MergeCleanup",
+    "js": "mergeCleanup"
+  },
+  "const git_repository_merge_cleanup *": {
+    "cpp": "MergeCleanup",
+    "js": "mergeCleanup"
+  },
+  "git_repository_fetchhead_foreach *": {
+    "cpp": "FetchheadForeach",
+    "js": "fetchheadForeach"
+  },
+  "const git_repository_fetchhead_foreach *": {
+    "cpp": "FetchheadForeach",
+    "js": "fetchheadForeach"
+  },
+  "git_repository_mergehead_foreach *": {
+    "cpp": "MergeheadForeach",
+    "js": "mergeheadForeach"
+  },
+  "const git_repository_mergehead_foreach *": {
+    "cpp": "MergeheadForeach",
+    "js": "mergeheadForeach"
+  },
+  "git_repository_hashfile *": {
+    "cpp": "Hashfile",
+    "js": "hashfile"
+  },
+  "const git_repository_hashfile *": {
+    "cpp": "Hashfile",
+    "js": "hashfile"
+  },
+  "git_repository_set_head *": {
+    "cpp": "SetHead",
+    "js": "setHead"
+  },
+  "const git_repository_set_head *": {
+    "cpp": "SetHead",
+    "js": "setHead"
+  },
+  "git_repository_set_head_detached *": {
+    "cpp": "SetHeadDetached",
+    "js": "setHeadDetached"
+  },
+  "const git_repository_set_head_detached *": {
+    "cpp": "SetHeadDetached",
+    "js": "setHeadDetached"
+  },
+  "git_repository_detach_head *": {
+    "cpp": "DetachHead",
+    "js": "detachHead"
+  },
+  "const git_repository_detach_head *": {
+    "cpp": "DetachHead",
+    "js": "detachHead"
+  },
+  "git_repository_state *": {
+    "cpp": "State",
+    "js": "state"
+  },
+  "const git_repository_state *": {
+    "cpp": "State",
+    "js": "state"
+  },
+  "git_repository_set_namespace": {
+    "cpp": "SetNamespace",
+    "js": "setNamespace"
+  },
+  "git_repository_set_namespace *": {
+    "cpp": "SetNamespace",
+    "js": "setNamespace"
+  },
+  "const git_repository_set_namespace *": {
+    "cpp": "SetNamespace",
+    "js": "setNamespace"
+  },
+  "git_repository_get_namespace": {
+    "cpp": "GetNamespace",
+    "js": "getNamespace"
+  },
+  "git_repository_get_namespace *": {
+    "cpp": "GetNamespace",
+    "js": "getNamespace"
+  },
+  "const git_repository_get_namespace *": {
+    "cpp": "GetNamespace",
+    "js": "getNamespace"
+  },
+  "git_repository_is_shallow": {
+    "cpp": "IsShallow",
+    "js": "isShallow"
+  },
+  "git_repository_is_shallow *": {
+    "cpp": "IsShallow",
+    "js": "isShallow"
+  },
+  "const git_repository_is_shallow *": {
+    "cpp": "IsShallow",
+    "js": "isShallow"
+  },
+  "git_reset **": {
+    "cpp": "GitReset",
+    "js": "Reset"
+  },
+  "git_reset *": {
+    "cpp": "Reset",
+    "js": "reset"
+  },
+  "const git_reset **": {
+    "cpp": "GitReset",
+    "js": "Reset"
+  },
+  "const git_reset *": {
+    "cpp": "Reset",
+    "js": "reset"
+  },
+  "git_reset_default *": {
+    "cpp": "ResetDefault",
+    "js": "resetDefault"
+  },
+  "const git_reset_default *": {
+    "cpp": "ResetDefault",
+    "js": "resetDefault"
+  },
+  "git_revparse **": {
+    "cpp": "GitRevparse",
+    "js": "Revparse"
+  },
+  "git_revparse *": {
+    "cpp": "Revparse",
+    "js": "revparse"
+  },
+  "const git_revparse **": {
+    "cpp": "GitRevparse",
+    "js": "Revparse"
+  },
+  "const git_revparse *": {
+    "cpp": "Revparse",
+    "js": "revparse"
+  },
+  "git_revparse_single *": {
+    "cpp": "RevparseSingle",
+    "js": "revparseSingle"
+  },
+  "const git_revparse_single *": {
+    "cpp": "RevparseSingle",
+    "js": "revparseSingle"
+  },
+  "git_revparse_ext": {
+    "cpp": "RevparseExt",
+    "js": "revparseExt"
+  },
+  "git_revparse_ext *": {
+    "cpp": "RevparseExt",
+    "js": "revparseExt"
+  },
+  "const git_revparse_ext *": {
+    "cpp": "RevparseExt",
+    "js": "revparseExt"
+  },
+  "git_revwalk": {
+    "cpp": "GitRevwalk",
+    "js": "Revwalk"
+  },
+  "const git_revwalk **": {
+    "cpp": "GitRevwalk",
+    "js": "Revwalk"
+  },
+  "const git_revwalk *": {
+    "cpp": "GitRevwalk",
+    "js": "Revwalk"
+  },
+  "git_revwalk_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_revwalk_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_revwalk_reset *": {
+    "cpp": "Reset",
+    "js": "reset"
+  },
+  "const git_revwalk_reset *": {
+    "cpp": "Reset",
+    "js": "reset"
+  },
+  "git_revwalk_push *": {
+    "cpp": "Push",
+    "js": "push"
+  },
+  "const git_revwalk_push *": {
+    "cpp": "Push",
+    "js": "push"
+  },
+  "git_revwalk_push_glob *": {
+    "cpp": "PushGlob",
+    "js": "pushGlob"
+  },
+  "const git_revwalk_push_glob *": {
+    "cpp": "PushGlob",
+    "js": "pushGlob"
+  },
+  "git_revwalk_push_head *": {
+    "cpp": "PushHead",
+    "js": "pushHead"
+  },
+  "const git_revwalk_push_head *": {
+    "cpp": "PushHead",
+    "js": "pushHead"
+  },
+  "git_revwalk_hide *": {
+    "cpp": "Hide",
+    "js": "hide"
+  },
+  "const git_revwalk_hide *": {
+    "cpp": "Hide",
+    "js": "hide"
+  },
+  "git_revwalk_hide_glob *": {
+    "cpp": "HideGlob",
+    "js": "hideGlob"
+  },
+  "const git_revwalk_hide_glob *": {
+    "cpp": "HideGlob",
+    "js": "hideGlob"
+  },
+  "git_revwalk_hide_head *": {
+    "cpp": "HideHead",
+    "js": "hideHead"
+  },
+  "const git_revwalk_hide_head *": {
+    "cpp": "HideHead",
+    "js": "hideHead"
+  },
+  "git_revwalk_push_ref *": {
+    "cpp": "PushRef",
+    "js": "pushRef"
+  },
+  "const git_revwalk_push_ref *": {
+    "cpp": "PushRef",
+    "js": "pushRef"
+  },
+  "git_revwalk_hide_ref *": {
+    "cpp": "HideRef",
+    "js": "hideRef"
+  },
+  "const git_revwalk_hide_ref *": {
+    "cpp": "HideRef",
+    "js": "hideRef"
+  },
+  "git_revwalk_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "const git_revwalk_next *": {
+    "cpp": "Next",
+    "js": "next"
+  },
+  "git_revwalk_sorting *": {
+    "cpp": "Sorting",
+    "js": "sorting"
+  },
+  "const git_revwalk_sorting *": {
+    "cpp": "Sorting",
+    "js": "sorting"
+  },
+  "git_revwalk_push_range *": {
+    "cpp": "PushRange",
+    "js": "pushRange"
+  },
+  "const git_revwalk_push_range *": {
+    "cpp": "PushRange",
+    "js": "pushRange"
+  },
+  "git_revwalk_simplify_first_parent": {
+    "cpp": "SimplifyFirstParent",
+    "js": "simplifyFirstParent"
+  },
+  "git_revwalk_simplify_first_parent *": {
+    "cpp": "SimplifyFirstParent",
+    "js": "simplifyFirstParent"
+  },
+  "const git_revwalk_simplify_first_parent *": {
+    "cpp": "SimplifyFirstParent",
+    "js": "simplifyFirstParent"
+  },
+  "git_revwalk_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_revwalk_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_revwalk_repository *": {
+    "cpp": "Repository",
+    "js": "repository"
+  },
+  "const git_revwalk_repository *": {
+    "cpp": "Repository",
+    "js": "repository"
+  },
+  "git_signature": {
+    "cpp": "GitSignature",
+    "js": "Signature"
+  },
+  "const git_signature **": {
+    "cpp": "GitSignature",
+    "js": "Signature"
+  },
+  "git_signature_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "const git_signature_new *": {
+    "cpp": "New2",
+    "js": "new2"
+  },
+  "git_signature_now *": {
+    "cpp": "Now",
+    "js": "now"
+  },
+  "const git_signature_now *": {
+    "cpp": "Now",
+    "js": "now"
+  },
+  "git_signature_default": {
+    "cpp": "Default",
+    "js": "default"
+  },
+  "git_signature_default *": {
+    "cpp": "Default",
+    "js": "default"
+  },
+  "const git_signature_default *": {
+    "cpp": "Default",
+    "js": "default"
+  },
+  "git_signature_dup *": {
+    "cpp": "Dup",
+    "js": "dup"
+  },
+  "const git_signature_dup *": {
+    "cpp": "Dup",
+    "js": "dup"
+  },
+  "git_signature_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_signature_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_stash": {
+    "cpp": "GitStash",
+    "js": "Stash"
+  },
+  "git_stash **": {
+    "cpp": "GitStash",
+    "js": "Stash"
+  },
+  "git_stash *": {
+    "cpp": "GitStash",
+    "js": "Stash"
+  },
+  "const git_stash **": {
+    "cpp": "GitStash",
+    "js": "Stash"
+  },
+  "const git_stash *": {
+    "cpp": "GitStash",
+    "js": "Stash"
+  },
+  "git_stash_save *": {
+    "cpp": "StashSave",
+    "js": "stashSave"
+  },
+  "const git_stash_save *": {
+    "cpp": "StashSave",
+    "js": "stashSave"
+  },
+  "git_stash_foreach *": {
+    "cpp": "StashForeach",
+    "js": "stashForeach"
+  },
+  "const git_stash_foreach *": {
+    "cpp": "StashForeach",
+    "js": "stashForeach"
+  },
+  "git_stash_drop *": {
+    "cpp": "StashDrop",
+    "js": "stashDrop"
+  },
+  "const git_stash_drop *": {
+    "cpp": "StashDrop",
+    "js": "stashDrop"
+  },
+  "git_status": {
+    "cpp": "GitStatus",
+    "js": "Status"
+  },
+  "git_status **": {
+    "cpp": "GitStatus",
+    "js": "Status"
+  },
+  "git_status *": {
+    "cpp": "GitStatus",
+    "js": "Status"
+  },
+  "const git_status **": {
+    "cpp": "GitStatus",
+    "js": "Status"
+  },
+  "const git_status *": {
+    "cpp": "GitStatus",
+    "js": "Status"
+  },
+  "git_status_foreach *": {
+    "cpp": "StatusForeach",
+    "js": "statusForeach"
+  },
+  "const git_status_foreach *": {
+    "cpp": "StatusForeach",
+    "js": "statusForeach"
+  },
+  "git_status_foreach_ext *": {
+    "cpp": "StatusForeachExt",
+    "js": "statusForeachExt"
+  },
+  "const git_status_foreach_ext *": {
+    "cpp": "StatusForeachExt",
+    "js": "statusForeachExt"
+  },
+  "git_status_file *": {
+    "cpp": "StatusFile",
+    "js": "statusFile"
+  },
+  "const git_status_file *": {
+    "cpp": "StatusFile",
+    "js": "statusFile"
+  },
+  "git_status_list_new": {
+    "cpp": "StatusListNew",
+    "js": "statusListNew"
+  },
+  "git_status_list_new *": {
+    "cpp": "StatusListNew",
+    "js": "statusListNew"
+  },
+  "const git_status_list_new *": {
+    "cpp": "StatusListNew",
+    "js": "statusListNew"
+  },
+  "git_status_list_entrycount": {
+    "cpp": "StatusListEntrycount",
+    "js": "statusListEntrycount"
+  },
+  "git_status_list_entrycount *": {
+    "cpp": "StatusListEntrycount",
+    "js": "statusListEntrycount"
+  },
+  "const git_status_list_entrycount *": {
+    "cpp": "StatusListEntrycount",
+    "js": "statusListEntrycount"
+  },
+  "git_status_byindex": {
+    "cpp": "StatusByindex",
+    "js": "statusByindex"
+  },
+  "git_status_byindex *": {
+    "cpp": "StatusByindex",
+    "js": "statusByindex"
+  },
+  "const git_status_byindex *": {
+    "cpp": "StatusByindex",
+    "js": "statusByindex"
+  },
+  "git_status_list_free": {
+    "cpp": "StatusListFree",
+    "js": "statusListFree"
+  },
+  "git_status_list_free *": {
+    "cpp": "StatusListFree",
+    "js": "statusListFree"
+  },
+  "const git_status_list_free *": {
+    "cpp": "StatusListFree",
+    "js": "statusListFree"
+  },
+  "git_status_should_ignore *": {
+    "cpp": "StatusShouldIgnore",
+    "js": "statusShouldIgnore"
+  },
+  "const git_status_should_ignore *": {
+    "cpp": "StatusShouldIgnore",
+    "js": "statusShouldIgnore"
+  },
+  "git_stdint": {
+    "cpp": "GitStdint",
+    "js": "Stdint"
+  },
+  "git_stdint **": {
+    "cpp": "GitStdint",
+    "js": "Stdint"
+  },
+  "git_stdint *": {
+    "cpp": "GitStdint",
+    "js": "Stdint"
+  },
+  "const git_stdint **": {
+    "cpp": "GitStdint",
+    "js": "Stdint"
+  },
+  "const git_stdint *": {
+    "cpp": "GitStdint",
+    "js": "Stdint"
+  },
+  "git_stdarray": {
+    "cpp": "GitStdarray",
+    "js": "Stdarray"
+  },
+  "git_stdarray **": {
+    "cpp": "GitStdarray",
+    "js": "Stdarray"
+  },
+  "git_stdarray *": {
+    "cpp": "GitStdarray",
+    "js": "Stdarray"
+  },
+  "const git_stdarray **": {
+    "cpp": "GitStdarray",
+    "js": "Stdarray"
+  },
+  "const git_stdarray *": {
+    "cpp": "GitStdarray",
+    "js": "Stdarray"
+  },
+  "git_strarray_free *": {
+    "cpp": "StrarrayFree",
+    "js": "strarrayFree"
+  },
+  "const git_strarray_free *": {
+    "cpp": "StrarrayFree",
+    "js": "strarrayFree"
+  },
+  "git_strarray_copy *": {
+    "cpp": "StrarrayCopy",
+    "js": "strarrayCopy"
+  },
+  "const git_strarray_copy *": {
+    "cpp": "StrarrayCopy",
+    "js": "strarrayCopy"
+  },
+  "git_submodule": {
+    "cpp": "GitSubmodule",
+    "js": "Submodule"
+  },
+  "const git_submodule **": {
+    "cpp": "GitSubmodule",
+    "js": "Submodule"
+  },
+  "const git_submodule *": {
+    "cpp": "GitSubmodule",
+    "js": "Submodule"
+  },
+  "git_submodule_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_submodule_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_submodule_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_submodule_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_submodule_add_setup *": {
+    "cpp": "AddSetup",
+    "js": "addSetup"
+  },
+  "const git_submodule_add_setup *": {
+    "cpp": "AddSetup",
+    "js": "addSetup"
+  },
+  "git_submodule_add_finalize *": {
+    "cpp": "AddFinalize",
+    "js": "addFinalize"
+  },
+  "const git_submodule_add_finalize *": {
+    "cpp": "AddFinalize",
+    "js": "addFinalize"
+  },
+  "git_submodule_add_to_index *": {
+    "cpp": "AddToIndex",
+    "js": "addToIndex"
+  },
+  "const git_submodule_add_to_index *": {
+    "cpp": "AddToIndex",
+    "js": "addToIndex"
+  },
+  "git_submodule_save *": {
+    "cpp": "Save",
+    "js": "save"
+  },
+  "const git_submodule_save *": {
+    "cpp": "Save",
+    "js": "save"
+  },
+  "git_submodule_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_submodule_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_submodule_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "const git_submodule_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "git_submodule_path *": {
+    "cpp": "Path",
+    "js": "path"
+  },
+  "const git_submodule_path *": {
+    "cpp": "Path",
+    "js": "path"
+  },
+  "git_submodule_url *": {
+    "cpp": "Url",
+    "js": "url"
+  },
+  "const git_submodule_url *": {
+    "cpp": "Url",
+    "js": "url"
+  },
+  "git_submodule_set_url *": {
+    "cpp": "SetUrl",
+    "js": "setUrl"
+  },
+  "const git_submodule_set_url *": {
+    "cpp": "SetUrl",
+    "js": "setUrl"
+  },
+  "git_submodule_index_id *": {
+    "cpp": "IndexId",
+    "js": "indexId"
+  },
+  "const git_submodule_index_id *": {
+    "cpp": "IndexId",
+    "js": "indexId"
+  },
+  "git_submodule_head_id *": {
+    "cpp": "HeadId",
+    "js": "headId"
+  },
+  "const git_submodule_head_id *": {
+    "cpp": "HeadId",
+    "js": "headId"
+  },
+  "git_submodule_wd_id *": {
+    "cpp": "WdId",
+    "js": "wdId"
+  },
+  "const git_submodule_wd_id *": {
+    "cpp": "WdId",
+    "js": "wdId"
+  },
+  "git_submodule_ignore *": {
+    "cpp": "Ignore",
+    "js": "ignore"
+  },
+  "const git_submodule_ignore *": {
+    "cpp": "Ignore",
+    "js": "ignore"
+  },
+  "git_submodule_set_ignore *": {
+    "cpp": "SetIgnore",
+    "js": "setIgnore"
+  },
+  "const git_submodule_set_ignore *": {
+    "cpp": "SetIgnore",
+    "js": "setIgnore"
+  },
+  "git_submodule_update *": {
+    "cpp": "Update",
+    "js": "update"
+  },
+  "const git_submodule_update *": {
+    "cpp": "Update",
+    "js": "update"
+  },
+  "git_submodule_set_update *": {
+    "cpp": "SetUpdate",
+    "js": "setUpdate"
+  },
+  "const git_submodule_set_update *": {
+    "cpp": "SetUpdate",
+    "js": "setUpdate"
+  },
+  "git_submodule_fetch_recurse_submodules *": {
+    "cpp": "FetchRecurseSubmodules",
+    "js": "fetchRecurseSubmodules"
+  },
+  "const git_submodule_fetch_recurse_submodules *": {
+    "cpp": "FetchRecurseSubmodules",
+    "js": "fetchRecurseSubmodules"
+  },
+  "git_submodule_set_fetch_recurse_submodules *": {
+    "cpp": "SetFetchRecurseSubmodules",
+    "js": "setFetchRecurseSubmodules"
+  },
+  "const git_submodule_set_fetch_recurse_submodules *": {
+    "cpp": "SetFetchRecurseSubmodules",
+    "js": "setFetchRecurseSubmodules"
+  },
+  "git_submodule_init *": {
+    "cpp": "Init",
+    "js": "init"
+  },
+  "const git_submodule_init *": {
+    "cpp": "Init",
+    "js": "init"
+  },
+  "git_submodule_sync *": {
+    "cpp": "Sync",
+    "js": "sync"
+  },
+  "const git_submodule_sync *": {
+    "cpp": "Sync",
+    "js": "sync"
+  },
+  "git_submodule_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "const git_submodule_open *": {
+    "cpp": "Open",
+    "js": "open"
+  },
+  "git_submodule_reload *": {
+    "cpp": "Reload",
+    "js": "reload"
+  },
+  "const git_submodule_reload *": {
+    "cpp": "Reload",
+    "js": "reload"
+  },
+  "git_submodule_reload_all *": {
+    "cpp": "ReloadAll",
+    "js": "reloadAll"
+  },
+  "const git_submodule_reload_all *": {
+    "cpp": "ReloadAll",
+    "js": "reloadAll"
+  },
+  "git_submodule_status *": {
+    "cpp": "Status",
+    "js": "status"
+  },
+  "const git_submodule_status *": {
+    "cpp": "Status",
+    "js": "status"
+  },
+  "git_submodule_location *": {
+    "cpp": "Location",
+    "js": "location"
+  },
+  "const git_submodule_location *": {
+    "cpp": "Location",
+    "js": "location"
+  },
+  "git_tag": {
+    "cpp": "GitTag",
+    "js": "Tag"
+  },
+  "const git_tag **": {
+    "cpp": "GitTag",
+    "js": "Tag"
+  },
+  "git_commit_create_from_oids": {
+    "cpp": "CreateFromOids",
+    "js": "createFromOids"
+  },
+  "git_commit_create_from_oids *": {
+    "cpp": "CreateFromOids",
+    "js": "createFromOids"
+  },
+  "const git_commit_create_from_oids *": {
+    "cpp": "CreateFromOids",
+    "js": "createFromOids"
+  },
+  "git_threads": {
+    "cpp": "GitThreads",
+    "js": "Threads"
+  },
+  "git_threads **": {
+    "cpp": "GitThreads",
+    "js": "Threads"
+  },
+  "git_threads *": {
+    "cpp": "GitThreads",
+    "js": "Threads"
+  },
+  "const git_threads **": {
+    "cpp": "GitThreads",
+    "js": "Threads"
+  },
+  "const git_threads *": {
+    "cpp": "GitThreads",
+    "js": "Threads"
+  },
+  "git_config_add_backend *": {
+    "cpp": "AddBackend",
+    "js": "addBackend"
+  },
+  "const git_config_add_backend *": {
+    "cpp": "AddBackend",
+    "js": "addBackend"
+  },
+  "git_trace": {
+    "cpp": "GitTrace",
+    "js": "Trace"
+  },
+  "git_trace **": {
+    "cpp": "GitTrace",
+    "js": "Trace"
+  },
+  "git_trace *": {
+    "cpp": "GitTrace",
+    "js": "Trace"
+  },
+  "const git_trace **": {
+    "cpp": "GitTrace",
+    "js": "Trace"
+  },
+  "const git_trace *": {
+    "cpp": "GitTrace",
+    "js": "Trace"
+  },
+  "git_filter_lookup": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_filter_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_filter_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_filter_list_new": {
+    "cpp": "ListNew",
+    "js": "listNew"
+  },
+  "git_filter_list_new *": {
+    "cpp": "ListNew",
+    "js": "listNew"
+  },
+  "const git_filter_list_new *": {
+    "cpp": "ListNew",
+    "js": "listNew"
+  },
+  "git_filter_list_push": {
+    "cpp": "ListPush",
+    "js": "listPush"
+  },
+  "git_filter_list_push *": {
+    "cpp": "ListPush",
+    "js": "listPush"
+  },
+  "const git_filter_list_push *": {
+    "cpp": "ListPush",
+    "js": "listPush"
+  },
+  "git_filter_list_length": {
+    "cpp": "ListLength",
+    "js": "listLength"
+  },
+  "git_filter_list_length *": {
+    "cpp": "ListLength",
+    "js": "listLength"
+  },
+  "const git_filter_list_length *": {
+    "cpp": "ListLength",
+    "js": "listLength"
+  },
+  "git_filter_source_repo": {
+    "cpp": "SourceRepo",
+    "js": "sourceRepo"
+  },
+  "git_filter_source_repo *": {
+    "cpp": "SourceRepo",
+    "js": "sourceRepo"
+  },
+  "const git_filter_source_repo *": {
+    "cpp": "SourceRepo",
+    "js": "sourceRepo"
+  },
+  "git_filter_source_path": {
+    "cpp": "SourcePath",
+    "js": "sourcePath"
+  },
+  "git_filter_source_path *": {
+    "cpp": "SourcePath",
+    "js": "sourcePath"
+  },
+  "const git_filter_source_path *": {
+    "cpp": "SourcePath",
+    "js": "sourcePath"
+  },
+  "git_filter_source_filemode": {
+    "cpp": "SourceFilemode",
+    "js": "sourceFilemode"
+  },
+  "git_filter_source_filemode *": {
+    "cpp": "SourceFilemode",
+    "js": "sourceFilemode"
+  },
+  "const git_filter_source_filemode *": {
+    "cpp": "SourceFilemode",
+    "js": "sourceFilemode"
+  },
+  "git_filter_source_id": {
+    "cpp": "SourceId",
+    "js": "sourceId"
+  },
+  "git_filter_source_id *": {
+    "cpp": "SourceId",
+    "js": "sourceId"
+  },
+  "const git_filter_source_id *": {
+    "cpp": "SourceId",
+    "js": "sourceId"
+  },
+  "git_filter_source_mode": {
+    "cpp": "SourceMode",
+    "js": "sourceMode"
+  },
+  "git_filter_source_mode *": {
+    "cpp": "SourceMode",
+    "js": "sourceMode"
+  },
+  "const git_filter_source_mode *": {
+    "cpp": "SourceMode",
+    "js": "sourceMode"
+  },
+  "git_filter_register": {
+    "cpp": "Register",
+    "js": "register"
+  },
+  "git_filter_register *": {
+    "cpp": "Register",
+    "js": "register"
+  },
+  "const git_filter_register *": {
+    "cpp": "Register",
+    "js": "register"
+  },
+  "git_filter_unregister": {
+    "cpp": "Unregister",
+    "js": "unregister"
+  },
+  "git_filter_unregister *": {
+    "cpp": "Unregister",
+    "js": "unregister"
+  },
+  "const git_filter_unregister *": {
+    "cpp": "Unregister",
+    "js": "unregister"
+  },
+  "git_transport": {
+    "cpp": "GitTransport",
+    "js": "Transport"
+  },
+  "const git_transport **": {
+    "cpp": "GitTransport",
+    "js": "Transport"
+  },
+  "const git_transport *": {
+    "cpp": "GitTransport",
+    "js": "Transport"
+  },
+  "git_index_name_entrycount": {
+    "cpp": "NameEntrycount",
+    "js": "nameEntrycount"
+  },
+  "git_index_name_entrycount *": {
+    "cpp": "NameEntrycount",
+    "js": "nameEntrycount"
+  },
+  "const git_index_name_entrycount *": {
+    "cpp": "NameEntrycount",
+    "js": "nameEntrycount"
+  },
+  "git_index_name_get_byindex": {
+    "cpp": "NameGetByindex",
+    "js": "nameGetByindex"
+  },
+  "git_index_name_get_byindex *": {
+    "cpp": "NameGetByindex",
+    "js": "nameGetByindex"
+  },
+  "const git_index_name_get_byindex *": {
+    "cpp": "NameGetByindex",
+    "js": "nameGetByindex"
+  },
+  "git_index_name_add": {
+    "cpp": "NameAdd",
+    "js": "nameAdd"
+  },
+  "git_index_name_add *": {
+    "cpp": "NameAdd",
+    "js": "nameAdd"
+  },
+  "const git_index_name_add *": {
+    "cpp": "NameAdd",
+    "js": "nameAdd"
+  },
+  "git_index_name_clear": {
+    "cpp": "NameClear",
+    "js": "nameClear"
+  },
+  "git_index_name_clear *": {
+    "cpp": "NameClear",
+    "js": "nameClear"
+  },
+  "const git_index_name_clear *": {
+    "cpp": "NameClear",
+    "js": "nameClear"
+  },
+  "git_index_reuc_entrycount *": {
+    "cpp": "ReucEntrycount",
+    "js": "reucEntrycount"
+  },
+  "const git_index_reuc_entrycount *": {
+    "cpp": "ReucEntrycount",
+    "js": "reucEntrycount"
+  },
+  "git_index_reuc_find *": {
+    "cpp": "ReucFind",
+    "js": "reucFind"
+  },
+  "const git_index_reuc_find *": {
+    "cpp": "ReucFind",
+    "js": "reucFind"
+  },
+  "git_index_reuc_get_bypath *": {
+    "cpp": "ReucGetBypath",
+    "js": "reucGetBypath"
+  },
+  "const git_index_reuc_get_bypath *": {
+    "cpp": "ReucGetBypath",
+    "js": "reucGetBypath"
+  },
+  "git_index_reuc_get_byindex *": {
+    "cpp": "ReucGetByindex",
+    "js": "reucGetByindex"
+  },
+  "const git_index_reuc_get_byindex *": {
+    "cpp": "ReucGetByindex",
+    "js": "reucGetByindex"
+  },
+  "git_index_reuc_add *": {
+    "cpp": "ReucAdd",
+    "js": "reucAdd"
+  },
+  "const git_index_reuc_add *": {
+    "cpp": "ReucAdd",
+    "js": "reucAdd"
+  },
+  "git_index_reuc_remove *": {
+    "cpp": "ReucRemove",
+    "js": "reucRemove"
+  },
+  "const git_index_reuc_remove *": {
+    "cpp": "ReucRemove",
+    "js": "reucRemove"
+  },
+  "git_index_reuc_clear *": {
+    "cpp": "ReucClear",
+    "js": "reucClear"
+  },
+  "const git_index_reuc_clear *": {
+    "cpp": "ReucClear",
+    "js": "reucClear"
+  },
+  "git_tree": {
+    "cpp": "GitTree",
+    "js": "Tree"
+  },
+  "const git_tree **": {
+    "cpp": "GitTree",
+    "js": "Tree"
+  },
+  "git_types": {
+    "cpp": "GitTypes",
+    "js": "Types"
+  },
+  "git_types **": {
+    "cpp": "GitTypes",
+    "js": "Types"
+  },
+  "git_types *": {
+    "cpp": "GitTypes",
+    "js": "Types"
+  },
+  "const git_types **": {
+    "cpp": "GitTypes",
+    "js": "Types"
+  },
+  "const git_types *": {
+    "cpp": "GitTypes",
+    "js": "Types"
+  },
+  "git_refdb_backend_fs *": {
+    "cpp": "RefdbBackendFs",
+    "js": "refdbBackendFs"
+  },
+  "const git_refdb_backend_fs *": {
+    "cpp": "RefdbBackendFs",
+    "js": "refdbBackendFs"
+  },
+  "git_refdb_set_backend *": {
+    "cpp": "RefdbSetBackend",
+    "js": "refdbSetBackend"
+  },
+  "const git_refdb_set_backend *": {
+    "cpp": "RefdbSetBackend",
+    "js": "refdbSetBackend"
+  },
+  "git_version": {
+    "cpp": "GitVersion",
+    "js": "Version"
+  },
+  "git_version **": {
+    "cpp": "GitVersion",
+    "js": "Version"
+  },
+  "git_version *": {
+    "cpp": "GitVersion",
+    "js": "Version"
+  },
+  "const git_version **": {
+    "cpp": "GitVersion",
+    "js": "Version"
+  },
+  "const git_version *": {
+    "cpp": "GitVersion",
+    "js": "Version"
   }
 }
