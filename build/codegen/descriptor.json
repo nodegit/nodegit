@@ -156,7 +156,31 @@
   },
 
   "repository": {
-    "ignore": false
+    "ignore": false,
+
+    "functions": {
+      "git_repository_open": {
+        "isAsync": true,
+        "isConstructorMethod": true,
+
+        "args": {
+          "out": {
+            "isReturn": true
+          }
+        }
+      },
+
+      "git_repository_init": {
+        "isAsync": true,
+        "isConstructorMethod": true,
+
+        "args": {
+          "out": {
+            "isReturn": true
+          }
+        }
+      }
+    }
   },
 
   "reset": {

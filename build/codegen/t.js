@@ -166,20 +166,32 @@ Object.keys(descriptor).forEach(function(fileName, index) {
 
     var args = descriptor.args || [];
     var typeDescriptor = args.length ? args[0].type || "" : "";
-    var isCtor = typeDescriptor.indexOf("**") === typeDescriptor.length - 2;
+
+    var functionDescriptor = file.functions ? file.functions[functionName] || {} : {};
+
+    var isCtor = Boolean(functionDescriptor.isConstructorMethod);
+
     descriptor.isConstructorMethod = isCtor;
 
     // Set the prototype method argument.
     descriptor.isPrototypeMethod = !descriptor.isConstructorMethod;
 
     descriptor.args = funcDescriptor.args.map(function(arg) {
+      var manualArgs = functionDescriptor.args ? functionDescriptor.args[arg.name] || {} : {};
+
+      function isSelf(arg) {
+        return file.jsClassName === typeMap[arg.type].js;
+      }
+
       if (typeMap[arg.type]) {
         return {
           name: arg.name,
           cType: arg.type,
           cppClassName: typeMap[arg.type].cpp,
           jsClassName: typeMap[arg.type].js,
-          comment: arg.comment
+          comment: arg.comment,
+          isReturn: arg.name === "out" || arg.name.slice(-4) === "_out",
+          isSelf: isSelf(arg)
         };
       }
 

@@ -12,6 +12,11 @@ try {
 
 var idefs = require("./compare");
 
+var emBrowserTemplate = ejs.compile(
+  "" + fs.readFileSync(String(__dirname + "/templates/em.browser.js.ejs")), {
+    filename: "browser.js"
+  });
+
 var emClassTemplate = ejs.compile(
   "" + fs.readFileSync(String(__dirname + "/templates/em.class.js.ejs")), {
     filename: "class.js"
@@ -53,3 +58,6 @@ Object.keys(idefs).forEach(function(keyName) {
 
 fs.writeFileSync(
   __dirname + "/../emscripten/nodegit.js", emNodegitTemplate({ files: idefs }));
+
+fs.writeFileSync(
+  __dirname + "/../../browser.js", emBrowserTemplate());

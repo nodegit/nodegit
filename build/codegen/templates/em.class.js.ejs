@@ -3,14 +3,13 @@
  **/
 
 // Emscripten build.
-var Module = require("../libgit2.min");
+require("../libgit2.min");
 
+<% if (typeof ctor.dependencies != 'undefined' && ctor.dependencies.length) { %>
 // NodeGit internal constructors.
-<% if (typeof ctor.dependencies != 'undefined') { -%>
-<% for (d in ctor.dependencies) { -%>
-var <%- typeMap['git_' +ctor.dependencies[d].slice(11, -2)].js %> = require('./<%- ctor.dependencies[d].slice(11, -2) %>');
-<% } -%>
-<% } -%>
+<% ctor.dependencies.shift(); %><% for (d in ctor.dependencies) { %>var <%- typeMap['git_' +ctor.dependencies[d].slice(11, -2)].js %> = require('./<%- ctor.dependencies[d].slice(11, -2) %>');
+<% } %>
+<% } %>
 
 /**
  * Represents a <%- ctor.jsClassName %>.
@@ -19,6 +18,94 @@ var <%- ctor.jsClassName %> = {};
 <% } else { %>
 function <%- ctor.jsClassName %>() {
 
+}<% } %>
+
+<%
+// List of unavailable words.
+var reservedWords = [
+  "in", "implements", "interface", "let", "package", "private", "protected",
+  "public", "static", "yield", "class", "enum", "export", "extends",
+  "import", "super", "abstract", "boolean", "byte", "char", "class", "const",
+  "debugger", "double", "enum", "export", "extends", "final", "float",
+  "goto", "implements", "import", "int", "interface", "long", "native",
+  "package", "private", "protected", "public", "short", "static", "super",
+  "synchronized", "throws", "transient", "volatile"
+];
+
+
+function args(descriptor, addCallback) {
+  var isAsync = descriptor.isAsync;
+
+  var args = descriptor.args
+    .filter(function(arg) {
+      return !arg.isReturn && !arg.isSelf && arg.name;
+    })
+
+    .map(function(arg) {
+      if (reservedWords.indexOf(arg.name) > -1) {
+        return arg.name + "_safe";
+      }
+
+      return arg.name;
+    });
+
+  if (isAsync && addCallback) {
+    args.push("callback");
+  }
+
+  return args;
 }
+%>
+
+<% if (ctor.cType != null) { %>
+<% ctor.functions.forEach(function(descriptor) { %>
+<% if (!descriptor.isConstructorMethod) { %>
+<%- ctor.jsClassName %>.prototype.<%- descriptor.jsFunctionName %> = function(<%- args(descriptor, true) %>) {
+<% } else { %>
+<%- ctor.jsClassName %>.<%- descriptor.jsFunctionName %> = function(<%- args(descriptor, true) %>) {
+<% } %>
+  
+  <% if (descriptor.args[1] && descriptor.args[1].name === "path") { %>
+  // Always resolve the path.
+  path = require("path").resolve(path);
+
+  var root = path.split("/")[1];
+
+  try {
+    global.Module.FS.mkdir("/" + root);
+    global.Module.FS.mount(global.Module.NODEFS, { root: "/" + root }, "/" + root);
+  } catch(ex) {}
+  <% } %>
+
+<% if (descriptor.args && descriptor.args[0].isReturn) { %>
+  <% if (descriptor.isConstructorMethod) { %>
+  var <%- descriptor.args[0].name %> = new <%- ctor.jsClassName %>();
+  <% } else { %>
+  var <%- descriptor.args[0].name %> = this;
+  <% } %>
+<% } %>
+
+  var err = global.Module.ccall("<%- descriptor.cFunctionName %>", "<%- descriptor.return.cType %>", [
+    <% descriptor.args.forEach(function(arg) { %>
+    "<%- (arg.jsClassName || "").toLowerCase() %>",
+    <% }); %>
+  ], [
+    <% if (descriptor.args && descriptor.args[0].isReturn) { %>
+    <%- descriptor.args[0].name %>,
+    <% } %>
+    <%- args(descriptor) %>
+  ]);
+
+  <% if (descriptor.isAsync) { %>
+  callback(err <%- descriptor.args[0].name ? ", " + descriptor.args[0].name : ""  %>);
+  <% } %>
+
+};<% }); %>
+<% } else { %>
+<% ctor.functions.forEach(function(descriptor) { %>
+<%- ctor.jsClassName %>.<%- descriptor.jsFunctionName %> = function(<%- args(descriptor, true) %>) {
+
+};
+<% }); %>
 <% } %>
 module.exports = <%- ctor.jsClassName %>;

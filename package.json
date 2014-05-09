@@ -22,6 +22,7 @@
     }
   ],
   "main": "index.js",
+  "browser": "browser.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/tbranyen/nodegit.git"
@@ -53,6 +54,7 @@
     "lint": "jshint src",
     "install": "npm run codegen && node install.js",
     "test": "cd test && nodeunit nodegit.js",
-    "codegen": "node build/codegen/t.js && node build/codegen/generate.js"
+    "codegen": "node build/codegen/t.js && node build/codegen/generate.js",
+    "browserify": "browserify . --noparse=build/libgit2.min.js > dist/nodegit.js"
   }
 }

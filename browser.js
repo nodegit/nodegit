@@ -1,3 +1,7 @@
+/**
+ * This code is auto-generated; unless you know what you're doing, do not modify!
+ **/
+
 // Used to detect for Cygwin
 var os = require('os');
 
