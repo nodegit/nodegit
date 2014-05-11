@@ -107,13 +107,13 @@ clone("https://github.com/nodegit/nodegit", "tmp", null, function(err, repo) {
   // Look up this known commit.
   repo.getCommit(sha, function(err, commit) {
     if (err) {
-      throw error;
+      throw err;
     }
 
     // Look up a specific file within that commit.
     commit.getEntry("README.md", function(err, entry) {
       if (err) {
-        throw error;
+        throw err;
       }
 
       // Get the blob contents from the file.
