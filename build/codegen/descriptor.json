@@ -1,258 +1,450 @@
 {
   "attr": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   },
 
   "blame": {
-    "ignore": false
+    "ignore": true
   },
 
   "blob": {
-    "ignore": false
-  },
-
-  "branch": {
     "ignore": false,
-    "cType": null
-  },
-
-  "buffer": {
-    "ignore": false
-  },
-
-  "checkout": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "clone": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "commit": {
-    "ignore": false
-  },
-
-  "common": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "config": {
-    "ignore": false
-  },
-
-  "cred_helpers": {
-    "ignore": false
-  },
-
-  "diff": {
-    "ignore": false
-  },
-
-  "errors": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "filter": {
-    "ignore": false
-  },
-
-  "graph": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "ignore": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "index": {
-    "ignore": false
-  },
-
-  "indexer": {
-    "ignore": false
-  },
-
-  "inttypes": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "merge": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "message": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "net": {
-    "ignore": false,
-    "cType": null
-  },
-
-  "notes": {
-    "ignore": false
-  },
-
-  "object": {
-    "ignore": false
-  },
-
-  "odb": {
-    "ignore": false
-  },
-
-  "odb_backend": {
-    "ignore": false
-  },
-
-  "oid": {
-    "ignore": false
-  },
-
-  "pack": {
-    "ignore": false
-  },
-
-  "patch": {
-    "ignore": false
-  },
-
-  "pathspec": {
-    "ignore": false
-  },
-
-  "push": {
-    "ignore": false
-  },
-
-  "refdb": {
-    "ignore": false
-  },
-
-  "refs": {
-    "ignore": false
-  },
-
-  "reflog": {
-    "ignore": false
-  },
-
-  "refspec": {
-    "ignore": false
-  },
-
-  "remote": {
-    "ignore": false
-  },
-
-  "repository": {
-    "ignore": false,
-
+    "dependencies": [
+      "../include/wrapper.h",
+      "node_buffer.h"
+    ],
     "functions": {
-      "git_repository_open": {
-        "isAsync": true,
-        "isConstructorMethod": true,
-
-        "args": {
-          "out": {
-            "isReturn": true
-          }
-        }
+      "git_blob_lookup": {
+        "ignore": false
       },
 
-      "git_repository_init": {
-        "isAsync": true,
-        "isConstructorMethod": true,
+      "git_blob_rawsize": {
+        "ignore": false,
+        "args": [{
+          "isSelf": true
+        }]
+      },
 
-        "args": {
-          "out": {
-            "isReturn": true
-          }
+      "git_blob_rawcontent": {
+        "ignore": false,
+        "args": [{
+          "isSelf": true
+        }],
+        "return": {
+          "cppClassName": "Wrapper"
         }
       }
     }
   },
 
-  "reset": {
+  "branch": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "buffer": {
+    "ignore": true
+  },
+
+  "checkout": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "clone": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "commit": {
     "ignore": false,
+    "dependencies": [
+      "../include/signature.h"
+    ],
+    "functions": {
+      "git_commit_lookup": {
+        "ignore": false,
+        "args": [{}, { "isSelf": true }]
+      },
+
+      "git_commit_message": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_id": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_time": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_time_offset": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_author": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_committer": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_parentcount": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_parent_id": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_tree_id": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      }
+    }
+  },
+
+  "common": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "config": {
+    "ignore": true
+  },
+
+  "cred_helpers": {
+    "ignore": true
+  },
+
+  "diff": {
+    "ignore": true
+  },
+
+  "errors": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "filter": {
+    "ignore": true
+  },
+
+  "graph": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "ignore": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "index": {
+    "ignore": true
+  },
+
+  "indexer": {
+    "ignore": true
+  },
+
+  "inttypes": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "merge": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "message": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "net": {
+    "ignore": true,
+    "cType": null
+  },
+
+  "notes": {
+    "ignore": true
+  },
+
+  "object": {
+    "ignore": true
+  },
+
+  "odb": {
+    "ignore": true
+  },
+
+  "odb_backend": {
+    "ignore": true
+  },
+
+  "oid": {
+    "ignore": false,
+    "functions": {
+      "git_oid_fromstr": {
+        "isAsync": false,
+        "isConstructorMethod": true,
+        "args": [{
+          "shouldAlloc": true
+        }]
+      },
+
+      "git_oid_allocfmt": {
+        "ignore": false,
+        "args": [{
+          "isSelf": true
+        }]
+      }
+    }
+  },
+
+  "pack": {
+    "ignore": true
+  },
+
+  "patch": {
+    "ignore": true
+  },
+
+  "pathspec": {
+    "ignore": true
+  },
+
+  "push": {
+    "ignore": true
+  },
+
+  "refdb": {
+    "ignore": true
+  },
+
+  "refs": {
+    "ignore": false,
+    "functions": {
+      "git_reference_lookup": {
+        "ignore": false,
+        "args": [{}, { "isSelf": true }]
+      },
+
+      "git_reference_type": {
+        "ignore": false,
+        "args": [
+          { "isSelf": true }
+        ]
+      },
+
+      "git_reference_target": {
+        "ignore": false,
+        "args": [{ "isSelf": true }],
+
+        "return": {
+          "copy": "git_oid_dup"
+        }
+      }
+    }
+  },
+
+  "reflog": {
+    "ignore": true
+  },
+
+  "refspec": {
+    "ignore": true
+  },
+
+  "remote": {
+    "ignore": true
+  },
+
+  "repository": {
+    "ignore": false,
+    "functions": {
+      "git_repository_open": {
+        "isConstructorMethod": true,
+        "ignore": false
+      },
+
+      "git_repository_init": {
+        "isConstructorMethod": true,
+        "ignore": false
+      }
+    }
+  },
+
+  "reset": {
+    "ignore": true,
     "cType": null
   },
 
   "revparse": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   },
 
   "revwalk": {
-    "ignore": false
+    "ignore": false,
+    "functions": {
+      "git_revwalk_new": {
+        "ignore": false,
+        "isAsync": false,
+        "jsFunctionName": "createRevwalk",
+        "cppFunctionName": "CreateRevwalk",
+        "args": [{}, { "isSelf": true }]
+      },
+
+      "git_revwalk_sorting": {
+        "ignore": false,
+        "args": [{ "isSelf": true, "isReturn": false }]
+      },
+
+      "git_revwalk_push": {
+        "ignore": false,
+        "isAsync": true,
+        "args": [
+          {
+            "isSelf": true,
+            "isReturn": false
+          },
+          {
+            "isReturn": false
+          }
+        ],
+
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_revwalk_walk": {
+        "ignore": false,
+        "args": [{ "isSelf": true, "isReturn": false }]
+      },
+
+      "git_revwalk_next": {
+        "ignore": false,
+        "args": [
+          { "shouldAlloc": true }
+        ]
+      }
+    }
   },
 
   "signature": {
-    "ignore": false
+    "ignore": false,
+
+    "dependencies": [
+      "../include/time.h"
+    ],
+
+    "fields": [
+      {
+        "name": "name",
+        "cType": "const char *"
+      },
+      {
+        "name": "email",
+        "cType": "const char *"
+      },
+      {
+        "name": "when",
+        "cType": "git_time",
+        "copy": "git_time_dup"
+      }
+    ]
   },
 
   "stash": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   },
 
   "status": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   },
 
   "stdint": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   },
 
   "stdarray": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   },
 
   "submodule": {
-    "ignore": false
+    "ignore": true
   },
 
   "tag": {
-    "ignore": false
+    "ignore": true
   },
 
   "threads": {
-    "ignore": false
+    "ignore": false,
+    "cType": null,
+    "functions": {
+      "git_threads_init": {
+        "ignore": false
+      }
+    }
+  },
+
+  "time": {
+    "ignore": false,
+    "cType": "git_time",
+    "freeFunctionName": "free",
+
+    "fields": [
+      {
+        "name": "time",
+        "cType": "git_time_t"
+      },
+      {
+        "name": "offset",
+        "cType": "int"
+      }
+    ]
   },
 
   "trace": {
-    "ignore": false
-  },
-
-  "transport": {
-    "ignore": false
-  },
-
-  "tree": {
     "ignore": false,
     "cType": null
   },
 
+  "transport": {
+    "ignore": true
+  },
+
+  "tree": {
+    "ignore": false
+  },
+
   "types": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   },
 
   "version": {
-    "ignore": false,
+    "ignore": true,
     "cType": null
   }
 }

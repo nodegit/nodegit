@@ -11,6 +11,7 @@
         # Maintained.
         "src/base.cc",
         "src/wrapper.cc",
+        "src/time.cc",
         "src/functions/copy.cc",
 
         # Generated files.

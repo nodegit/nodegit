@@ -12158,6 +12158,7 @@
           }
         ],
         "isAsync": true,
+        "isFree": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
         "jsFunctionName": "getBlob",

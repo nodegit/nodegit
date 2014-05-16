@@ -59,6 +59,7 @@
 #include "../include/submodule.h"
 #include "../include/tag.h"
 #include "../include/threads.h"
+#include "../include/time.h"
 #include "../include/trace.h"
 #include "../include/transport.h"
 #include "../include/tree.h"
@@ -116,6 +117,7 @@ extern "C" void init(Handle<v8::Object> target) {
   GitSubmodule::Initialize(target);
   GitTag::Initialize(target);
   GitThreads::Initialize(target);
+  GitTime::Initialize(target);
   GitTrace::Initialize(target);
   GitTransport::Initialize(target);
   GitTree::Initialize(target);

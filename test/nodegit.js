@@ -4,7 +4,16 @@ var exec = require('child_process').exec;
 var path = require('path');
 var async = require('async');
 
-var testFiles = ['blob','difflist','oid','repo','tree_entry','commit','reference','revwalk','tree'];
+var testFiles = [
+  'blob',
+  'oid',
+  'repo',
+  'reference',
+  'commit',
+  'revwalk',
+  'tree_entry',
+  //'tree',
+];
 
 function setupReposCache(cb) {
   fs.mkdir('repos',function() {

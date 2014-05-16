@@ -29,4 +29,4 @@ require('./lib/revwalk.js');
 exports.version = require('./package').version;
 
 // Initialize threads
-//exports.Threads.init();
+exports.Threads.threadsInit();

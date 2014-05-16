@@ -3,10 +3,6 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.1.4",
   "libgit2": {
-    "sha": "a50086d174658914d4d6462afbc83b02825b1f5b"
-  },
-  "version": "0.1.3",
-  "libgit2": {
     "sha": "43cb8b32428b1b29994874349ec22eb5372e152c",
     "version": "0.20.0"
   },
@@ -67,6 +63,6 @@
     "install": "npm run codegen && node install.js",
     "test": "cd test && nodeunit nodegit.js",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
-    "codegen": "node build/codegen/t.js && node build/codegen/generate.js"
+    "codegen": "node build/codegen/t.js ; node build/codegen/generate.js"
   }
 }

@@ -21,7 +21,8 @@ NAN_METHOD(<%- cppClassName %>::<%- functionInfo.cppFunctionName %>) {
 -%>
 <% if (!arg.isReturn) { -%>
 <% if (arg.isSelf) { -%>
-  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
+  baton-><%- arg.name %>Reference = Persistent<Value>::New(args.This());
+  baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- arg.cppClassName %>>(args.This())->GetValue();
 <% } else { -%>
   <% include convertFromV8.cc.ejs -%>
   <% if (!arg.isPayload) { -%>

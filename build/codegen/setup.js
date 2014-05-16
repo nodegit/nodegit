@@ -19,6 +19,7 @@ typeMap.__proto__ = {
   "const git_status_entry *": { cpp: "StatusEntry", js: "StatusEntry" },
   "const git_index_name_entry *": {
     cpp: "IndexNameEntry", js: "IndexNameEntry" },
+  "git_time": { cpp: "GitTime", js: "Time", },
 
   // unsure
   "uint16_t": { cpp: "Integer", js: "Number" },
@@ -63,7 +64,7 @@ Object.keys(descriptor).forEach(function(fileName, index) {
 
   // Adjust to find the real the index.
   libgit2.files.some(function(currentFile, _index) {
-    if (currentFile.filename === file.filename) {
+    if (currentFile.file === file.filename) {
       index = _index;
       return true;
     }
@@ -115,10 +116,15 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     addType(funcDescriptor.return.type);
   });
 
+  var deps = file.dependencies;
+
   file.dependencies = uniqueTypes.map(function(file) {
     return "../include/" + file + ".h"; 
   });
 
+  if (deps) {
+    file.dependencies.push.apply(file.dependencies, deps);
+  }
 
   // Add to the type's list if it's new.
   typeMap["const " + "git_" + fileName + " *"] =
@@ -130,15 +136,33 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     js: file.jsClassName 
   };
 
+  var fields = file.fields || [];
+
+  // Decorate fields.
+  file.fields = fields.map(function(field) {
+    field.cppFunctionName = titleCase(field.name);
+    field.jsFunctionName = camelCase(field.name);
+    field.cppClassName = typeMap[field.cType].cpp;
+    field.jsClassName = typeMap[field.cType].js;
+
+    return field;
+  });
+
+  // Used to identify a missing function descriptor later on.
+  var ident = {};
+
   file.functions = libgit2.files[index].functions.map(function(functionName, index) {
     var funcDescriptor = libgit2.functions[functionName];
     var descriptor = legacyFile.functions ? legacyFile.functions[index] || {} : {};
     var cType = file.cType || "git";
 
+    // From the hand maintained file.
+    var functionDescriptor = file.functions ? file.functions[functionName] || ident : ident;
+
     if (!functionName || !funcDescriptor) { return; }
 
     descriptor.cFunctionName = functionName;
-    descriptor.ignore = true;
+    descriptor.ignore = functionDescriptor === ident;
 
     var trimmedName = functionName.slice(cType.length + 1);
 
@@ -146,8 +170,8 @@ Object.keys(descriptor).forEach(function(fileName, index) {
       trimmedName = "new2";
     }
 
-    descriptor.cppFunctionName = titleCase(trimmedName);
-    descriptor.jsFunctionName = camelCase(trimmedName);
+    descriptor.cppFunctionName = functionDescriptor.cppFunctionName || titleCase(trimmedName);
+    descriptor.jsFunctionName = functionDescriptor.jsFunctionName || camelCase(trimmedName);
 
     // Add to the type's list if it's new.
     typeMap["const " + descriptor.cFunctionName + " *"] =
@@ -157,17 +181,21 @@ Object.keys(descriptor).forEach(function(fileName, index) {
       js: descriptor.jsFunctionName 
     };
 
-    var retVal = descriptor.return = {};
+    var retVal = descriptor.return = functionDescriptor.return || {};
     retVal.cType = funcDescriptor.return.type;
 
     var type = typeMap[retVal.cType];
-    retVal.cppClassName = type.cpp;
-    retVal.jsClassName = type.js;
+
+    if (!retVal.cppClassName) {
+      retVal.cppClassName = type.cpp;
+    }
+
+    if (!retVal.jsClassName) {
+      retVal.jsClassName = type.js;
+    }
 
     var args = descriptor.args || [];
     var typeDescriptor = args.length ? args[0].type || "" : "";
-
-    var functionDescriptor = file.functions ? file.functions[functionName] || {} : {};
 
     var isCtor = Boolean(functionDescriptor.isConstructorMethod);
 
@@ -176,12 +204,38 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     // Set the prototype method argument.
     descriptor.isPrototypeMethod = !descriptor.isConstructorMethod;
 
-    descriptor.args = funcDescriptor.args.map(function(arg) {
-      var manualArgs = functionDescriptor.args ? functionDescriptor.args[arg.name] || {} : {};
+    var hasReturn = false;
 
-      function isSelf(arg) {
+    descriptor.args = funcDescriptor.args.map(function(arg, index) {
+      var manualArgs = functionDescriptor.args || [];
+
+      var isSelf = function() {
+        if (manualArgs[index] && typeof manualArgs[index].isSelf === "boolean") {
+          return manualArgs[index].isSelf;
+        }
+
+        if (index === 0) { return false; }
         return file.jsClassName === typeMap[arg.type].js;
-      }
+      };
+
+      var isReturn = function() {
+        if (manualArgs[index] && typeof manualArgs[index].isReturn === "boolean") {
+          return manualArgs[index].isReturn;
+        }
+
+        if (index > 0) { return false; }
+        if (arg.name === "out" || arg.name.slice(-4) === "_out") {
+          hasReturn = true;
+          return true;
+        }
+
+        if ((arg.type || "").replace(/[* ]/g, "") === file.cType) {
+          hasReturn = true;
+          return true;
+        }
+
+        return false;
+      };
 
       if (typeMap[arg.type]) {
         return {
@@ -190,13 +244,27 @@ Object.keys(descriptor).forEach(function(fileName, index) {
           cppClassName: typeMap[arg.type].cpp,
           jsClassName: typeMap[arg.type].js,
           comment: arg.comment,
-          isReturn: arg.name === "out" || arg.name.slice(-4) === "_out",
-          isSelf: isSelf(arg)
+          isReturn: isReturn() || false,
+          isSelf: isSelf() || false,
+          shouldAlloc: manualArgs[index] ? manualArgs[index].shouldAlloc || false : false
         };
       }
 
       return {};
     });
+
+    // By default all methods are synchronous.
+    descriptor.isAsync = false;
+
+    // Determine if retVal isErrorCode.
+    if (retVal.cType === "int" && hasReturn) {
+      retVal.isErrorCode = true;
+      descriptor.isAsync = true;
+    }
+
+    if (typeof functionDescriptor.isAsync === "boolean") {
+      descriptor.isAsync = functionDescriptor.isAsync;
+    }
 
     return descriptor;
   });

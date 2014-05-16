@@ -4,7 +4,9 @@ var sha = '5716e9757886eaf38d51c86b192258c960d9cfea';
 
 var getEntry = function(path, callback) {
   git.Repo.open('repos/workdir/.git', function(error, repo) {
+    console.log('test');
     repo.getCommit(sha, function(error, commit) {
+      console.log(error);
       commit.getEntry(path, callback);
     });
  });

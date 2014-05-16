@@ -101,7 +101,7 @@
   },
   "git_reference **": {
     "js": "Reference",
-    "cpp": "GitReference"
+    "cpp": "GitRefs"
   },
   "const git_commit *": {
     "cpp": "GitCommit",
@@ -113,7 +113,7 @@
   },
   "git_reference *": {
     "js": "Reference",
-    "cpp": "GitReference"
+    "cpp": "GitRefs"
   },
   "git_branch_foreach": {
     "js": "foreach",
@@ -895,7 +895,7 @@
   },
   "git_oid*": {
     "js": "Oid*",
-    "cpp": "Oid*"
+    "cpp": "GitOid*"
   },
   "git_note_read": {
     "cpp": "Read",
@@ -1347,7 +1347,7 @@
   },
   "const git_reference *": {
     "js": "Reference",
-    "cpp": "GitReference"
+    "cpp": "GitRefs"
   },
   "git_reflog_write": {
     "cpp": "Write",
@@ -1933,8 +1933,8 @@
     "js": "createInmemory"
   },
   "git_revwalk_new": {
-    "cpp": "New2",
-    "js": "new2"
+    "cpp": "CreateRevwalk",
+    "js": "createRevwalk"
   },
   "git_revwalk **": {
     "cpp": "GitRevwalk",
@@ -1953,56 +1953,56 @@
     "js": "addSetup"
   },
   "git_tag_lookup": {
-    "js": "getTag",
-    "cpp": "GetTag"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_tag **": {
     "cpp": "GitTag",
     "js": "Tag"
   },
   "git_tag_lookup_prefix": {
-    "js": "getTagByPrefix",
-    "cpp": "GetTagByPrefix"
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
   },
   "git_tag_create": {
-    "js": "createTag",
-    "cpp": "CreateTag"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_tag_create_lightweight": {
-    "js": "createLightweightTag",
-    "cpp": "CreateLightweightTag"
+    "cpp": "CreateLightweight",
+    "js": "createLightweight"
   },
   "git_tree_lookup": {
-    "js": "getTree",
-    "cpp": "GetTree"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_tree_lookup_prefix": {
-    "js": "getTreeByPrefix",
-    "cpp": "GetTreeByPrefix"
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
   },
   "git_submodule_reload_all": {
     "cpp": "ReloadAll",
     "js": "reloadAll"
   },
   "git_tag_delete": {
-    "js": "delete",
-    "cpp": "Delete"
+    "cpp": "Delete",
+    "js": "delete"
   },
   "git_tag_list": {
-    "js": "listTags",
-    "cpp": "ListTags"
+    "cpp": "List",
+    "js": "list"
   },
   "git_strarray *": {
     "js": "Strarray",
     "cpp": "Strarray"
   },
   "git_tag_list_match": {
-    "js": "listMatch",
-    "cpp": "ListMatch"
+    "cpp": "ListMatch",
+    "js": "listMatch"
   },
   "git_tag_foreach": {
-    "js": "foreach",
-    "cpp": "Foreach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_tag_foreach_cb": {
     "js": "TagForeachCb",
@@ -2328,64 +2328,64 @@
     "js": "location"
   },
   "git_tag_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_tag *": {
     "cpp": "GitTag",
     "js": "Tag"
   },
   "git_tag_id": {
-    "js": "oid",
-    "cpp": "Oid"
+    "cpp": "Id",
+    "js": "id"
   },
   "const git_tag *": {
     "cpp": "GitTag",
     "js": "Tag"
   },
   "git_tag_target": {
-    "js": "getTarget",
-    "cpp": "GetTarget"
+    "cpp": "Target",
+    "js": "target"
   },
   "git_tag_target_id": {
-    "js": "targetId",
-    "cpp": "TargetId"
+    "cpp": "TargetId",
+    "js": "targetId"
   },
   "git_tag_target_type": {
-    "js": "targetType",
-    "cpp": "TargetType"
+    "cpp": "TargetType",
+    "js": "targetType"
   },
   "git_tag_name": {
-    "js": "name",
-    "cpp": "Name"
+    "cpp": "Name",
+    "js": "name"
   },
   "git_tag_tagger": {
-    "js": "tagger",
-    "cpp": "Tagger"
+    "cpp": "Tagger",
+    "js": "tagger"
   },
   "git_tag_message": {
-    "js": "message",
-    "cpp": "Message"
+    "cpp": "Message",
+    "js": "message"
   },
   "git_tag_create_frombuffer": {
-    "js": "createFrombuffer",
-    "cpp": "CreateFrombuffer"
+    "cpp": "CreateFrombuffer",
+    "js": "createFrombuffer"
   },
   "git_tag_peel": {
-    "js": "peel",
-    "cpp": "Peel"
+    "cpp": "Peel",
+    "js": "peel"
   },
   "git_threads_init": {
-    "js": "init",
-    "cpp": "Init"
+    "cpp": "ThreadsInit",
+    "js": "threadsInit"
   },
   "git_threads_shutdown": {
-    "js": "shutdown",
-    "cpp": "Shutdown"
+    "cpp": "ThreadsShutdown",
+    "js": "threadsShutdown"
   },
   "git_trace_set": {
-    "js": "set",
-    "cpp": "Set"
+    "cpp": "TraceSet",
+    "js": "traceSet"
   },
   "git_trace_level_t": {
     "js": "TraceLevelT",
@@ -2396,32 +2396,32 @@
     "cpp": "TraceCallback"
   },
   "git_cred_userpass_plaintext_new": {
-    "js": "gitCredUserpassPlaintextNew",
-    "cpp": "GitCredUserpassPlaintextNew"
+    "cpp": "UserpassPlaintextNew",
+    "js": "userpassPlaintextNew"
   },
   "git_transport_new": {
-    "js": "new",
-    "cpp": "New"
+    "cpp": "PortNew",
+    "js": "portNew"
   },
   "git_transport **": {
     "cpp": "GitTransport",
     "js": "Transport"
   },
   "git_transport_dummy": {
-    "js": "dummy",
-    "cpp": "Dummy"
+    "cpp": "PortDummy",
+    "js": "portDummy"
   },
   "git_transport_local": {
-    "js": "local",
-    "cpp": "Local"
+    "cpp": "PortLocal",
+    "js": "portLocal"
   },
   "git_transport_smart": {
-    "js": "smart",
-    "cpp": "Smart"
+    "cpp": "PortSmart",
+    "js": "portSmart"
   },
   "git_smart_subtransport_http": {
-    "js": "gitSmartSubtransportHttp",
-    "cpp": "GitSmartSubtransportHttp"
+    "cpp": "SubtransportHttp",
+    "js": "SubtransportHttp"
   },
   "git_smart_subtransport **": {
     "js": "SmartSubtransport",
@@ -2432,12 +2432,12 @@
     "cpp": "Transport*"
   },
   "git_smart_subtransport_git": {
-    "js": "gitSmartSubtransportGit",
-    "cpp": "GitSmartSubtransportGit"
+    "cpp": "SubtransportGit",
+    "js": "SubtransportGit"
   },
   "git_tree_entry_dup": {
-    "js": "dup",
-    "cpp": "Dup"
+    "cpp": "EntryDup",
+    "js": "entryDup"
   },
   "const git_tree_entry *": {
     "js": "GitTreeEntry",
@@ -2448,88 +2448,88 @@
     "cpp": "GitTreeEntry"
   },
   "git_tree_entry_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "EntryFree",
+    "js": "entryFree"
   },
   "git_tree_entry_name": {
-    "js": "name",
-    "cpp": "Name"
+    "cpp": "EntryName",
+    "js": "entryName"
   },
   "git_tree_entry_id": {
-    "js": "oid",
-    "cpp": "Oid"
+    "cpp": "EntryId",
+    "js": "entryId"
   },
   "git_tree_entry_type": {
-    "js": "type",
-    "cpp": "Type"
+    "cpp": "EntryType",
+    "js": "entryType"
   },
   "git_tree_entry_filemode": {
-    "js": "filemode",
-    "cpp": "filemode"
+    "cpp": "EntryFilemode",
+    "js": "entryFilemode"
   },
   "git_filemode_t": {
     "js": "Number",
     "cpp": "Number"
   },
   "git_tree_entry_cmp": {
-    "js": "compare",
-    "cpp": "Compare"
+    "cpp": "EntryCmp",
+    "js": "entryCmp"
   },
   "git_tree_entry_to_object": {
-    "js": "getObject",
-    "cpp": "GetObject"
+    "cpp": "EntryToObject",
+    "js": "entryToObject"
   },
   "git_tree_free": {
-    "js": "free",
-    "cpp": "Free"
+    "cpp": "Free",
+    "js": "free"
   },
   "git_tree *": {
     "cpp": "GitTree",
     "js": "Tree"
   },
   "git_tree_id": {
-    "js": "oid",
-    "cpp": "Oid"
+    "cpp": "Id",
+    "js": "id"
   },
   "git_tree_owner": {
-    "js": "owner",
-    "cpp": "Owner"
+    "cpp": "Owner",
+    "js": "owner"
   },
   "git_tree_entrycount": {
-    "js": "size",
-    "cpp": "Size"
+    "cpp": "Entrycount",
+    "js": "entrycount"
   },
   "git_tree_entry_byname": {
-    "js": "entryByName",
-    "cpp": "EntryByName"
+    "cpp": "EntryByname",
+    "js": "entryByname"
   },
   "git_tree_entry_byindex": {
-    "js": "entryByIndex",
-    "cpp": "EntryByIndex"
+    "cpp": "EntryByindex",
+    "js": "entryByindex"
   },
   "git_tree_entry_byoid": {
-    "js": "entryByOid",
-    "cpp": "EntryByOid"
+    "cpp": "EntryByoid",
+    "js": "entryByoid"
   },
   "git_tree_entry_bypath": {
-    "js": "getEntry",
-    "cpp": "GetEntry"
+    "cpp": "EntryBypath",
+    "js": "entryBypath"
   },
   "git_tree_entry **": {
     "js": "TreeEntry",
     "cpp": "GitTreeEntry"
   },
   "git_treebuilder_create": {
-    "js": "create",
-    "cpp": "Create"
+    "cpp": "UilderCreate",
+    "js": "uilderCreate"
   },
   "git_treebuilder **": {
     "js": "TreeBuilder",
     "cpp": "GitTreeBuilder"
   },
   "git_tree_walk": {
-    "js": "walk",
-    "cpp": "Walk"
+    "cpp": "Walk",
+    "js": "walk"
   },
   "git_treewalk_mode": {
     "js": "TreewalkMode",
@@ -2552,48 +2552,48 @@
     "js": "treeToWorkdir"
   },
   "git_treebuilder_clear": {
-    "js": "clear",
-    "cpp": "Clear"
+    "cpp": "UilderClear",
+    "js": "uilderClear"
   },
   "git_treebuilder *": {
     "js": "TreeBuilder",
     "cpp": "GitTreeBuilder"
   },
   "git_treebuilder_entrycount": {
-    "js": "size",
-    "cpp": "Size"
+    "cpp": "UilderEntrycount",
+    "js": "uilderEntrycount"
   },
   "git_treebuilder_free": {
-    "js": "treebuilderFree",
-    "cpp": "GitTreebuilderFree"
+    "cpp": "UilderFree",
+    "js": "uilderFree"
   },
   "git_treebuilder_get": {
-    "js": "get",
-    "cpp": "Get"
+    "cpp": "UilderGet",
+    "js": "uilderGet"
   },
   "git_treebuilder_insert": {
-    "js": "insert",
-    "cpp": "Insert"
+    "cpp": "UilderInsert",
+    "js": "uilderInsert"
   },
   "const git_tree_entry **": {
     "js": "TreeEntry",
     "cpp": "GitTreeEntry"
   },
   "git_treebuilder_remove": {
-    "js": "gitTreebuilderRemove",
-    "cpp": "GitTreebuilderRemove"
+    "cpp": "UilderRemove",
+    "js": "uilderRemove"
   },
   "git_treebuilder_filter": {
-    "js": "filter",
-    "cpp": "Filter"
+    "cpp": "UilderFilter",
+    "js": "uilderFilter"
   },
   "git_treebuilder_filter_cb": {
     "js": "TreebuilderFilterCb",
     "cpp": "TreebuilderFilterCb"
   },
   "git_treebuilder_write": {
-    "js": "write",
-    "cpp": "Write"
+    "cpp": "UilderWrite",
+    "js": "uilderWrite"
   },
   "git_blame_hunk": {},
   "git_attr": {
@@ -7353,12 +7353,12 @@
     "js": "Revwalk"
   },
   "git_revwalk_new *": {
-    "cpp": "New2",
-    "js": "new2"
+    "cpp": "CreateRevwalk",
+    "js": "createRevwalk"
   },
   "const git_revwalk_new *": {
-    "cpp": "New2",
-    "js": "new2"
+    "cpp": "CreateRevwalk",
+    "js": "createRevwalk"
   },
   "git_revwalk_reset *": {
     "cpp": "Reset",
@@ -8033,136 +8033,136 @@
     "js": "Trace"
   },
   "git_filter_lookup": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "RLookup",
+    "js": "rLookup"
   },
   "git_filter_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "RLookup",
+    "js": "rLookup"
   },
   "const git_filter_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "RLookup",
+    "js": "rLookup"
   },
   "git_filter_list_new": {
-    "cpp": "ListNew",
-    "js": "listNew"
+    "cpp": "RListNew",
+    "js": "rListNew"
   },
   "git_filter_list_new *": {
-    "cpp": "ListNew",
-    "js": "listNew"
+    "cpp": "RListNew",
+    "js": "rListNew"
   },
   "const git_filter_list_new *": {
-    "cpp": "ListNew",
-    "js": "listNew"
+    "cpp": "RListNew",
+    "js": "rListNew"
   },
   "git_filter_list_push": {
-    "cpp": "ListPush",
-    "js": "listPush"
+    "cpp": "RListPush",
+    "js": "rListPush"
   },
   "git_filter_list_push *": {
-    "cpp": "ListPush",
-    "js": "listPush"
+    "cpp": "RListPush",
+    "js": "rListPush"
   },
   "const git_filter_list_push *": {
-    "cpp": "ListPush",
-    "js": "listPush"
+    "cpp": "RListPush",
+    "js": "rListPush"
   },
   "git_filter_list_length": {
-    "cpp": "ListLength",
-    "js": "listLength"
+    "cpp": "RListLength",
+    "js": "rListLength"
   },
   "git_filter_list_length *": {
-    "cpp": "ListLength",
-    "js": "listLength"
+    "cpp": "RListLength",
+    "js": "rListLength"
   },
   "const git_filter_list_length *": {
-    "cpp": "ListLength",
-    "js": "listLength"
+    "cpp": "RListLength",
+    "js": "rListLength"
   },
   "git_filter_source_repo": {
-    "cpp": "SourceRepo",
-    "js": "sourceRepo"
+    "cpp": "RSourceRepo",
+    "js": "rSourceRepo"
   },
   "git_filter_source_repo *": {
-    "cpp": "SourceRepo",
-    "js": "sourceRepo"
+    "cpp": "RSourceRepo",
+    "js": "rSourceRepo"
   },
   "const git_filter_source_repo *": {
-    "cpp": "SourceRepo",
-    "js": "sourceRepo"
+    "cpp": "RSourceRepo",
+    "js": "rSourceRepo"
   },
   "git_filter_source_path": {
-    "cpp": "SourcePath",
-    "js": "sourcePath"
+    "cpp": "RSourcePath",
+    "js": "rSourcePath"
   },
   "git_filter_source_path *": {
-    "cpp": "SourcePath",
-    "js": "sourcePath"
+    "cpp": "RSourcePath",
+    "js": "rSourcePath"
   },
   "const git_filter_source_path *": {
-    "cpp": "SourcePath",
-    "js": "sourcePath"
+    "cpp": "RSourcePath",
+    "js": "rSourcePath"
   },
   "git_filter_source_filemode": {
-    "cpp": "SourceFilemode",
-    "js": "sourceFilemode"
+    "cpp": "RSourceFilemode",
+    "js": "rSourceFilemode"
   },
   "git_filter_source_filemode *": {
-    "cpp": "SourceFilemode",
-    "js": "sourceFilemode"
+    "cpp": "RSourceFilemode",
+    "js": "rSourceFilemode"
   },
   "const git_filter_source_filemode *": {
-    "cpp": "SourceFilemode",
-    "js": "sourceFilemode"
+    "cpp": "RSourceFilemode",
+    "js": "rSourceFilemode"
   },
   "git_filter_source_id": {
-    "cpp": "SourceId",
-    "js": "sourceId"
+    "cpp": "RSourceId",
+    "js": "rSourceId"
   },
   "git_filter_source_id *": {
-    "cpp": "SourceId",
-    "js": "sourceId"
+    "cpp": "RSourceId",
+    "js": "rSourceId"
   },
   "const git_filter_source_id *": {
-    "cpp": "SourceId",
-    "js": "sourceId"
+    "cpp": "RSourceId",
+    "js": "rSourceId"
   },
   "git_filter_source_mode": {
-    "cpp": "SourceMode",
-    "js": "sourceMode"
+    "cpp": "RSourceMode",
+    "js": "rSourceMode"
   },
   "git_filter_source_mode *": {
-    "cpp": "SourceMode",
-    "js": "sourceMode"
+    "cpp": "RSourceMode",
+    "js": "rSourceMode"
   },
   "const git_filter_source_mode *": {
-    "cpp": "SourceMode",
-    "js": "sourceMode"
+    "cpp": "RSourceMode",
+    "js": "rSourceMode"
   },
   "git_filter_register": {
-    "cpp": "Register",
-    "js": "register"
+    "cpp": "RRegister",
+    "js": "rRegister"
   },
   "git_filter_register *": {
-    "cpp": "Register",
-    "js": "register"
+    "cpp": "RRegister",
+    "js": "rRegister"
   },
   "const git_filter_register *": {
-    "cpp": "Register",
-    "js": "register"
+    "cpp": "RRegister",
+    "js": "rRegister"
   },
   "git_filter_unregister": {
-    "cpp": "Unregister",
-    "js": "unregister"
+    "cpp": "RUnregister",
+    "js": "rUnregister"
   },
   "git_filter_unregister *": {
-    "cpp": "Unregister",
-    "js": "unregister"
+    "cpp": "RUnregister",
+    "js": "rUnregister"
   },
   "const git_filter_unregister *": {
-    "cpp": "Unregister",
-    "js": "unregister"
+    "cpp": "RUnregister",
+    "js": "rUnregister"
   },
   "git_transport": {
     "cpp": "GitTransport",
@@ -8343,5 +8343,593 @@
   "const git_version *": {
     "cpp": "GitVersion",
     "js": "Version"
+  },
+  "git_tag_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_tag_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_tag_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "const git_tag_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "git_tag_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_tag_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_tag_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "const git_tag_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "git_tag_owner": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_tag_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_tag_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_tag_target *": {
+    "cpp": "Target",
+    "js": "target"
+  },
+  "const git_tag_target *": {
+    "cpp": "Target",
+    "js": "target"
+  },
+  "git_tag_target_id *": {
+    "cpp": "TargetId",
+    "js": "targetId"
+  },
+  "const git_tag_target_id *": {
+    "cpp": "TargetId",
+    "js": "targetId"
+  },
+  "git_tag_target_type *": {
+    "cpp": "TargetType",
+    "js": "targetType"
+  },
+  "const git_tag_target_type *": {
+    "cpp": "TargetType",
+    "js": "targetType"
+  },
+  "git_tag_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "const git_tag_name *": {
+    "cpp": "Name",
+    "js": "name"
+  },
+  "git_tag_tagger *": {
+    "cpp": "Tagger",
+    "js": "tagger"
+  },
+  "const git_tag_tagger *": {
+    "cpp": "Tagger",
+    "js": "tagger"
+  },
+  "git_tag_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "const git_tag_message *": {
+    "cpp": "Message",
+    "js": "message"
+  },
+  "git_tag_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "const git_tag_create *": {
+    "cpp": "Create",
+    "js": "create"
+  },
+  "git_tag_annotation_create": {
+    "cpp": "AnnotationCreate",
+    "js": "annotationCreate"
+  },
+  "git_tag_annotation_create *": {
+    "cpp": "AnnotationCreate",
+    "js": "annotationCreate"
+  },
+  "const git_tag_annotation_create *": {
+    "cpp": "AnnotationCreate",
+    "js": "annotationCreate"
+  },
+  "git_tag_create_frombuffer *": {
+    "cpp": "CreateFrombuffer",
+    "js": "createFrombuffer"
+  },
+  "const git_tag_create_frombuffer *": {
+    "cpp": "CreateFrombuffer",
+    "js": "createFrombuffer"
+  },
+  "git_tag_create_lightweight *": {
+    "cpp": "CreateLightweight",
+    "js": "createLightweight"
+  },
+  "const git_tag_create_lightweight *": {
+    "cpp": "CreateLightweight",
+    "js": "createLightweight"
+  },
+  "git_tag_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "const git_tag_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "git_tag_list *": {
+    "cpp": "List",
+    "js": "list"
+  },
+  "const git_tag_list *": {
+    "cpp": "List",
+    "js": "list"
+  },
+  "git_tag_list_match *": {
+    "cpp": "ListMatch",
+    "js": "listMatch"
+  },
+  "const git_tag_list_match *": {
+    "cpp": "ListMatch",
+    "js": "listMatch"
+  },
+  "git_tag_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "const git_tag_foreach *": {
+    "cpp": "Foreach",
+    "js": "foreach"
+  },
+  "git_tag_peel *": {
+    "cpp": "Peel",
+    "js": "peel"
+  },
+  "const git_tag_peel *": {
+    "cpp": "Peel",
+    "js": "peel"
+  },
+  "git_threads_init *": {
+    "cpp": "ThreadsInit",
+    "js": "threadsInit"
+  },
+  "const git_threads_init *": {
+    "cpp": "ThreadsInit",
+    "js": "threadsInit"
+  },
+  "git_threads_shutdown *": {
+    "cpp": "ThreadsShutdown",
+    "js": "threadsShutdown"
+  },
+  "const git_threads_shutdown *": {
+    "cpp": "ThreadsShutdown",
+    "js": "threadsShutdown"
+  },
+  "git_trace_set *": {
+    "cpp": "TraceSet",
+    "js": "traceSet"
+  },
+  "const git_trace_set *": {
+    "cpp": "TraceSet",
+    "js": "traceSet"
+  },
+  "git_cred_has_username": {
+    "cpp": "HasUsername",
+    "js": "hasUsername"
+  },
+  "git_cred_has_username *": {
+    "cpp": "HasUsername",
+    "js": "hasUsername"
+  },
+  "const git_cred_has_username *": {
+    "cpp": "HasUsername",
+    "js": "hasUsername"
+  },
+  "git_cred_userpass_plaintext_new *": {
+    "cpp": "UserpassPlaintextNew",
+    "js": "userpassPlaintextNew"
+  },
+  "const git_cred_userpass_plaintext_new *": {
+    "cpp": "UserpassPlaintextNew",
+    "js": "userpassPlaintextNew"
+  },
+  "git_cred_ssh_key_new": {
+    "cpp": "SshKeyNew",
+    "js": "sshKeyNew"
+  },
+  "git_cred_ssh_key_new *": {
+    "cpp": "SshKeyNew",
+    "js": "sshKeyNew"
+  },
+  "const git_cred_ssh_key_new *": {
+    "cpp": "SshKeyNew",
+    "js": "sshKeyNew"
+  },
+  "git_cred_ssh_custom_new": {
+    "cpp": "SshCustomNew",
+    "js": "sshCustomNew"
+  },
+  "git_cred_ssh_custom_new *": {
+    "cpp": "SshCustomNew",
+    "js": "sshCustomNew"
+  },
+  "const git_cred_ssh_custom_new *": {
+    "cpp": "SshCustomNew",
+    "js": "sshCustomNew"
+  },
+  "git_cred_default_new": {
+    "cpp": "DefaultNew",
+    "js": "defaultNew"
+  },
+  "git_cred_default_new *": {
+    "cpp": "DefaultNew",
+    "js": "defaultNew"
+  },
+  "const git_cred_default_new *": {
+    "cpp": "DefaultNew",
+    "js": "defaultNew"
+  },
+  "git_transport_new *": {
+    "cpp": "PortNew",
+    "js": "portNew"
+  },
+  "const git_transport_new *": {
+    "cpp": "PortNew",
+    "js": "portNew"
+  },
+  "git_transport_register": {
+    "cpp": "PortRegister",
+    "js": "portRegister"
+  },
+  "git_transport_register *": {
+    "cpp": "PortRegister",
+    "js": "portRegister"
+  },
+  "const git_transport_register *": {
+    "cpp": "PortRegister",
+    "js": "portRegister"
+  },
+  "git_transport_unregister": {
+    "cpp": "PortUnregister",
+    "js": "portUnregister"
+  },
+  "git_transport_unregister *": {
+    "cpp": "PortUnregister",
+    "js": "portUnregister"
+  },
+  "const git_transport_unregister *": {
+    "cpp": "PortUnregister",
+    "js": "portUnregister"
+  },
+  "git_transport_dummy *": {
+    "cpp": "PortDummy",
+    "js": "portDummy"
+  },
+  "const git_transport_dummy *": {
+    "cpp": "PortDummy",
+    "js": "portDummy"
+  },
+  "git_transport_local *": {
+    "cpp": "PortLocal",
+    "js": "portLocal"
+  },
+  "const git_transport_local *": {
+    "cpp": "PortLocal",
+    "js": "portLocal"
+  },
+  "git_transport_smart *": {
+    "cpp": "PortSmart",
+    "js": "portSmart"
+  },
+  "const git_transport_smart *": {
+    "cpp": "PortSmart",
+    "js": "portSmart"
+  },
+  "git_smart_subtransport_http *": {
+    "cpp": "SubtransportHttp",
+    "js": "SubtransportHttp"
+  },
+  "const git_smart_subtransport_http *": {
+    "cpp": "SubtransportHttp",
+    "js": "SubtransportHttp"
+  },
+  "git_smart_subtransport_git *": {
+    "cpp": "SubtransportGit",
+    "js": "SubtransportGit"
+  },
+  "const git_smart_subtransport_git *": {
+    "cpp": "SubtransportGit",
+    "js": "SubtransportGit"
+  },
+  "git_smart_subtransport_ssh": {
+    "cpp": "SubtransportSsh",
+    "js": "SubtransportSsh"
+  },
+  "git_smart_subtransport_ssh *": {
+    "cpp": "SubtransportSsh",
+    "js": "SubtransportSsh"
+  },
+  "const git_smart_subtransport_ssh *": {
+    "cpp": "SubtransportSsh",
+    "js": "SubtransportSsh"
+  },
+  "git_tree_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "const git_tree_lookup *": {
+    "cpp": "Lookup",
+    "js": "lookup"
+  },
+  "git_tree_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "const git_tree_lookup_prefix *": {
+    "cpp": "LookupPrefix",
+    "js": "lookupPrefix"
+  },
+  "git_tree_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "const git_tree_free *": {
+    "cpp": "Free",
+    "js": "free"
+  },
+  "git_tree_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "const git_tree_id *": {
+    "cpp": "Id",
+    "js": "id"
+  },
+  "git_tree_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "const git_tree_owner *": {
+    "cpp": "Owner",
+    "js": "owner"
+  },
+  "git_tree_entrycount *": {
+    "cpp": "Entrycount",
+    "js": "entrycount"
+  },
+  "const git_tree_entrycount *": {
+    "cpp": "Entrycount",
+    "js": "entrycount"
+  },
+  "git_tree_entry_byname *": {
+    "cpp": "EntryByname",
+    "js": "entryByname"
+  },
+  "const git_tree_entry_byname *": {
+    "cpp": "EntryByname",
+    "js": "entryByname"
+  },
+  "git_tree_entry_byindex *": {
+    "cpp": "EntryByindex",
+    "js": "entryByindex"
+  },
+  "const git_tree_entry_byindex *": {
+    "cpp": "EntryByindex",
+    "js": "entryByindex"
+  },
+  "git_tree_entry_byoid *": {
+    "cpp": "EntryByoid",
+    "js": "entryByoid"
+  },
+  "const git_tree_entry_byoid *": {
+    "cpp": "EntryByoid",
+    "js": "entryByoid"
+  },
+  "git_tree_entry_bypath *": {
+    "cpp": "EntryBypath",
+    "js": "entryBypath"
+  },
+  "const git_tree_entry_bypath *": {
+    "cpp": "EntryBypath",
+    "js": "entryBypath"
+  },
+  "git_tree_entry_dup *": {
+    "cpp": "EntryDup",
+    "js": "entryDup"
+  },
+  "const git_tree_entry_dup *": {
+    "cpp": "EntryDup",
+    "js": "entryDup"
+  },
+  "git_tree_entry_free *": {
+    "cpp": "EntryFree",
+    "js": "entryFree"
+  },
+  "const git_tree_entry_free *": {
+    "cpp": "EntryFree",
+    "js": "entryFree"
+  },
+  "git_tree_entry_name *": {
+    "cpp": "EntryName",
+    "js": "entryName"
+  },
+  "const git_tree_entry_name *": {
+    "cpp": "EntryName",
+    "js": "entryName"
+  },
+  "git_tree_entry_id *": {
+    "cpp": "EntryId",
+    "js": "entryId"
+  },
+  "const git_tree_entry_id *": {
+    "cpp": "EntryId",
+    "js": "entryId"
+  },
+  "git_tree_entry_type *": {
+    "cpp": "EntryType",
+    "js": "entryType"
+  },
+  "const git_tree_entry_type *": {
+    "cpp": "EntryType",
+    "js": "entryType"
+  },
+  "git_tree_entry_filemode *": {
+    "cpp": "EntryFilemode",
+    "js": "entryFilemode"
+  },
+  "const git_tree_entry_filemode *": {
+    "cpp": "EntryFilemode",
+    "js": "entryFilemode"
+  },
+  "git_tree_entry_filemode_raw": {
+    "cpp": "EntryFilemodeRaw",
+    "js": "entryFilemodeRaw"
+  },
+  "git_tree_entry_filemode_raw *": {
+    "cpp": "EntryFilemodeRaw",
+    "js": "entryFilemodeRaw"
+  },
+  "const git_tree_entry_filemode_raw *": {
+    "cpp": "EntryFilemodeRaw",
+    "js": "entryFilemodeRaw"
+  },
+  "git_tree_entry_cmp *": {
+    "cpp": "EntryCmp",
+    "js": "entryCmp"
+  },
+  "const git_tree_entry_cmp *": {
+    "cpp": "EntryCmp",
+    "js": "entryCmp"
+  },
+  "git_tree_entry_to_object *": {
+    "cpp": "EntryToObject",
+    "js": "entryToObject"
+  },
+  "const git_tree_entry_to_object *": {
+    "cpp": "EntryToObject",
+    "js": "entryToObject"
+  },
+  "git_treebuilder_create *": {
+    "cpp": "UilderCreate",
+    "js": "uilderCreate"
+  },
+  "const git_treebuilder_create *": {
+    "cpp": "UilderCreate",
+    "js": "uilderCreate"
+  },
+  "git_treebuilder_clear *": {
+    "cpp": "UilderClear",
+    "js": "uilderClear"
+  },
+  "const git_treebuilder_clear *": {
+    "cpp": "UilderClear",
+    "js": "uilderClear"
+  },
+  "git_treebuilder_entrycount *": {
+    "cpp": "UilderEntrycount",
+    "js": "uilderEntrycount"
+  },
+  "const git_treebuilder_entrycount *": {
+    "cpp": "UilderEntrycount",
+    "js": "uilderEntrycount"
+  },
+  "git_treebuilder_free *": {
+    "cpp": "UilderFree",
+    "js": "uilderFree"
+  },
+  "const git_treebuilder_free *": {
+    "cpp": "UilderFree",
+    "js": "uilderFree"
+  },
+  "git_treebuilder_get *": {
+    "cpp": "UilderGet",
+    "js": "uilderGet"
+  },
+  "const git_treebuilder_get *": {
+    "cpp": "UilderGet",
+    "js": "uilderGet"
+  },
+  "git_treebuilder_insert *": {
+    "cpp": "UilderInsert",
+    "js": "uilderInsert"
+  },
+  "const git_treebuilder_insert *": {
+    "cpp": "UilderInsert",
+    "js": "uilderInsert"
+  },
+  "git_treebuilder_remove *": {
+    "cpp": "UilderRemove",
+    "js": "uilderRemove"
+  },
+  "const git_treebuilder_remove *": {
+    "cpp": "UilderRemove",
+    "js": "uilderRemove"
+  },
+  "git_treebuilder_filter *": {
+    "cpp": "UilderFilter",
+    "js": "uilderFilter"
+  },
+  "const git_treebuilder_filter *": {
+    "cpp": "UilderFilter",
+    "js": "uilderFilter"
+  },
+  "git_treebuilder_write *": {
+    "cpp": "UilderWrite",
+    "js": "uilderWrite"
+  },
+  "const git_treebuilder_write *": {
+    "cpp": "UilderWrite",
+    "js": "uilderWrite"
+  },
+  "git_tree_walk *": {
+    "cpp": "Walk",
+    "js": "walk"
+  },
+  "const git_tree_walk *": {
+    "cpp": "Walk",
+    "js": "walk"
+  },
+  "git_time": {
+    "cpp": "GitTime",
+    "js": "Time"
+  },
+  "git_time **": {
+    "cpp": "GitTime",
+    "js": "Time"
+  },
+  "git_time *": {
+    "cpp": "GitTime",
+    "js": "Time"
+  },
+  "const git_time **": {
+    "cpp": "GitTime",
+    "js": "Time"
+  },
+  "const git_time *": {
+    "cpp": "GitTime",
+    "js": "Time"
   }
 }
