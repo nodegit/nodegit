@@ -63,7 +63,8 @@
 #include "../include/trace.h"
 #include "../include/transport.h"
 #include "../include/tree.h"
-#include "../include/types.h"
+//#include "../include/tree_entry.h"
+//#include "../include/types.h"
 #include "../include/version.h"
 
 extern "C" void init(Handle<v8::Object> target) {
@@ -121,7 +122,8 @@ extern "C" void init(Handle<v8::Object> target) {
   GitTrace::Initialize(target);
   GitTransport::Initialize(target);
   GitTree::Initialize(target);
-  GitTypes::Initialize(target);
+  //GitTreeEntry::Initialize(target);
+  //GitTypes::Initialize(target);
   GitVersion::Initialize(target);
 }
 

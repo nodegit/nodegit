@@ -20,6 +20,7 @@ typeMap.__proto__ = {
   "const git_index_name_entry *": {
     cpp: "IndexNameEntry", js: "IndexNameEntry" },
   "git_time": { cpp: "GitTime", js: "Time", },
+  "git_vector": { cpp: "Array", js: "Array", },
 
   // unsure
   "uint16_t": { cpp: "Integer", js: "Number" },
@@ -163,6 +164,10 @@ Object.keys(descriptor).forEach(function(fileName, index) {
 
     descriptor.cFunctionName = functionName;
     descriptor.ignore = functionDescriptor === ident;
+
+    if (typeof functionDescriptor.ignore === "boolean") {
+      descriptor.ignore = functionDescriptor.ignore;
+    }
 
     var trimmedName = functionName.slice(cType.length + 1);
 

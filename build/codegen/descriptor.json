@@ -435,7 +435,84 @@
   },
 
   "tree": {
-    "ignore": false
+    "ignore": false,
+
+    "functions": {
+      "git_tree_entrycount": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_tree_lookup": {
+        "ignore": false,
+
+        "args": [{}, { "isSelf": true }]
+      },
+
+      "git_tree_entry_byindex": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      }
+
+      "git_tree_entry_bypath": {
+        "ignore": false
+      }
+    }
+  },
+
+  "treebuilder": {
+    "ignore": false,
+    "cType": "git_treebuilder",
+
+    "dependencies": [
+      "tree.h"
+    ],
+
+    "fields": [
+      {
+        "name": "entries",
+        "cType": "git_vector"
+      },
+      {
+        "name": "entrycount",
+        "cType": "size_t"
+      }
+    ]
+  },
+
+  "tree_entry": {
+    "ignore": true,
+
+    "structType": "git_tree_entry",
+    "cType": null,
+
+    "dependencies": [
+      "../include/tree.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "removed",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "attr",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "oid",
+        "cType": "git_oid"
+      },
+      {
+        "name": "filename_len",
+        "cType": "size_t"
+      },
+      {
+        "name": "filename",
+        "cType": "char *"
+      }
+    ]
   },
 
   "types": {

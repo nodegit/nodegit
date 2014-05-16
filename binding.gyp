@@ -11,7 +11,6 @@
         # Maintained.
         "src/base.cc",
         "src/wrapper.cc",
-        "src/time.cc",
         "src/functions/copy.cc",
 
         # Generated files.
@@ -63,10 +62,12 @@
         "src/submodule.cc",
         "src/tag.cc",
         "src/threads.cc",
+        "src/time.cc",
         "src/trace.cc",
         "src/transport.cc",
         "src/tree.cc",
-        "src/types.cc",
+        #"src/tree_entry.cc",
+        #"src/types.cc",
         "src/version.cc",
       ],
 

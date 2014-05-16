@@ -1314,8 +1314,8 @@
     "js": "free"
   },
   "git_reference__alloc": {
-    "js": "gitReference_Alloc",
-    "cpp": "GitReference_Alloc"
+    "cpp": "ReferenceAlloc",
+    "js": "referenceAlloc"
   },
   "git_refdb *": {
     "cpp": "GitRefdb",
@@ -2440,12 +2440,12 @@
     "js": "entryDup"
   },
   "const git_tree_entry *": {
-    "js": "GitTreeEntry",
-    "cpp": "TreeEntry"
+    "cpp": "GitTreeEntry",
+    "js": "TreeEntry"
   },
   "git_tree_entry *": {
-    "js": "TreeEntry",
-    "cpp": "GitTreeEntry"
+    "cpp": "GitTreeEntry",
+    "js": "TreeEntry"
   },
   "git_tree_entry_free": {
     "cpp": "EntryFree",
@@ -2516,16 +2516,16 @@
     "js": "entryBypath"
   },
   "git_tree_entry **": {
-    "js": "TreeEntry",
-    "cpp": "GitTreeEntry"
+    "cpp": "GitTreeEntry",
+    "js": "TreeEntry"
   },
   "git_treebuilder_create": {
     "cpp": "UilderCreate",
     "js": "uilderCreate"
   },
   "git_treebuilder **": {
-    "js": "TreeBuilder",
-    "cpp": "GitTreeBuilder"
+    "cpp": "GitTreebuilder",
+    "js": "Treebuilder"
   },
   "git_tree_walk": {
     "cpp": "Walk",
@@ -2556,8 +2556,8 @@
     "js": "uilderClear"
   },
   "git_treebuilder *": {
-    "js": "TreeBuilder",
-    "cpp": "GitTreeBuilder"
+    "cpp": "GitTreebuilder",
+    "js": "Treebuilder"
   },
   "git_treebuilder_entrycount": {
     "cpp": "UilderEntrycount",
@@ -2576,8 +2576,8 @@
     "js": "uilderInsert"
   },
   "const git_tree_entry **": {
-    "js": "TreeEntry",
-    "cpp": "GitTreeEntry"
+    "cpp": "GitTreeEntry",
+    "js": "TreeEntry"
   },
   "git_treebuilder_remove": {
     "cpp": "UilderRemove",
@@ -8931,5 +8931,41 @@
   "const git_time *": {
     "cpp": "GitTime",
     "js": "Time"
+  },
+  "git_treebuilder": {
+    "cpp": "GitTreebuilder",
+    "js": "Treebuilder"
+  },
+  "const git_treebuilder **": {
+    "cpp": "GitTreebuilder",
+    "js": "Treebuilder"
+  },
+  "const git_treebuilder *": {
+    "cpp": "GitTreebuilder",
+    "js": "Treebuilder"
+  },
+  "git_tree_entry": {
+    "cpp": "GitTreeEntry",
+    "js": "TreeEntry"
+  },
+  "git_reference__alloc *": {
+    "cpp": "ReferenceAlloc",
+    "js": "referenceAlloc"
+  },
+  "const git_reference__alloc *": {
+    "cpp": "ReferenceAlloc",
+    "js": "referenceAlloc"
+  },
+  "git_reference__alloc_symbolic": {
+    "cpp": "ReferenceAllocSymbolic",
+    "js": "referenceAllocSymbolic"
+  },
+  "git_reference__alloc_symbolic *": {
+    "cpp": "ReferenceAllocSymbolic",
+    "js": "referenceAllocSymbolic"
+  },
+  "const git_reference__alloc_symbolic *": {
+    "cpp": "ReferenceAllocSymbolic",
+    "js": "referenceAllocSymbolic"
   }
 }
