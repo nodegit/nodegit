@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -24,12 +23,12 @@ GitDiffFile::~GitDiffFile() {
 }
 
 void GitDiffFile::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("DiffFile"));
+  tpl->SetClassName(NanNew<String>("DiffFile"));
 
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
@@ -38,27 +37,27 @@ void GitDiffFile::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "flags", Flags);
   NODE_SET_PROTOTYPE_METHOD(tpl, "mode", Mode);
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("DiffFile"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("DiffFile"), _constructor_template);
 }
 
-Handle<Value> GitDiffFile::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffFile::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_diff_file is required.")));
+    return NanThrowError("git_diff_file is required.");
   }
-
-  GitDiffFile* object = new GitDiffFile((git_diff_file *) External::Unwrap(args[0]));
+  GitDiffFile* object = new GitDiffFile(static_cast<git_diff_file *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitDiffFile::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitDiffFile::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitDiffFile::constructor_template)->NewInstance(1, argv));
 }
 
 git_diff_file *GitDiffFile::GetValue() {
@@ -66,8 +65,8 @@ git_diff_file *GitDiffFile::GetValue() {
 }
 
 
-Handle<Value> GitDiffFile::Oid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffFile::Oid) {
+  NanScope();
     Handle<Value> to;
 
   git_oid *oid =
@@ -79,53 +78,53 @@ Handle<Value> GitDiffFile::Oid(const Arguments& args) {
   if (oid != NULL) {
     to = GitOid::New((void *)oid);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitDiffFile::Path(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffFile::Path) {
+  NanScope();
     Handle<Value> to;
 
   const char * path =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->path;
 
-    to = String::New(path);
-  return scope.Close(to);
+    to = NanNew<String>(path);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitDiffFile::Size(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffFile::Size) {
+  NanScope();
     Handle<Value> to;
 
   git_off_t size =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->size;
 
-    to = Integer::New(size);
-  return scope.Close(to);
+    to = NanNew<Integer>(size);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitDiffFile::Flags(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffFile::Flags) {
+  NanScope();
     Handle<Value> to;
 
   uint32_t flags =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->flags;
 
-    to = Integer::New(flags);
-  return scope.Close(to);
+    to = NanNew<Integer>(flags);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitDiffFile::Mode(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffFile::Mode) {
+  NanScope();
     Handle<Value> to;
 
   uint16_t mode =
     ObjectWrap::Unwrap<GitDiffFile>(args.This())->GetValue()->mode;
 
-    to = Integer::New(mode);
-  return scope.Close(to);
+    to = NanNew<Integer>(mode);
+  NanReturnValue(to);
 }
 
 Persistent<Function> GitDiffFile::constructor_template;

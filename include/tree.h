@@ -5,8 +5,7 @@
 #ifndef GITTREE_H
 #define GITTREE_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,85 +27,111 @@ class GitTree : public ObjectWrap {
     GitTree(git_tree *raw);
     ~GitTree();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> Size(const Arguments& args);
-    static Handle<Value> EntryByName(const Arguments& args);
-    static Handle<Value> EntryByIndex(const Arguments& args);
-    static Handle<Value> EntryByOid(const Arguments& args);
-    static Handle<Value> GetEntry(const Arguments& args);
-    static void GetEntryWork(uv_work_t* req);
-    static void GetEntryAfterWork(uv_work_t* req);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(Size);
+    static NAN_METHOD(EntryByName);
+    static NAN_METHOD(EntryByIndex);
+    static NAN_METHOD(EntryByOid);
 
     struct GetEntryBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_tree_entry * out;
-      Persistent<Value> rootReference;
       git_tree * root;
-      Persistent<Value> pathReference;
       const char * path;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Builder(const Arguments& args);
-    static Handle<Value> DiffTree(const Arguments& args);
-    static void DiffTreeWork(uv_work_t* req);
-    static void DiffTreeAfterWork(uv_work_t* req);
+    class GetEntryWorker : public NanAsyncWorker {
+      public:
+        GetEntryWorker(
+            GetEntryBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetEntryWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetEntryBaton *baton;
+    };
+    static NAN_METHOD(GetEntry);
+    static NAN_METHOD(Builder);
 
     struct DiffTreeBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_diff_list * diff;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> old_treeReference;
       git_tree * old_tree;
-      Persistent<Value> new_treeReference;
       git_tree * new_tree;
-      Persistent<Value> optsReference;
       const git_diff_options * opts;
-      Persistent<Function> callback;
     };
-    static Handle<Value> DiffIndex(const Arguments& args);
-    static void DiffIndexWork(uv_work_t* req);
-    static void DiffIndexAfterWork(uv_work_t* req);
+    class DiffTreeWorker : public NanAsyncWorker {
+      public:
+        DiffTreeWorker(
+            DiffTreeBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~DiffTreeWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        DiffTreeBaton *baton;
+    };
+    static NAN_METHOD(DiffTree);
 
     struct DiffIndexBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_diff_list * diff;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> old_treeReference;
       git_tree * old_tree;
-      Persistent<Value> indexReference;
       git_index * index;
-      Persistent<Value> optsReference;
       const git_diff_options * opts;
-      Persistent<Function> callback;
     };
-    static Handle<Value> DiffWorkDir(const Arguments& args);
-    static void DiffWorkDirWork(uv_work_t* req);
-    static void DiffWorkDirAfterWork(uv_work_t* req);
+    class DiffIndexWorker : public NanAsyncWorker {
+      public:
+        DiffIndexWorker(
+            DiffIndexBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~DiffIndexWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        DiffIndexBaton *baton;
+    };
+    static NAN_METHOD(DiffIndex);
 
     struct DiffWorkDirBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_diff_list * diff;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> old_treeReference;
       git_tree * old_tree;
-      Persistent<Value> optsReference;
       const git_diff_options * opts;
-      Persistent<Function> callback;
     };
+    class DiffWorkDirWorker : public NanAsyncWorker {
+      public:
+        DiffWorkDirWorker(
+            DiffWorkDirBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~DiffWorkDirWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        DiffWorkDirBaton *baton;
+    };
+    static NAN_METHOD(DiffWorkDir);
     git_tree *raw;
 };
 

@@ -5,8 +5,7 @@
 #ifndef GITREPO_H
 #define GITREPO_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,342 +27,488 @@ class GitRepo : public ObjectWrap {
     GitRepo(git_repository *raw);
     ~GitRepo();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Open(const Arguments& args);
-    static void OpenWork(uv_work_t* req);
-    static void OpenAfterWork(uv_work_t* req);
 
     struct OpenBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_repository * out;
-      Persistent<Value> pathReference;
       const char * path;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Init(const Arguments& args);
-    static void InitWork(uv_work_t* req);
-    static void InitAfterWork(uv_work_t* req);
+    class OpenWorker : public NanAsyncWorker {
+      public:
+        OpenWorker(
+            OpenBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~OpenWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        OpenBaton *baton;
+    };
+    static NAN_METHOD(Open);
 
     struct InitBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_repository * out;
-      Persistent<Value> pathReference;
       const char * path;
-      Persistent<Value> is_bareReference;
       unsigned is_bare;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Path(const Arguments& args);
-    static Handle<Value> Workdir(const Arguments& args);
-    static Handle<Value> Odb(const Arguments& args);
-    static Handle<Value> openIndex(const Arguments& args);
-    static void openIndexWork(uv_work_t* req);
-    static void openIndexAfterWork(uv_work_t* req);
+    class InitWorker : public NanAsyncWorker {
+      public:
+        InitWorker(
+            InitBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~InitWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        InitBaton *baton;
+    };
+    static NAN_METHOD(Init);
+    static NAN_METHOD(Path);
+    static NAN_METHOD(Workdir);
+    static NAN_METHOD(Odb);
 
     struct openIndexBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_index * out;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetBlob(const Arguments& args);
-    static void GetBlobWork(uv_work_t* req);
-    static void GetBlobAfterWork(uv_work_t* req);
+    class openIndexWorker : public NanAsyncWorker {
+      public:
+        openIndexWorker(
+            openIndexBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~openIndexWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        openIndexBaton *baton;
+    };
+    static NAN_METHOD(openIndex);
 
     struct GetBlobBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_blob * blob;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> idReference;
       const git_oid * id;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetCommit(const Arguments& args);
-    static void GetCommitWork(uv_work_t* req);
-    static void GetCommitAfterWork(uv_work_t* req);
+    class GetBlobWorker : public NanAsyncWorker {
+      public:
+        GetBlobWorker(
+            GetBlobBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetBlobWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetBlobBaton *baton;
+    };
+    static NAN_METHOD(GetBlob);
 
     struct GetCommitBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_commit * commit;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> idReference;
       const git_oid * id;
-      Persistent<Function> callback;
     };
-    static Handle<Value> CreateCommit(const Arguments& args);
-    static void CreateCommitWork(uv_work_t* req);
-    static void CreateCommitAfterWork(uv_work_t* req);
+    class GetCommitWorker : public NanAsyncWorker {
+      public:
+        GetCommitWorker(
+            GetCommitBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetCommitWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetCommitBaton *baton;
+    };
+    static NAN_METHOD(GetCommit);
 
     struct CreateCommitBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_oid * id;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> update_refReference;
       const char * update_ref;
-      Persistent<Value> authorReference;
       const git_signature * author;
-      Persistent<Value> committerReference;
       const git_signature * committer;
-      Persistent<Value> message_encodingReference;
       const char * message_encoding;
-      Persistent<Value> messageReference;
       const char * message;
-      Persistent<Value> treeReference;
       const git_tree * tree;
-      Persistent<Value> parent_countReference;
       int parent_count;
-      Persistent<Value> parentsReference;
       const git_commit ** parents;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetObject(const Arguments& args);
-    static void GetObjectWork(uv_work_t* req);
-    static void GetObjectAfterWork(uv_work_t* req);
+    class CreateCommitWorker : public NanAsyncWorker {
+      public:
+        CreateCommitWorker(
+            CreateCommitBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~CreateCommitWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        CreateCommitBaton *baton;
+    };
+    static NAN_METHOD(CreateCommit);
 
     struct GetObjectBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_object * object;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> idReference;
       const git_oid * id;
-      Persistent<Value> typeReference;
       git_otype type;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetReference(const Arguments& args);
-    static void GetReferenceWork(uv_work_t* req);
-    static void GetReferenceAfterWork(uv_work_t* req);
+    class GetObjectWorker : public NanAsyncWorker {
+      public:
+        GetObjectWorker(
+            GetObjectBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetObjectWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetObjectBaton *baton;
+    };
+    static NAN_METHOD(GetObject);
 
     struct GetReferenceBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_reference * out;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> nameReference;
       const char * name;
-      Persistent<Function> callback;
     };
-    static Handle<Value> CreateSymbolicReference(const Arguments& args);
-    static Handle<Value> CreateReference(const Arguments& args);
-    static Handle<Value> AddRemote(const Arguments& args);
-    static void AddRemoteWork(uv_work_t* req);
-    static void AddRemoteAfterWork(uv_work_t* req);
+    class GetReferenceWorker : public NanAsyncWorker {
+      public:
+        GetReferenceWorker(
+            GetReferenceBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetReferenceWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetReferenceBaton *baton;
+    };
+    static NAN_METHOD(GetReference);
+    static NAN_METHOD(CreateSymbolicReference);
+    static NAN_METHOD(CreateReference);
 
     struct AddRemoteBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_remote * out;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> nameReference;
       const char * name;
-      Persistent<Value> urlReference;
       const char * url;
-      Persistent<Function> callback;
     };
-    static Handle<Value> CreateRevWalk(const Arguments& args);
-    static Handle<Value> GetSubmodule(const Arguments& args);
-    static Handle<Value> AddSubmodule(const Arguments& args);
-    static Handle<Value> GetTag(const Arguments& args);
-    static void GetTagWork(uv_work_t* req);
-    static void GetTagAfterWork(uv_work_t* req);
+    class AddRemoteWorker : public NanAsyncWorker {
+      public:
+        AddRemoteWorker(
+            AddRemoteBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~AddRemoteWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        AddRemoteBaton *baton;
+    };
+    static NAN_METHOD(AddRemote);
+    static NAN_METHOD(CreateRevWalk);
+    static NAN_METHOD(GetSubmodule);
+    static NAN_METHOD(AddSubmodule);
 
     struct GetTagBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_tag * out;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> idReference;
       const git_oid * id;
-      Persistent<Function> callback;
     };
-    static Handle<Value> CreateTag(const Arguments& args);
-    static void CreateTagWork(uv_work_t* req);
-    static void CreateTagAfterWork(uv_work_t* req);
+    class GetTagWorker : public NanAsyncWorker {
+      public:
+        GetTagWorker(
+            GetTagBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetTagWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetTagBaton *baton;
+    };
+    static NAN_METHOD(GetTag);
 
     struct CreateTagBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_oid * oid;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> tag_nameReference;
       const char * tag_name;
-      Persistent<Value> targetReference;
       const git_object * target;
-      Persistent<Value> taggerReference;
       const git_signature * tagger;
-      Persistent<Value> messageReference;
       const char * message;
-      Persistent<Value> forceReference;
       int force;
-      Persistent<Function> callback;
     };
-    static Handle<Value> CreateLightweightTag(const Arguments& args);
-    static void CreateLightweightTagWork(uv_work_t* req);
-    static void CreateLightweightTagAfterWork(uv_work_t* req);
+    class CreateTagWorker : public NanAsyncWorker {
+      public:
+        CreateTagWorker(
+            CreateTagBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~CreateTagWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        CreateTagBaton *baton;
+    };
+    static NAN_METHOD(CreateTag);
 
     struct CreateLightweightTagBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_oid * oid;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> tag_nameReference;
       const char * tag_name;
-      Persistent<Value> targetReference;
       const git_object * target;
-      Persistent<Value> forceReference;
       int force;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetTree(const Arguments& args);
-    static void GetTreeWork(uv_work_t* req);
-    static void GetTreeAfterWork(uv_work_t* req);
+    class CreateLightweightTagWorker : public NanAsyncWorker {
+      public:
+        CreateLightweightTagWorker(
+            CreateLightweightTagBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~CreateLightweightTagWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        CreateLightweightTagBaton *baton;
+    };
+    static NAN_METHOD(CreateLightweightTag);
 
     struct GetTreeBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_tree * out;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> idReference;
       const git_oid * id;
-      Persistent<Function> callback;
     };
-    static Handle<Value> ReloadSubmodules(const Arguments& args);
-    static void ReloadSubmodulesWork(uv_work_t* req);
-    static void ReloadSubmodulesAfterWork(uv_work_t* req);
+    class GetTreeWorker : public NanAsyncWorker {
+      public:
+        GetTreeWorker(
+            GetTreeBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetTreeWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetTreeBaton *baton;
+    };
+    static NAN_METHOD(GetTree);
 
     struct ReloadSubmodulesBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Delete(const Arguments& args);
-    static void DeleteWork(uv_work_t* req);
-    static void DeleteAfterWork(uv_work_t* req);
+    class ReloadSubmodulesWorker : public NanAsyncWorker {
+      public:
+        ReloadSubmodulesWorker(
+            ReloadSubmodulesBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~ReloadSubmodulesWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        ReloadSubmodulesBaton *baton;
+    };
+    static NAN_METHOD(ReloadSubmodules);
 
     struct DeleteBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> tag_nameReference;
       const char * tag_name;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetReferences(const Arguments& args);
-    static void GetReferencesWork(uv_work_t* req);
-    static void GetReferencesAfterWork(uv_work_t* req);
+    class DeleteWorker : public NanAsyncWorker {
+      public:
+        DeleteWorker(
+            DeleteBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~DeleteWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        DeleteBaton *baton;
+    };
+    static NAN_METHOD(Delete);
 
     struct GetReferencesBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_strarray * array;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> list_flagsReference;
       unsigned int list_flags;
-      Persistent<Function> callback;
     };
-    static Handle<Value> CreateBlobFromBuffer(const Arguments& args);
-    static void CreateBlobFromBufferWork(uv_work_t* req);
-    static void CreateBlobFromBufferAfterWork(uv_work_t* req);
+    class GetReferencesWorker : public NanAsyncWorker {
+      public:
+        GetReferencesWorker(
+            GetReferencesBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetReferencesWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetReferencesBaton *baton;
+    };
+    static NAN_METHOD(GetReferences);
 
     struct CreateBlobFromBufferBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_oid * oid;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> bufferReference;
       const void * buffer;
-      Persistent<Value> lenReference;
       size_t len;
-      Persistent<Function> callback;
     };
-    static Handle<Value> CreateBlobFromFile(const Arguments& args);
-    static void CreateBlobFromFileWork(uv_work_t* req);
-    static void CreateBlobFromFileAfterWork(uv_work_t* req);
+    class CreateBlobFromBufferWorker : public NanAsyncWorker {
+      public:
+        CreateBlobFromBufferWorker(
+            CreateBlobFromBufferBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~CreateBlobFromBufferWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        CreateBlobFromBufferBaton *baton;
+    };
+    static NAN_METHOD(CreateBlobFromBuffer);
 
     struct CreateBlobFromFileBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_oid * id;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> pathReference;
       const char * path;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetRemotes(const Arguments& args);
-    static void GetRemotesWork(uv_work_t* req);
-    static void GetRemotesAfterWork(uv_work_t* req);
+    class CreateBlobFromFileWorker : public NanAsyncWorker {
+      public:
+        CreateBlobFromFileWorker(
+            CreateBlobFromFileBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~CreateBlobFromFileWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        CreateBlobFromFileBaton *baton;
+    };
+    static NAN_METHOD(CreateBlobFromFile);
 
     struct GetRemotesBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_strarray * out;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Clone(const Arguments& args);
-    static void CloneWork(uv_work_t* req);
-    static void CloneAfterWork(uv_work_t* req);
+    class GetRemotesWorker : public NanAsyncWorker {
+      public:
+        GetRemotesWorker(
+            GetRemotesBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~GetRemotesWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        GetRemotesBaton *baton;
+    };
+    static NAN_METHOD(GetRemotes);
 
     struct CloneBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_repository * out;
-      Persistent<Value> urlReference;
       const char * url;
-      Persistent<Value> local_pathReference;
       const char * local_path;
-      Persistent<Value> optionsReference;
       const git_clone_options * options;
-      Persistent<Function> callback;
     };
-    static Handle<Value> GetRemote(const Arguments& args);
+    class CloneWorker : public NanAsyncWorker {
+      public:
+        CloneWorker(
+            CloneBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~CloneWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        CloneBaton *baton;
+    };
+    static NAN_METHOD(Clone);
+    static NAN_METHOD(GetRemote);
     git_repository *raw;
 };
 

@@ -5,8 +5,7 @@
 #ifndef GITCOMMIT_H
 #define GITCOMMIT_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,20 +27,19 @@ class GitCommit : public ObjectWrap {
     GitCommit(git_commit *raw);
     ~GitCommit();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> MessageEncoding(const Arguments& args);
-    static Handle<Value> Message(const Arguments& args);
-    static Handle<Value> Time(const Arguments& args);
-    static Handle<Value> Offset(const Arguments& args);
-    static Handle<Value> Committer(const Arguments& args);
-    static Handle<Value> Author(const Arguments& args);
-    static Handle<Value> TreeId(const Arguments& args);
-    static Handle<Value> ParentCount(const Arguments& args);
-    static Handle<Value> ParentId(const Arguments& args);
-    static Handle<Value> NthGenAncestor(const Arguments& args);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(MessageEncoding);
+    static NAN_METHOD(Message);
+    static NAN_METHOD(Time);
+    static NAN_METHOD(Offset);
+    static NAN_METHOD(Committer);
+    static NAN_METHOD(Author);
+    static NAN_METHOD(TreeId);
+    static NAN_METHOD(ParentCount);
+    static NAN_METHOD(ParentId);
+    static NAN_METHOD(NthGenAncestor);
     git_commit *raw;
 };
 

@@ -3,29 +3,26 @@
 /**
 <% include doc.cc.ejs -%>
  */
-Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(<%- cppClassName %>::<%- functionInfo.cppFunctionName %>) {
+  NanScope();
   <% var jsArg; -%>
   <% include guardArguments.cc.ejs -%>
 
   if (args.Length() == <%- jsArg %> || !args[<%- jsArg %>]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError("Callback is required and must be a Function.");
   }
 
   <%- functionInfo.cppFunctionName %>Baton* baton = new <%- functionInfo.cppFunctionName %>Baton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->request.data = baton;
 <%
     for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
       var arg = functionInfo.args[cArg];
 -%>
 <% if (!arg.isReturn) { -%>
 <% if (arg.isSelf) { -%>
-  baton-><%- arg.name %>Reference = Persistent<Value>::New(args.This());
   baton-><%- arg.name %> = ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue();
 <% } else { -%>
-  baton-><%- arg.name %>Reference = Persistent<Value>::New(args[<%- jsArg %>]);
   <% include convertFromV8.cc.ejs -%>
   <% if (!arg.isPayload) { -%>
   baton-><%- arg.name %> = from_<%- arg.name %>;
@@ -35,19 +32,32 @@ Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arg
 <% } else { -%>
 <% if (arg.shouldAlloc) { -%>
   baton-><%- arg.name %> = (<%- arg.cType %>)malloc(sizeof(<%- arg.cType.replace('*', '') %>));
+<% } -%>
+<% } -%>
+<% } -%>
+
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[<%- jsArg %>]));
+  <%- functionInfo.cppFunctionName %>Worker *worker = new <%- functionInfo.cppFunctionName %>Worker(baton, callback);
+<%
+    for (var cArg = 0, jsArg = 0; cArg < functionInfo.args.length; cArg++) {
+      var arg = functionInfo.args[cArg];
+-%>
+<% if (!arg.isReturn) { -%>
+<% if (arg.isSelf) { -%>
+  worker->SaveToPersistent("<%- arg.name %>", args.This());
 <% } else { -%>
+  if (!args[<%- jsArg %>]->IsUndefined() && !args[<%- jsArg %>]->IsNull())
+    worker->SaveToPersistent("<%- arg.name %>", args[<%- jsArg %>]->ToObject());
+<% } -%>
+<% if (!(arg.isReturn || arg.isSelf || arg.isPayload)) jsArg++; -%>
 <% } -%>
 <% } -%>
-<% } -%>
-  baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[<%- jsArg %>]));
 
-  uv_queue_work(uv_default_loop(), &baton->request, <%- functionInfo.cppFunctionName %>Work, (uv_after_work_cb)<%- functionInfo.cppFunctionName %>AfterWork);
-
-  return Undefined();
+  NanAsyncQueueWorker(worker);
+  NanReturnUndefined();
 }
 
-void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req) {
-  <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Worker::Execute() {
   <% if (functionInfo.return.cType != "void" || functionInfo.return.isErrorCode) { %><%- functionInfo.return.cType %> result = <% } %><%- functionInfo.cFunctionName %>(
 <%
   for (var i = 0; i < functionInfo.args.length; i++) {
@@ -66,46 +76,43 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Work(uv_work_t *req
 <% } -%>
 }
 
-void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t *req) {
-  HandleScope scope;
-  <%- functionInfo.cppFunctionName %>Baton *baton = static_cast<<%- functionInfo.cppFunctionName %>Baton *>(req->data);
-
+void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>Worker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
 <% if (!returns.length) { -%>
-    Handle<Value> result = Local<Value>::New(Undefined());
+    Handle<Value> result = NanUndefined();
 <% } else if (returns.length == 1) { -%>
 <% var to = {}; to.__proto__ = returns[0]; to.name = "baton->" + to.name; -%>
   Handle<Value> to;
   <% include convertToV8.cc.ejs -%>
   Handle<Value> result = to;
 <% } else { -%>
-  Handle<Object> result = Object::New();
+  Handle<Object> result = NanNew<Object>();
   Handle<Value> to;
 <%
   for (r in returns) {
     var to = returns[r];
 -%>
     <% include convertToV8.cc.ejs -%>
-    result->Set(String::NewSymbol("<%- to.jsName || to.name %>"), to);
+    result->Set(NanNew<String>("<%- to.jsName || to.name %>"), to);
 <% } -%>
 <% } -%>
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNull(),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
-        Exception::Error(String::New(baton->error->message))
+        NanError(baton->error->message)
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      callback->Call(1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      callback->Call(0, NULL);
     }
     <%
         for (var i = 0; i < functionInfo.args.length; i++) {
@@ -119,14 +126,6 @@ void <%- cppClassName %>::<%- functionInfo.cppFunctionName %>AfterWork(uv_work_t
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-<%
-    for (var i = 0, j = 0; i < functionInfo.args.length; i++) {
-      var arg = functionInfo.args[i];
-      if (arg.isReturn) continue;
--%>
-  baton-><%- arg.name %>Reference.Dispose();
-<% } -%>
-  baton->callback.Dispose();
 <%
     for (var i = 0; i < functionInfo.args.length; i++) {
       var arg = functionInfo.args[i];

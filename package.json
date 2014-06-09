@@ -37,7 +37,7 @@
     "which": "~1.0.5",
     "q": "~0.9.6",
     "fs-extra": "0.6.0",
-    "nan": "0.8.0",
+    "nan": "~1.2.0",
     "rimraf": "~2.2.6"
   },
   "devDependencies": {

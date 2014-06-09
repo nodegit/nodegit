@@ -5,8 +5,7 @@
 #ifndef GITREFDB_H
 #define GITREFDB_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,8 +27,7 @@ class GitRefDb : public ObjectWrap {
     GitRefDb(git_refdb *raw);
     ~GitRefDb();
 
-    static Handle<Value> New(const Arguments& args);
-
+    static NAN_METHOD(New);
 
     git_refdb *raw;
 };

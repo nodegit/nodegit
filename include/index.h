@@ -5,8 +5,7 @@
 #ifndef GITINDEX_H
 #define GITINDEX_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,114 +27,172 @@ class GitIndex : public ObjectWrap {
     GitIndex(git_index *raw);
     ~GitIndex();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Open(const Arguments& args);
-    static void OpenWork(uv_work_t* req);
-    static void OpenAfterWork(uv_work_t* req);
 
     struct OpenBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_index * out;
-      Persistent<Value> index_pathReference;
       const char * index_path;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Read(const Arguments& args);
-    static void ReadWork(uv_work_t* req);
-    static void ReadAfterWork(uv_work_t* req);
+    class OpenWorker : public NanAsyncWorker {
+      public:
+        OpenWorker(
+            OpenBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~OpenWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        OpenBaton *baton;
+    };
+    static NAN_METHOD(Open);
 
     struct ReadBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> indexReference;
       git_index * index;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Write(const Arguments& args);
-    static void WriteWork(uv_work_t* req);
-    static void WriteAfterWork(uv_work_t* req);
+    class ReadWorker : public NanAsyncWorker {
+      public:
+        ReadWorker(
+            ReadBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~ReadWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        ReadBaton *baton;
+    };
+    static NAN_METHOD(Read);
 
     struct WriteBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> indexReference;
       git_index * index;
-      Persistent<Function> callback;
     };
-    static Handle<Value> ReadTree(const Arguments& args);
-    static void ReadTreeWork(uv_work_t* req);
-    static void ReadTreeAfterWork(uv_work_t* req);
+    class WriteWorker : public NanAsyncWorker {
+      public:
+        WriteWorker(
+            WriteBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~WriteWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        WriteBaton *baton;
+    };
+    static NAN_METHOD(Write);
 
     struct ReadTreeBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> indexReference;
       git_index * index;
-      Persistent<Value> treeReference;
       const git_tree * tree;
-      Persistent<Function> callback;
     };
-    static Handle<Value> WriteTree(const Arguments& args);
-    static void WriteTreeWork(uv_work_t* req);
-    static void WriteTreeAfterWork(uv_work_t* req);
+    class ReadTreeWorker : public NanAsyncWorker {
+      public:
+        ReadTreeWorker(
+            ReadTreeBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~ReadTreeWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        ReadTreeBaton *baton;
+    };
+    static NAN_METHOD(ReadTree);
 
     struct WriteTreeBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_oid * out;
-      Persistent<Value> indexReference;
       git_index * index;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Size(const Arguments& args);
-    static Handle<Value> Clear(const Arguments& args);
-    static Handle<Value> Entry(const Arguments& args);
-    static Handle<Value> Remove(const Arguments& args);
-    static Handle<Value> RemoveDirectory(const Arguments& args);
-    static Handle<Value> AddBypath(const Arguments& args);
-    static void AddBypathWork(uv_work_t* req);
-    static void AddBypathAfterWork(uv_work_t* req);
+    class WriteTreeWorker : public NanAsyncWorker {
+      public:
+        WriteTreeWorker(
+            WriteTreeBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~WriteTreeWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        WriteTreeBaton *baton;
+    };
+    static NAN_METHOD(WriteTree);
+    static NAN_METHOD(Size);
+    static NAN_METHOD(Clear);
+    static NAN_METHOD(Entry);
+    static NAN_METHOD(Remove);
+    static NAN_METHOD(RemoveDirectory);
 
     struct AddBypathBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> indexReference;
       git_index * index;
-      Persistent<Value> pathReference;
       const char * path;
-      Persistent<Function> callback;
     };
-    static Handle<Value> RemoveBypath(const Arguments& args);
-    static Handle<Value> Find(const Arguments& args);
-    static Handle<Value> ConflictRemove(const Arguments& args);
-    static Handle<Value> ConflictCleanup(const Arguments& args);
-    static Handle<Value> HasConflicts(const Arguments& args);
-    static Handle<Value> IndexToWorkdir(const Arguments& args);
-    static void IndexToWorkdirWork(uv_work_t* req);
-    static void IndexToWorkdirAfterWork(uv_work_t* req);
+    class AddBypathWorker : public NanAsyncWorker {
+      public:
+        AddBypathWorker(
+            AddBypathBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~AddBypathWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        AddBypathBaton *baton;
+    };
+    static NAN_METHOD(AddBypath);
+    static NAN_METHOD(RemoveBypath);
+    static NAN_METHOD(Find);
+    static NAN_METHOD(ConflictRemove);
+    static NAN_METHOD(ConflictCleanup);
+    static NAN_METHOD(HasConflicts);
 
     struct IndexToWorkdirBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_diff_list * diff;
-      Persistent<Value> repoReference;
       git_repository * repo;
-      Persistent<Value> indexReference;
       git_index * index;
-      Persistent<Value> optsReference;
       const git_diff_options * opts;
-      Persistent<Function> callback;
     };
+    class IndexToWorkdirWorker : public NanAsyncWorker {
+      public:
+        IndexToWorkdirWorker(
+            IndexToWorkdirBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~IndexToWorkdirWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        IndexToWorkdirBaton *baton;
+    };
+    static NAN_METHOD(IndexToWorkdir);
     git_index *raw;
 };
 

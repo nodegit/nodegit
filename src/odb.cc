@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -26,12 +25,12 @@ GitOdb::~GitOdb() {
 }
 
 void GitOdb::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Odb"));
+  tpl->SetClassName(NanNew<String>("Odb"));
 
   NODE_SET_METHOD(tpl, "create()", Create);
   NODE_SET_METHOD(tpl, "open", Open);
@@ -46,27 +45,27 @@ void GitOdb::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "hashfile", Hashfile);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Odb"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("Odb"), _constructor_template);
 }
 
-Handle<Value> GitOdb::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_odb is required.")));
+    return NanThrowError("git_odb is required.");
   }
-
-  GitOdb* object = new GitOdb((git_odb *) External::Unwrap(args[0]));
+  GitOdb* object = new GitOdb(static_cast<git_odb *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitOdb::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitOdb::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitOdb::constructor_template)->NewInstance(1, argv));
 }
 
 git_odb *GitOdb::GetValue() {
@@ -77,8 +76,8 @@ git_odb *GitOdb::GetValue() {
 /**
  * @return {Odb} out
  */
-Handle<Value> GitOdb::Create(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Create) {
+  NanScope();
   
   git_odb * out = 0;
 
@@ -87,9 +86,9 @@ Handle<Value> GitOdb::Create(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -97,19 +96,19 @@ Handle<Value> GitOdb::Create(const Arguments& args) {
     if (out != NULL) {
     to = GitOdb::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} objects_dir
  * @return {Odb} out
  */
-Handle<Value> GitOdb::Open(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Open) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String objects_dir is required.")));
+    return NanThrowError("String objects_dir is required.");
   }
 
   git_odb * out = 0;
@@ -124,9 +123,9 @@ Handle<Value> GitOdb::Open(const Arguments& args) {
   free((void *)from_objects_dir);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -134,18 +133,18 @@ Handle<Value> GitOdb::Open(const Arguments& args) {
     if (out != NULL) {
     to = GitOdb::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} path
  */
-Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::AddDiskAlternate) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError("String path is required.");
   }
 
   const char * from_path;
@@ -159,13 +158,13 @@ Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
   free((void *)from_path);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 #include "../include/functions/copy.h"
@@ -174,35 +173,35 @@ Handle<Value> GitOdb::AddDiskAlternate(const Arguments& args) {
  * @param {Oid} id
  * @param {OdbObject} callback
  */
-Handle<Value> GitOdb::Read(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Read) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+    return NanThrowError("Oid id is required.");
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError("Callback is required and must be a Function.");
   }
 
   ReadBaton* baton = new ReadBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->request.data = baton;
-  baton->dbReference = Persistent<Value>::New(args.This());
   baton->db = ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue();
-  baton->idReference = Persistent<Value>::New(args[0]);
     const git_oid * from_id;
             from_id = ObjectWrap::Unwrap<GitOid>(args[0]->ToObject())->GetValue();
           baton->id = from_id;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[1]));
+  ReadWorker *worker = new ReadWorker(baton, callback);
+  worker->SaveToPersistent("db", args.This());
+  if (!args[0]->IsUndefined() && !args[0]->IsNull())
+    worker->SaveToPersistent("id", args[0]->ToObject());
 
-  uv_queue_work(uv_default_loop(), &baton->request, ReadWork, (uv_after_work_cb)ReadAfterWork);
-
-  return Undefined();
+  NanAsyncQueueWorker(worker);
+  NanReturnUndefined();
 }
 
-void GitOdb::ReadWork(uv_work_t *req) {
-  ReadBaton *baton = static_cast<ReadBaton *>(req->data);
+void GitOdb::ReadWorker::Execute() {
   int result = git_odb_read(
     &baton->out, 
     baton->db, 
@@ -214,44 +213,38 @@ void GitOdb::ReadWork(uv_work_t *req) {
   }
 }
 
-void GitOdb::ReadAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  ReadBaton *baton = static_cast<ReadBaton *>(req->data);
-
+void GitOdb::ReadWorker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     if (baton->out != NULL) {
     to = GitOdbObject::New((void *)baton->out);
   } else {
-    to = Null();
+    to = NanNull();
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNull(),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
-        Exception::Error(String::New(baton->error->message))
+        NanError(baton->error->message)
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      callback->Call(1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      callback->Call(0, NULL);
     }
       }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-  baton->dbReference.Dispose();
-  baton->idReference.Dispose();
-  baton->callback.Dispose();
   delete baton;
 }
 
@@ -261,16 +254,16 @@ void GitOdb::ReadAfterWork(uv_work_t *req) {
  * @param {Number} len
  * @return {OdbObject} out
  */
-Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::ReadPrefix) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Odb db is required.")));
+    return NanThrowError("Odb db is required.");
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid short_id is required.")));
+    return NanThrowError("Oid short_id is required.");
   }
   if (args.Length() == 2 || !args[2]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number len is required.")));
+    return NanThrowError("Number len is required.");
   }
 
   git_odb_object * out = 0;
@@ -289,9 +282,9 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -299,9 +292,9 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
     if (out != NULL) {
     to = GitOdbObject::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
@@ -310,13 +303,13 @@ Handle<Value> GitOdb::ReadPrefix(const Arguments& args) {
  * @return {Number} len_out
  * @return {Number} type_out
  */
-Handle<Value> GitOdb::ReadHeader(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::ReadHeader) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Odb db is required.")));
+    return NanThrowError("Odb db is required.");
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+    return NanThrowError("Oid id is required.");
   }
 
   size_t len_out = 0;
@@ -334,30 +327,30 @@ Handle<Value> GitOdb::ReadHeader(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  Handle<Object> toReturn = Object::New();
+  Handle<Object> toReturn = NanNew<Object>();
   Handle<Value> to;
-      to = Uint32::New(len_out);
-    toReturn->Set(String::NewSymbol("len_out"), to);
+      to = NanNew<Uint32>((uint32_t)len_out);
+    toReturn->Set(NanNew<String>("len_out"), to);
 
-      to = Int32::New(type_out);
-    toReturn->Set(String::NewSymbol("type_out"), to);
+      to = NanNew<Int32>((int32_t)type_out);
+    toReturn->Set(NanNew<String>("type_out"), to);
 
-  return scope.Close(toReturn);
+  NanReturnValue(toReturn);
 }
 
 /**
  * @param {Oid} id
  */
-Handle<Value> GitOdb::Exists(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Exists) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid id is required.")));
+    return NanThrowError("Oid id is required.");
   }
 
   const git_oid * from_id;
@@ -369,19 +362,19 @@ Handle<Value> GitOdb::Exists(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  */
-Handle<Value> GitOdb::Refresh(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Refresh) {
+  NanScope();
   
 
   int result = git_odb_refresh(
@@ -389,13 +382,13 @@ Handle<Value> GitOdb::Refresh(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 #include "../include/functions/copy.h"
@@ -406,51 +399,53 @@ Handle<Value> GitOdb::Refresh(const Arguments& args) {
  * @param {Number} type
  * @param {Oid} callback
  */
-Handle<Value> GitOdb::Write(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Write) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String data is required.")));
+    return NanThrowError("String data is required.");
   }
   if (args.Length() == 1 || !args[1]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number len is required.")));
+    return NanThrowError("Number len is required.");
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number type is required.")));
+    return NanThrowError("Number type is required.");
   }
 
   if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError("Callback is required and must be a Function.");
   }
 
   WriteBaton* baton = new WriteBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->request.data = baton;
   baton->out = (git_oid *)malloc(sizeof(git_oid ));
-  baton->odbReference = Persistent<Value>::New(args.This());
   baton->odb = ObjectWrap::Unwrap<GitOdb>(args.This())->GetValue();
-  baton->dataReference = Persistent<Value>::New(args[0]);
     const void * from_data;
             String::Utf8Value data(args[0]->ToString());
       from_data = strdup(*data);
           baton->data = from_data;
-    baton->lenReference = Persistent<Value>::New(args[1]);
-    size_t from_len;
+      size_t from_len;
             from_len = (size_t)   args[1]->ToUint32()->Value();
           baton->len = from_len;
-    baton->typeReference = Persistent<Value>::New(args[2]);
-    git_otype from_type;
+      git_otype from_type;
             from_type = (git_otype)   args[2]->ToInt32()->Value();
           baton->type = from_type;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+  
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[3]));
+  WriteWorker *worker = new WriteWorker(baton, callback);
+  worker->SaveToPersistent("odb", args.This());
+  if (!args[0]->IsUndefined() && !args[0]->IsNull())
+    worker->SaveToPersistent("data", args[0]->ToObject());
+  if (!args[1]->IsUndefined() && !args[1]->IsNull())
+    worker->SaveToPersistent("len", args[1]->ToObject());
+  if (!args[2]->IsUndefined() && !args[2]->IsNull())
+    worker->SaveToPersistent("type", args[2]->ToObject());
 
-  uv_queue_work(uv_default_loop(), &baton->request, WriteWork, (uv_after_work_cb)WriteAfterWork);
-
-  return Undefined();
+  NanAsyncQueueWorker(worker);
+  NanReturnUndefined();
 }
 
-void GitOdb::WriteWork(uv_work_t *req) {
-  WriteBaton *baton = static_cast<WriteBaton *>(req->data);
+void GitOdb::WriteWorker::Execute() {
   int result = git_odb_write(
     baton->out, 
     baton->odb, 
@@ -464,35 +459,32 @@ void GitOdb::WriteWork(uv_work_t *req) {
   }
 }
 
-void GitOdb::WriteAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  WriteBaton *baton = static_cast<WriteBaton *>(req->data);
-
+void GitOdb::WriteWorker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     if (baton->out != NULL) {
     to = GitOid::New((void *)baton->out);
   } else {
-    to = Null();
+    to = NanNull();
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNull(),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
-        Exception::Error(String::New(baton->error->message))
+        NanError(baton->error->message)
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      callback->Call(1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      callback->Call(0, NULL);
     }
         free(baton->out);
       }
@@ -500,11 +492,6 @@ void GitOdb::WriteAfterWork(uv_work_t *req) {
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-  baton->odbReference.Dispose();
-  baton->dataReference.Dispose();
-  baton->lenReference.Dispose();
-  baton->typeReference.Dispose();
-  baton->callback.Dispose();
   free((void *)baton->data);
   delete baton;
 }
@@ -515,16 +502,16 @@ void GitOdb::WriteAfterWork(uv_work_t *req) {
  * @param {Number} type
  * @return {Oid} out
  */
-Handle<Value> GitOdb::Hash(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Hash) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Buffer data is required.")));
+    return NanThrowError("Buffer data is required.");
   }
   if (args.Length() == 1 || !args[1]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number len is required.")));
+    return NanThrowError("Number len is required.");
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number type is required.")));
+    return NanThrowError("Number type is required.");
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid));
@@ -544,9 +531,9 @@ Handle<Value> GitOdb::Hash(const Arguments& args) {
   if (result != GIT_OK) {
     free(out);
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -554,9 +541,9 @@ Handle<Value> GitOdb::Hash(const Arguments& args) {
     if (out != NULL) {
     to = GitOid::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
@@ -564,13 +551,13 @@ Handle<Value> GitOdb::Hash(const Arguments& args) {
  * @param {Number} type
  * @return {Oid} out
  */
-Handle<Value> GitOdb::Hashfile(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitOdb::Hashfile) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError("String path is required.");
   }
   if (args.Length() == 1 || !args[1]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number type is required.")));
+    return NanThrowError("Number type is required.");
   }
 
   git_oid *out = (git_oid *)malloc(sizeof(git_oid));
@@ -589,9 +576,9 @@ Handle<Value> GitOdb::Hashfile(const Arguments& args) {
   if (result != GIT_OK) {
     free(out);
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -599,9 +586,9 @@ Handle<Value> GitOdb::Hashfile(const Arguments& args) {
     if (out != NULL) {
     to = GitOid::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 Persistent<Function> GitOdb::constructor_template;

@@ -5,8 +5,7 @@
 #ifndef GITSUBMODULE_H
 #define GITSUBMODULE_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,118 +27,186 @@ class GitSubmodule : public ObjectWrap {
     GitSubmodule(git_submodule *raw);
     ~GitSubmodule();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> AddFinalize(const Arguments& args);
-    static void AddFinalizeWork(uv_work_t* req);
-    static void AddFinalizeAfterWork(uv_work_t* req);
 
     struct AddFinalizeBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Function> callback;
     };
-    static Handle<Value> AddToIndex(const Arguments& args);
-    static void AddToIndexWork(uv_work_t* req);
-    static void AddToIndexAfterWork(uv_work_t* req);
+    class AddFinalizeWorker : public NanAsyncWorker {
+      public:
+        AddFinalizeWorker(
+            AddFinalizeBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~AddFinalizeWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        AddFinalizeBaton *baton;
+    };
+    static NAN_METHOD(AddFinalize);
 
     struct AddToIndexBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Value> write_indexReference;
       int write_index;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Save(const Arguments& args);
-    static void SaveWork(uv_work_t* req);
-    static void SaveAfterWork(uv_work_t* req);
+    class AddToIndexWorker : public NanAsyncWorker {
+      public:
+        AddToIndexWorker(
+            AddToIndexBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~AddToIndexWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        AddToIndexBaton *baton;
+    };
+    static NAN_METHOD(AddToIndex);
 
     struct SaveBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Name(const Arguments& args);
-    static Handle<Value> Path(const Arguments& args);
-    static Handle<Value> Url(const Arguments& args);
-    static Handle<Value> SetUrl(const Arguments& args);
-    static Handle<Value> IndexId(const Arguments& args);
-    static Handle<Value> HeadId(const Arguments& args);
-    static Handle<Value> Init(const Arguments& args);
-    static void InitWork(uv_work_t* req);
-    static void InitAfterWork(uv_work_t* req);
+    class SaveWorker : public NanAsyncWorker {
+      public:
+        SaveWorker(
+            SaveBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~SaveWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        SaveBaton *baton;
+    };
+    static NAN_METHOD(Save);
+    static NAN_METHOD(Name);
+    static NAN_METHOD(Path);
+    static NAN_METHOD(Url);
+    static NAN_METHOD(SetUrl);
+    static NAN_METHOD(IndexId);
+    static NAN_METHOD(HeadId);
 
     struct InitBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Value> overwriteReference;
       int overwrite;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Sync(const Arguments& args);
-    static void SyncWork(uv_work_t* req);
-    static void SyncAfterWork(uv_work_t* req);
+    class InitWorker : public NanAsyncWorker {
+      public:
+        InitWorker(
+            InitBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~InitWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        InitBaton *baton;
+    };
+    static NAN_METHOD(Init);
 
     struct SyncBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Open(const Arguments& args);
-    static void OpenWork(uv_work_t* req);
-    static void OpenAfterWork(uv_work_t* req);
+    class SyncWorker : public NanAsyncWorker {
+      public:
+        SyncWorker(
+            SyncBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~SyncWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        SyncBaton *baton;
+    };
+    static NAN_METHOD(Sync);
 
     struct OpenBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_repository * repo;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Reload(const Arguments& args);
-    static void ReloadWork(uv_work_t* req);
-    static void ReloadAfterWork(uv_work_t* req);
+    class OpenWorker : public NanAsyncWorker {
+      public:
+        OpenWorker(
+            OpenBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~OpenWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        OpenBaton *baton;
+    };
+    static NAN_METHOD(Open);
 
     struct ReloadBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Status(const Arguments& args);
-    static void StatusWork(uv_work_t* req);
-    static void StatusAfterWork(uv_work_t* req);
+    class ReloadWorker : public NanAsyncWorker {
+      public:
+        ReloadWorker(
+            ReloadBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~ReloadWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        ReloadBaton *baton;
+    };
+    static NAN_METHOD(Reload);
 
     struct StatusBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
-      Persistent<Value> statusReference;
       unsigned int * status;
-      Persistent<Value> submoduleReference;
       git_submodule * submodule;
-      Persistent<Function> callback;
     };
+    class StatusWorker : public NanAsyncWorker {
+      public:
+        StatusWorker(
+            StatusBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~StatusWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        StatusBaton *baton;
+    };
+    static NAN_METHOD(Status);
     git_submodule *raw;
 };
 

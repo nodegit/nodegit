@@ -5,8 +5,7 @@
 #ifndef GITINDEXENTRY_H
 #define GITINDEXENTRY_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,21 +27,20 @@ class GitIndexEntry : public ObjectWrap {
     GitIndexEntry(git_index_entry *raw);
     ~GitIndexEntry();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-    static Handle<Value> Ctime(const Arguments& args);
-    static Handle<Value> Mtime(const Arguments& args);
-    static Handle<Value> Dev(const Arguments& args);
-    static Handle<Value> Ino(const Arguments& args);
-    static Handle<Value> Mode(const Arguments& args);
-    static Handle<Value> Uid(const Arguments& args);
-    static Handle<Value> gid(const Arguments& args);
-    static Handle<Value> FileSize(const Arguments& args);
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> Flags(const Arguments& args);
-    static Handle<Value> FlagsExtended(const Arguments& args);
-    static Handle<Value> Path(const Arguments& args);
-
+    static NAN_METHOD(Ctime);
+    static NAN_METHOD(Mtime);
+    static NAN_METHOD(Dev);
+    static NAN_METHOD(Ino);
+    static NAN_METHOD(Mode);
+    static NAN_METHOD(Uid);
+    static NAN_METHOD(gid);
+    static NAN_METHOD(FileSize);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(Flags);
+    static NAN_METHOD(FlagsExtended);
+    static NAN_METHOD(Path);
     git_index_entry *raw;
 };
 

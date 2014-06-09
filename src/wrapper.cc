@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 #include <cstring>
 
@@ -19,22 +18,22 @@ Wrapper::Wrapper(void *raw) {
 void Wrapper::Initialize(Handle<v8::Object> target) {
   NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanSymbol("Wrapper"));
+  tpl->SetClassName(NanNew<String>("Wrapper"));
   
   NODE_SET_PROTOTYPE_METHOD(tpl, "toBuffer", ToBuffer);
 
-  NanAssignPersistent(FunctionTemplate, constructor_template, tpl);
-  target->Set(String::NewSymbol("Wrapper"), tpl->GetFunction());
+  NanAssignPersistent(constructor_template, tpl);
+  target->Set(NanNew<String>("Wrapper"), tpl->GetFunction());
 }
 
 NAN_METHOD(Wrapper::New) {
   NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError(String::New("void * is required."));
+    return NanThrowError("void * is required.");
   }
 
   Wrapper* object = new Wrapper(External::Cast(*args[0])->Value());
@@ -44,12 +43,14 @@ NAN_METHOD(Wrapper::New) {
 }
 
 Handle<Value> Wrapper::New(void *raw) {
-  NanScope();
-  Handle<Value> argv[1] = { External::New((void *)raw) };
+  NanEscapableScope();
+  
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
   Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = NanPersistentToLocal(constructor_template);
+  Local<FunctionTemplate> constructorHandle = NanNew(constructor_template);
   instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  return scope.Close(instance);
+  
+  return NanEscapeScope(instance);
 }
 
 void *Wrapper::GetValue() {
@@ -60,15 +61,15 @@ NAN_METHOD(Wrapper::ToBuffer) {
   NanScope();
 
   if(args.Length() == 0 || !args[0]->IsNumber()) {
-    return NanThrowError(String::New("Number is required."));
+    return NanThrowError("Number is required.");
   }
 
   int len = args[0]->ToNumber()->Value();
 
   Local<Function> bufferConstructor = Local<Function>::Cast(
-    Context::GetCurrent()->Global()->Get(String::New("Buffer"))); 
+    NanGetCurrentContext()->Global()->Get(NanNew<String>("Buffer"))); 
 
-  Handle<Value> constructorArgs[1] = { Integer::New(len) };
+  Handle<Value> constructorArgs[1] = { NanNew<Integer>(len) };
   Local<Object> nodeBuffer = bufferConstructor->NewInstance(1, constructorArgs);
 
   std::memcpy(node::Buffer::Data(nodeBuffer), ObjectWrap::Unwrap<Wrapper>(args.This())->GetValue(), len);
