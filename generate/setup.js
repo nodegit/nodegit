@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-var version = require("../../package.json").libgit2.version;
+var version = require("../package.json").libgit2.version;
 var descriptor = require("./descriptor.json");
 var libgit2 = require("./v" + version + ".json");
 
@@ -280,5 +280,5 @@ Object.keys(descriptor).forEach(function(fileName, index) {
 fs.writeFileSync(path.join(__dirname, "types.json"), 
   JSON.stringify(typeMap, null, 2));
 
-fs.writeFileSync(path.join(__dirname, "idefs.json"), 
+fs.writeFileSync(path.join(__dirname, "compare.json"), 
   JSON.stringify(files, null, 2));

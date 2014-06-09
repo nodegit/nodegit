@@ -483,8 +483,8 @@
   "tree_entry": {
     "ignore": true,
 
-    "structType": "git_tree_entry",
-    "cType": null,
+    "isStruct": true,
+    "cType": "git_tree_entry",
 
     "dependencies": [
       "../include/tree.h",

@@ -14,11 +14,14 @@
     "native"
   ],
   "license": "MIT",
-  "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
+  "author": "Tim Branyen (@tbranyen)",
   "contributors": [
     {
       "name": "Michael Robinson",
       "email": "mike@pagesofinterest.net"
+    },
+    {
+      "name": "Nick Kallen"
     }
   ],
   "main": "index.js",
@@ -48,6 +51,7 @@
     "which": "~1.0.5"
   },
   "devDependencies": {
+    "jshint": "~2.5.1",
     "async": "~0.9.0",
     "aws-sdk": "~2.0.0-rc.20",
     "ejs": "~1.0.0",
@@ -60,9 +64,10 @@
   },
   "scripts": {
     "lint": "jshint src",
-    "install": "npm run codegen && node install.js",
     "test": "cd test && nodeunit nodegit.js",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
-    "codegen": "node build/codegen/t.js ; node build/codegen/generate.js"
+    "codegen": "node build/codegen/t.js ; node build/codegen/generate.js",
+    "generate": "node generate/setup ; node generate",
+    "install": "npm run generate && node install"
   }
 }

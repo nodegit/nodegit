@@ -6,12 +6,12 @@ var async = require('async');
 
 var testFiles = [
   'blob',
+  //'commit',
   'oid',
-  'repo',
   'reference',
-  'commit',
+  'repo',
   'revwalk',
-  'tree_entry',
+  //'tree_entry',
   //'tree',
 ];
 
