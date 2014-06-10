@@ -2,7 +2,7 @@
 const fs = require("fs");
 const ejs = require("ejs");
 const path = require("path");
-const idefs = require("./compare");
+const idefs = require("./idefs");
 
 var classTemplate = ejs.compile(
   "" + fs.readFileSync(String(__dirname + "/templates/class.cc.ejs")), {
@@ -22,9 +22,9 @@ Object.keys(idefs).forEach(function(keyName) {
   }
 
   fs.writeFileSync(
-    __dirname + "/../../include/" + idef.filename, headerTemplate(idef));
+    __dirname + "/../include/" + idef.filename, headerTemplate(idef));
 
   fs.writeFileSync(
-    __dirname + "/../../src/" + path.basename(idef.filename, ".h") + ".cc",
+    __dirname + "/../src/" + path.basename(idef.filename, ".h") + ".cc",
       classTemplate(idef));
 });

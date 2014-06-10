@@ -14,7 +14,8 @@ var typeMap = require("./types.json");
 // Structs or new types between v0.18 and v0.20.
 typeMap.__proto__ = {
   "git_filter_mode_t": { cpp: "Number", js: "Number" },
-  "const git_blame_hunk*": { cpp: "GitBlameHunk", js: "BlameHunk" },
+  "const git_blame_hunk *": { cpp: "GitBlameHunk", js: "BlameHunk" },
+  "git_blame_hunk *": { cpp: "GitBlameHunk", js: "BlameHunk" },
   "git_filter *": { cpp: "GitFilter", js: "Filter" },
   "const git_status_entry *": { cpp: "StatusEntry", js: "StatusEntry" },
   "const git_index_name_entry *": {
@@ -81,8 +82,14 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     file.freeFunctionName = "git_" + fileName + "_free";
   }
 
+  var cFile = libgit2.files[index];
+
+  if (!cFile || !cFile.functions) {
+    return;
+  }
+
   // Doesn't actually exist.
-  if (libgit2.files[index].functions.indexOf(file.freeFunctionName) === -1) {
+  if (cFile.functions.indexOf(file.freeFunctionName) === -1) {
     delete file.freeFunctionName;
   }
 
@@ -108,7 +115,7 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     }
   };
 
-  libgit2.files[index].functions.forEach(function(functionName) {
+  cFile.functions.forEach(function(functionName) {
     var funcDescriptor = libgit2.functions[functionName];
 
     var args = funcDescriptor.args || [];
@@ -280,5 +287,5 @@ Object.keys(descriptor).forEach(function(fileName, index) {
 fs.writeFileSync(path.join(__dirname, "types.json"), 
   JSON.stringify(typeMap, null, 2));
 
-fs.writeFileSync(path.join(__dirname, "compare.json"), 
+fs.writeFileSync(path.join(__dirname, "idefs.json"), 
   JSON.stringify(files, null, 2));

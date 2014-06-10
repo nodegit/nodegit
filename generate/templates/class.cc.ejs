@@ -147,13 +147,13 @@ void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
 -%>
 
 <% if (functionInfo.isAsync) { -%>
-<% include build/codegen/templates/asyncFunction.cc.ejs -%>
+<% include generate/templates/asyncFunction.cc.ejs -%>
 <% } else { -%>
-<% include build/codegen/templates/syncFunction.cc.ejs -%>
+<% include generate/templates/syncFunction.cc.ejs -%>
 <% } -%>
 <% } -%>
 <% } -%>
-<% include build/codegen/templates/fields.cc.ejs -%>
+<% include generate/templates/fields.cc.ejs -%>
 
 <% if (typeof cType != 'undefined') { -%>
 Persistent<Function> <%- cppClassName %>::constructor_template;

@@ -452,7 +452,7 @@
       "git_tree_entry_byindex": {
         "ignore": false,
         "args": [{ "isSelf": true }]
-      }
+      },
 
       "git_tree_entry_bypath": {
         "ignore": false
