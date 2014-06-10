@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -27,12 +26,12 @@ GitCommit::~GitCommit() {
 }
 
 void GitCommit::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Commit"));
+  tpl->SetClassName(NanNew<String>("Commit"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "messageEncoding", MessageEncoding);
@@ -47,27 +46,27 @@ void GitCommit::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "nthGenAncestor", NthGenAncestor);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Commit"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("Commit"), _constructor_template);
 }
 
-Handle<Value> GitCommit::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_commit is required.")));
+    return NanThrowError("git_commit is required.");
   }
-
-  GitCommit* object = new GitCommit((git_commit *) External::Unwrap(args[0]));
+  GitCommit* object = new GitCommit(static_cast<git_commit *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitCommit::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitCommit::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitCommit::constructor_template)->NewInstance(1, argv));
 }
 
 git_commit *GitCommit::GetValue() {
@@ -78,8 +77,8 @@ git_commit *GitCommit::GetValue() {
 /**
  * @return {Oid} result
  */
-Handle<Value> GitCommit::Oid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::Oid) {
+  NanScope();
   
 
   const git_oid * result = git_commit_id(
@@ -93,16 +92,16 @@ Handle<Value> GitCommit::Oid(const Arguments& args) {
   if (result != NULL) {
     to = GitOid::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {String} result
  */
-Handle<Value> GitCommit::MessageEncoding(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::MessageEncoding) {
+  NanScope();
   
 
   const char * result = git_commit_message_encoding(
@@ -110,15 +109,15 @@ Handle<Value> GitCommit::MessageEncoding(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = String::New(result);
-  return scope.Close(to);
+    to = NanNew<String>(result);
+  NanReturnValue(to);
 }
 
 /**
  * @return {String} result
  */
-Handle<Value> GitCommit::Message(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::Message) {
+  NanScope();
   
 
   const char * result = git_commit_message(
@@ -126,15 +125,15 @@ Handle<Value> GitCommit::Message(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = String::New(result);
-  return scope.Close(to);
+    to = NanNew<String>(result);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitCommit::Time(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::Time) {
+  NanScope();
   
 
   git_time_t result = git_commit_time(
@@ -142,15 +141,15 @@ Handle<Value> GitCommit::Time(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Number::New(result);
-  return scope.Close(to);
+    to = NanNew<Number>(result);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitCommit::Offset(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::Offset) {
+  NanScope();
   
 
   int result = git_commit_time_offset(
@@ -158,15 +157,15 @@ Handle<Value> GitCommit::Offset(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Integer::New(result);
-  return scope.Close(to);
+    to = NanNew<Integer>(result);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Signature} result
  */
-Handle<Value> GitCommit::Committer(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::Committer) {
+  NanScope();
   
 
   const git_signature * result = git_commit_committer(
@@ -180,16 +179,16 @@ Handle<Value> GitCommit::Committer(const Arguments& args) {
   if (result != NULL) {
     to = GitSignature::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Signature} result
  */
-Handle<Value> GitCommit::Author(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::Author) {
+  NanScope();
   
 
   const git_signature * result = git_commit_author(
@@ -203,16 +202,16 @@ Handle<Value> GitCommit::Author(const Arguments& args) {
   if (result != NULL) {
     to = GitSignature::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Oid} result
  */
-Handle<Value> GitCommit::TreeId(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::TreeId) {
+  NanScope();
   
 
   const git_oid * result = git_commit_tree_id(
@@ -226,16 +225,16 @@ Handle<Value> GitCommit::TreeId(const Arguments& args) {
   if (result != NULL) {
     to = GitOid::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitCommit::ParentCount(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::ParentCount) {
+  NanScope();
   
 
   unsigned int result = git_commit_parentcount(
@@ -243,18 +242,18 @@ Handle<Value> GitCommit::ParentCount(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Uint32::New(result);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)result);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Number} n
  * @return {Oid} result
  */
-Handle<Value> GitCommit::ParentId(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::ParentId) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number n is required.")));
+    return NanThrowError("Number n is required.");
   }
 
   unsigned int from_n;
@@ -272,19 +271,19 @@ Handle<Value> GitCommit::ParentId(const Arguments& args) {
   if (result != NULL) {
     to = GitOid::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Number} n
  * @return {Commit} ancestor
  */
-Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitCommit::NthGenAncestor) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number n is required.")));
+    return NanThrowError("Number n is required.");
   }
 
   git_commit * ancestor = 0;
@@ -298,9 +297,9 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -308,9 +307,9 @@ Handle<Value> GitCommit::NthGenAncestor(const Arguments& args) {
     if (ancestor != NULL) {
     to = GitCommit::New((void *)ancestor);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 Persistent<Function> GitCommit::constructor_template;

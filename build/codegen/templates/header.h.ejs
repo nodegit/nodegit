@@ -5,8 +5,7 @@
 #ifndef <%- cppClassName.toUpperCase() %>_H
 #define <%- cppClassName.toUpperCase() %>_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -32,7 +31,7 @@ class <%- cppClassName %> : public ObjectWrap {
     ~<%- cppClassName %>();
 <% } -%>
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
 <% if (typeof fields != 'undefined') { -%>
 <%
@@ -40,23 +39,18 @@ class <%- cppClassName %> : public ObjectWrap {
     var fieldInfo = fields[i];
     if (fieldInfo.ignore) continue;
 -%>
-    static Handle<Value> <%- fieldInfo.cppFunctionName %>(const Arguments& args);
+    static NAN_METHOD(<%- fieldInfo.cppFunctionName %>);
 <% } -%>
 <% } -%>
-
 <% if (typeof functions != 'undefined') { -%>
 <%
   for (var i in functions) {
     var functionInfo = functions[i];
     if (functionInfo.ignore) continue;
 -%>
-    static Handle<Value> <%- functionInfo.cppFunctionName %>(const Arguments& args);
 <% if (functionInfo.isAsync) { -%>
-    static void <%- functionInfo.cppFunctionName %>Work(uv_work_t* req);
-    static void <%- functionInfo.cppFunctionName %>AfterWork(uv_work_t* req);
 
     struct <%- functionInfo.cppFunctionName %>Baton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
 <%
@@ -66,13 +60,26 @@ class <%- cppClassName %> : public ObjectWrap {
 <% if (arg.isReturn) { -%>
       <%- arg.cType.replace('**', '*') %> <%- arg.name %>;
 <% } else { -%>
-      Persistent<Value> <%- arg.name %>Reference;
       <%- arg.cType %> <%- arg.name %>;
 <% } -%>
 <% } -%>
-      Persistent<Function> callback;
+    };
+    class <%- functionInfo.cppFunctionName %>Worker : public NanAsyncWorker {
+      public:
+        <%- functionInfo.cppFunctionName %>Worker(
+            <%- functionInfo.cppFunctionName %>Baton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~<%- functionInfo.cppFunctionName %>Worker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        <%- functionInfo.cppFunctionName %>Baton *baton;
     };
 <% } -%>
+    static NAN_METHOD(<%- functionInfo.cppFunctionName %>);
 <% } -%>
 <% } -%>
 <% if (typeof cType != 'undefined') { -%>

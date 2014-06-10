@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -25,12 +24,12 @@ GitPatch::~GitPatch() {
 }
 
 void GitPatch::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Patch"));
+  tpl->SetClassName(NanNew<String>("Patch"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "delta", Delta);
   NODE_SET_PROTOTYPE_METHOD(tpl, "size", Size);
@@ -41,27 +40,27 @@ void GitPatch::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "toString", ToString);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Patch"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("Patch"), _constructor_template);
 }
 
-Handle<Value> GitPatch::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_diff_patch is required.")));
+    return NanThrowError("git_diff_patch is required.");
   }
-
-  GitPatch* object = new GitPatch((git_diff_patch *) External::Unwrap(args[0]));
+  GitPatch* object = new GitPatch(static_cast<git_diff_patch *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitPatch::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitPatch::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitPatch::constructor_template)->NewInstance(1, argv));
 }
 
 git_diff_patch *GitPatch::GetValue() {
@@ -72,8 +71,8 @@ git_diff_patch *GitPatch::GetValue() {
 /**
  * @return {Delta} result
  */
-Handle<Value> GitPatch::Delta(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::Delta) {
+  NanScope();
   
 
   const git_diff_delta * result = git_diff_patch_delta(
@@ -87,16 +86,16 @@ Handle<Value> GitPatch::Delta(const Arguments& args) {
   if (result != NULL) {
     to = GitDelta::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitPatch::Size(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::Size) {
+  NanScope();
   
 
   size_t result = git_diff_patch_num_hunks(
@@ -104,8 +103,8 @@ Handle<Value> GitPatch::Size(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Uint32::New(result);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)result);
+  NanReturnValue(to);
 }
 
 /**
@@ -113,8 +112,8 @@ Handle<Value> GitPatch::Size(const Arguments& args) {
  * @return {Number} total_additions
  * @return {Number} total_deletions
  */
-Handle<Value> GitPatch::Stats(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::Stats) {
+  NanScope();
   
   size_t total_context = 0;
   size_t total_additions = 0;
@@ -128,24 +127,24 @@ Handle<Value> GitPatch::Stats(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  Handle<Object> toReturn = Object::New();
+  Handle<Object> toReturn = NanNew<Object>();
   Handle<Value> to;
-      to = Integer::New(total_context);
-    toReturn->Set(String::NewSymbol("total_context"), to);
+      to = NanNew<Integer>(total_context);
+    toReturn->Set(NanNew<String>("total_context"), to);
 
-      to = Integer::New(total_additions);
-    toReturn->Set(String::NewSymbol("total_additions"), to);
+      to = NanNew<Integer>(total_additions);
+    toReturn->Set(NanNew<String>("total_additions"), to);
 
-      to = Integer::New(total_deletions);
-    toReturn->Set(String::NewSymbol("total_deletions"), to);
+      to = NanNew<Integer>(total_deletions);
+    toReturn->Set(NanNew<String>("total_deletions"), to);
 
-  return scope.Close(toReturn);
+  NanReturnValue(toReturn);
 }
 
 /**
@@ -155,10 +154,10 @@ Handle<Value> GitPatch::Stats(const Arguments& args) {
  * @return {Number} header_len
  * @return {Number} lines_in_hunk
  */
-Handle<Value> GitPatch::Hunk(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::Hunk) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
+    return NanThrowError("Number hunk_idx is required.");
   }
 
   const git_diff_range * range = 0;
@@ -178,13 +177,13 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  Handle<Object> toReturn = Object::New();
+  Handle<Object> toReturn = NanNew<Object>();
   Handle<Value> to;
       if (range != NULL) {
     range = (const git_diff_range * )git_diff_range_dup(range);
@@ -192,30 +191,30 @@ Handle<Value> GitPatch::Hunk(const Arguments& args) {
   if (range != NULL) {
     to = GitDiffRange::New((void *)range);
   } else {
-    to = Null();
+    to = NanNull();
   }
-    toReturn->Set(String::NewSymbol("range"), to);
+    toReturn->Set(NanNew<String>("range"), to);
 
-      to = String::New(header);
-    toReturn->Set(String::NewSymbol("header"), to);
+      to = NanNew<String>(header);
+    toReturn->Set(NanNew<String>("header"), to);
 
-      to = Uint32::New(header_len);
-    toReturn->Set(String::NewSymbol("headerLength"), to);
+      to = NanNew<Uint32>((uint32_t)header_len);
+    toReturn->Set(NanNew<String>("headerLength"), to);
 
-      to = Uint32::New(lines_in_hunk);
-    toReturn->Set(String::NewSymbol("lines"), to);
+      to = NanNew<Uint32>((uint32_t)lines_in_hunk);
+    toReturn->Set(NanNew<String>("lines"), to);
 
-  return scope.Close(toReturn);
+  NanReturnValue(toReturn);
 }
 
 /**
  * @param {Number} hunk_idx
  * @return {Number} result
  */
-Handle<Value> GitPatch::Lines(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::Lines) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
+    return NanThrowError("Number hunk_idx is required.");
   }
 
   size_t from_hunk_idx;
@@ -227,8 +226,8 @@ Handle<Value> GitPatch::Lines(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Int32::New(result);
-  return scope.Close(to);
+    to = NanNew<Int32>((int32_t)result);
+  NanReturnValue(to);
 }
 
 /**
@@ -240,13 +239,13 @@ Handle<Value> GitPatch::Lines(const Arguments& args) {
  * @return {Number} old_lineno
  * @return {Number} new_lineno
  */
-Handle<Value> GitPatch::Line(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::Line) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number hunk_idx is required.")));
+    return NanThrowError("Number hunk_idx is required.");
   }
   if (args.Length() == 1 || !args[1]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number line_of_hunk is required.")));
+    return NanThrowError("Number line_of_hunk is required.");
   }
 
   char line_origin = 0;
@@ -271,37 +270,37 @@ Handle<Value> GitPatch::Line(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  Handle<Object> toReturn = Object::New();
+  Handle<Object> toReturn = NanNew<Object>();
   Handle<Value> to;
-      to = Integer::New(line_origin);
-    toReturn->Set(String::NewSymbol("lineOrigin"), to);
+      to = NanNew<Integer>(line_origin);
+    toReturn->Set(NanNew<String>("lineOrigin"), to);
 
-      to = String::New(content, content_len);
-    toReturn->Set(String::NewSymbol("content"), to);
+      to = NanNew<String>(content, content_len);
+    toReturn->Set(NanNew<String>("content"), to);
 
-      to = Uint32::New(content_len);
-    toReturn->Set(String::NewSymbol("length"), to);
+      to = NanNew<Uint32>((uint32_t)content_len);
+    toReturn->Set(NanNew<String>("length"), to);
 
-      to = Int32::New(old_lineno);
-    toReturn->Set(String::NewSymbol("oldLineNumber"), to);
+      to = NanNew<Int32>((int32_t)old_lineno);
+    toReturn->Set(NanNew<String>("oldLineNumber"), to);
 
-      to = Int32::New(new_lineno);
-    toReturn->Set(String::NewSymbol("newLineNumber"), to);
+      to = NanNew<Int32>((int32_t)new_lineno);
+    toReturn->Set(NanNew<String>("newLineNumber"), to);
 
-  return scope.Close(toReturn);
+  NanReturnValue(toReturn);
 }
 
 /**
  * @return {String} string
  */
-Handle<Value> GitPatch::ToString(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitPatch::ToString) {
+  NanScope();
   
   char * string = 0;
 
@@ -311,16 +310,16 @@ Handle<Value> GitPatch::ToString(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
   Handle<Value> to;
-    to = String::New(string);
+    to = NanNew<String>(string);
   free(string);
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 Persistent<Function> GitPatch::constructor_template;

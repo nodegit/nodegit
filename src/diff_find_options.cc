@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -23,36 +22,36 @@ GitDiffFindOptions::~GitDiffFindOptions() {
 }
 
 void GitDiffFindOptions::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("DiffFindOptions"));
+  tpl->SetClassName(NanNew<String>("DiffFindOptions"));
 
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("DiffFindOptions"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("DiffFindOptions"), _constructor_template);
 }
 
-Handle<Value> GitDiffFindOptions::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitDiffFindOptions::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_diff_find_options is required.")));
+    return NanThrowError("git_diff_find_options is required.");
   }
-
-  GitDiffFindOptions* object = new GitDiffFindOptions((git_diff_find_options *) External::Unwrap(args[0]));
+  GitDiffFindOptions* object = new GitDiffFindOptions(static_cast<git_diff_find_options *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitDiffFindOptions::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitDiffFindOptions::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitDiffFindOptions::constructor_template)->NewInstance(1, argv));
 }
 
 git_diff_find_options *GitDiffFindOptions::GetValue() {

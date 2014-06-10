@@ -6,7 +6,7 @@
 -%>
 <% if (!arg.isOptional) { -%>
   if (args.Length() == <%- jsArg %> || !args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
-    return ThrowException(Exception::Error(String::New("<%- arg.jsClassName %> <%- arg.name %> is required.")));
+    return NanThrowError("<%- arg.jsClassName %> <%- arg.name %> is required.");
   }
 <% } -%>
 <% jsArg++; -%>

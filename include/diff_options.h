@@ -5,8 +5,7 @@
 #ifndef GITDIFFOPTIONS_H
 #define GITDIFFOPTIONS_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,8 +27,7 @@ class GitDiffOptions : public ObjectWrap {
     GitDiffOptions(git_diff_options *raw);
     ~GitDiffOptions();
 
-    static Handle<Value> New(const Arguments& args);
-
+    static NAN_METHOD(New);
 
     git_diff_options *raw;
 };

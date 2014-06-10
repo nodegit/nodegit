@@ -5,8 +5,8 @@
     if (fieldInfo.ignore) continue;
 -%>
 
-Handle<Value> <%- cppClassName %>::<%- fieldInfo.cppFunctionName %>(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(<%- cppClassName %>::<%- fieldInfo.cppFunctionName %>) {
+  NanScope();
   <% var to = fieldInfo; -%>
   Handle<Value> to;
 
@@ -14,7 +14,7 @@ Handle<Value> <%- cppClassName %>::<%- fieldInfo.cppFunctionName %>(const Argume
     <% if (!isV8Value(fieldInfo.cppClassName)) { %>&<% } %>ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()-><%- fieldInfo.name %>;
 
   <% include convertToV8.cc.ejs -%>
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 <% } -%>
 <% } -%>

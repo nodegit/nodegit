@@ -1,8 +1,8 @@
 /**
 <% include doc.cc.ejs -%>
  */
-Handle<Value> <%- cppClassName %>::<%- functionInfo.cppFunctionName %>(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(<%- cppClassName %>::<%- functionInfo.cppFunctionName %>) {
+  NanScope();
   <% include guardArguments.cc.ejs -%>
 
 <%
@@ -65,31 +65,31 @@ from_<%- arg.name %>
     free(<%= arg.name %>);
 <% } -%>
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 <% } -%>
 
 <% if (!returns.length) { -%>
-  return Undefined();
+  NanReturnUndefined();
 <% } else if (returns.length == 1) { -%>
 <% var to = returns[0]; -%>
   Handle<Value> to;
   <% include convertToV8.cc.ejs -%>
-  return scope.Close(to);
+  NanReturnValue(to);
 <% } else { -%>
-  Handle<Object> toReturn = Object::New();
+  Handle<Object> toReturn = NanNew<Object>();
   Handle<Value> to;
 <%
   for (r in returns) {
     var to = returns[r];
 -%>
     <% include convertToV8.cc.ejs -%>
-    toReturn->Set(String::NewSymbol("<%- to.jsName || to.name %>"), to);
+    toReturn->Set(NanNew<String>("<%- to.jsName || to.name %>"), to);
 
 <% } -%>
-  return scope.Close(toReturn);
+  NanReturnValue(toReturn);
 <% } -%>
 }

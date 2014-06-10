@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -27,12 +26,12 @@ GitBlob::~GitBlob() {
 }
 
 void GitBlob::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Blob"));
+  tpl->SetClassName(NanNew<String>("Blob"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "content", Content);
@@ -40,27 +39,27 @@ void GitBlob::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "isBinary", IsBinary);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Blob"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("Blob"), _constructor_template);
 }
 
-Handle<Value> GitBlob::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitBlob::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_blob is required.")));
+    return NanThrowError("git_blob is required.");
   }
-
-  GitBlob* object = new GitBlob((git_blob *) External::Unwrap(args[0]));
+  GitBlob* object = new GitBlob(static_cast<git_blob *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitBlob::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitBlob::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitBlob::constructor_template)->NewInstance(1, argv));
 }
 
 git_blob *GitBlob::GetValue() {
@@ -71,8 +70,8 @@ git_blob *GitBlob::GetValue() {
 /**
  * @return {Oid} result
  */
-Handle<Value> GitBlob::Oid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitBlob::Oid) {
+  NanScope();
   
 
   const git_oid * result = git_blob_id(
@@ -86,16 +85,16 @@ Handle<Value> GitBlob::Oid(const Arguments& args) {
   if (result != NULL) {
     to = GitOid::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Wrapper} result
  */
-Handle<Value> GitBlob::Content(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitBlob::Content) {
+  NanScope();
   
 
   const void * result = git_blob_rawcontent(
@@ -106,16 +105,16 @@ Handle<Value> GitBlob::Content(const Arguments& args) {
     if (result != NULL) {
     to = Wrapper::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitBlob::Size(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitBlob::Size) {
+  NanScope();
   
 
   git_off_t result = git_blob_rawsize(
@@ -123,15 +122,15 @@ Handle<Value> GitBlob::Size(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Number::New(result);
-  return scope.Close(to);
+    to = NanNew<Number>(result);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Boolean} result
  */
-Handle<Value> GitBlob::IsBinary(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitBlob::IsBinary) {
+  NanScope();
   
 
   int result = git_blob_is_binary(
@@ -139,8 +138,8 @@ Handle<Value> GitBlob::IsBinary(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Boolean::New(result);
-  return scope.Close(to);
+    to = NanNew<Boolean>(result);
+  NanReturnValue(to);
 }
 
 Persistent<Function> GitBlob::constructor_template;

@@ -78,7 +78,7 @@ var dependencies = Q.allSettled([
   
   // Missing CMake.
   if (!cmake) {
-    throw new Error('CMake is required to build libgit2.');
+    //throw new Error('CMake is required to build libgit2.');
   }
 
   // Now lets check the Python version to ensure it's < 3.

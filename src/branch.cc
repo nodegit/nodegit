@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -23,12 +22,12 @@ Branch::~Branch() {
 }
 
 void Branch::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Branch"));
+  tpl->SetClassName(NanNew<String>("Branch"));
 
   NODE_SET_METHOD(tpl, "create", Create);
   NODE_SET_METHOD(tpl, "delete", Delete);
@@ -43,27 +42,27 @@ void Branch::Initialize(Handle<v8::Object> target) {
   NODE_SET_METHOD(tpl, "remoteName", RemoteName);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Branch"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("Branch"), _constructor_template);
 }
 
-Handle<Value> Branch::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_branch is required.")));
+    return NanThrowError("git_branch is required.");
   }
-
-  Branch* object = new Branch((git_branch *) External::Unwrap(args[0]));
+  Branch* object = new Branch(static_cast<git_branch *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> Branch::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(Branch::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(Branch::constructor_template)->NewInstance(1, argv));
 }
 
 git_branch *Branch::GetValue() {
@@ -78,19 +77,19 @@ git_branch *Branch::GetValue() {
  * @param {Number} force
  * @return {Reference} out
  */
-Handle<Value> Branch::Create(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::Create) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String branch_name is required.")));
+    return NanThrowError("String branch_name is required.");
   }
   if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Commit target is required.")));
+    return NanThrowError("Commit target is required.");
   }
   if (args.Length() == 3 || !args[3]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
+    return NanThrowError("Number force is required.");
   }
 
   git_reference * out = 0;
@@ -114,9 +113,9 @@ Handle<Value> Branch::Create(const Arguments& args) {
   free((void *)from_branch_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -124,18 +123,18 @@ Handle<Value> Branch::Create(const Arguments& args) {
     if (out != NULL) {
     to = GitReference::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Reference} branch
  */
-Handle<Value> Branch::Delete(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::Delete) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Reference branch is required.")));
+    return NanThrowError("Reference branch is required.");
   }
 
   git_reference * from_branch;
@@ -146,13 +145,13 @@ Handle<Value> Branch::Delete(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
@@ -161,19 +160,19 @@ Handle<Value> Branch::Delete(const Arguments& args) {
  * @param {BranchForeachCb} branch_cb
  * @param {void} payload
  */
-Handle<Value> Branch::Foreach(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::Foreach) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
   if (args.Length() == 1 || !args[1]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number list_flags is required.")));
+    return NanThrowError("Number list_flags is required.");
   }
   if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("BranchForeachCb branch_cb is required.")));
+    return NanThrowError("BranchForeachCb branch_cb is required.");
   }
   if (args.Length() == 3 || !args[3]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("void payload is required.")));
+    return NanThrowError("void payload is required.");
   }
 
   git_repository * from_repo;
@@ -193,13 +192,13 @@ Handle<Value> Branch::Foreach(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
@@ -208,16 +207,16 @@ Handle<Value> Branch::Foreach(const Arguments& args) {
  * @param {Number} force
  * @return {Reference} out
  */
-Handle<Value> Branch::Move(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::Move) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Reference branch is required.")));
+    return NanThrowError("Reference branch is required.");
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String new_branch_name is required.")));
+    return NanThrowError("String new_branch_name is required.");
   }
   if (args.Length() == 2 || !args[2]->IsInt32()) {
-    return ThrowException(Exception::Error(String::New("Number force is required.")));
+    return NanThrowError("Number force is required.");
   }
 
   git_reference * out = 0;
@@ -238,9 +237,9 @@ Handle<Value> Branch::Move(const Arguments& args) {
   free((void *)from_new_branch_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -248,9 +247,9 @@ Handle<Value> Branch::Move(const Arguments& args) {
     if (out != NULL) {
     to = GitReference::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
@@ -259,16 +258,16 @@ Handle<Value> Branch::Move(const Arguments& args) {
  * @param {BranchT} branch_type
  * @return {Reference} out
  */
-Handle<Value> Branch::Lookup(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::Lookup) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String branch_name is required.")));
+    return NanThrowError("String branch_name is required.");
   }
   if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("BranchT branch_type is required.")));
+    return NanThrowError("BranchT branch_type is required.");
   }
 
   git_reference * out = 0;
@@ -289,9 +288,9 @@ Handle<Value> Branch::Lookup(const Arguments& args) {
   free((void *)from_branch_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -299,19 +298,19 @@ Handle<Value> Branch::Lookup(const Arguments& args) {
     if (out != NULL) {
     to = GitReference::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Reference} ref
  * @return {String} out
  */
-Handle<Value> Branch::Name(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::Name) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Reference ref is required.")));
+    return NanThrowError("Reference ref is required.");
   }
 
   const char * out = 0;
@@ -324,25 +323,25 @@ Handle<Value> Branch::Name(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
   Handle<Value> to;
-    to = String::New(out);
-  return scope.Close(to);
+    to = NanNew<String>(out);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Reference} branch
  * @return {Reference} out
  */
-Handle<Value> Branch::Upstream(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::Upstream) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Reference branch is required.")));
+    return NanThrowError("Reference branch is required.");
   }
 
   git_reference * out = 0;
@@ -355,9 +354,9 @@ Handle<Value> Branch::Upstream(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -365,22 +364,22 @@ Handle<Value> Branch::Upstream(const Arguments& args) {
     if (out != NULL) {
     to = GitReference::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Reference} branch
  * @param {String} upstream_name
  */
-Handle<Value> Branch::SetUpstream(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::SetUpstream) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Reference branch is required.")));
+    return NanThrowError("Reference branch is required.");
   }
   if (args.Length() == 1 || !args[1]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String upstream_name is required.")));
+    return NanThrowError("String upstream_name is required.");
   }
 
   git_reference * from_branch;
@@ -396,13 +395,13 @@ Handle<Value> Branch::SetUpstream(const Arguments& args) {
   free((void *)from_upstream_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
@@ -411,19 +410,19 @@ Handle<Value> Branch::SetUpstream(const Arguments& args) {
  * @param {Repository} repo
  * @param {String} canonical_branch_name
  */
-Handle<Value> Branch::UpstreamName(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::UpstreamName) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String tracking_branch_name_out is required.")));
+    return NanThrowError("String tracking_branch_name_out is required.");
   }
   if (args.Length() == 1 || !args[1]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number buffer_size is required.")));
+    return NanThrowError("Number buffer_size is required.");
   }
   if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
   if (args.Length() == 3 || !args[3]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String canonical_branch_name is required.")));
+    return NanThrowError("String canonical_branch_name is required.");
   }
 
   char * from_tracking_branch_name_out;
@@ -447,22 +446,22 @@ Handle<Value> Branch::UpstreamName(const Arguments& args) {
   free((void *)from_canonical_branch_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
  * @param {Reference} branch
  */
-Handle<Value> Branch::IsHead(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::IsHead) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Reference branch is required.")));
+    return NanThrowError("Reference branch is required.");
   }
 
   git_reference * from_branch;
@@ -473,13 +472,13 @@ Handle<Value> Branch::IsHead(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 /**
@@ -488,19 +487,19 @@ Handle<Value> Branch::IsHead(const Arguments& args) {
  * @param {Repository} repo
  * @param {String} canonical_branch_name
  */
-Handle<Value> Branch::RemoteName(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(Branch::RemoteName) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String remote_name_out is required.")));
+    return NanThrowError("String remote_name_out is required.");
   }
   if (args.Length() == 1 || !args[1]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number buffer_size is required.")));
+    return NanThrowError("Number buffer_size is required.");
   }
   if (args.Length() == 2 || !args[2]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
   if (args.Length() == 3 || !args[3]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String canonical_branch_name is required.")));
+    return NanThrowError("String canonical_branch_name is required.");
   }
 
   char * from_remote_name_out;
@@ -524,13 +523,13 @@ Handle<Value> Branch::RemoteName(const Arguments& args) {
   free((void *)from_canonical_branch_name);
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
-  return Undefined();
+  NanReturnUndefined();
 }
 
 Persistent<Function> Branch::constructor_template;

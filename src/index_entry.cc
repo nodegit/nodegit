@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -25,12 +24,12 @@ GitIndexEntry::~GitIndexEntry() {
 }
 
 void GitIndexEntry::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("IndexEntry"));
+  tpl->SetClassName(NanNew<String>("IndexEntry"));
 
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "ctime", Ctime);
@@ -46,27 +45,27 @@ void GitIndexEntry::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "flags_extended", FlagsExtended);
   NODE_SET_PROTOTYPE_METHOD(tpl, "path", Path);
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("IndexEntry"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("IndexEntry"), _constructor_template);
 }
 
-Handle<Value> GitIndexEntry::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_index_entry is required.")));
+    return NanThrowError("git_index_entry is required.");
   }
-
-  GitIndexEntry* object = new GitIndexEntry((git_index_entry *) External::Unwrap(args[0]));
+  GitIndexEntry* object = new GitIndexEntry(static_cast<git_index_entry *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitIndexEntry::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitIndexEntry::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitIndexEntry::constructor_template)->NewInstance(1, argv));
 }
 
 git_index_entry *GitIndexEntry::GetValue() {
@@ -74,8 +73,8 @@ git_index_entry *GitIndexEntry::GetValue() {
 }
 
 
-Handle<Value> GitIndexEntry::Ctime(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Ctime) {
+  NanScope();
     Handle<Value> to;
 
   git_index_time *ctime =
@@ -87,13 +86,13 @@ Handle<Value> GitIndexEntry::Ctime(const Arguments& args) {
   if (ctime != NULL) {
     to = GitIndexTime::New((void *)ctime);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Mtime(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Mtime) {
+  NanScope();
     Handle<Value> to;
 
   git_index_time *mtime =
@@ -105,79 +104,79 @@ Handle<Value> GitIndexEntry::Mtime(const Arguments& args) {
   if (mtime != NULL) {
     to = GitIndexTime::New((void *)mtime);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Dev(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Dev) {
+  NanScope();
     Handle<Value> to;
 
   unsigned int dev =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->dev;
 
-    to = Uint32::New(dev);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)dev);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Ino(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Ino) {
+  NanScope();
     Handle<Value> to;
 
   unsigned int ino =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->ino;
 
-    to = Uint32::New(ino);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)ino);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Mode(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Mode) {
+  NanScope();
     Handle<Value> to;
 
   uint16_t mode =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->mode;
 
-    to = Integer::New(mode);
-  return scope.Close(to);
+    to = NanNew<Integer>(mode);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Uid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Uid) {
+  NanScope();
     Handle<Value> to;
 
   unsigned int uid =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->uid;
 
-    to = Uint32::New(uid);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)uid);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::gid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::gid) {
+  NanScope();
     Handle<Value> to;
 
   unsigned int gid =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->gid;
 
-    to = Uint32::New(gid);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)gid);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::FileSize(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::FileSize) {
+  NanScope();
     Handle<Value> to;
 
   unsigned int file_size =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->file_size;
 
-    to = Uint32::New(file_size);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)file_size);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Oid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Oid) {
+  NanScope();
     Handle<Value> to;
 
   git_oid *oid =
@@ -189,42 +188,42 @@ Handle<Value> GitIndexEntry::Oid(const Arguments& args) {
   if (oid != NULL) {
     to = GitOid::New((void *)oid);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Flags(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Flags) {
+  NanScope();
     Handle<Value> to;
 
   uint16_t flags =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->flags;
 
-    to = Integer::New(flags);
-  return scope.Close(to);
+    to = NanNew<Integer>(flags);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::FlagsExtended(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::FlagsExtended) {
+  NanScope();
     Handle<Value> to;
 
   uint16_t flags_extended =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->flags_extended;
 
-    to = Integer::New(flags_extended);
-  return scope.Close(to);
+    to = NanNew<Integer>(flags_extended);
+  NanReturnValue(to);
 }
 
-Handle<Value> GitIndexEntry::Path(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitIndexEntry::Path) {
+  NanScope();
     Handle<Value> to;
 
   char * path =
     ObjectWrap::Unwrap<GitIndexEntry>(args.This())->GetValue()->path;
 
-    to = String::New(path);
-  return scope.Close(to);
+    to = NanNew<String>(path);
+  NanReturnValue(to);
 }
 
 Persistent<Function> GitIndexEntry::constructor_template;

@@ -5,8 +5,7 @@
 #ifndef GITOBJECT_H
 #define GITOBJECT_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,26 +27,33 @@ class GitObject : public ObjectWrap {
     GitObject(git_object *raw);
     ~GitObject();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Oid(const Arguments& args);
-    static Handle<Value> Type(const Arguments& args);
-    static Handle<Value> Peel(const Arguments& args);
-    static void PeelWork(uv_work_t* req);
-    static void PeelAfterWork(uv_work_t* req);
+    static NAN_METHOD(Oid);
+    static NAN_METHOD(Type);
 
     struct PeelBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_object * peeled;
-      Persistent<Value> objectReference;
       const git_object * object;
-      Persistent<Value> target_typeReference;
       git_otype target_type;
-      Persistent<Function> callback;
     };
+    class PeelWorker : public NanAsyncWorker {
+      public:
+        PeelWorker(
+            PeelBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~PeelWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        PeelBaton *baton;
+    };
+    static NAN_METHOD(Peel);
     git_object *raw;
 };
 

@@ -5,8 +5,7 @@
 #ifndef GITCLONEOPTIONS_H
 #define GITCLONEOPTIONS_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,8 +27,7 @@ class GitCloneOptions : public ObjectWrap {
     GitCloneOptions(git_clone_options *raw);
     ~GitCloneOptions();
 
-    static Handle<Value> New(const Arguments& args);
-
+    static NAN_METHOD(New);
 
     git_clone_options *raw;
 };

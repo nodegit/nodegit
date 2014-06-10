@@ -1,24 +1,29 @@
 <% toName = to.name || 'result' -%>
 <% if (to.cppClassName == "String") { -%>
 <% if (typeof to.size != 'undefined') { -%>
-  to = String::New(<%- toName %>, <%- to.size %>);
+  to = NanNew<String>(<%- toName %>, <%- to.size %>);
 <% } else { -%>
-  to = String::New(<%- toName %>);
+  to = NanNew<String>(<%- toName %>);
 <% } -%>
 <% if (to.freeFunctionName) { -%>
   <%- to.freeFunctionName %>(<%- toName %>);
 <% } -%>
 <% } else if (isV8Value(to.cppClassName)) { -%>
-  to = <%- to.cppClassName %>::New(<%- toName %>);
+<% if (~['Uint32', 'Int32'].indexOf(to.cppClassName)) { -%>
+<% var className = to.cppClassName.toLowerCase()+'_t' -%>
+  to = NanNew<<%- to.cppClassName %>>((<%- className %>)<%- toName %>);
+<% } else { -%>
+  to = NanNew<<%- to.cppClassName %>>(<%- toName %>);
+<% } -%>
 <% } else if (to.cppClassName == "External") { -%>
-  to = External::New((void *)<%- toName %>);
+  to = NanNew<External>((void *)<%- toName %>);
 <% } else if (to.cppClassName == 'Array') { -%>
 <%
   // FIXME this is not general purpose enough.
 %>
-  Local<Array> tmpArray = Array::New(<%- toName %>-><%- to.size %>);
+  Local<Array> tmpArray = NanNew<Array>(<%- toName %>-><%- to.size %>);
   for (unsigned int i = 0; i < <%- toName %>-><%- to.size %>; i++) {
-    tmpArray->Set(Number::New(i), String::New(<%- toName %>-><%- to.key %>[i]));
+    tmpArray->Set(NanNew<Number>(i), NanNew<String>(<%- toName %>-><%- to.key %>[i]));
   }
   to = tmpArray;
 <% } else { -%>
@@ -30,6 +35,6 @@
   if (<%- toName %> != NULL) {
     to = <%- to.cppClassName %>::New((void *)<%- toName %>);
   } else {
-    to = Null();
+    to = NanNull();
   }
 <% } -%>

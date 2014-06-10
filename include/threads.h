@@ -5,8 +5,7 @@
 #ifndef GITTHREADS_H
 #define GITTHREADS_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -23,11 +22,10 @@ class GitThreads : public ObjectWrap {
 
   private:
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Init(const Arguments& args);
-    static Handle<Value> Shutdown(const Arguments& args);
+    static NAN_METHOD(Init);
+    static NAN_METHOD(Shutdown);
 };
 
 #endif

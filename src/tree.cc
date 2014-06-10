@@ -1,8 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string.h>
 
 #include "git2.h"
@@ -30,12 +29,12 @@ GitTree::~GitTree() {
 }
 
 void GitTree::Initialize(Handle<v8::Object> target) {
-  HandleScope scope;
+  NanScope();
 
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(String::NewSymbol("Tree"));
+  tpl->SetClassName(NanNew<String>("Tree"));
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "oid", Oid);
   NODE_SET_PROTOTYPE_METHOD(tpl, "size", Size);
@@ -49,27 +48,27 @@ void GitTree::Initialize(Handle<v8::Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "diffWorkDir", DiffWorkDir);
 
 
-  constructor_template = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("Tree"), constructor_template);
+  Local<Function> _constructor_template = tpl->GetFunction();
+  NanAssignPersistent(constructor_template, _constructor_template);
+  target->Set(NanNew<String>("Tree"), _constructor_template);
 }
 
-Handle<Value> GitTree::New(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::New) {
+  NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return ThrowException(Exception::Error(String::New("git_tree is required.")));
+    return NanThrowError("git_tree is required.");
   }
-
-  GitTree* object = new GitTree((git_tree *) External::Unwrap(args[0]));
+  GitTree* object = new GitTree(static_cast<git_tree *>(Handle<External>::Cast(args[0])->Value()));
   object->Wrap(args.This());
 
-  return scope.Close(args.This());
+  NanReturnValue(args.This());
 }
 
 Handle<Value> GitTree::New(void *raw) {
-  HandleScope scope;
-  Handle<Value> argv[1] = { External::New((void *)raw) };
-  return scope.Close(GitTree::constructor_template->NewInstance(1, argv));
+  NanEscapableScope();
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>(GitTree::constructor_template)->NewInstance(1, argv));
 }
 
 git_tree *GitTree::GetValue() {
@@ -80,8 +79,8 @@ git_tree *GitTree::GetValue() {
 /**
  * @return {Oid} result
  */
-Handle<Value> GitTree::Oid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::Oid) {
+  NanScope();
   
 
   const git_oid * result = git_tree_id(
@@ -95,16 +94,16 @@ Handle<Value> GitTree::Oid(const Arguments& args) {
   if (result != NULL) {
     to = GitOid::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @return {Number} result
  */
-Handle<Value> GitTree::Size(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::Size) {
+  NanScope();
   
 
   size_t result = git_tree_entrycount(
@@ -112,18 +111,18 @@ Handle<Value> GitTree::Size(const Arguments& args) {
   );
 
   Handle<Value> to;
-    to = Uint32::New(result);
-  return scope.Close(to);
+    to = NanNew<Uint32>((uint32_t)result);
+  NanReturnValue(to);
 }
 
 /**
  * @param {String} filename
  * @return {TreeEntry} result
  */
-Handle<Value> GitTree::EntryByName(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::EntryByName) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String filename is required.")));
+    return NanThrowError("String filename is required.");
   }
 
   const char * from_filename;
@@ -143,19 +142,19 @@ Handle<Value> GitTree::EntryByName(const Arguments& args) {
   if (result != NULL) {
     to = GitTreeEntry::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Number} idx
  * @return {TreeEntry} result
  */
-Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::EntryByIndex) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsUint32()) {
-    return ThrowException(Exception::Error(String::New("Number idx is required.")));
+    return NanThrowError("Number idx is required.");
   }
 
   size_t from_idx;
@@ -173,19 +172,19 @@ Handle<Value> GitTree::EntryByIndex(const Arguments& args) {
   if (result != NULL) {
     to = GitTreeEntry::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 /**
  * @param {Oid} oid
  * @return {TreeEntry} result
  */
-Handle<Value> GitTree::EntryByOid(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::EntryByOid) {
+  NanScope();
     if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Oid oid is required.")));
+    return NanThrowError("Oid oid is required.");
   }
 
   const git_oid * from_oid;
@@ -203,9 +202,9 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
   if (result != NULL) {
     to = GitTreeEntry::New((void *)result);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -214,36 +213,36 @@ Handle<Value> GitTree::EntryByOid(const Arguments& args) {
  * @param {String} path
  * @param {TreeEntry} callback
  */
-Handle<Value> GitTree::GetEntry(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::GetEntry) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsString()) {
-    return ThrowException(Exception::Error(String::New("String path is required.")));
+    return NanThrowError("String path is required.");
   }
 
   if (args.Length() == 1 || !args[1]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError("Callback is required and must be a Function.");
   }
 
   GetEntryBaton* baton = new GetEntryBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->request.data = baton;
-  baton->rootReference = Persistent<Value>::New(args.This());
   baton->root = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
-  baton->pathReference = Persistent<Value>::New(args[0]);
     const char * from_path;
             String::Utf8Value path(args[0]->ToString());
       from_path = strdup(*path);
           baton->path = from_path;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[1]));
+  
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[1]));
+  GetEntryWorker *worker = new GetEntryWorker(baton, callback);
+  worker->SaveToPersistent("root", args.This());
+  if (!args[0]->IsUndefined() && !args[0]->IsNull())
+    worker->SaveToPersistent("path", args[0]->ToObject());
 
-  uv_queue_work(uv_default_loop(), &baton->request, GetEntryWork, (uv_after_work_cb)GetEntryAfterWork);
-
-  return Undefined();
+  NanAsyncQueueWorker(worker);
+  NanReturnUndefined();
 }
 
-void GitTree::GetEntryWork(uv_work_t *req) {
-  GetEntryBaton *baton = static_cast<GetEntryBaton *>(req->data);
+void GitTree::GetEntryWorker::Execute() {
   int result = git_tree_entry_bypath(
     &baton->out, 
     baton->root, 
@@ -255,44 +254,38 @@ void GitTree::GetEntryWork(uv_work_t *req) {
   }
 }
 
-void GitTree::GetEntryAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  GetEntryBaton *baton = static_cast<GetEntryBaton *>(req->data);
-
+void GitTree::GetEntryWorker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     if (baton->out != NULL) {
     to = GitTreeEntry::New((void *)baton->out);
   } else {
-    to = Null();
+    to = NanNull();
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNull(),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
-        Exception::Error(String::New(baton->error->message))
+        NanError(baton->error->message)
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      callback->Call(1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      callback->Call(0, NULL);
     }
       }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-  baton->rootReference.Dispose();
-  baton->pathReference.Dispose();
-  baton->callback.Dispose();
   free((void *)baton->path);
   delete baton;
 }
@@ -300,8 +293,8 @@ void GitTree::GetEntryAfterWork(uv_work_t *req) {
 /**
  * @return {TreeBuilder} out
  */
-Handle<Value> GitTree::Builder(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::Builder) {
+  NanScope();
   
   git_treebuilder * out = 0;
 
@@ -311,9 +304,9 @@ Handle<Value> GitTree::Builder(const Arguments& args) {
   );
   if (result != GIT_OK) {
     if (giterr_last()) {
-      return ThrowException(Exception::Error(String::New(giterr_last()->message)));
+      return NanThrowError(giterr_last()->message);
     } else {
-      return ThrowException(Exception::Error(String::New("Unkown Error")));
+      return NanThrowError("Unknown Error");
     }
   }
 
@@ -321,9 +314,9 @@ Handle<Value> GitTree::Builder(const Arguments& args) {
     if (out != NULL) {
     to = GitTreeBuilder::New((void *)out);
   } else {
-    to = Null();
+    to = NanNull();
   }
-  return scope.Close(to);
+  NanReturnValue(to);
 }
 
 #include "../include/functions/copy.h"
@@ -334,50 +327,52 @@ Handle<Value> GitTree::Builder(const Arguments& args) {
  * @param {DiffOptions} opts
  * @param {DiffList} callback
  */
-Handle<Value> GitTree::DiffTree(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::DiffTree) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
   if (args.Length() == 1 || !args[1]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Tree new_tree is required.")));
+    return NanThrowError("Tree new_tree is required.");
   }
 
   if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError("Callback is required and must be a Function.");
   }
 
   DiffTreeBaton* baton = new DiffTreeBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
     git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
           baton->repo = from_repo;
-    baton->old_treeReference = Persistent<Value>::New(args.This());
-  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
-  baton->new_treeReference = Persistent<Value>::New(args[1]);
+    baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
     git_tree * from_new_tree;
             from_new_tree = ObjectWrap::Unwrap<GitTree>(args[1]->ToObject())->GetValue();
           baton->new_tree = from_new_tree;
-    baton->optsReference = Persistent<Value>::New(args[2]);
-    const git_diff_options * from_opts;
+      const git_diff_options * from_opts;
       if (args[2]->IsObject()) {
             from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
           } else {
       from_opts = 0;
     }
       baton->opts = from_opts;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+  
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[3]));
+  DiffTreeWorker *worker = new DiffTreeWorker(baton, callback);
+  if (!args[0]->IsUndefined() && !args[0]->IsNull())
+    worker->SaveToPersistent("repo", args[0]->ToObject());
+  worker->SaveToPersistent("old_tree", args.This());
+  if (!args[1]->IsUndefined() && !args[1]->IsNull())
+    worker->SaveToPersistent("new_tree", args[1]->ToObject());
+  if (!args[2]->IsUndefined() && !args[2]->IsNull())
+    worker->SaveToPersistent("opts", args[2]->ToObject());
 
-  uv_queue_work(uv_default_loop(), &baton->request, DiffTreeWork, (uv_after_work_cb)DiffTreeAfterWork);
-
-  return Undefined();
+  NanAsyncQueueWorker(worker);
+  NanReturnUndefined();
 }
 
-void GitTree::DiffTreeWork(uv_work_t *req) {
-  DiffTreeBaton *baton = static_cast<DiffTreeBaton *>(req->data);
+void GitTree::DiffTreeWorker::Execute() {
   int result = git_diff_tree_to_tree(
     &baton->diff, 
     baton->repo, 
@@ -391,46 +386,38 @@ void GitTree::DiffTreeWork(uv_work_t *req) {
   }
 }
 
-void GitTree::DiffTreeAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  DiffTreeBaton *baton = static_cast<DiffTreeBaton *>(req->data);
-
+void GitTree::DiffTreeWorker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     if (baton->diff != NULL) {
     to = GitDiffList::New((void *)baton->diff);
   } else {
-    to = Null();
+    to = NanNull();
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNull(),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
-        Exception::Error(String::New(baton->error->message))
+        NanError(baton->error->message)
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      callback->Call(1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      callback->Call(0, NULL);
     }
       }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-  baton->repoReference.Dispose();
-  baton->old_treeReference.Dispose();
-  baton->new_treeReference.Dispose();
-  baton->optsReference.Dispose();
-  baton->callback.Dispose();
   delete baton;
 }
 
@@ -442,27 +429,23 @@ void GitTree::DiffTreeAfterWork(uv_work_t *req) {
  * @param {DiffOptions} opts
  * @param {DiffList} callback
  */
-Handle<Value> GitTree::DiffIndex(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::DiffIndex) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
 
   if (args.Length() == 3 || !args[3]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError("Callback is required and must be a Function.");
   }
 
   DiffIndexBaton* baton = new DiffIndexBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
     git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
           baton->repo = from_repo;
-    baton->old_treeReference = Persistent<Value>::New(args.This());
-  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
-  baton->indexReference = Persistent<Value>::New(args[1]);
+    baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
     git_index * from_index;
       if (args[1]->IsObject()) {
             from_index = ObjectWrap::Unwrap<GitIndex>(args[1]->ToObject())->GetValue();
@@ -470,23 +453,29 @@ Handle<Value> GitTree::DiffIndex(const Arguments& args) {
       from_index = 0;
     }
       baton->index = from_index;
-    baton->optsReference = Persistent<Value>::New(args[2]);
-    const git_diff_options * from_opts;
+      const git_diff_options * from_opts;
       if (args[2]->IsObject()) {
             from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[2]->ToObject())->GetValue();
           } else {
       from_opts = 0;
     }
       baton->opts = from_opts;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[3]));
+  
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[3]));
+  DiffIndexWorker *worker = new DiffIndexWorker(baton, callback);
+  if (!args[0]->IsUndefined() && !args[0]->IsNull())
+    worker->SaveToPersistent("repo", args[0]->ToObject());
+  worker->SaveToPersistent("old_tree", args.This());
+  if (!args[1]->IsUndefined() && !args[1]->IsNull())
+    worker->SaveToPersistent("index", args[1]->ToObject());
+  if (!args[2]->IsUndefined() && !args[2]->IsNull())
+    worker->SaveToPersistent("opts", args[2]->ToObject());
 
-  uv_queue_work(uv_default_loop(), &baton->request, DiffIndexWork, (uv_after_work_cb)DiffIndexAfterWork);
-
-  return Undefined();
+  NanAsyncQueueWorker(worker);
+  NanReturnUndefined();
 }
 
-void GitTree::DiffIndexWork(uv_work_t *req) {
-  DiffIndexBaton *baton = static_cast<DiffIndexBaton *>(req->data);
+void GitTree::DiffIndexWorker::Execute() {
   int result = git_diff_tree_to_index(
     &baton->diff, 
     baton->repo, 
@@ -500,46 +489,38 @@ void GitTree::DiffIndexWork(uv_work_t *req) {
   }
 }
 
-void GitTree::DiffIndexAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  DiffIndexBaton *baton = static_cast<DiffIndexBaton *>(req->data);
-
+void GitTree::DiffIndexWorker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     if (baton->diff != NULL) {
     to = GitDiffList::New((void *)baton->diff);
   } else {
-    to = Null();
+    to = NanNull();
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNull(),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
-        Exception::Error(String::New(baton->error->message))
+        NanError(baton->error->message)
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      callback->Call(1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      callback->Call(0, NULL);
     }
       }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-  baton->repoReference.Dispose();
-  baton->old_treeReference.Dispose();
-  baton->indexReference.Dispose();
-  baton->optsReference.Dispose();
-  baton->callback.Dispose();
   delete baton;
 }
 
@@ -550,27 +531,23 @@ void GitTree::DiffIndexAfterWork(uv_work_t *req) {
  * @param {DiffOptions} opts
  * @param {DiffList} callback
  */
-Handle<Value> GitTree::DiffWorkDir(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(GitTree::DiffWorkDir) {
+  NanScope();
       if (args.Length() == 0 || !args[0]->IsObject()) {
-    return ThrowException(Exception::Error(String::New("Repository repo is required.")));
+    return NanThrowError("Repository repo is required.");
   }
 
   if (args.Length() == 2 || !args[2]->IsFunction()) {
-    return ThrowException(Exception::Error(String::New("Callback is required and must be a Function.")));
+    return NanThrowError("Callback is required and must be a Function.");
   }
 
   DiffWorkDirBaton* baton = new DiffWorkDirBaton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->request.data = baton;
-  baton->repoReference = Persistent<Value>::New(args[0]);
     git_repository * from_repo;
             from_repo = ObjectWrap::Unwrap<GitRepo>(args[0]->ToObject())->GetValue();
           baton->repo = from_repo;
-    baton->old_treeReference = Persistent<Value>::New(args.This());
-  baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
-  baton->optsReference = Persistent<Value>::New(args[1]);
+    baton->old_tree = ObjectWrap::Unwrap<GitTree>(args.This())->GetValue();
     const git_diff_options * from_opts;
       if (args[1]->IsObject()) {
             from_opts = ObjectWrap::Unwrap<GitDiffOptions>(args[1]->ToObject())->GetValue();
@@ -578,15 +555,20 @@ Handle<Value> GitTree::DiffWorkDir(const Arguments& args) {
       from_opts = 0;
     }
       baton->opts = from_opts;
-    baton->callback = Persistent<Function>::New(Local<Function>::Cast(args[2]));
+  
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[2]));
+  DiffWorkDirWorker *worker = new DiffWorkDirWorker(baton, callback);
+  if (!args[0]->IsUndefined() && !args[0]->IsNull())
+    worker->SaveToPersistent("repo", args[0]->ToObject());
+  worker->SaveToPersistent("old_tree", args.This());
+  if (!args[1]->IsUndefined() && !args[1]->IsNull())
+    worker->SaveToPersistent("opts", args[1]->ToObject());
 
-  uv_queue_work(uv_default_loop(), &baton->request, DiffWorkDirWork, (uv_after_work_cb)DiffWorkDirAfterWork);
-
-  return Undefined();
+  NanAsyncQueueWorker(worker);
+  NanReturnUndefined();
 }
 
-void GitTree::DiffWorkDirWork(uv_work_t *req) {
-  DiffWorkDirBaton *baton = static_cast<DiffWorkDirBaton *>(req->data);
+void GitTree::DiffWorkDirWorker::Execute() {
   int result = git_diff_tree_to_workdir(
     &baton->diff, 
     baton->repo, 
@@ -599,45 +581,38 @@ void GitTree::DiffWorkDirWork(uv_work_t *req) {
   }
 }
 
-void GitTree::DiffWorkDirAfterWork(uv_work_t *req) {
-  HandleScope scope;
-  DiffWorkDirBaton *baton = static_cast<DiffWorkDirBaton *>(req->data);
-
+void GitTree::DiffWorkDirWorker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
   Handle<Value> to;
     if (baton->diff != NULL) {
     to = GitDiffList::New((void *)baton->diff);
   } else {
-    to = Null();
+    to = NanNull();
   }
   Handle<Value> result = to;
     Handle<Value> argv[2] = {
-      Local<Value>::New(Null()),
+      NanNull(),
       result
     };
-    baton->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+    callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<Value> argv[1] = {
-        Exception::Error(String::New(baton->error->message))
+        NanError(baton->error->message)
       };
-      baton->callback->Call(Context::GetCurrent()->Global(), 1, argv);
+      callback->Call(1, argv);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else {
-      baton->callback->Call(Context::GetCurrent()->Global(), 0, NULL);
+      callback->Call(0, NULL);
     }
       }
 
   if (try_catch.HasCaught()) {
     node::FatalException(try_catch);
   }
-  baton->repoReference.Dispose();
-  baton->old_treeReference.Dispose();
-  baton->optsReference.Dispose();
-  baton->callback.Dispose();
   delete baton;
 }
 

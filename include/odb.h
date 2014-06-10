@@ -5,8 +5,7 @@
 #ifndef GITODB_H
 #define GITODB_H
 
-#include <v8.h>
-#include <node.h>
+#include <nan.h>
 #include <string>
 
 #include "git2.h"
@@ -28,52 +27,65 @@ class GitOdb : public ObjectWrap {
     GitOdb(git_odb *raw);
     ~GitOdb();
 
-    static Handle<Value> New(const Arguments& args);
+    static NAN_METHOD(New);
 
-
-    static Handle<Value> Create(const Arguments& args);
-    static Handle<Value> Open(const Arguments& args);
-    static Handle<Value> AddDiskAlternate(const Arguments& args);
-    static Handle<Value> Read(const Arguments& args);
-    static void ReadWork(uv_work_t* req);
-    static void ReadAfterWork(uv_work_t* req);
+    static NAN_METHOD(Create);
+    static NAN_METHOD(Open);
+    static NAN_METHOD(AddDiskAlternate);
 
     struct ReadBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_odb_object * out;
-      Persistent<Value> dbReference;
       git_odb * db;
-      Persistent<Value> idReference;
       const git_oid * id;
-      Persistent<Function> callback;
     };
-    static Handle<Value> ReadPrefix(const Arguments& args);
-    static Handle<Value> ReadHeader(const Arguments& args);
-    static Handle<Value> Exists(const Arguments& args);
-    static Handle<Value> Refresh(const Arguments& args);
-    static Handle<Value> Write(const Arguments& args);
-    static void WriteWork(uv_work_t* req);
-    static void WriteAfterWork(uv_work_t* req);
+    class ReadWorker : public NanAsyncWorker {
+      public:
+        ReadWorker(
+            ReadBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~ReadWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        ReadBaton *baton;
+    };
+    static NAN_METHOD(Read);
+    static NAN_METHOD(ReadPrefix);
+    static NAN_METHOD(ReadHeader);
+    static NAN_METHOD(Exists);
+    static NAN_METHOD(Refresh);
 
     struct WriteBaton {
-      uv_work_t request;
       int error_code;
       const git_error* error;
       git_oid * out;
-      Persistent<Value> odbReference;
       git_odb * odb;
-      Persistent<Value> dataReference;
       const void * data;
-      Persistent<Value> lenReference;
       size_t len;
-      Persistent<Value> typeReference;
       git_otype type;
-      Persistent<Function> callback;
     };
-    static Handle<Value> Hash(const Arguments& args);
-    static Handle<Value> Hashfile(const Arguments& args);
+    class WriteWorker : public NanAsyncWorker {
+      public:
+        WriteWorker(
+            WriteBaton *_baton,
+            NanCallback *callback
+        ) : NanAsyncWorker(callback)
+          , baton(_baton) {};
+        ~WriteWorker() {};
+        void Execute();
+        void HandleOKCallback();
+
+      private:
+        WriteBaton *baton;
+    };
+    static NAN_METHOD(Write);
+    static NAN_METHOD(Hash);
+    static NAN_METHOD(Hashfile);
     git_odb *raw;
 };
 
