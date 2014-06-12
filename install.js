@@ -47,6 +47,7 @@ var paths = envOverride({
   pkg: __dirname + '/package',
   libgit2: __dirname + '/vendor/libgit2/',
   build: __dirname + '/vendor/libgit2/build/',
+  release: __dirname + '/build/Release'
 });
 
 // Load the package.json.
@@ -67,19 +68,11 @@ var dependencies = Q.allSettled([
 .then(function(results) {
   console.info('[nodegit] Determining dependencies.');
 
+  //throw new Error("can't build");
+
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
   cmake = results[2].value;
-
-  // Missing Python.
-  if (!python) {
-    throw new Error('Python is required to build libgit2.');
-  }
-  
-  // Missing CMake.
-  if (!cmake) {
-    //throw new Error('CMake is required to build libgit2.');
-  }
 
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {
@@ -190,4 +183,35 @@ var dependencies = Q.allSettled([
   console.info('[nodegit] Failed to build nodegit.');
   console.info(message.message);
   console.info(message.stack);
-});
+
+  // Attempt the prebuilt fallback.
+  console.info('[nodegit] Removing vendor/libgit2.');
+
+  return Q.ninvoke(rimraf, null, paths.release).then(function() {
+    console.info('[nodegit] Creating build/Release.');
+
+    // Attempt to fetch prebuilt binary.
+    return Q.ninvoke(fs, 'mkdir', paths.release).then(function() {
+      console.info('[nodegit] Attempting to fetch a prebuilt binary.');
+
+      var version = [
+        process.platform, process.arch, require("./package.json").version
+      ].join('_');
+
+      var url = 'https://s3.amazonaws.com/nodegit/' + version;
+
+      var extract = tar.Extract({
+        path: paths.release,
+        strip: true
+      });
+
+      var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
+
+      return Q.ninvoke(expand, 'on', 'end');
+    })
+
+    .then(function() {
+      console.info('[nodegit] Completed installation successfully.');
+    });
+  });
+})
