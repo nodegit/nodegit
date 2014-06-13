@@ -276,139 +276,145 @@
             # TargetMachine + static_library + x64 = nothing.
             "conditions": [
               ["target_arch=='x64'", {
-                'VCLibrarianTool': {
-                  'AdditionalOptions': [
-                    '/MACHINE:X64',
+                "VCLibrarianTool": {
+                  "AdditionalOptions": [
+                    "/MACHINE:X64",
                   ],
                 },
               }, {
-                'VCLibrarianTool': {
-                  'AdditionalOptions': [
-                    '/MACHINE:x86',
+                "VCLibrarianTool": {
+                  "AdditionalOptions": [
+                    "/MACHINE:x86",
                   ],
                 },
               }],
             ],
           },
-          'msvs_disabled_warnings': [
-            4244,  # conversion from 'ssize_t' to 'int32_t', possible loss of data
-            4267,  # conversion from 'size_t' to 'int', possible loss of data
-            4090,  # different 'volatile' qualifiers
-            4047,  # 'volatile void *' differs in levels of indirection from 'int'
-            4013,  # 'InterlockedDecrement' undefined; assuming extern returning int
+          "msvs_disabled_warnings": [
+            # Conversion from 'ssize_t' to 'int32_t', possible loss of data.
+            4244,
+            # Conversion from 'size_t' to 'int', possible loss of data.
+            4267,
+            # Different 'volatile' qualifiers.
+            4090,
+            # 'volatile void *' differs in levels of indirection from 'int'.
+            4047,
+            # 'InterlockedDecrement' undefined; assuming extern returning int.
+            4013,
           ],
-          'sources': [
-            'vendor/libgit2/src/win32/dir.c',
-            'vendor/libgit2/src/win32/dir.h',
-            'vendor/libgit2/src/win32/error.c',
-            'vendor/libgit2/src/win32/error.h',
-            'vendor/libgit2/src/win32/findfile.c',
-            'vendor/libgit2/src/win32/findfile.h',
-            'vendor/libgit2/src/win32/git2.rc',
-            'vendor/libgit2/src/win32/map.c',
-            'vendor/libgit2/src/win32/mingw-compat.h',
-            'vendor/libgit2/src/win32/msvc-compat.h',
-            'vendor/libgit2/src/win32/posix.h',
-            'vendor/libgit2/src/win32/posix_w32.c',
-            'vendor/libgit2/src/win32/precompiled.c',
-            'vendor/libgit2/src/win32/precompiled.h',
-            'vendor/libgit2/src/win32/pthread.c',
-            'vendor/libgit2/src/win32/pthread.h',
-            'vendor/libgit2/src/win32/utf-conv.c',
-            'vendor/libgit2/src/win32/utf-conv.h',
-            'vendor/libgit2/src/win32/version.h',
-            'vendor/libgit2/deps/regex/regex.c',
+          "sources": [
+            "vendor/libgit2/src/win32/dir.c",
+            "vendor/libgit2/src/win32/dir.h",
+            "vendor/libgit2/src/win32/error.c",
+            "vendor/libgit2/src/win32/error.h",
+            "vendor/libgit2/src/win32/findfile.c",
+            "vendor/libgit2/src/win32/findfile.h",
+            "vendor/libgit2/src/win32/git2.rc",
+            "vendor/libgit2/src/win32/map.c",
+            "vendor/libgit2/src/win32/mingw-compat.h",
+            "vendor/libgit2/src/win32/msvc-compat.h",
+            "vendor/libgit2/src/win32/posix.h",
+            "vendor/libgit2/src/win32/posix_w32.c",
+            "vendor/libgit2/src/win32/precompiled.c",
+            "vendor/libgit2/src/win32/precompiled.h",
+            "vendor/libgit2/src/win32/pthread.c",
+            "vendor/libgit2/src/win32/pthread.h",
+            "vendor/libgit2/src/win32/utf-conv.c",
+            "vendor/libgit2/src/win32/utf-conv.h",
+            "vendor/libgit2/src/win32/version.h",
+            "vendor/libgit2/deps/regex/regex.c",
           ],
         }, {
-          'libraries': [
-            '-lpthread',
+          "libraries": [
+            "-lpthread",
           ],
-          'sources': [
-            'vendor/libgit2/src/unix/map.c',
-            'vendor/libgit2/src/unix/posix.h',
-            'vendor/libgit2/src/unix/realpath.c',
+          "sources": [
+            "vendor/libgit2/src/unix/map.c",
+            "vendor/libgit2/src/unix/posix.h",
+            "vendor/libgit2/src/unix/realpath.c",
           ],
-          'cflags': [
-            '-Wno-missing-field-initializers',
-            '-Wno-unused-variable',
-            '-Wno-deprecated-declarations',
+          "cflags": [
+            "-Wno-missing-field-initializers",
+            "-Wno-unused-variable",
+            "-Wno-deprecated-declarations",
           ],
-          'xcode_settings': {
-            'WARNING_CFLAGS': [
-              '-Wno-missing-field-initializers',
-              '-Wno-unused-variable',
-              '-Wno-deprecated-declarations',
-              '-Wno-uninitialized',
+          "xcode_settings": {
+            "WARNING_CFLAGS": [
+              "-Wno-missing-field-initializers",
+              "-Wno-unused-variable",
+              "-Wno-deprecated-declarations",
+              "-Wno-uninitialized",
             ],
           },
         },
       ]
       ],
-      'include_dirs': [
-        'vendor/libgit2/include',
-        'vendor/libgit2/src',
-        'vendor/libgit2/deps/regex',
+      "include_dirs": [
+        "vendor/libgit2/include",
+        "vendor/libgit2/src",
+        "vendor/libgit2/deps/regex",
       ],
-      'direct_dependent_settings': {
-        'include_dirs': [
-          'vendor/libgit2/include',
+      "direct_dependent_settings": {
+        "include_dirs": [
+          "vendor/libgit2/include",
         ],
       },
     },
     {
-      'target_name': 'zlib',
-      'type': 'static_library',
-      'sources': [
-        'vendor/libgit2/deps/zlib/adler32.c',
-        'vendor/libgit2/deps/zlib/crc32.c',
-        'vendor/libgit2/deps/zlib/crc32.h',
-        'vendor/libgit2/deps/zlib/deflate.c',
-        'vendor/libgit2/deps/zlib/deflate.h',
-        'vendor/libgit2/deps/zlib/inffast.c',
-        'vendor/libgit2/deps/zlib/inffast.h',
-        'vendor/libgit2/deps/zlib/inffixed.h',
-        'vendor/libgit2/deps/zlib/inflate.c',
-        'vendor/libgit2/deps/zlib/inflate.h',
-        'vendor/libgit2/deps/zlib/inftrees.c',
-        'vendor/libgit2/deps/zlib/inftrees.h',
-        'vendor/libgit2/deps/zlib/trees.c',
-        'vendor/libgit2/deps/zlib/trees.h',
-        'vendor/libgit2/deps/zlib/zconf.h',
-        'vendor/libgit2/deps/zlib/zlib.h',
-        'vendor/libgit2/deps/zlib/zutil.c',
-        'vendor/libgit2/deps/zlib/zutil.h',
+      "target_name": "zlib",
+      "type": "static_library",
+      "sources": [
+        "vendor/libgit2/deps/zlib/adler32.c",
+        "vendor/libgit2/deps/zlib/crc32.c",
+        "vendor/libgit2/deps/zlib/crc32.h",
+        "vendor/libgit2/deps/zlib/deflate.c",
+        "vendor/libgit2/deps/zlib/deflate.h",
+        "vendor/libgit2/deps/zlib/inffast.c",
+        "vendor/libgit2/deps/zlib/inffast.h",
+        "vendor/libgit2/deps/zlib/inffixed.h",
+        "vendor/libgit2/deps/zlib/inflate.c",
+        "vendor/libgit2/deps/zlib/inflate.h",
+        "vendor/libgit2/deps/zlib/inftrees.c",
+        "vendor/libgit2/deps/zlib/inftrees.h",
+        "vendor/libgit2/deps/zlib/trees.c",
+        "vendor/libgit2/deps/zlib/trees.h",
+        "vendor/libgit2/deps/zlib/zconf.h",
+        "vendor/libgit2/deps/zlib/zlib.h",
+        "vendor/libgit2/deps/zlib/zutil.c",
+        "vendor/libgit2/deps/zlib/zutil.h",
       ],
-      'defines': [
-        'NO_VIZ',
-        'STDC',
-        'NO_GZIP',
+      "defines": [
+        "NO_VIZ",
+        "STDC",
+        "NO_GZIP",
       ],
-      'include_dirs': [
-        'vendor/libgit2/include',
-        'vendor/libgit2/deps/regex',
+      "include_dirs": [
+        "vendor/libgit2/include",
+        "vendor/libgit2/deps/regex",
       ],
-      'direct_dependent_settings': {
-        'include_dirs': [
-          'vendor/libgit2/deps/zlib',
+      "direct_dependent_settings": {
+        "include_dirs": [
+          "vendor/libgit2/deps/zlib",
         ],
       },
     },
     {
-      'target_name': 'http_parser',
-      'type': 'static_library',
-      'sources': [
-        'vendor/libgit2/deps/http-parser/http_parser.c',
-        'vendor/libgit2/deps/http-parser/http_parser.h',
+      "target_name": "http_parser",
+      "type": "static_library",
+      "sources": [
+        "vendor/libgit2/deps/http-parser/http_parser.c",
+        "vendor/libgit2/deps/http-parser/http_parser.h",
       ],
-      'direct_dependent_settings': {
-        'include_dirs': [
-          'vendor/libgit2/deps/http-parser',
+      "direct_dependent_settings": {
+        "include_dirs": [
+          "vendor/libgit2/deps/http-parser",
         ],
       },
-      'conditions': [
-        ['OS=="win"', {
-          'msvs_disabled_warnings': [
-            4244,  # conversion from 'ssize_t' to 'int32_t', possible loss of data
+      "conditions": [
+        ["OS=='win'", {
+          "msvs_disabled_warnings": [
+            # Conversion from 'ssize_t' to 'int32_t', possible loss of data.
+            4244,
           ],
         }],
       ],
