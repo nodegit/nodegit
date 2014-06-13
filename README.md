@@ -27,20 +27,14 @@ dependencies.
 npm install nodegit
 ```
 
-If you encounter problems with just installing, you should follow the Building
-and Installing instructions below.
+If you encounter problems while installing, you should try the Building from
+source instructions below.
 
-## Building and Installing. ##
+## Building from source. ##
 
 Minimum dependencies:
 
-* [Python 2](https://www.python.org/)
-
-``` bash
-npm install nodegit
-```
-
-### Building manually: ###
+- [Python 2](https://www.python.org/)
 
 If you wish to help contribute to nodegit it is useful to build locally.
 
