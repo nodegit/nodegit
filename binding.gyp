@@ -61,7 +61,7 @@
         [
           "OS=='win'", {
             "libraries": [
-              "-lRelease/git2.lib"
+              "-lRelease/libgit2.lib"
             ],
           }, { # 'OS!="win"'
             "libraries": [
@@ -253,10 +253,6 @@
         "vendor/libgit2/src/transports/smart.h",
         "vendor/libgit2/src/transports/smart_pkt.c",
         "vendor/libgit2/src/transports/smart_protocol.c",
-        "vendor/libgit2/src/transports/winhttp.c",
-        "vendor/libgit2/src/hash/hash_generic.c",
-        "vendor/libgit2/src/hash/hash_generic.h",
-        "vendor/libgit2/src/hash/hash_openssl.h",
         "vendor/libgit2/src/xdiff/xdiff.h",
         "vendor/libgit2/src/xdiff/xdiffi.c",
         "vendor/libgit2/src/xdiff/xdiffi.h",
@@ -280,9 +276,6 @@
           ],
         }],
         ["OS=='win'", {
-          "defines": [
-            "GIT_WINHTTP",
-          ],
           "msvs_settings": {
             "VCLinkerTool": {
               "AdditionalDependencies": [
@@ -334,9 +327,10 @@
             'vendor/libgit2/src/win32/utf-conv.c',
             'vendor/libgit2/src/win32/utf-conv.h',
             'vendor/libgit2/src/win32/version.h',
-            "vendor/libgit2/src/hash/hash_win32.c",
-            "vendor/libgit2/src/hash/hash_win32.h",
             'vendor/libgit2/deps/regex/regex.c',
+            "vendor/libgit2/src/hash/hash_generic.c",
+            "vendor/libgit2/src/hash/hash_generic.h",
+            "vendor/libgit2/src/hash/hash_openssl.h",
           ],
         }, {
           'libraries': [
@@ -357,7 +351,8 @@
               '-Wno-unused-variable'
             ],
           },
-        }],
+        },
+      ]
       ],
       'include_dirs': [
         'vendor/libgit2/include',
