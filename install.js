@@ -183,7 +183,7 @@ var dependencies = Q.allSettled([
     console.info('[nodegit] Fetching binary from S3.');
 
     // Using the node-pre-gyp module, attempt to fetch a compatible build.
-    return Q.nfcall(exec, './node_modules/.bin/node-pre-gyp install');
+    return Q.nfcall(exec, 'node-pre-gyp install');
   }
 
   // Attempt to fetch prebuilt binary.
