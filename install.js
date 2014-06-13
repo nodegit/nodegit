@@ -59,7 +59,7 @@ var dependencies = Q.allSettled([
   // work with Python 2.* if it's available.
   Q.nfcall(which, 'python2'),
   Q.nfcall(which, 'python'),
-  
+
   // Check for any version of CMake.
   Q.nfcall(which, 'cmake'),
 ])
@@ -71,7 +71,7 @@ var dependencies = Q.allSettled([
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
   cmake = results[2].value;
-
+  
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {
     if (version[1].indexOf('Python 3') === 0) {

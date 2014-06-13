@@ -50,31 +50,18 @@
       ],
 
       "cflags": [
-        "-Wall"
-      ],
-
-      "ldflags": [
-        "-Wl,-rpath,\$$ORIGIN/Release/"
+        "-Wall",
       ],
 
       "conditions": [
         [
-          "OS=='win'", {
-            "libraries": [
-              "-lRelease/libgit2.lib"
-            ],
-          }, { # 'OS!="win"'
-            "libraries": [
-             "-L<!(pwd)/build/Release",
-              "-lgit2"
-            ]
-          }
-        ],
-
-        [
           "OS=='mac'", {
             "xcode_settings": {
-              "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
+              "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+
+              "WARNING_CFLAGS": [
+                "-Wno-unused-variable",
+              ],
             }
           }
         ]
@@ -343,12 +330,15 @@
           ],
           'cflags': [
             '-Wno-missing-field-initializers',
-            '-Wno-unused-variable'
+            '-Wno-unused-variable',
+            '-Wno-deprecated-declarations',
           ],
           'xcode_settings': {
             'WARNING_CFLAGS': [
               '-Wno-missing-field-initializers',
-              '-Wno-unused-variable'
+              '-Wno-unused-variable',
+              '-Wno-deprecated-declarations',
+              '-Wno-uninitialized',
             ],
           },
         },

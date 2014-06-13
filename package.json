@@ -54,8 +54,7 @@
   "binary": {
     "module_name": "nodegit",
     "module_path": "./build/Release/",
-    "host": "https://s3.amazonaws.com/nodegit/nodegit/",
-    "remote_path": "../"
+    "host": "https://s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
     "lint": "jshint src",
