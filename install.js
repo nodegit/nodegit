@@ -47,6 +47,7 @@ var paths = envOverride({
   pkg: __dirname + '/package',
   libgit2: __dirname + '/vendor/libgit2/',
   build: __dirname + '/vendor/libgit2/build/',
+  release: __dirname + '/build/Release'
 });
 
 // Load the package.json.
@@ -58,7 +59,7 @@ var dependencies = Q.allSettled([
   // work with Python 2.* if it's available.
   Q.nfcall(which, 'python2'),
   Q.nfcall(which, 'python'),
-  
+
   // Check for any version of CMake.
   Q.nfcall(which, 'cmake'),
 ])
@@ -70,17 +71,7 @@ var dependencies = Q.allSettled([
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
   cmake = results[2].value;
-
-  // Missing Python.
-  if (!python) {
-    throw new Error('Python is required to build libgit2.');
-  }
   
-  // Missing CMake.
-  if (!cmake) {
-    //throw new Error('CMake is required to build libgit2.');
-  }
-
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {
     if (version[1].indexOf('Python 3') === 0) {
@@ -114,49 +105,6 @@ var dependencies = Q.allSettled([
   return Q.ninvoke(expand, 'on', 'end');
 })
 
-// Fetch completed successfully.
-.then(function() {
-  console.info('[nodegit] Creating vendor/libgit2/build.');
-
-  return Q.ninvoke(fs, 'mkdir', paths.build);
-})
-
-// Configure libgit2 using cmake.
-.then(function() {
-  console.info('[nodegit] Configuring libgit2.');
-
-  // Minimum flags necessary to configure in sane environments.
-  var flags = ['-DTHREADSAFE=ON', '-DBUILD_CLAR=OFF'];
-
-  // Windows flags.
-  if (process.platform === 'win32') {
-    flags.push.apply(flags, [
-      '-DSTDCALL=OFF',
-      '-DBUILD_SHARED_LIBS=OFF',
-      '-DCMAKE_C_FLAGS=-fPIC',
-      '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
-    ]);
-
-    // If the architecture is 64bit, have to change the generator.
-    if (os.arch() === 'x64') {
-      flags.push('-G "Visual Studio 12 Win64"');
-    }
-  }
-
-  return Q.nfcall(exec, 'cmake .. ' + flags.join(' '), {
-    cwd: paths.build
-  });
-})
-
-// Build libgit2 using cmake.
-.then(function() {
-  console.info('[nodegit] Building libgit2.');
-
-  return Q.nfcall(exec, 'cmake --build .', {
-    cwd: paths.build
-  });
-})
-
 // Configure the native module using node-gyp.
 .then(function() {
   console.info('[nodegit] Configuring native node module.');
@@ -178,6 +126,33 @@ var dependencies = Q.allSettled([
     cwd: '.',
     maxBuffer: Number.MAX_VALUE
   });
+})
+
+// Attempt to fallback on a prebuilt binary.
+.fail(function(message) {
+  console.info('[nodegit] Failed to build nodegit.');
+  console.info(message.message);
+  console.info(message.stack);
+
+  console.info('[nodegit] Attempting to fallback on a prebuilt binary.');
+
+  function fetchPrebuilt() {
+    console.info('[nodegit] Fetching binary from S3.');
+
+    // Using the node-pre-gyp module, attempt to fetch a compatible build.
+    return Q.nfcall(exec, 'node-pre-gyp install');
+  }
+
+  // Attempt to fetch prebuilt binary.
+  return Q.ninvoke(fs, 'mkdir', paths.release)
+    .then(fetchPrebuilt, fetchPrebuilt);
+})
+
+// Display a warning message about failing to build native node module.
+.fail(function(message) {
+  console.info('[nodegit] Failed to build and install nodegit.');
+  console.info(message.message);
+  console.info(message.stack);
 })
 
 // Display a success message.

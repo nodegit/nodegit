@@ -7,7 +7,7 @@ NodeGit
 Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
 <a href="https://ci.appveyor.com/project/TimBranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2/branch/master" alt="Build Status: Windows" height="18" /></a>
 
-**Stable: 0.1.3**
+**Stable: 0.1.4**
 
 Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael
 Robinson [@codeofinterest](http://twitter.com/codeofinterest), and Nick Kallen
@@ -18,18 +18,23 @@ contributors](https://github.com/tbranyen/nodegit/contributors)!
 
 http://www.nodegit.org/nodegit/
 
-## Building and Installing. ##
+## Getting started. ##
 
-Minimum dependencies:
-
-* [Python 2](https://www.python.org/)
-* [CMake 2.8](http://www.cmake.org/)
+NodeGit will work on most systems out-of-the-box without any native
+dependencies.
 
 ``` bash
 npm install nodegit
 ```
 
-### Building manually: ###
+If you encounter problems while installing, you should try the Building from
+source instructions below.
+
+## Building from source. ##
+
+Minimum dependencies:
+
+- [Python 2](https://www.python.org/)
 
 If you wish to help contribute to nodegit it is useful to build locally.
 
@@ -49,31 +54,26 @@ correctly.
 
 ### Installing dependencies: ###
 
-#### OS X ####
+#### Mac OS X ####
 
-Using Brew:
-
-``` bash
-brew install cmake libzip
-```
+- [Install XCode Command Line Tools](http://railsapps.github.io/xcode-command-line-tools.html)
 
 #### Linux ####
 
 Using APT in Ubuntu:
 
 ``` bash
-sudo apt-get install cmake libzip-dev build-essential
+sudo apt-get install build-essential
 ```
 
 Using Pacman in Arch Linux:
 
 ``` bash
-sudo pacman -S cmake libzip base-devel
+sudo pacman -S base-devel
 ```
 
 #### Windows ####
 
-- [Download and install CMake](http://www.cmake.org/cmake/resources/software.html).
 - [Download and install Python](https://www.python.org/download/windows).
 - [Download and install VS Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop).
 

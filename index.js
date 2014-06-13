@@ -1,19 +1,11 @@
-// Used to detect for Cygwin
-var os = require('os');
-
-// Required for Windows/Cygwin support
-var root = [__dirname, '/vendor/libgit2/build/shared'].join(''),
-  path = process.env.PATH;
-
-if (~os.type().indexOf('CYGWIN') && !~path.indexOf(root)) {
-  process.env.PATH = root + ':' + path;
-}
-
-// Assign raw api to module
 var rawApi;
+
+// Attempt to load the production release first, if it fails fall back to the
+// debug release.
 try {
   rawApi = require('./build/Release/nodegit');
-} catch (e) {
+}
+catch (e) {
   rawApi = require('./build/Debug/nodegit');
 }
 
