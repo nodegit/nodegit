@@ -267,7 +267,10 @@
         "vendor/libgit2/src/xdiff/xprepare.h",
         "vendor/libgit2/src/xdiff/xtypes.h",
         "vendor/libgit2/src/xdiff/xutils.c",
-        "vendor/libgit2/src/xdiff/xutils.h"
+        "vendor/libgit2/src/xdiff/xutils.h",
+        "vendor/libgit2/src/hash/hash_generic.c",
+        "vendor/libgit2/src/hash/hash_generic.h",
+        "vendor/libgit2/src/hash/hash_openssl.h",
       ],
       "conditions": [
         ["OS=='linux'", {
@@ -328,9 +331,6 @@
             'vendor/libgit2/src/win32/utf-conv.h',
             'vendor/libgit2/src/win32/version.h',
             'vendor/libgit2/deps/regex/regex.c',
-            "vendor/libgit2/src/hash/hash_generic.c",
-            "vendor/libgit2/src/hash/hash_generic.h",
-            "vendor/libgit2/src/hash/hash_openssl.h",
           ],
         }, {
           'libraries': [
