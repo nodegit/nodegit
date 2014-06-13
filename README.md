@@ -18,6 +18,18 @@ contributors](https://github.com/tbranyen/nodegit/contributors)!
 
 http://www.nodegit.org/nodegit/
 
+## Getting started. ##
+
+NodeGit will work on most systems out-of-the-box without any native
+dependencies.
+
+``` bash
+npm install nodegit
+```
+
+If you encounter problems with just installing, you should follow the Building
+and Installing instructions below.
+
 ## Building and Installing. ##
 
 Minimum dependencies:
