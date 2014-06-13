@@ -68,8 +68,6 @@ var dependencies = Q.allSettled([
 .then(function(results) {
   console.info('[nodegit] Determining dependencies.');
 
-  //throw new Error("can't build");
-
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
   cmake = results[2].value;
@@ -173,6 +171,33 @@ var dependencies = Q.allSettled([
   });
 })
 
+// Attempt to fallback on a prebuilt binary.
+.fail(function(message) {
+  console.info('[nodegit] Failed to build nodegit.');
+  console.info(message.message);
+  console.info(message.stack);
+
+  console.info('[nodegit] Attempting to fallback on a prebuilt binary.');
+
+  function fetchPrebuilt() {
+    console.info('[nodegit] Fetching binary from S3.');
+
+    // Using the node-pre-gyp module, attempt to fetch a compatible build.
+    return Q.nfcall(exec, './node_modules/.bin/node-pre-gyp install');
+  }
+
+  // Attempt to fetch prebuilt binary.
+  return Q.ninvoke(fs, 'mkdir', paths.release)
+    .then(fetchPrebuilt, fetchPrebuilt);
+})
+
+// Display a warning message about failing to build native node module.
+.fail(function(message) {
+  console.info('[nodegit] Failed to build and install nodegit.');
+  console.info(message.message);
+  console.info(message.stack);
+})
+
 // Display a success message.
 .then(function() {
   console.info('[nodegit] Completed installation successfully.');
@@ -183,35 +208,4 @@ var dependencies = Q.allSettled([
   console.info('[nodegit] Failed to build nodegit.');
   console.info(message.message);
   console.info(message.stack);
-
-  // Attempt the prebuilt fallback.
-  console.info('[nodegit] Removing vendor/libgit2.');
-
-  return Q.ninvoke(rimraf, null, paths.release).then(function() {
-    console.info('[nodegit] Creating build/Release.');
-
-    // Attempt to fetch prebuilt binary.
-    return Q.ninvoke(fs, 'mkdir', paths.release).then(function() {
-      console.info('[nodegit] Attempting to fetch a prebuilt binary.');
-
-      var version = [
-        process.platform, process.arch, require("./package.json").version
-      ].join('_');
-
-      var url = 'https://s3.amazonaws.com/nodegit/' + version;
-
-      var extract = tar.Extract({
-        path: paths.release,
-        strip: true
-      });
-
-      var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
-
-      return Q.ninvoke(expand, 'on', 'end');
-    })
-
-    .then(function() {
-      console.info('[nodegit] Completed installation successfully.');
-    });
-  });
-})
+});

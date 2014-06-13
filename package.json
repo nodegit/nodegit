@@ -30,21 +30,31 @@
   "engines": {
     "node": ">= 0.8"
   },
+  "bundledDependencies": [
+    "node-pre-gyp"
+  ],
   "dependencies": {
-    "request": "~2.25.0",
-    "node-gyp": "~0.13.0",
-    "tar": "~0.1.18",
-    "which": "~1.0.5",
-    "q": "~0.9.6",
-    "fs-extra": "0.6.0",
+    "fs-extra": "~0.9.1",
     "nan": "~1.2.0",
-    "rimraf": "~2.2.6"
+    "node-gyp": "~0.13.1",
+    "node-pre-gyp": "~0.5.16",
+    "q": "~1.0.1",
+    "request": "~2.36.0",
+    "rimraf": "~2.2.8",
+    "tar": "~0.1.19",
+    "which": "~1.0.5"
   },
   "devDependencies": {
-    "jshint": "~2.4.4",
-    "nodeunit": "~0.8.6",
+    "async": "~0.9.0",
+    "aws-sdk": "~2.0.0-rc.19",
     "ejs": "~1.0.0",
-    "async": "~0.2.10"
+    "jshint": "~2.5.1",
+    "nodeunit": "~0.9.0"
+  },
+  "binary": {
+    "module_name": "nodegit",
+    "module_path": "./build/Release/",
+    "host": "https://s3.amazonaws.com/nodegit/nodegit"
   },
   "scripts": {
     "lint": "jshint src",
