@@ -1,6 +1,4 @@
-docs/
-example/
-test/
-util/
-vendor/nodeunit
-vendor/rimraf
+/doc/
+/example/
+/node_modules/
+/test/

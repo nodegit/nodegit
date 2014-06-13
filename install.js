@@ -131,9 +131,6 @@ var dependencies = Q.allSettled([
 // Attempt to fallback on a prebuilt binary.
 .fail(function(message) {
   console.info('[nodegit] Failed to build nodegit.');
-  console.info(message.message);
-  console.info(message.stack);
-
   console.info('[nodegit] Attempting to fallback on a prebuilt binary.');
 
   function fetchPrebuilt() {
