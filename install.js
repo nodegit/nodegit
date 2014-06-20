@@ -1,11 +1,8 @@
-// Core Node.js modules.
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
 var exec = require('child_process').exec;
-
-// Third-party modules.
 var Q = require('q');
 var request = require('request');
 var tar = require('tar');
@@ -40,7 +37,7 @@ function systemPath(parts) {
 }
 
 // Will be used near the end to configure `node-gyp`.
-var python, cmake;
+var python;
 
 // Common reusable paths that can be overwritten by environment variables.
 var paths = envOverride({
@@ -58,10 +55,7 @@ var dependencies = Q.allSettled([
   // This will prioritize `python2` over `python`, because we always want to
   // work with Python 2.* if it's available.
   Q.nfcall(which, 'python2'),
-  Q.nfcall(which, 'python'),
-
-  // Check for any version of CMake.
-  Q.nfcall(which, 'cmake'),
+  Q.nfcall(which, 'python')
 ])
 
 // Determine if all the dependency requirements are met.
@@ -70,7 +64,6 @@ var dependencies = Q.allSettled([
 
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
-  cmake = results[2].value;
   
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {
@@ -80,19 +73,27 @@ var dependencies = Q.allSettled([
   });
 })
 
-// Successfully found all dependencies.  First step is to clean the vendor
+// Successfully found all dependencies.  First step is to detect the vendor
 // directory.
 .then(function() {
-  console.info('[nodegit] Removing vendor/libgit2.');
+  console.info('[nodegit] Detecting vendor/libgit2.');
 
-  return Q.ninvoke(rimraf, null, paths.libgit2);
+  return Q.ninvoke(fs, 'stat', paths.libgit2).then(function() {
+    return Q.ninvoke(fs, 'stat', paths.libgit2 + pkg.libgit2.sha);
+  }).fail(function() {
+    console.info('[nodegit] Removing outdated vendor/libgit2.');
+
+    // This directory is outdated, remove. 
+    throw Q.ninvoke(rimraf, null, paths.libgit2);
+  });
 })
 
-// Now fetch the libgit2 source from GitHub.
-.then(function() {
+// If the directory already exists, no need to refetch.
+.fail(function() {
+  // Otherwise fetch the libgit2 source from GitHub.
   console.info('[nodegit] Fetching vendor/libgit2.');
 
-  var url = 'https://github.com/libgit2/libgit2/tarball/' + pkg.libgit2;
+  var url = 'https://github.com/libgit2/libgit2/tarball/' + pkg.libgit2.sha;
   
   var extract = tar.Extract({
     path: paths.libgit2,
@@ -102,7 +103,10 @@ var dependencies = Q.allSettled([
   // First extract from Zlib and then extract from Tar.
   var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
 
-  return Q.ninvoke(expand, 'on', 'end');
+  return Q.ninvoke(expand, 'on', 'end').then(function() {
+    // Write out a sha file for testing in the future.
+    return Q.ninvoke(fs, 'writeFile', paths.libgit2 + pkg.libgit2.sha, '');
+  });
 })
 
 // Configure the native module using node-gyp.
