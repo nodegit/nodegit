@@ -39,7 +39,7 @@ function systemPath(parts) {
 }
 
 // Will be used near the end to configure `node-gyp`.
-var python, cmake;
+var python;
 
 // Common reusable paths that can be overwritten by environment variables.
 var paths = envOverride({
@@ -57,10 +57,7 @@ var dependencies = Q.allSettled([
   // This will prioritize `python2` over `python`, because we always want to
   // work with Python 2.* if it's available.
   Q.nfcall(which, 'python2'),
-  Q.nfcall(which, 'python'),
-
-  // Check for any version of CMake.
-  Q.nfcall(which, 'cmake'),
+  Q.nfcall(which, 'python')
 ])
 
 // Determine if all the dependency requirements are met.
@@ -69,7 +66,6 @@ var dependencies = Q.allSettled([
 
   // Assign to reusable variables.
   python = results[0].value || results[1].value;
-  cmake = results[2].value;
   
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {
