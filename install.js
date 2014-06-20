@@ -1,15 +1,13 @@
-// Core Node.js modules.
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
 var exec = require('child_process').exec;
-
-// Third-party modules.
 var Q = require('q');
 var request = require('request');
 var tar = require('tar');
 var which = require('which');
+var rimraf = require('rimraf');
 
 // This will take in an object and find any matching keys in the environment
 // to use as overrides.
@@ -80,7 +78,14 @@ var dependencies = Q.allSettled([
 .then(function() {
   console.info('[nodegit] Detecting vendor/libgit2.');
 
-  return Q.ninvoke(fs, 'stat', paths.libgit2);
+  return Q.ninvoke(fs, 'stat', paths.libgit2).then(function() {
+    return Q.ninvoke(fs, 'stat', paths.libgit2 + pkg.libgit2.sha);
+  }).fail(function() {
+    console.info('[nodegit] Removing outdated vendor/libgit2.');
+
+    // This directory is outdated, remove. 
+    throw Q.ninvoke(rimraf, null, paths.libgit2);
+  });
 })
 
 // If the directory already exists, no need to refetch.
@@ -98,7 +103,10 @@ var dependencies = Q.allSettled([
   // First extract from Zlib and then extract from Tar.
   var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
 
-  return Q.ninvoke(expand, 'on', 'end');
+  return Q.ninvoke(expand, 'on', 'end').then(function() {
+    // Write out a sha file for testing in the future.
+    return Q.ninvoke(fs, 'writeFile', paths.libgit2 + pkg.libgit2.sha, '');
+  });
 })
 
 // Configure the native module using node-gyp.
