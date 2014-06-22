@@ -44,13 +44,13 @@ var local = path.join.bind(path, __dirname);
 // Common reusable paths that can be overwritten by environment variables.
 var paths = envOverride({
   pkg: local('package'),
-  libgit2: local('vendor/libgit2'),
+  libgit2: local('vendor/libgit2/'),
   sys: {
-    include: local('include/sys'),
-    src: local('src/sys'),
-    build: local('build/Release/obj.target/src/sys')
+    include: local('include/sys/'),
+    src: local('src/sys/'),
+    build: local('build/Release/obj.target/src/sys/')
   },
-  release: local('build/Release')
+  release: local('build/Release/')
 });
 
 // Load the package.json.
