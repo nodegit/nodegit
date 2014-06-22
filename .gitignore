@@ -4,6 +4,15 @@
 /doc/*
 !/doc/Theme.css
 
+/src/*
+!/src/functions/copy.cc
+!/src/wrapper.cc
+!/src/base.cc
+
+/include/*
+!/include/functions/copy.h
+!/include/wrapper.h
+
 /node_modules/
 /vendor/libgit2/
 /test/repos/

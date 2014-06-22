@@ -60,7 +60,7 @@
   },
   "scripts": {
     "lint": "jshint src",
-    "install": "node install.js",
+    "install": "npm run codegen && node install.js",
     "test": "cd test && nodeunit nodegit.js",
     "codegen": "node build/codegen/generate.js",
     "publish": "node-pre-gyp package && node-pre-gyp publish"

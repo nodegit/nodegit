@@ -137,6 +137,8 @@ var dependencies = Q.allSettled([
   console.info('[nodegit] Failed to build nodegit.');
   console.info('[nodegit] Attempting to fallback on a prebuilt binary.');
 
+  console.log(message.stack);
+
   function fetchPrebuilt() {
     console.info('[nodegit] Fetching binary from S3.');
 
