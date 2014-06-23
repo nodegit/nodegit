@@ -4,7 +4,7 @@
     var arg = functionInfo.args[cArg];
     if (arg.isReturn || arg.isSelf || arg.isPayload) continue;
 -%>
-<% if (!arg.isOptional) { -%>
+<% if (arg.isOptional == false) { -%>
   if (args.Length() == <%- jsArg %> || !args[<%- jsArg %>]->Is<%- cppClassName2v8ValueClassName(arg.cppClassName) %>()) {
     return NanThrowError("<%- arg.jsClassName %> <%- arg.name %> is required.");
   }

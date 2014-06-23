@@ -29,8 +29,8 @@
         "src/threads.cc",
         "src/time.cc",
         "src/trace.cc",
-        #"src/tree.cc",
-        #"src/treebuilder.cc"
+        "src/tree.cc",
+        "src/tree_entry.cc",
       ],
 
       "include_dirs": [

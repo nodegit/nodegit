@@ -72,9 +72,11 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     }
   });
 
+  var cFile = libgit2.files[index];
+
   if (file.cType === undefined) {
-    if (libgit2.files[index].functions.length) {
-      file.cType = libgit2.files[index].functions[0].split("_").slice(0, 2).join("_");
+    if (cFile.functions.length) {
+      file.cType = cFile.functions[0].split("_").slice(0, 2).join("_");
     }
   }
 
@@ -82,10 +84,15 @@ Object.keys(descriptor).forEach(function(fileName, index) {
     file.freeFunctionName = "git_" + fileName + "_free";
   }
 
-  var cFile = libgit2.files[index];
-
-  if (!cFile || !cFile.functions) {
+  if ((!cFile || !cFile.functions) && !file.isStruct) {
     return;
+  }
+
+  // TODO Obsolete this.
+  if (file.isStruct) {
+    // No functions.
+    cFile = file;
+    cFile.functions = [];
   }
 
   // Doesn't actually exist.
@@ -159,7 +166,13 @@ Object.keys(descriptor).forEach(function(fileName, index) {
   // Used to identify a missing function descriptor later on.
   var ident = {};
 
-  file.functions = libgit2.files[index].functions.map(function(functionName, index) {
+  //Object.keys(file.functions || {}).forEach(function(functionName) {
+  //  if (cFile.functions.indexOf(functionName) === -1 && functionName) {
+  //    cFile.functions.push(functionName);
+  //  }
+  //});
+
+  file.functions = cFile.functions.map(function(functionName, index) {
     var funcDescriptor = libgit2.functions[functionName];
     var descriptor = legacyFile.functions ? legacyFile.functions[index] || {} : {};
     var cType = file.cType || "git";

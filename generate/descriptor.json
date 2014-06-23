@@ -70,7 +70,7 @@
 
       "git_commit_message": {
         "ignore": false,
-        "args": [{ "isSelf": true }]
+        "args": [{ "shouldAlloc": true, "isSelf": true }]
       },
 
       "git_commit_id": {
@@ -129,7 +129,14 @@
   },
 
   "diff": {
-    "ignore": true
+    "ignore": true,
+
+    "functions": {
+      "git_diff_tree_to_tree": {
+        "ignore": false,
+        "args": [{ "isReturn": true }, { "isSelf": true }]
+      }
+    }
   },
 
   "errors": {
@@ -306,7 +313,7 @@
         "isAsync": false,
         "jsFunctionName": "createRevwalk",
         "cppFunctionName": "CreateRevwalk",
-        "args": [{}, { "isSelf": true }]
+        "args": [{ "shouldAlloc": true }, { "isSelf": true }]
       },
 
       "git_revwalk_sorting": {
@@ -462,33 +469,25 @@
 
   "treebuilder": {
     "ignore": false,
+
+    "isStruct": true,
     "cType": "git_treebuilder",
 
     "dependencies": [
       "tree.h"
-    ],
-
-    "fields": [
-      {
-        "name": "entries",
-        "cType": "git_vector"
-      },
-      {
-        "name": "entrycount",
-        "cType": "size_t"
-      }
     ]
   },
 
   "tree_entry": {
-    "ignore": true,
+    "ignore": false,
 
     "isStruct": true,
     "cType": "git_tree_entry",
 
     "dependencies": [
       "../include/tree.h",
-      "../include/types.h"
+      "../include/types.h",
+      "../include/oid.h"
     ],
 
     "fields": [
@@ -516,12 +515,7 @@
   },
 
   "types": {
-    "ignore": true,
-    "cType": null
-  },
-
-  "version": {
-    "ignore": true,
+    "ignore": false,
     "cType": null
   }
 }

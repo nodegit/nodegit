@@ -13,6 +13,7 @@
 #include "../include/blob.h"
 #include "../include/commit.h"
 #include "../include/config.h"
+//#include "../include/diff.h"
 #include "../include/index.h"
 #include "../include/object.h"
 #include "../include/odb.h"
@@ -25,7 +26,8 @@
 #include "../include/threads.h"
 #include "../include/time.h"
 #include "../include/trace.h"
-//#include "../include/tree.h"
+#include "../include/tree.h"
+#include "../include/tree_entry.h"
 //#include "../include/treebuilder.h"
 #include "../include/wrapper.h"
 
@@ -37,6 +39,7 @@ extern "C" void init(Handle<v8::Object> target) {
   GitBlob::Initialize(target);
   GitCommit::Initialize(target);
   GitConfig::Initialize(target);
+  //GitDiff::Initialize(target);
   GitIndex::Initialize(target);
   GitObject::Initialize(target);
   GitOdb::Initialize(target);
@@ -48,6 +51,8 @@ extern "C" void init(Handle<v8::Object> target) {
   GitSignature::Initialize(target);
   GitThreads::Initialize(target);
   GitTime::Initialize(target);
+  GitTree::Initialize(target);
+  GitTreeEntry::Initialize(target);
 //  GitTrace::Initialize(target);
 //  GitTreebuilder::Initialize(target);
 }

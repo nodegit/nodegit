@@ -23,7 +23,7 @@ require('./lib/index.js');
 require('./lib/repository.js');
 require('./lib/reference.js');
 require('./lib/revwalk.js');
-//require('./lib/tree.js');
+require('./lib/tree.js');
 
 // Set version
 exports.version = require('./package').version;

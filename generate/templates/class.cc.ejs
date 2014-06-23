@@ -143,6 +143,7 @@ void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
       var arg = functionInfo.args[i];
       if (arg.isReturn) returns.push(arg);
     }
+    functionInfo.return = functionInfo.return || {};
     if (!returns.length && !functionInfo.return.isErrorCode && functionInfo.return.cType != "void") returns.push(functionInfo.return);
 -%>
 
