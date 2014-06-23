@@ -65,7 +65,7 @@
     "functions": {
       "git_commit_lookup": {
         "ignore": false,
-        "args": [{}, { "isSelf": true }]
+        "args": [{}, { "shouldAlloc": true, "isSelf": true }]
       },
 
       "git_commit_message": {
@@ -121,7 +121,7 @@
   },
 
   "config": {
-    "ignore": true
+    "ignore": false
   },
 
   "cred_helpers": {
@@ -152,7 +152,7 @@
   },
 
   "index": {
-    "ignore": true
+    "ignore": false
   },
 
   "indexer": {
@@ -184,15 +184,15 @@
   },
 
   "object": {
-    "ignore": true
+    "ignore": false
   },
 
   "odb": {
-    "ignore": true
+    "ignore": false
   },
 
   "odb_backend": {
-    "ignore": true
+    "ignore": false
   },
 
   "oid": {
@@ -232,7 +232,7 @@
   },
 
   "refdb": {
-    "ignore": true
+    "ignore": false
   },
 
   "refs": {
@@ -450,12 +450,12 @@
       },
 
       "git_tree_entry_byindex": {
-        "ignore": false,
+        "ignore": true,
         "args": [{ "isSelf": true }]
       },
 
       "git_tree_entry_bypath": {
-        "ignore": false
+        "ignore": true
       }
     }
   },

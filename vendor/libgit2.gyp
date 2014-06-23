@@ -270,7 +270,6 @@
             "vendor/libgit2/src/win32/findfile.c",
             "vendor/libgit2/src/win32/findfile.h",
             "vendor/libgit2/src/win32/git2.rc",
-            "vendor/libgit2/src/win32/map.c",
             "vendor/libgit2/src/win32/mingw-compat.h",
             "vendor/libgit2/src/win32/msvc-compat.h",
             "vendor/libgit2/src/win32/posix.h",
@@ -282,7 +281,6 @@
             "vendor/libgit2/src/win32/utf-conv.c",
             "vendor/libgit2/src/win32/utf-conv.h",
             "vendor/libgit2/src/win32/version.h",
-            "vendor/libgit2/src/transports/winhttp.c",
             "vendor/libgit2/deps/regex/regex.c",
           ],
         }, {
