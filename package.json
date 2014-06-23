@@ -66,8 +66,7 @@
     "lint": "jshint src",
     "test": "cd test && nodeunit nodegit.js",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
-    "codegen": "node build/codegen/t.js ; node build/codegen/generate.js",
-    "generate": "node generate/setup ; node generate",
+    "generate": "node generate/setup && node generate",
     "install": "npm run generate && node install"
   }
 }

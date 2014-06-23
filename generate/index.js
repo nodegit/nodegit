@@ -4,13 +4,16 @@ const ejs = require("ejs");
 const path = require("path");
 const idefs = require("./idefs");
 
+
+var local = path.join.bind(null, __dirname);
+
 var classTemplate = ejs.compile(
-  "" + fs.readFileSync(String(__dirname + "/templates/class.cc.ejs")), {
+  "" + fs.readFileSync(local("templates/class.cc.ejs")), {
     filename: "class.cc"
   });
 
 var headerTemplate = ejs.compile(
-  "" + fs.readFileSync(String(__dirname + "/templates/header.h.ejs")), {
+  "" + fs.readFileSync(local("templates/header.h.ejs")), {
     filename: "header.h"
   });
 
@@ -21,10 +24,9 @@ Object.keys(idefs).forEach(function(keyName) {
     return;
   }
 
-  fs.writeFileSync(
-    __dirname + "/../include/" + idef.filename, headerTemplate(idef));
+  fs.writeFileSync(local("../include/", idef.filename), headerTemplate(idef));
 
   fs.writeFileSync(
-    __dirname + "/../src/" + path.basename(idef.filename, ".h") + ".cc",
+    local("../src/", path.basename(idef.filename, ".h")) + ".cc",
       classTemplate(idef));
 });
