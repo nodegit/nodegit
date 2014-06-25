@@ -140,27 +140,27 @@ exports.improperCommitId = function(test) {
 /**
  * Test that retreiving walking a given commit's history works as expected.
  */
-exports.history = function(test) {
-  test.expect(4);
-  git.Repo.open('repos/workdir/.git', function(error, repository) {
-    repository.getCommit(historyCountKnownSHA, function(error, commit) {
-      test.equals(null, error, 'Getting latest branch commit should not error');
-      var historyCount = 0;
-      var expectedHistoryCount = 364;
-      commit.history().on('commit', function(commit) {
-        historyCount++;
-      }).on('end', function(commits) {
-        test.equals(null, error, 'There should be no errors');
-        test.equals(historyCount, expectedHistoryCount);
-        test.equals(commits.length, expectedHistoryCount);
-        test.done();
-      }).on('error', function(error) {
-        test.equals(null, error, 'There should be no errors');
-        test.ok(false, 'There should be no errors');
-      }).start();
-    });
-  });
-};
+//exports.history = function(test) {
+//  test.expect(4);
+//  git.Repo.open('repos/workdir/.git', function(error, repository) {
+//    repository.getCommit(historyCountKnownSHA, function(error, commit) {
+//      test.equals(null, error, 'Getting latest branch commit should not error');
+//      var historyCount = 0;
+//      var expectedHistoryCount = 364;
+//      commit.history().on('commit', function(commit) {
+//        historyCount++;
+//      }).on('end', function(commits) {
+//        test.equals(null, error, 'There should be no errors');
+//        test.equals(historyCount, expectedHistoryCount);
+//        test.equals(commits.length, expectedHistoryCount);
+//        test.done();
+//      }).on('error', function(error) {
+//        test.equals(null, error, 'There should be no errors');
+//        test.ok(false, 'There should be no errors');
+//      }).start();
+//    });
+//  });
+//};
 
 /**
  * Test that retreiving master branch's HEAD commit works as expected.
@@ -183,20 +183,20 @@ exports.masterHead = function(test) {
  *
  * @param  {Object} test
  */
-exports.parents = function(test) {
-  test.expect(3);
-  git.Repo.open('repos/workdir/.git', function(error, repository) {
-    repository.getCommit(historyCountKnownSHA, function(error, commit) {
-      commit.getParents(function(error, parents) {
-        test.equals(parents.length, 1, 'Commit should have exactly one parent');
-        var sha = parents[0].sha();
-        test.equals(error, null, 'Getting parent SHA should not error');
-        test.equals(sha, 'ecfd36c80a3e9081f200dfda2391acadb56dac27', 'Parent SHA should match expected value');
-        test.done();
-      });
-    });
-  });
-};
+//exports.parents = function(test) {
+//  test.expect(3);
+//  git.Repo.open('repos/workdir/.git', function(error, repository) {
+//    repository.getCommit(historyCountKnownSHA, function(error, commit) {
+//      commit.getParents(function(error, parents) {
+//        test.equals(parents.length, 1, 'Commit should have exactly one parent');
+//        var sha = parents[0].sha();
+//        test.equals(error, null, 'Getting parent SHA should not error');
+//        test.equals(sha, 'ecfd36c80a3e9081f200dfda2391acadb56dac27', 'Parent SHA should match expected value');
+//        test.done();
+//      });
+//    });
+//  });
+//};
 
 /**
  * Test that retrieving and walking a commit's tree works as expected.
@@ -240,4 +240,3 @@ exports.parents = function(test) {
 process.on('uncaughtException', function(err) {
   console.log(err.stack);
 });
-

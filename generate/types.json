@@ -2376,12 +2376,12 @@
     "js": "peel"
   },
   "git_threads_init": {
-    "cpp": "DsInit",
-    "js": "dsInit"
+    "cpp": "ThreadsInit",
+    "js": "threadsInit"
   },
   "git_threads_shutdown": {
-    "cpp": "DsShutdown",
-    "js": "dsShutdown"
+    "cpp": "ThreadsShutdown",
+    "js": "threadsShutdown"
   },
   "git_trace_set": {
     "cpp": "TraceSet",
@@ -4541,24 +4541,24 @@
     "js": "Inttypes"
   },
   "git_merge": {
-    "cpp": "GitMerge",
-    "js": "Merge"
+    "cpp": "Merge",
+    "js": "merge"
   },
   "git_merge **": {
     "cpp": "GitMerge",
     "js": "Merge"
   },
   "git_merge *": {
-    "cpp": "GitMerge",
-    "js": "Merge"
+    "cpp": "Merge",
+    "js": "merge"
   },
   "const git_merge **": {
     "cpp": "GitMerge",
     "js": "Merge"
   },
   "const git_merge *": {
-    "cpp": "GitMerge",
-    "js": "Merge"
+    "cpp": "Merge",
+    "js": "merge"
   },
   "git_merge_base *": {
     "cpp": "MergeBase",
@@ -8513,20 +8513,20 @@
     "js": "peel"
   },
   "git_threads_init *": {
-    "cpp": "DsInit",
-    "js": "dsInit"
+    "cpp": "ThreadsInit",
+    "js": "threadsInit"
   },
   "const git_threads_init *": {
-    "cpp": "DsInit",
-    "js": "dsInit"
+    "cpp": "ThreadsInit",
+    "js": "threadsInit"
   },
   "git_threads_shutdown *": {
-    "cpp": "DsShutdown",
-    "js": "dsShutdown"
+    "cpp": "ThreadsShutdown",
+    "js": "threadsShutdown"
   },
   "const git_threads_shutdown *": {
-    "cpp": "DsShutdown",
-    "js": "dsShutdown"
+    "cpp": "ThreadsShutdown",
+    "js": "threadsShutdown"
   },
   "git_trace_set *": {
     "cpp": "TraceSet",

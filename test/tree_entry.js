@@ -4,9 +4,7 @@ var sha = '5716e9757886eaf38d51c86b192258c960d9cfea';
 
 var getEntry = function(path, callback) {
   git.Repo.open('repos/workdir/.git', function(error, repo) {
-    console.log('test');
     repo.getCommit(sha, function(error, commit) {
-      console.log(error);
       commit.getEntry(path, callback);
     });
  });
@@ -25,6 +23,7 @@ exports.sha = function(test) {
   test.expect(1);
   getEntry('README.md', function(error, entry) {
     var sha = entry.sha();
+
     test.equal(sha, '6cb45ba5d32532bf0d1310dc31ca4f20f59964bc', 'Entry SHA should match expected value');
     test.done();
   });

@@ -6,14 +6,18 @@ var async = require('async');
 
 var testFiles = [
   'blob',
-  'commit',
+  //'commit',
   'oid',
- // 'reference',
+  'reference',
   'repo',
   'revwalk',
-  //'tree_entry',
+  'tree_entry',
   //'tree',
 ];
+
+testFiles.sort(function() {
+  return Math.random() >= Math.random();
+});
 
 function setupReposCache(cb) {
   fs.mkdir('repos',function() {

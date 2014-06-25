@@ -452,17 +452,30 @@
 
       "git_tree_lookup": {
         "ignore": false,
-
-        "args": [{}, { "isSelf": true }]
+        "isAsync": true,
+        "args": [{ "isReturn": true }, { "isSelf": true }],
+        "return": {
+          "isErrorCode": true
+        }
       },
 
       "git_tree_entry_byindex": {
-        "ignore": true,
+        "ignore": false,
         "args": [{ "isSelf": true }]
       },
 
       "git_tree_entry_bypath": {
-        "ignore": true
+        "ignore": false,
+        "isAsync": true,
+        "args": [{ "isReturn": true }, { "isSelf": true }],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_tree_entry_byname": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
       }
     }
   },
@@ -509,6 +522,8 @@
       },
       {
         "name": "filename",
+        "structType": "char",
+        "structName": "filename[1]",
         "cType": "char *"
       }
     ]
