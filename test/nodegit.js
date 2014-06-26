@@ -6,13 +6,13 @@ var async = require('async');
 
 var testFiles = [
   'blob',
-  //'commit',
+  'commit',
   'oid',
   'reference',
   'repo',
   'revwalk',
   'tree_entry',
-  //'tree',
+  'tree',
 ];
 
 testFiles.sort(function() {
