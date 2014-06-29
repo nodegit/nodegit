@@ -24,7 +24,7 @@
       "name": "Nick Kallen"
     }
   ],
-  "main": "index.js",
+  "main": "lib/nodegit.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/tbranyen/nodegit.git"

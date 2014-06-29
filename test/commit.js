@@ -64,65 +64,66 @@ exports.offset = function(test) {
   });
 };
 
-//exports.author = function(test) {
-//  test.expect(2);
-//  git.Repo.open('repos/workdir/.git', function(error, repository) {
-//    repository.getCommit(historyCountKnownSHA, function(error, commit) {
-//      var author = commit.author();
-//      test.equals(error, null, 'There should be no error');
-//      test.notEqual(author, null, 'Author should not be null');
-//      test.done();
-//    });
-//  });
-//};
+exports.author = function(test) {
+  test.expect(2);
+  debugger;
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
+    repository.getCommit(historyCountKnownSHA, function(error, commit) {
+      var author = commit.author();
+      test.equals(error, null, 'There should be no error');
+      test.notEqual(author, null, 'Author should not be null');
+      test.done();
+    });
+  });
+};
 
-//exports.authorName = function(test) {
-//  test.expect(1);
-//  git.Repo.open('repos/workdir/.git', function(error, repository) {
-//    repository.getCommit(historyCountKnownSHA, function(error, commit) {
-//      var author = commit.author();
-//      var name = author.name();
-//      test.equals(name, 'Michael Robinson', 'The author name should match expected value');
-//      test.done();
-//    });
-//  });
-//};
-//
-//exports.authorEmail = function(test) {
-//  test.expect(1);
-//  git.Repo.open('repos/workdir/.git', function(error, repository) {
-//    repository.getCommit(historyCountKnownSHA, function(error, commit) {
-//      var author = commit.author();
-//      var email = author.email();
-//      test.equals(email, 'mike@panmedia.co.nz', 'The author email should match expected value');
-//      test.done();
-//    });
-//  });
-//};
-//
-//exports.committerName = function(test) {
-//  test.expect(1);
-//  git.Repo.open('repos/workdir/.git', function(error, repository) {
-//    repository.getCommit(historyCountKnownSHA, function(error, commit) {
-//      var committer = commit.committer();
-//      var name = committer.name();
-//      test.equals(name, 'Michael Robinson', 'The author name should match expected value');
-//      test.done();
-//    });
-//  });
-//};
-//
-//exports.committerEmail = function(test) {
-//  test.expect(1);
-//  git.Repo.open('repos/workdir/.git', function(error, repository) {
-//    repository.getCommit(historyCountKnownSHA, function(error, commit) {
-//      var committer = commit.committer();
-//      var email = committer.email();
-//      test.equals(email, 'mike@panmedia.co.nz', 'The committer email should match expected value');
-//      test.done();
-//    });
-//  });
-//};
+exports.authorName = function(test) {
+  test.expect(1);
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
+    repository.getCommit(historyCountKnownSHA, function(error, commit) {
+      var author = commit.author();
+      var name = author.name();
+      test.equals(name, 'Michael Robinson', 'The author name should match expected value');
+      test.done();
+    });
+  });
+};
+
+exports.authorEmail = function(test) {
+  test.expect(1);
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
+    repository.getCommit(historyCountKnownSHA, function(error, commit) {
+      var author = commit.author();
+      var email = author.email();
+      test.equals(email, 'mike@panmedia.co.nz', 'The author email should match expected value');
+      test.done();
+    });
+  });
+};
+
+exports.committerName = function(test) {
+  test.expect(1);
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
+    repository.getCommit(historyCountKnownSHA, function(error, commit) {
+      var committer = commit.committer();
+      var name = committer.name();
+      test.equals(name, 'Michael Robinson', 'The author name should match expected value');
+      test.done();
+    });
+  });
+};
+
+exports.committerEmail = function(test) {
+  test.expect(1);
+  git.Repo.open('repos/workdir/.git', function(error, repository) {
+    repository.getCommit(historyCountKnownSHA, function(error, commit) {
+      var committer = commit.committer();
+      var email = committer.email();
+      test.equals(email, 'mike@panmedia.co.nz', 'The committer email should match expected value');
+      test.done();
+    });
+  });
+};
 
 /**
  * Test that improper commit ID's result in an error message

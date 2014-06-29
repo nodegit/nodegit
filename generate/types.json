@@ -616,8 +616,8 @@
     "js": "blobs"
   },
   "const git_diff_options *": {
-    "js": "DiffOptions",
-    "cpp": "GitDiffOptions"
+    "cpp": "GitDiffOptions",
+    "js": "DiffOptions"
   },
   "git_diff_blob_to_buffer": {
     "cpp": "BlobToBuffer",
@@ -2137,8 +2137,8 @@
     "js": "repository"
   },
   "git_signature_new": {
-    "cpp": "New2",
-    "js": "new2"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_signature **": {
     "cpp": "GitSignature",
@@ -7493,12 +7493,12 @@
     "js": "Signature"
   },
   "git_signature_new *": {
-    "cpp": "New2",
-    "js": "new2"
+    "cpp": "Create",
+    "js": "create"
   },
   "const git_signature_new *": {
-    "cpp": "New2",
-    "js": "new2"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_signature_now *": {
     "cpp": "Now",
@@ -8967,5 +8967,21 @@
   "const git_reference__alloc_symbolic *": {
     "cpp": "AllocSymbolic",
     "js": "allocSymbolic"
+  },
+  "git_diff_options": {
+    "cpp": "GitDiffOptions",
+    "js": "DiffOptions"
+  },
+  "git_diff_options **": {
+    "cpp": "GitDiffOptions",
+    "js": "DiffOptions"
+  },
+  "git_diff_options *": {
+    "cpp": "GitDiffOptions",
+    "js": "DiffOptions"
+  },
+  "const git_diff_options **": {
+    "cpp": "GitDiffOptions",
+    "js": "DiffOptions"
   }
 }

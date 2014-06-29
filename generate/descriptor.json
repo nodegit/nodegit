@@ -53,7 +53,7 @@
   },
 
   "clone": {
-    "ignore": true,
+    "ignore": false,
     "cType": null
   },
 
@@ -90,12 +90,18 @@
 
       "git_commit_author": {
         "ignore": false,
-        "args": [{ "isSelf": true }]
+        "args": [{ "isSelf": true }],
+        "return": {
+          "copy": "git_signature_dup"
+        }
       },
 
       "git_commit_committer": {
         "ignore": false,
-        "args": [{ "isSelf": true }]
+        "args": [{ "isSelf": true }],
+        "return": {
+          "copy": "git_signature_dup"
+        }
       },
 
       "git_commit_parentcount": {
@@ -137,6 +143,44 @@
         "args": [{ "isReturn": true }, { "isSelf": true }]
       }
     }
+  },
+
+  "diff_options": {
+    "ignore": false,
+
+    "isStruct": true,
+    "cType": "git_diff_options",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "filename",
+        "structType": "char",
+        "structName": "filename[1]",
+        "cType": "char *"
+      }, {
+        "name": "attr",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "oid",
+        "cType": "git_oid"
+      },
+      {
+        "name": "filename_len",
+        "cType": "size_t"
+      },
+      {
+        "name": "filename",
+        "structType": "char",
+        "structName": "filename[1]",
+        "cType": "char *"
+      }
+    ]
   },
 
   "errors": {
@@ -277,7 +321,7 @@
   },
 
   "remote": {
-    "ignore": true
+    "ignore": false
   },
 
   "repository": {
@@ -360,6 +404,16 @@
       "../include/time.h"
     ],
 
+    "functions": {
+      "git_signature_new": {
+        "ignore": false,
+        "isAsync": false,
+        "isConstructorMethod": true,
+        "jsFunctionName": "create",
+        "cppFunctionName": "Create"
+      }
+    },
+
     "fields": [
       {
         "name": "name",
@@ -438,7 +492,7 @@
   },
 
   "transport": {
-    "ignore": true
+    "ignore": false
   },
 
   "tree": {

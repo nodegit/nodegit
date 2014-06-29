@@ -9,14 +9,16 @@
 
       "sources": [
         # Maintained.
-        "src/base.cc",
+        "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
 
         # Generated files.
         "src/blob.cc",
+        "src/clone.cc",
         "src/commit.cc",
         "src/config.cc",
+        #"src/diff.cc",
         "src/index.cc",
         "src/object.cc",
         "src/odb.cc",
@@ -30,6 +32,7 @@
         "src/time.cc",
         "src/trace.cc",
         "src/tree.cc",
+        "src/treebuilder.cc",
         "src/tree_entry.cc",
       ],
 
