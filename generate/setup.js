@@ -60,7 +60,7 @@ Object.keys(descriptor).forEach(function(fileName, index) {
 
   // Constants.
   file.filename = fileName + ".h";
-  file.ignore = typeof file.ignore == "boolean" ? file.ignore : true;
+  file.ignore = typeof file.ignore == "boolean" ? file.ignore : false;
   file.cppClassName = "Git" + titleCase(fileName);
   file.jsClassName = file.cppClassName;
 
@@ -155,10 +155,14 @@ Object.keys(descriptor).forEach(function(fileName, index) {
 
   // Decorate fields.
   file.fields = fields.map(function(field) {
-    field.cppFunctionName = titleCase(field.name);
-    field.jsFunctionName = camelCase(field.name);
-    field.cppClassName = typeMap[field.cType].cpp;
-    field.jsClassName = typeMap[field.cType].js;
+    try {
+      field.cppFunctionName = titleCase(field.name);
+      field.jsFunctionName = camelCase(field.name);
+      field.cppClassName = typeMap[field.cType].cpp;
+      field.jsClassName = typeMap[field.cType].js;
+    } catch (ex) {
+      console.error(field.name + " is missing a definition.");
+    }
 
     return field;
   });

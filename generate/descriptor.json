@@ -1,15 +1,12 @@
 {
   "attr": {
-    "ignore": true,
     "cType": null
   },
 
   "blame": {
-    "ignore": true
   },
 
   "blob": {
-    "ignore": false,
     "dependencies": [
       "../include/wrapper.h",
       "node_buffer.h"
@@ -39,26 +36,21 @@
   },
 
   "branch": {
-    "ignore": true,
     "cType": null
   },
 
   "buffer": {
-    "ignore": true
   },
 
   "checkout": {
-    "ignore": true,
     "cType": null
   },
 
   "clone": {
-    "ignore": false,
     "cType": null
   },
 
   "commit": {
-    "ignore": false,
     "dependencies": [
       "../include/signature.h"
     ],
@@ -122,32 +114,25 @@
   },
 
   "common": {
-    "ignore": true,
     "cType": null
   },
 
   "config": {
-    "ignore": false
   },
 
   "cred_helpers": {
-    "ignore": true
   },
 
   "diff": {
-    "ignore": true,
-
     "functions": {
       "git_diff_tree_to_tree": {
-        "ignore": false,
+        "ignore": true,
         "args": [{ "isReturn": true }, { "isSelf": true }]
       }
     }
   },
 
   "diff_options": {
-    "ignore": false,
-
     "isStruct": true,
     "cType": "git_diff_options",
 
@@ -158,96 +143,93 @@
 
     "fields": [
       {
-        "name": "filename",
-        "structType": "char",
-        "structName": "filename[1]",
-        "cType": "char *"
+        "name": "version",
+        "cType": "unsigned int"
       }, {
-        "name": "attr",
+        "name": "flags",
+        "cType": "uint32_t"
+      },
+      {
+        "name": "ignore_submodules",
+        "cType": "git_submodule_ignore_t"
+      },
+      {
+        "name": "context_lines",
         "cType": "uint16_t"
       },
       {
-        "name": "oid",
-        "cType": "git_oid"
+        "name": "interhunk_lines",
+        "cType": "uint16_t"
       },
       {
-        "name": "filename_len",
-        "cType": "size_t"
+        "name": "oid_abbrev",
+        "cType": "uint16_t"
       },
       {
-        "name": "filename",
-        "structType": "char",
-        "structName": "filename[1]",
-        "cType": "char *"
+        "name": "max_size",
+        "cType": "git_off_t"
+      },
+      {
+        "name": "old_prefix",
+        "cType": "const char *"
+      },
+      {
+        "name": "new_prefix",
+        "cType": "const char *"
       }
     ]
   },
 
   "errors": {
-    "ignore": true,
     "cType": null
   },
 
   "filter": {
-    "ignore": true
   },
 
   "graph": {
-    "ignore": true,
     "cType": null
   },
 
   "ignore": {
-    "ignore": true,
     "cType": null
   },
 
   "index": {
-    "ignore": false
   },
 
   "indexer": {
-    "ignore": true
   },
 
   "inttypes": {
-    "ignore": true,
     "cType": null
   },
 
   "merge": {
-    "ignore": true,
     "cType": null
   },
 
   "message": {
-    "ignore": true,
     "cType": null
   },
 
   "net": {
-    "ignore": true,
     "cType": null
   },
 
   "notes": {
-    "ignore": true
   },
 
   "object": {
-    "ignore": false
   },
 
   "odb": {
-    "ignore": false
   },
 
   "odb_backend": {
-    "ignore": false
   },
 
   "oid": {
-    "ignore": false,
     "functions": {
       "git_oid_fromstr": {
         "isAsync": false,
@@ -267,27 +249,21 @@
   },
 
   "pack": {
-    "ignore": true
   },
 
   "patch": {
-    "ignore": true
   },
 
   "pathspec": {
-    "ignore": true
   },
 
   "push": {
-    "ignore": true
   },
 
   "refdb": {
-    "ignore": false
   },
 
   "refs": {
-    "ignore": false,
     "functions": {
       "git_reference_lookup": {
         "ignore": false,
@@ -313,19 +289,15 @@
   },
 
   "reflog": {
-    "ignore": true
   },
 
   "refspec": {
-    "ignore": true
   },
 
   "remote": {
-    "ignore": false
   },
 
   "repository": {
-    "ignore": false,
     "functions": {
       "git_repository_open": {
         "isConstructorMethod": true,
@@ -340,17 +312,14 @@
   },
 
   "reset": {
-    "ignore": true,
     "cType": null
   },
 
   "revparse": {
-    "ignore": true,
     "cType": null
   },
 
   "revwalk": {
-    "ignore": false,
     "functions": {
       "git_revwalk_new": {
         "ignore": false,
@@ -398,8 +367,6 @@
   },
 
   "signature": {
-    "ignore": false,
-
     "dependencies": [
       "../include/time.h"
     ],
@@ -432,35 +399,28 @@
   },
 
   "stash": {
-    "ignore": true,
     "cType": null
   },
 
   "status": {
-    "ignore": true,
     "cType": null
   },
 
   "stdint": {
-    "ignore": true,
     "cType": null
   },
 
   "stdarray": {
-    "ignore": true,
     "cType": null
   },
 
   "submodule": {
-    "ignore": true
   },
 
   "tag": {
-    "ignore": true
   },
 
   "threads": {
-    "ignore": false,
     "cType": null,
     "functions": {
       "git_threads_init": {
@@ -470,7 +430,6 @@
   },
 
   "time": {
-    "ignore": false,
     "cType": "git_time",
     "freeFunctionName": "free",
 
@@ -487,17 +446,13 @@
   },
 
   "trace": {
-    "ignore": false,
     "cType": null
   },
 
   "transport": {
-    "ignore": false
   },
 
   "tree": {
-    "ignore": false,
-
     "functions": {
       "git_tree_entrycount": {
         "ignore": false,
@@ -535,8 +490,6 @@
   },
 
   "treebuilder": {
-    "ignore": false,
-
     "isStruct": true,
     "cType": "git_treebuilder",
 
@@ -546,9 +499,8 @@
   },
 
   "tree_entry": {
-    "ignore": false,
-
     "isStruct": true,
+    "forwardDeclare": true,
     "cType": "git_tree_entry",
 
     "dependencies": [
@@ -584,7 +536,6 @@
   },
 
   "types": {
-    "ignore": false,
     "cType": null
   }
 }

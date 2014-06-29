@@ -10,7 +10,7 @@
 
 #include "git2.h"
 
-<% if (typeof isStruct !== "undefined") { %>
+<% if (typeof forwardDeclare !== "undefined") { %>
 // Forward declaration.
 struct <%- cType %> {
   <% if (typeof fields != 'undefined') { %>
