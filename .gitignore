@@ -3,9 +3,6 @@
 /build/
 /test/repos/
 
-/doc/*
-!/doc/Theme.css
-
 /src/*
 !/src/functions/copy.cc
 !/src/wrapper.cc
@@ -16,7 +13,3 @@
 !/include/wrapper.h
 
 /generate/idefs.json
-
-/node_modules/
-/vendor/libgit2/
-/test/repos/
