@@ -247,6 +247,12 @@ Object.keys(descriptor).forEach(function(fileName, index) {
         return file.jsClassName === typeMap[arg.type].js;
       };
 
+      var isOptional = function() {
+        if (manualArgs[index] && typeof manualArgs[index].isOptional === "boolean") {
+          return manualArgs[index].isOptional;
+        }
+      };
+
       var isReturn = function() {
         if (manualArgs[index] && typeof manualArgs[index].isReturn === "boolean") {
           return manualArgs[index].isReturn;
@@ -273,6 +279,7 @@ Object.keys(descriptor).forEach(function(fileName, index) {
           cppClassName: typeMap[arg.type].cpp,
           jsClassName: typeMap[arg.type].js,
           comment: arg.comment,
+          isOptional: isOptional() || true,
           isReturn: isReturn() || false,
           isSelf: isSelf() || false,
           shouldAlloc: manualArgs[index] ? manualArgs[index].shouldAlloc || false : false

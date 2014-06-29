@@ -126,8 +126,17 @@
   "diff": {
     "functions": {
       "git_diff_tree_to_tree": {
-        "ignore": true,
-        "args": [{ "isReturn": true }, { "isSelf": true }]
+        "isAsync": true,
+        "args": [
+          { "isReturn": true },
+          { "isSelf": true },
+          {},
+          {},
+          { "isOptional": true }
+        ],
+        "return": {
+          "isErrorCode": true
+        }
       }
     }
   },
