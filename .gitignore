@@ -6,7 +6,7 @@
 /src/*
 !/src/functions/copy.cc
 !/src/wrapper.cc
-!/src/base.cc
+!/src/nodegit.cc
 
 /include/*
 !/include/functions/copy.h

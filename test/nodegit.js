@@ -15,10 +15,6 @@ var testFiles = [
   'tree',
 ];
 
-testFiles.sort(function() {
-  return Math.random() >= Math.random();
-});
-
 function setupReposCache(cb) {
   fs.mkdir('repos',function() {
     async.series([

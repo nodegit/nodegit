@@ -31,6 +31,21 @@
         "return": {
           "cppClassName": "Wrapper"
         }
+      },
+
+      "git_blob_create_frombuffer": {
+        "ignore": false,
+        "isAsync": true,
+        "isPrototypeMethod": true,
+
+        "args": [
+          { "shouldAlloc": true, "isReturn": true },
+          { "isSelf": true }
+        ],
+
+        "return": {
+          "isErrorCode": true
+        }
       }
     }
   },
@@ -55,6 +70,31 @@
       "../include/signature.h"
     ],
     "functions": {
+      "git_commit_create": {
+        "ignore": false,
+        "jsFunctionName": "createCommit",
+        "cppFunctionName": "CreateCommit",
+        "isAsync": true,
+        "return": {
+          "isErrorCode": true
+        },
+        "args": [
+          { "shouldAlloc": true, "isReturn": true },
+          { "isSelf": true },
+          { "isOptional": true },
+          {},
+          {},
+          { "isOptional": true },
+          {},
+          {},
+          {},
+          { 
+            "cType": "const git_commit **",
+            "arrayElementCppClassName": "GitCommit"
+          }
+        ]
+      },
+
       "git_commit_lookup": {
         "ignore": false,
         "args": [{}, { "shouldAlloc": true, "isSelf": true }]
@@ -503,8 +543,51 @@
     "cType": "git_treebuilder",
 
     "dependencies": [
-      "tree.h"
-    ]
+      "../include/tree.h",
+      "../include/oid.h"
+    ],
+
+    "functions": {
+      "git_treebuilder_create": {
+        "ignore": false,
+        "cppFunctionName": "Create",
+        "jsFunctionName": "create",
+        "isAsync": false,
+        "args": [{}, { "isSelf": true }]
+      },
+      "git_treebuilder_insert": {
+        "ignore": false,
+        "args": [
+          { "isReturn": true },
+          { "isSelf": true }
+        ],
+        "isAsync": false,
+        "return": {
+          "isErrorCode": true
+        }
+      },
+      "git_treebuilder_remove": {
+        "ignore": false,
+        "args": [
+          { "isSelf": true }
+        ],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+      "git_treebuilder_write": {
+        "ignore": false,
+        "isAsync": true,
+        "args": [
+          { "shouldAlloc": true, "isReturn": true },
+          {},
+          { "isSelf": true }
+        ],
+        "return": {
+          "isErrorCode": true
+        }
+      }
+    }
   },
 
   "tree_entry": {

@@ -1877,8 +1877,8 @@
     "js": "lookup"
   },
   "git_commit_create": {
-    "cpp": "Create",
-    "js": "create"
+    "cpp": "CreateCommit",
+    "js": "createCommit"
   },
   "const git_commit **": {
     "cpp": "GitCommit",
@@ -2037,8 +2037,8 @@
     "js": "list"
   },
   "git_clone": {
-    "cpp": "Clone",
-    "js": "clone"
+    "cpp": "GitClone",
+    "js": "Clone"
   },
   "const git_clone_options *": {
     "js": "CloneOptions",
@@ -2069,8 +2069,8 @@
     "js": "revparseSingle"
   },
   "git_revparse": {
-    "cpp": "Revparse",
-    "js": "revparse"
+    "cpp": "GitRevparse",
+    "js": "Revparse"
   },
   "git_revspec *": {
     "js": "Revspec",
@@ -2520,8 +2520,8 @@
     "js": "TreeEntry"
   },
   "git_treebuilder_create": {
-    "cpp": "UilderCreate",
-    "js": "uilderCreate"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_treebuilder **": {
     "cpp": "GitTreebuilder",
@@ -2572,16 +2572,16 @@
     "js": "uilderGet"
   },
   "git_treebuilder_insert": {
-    "cpp": "UilderInsert",
-    "js": "uilderInsert"
+    "cpp": "Insert",
+    "js": "insert"
   },
   "const git_tree_entry **": {
     "cpp": "GitTreeEntry",
     "js": "TreeEntry"
   },
   "git_treebuilder_remove": {
-    "cpp": "UilderRemove",
-    "js": "uilderRemove"
+    "cpp": "Remove",
+    "js": "remove"
   },
   "git_treebuilder_filter": {
     "cpp": "UilderFilter",
@@ -2592,8 +2592,8 @@
     "cpp": "TreebuilderFilterCb"
   },
   "git_treebuilder_write": {
-    "cpp": "UilderWrite",
-    "js": "uilderWrite"
+    "cpp": "Write",
+    "js": "write"
   },
   "git_blame_hunk": {},
   "git_attr": {
@@ -3109,16 +3109,16 @@
     "js": "Clone"
   },
   "git_clone *": {
-    "cpp": "Clone",
-    "js": "clone"
+    "cpp": "GitClone",
+    "js": "Clone"
   },
   "const git_clone **": {
     "cpp": "GitClone",
     "js": "Clone"
   },
   "const git_clone *": {
-    "cpp": "Clone",
-    "js": "clone"
+    "cpp": "GitClone",
+    "js": "Clone"
   },
   "git_clone_into": {
     "cpp": "CloneInto",
@@ -3301,12 +3301,12 @@
     "js": "nthGenAncestor"
   },
   "git_commit_create *": {
-    "cpp": "Create",
-    "js": "create"
+    "cpp": "CreateCommit",
+    "js": "createCommit"
   },
   "const git_commit_create *": {
-    "cpp": "Create",
-    "js": "create"
+    "cpp": "CreateCommit",
+    "js": "createCommit"
   },
   "git_commit_create_v *": {
     "cpp": "CreateV",
@@ -4541,24 +4541,24 @@
     "js": "Inttypes"
   },
   "git_merge": {
-    "cpp": "Merge",
-    "js": "merge"
+    "cpp": "GitMerge",
+    "js": "Merge"
   },
   "git_merge **": {
     "cpp": "GitMerge",
     "js": "Merge"
   },
   "git_merge *": {
-    "cpp": "Merge",
-    "js": "merge"
+    "cpp": "GitMerge",
+    "js": "Merge"
   },
   "const git_merge **": {
     "cpp": "GitMerge",
     "js": "Merge"
   },
   "const git_merge *": {
-    "cpp": "Merge",
-    "js": "merge"
+    "cpp": "GitMerge",
+    "js": "Merge"
   },
   "git_merge_base *": {
     "cpp": "MergeBase",
@@ -7309,16 +7309,16 @@
     "js": "Revparse"
   },
   "git_revparse *": {
-    "cpp": "Revparse",
-    "js": "revparse"
+    "cpp": "GitRevparse",
+    "js": "Revparse"
   },
   "const git_revparse **": {
     "cpp": "GitRevparse",
     "js": "Revparse"
   },
   "const git_revparse *": {
-    "cpp": "Revparse",
-    "js": "revparse"
+    "cpp": "GitRevparse",
+    "js": "Revparse"
   },
   "git_revparse_single *": {
     "cpp": "RevparseSingle",
@@ -8833,12 +8833,12 @@
     "js": "entryToObject"
   },
   "git_treebuilder_create *": {
-    "cpp": "UilderCreate",
-    "js": "uilderCreate"
+    "cpp": "Create",
+    "js": "create"
   },
   "const git_treebuilder_create *": {
-    "cpp": "UilderCreate",
-    "js": "uilderCreate"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_treebuilder_clear *": {
     "cpp": "UilderClear",
@@ -8873,20 +8873,20 @@
     "js": "uilderGet"
   },
   "git_treebuilder_insert *": {
-    "cpp": "UilderInsert",
-    "js": "uilderInsert"
+    "cpp": "Insert",
+    "js": "insert"
   },
   "const git_treebuilder_insert *": {
-    "cpp": "UilderInsert",
-    "js": "uilderInsert"
+    "cpp": "Insert",
+    "js": "insert"
   },
   "git_treebuilder_remove *": {
-    "cpp": "UilderRemove",
-    "js": "uilderRemove"
+    "cpp": "Remove",
+    "js": "remove"
   },
   "const git_treebuilder_remove *": {
-    "cpp": "UilderRemove",
-    "js": "uilderRemove"
+    "cpp": "Remove",
+    "js": "remove"
   },
   "git_treebuilder_filter *": {
     "cpp": "UilderFilter",
@@ -8897,12 +8897,12 @@
     "js": "uilderFilter"
   },
   "git_treebuilder_write *": {
-    "cpp": "UilderWrite",
-    "js": "uilderWrite"
+    "cpp": "Write",
+    "js": "write"
   },
   "const git_treebuilder_write *": {
-    "cpp": "UilderWrite",
-    "js": "uilderWrite"
+    "cpp": "Write",
+    "js": "write"
   },
   "git_tree_walk *": {
     "cpp": "Walk",

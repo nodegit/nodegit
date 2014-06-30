@@ -10,6 +10,12 @@
 
 #include "git2.h"
 
+<% if (typeof dependencies != 'undefined') { -%>
+<% for (d in dependencies) { -%>
+#include "<%- dependencies[d] %>"
+<% } -%>
+<% } -%>
+
 <% if (typeof forwardDeclare !== "undefined") { %>
 // Forward declaration.
 struct <%- cType %> {
