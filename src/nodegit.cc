@@ -40,7 +40,7 @@
 #include "../include/oid.h"
 #include "../include/pack.h"
 #include "../include/patch.h"
-#include "../include/pathspec.h"
+//#include "../include/pathspec.h"
 #include "../include/push.h"
 #include "../include/refdb.h"
 #include "../include/reflog.h"
@@ -103,7 +103,7 @@ extern "C" void init(Handle<v8::Object> target) {
   GitOid::Initialize(target);
   GitPack::Initialize(target);
   GitPatch::Initialize(target);
-  GitPathspec::Initialize(target);
+  //GitPathspec::Initialize(target);
   GitPush::Initialize(target);
   GitRefdb::Initialize(target);
   GitRefs::Initialize(target);

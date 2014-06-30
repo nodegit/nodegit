@@ -286,6 +286,10 @@ fileNames.forEach(function(fileName, index) {
           retVal.cType = manualArgs[index].cType;
         }
 
+        if (manualArgs[index] && manualArgs[index].additionalCast) {
+          retVal.additionalCast = manualArgs[index].additionalCast;
+        }
+
         if (isOptional()) {
           retVal.isOptional = true;
         }

@@ -559,7 +559,10 @@
         "ignore": false,
         "args": [
           { "isReturn": true },
-          { "isSelf": true }
+          { "isSelf": true },
+          {},
+          {},
+          { "additionalCast": "(int)" }
         ],
         "isAsync": false,
         "return": {

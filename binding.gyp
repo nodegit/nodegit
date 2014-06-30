@@ -47,7 +47,7 @@
         "src/oid.cc",
         "src/pack.cc",
         "src/patch.cc",
-        "src/pathspec.cc",
+        #"src/pathspec.cc",
         "src/push.cc",
         "src/refdb.cc",
         "src/reflog.cc",
