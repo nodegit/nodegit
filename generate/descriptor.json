@@ -13,7 +13,8 @@
     ],
     "functions": {
       "git_blob_lookup": {
-        "ignore": false
+        "ignore": false,
+        "isConstructorMethod": true
       },
 
       "git_blob_rawsize": {
@@ -36,7 +37,7 @@
       "git_blob_create_frombuffer": {
         "ignore": false,
         "isAsync": true,
-        "isPrototypeMethod": true,
+        "isConstructorMethod": true,
 
         "args": [
           { "shouldAlloc": true, "isReturn": true },
@@ -74,6 +75,7 @@
         "ignore": false,
         "jsFunctionName": "createCommit",
         "cppFunctionName": "CreateCommit",
+        "isConstructorMethod": true,
         "isAsync": true,
         "return": {
           "isErrorCode": true
@@ -97,7 +99,8 @@
 
       "git_commit_lookup": {
         "ignore": false,
-        "args": [{}, { "shouldAlloc": true, "isSelf": true }]
+        "args": [{}, { "shouldAlloc": true }],
+        "isConstructorMethod": true
       },
 
       "git_commit_message": {
@@ -167,6 +170,7 @@
     "functions": {
       "git_diff_tree_to_tree": {
         "isAsync": true,
+        "isConstructorMethod": true,
         "args": [
           { "isReturn": true },
           { "isSelf": true },
@@ -316,6 +320,7 @@
     "functions": {
       "git_reference_lookup": {
         "ignore": false,
+        "isConstructorMethod": true,
         "args": [{}, { "isSelf": true }]
       },
 
@@ -373,6 +378,7 @@
       "git_revwalk_new": {
         "ignore": false,
         "isAsync": false,
+        "isConstructorMethod": true,
         "jsFunctionName": "createRevwalk",
         "cppFunctionName": "CreateRevwalk",
         "args": [{ "shouldAlloc": true }, { "isSelf": true }]
@@ -511,6 +517,7 @@
       "git_tree_lookup": {
         "ignore": false,
         "isAsync": true,
+        "isConstructorMethod": true,
         "args": [{ "isReturn": true }, { "isSelf": true }],
         "return": {
           "isErrorCode": true
@@ -552,6 +559,7 @@
         "ignore": false,
         "cppFunctionName": "Create",
         "jsFunctionName": "create",
+        "isConstructorMethod": true,
         "isAsync": false,
         "args": [{}, { "isSelf": true }]
       },
