@@ -381,7 +381,10 @@
         "isConstructorMethod": true,
         "jsFunctionName": "createRevwalk",
         "cppFunctionName": "CreateRevwalk",
-        "args": [{ "shouldAlloc": true }]
+        "args": [
+          { "isReturn": true },
+          { "isSelf": false }
+        ]
       },
 
       "git_revwalk_sorting": {
@@ -391,17 +394,8 @@
 
       "git_revwalk_push": {
         "ignore": false,
-        "isAsync": true,
-        "args": [
-          {
-            "isSelf": true,
-            "isReturn": false
-          },
-          {
-            "isReturn": false
-          }
-        ],
-
+        "isAsync": false,
+        "args": [{ "isSelf": true, "isReturn": false }],
         "return": {
           "isErrorCode": true
         }
