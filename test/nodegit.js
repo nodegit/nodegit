@@ -44,6 +44,6 @@ exports.setUp = function(cb) {
 };
 
 Object.keys(testFiles).forEach(function(fileName) {
-  var testFile = testFiles[fileName]
+  var testFile = testFiles[fileName];
   exports[testFile] = require('./' + testFile);
 });

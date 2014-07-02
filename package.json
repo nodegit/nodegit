@@ -63,7 +63,7 @@
     "host": "https://s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
-    "lint": "jshint src",
+    "lint": "jshint lib test/*.js",
     "test": "cd test && nodeunit nodegit.js",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "generate": "node generate/setup && node generate",
