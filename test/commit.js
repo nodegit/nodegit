@@ -66,7 +66,6 @@ exports.offset = function(test) {
 
 exports.author = function(test) {
   test.expect(2);
-  debugger;
   git.Repo.open('repos/workdir/.git', function(error, repository) {
     repository.getCommit(historyCountKnownSHA, function(error, commit) {
       var author = commit.author();
@@ -149,15 +148,15 @@ exports.improperCommitId = function(test) {
 //      var historyCount = 0;
 //      var expectedHistoryCount = 364;
 //      commit.history().on('commit', function(commit) {
-//        historyCount++;
-//      }).on('end', function(commits) {
-//        test.equals(null, error, 'There should be no errors');
-//        test.equals(historyCount, expectedHistoryCount);
-//        test.equals(commits.length, expectedHistoryCount);
+//    //    historyCount++;
+//    //  }).on('end', function(commits) {
+//    //    test.equals(null, error, 'There should be no errors');
+//    //    test.equals(historyCount, expectedHistoryCount);
+//    //    test.equals(commits.length, expectedHistoryCount);
 //        test.done();
-//      }).on('error', function(error) {
-//        test.equals(null, error, 'There should be no errors');
-//        test.ok(false, 'There should be no errors');
+//    //  }).on('error', function(error) {
+//    //    test.equals(null, error, 'There should be no errors');
+//    //    test.ok(false, 'There should be no errors');
 //      }).start();
 //    });
 //  });
