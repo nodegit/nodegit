@@ -375,6 +375,8 @@
   },
 
   "filter": {
+    "forwardDeclare": true,
+    "fields": []
   },
 
   "graph": {
@@ -420,6 +422,8 @@
   },
 
   "oid": {
+    "fields": [],
+
     "functions": {
       "git_oid_fromstr": {
         "isAsync": false,
