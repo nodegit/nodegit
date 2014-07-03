@@ -19,6 +19,9 @@ var headerTemplate = ejs.compile(
 var bindingTemplate = ejs.compile(
   "" + fs.readFileSync(local("templates/binding.gyp.ejs")), {});
 
+var nodegitSourceTemplate = ejs.compile(
+  "" + fs.readFileSync(local("templates/nodegit.cc.ejs")), {});
+
 var enabled = idefs.filter(function(idef) {
   idef.name = path.basename(idef.filename, ".h");
   return !idef.ignore;
@@ -32,6 +35,10 @@ enabled.forEach(function(idef) {
       classTemplate(idef));
 
   fs.writeFileSync(local("../binding.gyp"), bindingTemplate({
+    idefs: idefs
+  }));
+
+  fs.writeFileSync(local("../src/nodegit.cc"), nodegitSourceTemplate({
     idefs: idefs
   }));
 });

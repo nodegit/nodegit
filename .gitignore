@@ -11,7 +11,6 @@
 /src/*
 !/src/functions/copy.cc
 !/src/wrapper.cc
-!/src/nodegit.cc
 
 /include/*
 !/include/functions/copy.h
