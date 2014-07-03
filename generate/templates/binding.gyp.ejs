@@ -1,3 +1,4 @@
+# This is a generated file, modify: generate/templates/binding.gyp.ejs.
 {
   "targets": [
     {
@@ -8,12 +9,9 @@
       ],
 
       "sources": [
-        # Maintained.
         "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
-
-        # Generated from libgit2 descriptor.
     <% idefs.forEach(function(idef) { -%>
     "src/<%- idef.name %>.cc",
     <% }); -%>
