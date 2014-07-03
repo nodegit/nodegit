@@ -29,7 +29,9 @@
 #include <nan.h>
 #include <string.h>
 
-#include "git2.h"
+extern "C" {
+#include <git2.h>
+}
 
 #include "../include/functions/copy.h"
 
