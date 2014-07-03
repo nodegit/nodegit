@@ -254,29 +254,6 @@
       "../include/diff.h",
       "../include/oid.h",
       "../include/types.h"
-    ],
-
-    "fields": [
-      {
-        "name": "oid",
-        "cType": "git_oid"
-      },
-      {
-        "name": "path",
-        "cType": "const char *"
-      },
-      {
-        "name": "size",
-        "cType": "git_off_t"
-      },
-      {
-        "name": "flags",
-        "cType": "uint32_t"
-      },
-      {
-        "name": "mode",
-        "cType": "uint16_t"
-      }
     ]
   },
 
