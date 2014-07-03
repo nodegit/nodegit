@@ -28,7 +28,8 @@ typeMap.__proto__ = {
   "git_branch_iterator *": { cpp: "BranchIterator", js: "Iterator" },
   "git_branch_iterator **": { cpp: "BranchIterator", js: "Iterator" },
   "git_branch_t *": { cpp: "GitBranch", js: "Branch" },
-  "const git_commit *[]": { cpp: "Array", js: "Array" }
+  "const git_commit *[]": { cpp: "Array", js: "Array" },
+  "git_diff_file": { cpp: "GitDiffFile", js: "DiffFile" }
 };
 
 var files = [];

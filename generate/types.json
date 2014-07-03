@@ -480,12 +480,12 @@
     "cpp": "GitPatch"
   },
   "git_diff_patch_delta": {
-    "js": "delta",
-    "cpp": "Delta"
+    "js": "Delta",
+    "cpp": "GitDelta"
   },
   "const git_diff_delta *": {
-    "js": "GitDelta",
-    "cpp": "Delta"
+    "js": "Delta",
+    "cpp": "GitDelta"
   },
   "git_diff_patch_num_hunks": {
     "js": "size",
@@ -8983,5 +8983,65 @@
   "const git_diff_options **": {
     "cpp": "GitDiffOptions",
     "js": "DiffOptions"
+  },
+  "git_delta": {
+    "cpp": "GitDelta",
+    "js": "Delta"
+  },
+  "git_delta **": {
+    "cpp": "GitDelta",
+    "js": "Delta"
+  },
+  "git_delta *": {
+    "cpp": "GitDelta",
+    "js": "Delta"
+  },
+  "const git_delta **": {
+    "cpp": "GitDelta",
+    "js": "Delta"
+  },
+  "const git_delta *": {
+    "cpp": "GitDelta",
+    "js": "Delta"
+  },
+  "git_diff_file": {
+    "cpp": "GitDiffFile",
+    "js": "DiffFile"
+  },
+  "git_diff_file **": {
+    "cpp": "GitDiffFile",
+    "js": "DiffFile"
+  },
+  "git_diff_file *": {
+    "cpp": "GitDiffFile",
+    "js": "DiffFile"
+  },
+  "const git_diff_file **": {
+    "cpp": "GitDiffFile",
+    "js": "DiffFile"
+  },
+  "const git_diff_file *": {
+    "cpp": "GitDiffFile",
+    "js": "DiffFile"
+  },
+  "git_diff_line": {
+    "cpp": "GitDiffLine",
+    "js": "DiffLine"
+  },
+  "git_diff_line **": {
+    "cpp": "GitDiffLine",
+    "js": "DiffLine"
+  },
+  "git_diff_line *": {
+    "cpp": "GitDiffLine",
+    "js": "DiffLine"
+  },
+  "const git_diff_line **": {
+    "cpp": "GitDiffLine",
+    "js": "DiffLine"
+  },
+  "const git_diff_line *": {
+    "cpp": "GitDiffLine",
+    "js": "DiffLine"
   }
 }

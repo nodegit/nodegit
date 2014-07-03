@@ -3,6 +3,11 @@
 /build/
 /test/repos/
 
+/vendor/Release
+/vendor/*.vcxproj
+/vendor/*.filters
+/vendor/*.sln
+
 /src/*
 !/src/functions/copy.cc
 !/src/wrapper.cc

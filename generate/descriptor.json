@@ -166,7 +166,54 @@
   "cred_helpers": {
   },
 
+  "delta": {
+    "isStruct": true,
+    "cType": "git_diff_delta",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/diff_file.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "status",
+        "cType": "git_delta_t"
+      },
+      {
+        "name": "flags",
+        "cType": "uint32_t"
+      },
+      {
+        "name": "similarity",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "nfiles",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "old_file",
+        "cType": "git_diff_file"
+      },
+      {
+        "name": "new_file",
+        "cType": "git_diff_file"
+      }
+    ]
+  },
+
   "diff": {
+    "dependencies": [
+      "../include/diff.h",
+      "../include/delta.h",
+      "../include/repository.h",
+      "../include/tree.h",
+      "../include/index.h",
+      "../include/diff_options.h"
+    ],
+
     "functions": {
       "git_diff_tree_to_tree": {
         "isAsync": true,
@@ -181,8 +228,98 @@
         "return": {
           "isErrorCode": true
         }
+      },
+
+      "git_diff_num_deltas": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_diff_get_delta": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true, "isSelf": true }],
+        "return": {
+          "cType": "const git_diff_delta **",
+          "copy": "git_diff_delta_dup"
+        }
       }
     }
+  },
+
+  "diff_file": {
+    "isStruct": true,
+    "cType": "git_diff_file",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/oid.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "oid",
+        "cType": "git_oid"
+      },
+      {
+        "name": "path",
+        "cType": "const char *"
+      },
+      {
+        "name": "size",
+        "cType": "git_off_t"
+      },
+      {
+        "name": "flags",
+        "cType": "uint32_t"
+      },
+      {
+        "name": "mode",
+        "cType": "uint16_t"
+      }
+    ]
+  },
+
+  "diff_line": {
+    "isStruct": true,
+    "cType": "git_diff_line",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/oid.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "origin",
+        "cType": "int"
+      },
+      {
+        "name": "old_lineno",
+        "cType": "int"
+      },
+      {
+        "name": "new_lineno",
+        "cType": "int"
+      },
+      {
+        "name": "num_lines",
+        "cType": "int"
+      },
+      {
+        "name": "content_len",
+        "cType": "size_t"
+      },
+      {
+        "name": "content_offset",
+        "cType": "git_off_t"
+      },
+      {
+        "name": "content",
+        "cType": "const char *"
+      }
+    ]
   },
 
   "diff_options": {
@@ -305,6 +442,52 @@
   },
 
   "patch": {
+    "isStruct": true,
+    "forwardDeclare": true,
+    "dependencies": [
+      "../include/delta.h",
+      "../include/diff_file.h",
+      "../include/diff_line.h"
+    ],
+    "functions": {
+      "git_patch_get_delta": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ],
+        "return": {
+          "copy": "git_diff_delta_dup"
+        }
+      },
+
+      "git_patch_from_diff": {
+        "ignore": false,
+        "isAsync": false,
+        "isConstructorMethod": true
+      },
+
+      "git_patch_num_hunks": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ]
+      },
+
+      "git_patch_num_lines_in_hunk": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ]
+      },
+
+      "git_patch_get_line_in_hunk": {
+        "ignore": false,
+        "args": [
+          { "isReturn": true },
+          { "isSelf": true }
+        ]
+      }
+    }
   },
 
   "pathspec": {
@@ -474,6 +657,7 @@
   },
 
   "time": {
+    "isStruct": true,
     "cType": "git_time",
     "freeFunctionName": "free",
 

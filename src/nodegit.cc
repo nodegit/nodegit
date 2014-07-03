@@ -21,7 +21,10 @@
 #include "../include/common.h"
 #include "../include/config.h"
 #include "../include/cred_helpers.h"
+#include "../include/delta.h"
 #include "../include/diff.h"
+#include "../include/diff_file.h"
+#include "../include/diff_line.h"
 #include "../include/diff_options.h"
 #include "../include/errors.h"
 #include "../include/filter.h"
@@ -84,7 +87,10 @@ extern "C" void init(Handle<v8::Object> target) {
   GitCommon::Initialize(target);
   GitConfig::Initialize(target);
   GitCredHelpers::Initialize(target);
+  GitDelta::Initialize(target);
   GitDiff::Initialize(target);
+  GitDiffFile::Initialize(target);
+  GitDiffLine::Initialize(target);
   GitDiffOptions::Initialize(target);
   GitErrors::Initialize(target);
   GitFilter::Initialize(target);
