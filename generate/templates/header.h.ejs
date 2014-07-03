@@ -10,6 +10,29 @@
 
 #include "git2.h"
 
+<% if (typeof dependencies != 'undefined') { -%>
+<% for (d in dependencies) { -%>
+#include "<%- dependencies[d] %>"
+<% } -%>
+<% } -%>
+
+<% if (typeof forwardDeclare !== "undefined") { %>
+// Forward declaration.
+struct <%- cType %> {
+  <% if (typeof fields != 'undefined') { %>
+  <%
+    for (var i in fields) {
+      var fieldInfo = fields[i];
+      if (fieldInfo.ignore || !fieldInfo.cppFunctionName) continue;
+  -%>
+
+      <%- fieldInfo.structType || fieldInfo.cType -%> <%- fieldInfo.structName || fieldInfo.name %>;
+    <% } -%>
+  <% } -%>
+
+};
+<% } -%>
+
 using namespace node;
 using namespace v8;
 
@@ -19,14 +42,14 @@ class <%- cppClassName %> : public ObjectWrap {
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
     <%- cType %> *GetValue();
 
     static Handle<Value> New(void *raw);
 <% } -%>
 
   private:
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
     <%- cppClassName %>(<%- cType %> *raw);
     ~<%- cppClassName %>();
 <% } -%>
@@ -37,7 +60,7 @@ class <%- cppClassName %> : public ObjectWrap {
 <%
   for (var i in fields) {
     var fieldInfo = fields[i];
-    if (fieldInfo.ignore) continue;
+    if (fieldInfo.ignore || !fieldInfo.cppFunctionName) continue;
 -%>
     static NAN_METHOD(<%- fieldInfo.cppFunctionName %>);
 <% } -%>
@@ -46,7 +69,7 @@ class <%- cppClassName %> : public ObjectWrap {
 <%
   for (var i in functions) {
     var functionInfo = functions[i];
-    if (functionInfo.ignore) continue;
+    if (functionInfo.ignore || !functionInfo.cppFunctionName) continue;
 -%>
 <% if (functionInfo.isAsync) { -%>
 
@@ -82,7 +105,7 @@ class <%- cppClassName %> : public ObjectWrap {
     static NAN_METHOD(<%- functionInfo.cppFunctionName %>);
 <% } -%>
 <% } -%>
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
     <%- cType %> *raw;
 <% } -%>
 };

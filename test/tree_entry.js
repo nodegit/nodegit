@@ -23,6 +23,7 @@ exports.sha = function(test) {
   test.expect(1);
   getEntry('README.md', function(error, entry) {
     var sha = entry.sha();
+
     test.equal(sha, '6cb45ba5d32532bf0d1310dc31ca4f20f59964bc', 'Entry SHA should match expected value');
     test.done();
   });

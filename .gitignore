@@ -1,18 +1,20 @@
-/build/*
-!/build/codegen/
+/node_modules/
+/vendor/libgit2/
+/build/
+/test/repos/
 
-/doc/*
-!/doc/Theme.css
+/vendor/Release
+/vendor/*.vcxproj
+/vendor/*.filters
+/vendor/*.sln
 
 /src/*
 !/src/functions/copy.cc
 !/src/wrapper.cc
-!/src/base.cc
+!/src/nodegit.cc
 
 /include/*
 !/include/functions/copy.h
 !/include/wrapper.h
 
-/node_modules/
-/vendor/libgit2/
-/test/repos/
+/generate/idefs.json

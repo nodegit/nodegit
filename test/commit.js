@@ -239,4 +239,3 @@ exports.getDiff = function(test) {
 process.on('uncaughtException', function(err) {
   console.log(err.stack);
 });
-

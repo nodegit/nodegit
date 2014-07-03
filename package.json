@@ -3,7 +3,8 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.1.4",
   "libgit2": {
-    "sha": "a50086d174658914d4d6462afbc83b02825b1f5b"
+    "sha": "43cb8b32428b1b29994874349ec22eb5372e152c",
+    "version": "0.20.0"
   },
   "homepage": "https://github.com/tbranyen/nodegit",
   "keywords": [
@@ -13,14 +14,17 @@
     "native"
   ],
   "license": "MIT",
-  "author": "Tim Branyen <tim@tabdeveloper.com> (http://twitter.com/tbranyen)",
+  "author": "Tim Branyen (@tbranyen)",
   "contributors": [
     {
       "name": "Michael Robinson",
       "email": "mike@pagesofinterest.net"
+    },
+    {
+      "name": "Nick Kallen"
     }
   ],
-  "main": "index.js",
+  "main": "lib/nodegit.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/tbranyen/nodegit.git"
@@ -47,10 +51,10 @@
     "which": "~1.0.5"
   },
   "devDependencies": {
+    "jshint": "~2.5.1",
     "async": "~0.9.0",
     "aws-sdk": "~2.0.0-rc.20",
     "ejs": "~1.0.0",
-    "jshint": "~2.5.1",
     "nodeunit": "~0.9.0"
   },
   "binary": {
@@ -59,10 +63,10 @@
     "host": "https://s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
-    "lint": "jshint src",
-    "install": "npm run codegen && node install.js",
+    "lint": "jshint lib test/*.js",
     "test": "cd test && nodeunit nodegit.js",
-    "codegen": "node build/codegen/generate.js",
-    "publish": "node-pre-gyp package && node-pre-gyp publish"
+    "publish": "node-pre-gyp package && node-pre-gyp publish",
+    "generate": "node generate/setup && node generate",
+    "install": "npm run generate && node install"
   }
 }

@@ -43,7 +43,7 @@
 using namespace v8;
 using namespace node;
 
-<% if (typeof cType != 'undefined') { -%>
+<% if (cType != undefined) { -%>
 <%- cppClassName %>::<%- cppClassName %>(<%- cType %> *raw) {
   this->raw = raw;
 }
@@ -143,17 +143,18 @@ void <%- cppClassName %>::Initialize(Handle<v8::Object> target) {
       var arg = functionInfo.args[i];
       if (arg.isReturn) returns.push(arg);
     }
+    functionInfo.return = functionInfo.return || {};
     if (!returns.length && !functionInfo.return.isErrorCode && functionInfo.return.cType != "void") returns.push(functionInfo.return);
 -%>
 
 <% if (functionInfo.isAsync) { -%>
-<% include build/codegen/templates/asyncFunction.cc.ejs -%>
+<% include generate/templates/asyncFunction.cc.ejs -%>
 <% } else { -%>
-<% include build/codegen/templates/syncFunction.cc.ejs -%>
+<% include generate/templates/syncFunction.cc.ejs -%>
 <% } -%>
 <% } -%>
 <% } -%>
-<% include build/codegen/templates/fields.cc.ejs -%>
+<% include generate/templates/fields.cc.ejs -%>
 
 <% if (typeof cType != 'undefined') { -%>
 Persistent<Function> <%- cppClassName %>::constructor_template;

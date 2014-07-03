@@ -1,0 +1,817 @@
+{
+  "attr": {
+    "cType": null
+  },
+
+  "blame": {
+  },
+
+  "blob": {
+    "dependencies": [
+      "../include/wrapper.h",
+      "node_buffer.h"
+    ],
+    "functions": {
+      "git_blob_lookup": {
+        "ignore": false,
+        "isConstructorMethod": true
+      },
+
+      "git_blob_rawsize": {
+        "ignore": false,
+        "args": [{
+          "isSelf": true
+        }]
+      },
+
+      "git_blob_rawcontent": {
+        "ignore": false,
+        "args": [{
+          "isSelf": true
+        }],
+        "return": {
+          "cppClassName": "Wrapper"
+        }
+      },
+
+      "git_blob_create_frombuffer": {
+        "ignore": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
+
+        "args": [
+          { "shouldAlloc": true, "isReturn": true },
+          { "isSelf": true }
+        ],
+
+        "return": {
+          "isErrorCode": true
+        }
+      }
+    }
+  },
+
+  "branch": {
+    "cType": null
+  },
+
+  "buffer": {
+  },
+
+  "checkout": {
+    "cType": null
+  },
+
+  "clone": {
+    "cType": null
+  },
+
+  "commit": {
+    "dependencies": [
+      "../include/signature.h"
+    ],
+    "functions": {
+      "git_commit_create": {
+        "ignore": false,
+        "jsFunctionName": "createCommit",
+        "cppFunctionName": "CreateCommit",
+        "isConstructorMethod": true,
+        "isAsync": true,
+        "return": {
+          "isErrorCode": true
+        },
+        "args": [
+          { "shouldAlloc": true, "isReturn": true },
+          { "isSelf": true },
+          { "isOptional": true },
+          {},
+          {},
+          { "isOptional": true },
+          {},
+          {},
+          {},
+          { 
+            "cType": "const git_commit **",
+            "arrayElementCppClassName": "GitCommit"
+          }
+        ]
+      },
+
+      "git_commit_lookup": {
+        "ignore": false,
+        "args": [{}, { "shouldAlloc": true }],
+        "isConstructorMethod": true
+      },
+
+      "git_commit_message": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true, "isSelf": true }]
+      },
+
+      "git_commit_id": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_time": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_time_offset": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_author": {
+        "ignore": false,
+        "args": [{ "isSelf": true }],
+        "return": {
+          "copy": "git_signature_dup"
+        }
+      },
+
+      "git_commit_committer": {
+        "ignore": false,
+        "args": [{ "isSelf": true }],
+        "return": {
+          "copy": "git_signature_dup"
+        }
+      },
+
+      "git_commit_parentcount": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_parent_id": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_commit_tree_id": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      }
+    }
+  },
+
+  "common": {
+    "cType": null
+  },
+
+  "config": {
+  },
+
+  "cred_helpers": {
+  },
+
+  "delta": {
+    "isStruct": true,
+    "cType": "git_diff_delta",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/diff_file.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "status",
+        "cType": "git_delta_t"
+      },
+      {
+        "name": "flags",
+        "cType": "uint32_t"
+      },
+      {
+        "name": "similarity",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "nfiles",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "old_file",
+        "cType": "git_diff_file"
+      },
+      {
+        "name": "new_file",
+        "cType": "git_diff_file"
+      }
+    ]
+  },
+
+  "diff": {
+    "dependencies": [
+      "../include/diff.h",
+      "../include/delta.h",
+      "../include/repository.h",
+      "../include/tree.h",
+      "../include/index.h",
+      "../include/diff_options.h"
+    ],
+
+    "functions": {
+      "git_diff_tree_to_tree": {
+        "isAsync": true,
+        "isConstructorMethod": true,
+        "args": [
+          { "isReturn": true },
+          { "isSelf": true },
+          {},
+          {},
+          { "isOptional": true }
+        ],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_diff_num_deltas": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_diff_get_delta": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true, "isSelf": true }],
+        "return": {
+          "cType": "const git_diff_delta **",
+          "copy": "git_diff_delta_dup"
+        }
+      }
+    }
+  },
+
+  "diff_file": {
+    "isStruct": true,
+    "cType": "git_diff_file",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/oid.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "oid",
+        "cType": "git_oid"
+      },
+      {
+        "name": "path",
+        "cType": "const char *"
+      },
+      {
+        "name": "size",
+        "cType": "git_off_t"
+      },
+      {
+        "name": "flags",
+        "cType": "uint32_t"
+      },
+      {
+        "name": "mode",
+        "cType": "uint16_t"
+      }
+    ]
+  },
+
+  "diff_line": {
+    "isStruct": true,
+    "cType": "git_diff_line",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/oid.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "origin",
+        "cType": "int"
+      },
+      {
+        "name": "old_lineno",
+        "cType": "int"
+      },
+      {
+        "name": "new_lineno",
+        "cType": "int"
+      },
+      {
+        "name": "num_lines",
+        "cType": "int"
+      },
+      {
+        "name": "content_len",
+        "cType": "size_t"
+      },
+      {
+        "name": "content_offset",
+        "cType": "git_off_t"
+      },
+      {
+        "name": "content",
+        "cType": "const char *"
+      }
+    ]
+  },
+
+  "diff_options": {
+    "isStruct": true,
+    "cType": "git_diff_options",
+
+    "dependencies": [
+      "../include/diff.h",
+      "../include/types.h"
+    ],
+
+    "fields": [
+      {
+        "name": "version",
+        "cType": "unsigned int"
+      }, {
+        "name": "flags",
+        "cType": "uint32_t"
+      },
+      {
+        "name": "ignore_submodules",
+        "cType": "git_submodule_ignore_t"
+      },
+      {
+        "name": "context_lines",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "interhunk_lines",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "oid_abbrev",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "max_size",
+        "cType": "git_off_t"
+      },
+      {
+        "name": "old_prefix",
+        "cType": "const char *"
+      },
+      {
+        "name": "new_prefix",
+        "cType": "const char *"
+      }
+    ]
+  },
+
+  "errors": {
+    "cType": null
+  },
+
+  "filter": {
+  },
+
+  "graph": {
+    "cType": null
+  },
+
+  "ignore": {
+    "cType": null
+  },
+
+  "index": {
+  },
+
+  "indexer": {
+  },
+
+  "inttypes": {
+    "cType": null
+  },
+
+  "merge": {
+    "cType": null
+  },
+
+  "message": {
+    "cType": null
+  },
+
+  "net": {
+    "cType": null
+  },
+
+  "notes": {
+  },
+
+  "object": {
+  },
+
+  "odb": {
+  },
+
+  "odb_backend": {
+  },
+
+  "oid": {
+    "functions": {
+      "git_oid_fromstr": {
+        "isAsync": false,
+        "isConstructorMethod": true,
+        "args": [{
+          "shouldAlloc": true
+        }]
+      },
+
+      "git_oid_allocfmt": {
+        "ignore": false,
+        "args": [{
+          "isSelf": true
+        }]
+      }
+    }
+  },
+
+  "pack": {
+  },
+
+  "patch": {
+    "isStruct": true,
+    "forwardDeclare": true,
+    "dependencies": [
+      "../include/delta.h",
+      "../include/diff_file.h",
+      "../include/diff_line.h"
+    ],
+    "functions": {
+      "git_patch_get_delta": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ],
+        "return": {
+          "copy": "git_diff_delta_dup"
+        }
+      },
+
+      "git_patch_from_diff": {
+        "ignore": false,
+        "isAsync": false,
+        "isConstructorMethod": true
+      },
+
+      "git_patch_num_hunks": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ]
+      },
+
+      "git_patch_num_lines_in_hunk": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ]
+      },
+
+      "git_patch_get_line_in_hunk": {
+        "ignore": false,
+        "args": [
+          { "isReturn": true },
+          { "isSelf": true }
+        ]
+      }
+    }
+  },
+
+  "pathspec": {
+  },
+
+  "push": {
+  },
+
+  "refdb": {
+  },
+
+  "refs": {
+    "functions": {
+      "git_reference_lookup": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "args": [{}, { "isSelf": true }]
+      },
+
+      "git_reference_type": {
+        "ignore": false,
+        "args": [
+          { "isSelf": true }
+        ]
+      },
+
+      "git_reference_target": {
+        "ignore": false,
+        "args": [{ "isSelf": true }],
+
+        "return": {
+          "copy": "git_oid_dup"
+        }
+      }
+    }
+  },
+
+  "reflog": {
+  },
+
+  "refspec": {
+  },
+
+  "remote": {
+  },
+
+  "repository": {
+    "functions": {
+      "git_repository_open": {
+        "isConstructorMethod": true,
+        "ignore": false
+      },
+
+      "git_repository_init": {
+        "isConstructorMethod": true,
+        "ignore": false
+      }
+    }
+  },
+
+  "reset": {
+    "cType": null
+  },
+
+  "revparse": {
+    "cType": null
+  },
+
+  "revwalk": {
+    "functions": {
+      "git_revwalk_new": {
+        "ignore": false,
+        "isAsync": false,
+        "isConstructorMethod": true,
+        "jsFunctionName": "createRevwalk",
+        "cppFunctionName": "CreateRevwalk",
+        "args": [
+          { "isReturn": true },
+          { "isSelf": false }
+        ]
+      },
+
+      "git_revwalk_sorting": {
+        "ignore": false,
+        "args": [{ "isSelf": true, "isReturn": false }]
+      },
+
+      "git_revwalk_push": {
+        "ignore": false,
+        "isAsync": false,
+        "args": [{ "isSelf": true, "isReturn": false }],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_revwalk_next": {
+        "ignore": false,
+        "args": [
+          { "shouldAlloc": true }
+        ]
+      }
+    }
+  },
+
+  "signature": {
+    "dependencies": [
+      "../include/time.h"
+    ],
+
+    "functions": {
+      "git_signature_new": {
+        "ignore": false,
+        "isAsync": false,
+        "isConstructorMethod": true,
+        "jsFunctionName": "create",
+        "cppFunctionName": "Create"
+      }
+    },
+
+    "fields": [
+      {
+        "name": "name",
+        "cType": "const char *"
+      },
+      {
+        "name": "email",
+        "cType": "const char *"
+      },
+      {
+        "name": "when",
+        "cType": "git_time",
+        "copy": "git_time_dup"
+      }
+    ]
+  },
+
+  "stash": {
+    "cType": null
+  },
+
+  "status": {
+    "cType": null
+  },
+
+  "stdint": {
+    "cType": null
+  },
+
+  "stdarray": {
+    "cType": null
+  },
+
+  "submodule": {
+  },
+
+  "tag": {
+  },
+
+  "threads": {
+    "cType": null,
+    "functions": {
+      "git_threads_init": {
+        "ignore": false
+      }
+    }
+  },
+
+  "time": {
+    "isStruct": true,
+    "cType": "git_time",
+    "freeFunctionName": "free",
+
+    "fields": [
+      {
+        "name": "time",
+        "cType": "git_time_t"
+      },
+      {
+        "name": "offset",
+        "cType": "int"
+      }
+    ]
+  },
+
+  "trace": {
+    "cType": null
+  },
+
+  "transport": {
+  },
+
+  "tree": {
+    "functions": {
+      "git_tree_entrycount": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_tree_lookup": {
+        "ignore": false,
+        "isAsync": true,
+        "isConstructorMethod": true,
+        "args": [{ "isReturn": true }, { "isSelf": true }],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_tree_entry_byindex": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_tree_entry_bypath": {
+        "ignore": false,
+        "isAsync": true,
+        "args": [{ "isReturn": true }, { "isSelf": true }],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_tree_entry_byname": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      }
+    }
+  },
+
+  "treebuilder": {
+    "isStruct": true,
+    "cType": "git_treebuilder",
+
+    "dependencies": [
+      "../include/tree.h",
+      "../include/oid.h"
+    ],
+
+    "functions": {
+      "git_treebuilder_create": {
+        "ignore": false,
+        "cppFunctionName": "Create",
+        "jsFunctionName": "create",
+        "isConstructorMethod": true,
+        "isAsync": false,
+        "args": [{}, { "isSelf": true }]
+      },
+      "git_treebuilder_insert": {
+        "ignore": false,
+        "args": [
+          { "isReturn": true },
+          { "isSelf": true },
+          {},
+          {},
+          { "additionalCast": "(int)" }
+        ],
+        "isAsync": false,
+        "return": {
+          "isErrorCode": true
+        }
+      },
+      "git_treebuilder_remove": {
+        "ignore": false,
+        "args": [
+          { "isSelf": true }
+        ],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+      "git_treebuilder_write": {
+        "ignore": false,
+        "isAsync": true,
+        "args": [
+          { "shouldAlloc": true, "isReturn": true },
+          {},
+          { "isSelf": true }
+        ],
+        "return": {
+          "isErrorCode": true
+        }
+      }
+    }
+  },
+
+  "tree_entry": {
+    "isStruct": true,
+    "forwardDeclare": true,
+    "cType": "git_tree_entry",
+
+    "dependencies": [
+      "../include/tree.h",
+      "../include/types.h",
+      "../include/oid.h"
+    ],
+
+    "fields": [
+      {
+        "name": "removed",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "attr",
+        "cType": "uint16_t"
+      },
+      {
+        "name": "oid",
+        "cType": "git_oid"
+      },
+      {
+        "name": "filename_len",
+        "cType": "size_t"
+      },
+      {
+        "name": "filename",
+        "structType": "char",
+        "structName": "filename[1]",
+        "cType": "char *"
+      }
+    ]
+  },
+
+  "types": {
+    "cType": null
+  }
+}

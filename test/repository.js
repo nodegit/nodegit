@@ -46,7 +46,7 @@ exports.nonexistentDirectory = function(test) {
 exports.init = function(test) {
   test.expect(2);
   // Create bare repo and test for creation
-  git.Repo.init('repos/newrepo', true, function(error, path, isBare) {
+  git.Repo.init('repos/newrepo', 1, function(error, path, isBare) {
     test.equals(null, error, 'Successfully created bare repository');
     // Verify repo exists
     git.Repo.open('repos/newrepo', function(error, path, repo) {
