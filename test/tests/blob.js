@@ -9,17 +9,19 @@ describe("Blob", function() {
   var Oid = nodegit.Oid;
   var Repository = nodegit.Repository;
 
-  it("can fetch content from a commit", function(done) {
+  before(function() {
+    var test = this;
+
+    return Repository.open(reposPath).then(function(repository) {
+      test.repository = repository;
+    });
+  });
+
+  it("can fetch content from a commit", function() {
     var oid= Oid.fromstr("111dd657329797f6165f52f5085f61ac976dcf04");
 
-    Repository.open(reposPath, function(err, repository) {
-      repository.getBlob(oid, function(err, blob) {
-        var contents = blob.toString();
-
-        assert.equal(contents.slice(0, 7), "@import");
-
-        done();
-      });
+    return this.repository.getBlob(oid).then(function(blob) {
+      assert.equal(blob.toString().slice(0, 7), "@import");
     });
   });
 });

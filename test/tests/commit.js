@@ -7,77 +7,40 @@ var nodegit = require("../../");
 var Repository = nodegit.Repository;
 
 describe("Commit", function() {
-  var historyCountKnownSHA = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
   var reposPath = path.resolve("test/repos/workdir/.git");
+  var historyCountKnownSHA = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
   var Commit = require("./commit");
 
-  describe("when fetched", function() {
+  beforeEach(function() {
+    var test = this;
 
-    it("makes its message available", function(done) {
-      Repository.open(reposPath, function(error, repository) {
-        repository.getCommit(historyCountKnownSHA, function(error, commit) {
-          var message = commit.message();
+    return Repository.open(reposPath).then(function(repository) {
+      test.repository = repository;
 
-          assert.equal(error, null);
-          assert.equal(message, "Update README.md");
-
-          done();
-        });
+      return repository.getCommit(historyCountKnownSHA).then(function(commit) {
+        test.commit = commit;
       });
     });
+  });
 
-    it("makes its sha available", function(done) {
-      Repository.open(reposPath, function(error, repository) {
-        repository.getCommit(historyCountKnownSHA, function(error, commit) {
-          var sha = commit.sha();
+  it("makes its message available", function() {
+    assert.equal(this.commit.message(), "Update README.md");
+  });
 
-          assert.equal(error, null);
-          assert.equal(sha, historyCountKnownSHA);
+  it("makes its sha available", function() {
+    assert.equal(this.commit.sha(), historyCountKnownSHA);
+  });
 
-          done();
-        });
-      });
-    });
+  it("makes its time available", function() {
+    assert.equal(this.commit.timeMs(), 1362012884000);
+  });
 
-    it("makes its time available", function(done) {
-      Repository.open(reposPath, function(error, repository) {
-        repository.getCommit(historyCountKnownSHA, function(error, commit) {
-          var time = commit.timeMs();
+  it("makes its date available", function() {
+    assert.equal(this.commit.date().getTime(), 1362012884000);
+  });
 
-          assert.equal(error, null);
-          assert.equal(time, 1362012884000);
-
-          done();
-        });
-      });
-    });
-
-    it("makes its date available", function(done) {
-      Repository.open(reposPath, function(error, repository) {
-        repository.getCommit(historyCountKnownSHA, function(error, commit) {
-          var date = commit.date();
-
-          assert.equal(error, null);
-          assert.equal(date.getTime(), 1362012884000);
-
-          done();
-        });
-      });
-    });
-
-    it("makes its offset available", function(done) {
-      Repository.open(reposPath, function(error, repository) {
-        repository.getCommit(historyCountKnownSHA, function(error, commit) {
-          var offset = commit.offset();
-
-          assert.equal(error, null);
-          assert.equal(offset, 780);
-
-          done();
-        });
-      });
-    });
-
+  it("makes its offset available", function() {
+    assert.equal(this.commit.offset(), 780);
   });
 });
