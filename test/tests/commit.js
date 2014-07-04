@@ -24,23 +24,65 @@ describe("Commit", function() {
     });
   });
 
-  it("makes its message available", function() {
+  it("will fail with an invalid sha", function() {
+    return this.repository.getCommit("invalid").then(null, function(error) {
+      assert.ok(error instanceof Error);
+    });
+  });
+
+  it("has a message", function() {
     assert.equal(this.commit.message(), "Update README.md");
   });
 
-  it("makes its sha available", function() {
+  it("has a sha", function() {
     assert.equal(this.commit.sha(), historyCountKnownSHA);
   });
 
-  it("makes its time available", function() {
+  it("has a time", function() {
     assert.equal(this.commit.timeMs(), 1362012884000);
   });
 
-  it("makes its date available", function() {
+  it("has a date", function() {
     assert.equal(this.commit.date().getTime(), 1362012884000);
   });
 
-  it("makes its offset available", function() {
+  it("has an offset", function() {
     assert.equal(this.commit.offset(), 780);
+  });
+
+  describe("author", function() {
+    before(function() {
+      this.author = this.commit.author();
+    });
+
+    it("is available", function() {
+      assert.ok(this.author instanceof nodegit.Signature);
+    });
+
+    it("has a name", function() {
+      assert.equal(this.author.name(), "Michael Robinson");
+    });
+
+    it("has an email", function() {
+      assert.equal(this.author.email(), "mike@panmedia.co.nz");
+    });
+  });
+
+  describe("committer", function() {
+    before(function() {
+      this.author = this.commit.committer();
+    });
+
+    it("is available", function() {
+      assert.ok(this.author instanceof nodegit.Signature);
+    });
+
+    it("has a name", function() {
+      assert.equal(this.author.name(), "Michael Robinson");
+    });
+
+    it("has an email", function() {
+      assert.equal(this.author.email(), "mike@panmedia.co.nz");
+    });
   });
 });
