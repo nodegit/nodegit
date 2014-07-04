@@ -49,6 +49,7 @@
     "rimraf": "~2.2.8",
     "tar": "~0.1.19",
     "which": "~1.0.5",
+    "promise": "~4.0.0",
     "promisify-node": "~0.1.2"
   },
   "devDependencies": {
@@ -67,7 +68,7 @@
   },
   "scripts": {
     "lint": "jshint lib test/tests/*.js",
-    "mocha": "istanbul cover _mocha -- test/tests --report=lcov",
+    "mocha": "istanbul cover _mocha -- test/runner test/tests --report=lcov",
     "test": "npm run lint && npm run mocha",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "generate": "node generate/setup && node generate",

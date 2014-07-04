@@ -85,4 +85,51 @@ describe("Commit", function() {
       assert.equal(this.author.email(), "mike@panmedia.co.nz");
     });
   });
+
+  it("can walk its repository's history", function(done) {
+    var historyCount = 0;
+    var expectedHistoryCount = 364;
+
+    var history = this.commit.history();
+
+    history.on("commit", function(commit) {
+      historyCount++;
+    });
+    
+    history.on("end", function(commits) {
+      assert.equal(historyCount, expectedHistoryCount);
+      assert.equal(commits.length, expectedHistoryCount);
+
+      done();
+    });
+    
+    history.on("error", function(error) {
+      assert.ok(false);
+    });
+    
+    history.start();
+  });
+
+  it("can fetch the master branch HEAD", function() {
+    var repository = this.repository;
+
+    return repository.getBranch("master").then(function(branch) {
+      return repository.getCommit(branch.sha());
+    });
+  });
+
+  it("can fetch all its parents", function() {
+    return this.commit.getParents().then(function(parents) {
+      assert.equal(parents.length, 1);
+
+      var sha = parents[0].sha();
+      assert.equal(sha, "ecfd36c80a3e9081f200dfda2391acadb56dac27");
+    });
+  });
+
+  it("can specify a parents limit", function() {
+    return this.commit.getParents(0).then(function(parents) {
+      assert.equal(parents.length, 0);
+    });
+  });
 });

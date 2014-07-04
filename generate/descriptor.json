@@ -484,8 +484,7 @@
     "functions": {
       "git_reference_lookup": {
         "ignore": false,
-        "isConstructorMethod": true,
-        "args": [{}, { "isSelf": true }]
+        "isConstructorMethod": true
       },
 
       "git_reference_type": {
