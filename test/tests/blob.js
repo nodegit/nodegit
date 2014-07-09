@@ -1,8 +1,6 @@
 var assert = require("assert");
 var path = require("path");
 
-var NodeGit = require("../../");
-
 describe("Blob", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";

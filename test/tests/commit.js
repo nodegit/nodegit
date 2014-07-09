@@ -8,8 +8,6 @@ describe("Commit", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
-  var Commit = require("../../lib/commit");
-
   beforeEach(function() {
     var test = this;
 
