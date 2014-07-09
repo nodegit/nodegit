@@ -1,7 +1,5 @@
 var assert = require("assert");
-var rimraf = require("rimraf");
 var path = require("path");
-var fs = require( "fs" );
 
 var NodeGit = require("../../");
 var Repository = NodeGit.Repository;
@@ -10,7 +8,7 @@ describe("Commit", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
-  var Commit = require("./commit");
+  var Commit = require("../../lib/commit");
 
   beforeEach(function() {
     var test = this;

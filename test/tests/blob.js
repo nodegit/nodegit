@@ -7,9 +7,8 @@ describe("Blob", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
 
-  var Oid = NodeGit.Oid;
-  var Repository = NodeGit.Repository;
-  var FileMode = NodeGit.TreeEntry.FileMode;
+  var Repository = require("../../lib/repository");
+  var FileMode = require("../../lib/tree_entry").FileMode;
 
   before(function() {
     var test = this;
