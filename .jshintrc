@@ -1,4 +1,18 @@
 {
+  "evil": true,
+  "boss": true,
+  "immed": false,
+  "eqnull": true,
+  "maxlen": 80,
   "node": true,
-  "proto": true
+  "curly": true,
+  "quotmark": "double",
+  "trailing": true,
+  "unused": "vars",
+  "undef": true,
+  "validthis": true,
+  "globals": {
+    "global": true,
+    "define": true
+  }
 }

@@ -1,27 +1,42 @@
 var assert = require("assert");
 var path = require("path");
 
-var nodegit = require("../../");
+var NodeGit = require("../../");
 
 describe("Blob", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
+  var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
 
-  var Oid = nodegit.Oid;
-  var Repository = nodegit.Repository;
+  var Oid = NodeGit.Oid;
+  var Repository = NodeGit.Repository;
+  var FileMode = NodeGit.TreeEntry.FileMode;
 
   before(function() {
     var test = this;
 
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
+
+      return repository.getBlob(oid).then(function(blob) {
+        test.blob = blob;
+      });
     });
   });
 
-  it("can fetch content from a commit", function() {
-    var oid= Oid.fromstr("111dd657329797f6165f52f5085f61ac976dcf04");
+  it("can provide content as a buffer", function() {
+    var contents = this.blob.content();
 
-    return this.repository.getBlob(oid).then(function(blob) {
-      assert.equal(blob.toString().slice(0, 7), "@import");
-    });
+    assert.ok(Buffer.isBuffer(contents));
+  });
+
+  it("can provide content as a string", function() {
+    var contents = this.blob.toString();
+
+    assert.equal(typeof contents, "string");
+    assert.equal(contents.slice(0, 7), "@import");
+  });
+
+  it("can determine if a blob is not a binary", function() {
+    assert.equal(this.blob.filemode(), FileMode.Blob);
   });
 });

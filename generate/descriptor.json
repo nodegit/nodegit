@@ -34,6 +34,13 @@
         }
       },
 
+      "git_blob_is_binary": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ]
+      },
+
       "git_blob_create_frombuffer": {
         "ignore": false,
         "isAsync": true,
@@ -671,7 +678,7 @@
         "ignore": false,
         "isAsync": true,
         "isConstructorMethod": true,
-        "args": [{ "isReturn": true }, { "isSelf": true }],
+        "args": [{ "isReturn": true }],
         "return": {
           "isErrorCode": true
         }

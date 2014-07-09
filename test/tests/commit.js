@@ -3,12 +3,12 @@ var rimraf = require("rimraf");
 var path = require("path");
 var fs = require( "fs" );
 
-var nodegit = require("../../");
-var Repository = nodegit.Repository;
+var NodeGit = require("../../");
+var Repository = NodeGit.Repository;
 
 describe("Commit", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
-  var historyCountKnownSHA = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
+  var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
   var Commit = require("./commit");
 
@@ -18,7 +18,7 @@ describe("Commit", function() {
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
-      return repository.getCommit(historyCountKnownSHA).then(function(commit) {
+      return repository.getCommit(oid).then(function(commit) {
         test.commit = commit;
       });
     });
@@ -35,7 +35,7 @@ describe("Commit", function() {
   });
 
   it("has a sha", function() {
-    assert.equal(this.commit.sha(), historyCountKnownSHA);
+    assert.equal(this.commit.sha(), oid);
   });
 
   it("has a time", function() {
@@ -46,8 +46,8 @@ describe("Commit", function() {
     assert.equal(this.commit.date().getTime(), 1362012884000);
   });
 
-  it("has an offset", function() {
-    assert.equal(this.commit.offset(), 780);
+  it("has a time offset", function() {
+    assert.equal(this.commit.timeOffset(), 780);
   });
 
   describe("author", function() {
@@ -56,7 +56,7 @@ describe("Commit", function() {
     });
 
     it("is available", function() {
-      assert.ok(this.author instanceof nodegit.Signature);
+      assert.ok(this.author instanceof NodeGit.Signature);
     });
 
     it("has a name", function() {
@@ -74,7 +74,7 @@ describe("Commit", function() {
     });
 
     it("is available", function() {
-      assert.ok(this.author instanceof nodegit.Signature);
+      assert.ok(this.author instanceof NodeGit.Signature);
     });
 
     it("has a name", function() {
@@ -130,6 +130,36 @@ describe("Commit", function() {
   it("can specify a parents limit", function() {
     return this.commit.getParents(0).then(function(parents) {
       assert.equal(parents.length, 0);
+    });
+  });
+
+  it("can retrieve and walk a commit tree", function(done) {
+    var commitTreeEntryCount = 0;
+    var expectedCommitTreeEntryCount = 198;
+
+    this.commit.getTree().then(function(tree) {
+      var walk = tree.walk();
+
+      walk.on("entry", function(entry) {
+        commitTreeEntryCount++;
+      });
+
+      walk.on("error", function() {
+        assert.ok(false);
+      });
+      
+      walk.on("end", function(error, entries) {
+        assert.equal(commitTreeEntryCount, expectedCommitTreeEntryCount);
+        done();
+      });
+
+      walk.start();
+    });
+  });
+
+  it("can get the commit diff", function() {
+    return this.commit.getDiff().then(function(diff) {
+      assert.equal(diff.length, 1);
     });
   });
 });
