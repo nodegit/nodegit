@@ -227,7 +227,7 @@
         "isConstructorMethod": true,
         "args": [
           { "isReturn": true },
-          { "isSelf": true },
+          { "isSelf": false },
           {},
           {},
           { "isOptional": true }
