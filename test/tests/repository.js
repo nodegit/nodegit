@@ -3,6 +3,7 @@ var path = require("path");
 
 describe("Repository", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
+  var newRepo = path.resolve("test/repos/newrepo");
 
   var Repository = require("../../lib/repository");
 
@@ -33,8 +34,8 @@ describe("Repository", function() {
   });
 
   it("can initialize a repository into a folder", function() {
-    return Repository.init("repos/newrepo", 1).then(function(path, isBare) {
-      return Repository.open("repos/newrepo");
+    return Repository.init(newRepo, 1).then(function(path, isBare) {
+      return Repository.open(newRepo);
     });
   });
 });

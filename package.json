@@ -68,7 +68,7 @@
   },
   "scripts": {
     "lint": "jshint lib test/tests",
-    "mocha": "istanbul cover _mocha -- test/runner test/tests --report=lcov",
+    "mocha": "istanbul cover node_modules/mocha/bin/_mocha -- test/runner test/tests --report=lcov",
     "test": "npm run lint && npm run mocha",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "generate": "node generate/setup && node generate",
