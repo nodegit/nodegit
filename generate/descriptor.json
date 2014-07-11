@@ -1,5 +1,4 @@
-{
-  "attr": {
+{ "attr": {
     "cType": null,
 
     "functions": {
@@ -117,19 +116,43 @@
       },
 
       "git_checkout_init_options": {
-        "ignore": false
+        "ignore": true
       }
     }
   },
 
-  "checkout_options": {
-    "isStruct": true,
-    "cType": "git_checkout_options",
-    "fields": []
+  "clone": {
+    "cType": null,
+
+    "dependencies": [
+      "../include/clone_options.h",
+      "../include/checkout_opts.h",
+      "../include/repository.h",
+      "../include/remote.h"
+    ],
+
+    "functions": {
+      "git_clone": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "args": [{}, {}, {}, { "isOptional": true }]
+      },
+
+      "git_clone_into": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "args": [{}, {}, { "isOptional": true }]
+      }
+    }
   },
 
-  "clone": {
-    "cType": null
+  "clone_options": {
+    "cType": "git_clone_options",
+    "isStruct": true,
+    "dependencies": [
+      "../include/checkout_opts.h",
+      "../include/remote_callbacks.h"
+    ]
   },
 
   "commit": {
@@ -625,6 +648,12 @@
         "args": [{ "isSelf": true }]
       }
     }
+  },
+
+  "remote_callbacks": {
+    "isStruct": true,
+    "cType": "git_remote_callbacks",
+    "fields": []
   },
 
   "repository": {

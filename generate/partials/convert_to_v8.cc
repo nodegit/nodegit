@@ -22,10 +22,14 @@ to = NanNew<External>((void *){{= parsedName =}});
 {%--
   // FIXME this is not general purpose enough.
 --%}
+{%if size%}
 Local<Array> tmpArray = NanNew<Array>({{= parsedName =}}->{{ size }});
 for (unsigned int i = 0; i < {{= parsedName =}}->{{ size }}; i++) {
   tmpArray->Set(NanNew<Number>(i), NanNew<String>({{= parsedName =}}->{{ key }}[i]));
 }
+{%else%}
+Local<Array> tmpArray = NanNew<Array>({{= parsedName =}});
+{%endif%}
 to = tmpArray;
 {%else%}
   {%if copy %}
