@@ -21,8 +21,8 @@ describe("Commit", function() {
   });
 
   it("will fail with an invalid sha", function() {
-    return this.repository.getCommit("invalid").then(null, function(error) {
-      assert.ok(error instanceof Error);
+    return this.repository.getCommit("invalid").then(null, function(err) {
+      assert.ok(err instanceof Error);
     });
   });
 
@@ -99,7 +99,7 @@ describe("Commit", function() {
       done();
     });
     
-    history.on("error", function(error) {
+    history.on("error", function(err) {
       assert.ok(false);
     });
     
@@ -134,22 +134,22 @@ describe("Commit", function() {
     var expectedCommitTreeEntryCount = 198;
 
     this.commit.getTree().then(function(tree) {
-      var walk = tree.walk();
+      var treeWalker = tree.walk();
 
-      walk.on("entry", function(entry) {
+      treeWalker.on("entry", function(entry) {
         commitTreeEntryCount++;
       });
 
-      walk.on("error", function() {
+      treeWalker.on("error", function() {
         assert.ok(false);
       });
       
-      walk.on("end", function(error, entries) {
+      treeWalker.on("end", function(entries) {
         assert.equal(commitTreeEntryCount, expectedCommitTreeEntryCount);
         done();
       });
 
-      walk.start();
+      treeWalker.start();
     });
   });
 
