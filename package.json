@@ -67,7 +67,7 @@
     "host": "https://s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
-    "lint": "jshint lib test/tests/*.js",
+    "lint": "jshint lib test/tests",
     "mocha": "istanbul cover _mocha -- test/runner test/tests --report=lcov",
     "test": "npm run lint && npm run mocha",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
