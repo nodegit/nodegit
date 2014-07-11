@@ -7,7 +7,3 @@ git:
 branches:
   only:
     - master
-matrix:
-  fast_finish: true
-  allow_failures:
-    - node_js: 0.11

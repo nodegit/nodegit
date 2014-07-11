@@ -5,6 +5,10 @@ var version = require("../package.json").libgit2.version;
 var descriptor = require("./descriptor.json");
 var libgit2 = require("./v" + version + ".json");
 
+var structs = libgit2.types.reduce(function(memo, current) {
+  return memo[current[0]] = current[1], memo;
+}, {});
+
 // Extracted types.
 var typeMap = require("./types.json");
 
@@ -29,7 +33,15 @@ typeMap.__proto__ = {
   "git_branch_iterator **": { cpp: "BranchIterator", js: "Iterator" },
   "git_branch_t *": { cpp: "GitBranch", js: "Branch" },
   "const git_commit *[]": { cpp: "Array", js: "Array" },
-  "git_diff_file": { cpp: "GitDiffFile", js: "DiffFile" }
+  "git_diff_file": { cpp: "GitDiffFile", js: "DiffFile" },
+  "git_strarray": { cpp: "Array", js: "Array" },
+  "git_diff_notify_cb": { cpp: "GitDiffNotifyCb", js: "DiffNotifyCb" },
+  "unsigned char [20]": { cpp: "Array", js: "Array" },
+  "git_filter_init_fn": { cpp: "Function", js: "Function" },
+  "git_filter_shutdown_fn": { cpp: "Function", js: "Function" },
+  "git_filter_check_fn": { cpp: "Function", js: "Function" },
+  "git_filter_apply_fn": { cpp: "Function", js: "Function" },
+  "git_filter_cleanup_fn": { cpp: "Function", js: "Function" },
 };
 
 var files = [];
@@ -58,6 +70,7 @@ var fileNames = Object.keys(descriptor);
 
 fileNames.forEach(function(fileName, index) {
   var file = descriptor[fileName];
+  var structFile = structs["git_" + fileName];
 
   // Constants.
   file.filename = fileName + ".h";
@@ -90,6 +103,7 @@ fileNames.forEach(function(fileName, index) {
     // No functions.
     cFile = Object.create(file);
     cFile.functions = [];
+    cFile.fields = descriptor[fileName].fields || structFile.fields;
   }
 
   // Doesn't actually exist.
@@ -146,17 +160,18 @@ fileNames.forEach(function(fileName, index) {
     js: file.jsClassName 
   };
 
-  var fields = file.fields || [];
+  var fields = file.fields || cFile.fields || (structFile ? structFile.fields || [] : []);
 
   // Decorate fields.
   file.fields = fields.map(function(field) {
     try {
+      field.cType = field.cType || field.type;
       field.cppFunctionName = titleCase(field.name);
       field.jsFunctionName = camelCase(field.name);
       field.cppClassName = typeMap[field.cType].cpp;
       field.jsClassName = typeMap[field.cType].js;
     } catch (ex) {
-      console.error(field.name + " is missing a definition.");
+      console.error(file.filename, field.cType + " is missing a definition.");
     }
 
     return field;

@@ -23,13 +23,13 @@
     else { return '0'; }
   }
 -%>
-/**
- * This code is auto-generated; unless you know what you're doing, do not modify!
- **/
+// This is a generated file, modify: generate/templates/class.cc.ejs.
 #include <nan.h>
 #include <string.h>
 
-#include "git2.h"
+extern "C" {
+#include <git2.h>
+}
 
 #include "../include/functions/copy.h"
 

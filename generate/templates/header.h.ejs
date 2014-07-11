@@ -1,14 +1,13 @@
-/**
- * This code is auto-generated; unless you know what you're doing, do not modify!
- **/
-
+// This is a generated file, modify: generate/templates/header.h.ejs.
 #ifndef <%- cppClassName.toUpperCase() %>_H
 #define <%- cppClassName.toUpperCase() %>_H
 
 #include <nan.h>
 #include <string>
 
-#include "git2.h"
+extern "C" {
+#include <git2.h>
+}
 
 <% if (typeof dependencies != 'undefined') { -%>
 <% for (d in dependencies) { -%>
