@@ -50,6 +50,8 @@ typeMap.__proto__ = {
   "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" }
 };
 
+typeMap["void *"] = { cpp: "Function", js: "Function" };
+
 var files = [];
 
 function titleCase(str) {
@@ -76,7 +78,7 @@ var fileNames = Object.keys(descriptor);
 
 fileNames.forEach(function(fileName, index) {
   var file = descriptor[fileName];
-  var structFile = structs["git_" + fileName];
+  var structFile = structs["git_" + fileName] || {};
 
   // Constants.
   file.filename = fileName + ".h";
@@ -110,7 +112,7 @@ fileNames.forEach(function(fileName, index) {
     // No functions.
     cFile = Object.create(file);
     cFile.functions = [];
-    cFile.fields = descriptor[fileName].fields || structFile.fields;
+    cFile.fields = descriptor[fileName].fields || structFile.fields || [];
   }
 
   // Doesn't actually exist.
@@ -167,7 +169,12 @@ fileNames.forEach(function(fileName, index) {
     js: file.jsClassName 
   };
 
-  var fields = file.fields || cFile.fields || (structFile ? structFile.fields || [] : []);
+  var fields = file.fields || cFile.fields || (structFile ? structFile.fields || [] : []) || [];
+
+  // Ensure fields is actually an Array.
+  if (!Array.isArray(fields)) {
+    fields = [];
+  }
 
   // Decorate fields.
   file.fields = fields.map(function(field) {
