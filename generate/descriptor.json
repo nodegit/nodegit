@@ -34,6 +34,13 @@
         }
       },
 
+      "git_blob_is_binary": {
+        "ignore": false,
+        "args": [
+          { "isReturn": false, "isSelf": true }
+        ]
+      },
+
       "git_blob_create_frombuffer": {
         "ignore": false,
         "isAsync": true,
@@ -220,7 +227,7 @@
         "isConstructorMethod": true,
         "args": [
           { "isReturn": true },
-          { "isSelf": true },
+          { "isSelf": false },
           {},
           {},
           { "isOptional": true }
@@ -484,8 +491,7 @@
     "functions": {
       "git_reference_lookup": {
         "ignore": false,
-        "isConstructorMethod": true,
-        "args": [{}, { "isSelf": true }]
+        "isConstructorMethod": true
       },
 
       "git_reference_type": {
@@ -672,7 +678,7 @@
         "ignore": false,
         "isAsync": true,
         "isConstructorMethod": true,
-        "args": [{ "isReturn": true }, { "isSelf": true }],
+        "args": [{ "isReturn": true }],
         "return": {
           "isErrorCode": true
         }

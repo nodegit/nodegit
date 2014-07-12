@@ -120,23 +120,13 @@ var dependencies = Q.allSettled([
   });
 })
 
-// Configure the native module using node-gyp.
-.then(function() {
-  console.info('[nodegit] Configuring native node module.');
-
-  return Q.nfcall(exec, systemPath([
-    '.', 'node_modules', '.bin', 'node-gyp configure --python ' + python
-  ]), {
-    cwd: '.'
-  });
-})
-
 // Build the native module using node-gyp.
 .then(function() {
   console.info('[nodegit] Building native node module.');
+  var pythonFlag = ' --python ' + python;
 
   return Q.nfcall(exec, systemPath([
-    '.', 'node_modules', '.bin', 'node-gyp build'
+    '.', 'node_modules', '.bin', 'node-gyp clean configure build' + pythonFlag
   ]), {
     cwd: '.',
     maxBuffer: Number.MAX_VALUE

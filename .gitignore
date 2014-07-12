@@ -1,12 +1,16 @@
 /node_modules/
 /vendor/libgit2/
 /build/
+/coverage/
 /test/repos/
 
 /vendor/Release
 /vendor/*.vcxproj
 /vendor/*.filters
 /vendor/*.sln
+
+/generate/idefs.json
+/binding.gyp
 
 /src/*
 !/src/functions/copy.cc
@@ -15,6 +19,3 @@
 /include/*
 !/include/functions/copy.h
 !/include/wrapper.h
-
-/generate/idefs.json
-/binding.gyp
