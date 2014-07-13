@@ -1,6 +1,31 @@
 {
   "attr": {
-    "cType": null
+    "cType": null,
+
+    "functions": {
+      "git_attr_get": {
+        "ignore": false
+      },
+
+      "git_attr_get_many": {
+        "ignore": false
+      },
+
+      "git_attr_foreach": {
+        "ignore": true,
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_attr_cache_flush": {
+        "ignore": false
+      },
+
+      "git_attr_add_macro": {
+        "ignore": false
+      }
+    }
   },
 
   "blame": {
