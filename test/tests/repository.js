@@ -6,6 +6,7 @@ describe("Repository", function() {
   var newRepo = path.resolve("test/repos/newrepo");
 
   var Repository = require("../../lib/repository");
+  var Index = require("../../lib/index");
 
   before(function() {
     var test = this;
@@ -36,6 +37,12 @@ describe("Repository", function() {
   it("can initialize a repository into a folder", function() {
     return Repository.init(newRepo, 1).then(function(path, isBare) {
       return Repository.open(newRepo);
+    });
+  });
+
+  it("can read the index", function() {
+    return this.repository.index().then(function(index) {
+      assert.ok(index instanceof Index);
     });
   });
 });
