@@ -132,18 +132,12 @@
 
       "git_commit_author": {
         "ignore": false,
-        "args": [{ "isSelf": true }],
-        "return": {
-          "copy": "git_signature_dup"
-        }
+        "args": [{ "isSelf": true }]
       },
 
       "git_commit_committer": {
         "ignore": false,
-        "args": [{ "isSelf": true }],
-        "return": {
-          "copy": "git_signature_dup"
-        }
+        "args": [{ "isSelf": true }]
       },
 
       "git_commit_parentcount": {
@@ -333,10 +327,6 @@
       },
       {
         "name": "interhunk_lines",
-        "cType": "uint16_t"
-      },
-      {
-        "name": "oid_abbrev",
         "cType": "uint16_t"
       },
       {

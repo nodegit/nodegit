@@ -3,8 +3,8 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.1.4",
   "libgit2": {
-    "sha": "43cb8b32428b1b29994874349ec22eb5372e152c",
-    "version": "0.20.0"
+    "sha": "28f087c8642ff9c8dd6964e101e6d8539db6281a",
+    "version": "0.21.0"
   },
   "homepage": "https://github.com/tbranyen/nodegit",
   "keywords": [
