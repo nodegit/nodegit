@@ -1993,8 +1993,8 @@
     "js": "list"
   },
   "git_strarray *": {
-    "js": "Strarray",
-    "cpp": "Strarray"
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   },
   "git_tag_list_match": {
     "cpp": "ListMatch",
@@ -2062,7 +2062,7 @@
   },
   "git_strarray*": {
     "js": "Strarray*",
-    "cpp": "Strarray*"
+    "cpp": "GitStrarray*"
   },
   "git_revparse_single": {
     "cpp": "RevparseSingle",
@@ -2213,8 +2213,8 @@
     "js": "strarrayCopy"
   },
   "const git_strarray *": {
-    "js": "Strarray",
-    "cpp": "Strarray"
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   },
   "git_submodule_foreach": {
     "cpp": "Foreach",
@@ -9043,5 +9043,17 @@
   "const git_diff_line *": {
     "cpp": "GitDiffLine",
     "js": "DiffLine"
+  },
+  "git_strarray": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
+  },
+  "git_strarray **": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
+  },
+  "const git_strarray **": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   }
 }

@@ -1,13 +1,16 @@
 <% toName = to.name || 'result' -%>
 <% if (to.cppClassName == "String") { -%>
-<% if (typeof to.size != 'undefined') { -%>
-  to = NanNew<String>(<%- toName %>, <%- to.size %>);
-<% } else { -%>
-  to = NanNew<String>(<%- toName %>);
-<% } -%>
-<% if (to.freeFunctionName) { -%>
-  <%- to.freeFunctionName %>(<%- toName %>);
-<% } -%>
+  <% if (typeof to.size != 'undefined') { -%>
+to = NanNew<String>(<%- toName %>, <%- to.size %>);
+  <% } else if (to.cType === "char **") { -%>
+to = NanNew<String>(*<%- toName %>);
+  <% } else { -%>
+to = NanNew<String>(<%- toName %>);
+  <% } -%>
+
+  <% if (to.freeFunctionName) { -%>
+    <%- to.freeFunctionName %>(<%- toName %>);
+  <% } -%>
 <% } else if (isV8Value(to.cppClassName)) { -%>
 <% if (~['Uint32', 'Int32'].indexOf(to.cppClassName)) { -%>
 <% var className = to.cppClassName.toLowerCase()+'_t' -%>

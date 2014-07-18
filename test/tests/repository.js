@@ -45,4 +45,11 @@ describe("Repository", function() {
       assert.ok(index instanceof Index);
     });
   });
+
+  it("can list remotes", function() {
+    return this.repository.getRemotes().then(function(remotes) {
+      assert.equal(remotes.count(), 1);
+      assert.equal(remotes.strings(), "origin");
+    });
+  });
 });
