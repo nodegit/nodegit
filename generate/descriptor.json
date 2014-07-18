@@ -3,11 +3,12 @@
     "cType": null,
 
     "functions": {
-      "git_attr_get": {
-        "ignore": false
+      "git_attr_add_macro": {
+        "ignore": false,
+        "isConstructorMethod": true
       },
 
-      "git_attr_get_many": {
+      "git_attr_cache_flush": {
         "ignore": false
       },
 
@@ -18,11 +19,11 @@
         }
       },
 
-      "git_attr_cache_flush": {
+      "git_attr_get": {
         "ignore": false
       },
 
-      "git_attr_add_macro": {
+      "git_attr_get_many": {
         "ignore": false
       }
     }

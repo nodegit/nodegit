@@ -75,6 +75,7 @@ fileNames.forEach(function(fileName, index) {
   // Constants.
   file.filename = fileName + ".h";
   file.ignore = typeof file.ignore == "boolean" ? file.ignore : false;
+  //FIXME
   file.cppClassName = "Git" + titleCase(fileName);
   file.jsClassName = file.cppClassName;
 
@@ -193,7 +194,7 @@ fileNames.forEach(function(fileName, index) {
 
     var funcDescriptor = libgit2.functions[functionName];
     var descriptor = {};
-    var cType = file.cType || "git";
+    var cType = file.cType || "git_" + file.filename.slice(0, -2);
 
     // From the hand maintained file.
     var functionDescriptor = functions ? functions[functionName] || ident : ident;
