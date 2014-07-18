@@ -1,7 +1,7 @@
 {
   "git_attr_get": {
-    "cpp": "AttrGet",
-    "js": "attrGet"
+    "cpp": "Get",
+    "js": "get"
   },
   "const char **": {
     "js": "String",
@@ -24,16 +24,16 @@
     "cpp": "Number"
   },
   "git_attr_get_many": {
-    "cpp": "AttrGetMany",
-    "js": "attrGetMany"
+    "cpp": "GetMany",
+    "js": "getMany"
   },
   "size_t": {
     "js": "Number",
     "cpp": "Uint32"
   },
   "git_attr_foreach": {
-    "cpp": "AttrForeach",
-    "js": "attrForeach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_attr_foreach_cb": {
     "js": "AttrForeachCb",
@@ -44,16 +44,16 @@
     "cpp": "void"
   },
   "git_attr_cache_flush": {
-    "cpp": "AttrCacheFlush",
-    "js": "attrCacheFlush"
+    "cpp": "CacheFlush",
+    "js": "cacheFlush"
   },
   "void": {
     "js": "void",
     "cpp": "void"
   },
   "git_attr_add_macro": {
-    "cpp": "AttrAddMacro",
-    "js": "attrAddMacro"
+    "cpp": "AddMacro",
+    "js": "addMacro"
   },
   "git_blob_free": {
     "cpp": "Free",
@@ -2376,8 +2376,8 @@
     "js": "peel"
   },
   "git_threads_init": {
-    "cpp": "ThreadsInit",
-    "js": "threadsInit"
+    "cpp": "Init",
+    "js": "init"
   },
   "git_threads_shutdown": {
     "cpp": "ThreadsShutdown",
@@ -2617,44 +2617,44 @@
     "js": "Attr"
   },
   "git_attr_get *": {
-    "cpp": "AttrGet",
-    "js": "attrGet"
+    "cpp": "Get",
+    "js": "get"
   },
   "const git_attr_get *": {
-    "cpp": "AttrGet",
-    "js": "attrGet"
+    "cpp": "Get",
+    "js": "get"
   },
   "git_attr_get_many *": {
-    "cpp": "AttrGetMany",
-    "js": "attrGetMany"
+    "cpp": "GetMany",
+    "js": "getMany"
   },
   "const git_attr_get_many *": {
-    "cpp": "AttrGetMany",
-    "js": "attrGetMany"
+    "cpp": "GetMany",
+    "js": "getMany"
   },
   "git_attr_foreach *": {
-    "cpp": "AttrForeach",
-    "js": "attrForeach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "const git_attr_foreach *": {
-    "cpp": "AttrForeach",
-    "js": "attrForeach"
+    "cpp": "Foreach",
+    "js": "foreach"
   },
   "git_attr_cache_flush *": {
-    "cpp": "AttrCacheFlush",
-    "js": "attrCacheFlush"
+    "cpp": "CacheFlush",
+    "js": "cacheFlush"
   },
   "const git_attr_cache_flush *": {
-    "cpp": "AttrCacheFlush",
-    "js": "attrCacheFlush"
+    "cpp": "CacheFlush",
+    "js": "cacheFlush"
   },
   "git_attr_add_macro *": {
-    "cpp": "AttrAddMacro",
-    "js": "attrAddMacro"
+    "cpp": "AddMacro",
+    "js": "addMacro"
   },
   "const git_attr_add_macro *": {
-    "cpp": "AttrAddMacro",
-    "js": "attrAddMacro"
+    "cpp": "AddMacro",
+    "js": "addMacro"
   },
   "git_blame": {
     "cpp": "GitBlame",
@@ -8513,12 +8513,12 @@
     "js": "peel"
   },
   "git_threads_init *": {
-    "cpp": "ThreadsInit",
-    "js": "threadsInit"
+    "cpp": "Init",
+    "js": "init"
   },
   "const git_threads_init *": {
-    "cpp": "ThreadsInit",
-    "js": "threadsInit"
+    "cpp": "Init",
+    "js": "init"
   },
   "git_threads_shutdown *": {
     "cpp": "ThreadsShutdown",
