@@ -535,6 +535,26 @@
   },
 
   "remote": {
+    "dependencies": [
+      "../include/functions/copy.h",
+      "../include/remote.h",
+      "../include/strarray.h",
+      "../include/repository.h",
+      "../include/transport.h"
+    ],
+
+    "functions": {
+      "git_remote_list": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "args": [
+          { "shouldAlloc": true }
+        ],
+        "return": {
+          "copy": "git_strarray_copy"
+        }
+      }
+    }
   },
 
   "repository": {
@@ -646,6 +666,10 @@
 
   "stdarray": {
     "cType": null
+  },
+
+  "strarray": {
+    "cType": "git_strarray"
   },
 
   "submodule": {

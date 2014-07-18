@@ -72,6 +72,7 @@
     "test": "npm run lint && npm run mocha",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "generate": "node generate/setup && node generate",
-    "install": "npm run generate && node install"
+    "install": "npm run generate && node install",
+    "rebuild": "npm run generate && node-gyp configure build"
   }
 }
