@@ -30,6 +30,33 @@
   },
 
   "blame": {
+    "cType": null,
+
+    "functions": {
+      "git_blame_init_options": {
+        "ignore": true
+      },
+
+      "git_blame_get_hunk_count": {
+        "ignore": true
+      },
+
+      "git_blame_get_hunk_byindex": {
+        "ignore": true
+      },
+
+      "git_blame_get_hunk_byline": {
+        "ignore": true
+      },
+
+      "git_blame_file": {
+        "ignore": false
+      },
+
+      "git_blame_buffer": {
+        "ignore": false
+      }
+    }
   },
 
   "blob": {
