@@ -4,6 +4,7 @@ var path = require("path");
 describe("Repository", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
   var newRepo = path.resolve("test/repos/newrepo");
+  var initRepo = path.resolve("test/repos/initrepo");
 
   var Repository = require("../../lib/repository");
   var Index = require("../../lib/index");
@@ -51,5 +52,9 @@ describe("Repository", function() {
       assert.equal(remotes.count(), 1);
       assert.equal(remotes.strings(), "origin");
     });
+  });
+
+  it("can utilize repository init options", function() {
+    return Repository.initExt(initRepo, {});
   });
 });
