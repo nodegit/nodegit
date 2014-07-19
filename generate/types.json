@@ -168,24 +168,24 @@
     "js": "branchRemoteName"
   },
   "git_checkout_head": {
-    "cpp": "CheckoutHead",
-    "js": "checkoutHead"
+    "cpp": "Head",
+    "js": "head"
   },
   "git_checkout_opts *": {
     "js": "CheckoutOpts",
     "cpp": "CheckoutOpts"
   },
   "git_checkout_index": {
-    "cpp": "CheckoutIndex",
-    "js": "checkoutIndex"
+    "cpp": "Index",
+    "js": "index"
   },
   "git_index *": {
     "cpp": "GitIndex",
     "js": "Index"
   },
   "git_checkout_tree": {
-    "cpp": "CheckoutTree",
-    "js": "checkoutTree"
+    "cpp": "Tree",
+    "js": "tree"
   },
   "const git_object *": {
     "cpp": "GitObject",
@@ -1733,8 +1733,8 @@
     "js": "initExt"
   },
   "git_repository_init_options *": {
-    "js": "RepositoryInitOptions",
-    "cpp": "RepositoryInitOptions"
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
   },
   "git_repository_head": {
     "cpp": "Head",
@@ -3081,28 +3081,28 @@
     "js": "Checkout"
   },
   "git_checkout_head *": {
-    "cpp": "CheckoutHead",
-    "js": "checkoutHead"
+    "cpp": "Head",
+    "js": "head"
   },
   "const git_checkout_head *": {
-    "cpp": "CheckoutHead",
-    "js": "checkoutHead"
+    "cpp": "Head",
+    "js": "head"
   },
   "git_checkout_index *": {
-    "cpp": "CheckoutIndex",
-    "js": "checkoutIndex"
+    "cpp": "Index",
+    "js": "index"
   },
   "const git_checkout_index *": {
-    "cpp": "CheckoutIndex",
-    "js": "checkoutIndex"
+    "cpp": "Index",
+    "js": "index"
   },
   "git_checkout_tree *": {
-    "cpp": "CheckoutTree",
-    "js": "checkoutTree"
+    "cpp": "Tree",
+    "js": "tree"
   },
   "const git_checkout_tree *": {
-    "cpp": "CheckoutTree",
-    "js": "checkoutTree"
+    "cpp": "Tree",
+    "js": "tree"
   },
   "git_clone **": {
     "cpp": "GitClone",
@@ -3365,7 +3365,6 @@
     "js": "Config"
   },
   "const git_config **": {
-    "cpp": "GitConfig",
     "js": "Config"
   },
   "git_config_find_global *": {
@@ -9067,5 +9066,85 @@
   "const git_remote_delete *": {
     "cpp": "Delete",
     "js": "delete"
+  },
+  "git_checkout_options": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "git_checkout_options **": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "git_checkout_options *": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "const git_checkout_options **": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "const git_checkout_options *": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "git_cherry": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "git_cherry **": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "git_cherry *": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "const git_cherry **": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "const git_cherry *": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "git_checkout_init_options": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
+  },
+  "git_checkout_init_options *": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
+  },
+  "const git_checkout_init_options *": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
+  },
+  "git_repository_init_options": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "git_repository_init_options **": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "const git_repository_init_options **": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "const git_repository_init_options *": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "git_repository_init_init_options": {
+    "cpp": "InitInitOptions",
+    "js": "initInitOptions"
+  },
+  "git_repository_init_init_options *": {
+    "cpp": "InitInitOptions",
+    "js": "initInitOptions"
+  },
+  "const git_repository_init_init_options *": {
+    "cpp": "InitInitOptions",
+    "js": "initInitOptions"
   }
 }

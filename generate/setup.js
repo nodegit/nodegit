@@ -42,6 +42,12 @@ typeMap.__proto__ = {
   "git_filter_check_fn": { cpp: "Function", js: "Function" },
   "git_filter_apply_fn": { cpp: "Function", js: "Function" },
   "git_filter_cleanup_fn": { cpp: "Function", js: "Function" },
+  "const git_checkout_options *": { cpp: "GitCheckoutOptions", js: "CheckoutOptions" },
+  "git_checkout_notify_cb": { cpp: "Function", js: "Function" },
+  "git_checkout_progress_cb": { cpp: "Function", js: "Function" },
+  "git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
+  "const git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
+  "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" }
 };
 
 var files = [];
