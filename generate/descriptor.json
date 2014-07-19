@@ -92,7 +92,40 @@
   },
 
   "checkout": {
-    "cType": null
+    "cType": null,
+
+    "dependencies": [
+      "../include/functions/copy.h",
+      "../include/checkout.h",
+      "../include/checkout_options.h",
+      "../include/repository.h",
+      "../include/index.h",
+      "../include/object.h"
+    ],
+
+    "functions": {
+      "git_checkout_head": {
+        "ignore": false
+      },
+
+      "git_checkout_index": {
+        "ignore": false
+      },
+
+      "git_checkout_tree": {
+        "ignore": false
+      },
+
+      "git_checkout_init_options": {
+        "ignore": false
+      }
+    }
+  },
+
+  "checkout_options": {
+    "isStruct": true,
+    "cType": "git_checkout_options",
+    "fields": []
   },
 
   "clone": {
@@ -595,6 +628,18 @@
   },
 
   "repository": {
+    "dependencies": [
+      "../include/functions/copy.h",
+      "../include/repository.h",
+      "../include/repository.h",
+      "../include/odb.h",
+      "../include/config.h",
+      "../include/refdb.h",
+      "../include/index.h",
+      "../include/oid.h",
+      "../include/repository_init_options.h"
+    ],
+
     "functions": {
       "git_repository_open": {
         "isConstructorMethod": true,
@@ -608,8 +653,24 @@
       "git_repository_init": {
         "isConstructorMethod": true,
         "ignore": false
+      },
+
+      "git_repository_init_ext": {
+        "isConstructorMethod": true,
+        "ignore": false
+      },
+
+      "git_repository_init_init_options": {
+        "ignore": false,
+        "isConstructorMethod": true
       }
     }
+  },
+
+  "repository_init_options": {
+    "isStruct": true,
+    "cType": "git_repository_init_options",
+    "fields": []
   },
 
   "reset": {
