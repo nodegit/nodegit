@@ -12,10 +12,10 @@
         "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
-    <% idefs.forEach(function(idef) { -%>
-    "src/<%- idef.name %>.cc",
-    <% }); -%>
-  ],
+        {%each%}
+        "src/{{ name }}.cc",
+        {%endeach%}
+      ],
 
       "include_dirs": [
         "vendor/libv8-convert",
