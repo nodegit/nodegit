@@ -553,6 +553,16 @@
         "return": {
           "copy": "git_strarray_copy"
         }
+      },
+
+      "git_remote_load": {
+        "ignore": false,
+        "isConstructorMethod": true
+      },
+
+      "git_remote_url": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
       }
     }
   },
