@@ -9055,5 +9055,17 @@
   "const git_strarray **": {
     "cpp": "GitStrarray",
     "js": "Strarray"
+  },
+  "git_remote_delete": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "git_remote_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
+  },
+  "const git_remote_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
   }
 }

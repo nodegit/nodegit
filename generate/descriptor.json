@@ -555,9 +555,36 @@
         }
       },
 
-      "git_remote_load": {
+      "git_remote_create": {
         "ignore": false,
         "isConstructorMethod": true
+      },
+
+      "git_remote_rename": {
+        "ignore": false
+      },
+
+      "git_remote_name": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_remote_pushurl": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
+      "git_remote_load": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "return": {
+          "copy": "git_remote_dup"
+        }
+      },
+
+      "git_remote_delete": {
+        "ignore": false,
+        "args": [{ "isReturn": false, "isSelf": true }]
       },
 
       "git_remote_url": {
