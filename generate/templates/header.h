@@ -8,103 +8,88 @@ extern "C" {
 #include <git2.h>
 }
 
-//{%each dependencies as dependency%}
-#include "<%- dependencies[d] %>"
-//{%endeach%}
+{%each dependencies as dependency%}
+#include "{{ dependency }}"
+{%endeach%}
 
-<% if (typeof forwardDeclare !== "undefined") { %>
+{%if forwardDeclare%}
 // Forward declaration.
-struct <%- cType %> {
-  <% if (typeof fields != 'undefined') { %>
-  <%
-    for (var i in fields) {
-      var fieldInfo = fields[i];
-      if (fieldInfo.ignore || !fieldInfo.cppFunctionName) continue;
-  -%>
-
-      <%- fieldInfo.structType || fieldInfo.cType -%> <%- fieldInfo.structName || fieldInfo.name %>;
-    <% } -%>
-  <% } -%>
-
+struct {{ cType }} {
+  {%each fields as field%}
+    {%if not field.ignore%}
+      {{ field.structType|or field.cType }} {{ field.structName|or field.name }};
+    {%endif%}
+  {%endeach%}
 };
-<% } -%>
+{%endif%}
 
 using namespace node;
 using namespace v8;
 
-class <%- cppClassName %> : public ObjectWrap {
+class {{ cppClassName }} : public ObjectWrap {
   public:
 
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
-<% if (cType != undefined) { -%>
-    <%- cType %> *GetValue();
+    {%if cType%}
+    {{ cType }} *GetValue();
 
     static Handle<Value> New(void *raw);
-<% } -%>
+    {%endif%}
 
   private:
-<% if (cType != undefined) { -%>
-    <%- cppClassName %>(<%- cType %> *raw);
-    ~<%- cppClassName %>();
-<% } -%>
+    {%if cType%}
+    {{ cppClassName }}({{ cType }} *raw);
+    ~{{ cppClassName }}();
+    {%endif%}
 
     static NAN_METHOD(New);
 
-<% if (typeof fields != 'undefined') { -%>
-<%
-  for (var i in fields) {
-    var fieldInfo = fields[i];
-    if (fieldInfo.ignore || !fieldInfo.cppFunctionName) continue;
--%>
-    static NAN_METHOD(<%- fieldInfo.cppFunctionName %>);
-<% } -%>
-<% } -%>
-<% if (typeof functions != 'undefined') { -%>
-<%
-  for (var i in functions) {
-    var functionInfo = functions[i];
-    if (functionInfo.ignore || !functionInfo.cppFunctionName) continue;
--%>
-<% if (functionInfo.isAsync) { -%>
+    {%each fields as field%}
+      {%if not field.ignore%}
+    static NAN_METHOD({{ field.cppFunctionName }});
+      {%endif%}
+    {%endeach%}
 
-    struct <%- functionInfo.cppFunctionName %>Baton {
+    {%each functions as function%}
+      {%if not function.ignore%}
+        {%if function.isAsync%}
+
+    struct {{ function.cppFunctionName }}Baton {
       int error_code;
       const git_error* error;
-<%
-  for (var i = 0; i < functionInfo.args.length; i++) {
-    var arg = functionInfo.args[i];
--%>
-<% if (arg.isReturn) { -%>
-      <%- arg.cType.replace('**', '*') %> <%- arg.name %>;
-<% } else { -%>
-      <%- arg.cType %> <%- arg.name %>;
-<% } -%>
-<% } -%>
+      {%each function.args as arg%}
+        {%if arg.isReturn%}
+      {{ arg.cType|replace "**" "*" }} {{ arg.name }};
+        {%else%}
+      {{ arg.cType }} {{ arg.name }};
+        {%endif%}
+      {%endeach%}
     };
-    class <%- functionInfo.cppFunctionName %>Worker : public NanAsyncWorker {
+    class {{ function.cppFunctionName }}Worker : public NanAsyncWorker {
       public:
-        <%- functionInfo.cppFunctionName %>Worker(
-            <%- functionInfo.cppFunctionName %>Baton *_baton,
+        {{ function.cppFunctionName }}Worker(
+            {{ function.cppFunctionName }}Baton *_baton,
             NanCallback *callback
         ) : NanAsyncWorker(callback)
           , baton(_baton) {};
-        ~<%- functionInfo.cppFunctionName %>Worker() {};
+        ~{{ function.cppFunctionName }}Worker() {};
         void Execute();
         void HandleOKCallback();
 
       private:
-        <%- functionInfo.cppFunctionName %>Baton *baton;
+        {{ function.cppFunctionName }}Baton *baton;
     };
-<% } -%>
-    static NAN_METHOD(<%- functionInfo.cppFunctionName %>);
-<% } -%>
-<% } -%>
-<% if (cType != undefined) { -%>
-    <%- cType %> *raw;
-<% } -%>
+        {%endif%}
+    
+    static NAN_METHOD({{ function.cppFunctionName }});
+      {%endif%}
+    {%endeach%}
+
+    {%if cType%}
+    {{ cType }} *raw;
+    {%endif%}
 };
 
 #endif
-
