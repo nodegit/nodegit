@@ -47,7 +47,8 @@ typeMap.__proto__ = {
   "git_checkout_progress_cb": { cpp: "Function", js: "Function" },
   "git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
   "const git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
-  "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" }
+  "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" },
+  "git_checkout_options *": { cpp: "GitCheckoutOptions", js: "CheckoutOptions" }
 };
 
 typeMap["void *"] = { cpp: "Function", js: "Function" };
@@ -221,7 +222,7 @@ fileNames.forEach(function(fileName, index) {
       descriptor.ignore = functionDescriptor.ignore;
     }
 
-    var trimmedName = functionName.slice(cType.length + 1);
+    var trimmedName = descriptor.trim ? functionName.slice(cType.length + 1) : functionName.slice(4);
 
     descriptor.cppFunctionName = functionDescriptor.cppFunctionName || titleCase(trimmedName);
     descriptor.jsFunctionName = functionDescriptor.jsFunctionName || camelCase(trimmedName);
