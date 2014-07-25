@@ -76,24 +76,24 @@
     "js": "Oid"
   },
   "git_blob_rawcontent": {
-    "cpp": "Rawcontent",
-    "js": "rawcontent"
+    "cpp": "BlobRawcontent",
+    "js": "blobRawcontent"
   },
   "const void *": {
     "js": "Buffer",
     "cpp": "Buffer"
   },
   "git_blob_rawsize": {
-    "cpp": "Rawsize",
-    "js": "rawsize"
+    "cpp": "BlobRawsize",
+    "js": "blobRawsize"
   },
   "git_off_t": {
     "js": "Number",
     "cpp": "Number"
   },
   "git_blob_is_binary": {
-    "cpp": "IsBinary",
-    "js": "isBinary"
+    "cpp": "BlobIsBinary",
+    "js": "blobIsBinary"
   },
   "git_branch_create": {
     "cpp": "BranchCreate",
@@ -208,40 +208,40 @@
     "js": "Commit"
   },
   "git_commit_id": {
-    "cpp": "Id",
-    "js": "id"
+    "cpp": "CommitId",
+    "js": "commitId"
   },
   "git_commit_message_encoding": {
     "cpp": "MessageEncoding",
     "js": "messageEncoding"
   },
   "git_commit_message": {
-    "cpp": "Message",
-    "js": "message"
+    "cpp": "CommitMessage",
+    "js": "commitMessage"
   },
   "git_commit_time": {
-    "cpp": "Time",
-    "js": "time"
+    "cpp": "CommitTime",
+    "js": "commitTime"
   },
   "git_time_t": {
     "js": "Number",
     "cpp": "Int32"
   },
   "git_commit_time_offset": {
-    "cpp": "TimeOffset",
-    "js": "timeOffset"
+    "cpp": "CommitTimeOffset",
+    "js": "commitTimeOffset"
   },
   "git_commit_committer": {
-    "cpp": "Committer",
-    "js": "committer"
+    "cpp": "CommitCommitter",
+    "js": "commitCommitter"
   },
   "const git_signature *": {
     "cpp": "GitSignature",
     "js": "Signature"
   },
   "git_commit_author": {
-    "cpp": "Author",
-    "js": "author"
+    "cpp": "CommitAuthor",
+    "js": "commitAuthor"
   },
   "git_commit_tree": {
     "cpp": "Tree",
@@ -252,20 +252,20 @@
     "js": "Tree"
   },
   "git_commit_tree_id": {
-    "cpp": "TreeId",
-    "js": "treeId"
+    "cpp": "CommitTreeId",
+    "js": "commitTreeId"
   },
   "git_commit_parentcount": {
-    "cpp": "Parentcount",
-    "js": "parentcount"
+    "cpp": "CommitParentcount",
+    "js": "commitParentcount"
   },
   "git_commit_parent": {
     "cpp": "Parent",
     "js": "parent"
   },
   "git_commit_parent_id": {
-    "cpp": "ParentId",
-    "js": "parentId"
+    "cpp": "CommitParentId",
+    "js": "commitParentId"
   },
   "git_commit_nth_gen_ancestor": {
     "cpp": "NthGenAncestor",
@@ -592,8 +592,8 @@
     "cpp": "PrintPatch"
   },
   "git_diff_num_deltas": {
-    "cpp": "NumDeltas",
-    "js": "numDeltas"
+    "cpp": "DiffNumDeltas",
+    "js": "diffNumDeltas"
   },
   "git_diff_num_deltas_of_type": {
     "cpp": "NumDeltasOfType",
@@ -1138,8 +1138,8 @@
     "js": "OdbBackend"
   },
   "git_oid_fromstr": {
-    "cpp": "Fromstr",
-    "js": "fromstr"
+    "cpp": "OidFromstr",
+    "js": "oidFromstr"
   },
   "git_oid_fromstrp": {
     "cpp": "Fromstrp",
@@ -1166,8 +1166,8 @@
     "js": "pathfmt"
   },
   "git_oid_allocfmt": {
-    "cpp": "Allocfmt",
-    "js": "allocfmt"
+    "cpp": "OidAllocfmt",
+    "js": "oidAllocfmt"
   },
   "git_oid_tostr": {
     "cpp": "Tostr",
@@ -1410,16 +1410,16 @@
     "js": "nameToId"
   },
   "git_reference_target": {
-    "cpp": "Target",
-    "js": "target"
+    "cpp": "ReferenceTarget",
+    "js": "referenceTarget"
   },
   "git_reference_symbolic_target": {
     "cpp": "SymbolicTarget",
     "js": "symbolicTarget"
   },
   "git_reference_type": {
-    "cpp": "Type",
-    "js": "type"
+    "cpp": "ReferenceType",
+    "js": "referenceType"
   },
   "git_ref_t": {
     "js": "Number",
@@ -1538,16 +1538,16 @@
     "js": "Remote"
   },
   "git_remote_name": {
-    "cpp": "Name",
-    "js": "name"
+    "cpp": "RemoteName",
+    "js": "remoteName"
   },
   "git_remote_url": {
-    "cpp": "Url",
-    "js": "url"
+    "cpp": "RemoteUrl",
+    "js": "remoteUrl"
   },
   "git_remote_pushurl": {
-    "cpp": "Pushurl",
-    "js": "pushurl"
+    "cpp": "RemotePushurl",
+    "js": "remotePushurl"
   },
   "git_remote_set_url": {
     "cpp": "SetUrl",
@@ -1677,8 +1677,8 @@
     "cpp": "RemoteAutotagOptionT"
   },
   "git_remote_rename": {
-    "cpp": "Rename",
-    "js": "rename"
+    "cpp": "RemoteRename",
+    "js": "remoteRename"
   },
   "git_remote_rename_problem_cb": {
     "js": "RemoteRenameProblemCb",
@@ -1697,8 +1697,8 @@
     "js": "isValidName"
   },
   "git_repository_open": {
-    "cpp": "Open",
-    "js": "open"
+    "cpp": "RepositoryOpen",
+    "js": "repositoryOpen"
   },
   "git_repository **": {
     "cpp": "GitRepository",
@@ -1721,20 +1721,20 @@
     "js": "free"
   },
   "git_repository_init": {
-    "cpp": "Init",
-    "js": "init"
+    "cpp": "RepositoryInit",
+    "js": "repositoryInit"
   },
   "unsigned": {
     "js": "Boolean",
     "cpp": "Boolean"
   },
   "git_repository_init_ext": {
-    "cpp": "InitExt",
-    "js": "initExt"
+    "cpp": "RepositoryInitExt",
+    "js": "repositoryInitExt"
   },
   "git_repository_init_options *": {
-    "js": "RepositoryInitOptions",
-    "cpp": "RepositoryInitOptions"
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
   },
   "git_repository_head": {
     "cpp": "Head",
@@ -1797,8 +1797,8 @@
     "cpp": "SetRefdb"
   },
   "git_repository_index": {
-    "cpp": "Index",
-    "js": "index"
+    "cpp": "RepositoryIndex",
+    "js": "repositoryIndex"
   },
   "git_repository_set_index": {
     "js": "setIndex",
@@ -1861,8 +1861,8 @@
     "js": "state"
   },
   "git_blob_lookup": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "BlobLookup",
+    "js": "blobLookup"
   },
   "git_blob **": {
     "cpp": "GitBlob",
@@ -1873,8 +1873,8 @@
     "js": "lookupPrefix"
   },
   "git_commit_lookup": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "CommitLookup",
+    "js": "commitLookup"
   },
   "git_commit_create": {
     "cpp": "CreateCommit",
@@ -1909,8 +1909,8 @@
     "cpp": "RefdbBackend"
   },
   "git_reference_lookup": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "ReferenceLookup",
+    "js": "referenceLookup"
   },
   "git_reference_symbolic_create": {
     "cpp": "SymbolicCreate",
@@ -1921,8 +1921,8 @@
     "js": "create"
   },
   "git_remote_create": {
-    "cpp": "Create",
-    "js": "create"
+    "cpp": "RemoteCreate",
+    "js": "remoteCreate"
   },
   "git_remote **": {
     "cpp": "GitRemote",
@@ -1973,8 +1973,8 @@
     "js": "createLightweight"
   },
   "git_tree_lookup": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "TreeLookup",
+    "js": "treeLookup"
   },
   "git_tree_lookup_prefix": {
     "cpp": "LookupPrefix",
@@ -1993,8 +1993,8 @@
     "js": "list"
   },
   "git_strarray *": {
-    "js": "Strarray",
-    "cpp": "Strarray"
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   },
   "git_tag_list_match": {
     "cpp": "ListMatch",
@@ -2013,8 +2013,8 @@
     "js": "list"
   },
   "git_blob_create_frombuffer": {
-    "cpp": "CreateFrombuffer",
-    "js": "createFrombuffer"
+    "cpp": "BlobCreateFrombuffer",
+    "js": "blobCreateFrombuffer"
   },
   "git_blob_create_fromworkdir": {
     "cpp": "CreateFromworkdir",
@@ -2033,8 +2033,8 @@
     "cpp": "BlobChunkCb"
   },
   "git_remote_list": {
-    "cpp": "List",
-    "js": "list"
+    "cpp": "RemoteList",
+    "js": "remoteList"
   },
   "git_clone": {
     "cpp": "Clone",
@@ -2045,8 +2045,8 @@
     "js": "CloneOptions"
   },
   "git_remote_load": {
-    "cpp": "Load",
-    "js": "load"
+    "cpp": "RemoteLoad",
+    "js": "remoteLoad"
   },
   "git_reset": {
     "cpp": "GitReset",
@@ -2085,8 +2085,8 @@
     "js": "Revwalk"
   },
   "git_revwalk_push": {
-    "cpp": "Push",
-    "js": "push"
+    "cpp": "RevwalkPush",
+    "js": "revwalkPush"
   },
   "git_revwalk_push_glob": {
     "cpp": "PushGlob",
@@ -2117,12 +2117,12 @@
     "js": "hideRef"
   },
   "git_revwalk_next": {
-    "cpp": "Next",
-    "js": "next"
+    "cpp": "RevwalkNext",
+    "js": "revwalkNext"
   },
   "git_revwalk_sorting": {
-    "cpp": "Sorting",
-    "js": "sorting"
+    "cpp": "RevwalkSorting",
+    "js": "revwalkSorting"
   },
   "git_revwalk_push_range": {
     "cpp": "PushRange",
@@ -2213,8 +2213,8 @@
     "js": "strarrayCopy"
   },
   "const git_strarray *": {
-    "js": "Strarray",
-    "cpp": "Strarray"
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   },
   "git_submodule_foreach": {
     "cpp": "Foreach",
@@ -2496,24 +2496,24 @@
     "js": "owner"
   },
   "git_tree_entrycount": {
-    "cpp": "Entrycount",
-    "js": "entrycount"
+    "cpp": "TreeEntrycount",
+    "js": "treeEntrycount"
   },
   "git_tree_entry_byname": {
-    "cpp": "EntryByname",
-    "js": "entryByname"
+    "cpp": "TreeEntryByname",
+    "js": "treeEntryByname"
   },
   "git_tree_entry_byindex": {
-    "cpp": "EntryByindex",
-    "js": "entryByindex"
+    "cpp": "TreeEntryByindex",
+    "js": "treeEntryByindex"
   },
   "git_tree_entry_byoid": {
     "cpp": "EntryByoid",
     "js": "entryByoid"
   },
   "git_tree_entry_bypath": {
-    "cpp": "EntryBypath",
-    "js": "entryBypath"
+    "cpp": "TreeEntryBypath",
+    "js": "treeEntryBypath"
   },
   "git_tree_entry **": {
     "cpp": "GitTreeEntry",
@@ -2540,8 +2540,8 @@
     "cpp": "TreewalkCb"
   },
   "git_diff_tree_to_tree": {
-    "cpp": "TreeToTree",
-    "js": "treeToTree"
+    "cpp": "DiffTreeToTree",
+    "js": "diffTreeToTree"
   },
   "git_diff_tree_to_index": {
     "cpp": "TreeToIndex",
@@ -2572,16 +2572,16 @@
     "js": "uilderGet"
   },
   "git_treebuilder_insert": {
-    "cpp": "Insert",
-    "js": "insert"
+    "cpp": "TreebuilderInsert",
+    "js": "treebuilderInsert"
   },
   "const git_tree_entry **": {
     "cpp": "GitTreeEntry",
     "js": "TreeEntry"
   },
   "git_treebuilder_remove": {
-    "cpp": "Remove",
-    "js": "remove"
+    "cpp": "TreebuilderRemove",
+    "js": "treebuilderRemove"
   },
   "git_treebuilder_filter": {
     "cpp": "UilderFilter",
@@ -2592,8 +2592,8 @@
     "cpp": "TreebuilderFilterCb"
   },
   "git_treebuilder_write": {
-    "cpp": "Write",
-    "js": "write"
+    "cpp": "TreebuilderWrite",
+    "js": "treebuilderWrite"
   },
   "git_blame_hunk": {},
   "git_attr": {
@@ -2757,12 +2757,12 @@
     "js": "Blob"
   },
   "git_blob_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "BlobLookup",
+    "js": "blobLookup"
   },
   "const git_blob_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "BlobLookup",
+    "js": "blobLookup"
   },
   "git_blob_lookup_prefix *": {
     "cpp": "LookupPrefix",
@@ -2801,20 +2801,20 @@
     "js": "owner"
   },
   "git_blob_rawcontent *": {
-    "cpp": "Rawcontent",
-    "js": "rawcontent"
+    "cpp": "BlobRawcontent",
+    "js": "blobRawcontent"
   },
   "const git_blob_rawcontent *": {
-    "cpp": "Rawcontent",
-    "js": "rawcontent"
+    "cpp": "BlobRawcontent",
+    "js": "blobRawcontent"
   },
   "git_blob_rawsize *": {
-    "cpp": "Rawsize",
-    "js": "rawsize"
+    "cpp": "BlobRawsize",
+    "js": "blobRawsize"
   },
   "const git_blob_rawsize *": {
-    "cpp": "Rawsize",
-    "js": "rawsize"
+    "cpp": "BlobRawsize",
+    "js": "blobRawsize"
   },
   "git_blob_filtered_content": {
     "cpp": "FilteredContent",
@@ -2853,20 +2853,20 @@
     "js": "createFromchunks"
   },
   "git_blob_create_frombuffer *": {
-    "cpp": "CreateFrombuffer",
-    "js": "createFrombuffer"
+    "cpp": "BlobCreateFrombuffer",
+    "js": "blobCreateFrombuffer"
   },
   "const git_blob_create_frombuffer *": {
-    "cpp": "CreateFrombuffer",
-    "js": "createFrombuffer"
+    "cpp": "BlobCreateFrombuffer",
+    "js": "blobCreateFrombuffer"
   },
   "git_blob_is_binary *": {
-    "cpp": "IsBinary",
-    "js": "isBinary"
+    "cpp": "BlobIsBinary",
+    "js": "blobIsBinary"
   },
   "const git_blob_is_binary *": {
-    "cpp": "IsBinary",
-    "js": "isBinary"
+    "cpp": "BlobIsBinary",
+    "js": "blobIsBinary"
   },
   "git_branch": {
     "cpp": "GitBranch",
@@ -3137,12 +3137,12 @@
     "js": "Commit"
   },
   "git_commit_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "CommitLookup",
+    "js": "commitLookup"
   },
   "const git_commit_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "CommitLookup",
+    "js": "commitLookup"
   },
   "git_commit_lookup_prefix *": {
     "cpp": "LookupPrefix",
@@ -3161,12 +3161,12 @@
     "js": "free"
   },
   "git_commit_id *": {
-    "cpp": "Id",
-    "js": "id"
+    "cpp": "CommitId",
+    "js": "commitId"
   },
   "const git_commit_id *": {
-    "cpp": "Id",
-    "js": "id"
+    "cpp": "CommitId",
+    "js": "commitId"
   },
   "git_commit_owner": {
     "cpp": "Owner",
@@ -3189,12 +3189,12 @@
     "js": "messageEncoding"
   },
   "git_commit_message *": {
-    "cpp": "Message",
-    "js": "message"
+    "cpp": "CommitMessage",
+    "js": "commitMessage"
   },
   "const git_commit_message *": {
-    "cpp": "Message",
-    "js": "message"
+    "cpp": "CommitMessage",
+    "js": "commitMessage"
   },
   "git_commit_message_raw": {
     "cpp": "MessageRaw",
@@ -3209,36 +3209,36 @@
     "js": "messageRaw"
   },
   "git_commit_time *": {
-    "cpp": "Time",
-    "js": "time"
+    "cpp": "CommitTime",
+    "js": "commitTime"
   },
   "const git_commit_time *": {
-    "cpp": "Time",
-    "js": "time"
+    "cpp": "CommitTime",
+    "js": "commitTime"
   },
   "git_commit_time_offset *": {
-    "cpp": "TimeOffset",
-    "js": "timeOffset"
+    "cpp": "CommitTimeOffset",
+    "js": "commitTimeOffset"
   },
   "const git_commit_time_offset *": {
-    "cpp": "TimeOffset",
-    "js": "timeOffset"
+    "cpp": "CommitTimeOffset",
+    "js": "commitTimeOffset"
   },
   "git_commit_committer *": {
-    "cpp": "Committer",
-    "js": "committer"
+    "cpp": "CommitCommitter",
+    "js": "commitCommitter"
   },
   "const git_commit_committer *": {
-    "cpp": "Committer",
-    "js": "committer"
+    "cpp": "CommitCommitter",
+    "js": "commitCommitter"
   },
   "git_commit_author *": {
-    "cpp": "Author",
-    "js": "author"
+    "cpp": "CommitAuthor",
+    "js": "commitAuthor"
   },
   "const git_commit_author *": {
-    "cpp": "Author",
-    "js": "author"
+    "cpp": "CommitAuthor",
+    "js": "commitAuthor"
   },
   "git_commit_raw_header": {
     "cpp": "RawHeader",
@@ -3261,20 +3261,20 @@
     "js": "tree"
   },
   "git_commit_tree_id *": {
-    "cpp": "TreeId",
-    "js": "treeId"
+    "cpp": "CommitTreeId",
+    "js": "commitTreeId"
   },
   "const git_commit_tree_id *": {
-    "cpp": "TreeId",
-    "js": "treeId"
+    "cpp": "CommitTreeId",
+    "js": "commitTreeId"
   },
   "git_commit_parentcount *": {
-    "cpp": "Parentcount",
-    "js": "parentcount"
+    "cpp": "CommitParentcount",
+    "js": "commitParentcount"
   },
   "const git_commit_parentcount *": {
-    "cpp": "Parentcount",
-    "js": "parentcount"
+    "cpp": "CommitParentcount",
+    "js": "commitParentcount"
   },
   "git_commit_parent *": {
     "cpp": "Parent",
@@ -3285,12 +3285,12 @@
     "js": "parent"
   },
   "git_commit_parent_id *": {
-    "cpp": "ParentId",
-    "js": "parentId"
+    "cpp": "CommitParentId",
+    "js": "commitParentId"
   },
   "const git_commit_parent_id *": {
-    "cpp": "ParentId",
-    "js": "parentId"
+    "cpp": "CommitParentId",
+    "js": "commitParentId"
   },
   "git_commit_nth_gen_ancestor *": {
     "cpp": "NthGenAncestor",
@@ -3761,12 +3761,12 @@
     "js": "free"
   },
   "git_diff_tree_to_tree *": {
-    "cpp": "TreeToTree",
-    "js": "treeToTree"
+    "cpp": "DiffTreeToTree",
+    "js": "diffTreeToTree"
   },
   "const git_diff_tree_to_tree *": {
-    "cpp": "TreeToTree",
-    "js": "treeToTree"
+    "cpp": "DiffTreeToTree",
+    "js": "diffTreeToTree"
   },
   "git_diff_tree_to_index *": {
     "cpp": "TreeToIndex",
@@ -3833,12 +3833,12 @@
     "js": "optionsInit"
   },
   "git_diff_num_deltas *": {
-    "cpp": "NumDeltas",
-    "js": "numDeltas"
+    "cpp": "DiffNumDeltas",
+    "js": "diffNumDeltas"
   },
   "const git_diff_num_deltas *": {
-    "cpp": "NumDeltas",
-    "js": "numDeltas"
+    "cpp": "DiffNumDeltas",
+    "js": "diffNumDeltas"
   },
   "git_diff_num_deltas_of_type *": {
     "cpp": "NumDeltasOfType",
@@ -3849,16 +3849,16 @@
     "js": "numDeltasOfType"
   },
   "git_diff_get_delta": {
-    "cpp": "GetDelta",
-    "js": "getDelta"
+    "cpp": "DiffGetDelta",
+    "js": "diffGetDelta"
   },
   "git_diff_get_delta *": {
-    "cpp": "GetDelta",
-    "js": "getDelta"
+    "cpp": "DiffGetDelta",
+    "js": "diffGetDelta"
   },
   "const git_diff_get_delta *": {
-    "cpp": "GetDelta",
-    "js": "getDelta"
+    "cpp": "DiffGetDelta",
+    "js": "diffGetDelta"
   },
   "git_diff_is_sorted_icase": {
     "cpp": "IsSortedIcase",
@@ -5281,12 +5281,12 @@
     "js": "Oid"
   },
   "git_oid_fromstr *": {
-    "cpp": "Fromstr",
-    "js": "fromstr"
+    "cpp": "OidFromstr",
+    "js": "oidFromstr"
   },
   "const git_oid_fromstr *": {
-    "cpp": "Fromstr",
-    "js": "fromstr"
+    "cpp": "OidFromstr",
+    "js": "oidFromstr"
   },
   "git_oid_fromstrp *": {
     "cpp": "Fromstrp",
@@ -5341,12 +5341,12 @@
     "js": "pathfmt"
   },
   "git_oid_allocfmt *": {
-    "cpp": "Allocfmt",
-    "js": "allocfmt"
+    "cpp": "OidAllocfmt",
+    "js": "oidAllocfmt"
   },
   "const git_oid_allocfmt *": {
-    "cpp": "Allocfmt",
-    "js": "allocfmt"
+    "cpp": "OidAllocfmt",
+    "js": "oidAllocfmt"
   },
   "git_oid_tostr *": {
     "cpp": "Tostr",
@@ -5589,16 +5589,16 @@
     "js": "Patch"
   },
   "git_patch_from_diff": {
-    "cpp": "FromDiff",
-    "js": "fromDiff"
+    "cpp": "PatchFromDiff",
+    "js": "patchFromDiff"
   },
   "git_patch_from_diff *": {
-    "cpp": "FromDiff",
-    "js": "fromDiff"
+    "cpp": "PatchFromDiff",
+    "js": "patchFromDiff"
   },
   "const git_patch_from_diff *": {
-    "cpp": "FromDiff",
-    "js": "fromDiff"
+    "cpp": "PatchFromDiff",
+    "js": "patchFromDiff"
   },
   "git_patch_from_blobs": {
     "cpp": "FromBlobs",
@@ -5637,28 +5637,28 @@
     "js": "free"
   },
   "git_patch_get_delta": {
-    "cpp": "GetDelta",
-    "js": "getDelta"
+    "cpp": "PatchGetDelta",
+    "js": "patchGetDelta"
   },
   "git_patch_get_delta *": {
-    "cpp": "GetDelta",
-    "js": "getDelta"
+    "cpp": "PatchGetDelta",
+    "js": "patchGetDelta"
   },
   "const git_patch_get_delta *": {
-    "cpp": "GetDelta",
-    "js": "getDelta"
+    "cpp": "PatchGetDelta",
+    "js": "patchGetDelta"
   },
   "git_patch_num_hunks": {
-    "cpp": "NumHunks",
-    "js": "numHunks"
+    "cpp": "PatchNumHunks",
+    "js": "patchNumHunks"
   },
   "git_patch_num_hunks *": {
-    "cpp": "NumHunks",
-    "js": "numHunks"
+    "cpp": "PatchNumHunks",
+    "js": "patchNumHunks"
   },
   "const git_patch_num_hunks *": {
-    "cpp": "NumHunks",
-    "js": "numHunks"
+    "cpp": "PatchNumHunks",
+    "js": "patchNumHunks"
   },
   "git_patch_line_stats": {
     "cpp": "LineStats",
@@ -5685,28 +5685,28 @@
     "js": "getHunk"
   },
   "git_patch_num_lines_in_hunk": {
-    "cpp": "NumLinesInHunk",
-    "js": "numLinesInHunk"
+    "cpp": "PatchNumLinesInHunk",
+    "js": "patchNumLinesInHunk"
   },
   "git_patch_num_lines_in_hunk *": {
-    "cpp": "NumLinesInHunk",
-    "js": "numLinesInHunk"
+    "cpp": "PatchNumLinesInHunk",
+    "js": "patchNumLinesInHunk"
   },
   "const git_patch_num_lines_in_hunk *": {
-    "cpp": "NumLinesInHunk",
-    "js": "numLinesInHunk"
+    "cpp": "PatchNumLinesInHunk",
+    "js": "patchNumLinesInHunk"
   },
   "git_patch_get_line_in_hunk": {
-    "cpp": "GetLineInHunk",
-    "js": "getLineInHunk"
+    "cpp": "PatchGetLineInHunk",
+    "js": "patchGetLineInHunk"
   },
   "git_patch_get_line_in_hunk *": {
-    "cpp": "GetLineInHunk",
-    "js": "getLineInHunk"
+    "cpp": "PatchGetLineInHunk",
+    "js": "patchGetLineInHunk"
   },
   "const git_patch_get_line_in_hunk *": {
-    "cpp": "GetLineInHunk",
-    "js": "getLineInHunk"
+    "cpp": "PatchGetLineInHunk",
+    "js": "patchGetLineInHunk"
   },
   "git_patch_size": {
     "cpp": "Size",
@@ -6201,12 +6201,12 @@
     "js": "Reflog"
   },
   "git_reference_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "ReferenceLookup",
+    "js": "referenceLookup"
   },
   "const git_reference_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "ReferenceLookup",
+    "js": "referenceLookup"
   },
   "git_reference_name_to_id *": {
     "cpp": "NameToId",
@@ -6245,12 +6245,12 @@
     "js": "create"
   },
   "git_reference_target *": {
-    "cpp": "Target",
-    "js": "target"
+    "cpp": "ReferenceTarget",
+    "js": "referenceTarget"
   },
   "const git_reference_target *": {
-    "cpp": "Target",
-    "js": "target"
+    "cpp": "ReferenceTarget",
+    "js": "referenceTarget"
   },
   "git_reference_target_peel": {
     "cpp": "TargetPeel",
@@ -6273,12 +6273,12 @@
     "js": "symbolicTarget"
   },
   "git_reference_type *": {
-    "cpp": "Type",
-    "js": "type"
+    "cpp": "ReferenceType",
+    "js": "referenceType"
   },
   "const git_reference_type *": {
-    "cpp": "Type",
-    "js": "type"
+    "cpp": "ReferenceType",
+    "js": "referenceType"
   },
   "git_reference_name *": {
     "cpp": "Name",
@@ -6601,12 +6601,12 @@
     "js": "Remote"
   },
   "git_remote_create *": {
-    "cpp": "Create",
-    "js": "create"
+    "cpp": "RemoteCreate",
+    "js": "remoteCreate"
   },
   "const git_remote_create *": {
-    "cpp": "Create",
-    "js": "create"
+    "cpp": "RemoteCreate",
+    "js": "remoteCreate"
   },
   "git_remote_create_with_fetchspec": {
     "cpp": "CreateWithFetchspec",
@@ -6629,12 +6629,12 @@
     "js": "createInmemory"
   },
   "git_remote_load *": {
-    "cpp": "Load",
-    "js": "load"
+    "cpp": "RemoteLoad",
+    "js": "remoteLoad"
   },
   "const git_remote_load *": {
-    "cpp": "Load",
-    "js": "load"
+    "cpp": "RemoteLoad",
+    "js": "remoteLoad"
   },
   "git_remote_save *": {
     "cpp": "Save",
@@ -6657,28 +6657,28 @@
     "js": "owner"
   },
   "git_remote_name *": {
-    "cpp": "Name",
-    "js": "name"
+    "cpp": "RemoteName",
+    "js": "remoteName"
   },
   "const git_remote_name *": {
-    "cpp": "Name",
-    "js": "name"
+    "cpp": "RemoteName",
+    "js": "remoteName"
   },
   "git_remote_url *": {
-    "cpp": "Url",
-    "js": "url"
+    "cpp": "RemoteUrl",
+    "js": "remoteUrl"
   },
   "const git_remote_url *": {
-    "cpp": "Url",
-    "js": "url"
+    "cpp": "RemoteUrl",
+    "js": "remoteUrl"
   },
   "git_remote_pushurl *": {
-    "cpp": "Pushurl",
-    "js": "pushurl"
+    "cpp": "RemotePushurl",
+    "js": "remotePushurl"
   },
   "const git_remote_pushurl *": {
-    "cpp": "Pushurl",
-    "js": "pushurl"
+    "cpp": "RemotePushurl",
+    "js": "remotePushurl"
   },
   "git_remote_set_url *": {
     "cpp": "SetUrl",
@@ -6897,12 +6897,12 @@
     "js": "supportedUrl"
   },
   "git_remote_list *": {
-    "cpp": "List",
-    "js": "list"
+    "cpp": "RemoteList",
+    "js": "remoteList"
   },
   "const git_remote_list *": {
-    "cpp": "List",
-    "js": "list"
+    "cpp": "RemoteList",
+    "js": "remoteList"
   },
   "git_remote_check_cert *": {
     "cpp": "CheckCert",
@@ -6953,12 +6953,12 @@
     "js": "setAutotag"
   },
   "git_remote_rename *": {
-    "cpp": "Rename",
-    "js": "rename"
+    "cpp": "RemoteRename",
+    "js": "remoteRename"
   },
   "const git_remote_rename *": {
-    "cpp": "Rename",
-    "js": "rename"
+    "cpp": "RemoteRename",
+    "js": "remoteRename"
   },
   "git_remote_update_fetchhead *": {
     "cpp": "UpdateFetchhead",
@@ -6997,12 +6997,12 @@
     "js": "Repository"
   },
   "git_repository_open *": {
-    "cpp": "Open",
-    "js": "open"
+    "cpp": "RepositoryOpen",
+    "js": "repositoryOpen"
   },
   "const git_repository_open *": {
-    "cpp": "Open",
-    "js": "open"
+    "cpp": "RepositoryOpen",
+    "js": "repositoryOpen"
   },
   "git_repository_wrap_odb *": {
     "cpp": "WrapOdb",
@@ -7049,20 +7049,20 @@
     "js": "free"
   },
   "git_repository_init *": {
-    "cpp": "Init",
-    "js": "init"
+    "cpp": "RepositoryInit",
+    "js": "repositoryInit"
   },
   "const git_repository_init *": {
-    "cpp": "Init",
-    "js": "init"
+    "cpp": "RepositoryInit",
+    "js": "repositoryInit"
   },
   "git_repository_init_ext *": {
-    "cpp": "InitExt",
-    "js": "initExt"
+    "cpp": "RepositoryInitExt",
+    "js": "repositoryInitExt"
   },
   "const git_repository_init_ext *": {
-    "cpp": "InitExt",
-    "js": "initExt"
+    "cpp": "RepositoryInitExt",
+    "js": "repositoryInitExt"
   },
   "git_repository_head *": {
     "cpp": "Head",
@@ -7157,12 +7157,12 @@
     "js": "refdb"
   },
   "git_repository_index *": {
-    "cpp": "Index",
-    "js": "index"
+    "cpp": "RepositoryIndex",
+    "js": "repositoryIndex"
   },
   "const git_repository_index *": {
-    "cpp": "Index",
-    "js": "index"
+    "cpp": "RepositoryIndex",
+    "js": "repositoryIndex"
   },
   "git_repository_message *": {
     "cpp": "Message",
@@ -7369,12 +7369,12 @@
     "js": "reset"
   },
   "git_revwalk_push *": {
-    "cpp": "Push",
-    "js": "push"
+    "cpp": "RevwalkPush",
+    "js": "revwalkPush"
   },
   "const git_revwalk_push *": {
-    "cpp": "Push",
-    "js": "push"
+    "cpp": "RevwalkPush",
+    "js": "revwalkPush"
   },
   "git_revwalk_push_glob *": {
     "cpp": "PushGlob",
@@ -7433,20 +7433,20 @@
     "js": "hideRef"
   },
   "git_revwalk_next *": {
-    "cpp": "Next",
-    "js": "next"
+    "cpp": "RevwalkNext",
+    "js": "revwalkNext"
   },
   "const git_revwalk_next *": {
-    "cpp": "Next",
-    "js": "next"
+    "cpp": "RevwalkNext",
+    "js": "revwalkNext"
   },
   "git_revwalk_sorting *": {
-    "cpp": "Sorting",
-    "js": "sorting"
+    "cpp": "RevwalkSorting",
+    "js": "revwalkSorting"
   },
   "const git_revwalk_sorting *": {
-    "cpp": "Sorting",
-    "js": "sorting"
+    "cpp": "RevwalkSorting",
+    "js": "revwalkSorting"
   },
   "git_revwalk_push_range *": {
     "cpp": "PushRange",
@@ -8677,12 +8677,12 @@
     "js": "SubtransportSsh"
   },
   "git_tree_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "TreeLookup",
+    "js": "treeLookup"
   },
   "const git_tree_lookup *": {
-    "cpp": "Lookup",
-    "js": "lookup"
+    "cpp": "TreeLookup",
+    "js": "treeLookup"
   },
   "git_tree_lookup_prefix *": {
     "cpp": "LookupPrefix",
@@ -8717,28 +8717,28 @@
     "js": "owner"
   },
   "git_tree_entrycount *": {
-    "cpp": "Entrycount",
-    "js": "entrycount"
+    "cpp": "TreeEntrycount",
+    "js": "treeEntrycount"
   },
   "const git_tree_entrycount *": {
-    "cpp": "Entrycount",
-    "js": "entrycount"
+    "cpp": "TreeEntrycount",
+    "js": "treeEntrycount"
   },
   "git_tree_entry_byname *": {
-    "cpp": "EntryByname",
-    "js": "entryByname"
+    "cpp": "TreeEntryByname",
+    "js": "treeEntryByname"
   },
   "const git_tree_entry_byname *": {
-    "cpp": "EntryByname",
-    "js": "entryByname"
+    "cpp": "TreeEntryByname",
+    "js": "treeEntryByname"
   },
   "git_tree_entry_byindex *": {
-    "cpp": "EntryByindex",
-    "js": "entryByindex"
+    "cpp": "TreeEntryByindex",
+    "js": "treeEntryByindex"
   },
   "const git_tree_entry_byindex *": {
-    "cpp": "EntryByindex",
-    "js": "entryByindex"
+    "cpp": "TreeEntryByindex",
+    "js": "treeEntryByindex"
   },
   "git_tree_entry_byoid *": {
     "cpp": "EntryByoid",
@@ -8749,12 +8749,12 @@
     "js": "entryByoid"
   },
   "git_tree_entry_bypath *": {
-    "cpp": "EntryBypath",
-    "js": "entryBypath"
+    "cpp": "TreeEntryBypath",
+    "js": "treeEntryBypath"
   },
   "const git_tree_entry_bypath *": {
-    "cpp": "EntryBypath",
-    "js": "entryBypath"
+    "cpp": "TreeEntryBypath",
+    "js": "treeEntryBypath"
   },
   "git_tree_entry_dup *": {
     "cpp": "EntryDup",
@@ -8873,20 +8873,20 @@
     "js": "uilderGet"
   },
   "git_treebuilder_insert *": {
-    "cpp": "Insert",
-    "js": "insert"
+    "cpp": "TreebuilderInsert",
+    "js": "treebuilderInsert"
   },
   "const git_treebuilder_insert *": {
-    "cpp": "Insert",
-    "js": "insert"
+    "cpp": "TreebuilderInsert",
+    "js": "treebuilderInsert"
   },
   "git_treebuilder_remove *": {
-    "cpp": "Remove",
-    "js": "remove"
+    "cpp": "TreebuilderRemove",
+    "js": "treebuilderRemove"
   },
   "const git_treebuilder_remove *": {
-    "cpp": "Remove",
-    "js": "remove"
+    "cpp": "TreebuilderRemove",
+    "js": "treebuilderRemove"
   },
   "git_treebuilder_filter *": {
     "cpp": "UilderFilter",
@@ -8897,12 +8897,12 @@
     "js": "uilderFilter"
   },
   "git_treebuilder_write *": {
-    "cpp": "Write",
-    "js": "write"
+    "cpp": "TreebuilderWrite",
+    "js": "treebuilderWrite"
   },
   "const git_treebuilder_write *": {
-    "cpp": "Write",
-    "js": "write"
+    "cpp": "TreebuilderWrite",
+    "js": "treebuilderWrite"
   },
   "git_tree_walk *": {
     "cpp": "Walk",
@@ -9111,5 +9111,89 @@
   "const git_remote_callbacks *": {
     "cpp": "GitRemoteCallbacks",
     "js": "RemoteCallbacks"
+  },
+  "git_checkout_init_options": {
+    "cpp": "CheckoutInitOptions",
+    "js": "checkoutInitOptions"
+  },
+  "git_checkout_init_options *": {
+    "cpp": "CheckoutInitOptions",
+    "js": "checkoutInitOptions"
+  },
+  "const git_checkout_init_options *": {
+    "cpp": "CheckoutInitOptions",
+    "js": "checkoutInitOptions"
+  },
+  "git_checkout_options": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "git_checkout_options **": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "git_checkout_options *": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "const git_checkout_options **": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "const git_checkout_options *": {
+    "cpp": "GitCheckoutOptions",
+    "js": "CheckoutOptions"
+  },
+  "git_remote_delete": {
+    "cpp": "RemoteDelete",
+    "js": "remoteDelete"
+  },
+  "git_remote_delete *": {
+    "cpp": "RemoteDelete",
+    "js": "remoteDelete"
+  },
+  "const git_remote_delete *": {
+    "cpp": "RemoteDelete",
+    "js": "remoteDelete"
+  },
+  "git_repository_init_init_options": {
+    "cpp": "RepositoryInitInitOptions",
+    "js": "repositoryInitInitOptions"
+  },
+  "git_repository_init_init_options *": {
+    "cpp": "RepositoryInitInitOptions",
+    "js": "repositoryInitInitOptions"
+  },
+  "const git_repository_init_init_options *": {
+    "cpp": "RepositoryInitInitOptions",
+    "js": "repositoryInitInitOptions"
+  },
+  "git_repository_init_options": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "git_repository_init_options **": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "const git_repository_init_options **": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "const git_repository_init_options *": {
+    "cpp": "GitRepositoryInitOptions",
+    "js": "RepositoryInitOptions"
+  },
+  "git_strarray": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
+  },
+  "git_strarray **": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
+  },
+  "const git_strarray **": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   }
 }
