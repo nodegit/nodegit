@@ -123,9 +123,12 @@
 
   "clone": {
     "cType": null,
+    "trim": false,
 
     "dependencies": [
       "../include/clone_options.h",
+      "../include/checkout_options.h",
+      "../include/signature.h",
       "../include/checkout_opts.h",
       "../include/repository.h",
       "../include/remote.h"
