@@ -30,7 +30,7 @@ describe("Remote", function() {
   });
 
   it("can read the remote url", function() {
-    assert.equal(this.remote.url(), "https://github.com/nodegit/nodegit");
+    assert.equal(this.remote.url(), "https://github.com/nodegit/nodegit.git");
   });
 
   it("can read the remote name", function() {
