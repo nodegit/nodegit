@@ -1,4 +1,4 @@
-// This is a generated file, modify: generate/templates/class.cc.ejs.
+// This is a generated file, modify: generate/templates/class.cc.
 #include <nan.h>
 #include <string.h>
 
@@ -93,14 +93,11 @@ void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
 
 {%each functions as function%}
   {%if not function.ignore%}
-    {%each function.args as arg%}
-    {%endeach%}
-  {%endif%}
-
-  {%if function.isAsync%}
-    {%partial asyncFunction .%}
-  {%else%}
-    {%partial syncFunction .%}
+    {%if function.isAsync%}
+      {%partial asyncFunction .%}
+    {%else%}
+      {%partial syncFunction .%}
+    {%endif%}
   {%endif%}
 {%endeach%}
 

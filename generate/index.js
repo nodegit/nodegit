@@ -20,7 +20,7 @@ var partials = {
 };
 
 var templates = {
-//  class: file.read("templates/class.cc"),
+  class: file.read("templates/class.cc"),
   header: file.read("templates/header.h"),
   binding: file.read("templates/binding.gyp"),
   nodegit: file.read("templates/nodegit.cc")
@@ -29,7 +29,13 @@ var templates = {
 var filters = {
   upper: require("./filters/upper"),
   replace: require("./filters/replace"),
-  or: require("./filters/or")
+  or: require("./filters/or"),
+  returns: require("./filters/returns"),
+  argsInfo: require("./filters/args_info"),
+  jsArgsCount: require("./filters/js_args_count"),
+  isV8Value: require("./filters/is_v8_value"),
+  hasReturnType: require("./filters/has_return_type"),
+  convertReturns: require("./filters/convert_returns")
 };
 
 // Convert Buffers to Combyne templates.
@@ -43,9 +49,9 @@ Object.keys(templates).forEach(function(template) {
 });
 
 // Attach all partials to select templates.
-//Object.keys(partials).forEach(function(partial) {
-//  templates.class.registerPartial(partial, combyne(partials[partial]));
-//});
+Object.keys(partials).forEach(function(partial) {
+ templates.class.registerPartial(partial, combyne(partials[partial]));
+});
 
 
 // Determine which definitions to actually include in the source code.
@@ -63,6 +69,6 @@ file.write("../src/nodegit.cc", templates.nodegit.render(enabled));
 
 // Write out all the classes.
 enabled.forEach(function(idef) {
-  //file.write("../src/" + idef.name + ".cc", templates.class.render(idef));
+  file.write("../src/" + idef.name + ".cc", templates.class.render(idef));
   file.write("../include/" + idef.name + ".h", templates.header.render(idef));
 });
