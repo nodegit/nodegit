@@ -21,5 +21,6 @@
     "beforeEach": true,
     "after": true,
     "afterEach": true
-  }
+  },
+  "predef": ["-Promise"]
 }
