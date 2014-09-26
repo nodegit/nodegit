@@ -1,18 +1,18 @@
 /**
 {%partial doc .%}
   */
-NAN_METHOD({{ cppClassName }}::{{ functionInfo.cppFunctionName }}) {
+NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();
-  {%partial guard_arguments .%}
+  {%partial guardArguments .%}
 
-  if (args.Length() == {{functionInfo.args|jsArgsCount}} || !args[{{functionInfo.args|jsArgsCount}}]->IsFunction()) {
+  if (args.Length() == {{args|jsArgsCount}} || !args[{{args|jsArgsCount}}]->IsFunction()) {
     return NanThrowError("Callback is required and must be a Function.");
   }
 
-  {{ functionInfo.cppFunctionName }}Baton* baton = new {{ functionInfo.cppFunctionName }}Baton;
+  {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  {%each functionInfo.args|argsInfo as arg %}
+  {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
@@ -27,9 +27,9 @@ NAN_METHOD({{ cppClassName }}::{{ functionInfo.cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[{{functionInfo.args|jsArgsCount}}]));
-  {{ functionInfo.cppFunctionName }}Worker *worker = new {{ functionInfo.cppFunctionName }}Worker(baton, callback);
-  {%each functionInfo.args|argsInfo as arg %}
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[{{args|jsArgsCount}}]));
+  {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback);
+  {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   worker->SaveToPersistent("{{ arg.name }}", args.This());
@@ -46,33 +46,33 @@ NAN_METHOD({{ cppClassName }}::{{ functionInfo.cppFunctionName }}) {
   NanReturnUndefined();
 }
 
-void {{ cppClassName }}::{{ functionInfo.cppFunctionName }}Worker::Execute() {
+void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   {%if functionInfo|hasReturnType %}
-  {{ functionInfo.return.cType }} result =
+  {{ return.cType }} result =
   {%endif%}
-  {{ functionInfo.cFunctionName }}(
+  {{ cFunctionName }}(
     {%-- Insert Function Arguments --%}
-    {%each functionInfo.args|argsInfo as arg %}
+    {%each args|argsInfo as arg %}
       {%-- turn the pointer into a ref %}
     {%if arg.isReturn|and arg.cType|isPointer %}&{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
     {%endeach%}
     );
 
-  {%if functionInfo.return.isErrorCode %}
+  {%if return.isErrorCode %}
   baton->error_code = result;
 
   if (result != GIT_OK && giterr_last() != NULL) {
     baton->error = git_error_dup(giterr_last());
   }
 
-  {%elsif not functionInfo.return.cType == 'void' %}
+  {%elsif not return.cType == 'void' %}
 
   baton->result = result;
 
   {%endif%}
 }
 
-void {{ cppClassName }}::{{ functionInfo.cppFunctionName }}Worker::HandleOKCallback() {
+void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
     {%if not returns.length %}
@@ -109,7 +109,7 @@ void {{ cppClassName }}::{{ functionInfo.cppFunctionName }}Worker::HandleOKCallb
       callback->Call(0, NULL);
     }
 
-    {%each functionInfo.args as arg %}
+    {%each args as arg %}
       {%if arg.shouldAlloc %}
     free(baton->{{ arg.name }});
       {%endif%}
@@ -120,7 +120,7 @@ void {{ cppClassName }}::{{ functionInfo.cppFunctionName }}Worker::HandleOKCallb
     node::FatalException(try_catch);
   }
 
-  {%each functionInfo.args as arg %}
+  {%each args as arg %}
     {%if arg.cppClassName == 'String' | or arg.cppClassName == 'Array' %}
       {%if arg.freeFunctionName %}
   {{ arg.freeFunctionName }}(baton->{{ arg.name }});

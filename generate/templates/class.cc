@@ -94,9 +94,9 @@ void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
 {%each functions as function%}
   {%if not function.ignore%}
     {%if function.isAsync%}
-      {%partial asyncFunction .%}
+      {%partial asyncFunction function%}
     {%else%}
-      {%partial syncFunction .%}
+      {%partial syncFunction function%}
     {%endif%}
   {%endif%}
 {%endeach%}
