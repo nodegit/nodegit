@@ -17,13 +17,13 @@ NAN_METHOD({{ cppClassName }}::{{ functionInfo.cppFunctionName }}) {
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
       {%elsif arg.name $}
-  {%partial convert_from_v8 .%}
+  {%partial convertFromV8 .%}
         {%if not arg.isPayload %}
   baton->{{ arg.name }} = from_{{ arg.name }};
         {%endif}
       {%endif%}
     {%elsif arg.shouldAlloc %}
-  baton->{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '') }}));
+  baton->{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
     {%endif%}
   {%endeach%}
 
