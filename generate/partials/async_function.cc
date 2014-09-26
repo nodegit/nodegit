@@ -17,7 +17,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
       {%elsif arg.name $}
-  {%partial convertFromV8 .%}
+  {%partial convertFromV8 arg%}
         {%if not arg.isPayload %}
   baton->{{ arg.name }} = from_{{ arg.name }};
         {%endif}
@@ -54,7 +54,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
     {%-- Insert Function Arguments --%}
     {%each args|argsInfo as arg %}
       {%-- turn the pointer into a ref %}
-    {%if arg.isReturn|and arg.cType|isPointer %}&{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
+    {%if arg.isReturn|and arg.cType|isDoublePointer %}&{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
     {%endeach%}
     );
 
@@ -78,7 +78,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     {%if not returns.length %}
   Handle<Value> result = NanUndefined();
     {%else%}
-      {%each returns|converReturns as _return %}
+      {%each returns|convertReturns as _return %}
         {%if returns.length == 1 %}
   Handle<Value> to;
   {%partial convertToV8 _return %}

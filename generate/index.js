@@ -35,8 +35,11 @@ var filters = {
   argsInfo: require("./filters/args_info"),
   jsArgsCount: require("./filters/js_args_count"),
   isV8Value: require("./filters/is_v8_value"),
+  isPointer: require("./filters/is_pointer"),
+  isDoublePointer: require("./filters/is_double_pointer"),
   hasReturnType: require("./filters/has_return_type"),
-  convertReturns: require("./filters/convert_returns")
+  convertReturns: require("./filters/convert_returns"),
+  fieldsInfo: require("./filters/fields_info")
 };
 
 // Convert Buffers to Combyne templates.

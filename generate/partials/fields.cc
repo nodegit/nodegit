@@ -1,16 +1,15 @@
-{%each fields as field%}
-  {%if not field.ignore%}
+{%each fields|fieldsInfo as field %}
+  {%if not field.ignore %}
 
 NAN_METHOD({{ cppClassName }}::{{ field.cppFunctionName }}) {
   NanScope();
-  <% var to = fieldInfo; -%>
   Handle<Value> to;
 
-  <%- fieldInfo.cType %> <% if (!isV8Value(fieldInfo.cppClassName)) { %>*<% } %><%- fieldInfo.name %> =
-    <% if (!isV8Value(fieldInfo.cppClassName)) { %>&<% } %>ObjectWrap::Unwrap<<%- cppClassName %>>(args.This())->GetValue()-><%- fieldInfo.name %>;
+  {{ field.cType }} {%if field.cppClassName|isV8Value %}*{%endif%}{{ field.name }} =
+    {%if not field.cppClassName|isV8Value %}&{%endif%}ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue()->{{ field.name }};
 
-  <% include convertToV8.cc.ejs -%>
+  {%partial convertToV8 field %}
   NanReturnValue(to);
 }
-<% } -%>
-<% } -%>
+  {%endif%}
+{%endeach%}
