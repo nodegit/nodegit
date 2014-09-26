@@ -111,7 +111,7 @@ void {{ cppClassName }}::{{ functionInfo.cppFunctionName }}Worker::HandleOKCallb
 
     {%each functionInfo.args as arg %}
       {%if arg.shouldAlloc %}
-    free(baton-><%= arg.name %>);
+    free(baton->{{ arg.name }});
       {%endif%}
     {%endeach%}
   }
@@ -129,6 +129,6 @@ void {{ cppClassName }}::{{ functionInfo.cppFunctionName }}Worker::HandleOKCallb
       {%endif%}
     {%endif%}
   {%endeach%}
-  
+
   delete baton;
 }
