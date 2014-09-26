@@ -30,6 +30,7 @@ var filters = {
   upper: require("./filters/upper"),
   replace: require("./filters/replace"),
   or: require("./filters/or"),
+  and: require("./filters/and"),
   returns: require("./filters/returns"),
   argsInfo: require("./filters/args_info"),
   jsArgsCount: require("./filters/js_args_count"),
