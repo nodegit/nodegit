@@ -76,20 +76,21 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
     {%if not returns.length %}
-  Handle<Value> result = NanUndefined();
+    Handle<Value> result = NanUndefined();
     {%else%}
+    Handle<Value> to;
+      {%if returns.length > 1 %}
+    Handle<Object> result = NanNew<Object>();
+      {%endif%}
       {%each returns|convertReturns as _return %}
-        {%if returns.length == 1 %}
-  Handle<Value> to;
-  {%partial convertToV8 _return %}
-  Handle<Value> result = to;
-        {%else%}
-  Handle<Object> result = NanNew<Object>();
-  Handle<Value> to;
-  {%partial convertToV8 _return %}
-  result->Set(NanNew<String>("{{ _return.jsName | or _return.name }}"), to);
+    {%partial convertToV8 _return %}
+        {%if returns.length > 1 %}
+    result->Set(NanNew<String>("{{ _return.jsName | or _return.name }}"), to);
         {%endif%}
       {%endeach%}
+      {%if returns.length == 1 %}
+    Handle<Value> result = to;
+      {%endif%}
     {%endif%}
     Handle<Value> argv[2] = {
       NanNull(),
