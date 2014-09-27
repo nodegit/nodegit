@@ -37,6 +37,7 @@ var filters = {
   isV8Value: require("./filters/is_v8_value"),
   isPointer: require("./filters/is_pointer"),
   isDoublePointer: require("./filters/is_double_pointer"),
+  unPointer: require("./filters/un_pointer"),
   hasReturnType: require("./filters/has_return_type"),
   convertReturns: require("./filters/convert_returns"),
   fieldsInfo: require("./filters/fields_info")

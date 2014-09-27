@@ -21,9 +21,10 @@ module.exports = function(args) {
     else {
       arg.lastArg = false;
     }
-    
+
     arg.cArg = cArg;
     arg.v8ValueClassName = cppToV8(arg.cppClassName);
+    arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
 
     result.push(arg);
   }
