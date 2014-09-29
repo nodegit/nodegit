@@ -5,31 +5,31 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();
   {%partial guardArguments .%}
 
-  if (args.Length() == {{args|jsArgsCount}} || !args[{{args|jsArgsCount}}]->IsFunction()) {
+  if (args.Length() == {{ jsArgsCount }} || !args[{{ jsArgsCount }}]->IsFunction()) {
     return NanThrowError("Callback is required and must be a Function.");
   }
 
   {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  {%each args|argsInfo as arg %}
+  {%each argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
-      {%elsif arg.name $}
+      {%elsif arg.name %}
   {%partial convertFromV8 arg%}
         {%if not arg.isPayload %}
   baton->{{ arg.name }} = from_{{ arg.name }};
-        {%endif}
+        {%endif%}
       {%endif%}
     {%elsif arg.shouldAlloc %}
   baton->{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
     {%endif%}
   {%endeach%}
 
-  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[{{args|jsArgsCount}}]));
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[{{ jsArgsCount }}]));
   {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback);
-  {%each args|argsInfo as arg %}
+  {%each argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   worker->SaveToPersistent("{{ arg.name }}", args.This());
@@ -52,9 +52,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   {%endif%}
   {{ cFunctionName }}(
     {%-- Insert Function Arguments --%}
-    {%each args|argsInfo as arg %}
+    {%each argsInfo as arg %}
       {%-- turn the pointer into a ref --%}
-    {%if arg.isReturn|and arg.cType|isDoublePointer %}&{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
+    {%if arg.isReturn %}{%if arg.cType|isDoublePointer %}&{%endif%}{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
     {%endeach%}
     );
 
@@ -82,7 +82,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%if returns.length > 1 %}
     Handle<Object> result = NanNew<Object>();
       {%endif%}
-      {%each returns|convertReturns as _return %}
+      {%each returns as _return %}
         {%partial convertToV8 _return %}
         {%if returns.length > 1 %}
     result->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
@@ -121,7 +121,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     node::FatalException(try_catch);
   }
 
-  {%each args|argsInfo as arg %}
+  {%each argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}
       {%if arg.freeFunctionName %}
   {{ arg.freeFunctionName }}(baton->{{ arg.name }});

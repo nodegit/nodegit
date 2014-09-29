@@ -5,7 +5,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();
   {%partial guardArguments .%}
 
-  {%each arg|argsInfo as arg %}
+  {%each argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.shouldAlloc %}
   {{ arg.cType }}{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|unPointer }}));
@@ -15,13 +15,13 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  {%each args|argsInfo as arg %}
+  {%each argsInfo as arg %}
     {%partial convertFromV8 arg %}
   {%endeach%}
 
 {%if hasReturns %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
-  {%each args|argsInfo as arg %}
+  {%each argsInfo as arg %}
     {%if arg.isReturn %}
       {%if not arg.shouldAlloc %}
     &
@@ -38,7 +38,7 @@ from_{{ arg.name }}
   {%endeach%}
   );
 
-{%each args|argsInfo as arg %}
+{%each argsInfo as arg %}
   {%if arg.isCppClassStringOrArray %}
     {%if arg.freeFunctionName %}
   {{ arg.freeFunctionName }}(from_{{ arg.name }});
@@ -50,7 +50,7 @@ from_{{ arg.name }}
 
 {%if return.isErrorCode %}
   if (result != GIT_OK) {
-  {%each args|argsInfo as arg %}
+  {%each argsInfo as arg %}
       {%if arg.shouldAlloc %}
     free(<%= arg.name %>);
     {%endif%}
@@ -71,7 +71,7 @@ from_{{ arg.name }}
   {%if returns.length > 1 %}
   Handle<Object> toReturn = NanNew<Object>();
   {%endif%}
-  {%each returns|convertReturns as _return %}
+  {%each returns as _return %}
     {%partial convertToV8 _return %}
     {%if returns.length > 1 %}
   toReturn->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);

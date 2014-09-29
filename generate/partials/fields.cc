@@ -1,4 +1,4 @@
-{%each fields|fieldsInfo as field %}
+{%each fieldInfos as field %}
   {%if not field.ignore %}
 
 NAN_METHOD({{ cppClassName }}::{{ field.cppFunctionName }}) {
