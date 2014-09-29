@@ -35,9 +35,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   worker->SaveToPersistent("{{ arg.name }}", args.This());
       {%else%}
   if (!args[{{ arg.jsArg }}]->IsUndefined() && !args[{{ arg.jsArg }}]->IsNull())
-  {
     worker->SaveToPersistent("{{ arg.name }}", args[{{ arg.jsArg }}]->ToObject());
-  }
       {%endif%}
     {%endif%}
   {%endeach%}
@@ -47,14 +45,14 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
-  {%if functionInfo|hasReturnType %}
+  {%if hasReturnType %}
   {{ return.cType }} result =
   {%endif%}
   {{ cFunctionName }}(
     {%-- Insert Function Arguments --%}
     {%each argsInfo as arg %}
       {%-- turn the pointer into a ref --%}
-    {%if arg.isReturn %}{%if arg.cType|isDoublePointer %}&{%endif%}{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
+    {%if arg.isReturn %}{%if arg.isDoublePointer %}&{%endif%}{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
     {%endeach%}
     );
 

@@ -10,5 +10,5 @@ var v8 = [
 ];
 
 module.exports = function(cppClassName) {
-  return v8.indexOf(cppClassName) > -1;
+  return v8.indexOf(cppClassName) > -1 ? true : false;
 };

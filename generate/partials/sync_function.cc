@@ -6,11 +6,11 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%partial guardArguments .%}
 
   {%each argsInfo as arg %}
-    {%if not arg.isReturn %}
+    {%if arg.isReturn %}
       {%if arg.shouldAlloc %}
   {{ arg.cType }}{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|unPointer }}));
       {%else%}
-  {{ arg.cType|unPointer}} {{ arg.name }} = {{ arg.cType|unPointer|defaultValue }};
+  {{ arg.cType|unPointer }} {{ arg.name }} = {{ arg.cType|unPointer|defaultValue }};
       {%endif%}
     {%endif%}
   {%endeach%}
@@ -81,5 +81,5 @@ from_{{ arg.name }}
   NanReturnValue(to);
   {%else%}
   NanReturnValue(toReturn);
-{%endif%}}
+{%endif%}
 }
