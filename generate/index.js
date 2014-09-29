@@ -63,6 +63,16 @@ Object.keys(partials).forEach(function(partial) {
 var enabled = idefs.filter(function(idef) {
   // Additionally provide a friendly name to the actual filename.
   idef.name = path.basename(idef.filename, ".h");
+
+  // Helper functions to allow partials to have access to custom data
+  idef.attachCommonData = function(partialData) {
+    var result;
+
+    result.__proto__ = partialData;
+    result.cppClassName = idef.cppClassName;
+    
+    return result;
+  }
   return !idef.ignore;
 });
 
