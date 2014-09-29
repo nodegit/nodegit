@@ -5,13 +5,10 @@
     {%endif%}
   {%endif%}
 {%endeach%}
-
-{%--
-{%each .|returns as returnInfo %}
+{%each returns|convertReturns as returnInfo %}
   {%if isAsync %}
   * @param {{ returnInfo.jsClassName }} callback
   {%else%}
   * @return {{ returnInfo.jsClassName }} {%if returnInfo.name %}{{ returnInfo.name }}{%else%}result{%endif%}
   {%endif%}
 {%endeach%}
---%}

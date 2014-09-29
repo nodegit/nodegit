@@ -91,12 +91,12 @@ void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
 }
 {%endif%}
 
-{%each functions as function%}
+{%each functions as function %}
   {%if not function.ignore%}
     {%if function.isAsync%}
-      {%partial asyncFunction attachCommonData function %}
+      {%partial asyncFunction function %}
     {%else%}
-      {%partial syncFunction attachCommonData function %}
+      {%partial syncFunction function %}
     {%endif%}
   {%endif%}
 {%endeach%}

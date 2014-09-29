@@ -53,7 +53,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   {{ cFunctionName }}(
     {%-- Insert Function Arguments --%}
     {%each args|argsInfo as arg %}
-      {%-- turn the pointer into a ref %}
+      {%-- turn the pointer into a ref --%}
     {%if arg.isReturn|and arg.cType|isDoublePointer %}&{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
     {%endeach%}
     );
@@ -85,7 +85,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%each returns|convertReturns as _return %}
         {%partial convertToV8 _return %}
         {%if returns.length > 1 %}
-    result->Set(NanNew<String>("{{ _return.jsName | or _return.name }}"), to);
+    result->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
         {%endif%}
       {%endeach%}
       {%if returns.length == 1 %}
@@ -121,8 +121,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     node::FatalException(try_catch);
   }
 
-  {%each args as arg %}
-    {%if arg.cppClassName == 'String' | or arg.cppClassName == 'Array' %}
+  {%each args|argsInfo as arg %}
+    {%if arg.isCppClassStringOrArray %}
       {%if arg.freeFunctionName %}
   {{ arg.freeFunctionName }}(baton->{{ arg.name }});
       {%else%}

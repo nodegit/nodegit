@@ -64,16 +64,14 @@ var enabled = idefs.filter(function(idef) {
   // Additionally provide a friendly name to the actual filename.
   idef.name = path.basename(idef.filename, ".h");
 
-  // Helper functions to allow partials to have access to custom data
-  idef.attachCommonData = function(partialData) {
-    var result;
+  // We need some custom data on each of the functions
+  idef.functions.forEach(function(fn) {
+    fn.cppClassName = idef.cppClassName;
+    fn.returns = idef.returns || [];
+    fn.return = idef.return || {};
+    fn.hasReturns = fn.returns.length || fn.return.isErrorCode;
+  });
 
-    result.__proto__ = partialData;
-    result.cppClassName = idef.cppClassName;
-    result.returns = idef.returns || [];
-
-    return result;
-  }
   return !idef.ignore;
 });
 
