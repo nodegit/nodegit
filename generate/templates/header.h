@@ -1,5 +1,5 @@
-#ifndef {{ cppClassName.toUpperCase() }}_H
-#define {{ cppClassName.toUpperCase() }}_H
+#ifndef {{ cppClassName|upper }}_H
+#define {{ cppClassName|upper }}_H
 
 #include <nan.h>
 #include <string>
@@ -82,7 +82,7 @@ class {{ cppClassName }} : public ObjectWrap {
         {{ function.cppFunctionName }}Baton *baton;
     };
         {%endif%}
-    
+
     static NAN_METHOD({{ function.cppFunctionName }});
       {%endif%}
     {%endeach%}
