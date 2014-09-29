@@ -70,7 +70,8 @@ var enabled = idefs.filter(function(idef) {
 
     result.__proto__ = partialData;
     result.cppClassName = idef.cppClassName;
-    
+    result.returns = idef.returns || [];
+
     return result;
   }
   return !idef.ignore;

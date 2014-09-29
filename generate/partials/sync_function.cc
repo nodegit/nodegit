@@ -19,6 +19,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%partial convertFromV8 arg %}
   {%endeach%}
 
+{%if not returns %}
+  NanReturnUndefined();
+{%else%}
   {%if returns.length | or return.isErrorCode %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
     {%each args|argsInfo as arg %}
@@ -64,22 +67,23 @@ from_{{ arg.name }}
   }
   {%endif%}
 
-{%if not returns.length %}
+  {%if not returns.length %}
   NanReturnUndefined();
-{%else%}
-  Handle<Value> to;
-  {%if returns.length > 1 %}
-  Handle<Object> toReturn = NanNew<Object>();
-  {%endif%}
-  {%each returns|convertReturns as _return %}
-    {%partial convertToV8 _return %}
-    {%if returns.length > 1 %}
-  toReturn->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
-    {%endif%}
-  {%endeach%}
-  {%if returns.length == 1 %}
-  NanReturnValue(to);
   {%else%}
+  Handle<Value> to;
+    {%if returns.length > 1 %}
+  Handle<Object> toReturn = NanNew<Object>();
+    {%endif%}
+    {%each returns|convertReturns as _return %}
+      {%partial convertToV8 _return %}
+      {%if returns.length > 1 %}
+  toReturn->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
+      {%endif%}
+    {%endeach%}
+    {%if returns.length == 1 %}
+  NanReturnValue(to);
+    {%else%}
   NanReturnValue(toReturn);
-{%endif%}}
+  {%endif%}}
+{%endif%}
 }
