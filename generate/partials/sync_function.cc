@@ -81,5 +81,6 @@ from_{{ arg.name }}
   NanReturnValue(to);
   {%else%}
   NanReturnValue(toReturn);
+  {%endif%}
 {%endif%}
 }

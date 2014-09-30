@@ -103,6 +103,6 @@ void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
 
 {%partial fields .%}
 
-{%if cType%}
+{%if not cTypeIsUndefined %}
 Persistent<Function> {{ cppClassName }}::constructor_template;
 {%endif%}

@@ -33,7 +33,6 @@ var filters = {
   or: require("./filters/or"),
   and: require("./filters/and"),
   isV8Value: require("./filters/is_v8_value"),
-  isPointer: require("./filters/is_pointer"),
   unPointer: require("./filters/un_pointer"),
   defaultValue: require("./filters/default_value")
 };
@@ -58,7 +57,8 @@ Object.keys(partials).forEach(function(partial) {
 var enabled = idefs.filter(function(idef) {
   // Additionally provide a friendly name to the actual filename.
   idef.name = path.basename(idef.filename, ".h");
-
+  idef.cTypeIsUndefined = typeof idef.cType == 'undefined';
+  
   // We need some custom data on each of the functions
   idef.functions.forEach(function(fn) {
     fn.cppClassName = idef.cppClassName;
@@ -102,6 +102,7 @@ var enabled = idefs.filter(function(idef) {
       arg.cArg = cArg;
       arg.v8ValueClassName = cppToV8(arg.cppClassName);
       arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
+      arg.isPointer = /\s*\*\s*/.test(arg.cType);
       arg.isDoublePointer = /\s*\*\*\s*/.test(arg.cType);
       arg.isV8Value = ~v8Values.indexOf(arg.cppClassName);
 
@@ -113,7 +114,7 @@ var enabled = idefs.filter(function(idef) {
     fn.returns = [];
 
     // generate returns data
-    fn.args.forEach(function(arg) {
+    fn.argsInfo.forEach(function(arg) {
       if (!arg.isReturn) return;
 
       var _return = {};
@@ -134,6 +135,21 @@ var enabled = idefs.filter(function(idef) {
     if (!fn.returns.length
         && !fn.return.isErrorCode
         && fn.return.cType != "void") {
+      var _return = {};
+
+      _return = fn.return;
+
+      _return.v8ValueClassName = cppToV8(_return.cppClassName);
+      _return.isCppClassStringOrArray = ~["String", "Array"].indexOf(_return.cppClassName);
+      _return.isPointer = /\s*\*\s*/.test(_return.cType);
+      _return.isDoublePointer = /\s*\*\*\s*/.test(_return.cType);
+      _return.isV8Value = ~v8Values.indexOf(_return.cppClassName);
+      _return.parsedName = 'result';
+      _return.jsOrCppClassName = _return.jsClassName || _return.cppClassName;
+      _return.isCppClassIntType = ~["Uint32", "Int32"].indexOf(_return.cppClassName);
+      _return.parsedClassName = (_return.cppClassName || '').toLowerCase() + "_t";
+      _return.jsNameOrName = _return.jsName | _return.name;
+
       fn.returns.push(fn.return);
     }
 
@@ -155,6 +171,7 @@ var enabled = idefs.filter(function(idef) {
       fieldInfo.parsedName = field.name || "result";
       fieldInfo.isCppClassIntType = ~["Uin32", "Int32"].indexOf(field.cppClassName);
       fieldInfo.parsedClassName = (field.cppClassName || '').toLowerCase() + "_t";
+      fieldInfo.isV8Value = ~v8Values.indexOf(field.cppClassName);
 
       fn.fieldInfos.push(fieldInfo);
     });
