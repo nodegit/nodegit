@@ -16,7 +16,11 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%endeach%}
 
   {%each argsInfo as arg %}
-    {%partial convertFromV8 arg %}
+    {%if not arg.isSelf %}
+      {%if not arg.isReturn %}
+        {%partial convertFromV8 arg %}
+      {%endif%}
+    {%endif%}
   {%endeach%}
 
 {%if hasReturns %}
