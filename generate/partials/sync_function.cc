@@ -56,7 +56,7 @@ from_{{ arg.name }}
   if (result != GIT_OK) {
   {%each argsInfo as arg %}
       {%if arg.shouldAlloc %}
-    free(<%= arg.name %>);
+    free({{ arg.name }});
     {%endif%}
   {%endeach%}
 

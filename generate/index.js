@@ -58,7 +58,7 @@ var enabled = idefs.filter(function(idef) {
   // Additionally provide a friendly name to the actual filename.
   idef.name = path.basename(idef.filename, ".h");
   idef.cTypeIsUndefined = typeof idef.cType == 'undefined';
-  
+
   // We need some custom data on each of the functions
   idef.functions.forEach(function(fn) {
     fn.cppClassName = idef.cppClassName;
@@ -154,7 +154,7 @@ var enabled = idefs.filter(function(idef) {
     }
 
     if (fn.returns.length === 1) {
-      fn.returns[0].parsedName = "baton->" + fn.returns[0].name;
+      fn.returns[0].parsedName = fn.returns[0].name ? "baton->" + fn.returns[0].name : "result";
     }
 
     fn.hasReturns = fn.returns.length || fn.return.isErrorCode;
