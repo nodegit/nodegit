@@ -13,7 +13,7 @@ module.exports = function(args) {
       jsArg++;
     }
 
-    if (cArg >= args.length -1) {
+    if (cArg === args.length -1) {
       arg.lastArg = true;
     }
     else {

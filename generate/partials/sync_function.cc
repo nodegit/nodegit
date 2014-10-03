@@ -5,13 +5,11 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();
   {%partial guardArguments .%}
 
-  {%each arg|argsInfo as arg %}
-    {%if arg.isReturn %}
-      {%if arg.shouldAlloc %}
-  {{ arg.cType }}{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|unPointer }}));
-      {%else%}
-  {{ arg.cType|unPointer }} {{ arg.name }} = {{ arg.cType|unPointer|defaultValue }};
-      {%endif%}
+  {%each .|returnsInfo 'true' as _return %}
+    {%if _return.shouldAlloc %}
+  {{ _return.cType }}{{ _return.name }} = ({{ _return.cType }})malloc(sizeof({{ _return.cType|unPointer }}));
+    {%else%}
+  {{ _return.cType|unPointer }} {{ _return.name }} = {{ _return.cType|unPointer|defaultValue }};
     {%endif%}
   {%endeach%}
 

@@ -7,7 +7,7 @@ module.exports = function(fields) {
     fieldInfo.__proto__ = field;
 
     fieldInfo.parsedName = field.name || "result";
-    fieldInfo.isCppClassIntType = ~["Uin32", "Int32"].indexOf(field.cppClassName);
+    fieldInfo.isCppClassIntType = ~["Uint32", "Int32"].indexOf(field.cppClassName);
     fieldInfo.parsedClassName = (field.cppClassName || '').toLowerCase() + "_t";
 
     result.push(fieldInfo);

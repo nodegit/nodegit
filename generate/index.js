@@ -31,6 +31,7 @@ var filters = {
   replace: require("./filters/replace"),
   or: require("./filters/or"),
   and: require("./filters/and"),
+  defaultValue: require("./filters/default_value"),
   argsInfo: require("./filters/args_info"),
   cppToV8: require("./filters/cpp_to_v8"),
   jsArgsCount: require("./filters/js_args_count"),

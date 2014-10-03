@@ -1,4 +1,4 @@
-module.exports = function(fn) {
+module.exports = function(fn, argReturnsOnly) {
   var result = [];
   var args = fn.args || [];
 
@@ -19,14 +19,20 @@ module.exports = function(fn) {
   });
 
   if (!result.length
+      && !argReturnsOnly
       && fn.return
       && !fn.return.isErrorCode
       && fn.return.cType != "void") {
-    result.push(fn.return);
-  }
+    var return_info = {};
 
-  if (result.length === 1) {
-    result[0].parsedName = result[0].name ? "baton->" + result[0].name : "result";
+    return_info.__proto__ = fn.return;
+    return_info.parsedName = return_info.name ? "baton->" + return_info.name : "result";
+    return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
+    return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
+    return_info.jsNameOrName = return_info.jsName | return_info.name;
+    return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;
+
+    result.push(return_info);
   }
 
 
