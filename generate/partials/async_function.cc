@@ -5,14 +5,14 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();
   {%partial guardArguments .%}
 
-  if (args.Length() == {{ jsArgsCount }} || !args[{{ jsArgsCount }}]->IsFunction()) {
+  if (args.Length() == {{args|jsArgsCount}} || !args[{{args|jsArgsCount}}]->IsFunction()) {
     return NanThrowError("Callback is required and must be a Function.");
   }
 
   {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  {%each argsInfo as arg %}
+  {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
@@ -27,9 +27,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[{{ jsArgsCount }}]));
+  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[{{args|jsArgsCount}}]));
   {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback);
-  {%each argsInfo as arg %}
+  {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   worker->SaveToPersistent("{{ arg.name }}", args.This());
@@ -51,9 +51,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   {{ cFunctionName }}(
   {%endif%}
     {%-- Insert Function Arguments --%}
-    {%each argsInfo as arg %}
+    {%each args|argsInfo as arg %}
       {%-- turn the pointer into a ref --%}
-    {%if arg.isReturn %}{%if arg.cType|isDoublePointer %}&{%endif%}{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
+    {%if arg.isReturn|and arg.cType|isDoublePointer %}&{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
     {%endeach%}
     );
 
@@ -74,20 +74,20 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   TryCatch try_catch;
   if (baton->error_code == GIT_OK) {
-    {%if not returns.length %}
+    {%if not .|returnsCount %}
     Handle<Value> result = NanUndefined();
     {%else%}
     Handle<Value> to;
-      {%if returns.length > 1 %}
+      {%if .|returnsCount > 1 %}
     Handle<Object> result = NanNew<Object>();
       {%endif%}
-      {%each returns as _return %}
+      {%each .|convertReturns as _return %}
         {%partial convertToV8 _return %}
-        {%if returns.length > 1 %}
+        {%if .|returnsCount > 1 %}
     result->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
         {%endif%}
       {%endeach%}
-      {%if returns.length == 1 %}
+      {%if .|returnsCount == 1 %}
     Handle<Value> result = to;
       {%endif%}
     {%endif%}
@@ -120,7 +120,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     node::FatalException(try_catch);
   }
 
-  {%each argsInfo as arg %}
+  {%each args|argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}
       {%if arg.freeFunctionName %}
   {{ arg.freeFunctionName }}(baton->{{ arg.name }});

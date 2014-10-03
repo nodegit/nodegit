@@ -5,7 +5,7 @@
     {%endif%}
   {%endif%}
 {%endeach%}
-{%each returns as returnInfo %}
+{%each .|convertReturns as returnInfo %}
   {%if isAsync %}
   * @param {{ returnInfo.jsOrCppClassName }} callback
   {%else%}

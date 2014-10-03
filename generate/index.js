@@ -2,7 +2,6 @@ const path = require("path");
 const combyne = require("combyne");
 const file = require("./util/file");
 const idefs = require("./idefs");
-var cppToV8 = require("./filters/cpp_to_v8");
 
 // Customize the delimiters so as to not process `{{{` or `}}}`.
 combyne.settings.delimiters = {
@@ -32,12 +31,17 @@ var filters = {
   replace: require("./filters/replace"),
   or: require("./filters/or"),
   and: require("./filters/and"),
+  argsInfo: require("./filters/args_info"),
+  jsArgsCount: require("./filters/js_args_count"),
   isV8Value: require("./filters/is_v8_value"),
   isPointer: require("./filters/is_pointer"),
   isDoublePointer: require("./filters/is_double_pointer"),
   unPointer: require("./filters/un_pointer"),
   hasReturnType: require("./filters/has_return_type"),
-  defaultValue: require("./filters/default_value")
+  hasReturns: require("./filters/has_returns"),
+  returnsCount: require("./filters/returns_count"),
+  convertReturns: require("./filters/convert_returns"),
+  fieldsInfo: require("./filters/fields_info")
 };
 
 // Convert Buffers to Combyne templates.
@@ -64,89 +68,6 @@ var enabled = idefs.filter(function(idef) {
   // We need some custom data on each of the functions
   idef.functions.forEach(function(fn) {
     fn.cppClassName = idef.cppClassName;
-
-    // generate argument info
-    fn.args = fn.args || [];
-    fn.argsInfo = [];
-
-    var cArg,
-        jsArg;
-
-    for(cArg = 0, jsArg = 0; cArg < fn.args.length; cArg++) {
-      var arg = {};
-
-      arg.__proto__ = fn.args[cArg];
-
-      if (!arg.isReturn && !arg.isSelf && !arg.isPayload) {
-        arg.isJsArg = true;
-        arg.jsArg = jsArg;
-
-        jsArg++;
-      }
-
-      if (cArg >= fn.args.length -1) {
-        arg.lastArg = true;
-      }
-      else {
-        arg.lastArg = false;
-      }
-
-      arg.cArg = cArg;
-      arg.v8ValueClassName = cppToV8(arg.cppClassName);
-      arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
-
-      fn.argsInfo.push(arg);
-    }
-
-    fn.jsArgsCount = jsArg;
-
-    fn.returns = [];
-
-    // generate returns data
-    fn.args.forEach(function(arg) {
-      if (!arg.isReturn) return;
-
-      var _return = {};
-
-      _return.__proto__ = arg;
-
-      _return.parsedName = _return.name;
-      _return.jsOrCppClassName = _return.jsClassName || _return.cppClassName;
-      _return.isCppClassIntType = ~["Uint32", "Int32"].indexOf(_return.cppClassName);
-      _return.parsedClassName = (_return.cppClassName || '').toLowerCase() + "_t";
-      _return.jsNameOrName = _return.jsName | _return.name;
-
-      fn.returns.push(_return);
-    });
-
-    fn.return = fn.return || {};
-
-    if (!fn.returns.length
-        && !fn.return.isErrorCode
-        && fn.return.cType != "void") {
-      fn.returns.push(fn.return);
-    }
-
-    if (fn.returns.length === 1) {
-      fn.returns[0].parsedName = fn.returns[0].name ? "baton->" + fn.returns[0].name : "result";
-    }
-
-    fn.hasReturns = fn.returns.length || fn.return.isErrorCode;
-
-    // generate fields data
-    fn.fields = fn.fields || [];
-    fn.fieldInfos = [];
-
-    fn.fields.forEach(function (field) {
-      var fieldInfo = {};
-      fieldInfo.__proto__ = field;
-
-      fieldInfo.parsedName = field.name || "result";
-      fieldInfo.isCppClassIntType = ~["Uin32", "Int32"].indexOf(field.cppClassName);
-      fieldInfo.parsedClassName = (field.cppClassName || '').toLowerCase() + "_t";
-
-      fn.fieldInfos.push(fieldInfo);
-    });
   });
 
   return !idef.ignore;

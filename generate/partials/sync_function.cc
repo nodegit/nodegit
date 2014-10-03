@@ -5,7 +5,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();
   {%partial guardArguments .%}
 
-  {%each argsInfo as arg %}
+  {%each arg|argsInfo as arg %}
     {%if arg.isReturn %}
       {%if arg.shouldAlloc %}
   {{ arg.cType }}{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|unPointer }}));
@@ -15,7 +15,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  {%each argsInfo as arg %}
+  {%each args|argsInfo as arg %}
     {%if not arg.isSelf %}
       {%if not arg.isReturn %}
         {%partial convertFromV8 arg %}
@@ -23,9 +23,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-{%if hasReturns %}
+{%if .|hasReturns %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
-  {%each argsInfo as arg %}
+  {%each args|argsInfo as arg %}
     {%if arg.isReturn %}
       {%if not arg.shouldAlloc %}
     &
@@ -42,7 +42,7 @@ from_{{ arg.name }}
   {%endeach%}
   );
 
-{%each argsInfo as arg %}
+{%each args|argsInfo as arg %}
   {%if arg.isCppClassStringOrArray %}
     {%if arg.freeFunctionName %}
   {{ arg.freeFunctionName }}(from_{{ arg.name }});
@@ -54,8 +54,8 @@ from_{{ arg.name }}
 
 {%if return.isErrorCode %}
   if (result != GIT_OK) {
-  {%each argsInfo as arg %}
-      {%if arg.shouldAlloc %}
+  {%each args|argsInfo as arg %}
+    {%if arg.shouldAlloc %}
     free({{ arg.name }});
     {%endif%}
   {%endeach%}
@@ -68,20 +68,20 @@ from_{{ arg.name }}
   }
 {%endif%}
 
-{%if not returns.length %}
+{%if not .|returnsCount %}
   NanReturnUndefined();
 {%else%}
   Handle<Value> to;
-  {%if returns.length > 1 %}
+  {%if .|returnsCount > 1 %}
   Handle<Object> toReturn = NanNew<Object>();
   {%endif%}
-  {%each returns as _return %}
+  {%each .|convertReturns as _return %}
     {%partial convertToV8 _return %}
-    {%if returns.length > 1 %}
+    {%if .|returnsCount > 1 %}
   toReturn->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
     {%endif%}
   {%endeach%}
-  {%if returns.length == 1 %}
+  {%if .|returnsCount == 1 %}
   NanReturnValue(to);
   {%else%}
   NanReturnValue(toReturn);
