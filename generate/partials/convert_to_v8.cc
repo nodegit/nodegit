@@ -10,7 +10,7 @@ to = NanNew<String>({{= parsedName =}});
   {%if freeFunctionName %}
     {{ freeFunctionName }}({{= parsedName =}});
   {%endif%}
-{%elsif isV8Value %}
+{%elsif cppClassName|isV8Value %}
   {%if isCppClassIntType %}
 to = NanNew<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}});
   {%else%}
@@ -30,7 +30,7 @@ to = tmpArray;
 {%else%}
   {%if copy %}
 if ({{= parsedName =}} != NULL) {
-  {{= parsedName =}} = ({{ cType|replace '**' '*' }} {%if not isPointer %}*{%endif%}){{ copy }}({{= parsedName =}});
+  {{= parsedName =}} = ({{ cType|replace '**' '*' }} {%if not cType|isPointer %}*{%endif%}){{ copy }}({{= parsedName =}});
 }
   {%endif%}
 if ({{= parsedName =}} != NULL) {

@@ -5,8 +5,8 @@ NAN_METHOD({{ cppClassName }}::{{ field.cppFunctionName }}) {
   NanScope();
   Handle<Value> to;
 
-  {{ field.cType }} {%if field.isV8Value %}*{%endif%}{{ field.name }} =
-    {%if not field.isV8Value %}&{%endif%}ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue()->{{ field.name }};
+  {{ field.cType }} {%if field.cppClassName|isV8Value %}*{%endif%}{{ field.name }} =
+    {%if not field.cppClassName|isV8Value %}&{%endif%}ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue()->{{ field.name }};
 
   {%partial convertToV8 field %}
   NanReturnValue(to);
