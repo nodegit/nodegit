@@ -18,7 +18,7 @@
   {%elsif cppClassName == 'Function' %}
   {%elsif cppClassName == 'Buffer' %}
       from_{{ name }} = Buffer::Data(args[{{ jsArg }}]->ToObject());
-  {%elsif isV8Value %}
+  {%elsif cppClassName|isV8Value %}
       from_{{ name }} = ({{ cType }}) {{ additionalCast }} {{ cast }} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
   {%else%}
       from_{{ name }} = ObjectWrap::Unwrap<{{ cppClassName }}>(args[{{ jsArg }}]->ToObject())->GetValue();

@@ -34,7 +34,9 @@ var filters = {
   and: require("./filters/and"),
   isV8Value: require("./filters/is_v8_value"),
   isPointer: require("./filters/is_pointer"),
+  isDoublePointer: require("./filters/is_double_pointer"),
   unPointer: require("./filters/un_pointer"),
+  hasReturnType: require("./filters/has_return_type"),
   defaultValue: require("./filters/default_value")
 };
 
@@ -68,17 +70,7 @@ var enabled = idefs.filter(function(idef) {
     fn.argsInfo = [];
 
     var cArg,
-        jsArg,
-        v8Values = [
-          "Boolean",
-          "Number",
-          "String",
-          "Integer",
-          "Int32",
-          "Uint32",
-          "Date",
-          "Function"
-        ];;
+        jsArg;
 
     for(cArg = 0, jsArg = 0; cArg < fn.args.length; cArg++) {
       var arg = {};
@@ -102,8 +94,6 @@ var enabled = idefs.filter(function(idef) {
       arg.cArg = cArg;
       arg.v8ValueClassName = cppToV8(arg.cppClassName);
       arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
-      arg.isDoublePointer = /\s*\*\*\s*/.test(arg.cType);
-      arg.isV8Value = ~v8Values.indexOf(arg.cppClassName);
 
       fn.argsInfo.push(arg);
     }
@@ -142,7 +132,6 @@ var enabled = idefs.filter(function(idef) {
     }
 
     fn.hasReturns = fn.returns.length || fn.return.isErrorCode;
-    fn.hasReturnType = fn.return.cType != "void" || fn.return.isErrorCode;
 
     // generate fields data
     fn.fields = fn.fields || [];
