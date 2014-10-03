@@ -1,5 +1,3 @@
-var cppToV8 = require("./cpp_to_v8");
-
 module.exports = function(args) {
   var result = [],
       cArg,
@@ -23,7 +21,6 @@ module.exports = function(args) {
     }
 
     arg.cArg = cArg;
-    arg.v8ValueClassName = cppToV8(arg.cppClassName);
     arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
 
     result.push(arg);

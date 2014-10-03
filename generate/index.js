@@ -32,6 +32,7 @@ var filters = {
   or: require("./filters/or"),
   and: require("./filters/and"),
   argsInfo: require("./filters/args_info"),
+  cppToV8: require("./filters/cpp_to_v8"),
   jsArgsCount: require("./filters/js_args_count"),
   isV8Value: require("./filters/is_v8_value"),
   isPointer: require("./filters/is_pointer"),
@@ -40,7 +41,7 @@ var filters = {
   hasReturnType: require("./filters/has_return_type"),
   hasReturns: require("./filters/has_returns"),
   returnsCount: require("./filters/returns_count"),
-  convertReturns: require("./filters/convert_returns"),
+  returnsInfo: require("./filters/returns_info"),
   fieldsInfo: require("./filters/fields_info")
 };
 

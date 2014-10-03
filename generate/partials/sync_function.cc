@@ -75,7 +75,7 @@ from_{{ arg.name }}
   {%if .|returnsCount > 1 %}
   Handle<Object> toReturn = NanNew<Object>();
   {%endif%}
-  {%each .|convertReturns as _return %}
+  {%each .|returnsInfo as _return %}
     {%partial convertToV8 _return %}
     {%if .|returnsCount > 1 %}
   toReturn->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);

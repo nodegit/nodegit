@@ -1,7 +1,7 @@
 {%if not isPayload %}
   {{ cType }} from_{{ name }};
   {%if isOptional %}
-    if (args[{{ jsArg }}]->Is{{ v8ValueClassName }}()) {
+    if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
   {%endif%}
   {%if cppClassName == 'String' %}
       String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
