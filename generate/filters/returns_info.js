@@ -1,4 +1,4 @@
-module.exports = function(fn, argReturnsOnly) {
+module.exports = function(fn, argReturnsOnly, isAsync) {
   var result = [];
   var args = fn.args || [];
 
@@ -9,7 +9,7 @@ module.exports = function(fn, argReturnsOnly) {
 
     return_info.__proto__ = arg;
 
-    return_info.parsedName = result.length === 1 ? "baton->" + return_info.name : return_info.name;
+    return_info.parsedName = isAsync ? "baton->" + return_info.name : return_info.name;
     return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
     return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
     return_info.jsNameOrName = return_info.jsName | return_info.name;
@@ -26,7 +26,7 @@ module.exports = function(fn, argReturnsOnly) {
     var return_info = {};
 
     return_info.__proto__ = fn.return;
-    return_info.parsedName = return_info.name ? "baton->" + return_info.name : "result";
+    return_info.parsedName = return_info.name && isAsync ? "baton->" + return_info.name : "result";
     return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
     return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
     return_info.jsNameOrName = return_info.jsName | return_info.name;

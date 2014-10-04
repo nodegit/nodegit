@@ -81,7 +81,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%if .|returnsCount > 1 %}
     Handle<Object> result = NanNew<Object>();
       {%endif%}
-      {%each .|returnsInfo as _return %}
+      {%each .|returnsInfo 0 1 as _return %}
         {%partial convertToV8 _return %}
         {%if .|returnsCount > 1 %}
     result->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
