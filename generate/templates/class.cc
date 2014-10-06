@@ -22,7 +22,9 @@ using namespace node;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
-  {%if freeFunctionName%}{{ freeFunctionName }}(this->raw);{%endif%}
+  {%if freeFunctionName%}
+  {{ freeFunctionName }}(this->raw);
+  {%endif%}
 }
 
 void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {

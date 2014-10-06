@@ -23,9 +23,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
   {%each args|argsInfo as arg %}
     {%if arg.isReturn %}
-      {%if not arg.shouldAlloc %}
-    &
-      {%endif%}
+      {%if not arg.shouldAlloc %}&{%endif%}
     {%endif%}
     {%if arg.isSelf %}
 ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue()
