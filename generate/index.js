@@ -2,6 +2,8 @@ const path = require("path");
 const combyne = require("combyne");
 const file = require("./util/file");
 const idefs = require("./idefs");
+const promisify = require("promisify-node");
+const fse = promisify(require("fs-extra"));
 
 // Customize the delimiters so as to not process `{{{` or `}}}`.
 combyne.settings.delimiters = {
@@ -75,14 +77,18 @@ var enabled = idefs.filter(function(idef) {
   return !idef.ignore;
 });
 
-// TODO Wipe out all existing source files.
+fse.remove(path.resolve(__dirname, "../src")).then(function() {
+  return fse.remove(path.resolve(__dirname, "../include"));
+}).then(function() {
+  return fse.copy(path.resolve(__dirname, "./manual/"), path.resolve(__dirname, "../"));
+}).then(function() {
+  // Write out single purpose templates.
+  file.write("../binding.gyp", templates.binding.render(enabled));
+  file.write("../src/nodegit.cc", templates.nodegit.render(enabled));
 
-// Write out single purpose templates.
-file.write("../binding.gyp", templates.binding.render(enabled));
-file.write("../src/nodegit.cc", templates.nodegit.render(enabled));
-
-// Write out all the classes.
-enabled.forEach(function(idef) {
-  file.write("../src/" + idef.name + ".cc", templates.class.render(idef));
-  file.write("../include/" + idef.name + ".h", templates.header.render(idef));
+  // Write out all the classes.
+  enabled.forEach(function(idef) {
+    file.write("../src/" + idef.name + ".cc", templates.class.render(idef));
+    file.write("../include/" + idef.name + ".h", templates.header.render(idef));
+  });
 });
