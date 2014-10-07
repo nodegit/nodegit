@@ -3365,6 +3365,7 @@
     "js": "Config"
   },
   "const git_config **": {
+    "cpp": "GitConfig",
     "js": "Config"
   },
   "git_config_find_global *": {

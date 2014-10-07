@@ -45,8 +45,8 @@ git clone git://github.com/tbranyen/nodegit.git
 # Enter the repository.
 cd nodegit
 
-# Install the template engine, run the code generation script, and install.
-npm install ejs && npm run codegen && npm install
+# Installs the template engine, run the code generation script, and build.
+npm install
 ```
 
 If you encounter errors, you most likely have not configured the dependencies
@@ -93,35 +93,19 @@ npm install nodegit --msvs_version=2013
 ### Cloning a repository and reading a file: ###
 
 ``` javascript
-var clone = require("nodegit").Repo.clone;
+var clone = require("nodegit").Repository.clone;
 
 // Clone a given repository into a specific folder.
-clone("https://github.com/nodegit/nodegit", "tmp", null, function(err, repo) {
-  if (err) {
-    throw err;
-  }
-
+clone("https://github.com/nodegit/nodegit", "tmp", null).then(function(repo) {
   // Use a known commit sha from this repository.
   var sha = "59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5";
 
   // Look up this known commit.
-  repo.getCommit(sha, function(err, commit) {
-    if (err) {
-      throw err;
-    }
-
+  repo.getCommit(sha).then(function(commit) {
     // Look up a specific file within that commit.
-    commit.getEntry("README.md", function(err, entry) {
-      if (err) {
-        throw err;
-      }
-
+    commit.getEntry("README.md").then(function(entry) {
       // Get the blob contents from the file.
-      entry.getBlob(function(err, blob) {
-        if (err) {
-          throw err;
-        }
-
+      entry.getBlob().then(function(blob) {
         // Show the name, sha, and filesize in byes.
         console.log(entry.name() + entry.sha() + blob.size() + "b");
 
@@ -139,20 +123,12 @@ clone("https://github.com/nodegit/nodegit", "tmp", null, function(err, repo) {
 ### Emulating git log: ###
 
 ``` javascript
-var open = require("nodegit").Repo.open;
+var open = require("nodegit").Repository.open;
 
 // Open the repository directory.
-open("tmp", function(err, repo) {
-  if (err) {
-    throw err;
-  }
-
+open("tmp").then(function(repo) {
   // Open the master branch.
-  repo.getMaster(function(err, branch) {
-    if (err) {
-      throw err;
-    }
-
+  repo.getMaster().then(function(branch) {
     // Create a new history event emitter.
     var history = branch.history();
 

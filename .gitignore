@@ -19,3 +19,5 @@
 /include/*
 !/include/functions/copy.h
 !/include/wrapper.h
+
+*.log
