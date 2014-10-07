@@ -153,7 +153,7 @@ fileNames.forEach(function(fileName, index) {
   var deps = file.dependencies;
 
   file.dependencies = uniqueTypes.map(function(file) {
-    return "../include/" + file + ".h"; 
+    return "../include/" + file + ".h";
   });
 
   if (deps) {
@@ -167,7 +167,7 @@ fileNames.forEach(function(fileName, index) {
   typeMap["git_" + fileName + " **"] =
   typeMap["git_" + fileName] = {
     cpp: file.cppClassName,
-    js: file.jsClassName 
+    js: file.jsClassName
   };
 
   var fields = file.fields || cFile.fields || (structFile ? structFile.fields || [] : []) || [];
@@ -200,7 +200,7 @@ fileNames.forEach(function(fileName, index) {
   var iterateFunctions = Object.keys(file.functions || {});
 
   file.functions = [];
-  
+
   (cFile.functions.length ? cFile.functions : iterateFunctions).forEach(function(functionName, index) {
     if (iterateFunctions.indexOf(functionName) === -1) {
       return;
@@ -222,7 +222,7 @@ fileNames.forEach(function(fileName, index) {
       descriptor.ignore = functionDescriptor.ignore;
     }
 
-    var trimmedName = descriptor.trim ? functionName.slice(cType.length + 1) : functionName.slice(4);
+    var trimmedName = file.trim !== false ? functionName.slice(cType.length + 1) : functionName.slice(4);
 
     descriptor.cppFunctionName = functionDescriptor.cppFunctionName || titleCase(trimmedName);
     descriptor.jsFunctionName = functionDescriptor.jsFunctionName || camelCase(trimmedName);
@@ -232,7 +232,7 @@ fileNames.forEach(function(fileName, index) {
     typeMap[descriptor.cFunctionName + " *"] =
     typeMap[descriptor.cFunctionName] = {
       cpp: descriptor.cppFunctionName,
-      js: descriptor.jsFunctionName 
+      js: descriptor.jsFunctionName
     };
 
     var retVal = descriptor.return = functionDescriptor.return || {};
@@ -352,8 +352,8 @@ fileNames.forEach(function(fileName, index) {
   files.push(file);
 });
 
-fs.writeFileSync(path.join(__dirname, "types.json"), 
+fs.writeFileSync(path.join(__dirname, "types.json"),
   JSON.stringify(typeMap, null, 2));
 
-fs.writeFileSync(path.join(__dirname, "idefs.json"), 
+fs.writeFileSync(path.join(__dirname, "idefs.json"),
   JSON.stringify(files, null, 2));

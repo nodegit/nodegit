@@ -121,15 +121,25 @@
     }
   },
 
+  "checkout_options": {
+    "isStruct": true,
+    "cType": "git_checkout_options",
+    "dependencies": [
+      "../include/strarray.h",
+      "../include/functions/copy.h",
+      "../include/checkout_options.h",
+      "../include/tree.h"
+    ],
+    "fields": []
+  },
+
   "clone": {
     "cType": null,
     "trim": false,
 
     "dependencies": [
-      "../include/clone_options.h",
-      "../include/checkout_options.h",
       "../include/signature.h",
-      "../include/checkout_opts.h",
+      "../include/checkout_options.h",
       "../include/repository.h",
       "../include/remote.h"
     ],
@@ -150,6 +160,7 @@
   },
 
   "clone_options": {
+    "ignore": true,
     "cType": "git_clone_options",
     "isStruct": true,
     "dependencies": [
