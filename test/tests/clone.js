@@ -22,7 +22,7 @@ describe("Clone", function() {
     ]);
   });
 
-  it.skip("can clone with http", function() {
+  it("can clone with http", function() {
     var url = "http://github.com/nodegit/test.git";
 
     return Clone.clone(url, http, null).then(function(repository) {
@@ -30,7 +30,7 @@ describe("Clone", function() {
     });
   });
 
-  it.skip("can clone with https", function() {
+  it("can clone with https", function() {
     var url = "https://github.com/nodegit/test.git";
 
     return Clone.clone(url, https, null).then(function(repository) {
@@ -38,7 +38,7 @@ describe("Clone", function() {
     });
   });
 
-  it.skip("can clone with ssh", function() {
+  it("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
 
     return Clone.clone(url, ssh, null).then(function(repository) {
