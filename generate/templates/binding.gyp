@@ -1,4 +1,4 @@
-# This is a generated file, modify: generate/templates/binding.gyp.ejs.
+# This is a generated file, modify: generate/templates/binding.gyp.
 {
   "targets": [
     {

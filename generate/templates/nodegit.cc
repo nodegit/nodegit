@@ -1,4 +1,4 @@
-// This is a generated file, modify: generate/templates/nodegit.cc.ejs.
+// This is a generated file, modify: generate/templates/nodegit.cc.
 #include <v8.h>
 #include <node.h>
 #include <git2.h>
