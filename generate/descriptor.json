@@ -160,13 +160,13 @@
   },
 
   "clone_options": {
-    "ignore": true,
     "cType": "git_clone_options",
     "isStruct": true,
     "dependencies": [
-      "../include/checkout_opts.h",
+      "../include/checkout_options.h",
       "../include/remote_callbacks.h"
-    ]
+    ],
+    "fields": []
   },
 
   "commit": {
