@@ -3,6 +3,8 @@
 /build/
 /coverage/
 /test/repos/
+/src/
+/include/
 
 /vendor/Release
 /vendor/*.vcxproj
@@ -11,13 +13,5 @@
 
 /generate/idefs.json
 /binding.gyp
-
-/src/*
-!/src/functions/copy.cc
-!/src/wrapper.cc
-
-/include/*
-!/include/functions/copy.h
-!/include/wrapper.h
 
 *.log
