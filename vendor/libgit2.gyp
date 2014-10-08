@@ -5,6 +5,7 @@
       "type": "static_library",
       "defines": [
         "GIT_THREADS",
+        "GIT_SSH",
         # Node's util.h may be accidentally included so use this to guard
         # against compilation error.
         "SRC_UTIL_H_",
