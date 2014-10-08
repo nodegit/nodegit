@@ -166,7 +166,12 @@
       "../include/checkout_options.h",
       "../include/remote_callbacks.h"
     ],
-    "fields": []
+    "fields": [
+      {
+        "name": "ignore_cert_errors",
+        "cType": "int"
+      }
+    ]
   },
 
   "commit": {
