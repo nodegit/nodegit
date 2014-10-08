@@ -6,6 +6,10 @@
     "sha": "b4d00c1d2466de3558a7cc6983dce4eb2ee98431",
     "version": "0.21.1"
   },
+  "libssh2": {
+    "url": "http://www.libssh2.org/download/libssh2-1.4.3.tar.gz",
+    "version": "1.4.3"
+  },
   "homepage": "https://github.com/tbranyen/nodegit",
   "keywords": [
     "libgit2",
