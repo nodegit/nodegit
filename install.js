@@ -15,7 +15,7 @@ var rimraf = require('rimraf');
 // ENV variables:
 //
 // PKG: Location of `package.json` sans `.json`.
-// LIBGIT2: Location of libgit2 source. 
+// LIBGIT2: Location of libgit2 source.
 // BUILD: Location of nodegit build directory.
 function envOverride(obj) {
   // Look through all keys.
@@ -45,6 +45,7 @@ var local = path.join.bind(path, __dirname);
 var paths = envOverride({
   pkg: local('package'),
   libgit2: local('vendor/libgit2/'),
+  libssh2: local('vendor/libssh2/'),
   sys: {
     include: local('include/sys/'),
     src: local('src/sys/'),
@@ -75,7 +76,7 @@ var dependencies = Q.allSettled([
   if (!python) {
     throw new Error('Python is required to build libgit2.');
   }
-  
+
   // Now lets check the Python version to ensure it's < 3.
   return Q.nfcall(exec, python + ' --version').then(function(version) {
     if (version[1].indexOf('Python 3') === 0) {
@@ -94,7 +95,7 @@ var dependencies = Q.allSettled([
   }).fail(function() {
     console.info('[nodegit] Removing outdated vendor/libgit2.');
 
-    // This directory is outdated, remove. 
+    // This directory is outdated, remove.
     throw Q.ninvoke(rimraf, null, paths.libgit2);
   });
 })
@@ -105,7 +106,7 @@ var dependencies = Q.allSettled([
   console.info('[nodegit] Fetching vendor/libgit2.');
 
   var url = 'https://github.com/libgit2/libgit2/tarball/' + pkg.libgit2.sha;
-  
+
   var extract = tar.Extract({
     path: paths.libgit2,
     strip: true
@@ -117,6 +118,41 @@ var dependencies = Q.allSettled([
   return Q.ninvoke(expand, 'on', 'end').then(function() {
     // Write out a sha file for testing in the future.
     return Q.ninvoke(fs, 'writeFile', paths.libgit2 + pkg.libgit2.sha, '');
+  });
+})
+
+// Grab libssh2 if needed
+.then(function() {
+  console.info('[nodegit] Detecting vendor/libssh2.');
+
+  return Q.ninvoke(fs, 'stat', paths.libssh2).then(function() {
+    return Q.ninvoke(fs, 'stat', paths.libssh2 + pkg.libssh2.version);
+  }).fail(function() {
+    console.info('[nodegit] Removing outdated vendor/libssh2.');
+
+    // This directory is outdated, remove.
+    throw Q.ninvoke(rimraf, null, paths.libssh2);
+  });
+})
+
+// If the directory already exists, no need to refetch.
+.fail(function() {
+  // Otherwise fetch the libssh2 source.
+  console.info('[nodegit] Fetching vendor/libssh2.');
+
+  var url = pkg.libssh2.url;
+
+  var extract = tar.Extract({
+    path: paths.libssh2,
+    strip: true
+  });
+
+  // First extract from Zlib and then extract from Tar.
+  var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
+
+  return Q.ninvoke(expand, 'on', 'end').then(function() {
+    // Write out a sha file for testing in the future.
+    return Q.ninvoke(fs, 'writeFile', paths.libssh2 + pkg.libssh2.version, '');
   });
 })
 
