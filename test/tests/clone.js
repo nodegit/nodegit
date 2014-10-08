@@ -12,7 +12,6 @@ describe("Clone", function() {
 
   var Repository = require("../../lib/repository");
   var Clone = require("../../lib/clone");
-  var CloneOptions = require("../../lib/clone_options");
 
   before(function() {
     return Promise.all([
@@ -25,7 +24,7 @@ describe("Clone", function() {
 
   it("can clone with http", function() {
     var url = "http://github.com/nodegit/test.git";
-    var opts = CloneOptions.fromObj({ ignoreCertErrors: 1});
+    var opts = { ignoreCertErrors: 1 };
 
     return Clone.clone(url, http, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
