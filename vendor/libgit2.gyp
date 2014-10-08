@@ -333,6 +333,8 @@
         "libgit2/include",
         "libgit2/src",
         "libgit2/deps/regex",
+        "libssh2/include",
+        "libssh2/src"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
