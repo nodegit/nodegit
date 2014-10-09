@@ -3,12 +3,10 @@ var path = require("path");
 
 describe("Revwalk", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
-  //var newRepo = path.resolve("test/repos/newrepo");
 
   var Repository = require("../../lib/repository");
   var Revwalk = require("../../lib/revwalk");
   var Oid = require("../../lib/oid");
-  //var Index = require("../../lib/index");
 
   before(function() {
     var test = this;
@@ -16,6 +14,11 @@ describe("Revwalk", function() {
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
       test.walker = repository.createRevWalk();
+
+      return test.repository.getMaster().then(function(master) {
+        test.master = master;
+        test.walker.push(test.master.id());
+      });
     });
   });
 
@@ -24,26 +27,21 @@ describe("Revwalk", function() {
   });
 
   it("can push an object", function() {
-    var test = this;
+    var sha = this.master.sha();
 
-    return this.repository.getMaster().then(function(master) {
-      test.walker.push(master.id());
-      return test.walker.next().then(function(commit) {
-        assert.equal(master.sha(), commit.toString());
-      });
+    return this.walker.next().then(function(commit) {
+      assert.equal(sha, commit);
     });
   });
 
   it("can hide an object", function() {
     var test = this;
 
-    var oid = Oid.fromString("1b27c70763f7b47c38d0c4e9b681415a08a3210e");
-    test.walker.push(oid);
-    test.walker.hide(Oid.fromstr("a03e044fcb45c654d4e15a4e495a6a0c6e632854"));
+    this.walker.hide(Oid.fromstr("a03e044fcb45c654d4e15a4e495a6a0c6e632854"));
+
     return test.walker.next().then(function(commit) {
       return test.walker.next().then(function(commit) {
-        assert.equal(commit.toString(),
-          "32789a79e71fbc9e04d3eff7425e1771eb595150");
+        assert.equal(commit, "1efa3354299ede235f90880383176fb5d48aaa89");
       });
     });
   });
@@ -51,13 +49,11 @@ describe("Revwalk", function() {
   it("can simplify to first parent", function() {
     var test = this;
 
-    var oid = Oid.fromString("1b27c70763f7b47c38d0c4e9b681415a08a3210e");
-    test.walker.push(oid);
     test.walker.simplifyFirstParent();
+
     return test.walker.next().then(function(commit) {
       return test.walker.next().then(function(commit) {
-        assert.equal(commit.toString(),
-          "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
+        assert.equal(commit, "231c550f3ec28874b4c426fc9eebad9a742e1332");
       });
     });
   });
