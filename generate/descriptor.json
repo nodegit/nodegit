@@ -156,7 +156,7 @@
           {},
           {},
           {},
-          { 
+          {
             "cType": "const git_commit **",
             "arrayElementCppClassName": "GitCommit"
           }
@@ -707,6 +707,21 @@
         "return": {
           "isErrorCode": true
         }
+      },
+
+      "git_revwalk_hide": {
+        "ignore": false,
+        "isAsync": false,
+        "args": [{ "isSelf": true, "isReturn": false }],
+        "return": {
+          "isErrorCode": true
+        }
+      },
+
+      "git_revwalk_simplify_first_parent": {
+        "ignore": false,
+        "isAsync": false,
+        "args": [{ "isSelf": true, "isReturn": false }]
       },
 
       "git_revwalk_next": {
