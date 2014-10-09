@@ -37,14 +37,13 @@ describe("Revwalk", function() {
   it("can hide an object", function() {
     var test = this;
 
-    return this.repository.getMaster().then(function(master) {
-      test.walker.push(master.id());
-      test.walker.hide(Oid.fromstr("a03e044fcb45c654d4e15a4e495a6a0c6e632854"));
+    var oid = Oid.fromString("1b27c70763f7b47c38d0c4e9b681415a08a3210e");
+    test.walker.push(oid);
+    test.walker.hide(Oid.fromstr("a03e044fcb45c654d4e15a4e495a6a0c6e632854"));
+    return test.walker.next().then(function(commit) {
       return test.walker.next().then(function(commit) {
-        return test.walker.next().then(function(commit) {
-          assert.equal(commit.toString(),
-            "32789a79e71fbc9e04d3eff7425e1771eb595150");
-        });
+        assert.equal(commit.toString(),
+          "32789a79e71fbc9e04d3eff7425e1771eb595150");
       });
     });
   });
@@ -52,13 +51,13 @@ describe("Revwalk", function() {
   it("can simplify to first parent", function() {
     var test = this;
 
-    return this.repository.getMaster().then(function(master) {
-      test.walker.simplifyFirstParent();
+    var oid = Oid.fromString("1b27c70763f7b47c38d0c4e9b681415a08a3210e");
+    test.walker.push(oid);
+    test.walker.simplifyFirstParent();
+    return test.walker.next().then(function(commit) {
       return test.walker.next().then(function(commit) {
-        return test.walker.next().then(function(commit) {
-          assert.equal(commit.toString(),
-            "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
-        });
+        assert.equal(commit.toString(),
+          "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
       });
     });
   });
