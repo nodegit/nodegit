@@ -23,7 +23,7 @@ using namespace node;
 {{ cppClassName }}::~{{ cppClassName }}() {
   // This is going to cause memory leaks. We'll have to solve that later
   // TODO: Clean up memory better
-  free(this->raw);
+  //free(this->raw);
 }
 
 void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
