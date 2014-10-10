@@ -36,16 +36,22 @@ describe("Clone", function() {
 
   it("can clone with https", function() {
     var url = "https://github.com/nodegit/test.git";
+    var opts = new NodeGit.CloneOptions();
 
-    return Clone.clone(url, https, null).then(function(repository) {
+    opts.ignoreCertErrors = 1;
+
+    return Clone.clone(url, https, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
     });
   });
 
   it("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
+    var opts = new NodeGit.CloneOptions();
 
-    return Clone.clone(url, ssh, null).then(function(repository) {
+    opts.ignoreCertErrors = 1;
+
+    return Clone.clone(url, ssh, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
     });
   });
