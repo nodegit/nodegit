@@ -26,7 +26,7 @@ class {{ cppClassName }} : public ObjectWrap {
     static Handle<Value> New(void *raw);
 
   private:
-    {{ cppClassName }}({{ cType }} *raw);
+    {{ cppClassName }}();
     ~{{ cppClassName }}();
 
     static NAN_METHOD(New);
