@@ -8,6 +8,7 @@ describe("Clone", function() {
   var http = path.resolve("test/repos/http");
   var https = path.resolve("test/repos/https");
   var ssh = path.resolve("test/repos/ssh");
+  var git = path.resolve("test/repos/git");
   var file = path.resolve("test/repos/file");
 
   var Repository = require("../../lib/repository");
@@ -19,6 +20,7 @@ describe("Clone", function() {
       rimraf(http),
       rimraf(https),
       rimraf(ssh),
+      rimraf(git),
       rimraf(file),
     ]);
   });
@@ -52,6 +54,17 @@ describe("Clone", function() {
     opts.ignoreCertErrors = 1;
 
     return Clone.clone(url, ssh, opts).then(function(repository) {
+      assert.ok(repository instanceof Repository);
+    });
+  });
+
+  it("can clone with git", function() {
+    var url = "git://github.com/nodegit/test.git";
+    var opts = new NodeGit.CloneOptions();
+
+    opts.ignoreCertErrors = 1;
+
+    return Clone.clone(url, git, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
     });
   });
