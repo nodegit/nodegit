@@ -171,6 +171,10 @@
       {
         "name": "ignore_cert_errors",
         "cType": "int"
+      },
+      {
+        "name": "version",
+        "cType": "int"
       }
     ]
   },
