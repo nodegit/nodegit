@@ -130,24 +130,21 @@ fileNames.forEach(function(fileName, index) {
 
   var uniqueTypes = [];
 
-  var addType = function(arg) {
-    if (!arg.type) { return; }
-    if (arg.type.indexOf("git") === 0) {
-      var val = arg.type.split(" ")[0].slice(4);
-
-      if (uniqueTypes.indexOf(val) === -1 && descriptor[val]) {
-        uniqueTypes.push(val);
-      }
-    }
-  };
-
   cFile.functions.forEach(function(functionName) {
     var funcDescriptor = libgit2.functions[functionName];
 
     var args = funcDescriptor.args || [];
 
-    args.forEach(addType);
-    addType(funcDescriptor.return.type);
+    args.forEach(function(arg) {
+      if (!arg.type) { return; }
+      if (arg.type.indexOf("git") === 0) {
+        var val = arg.type.split(" ")[0].slice(4);
+
+        if (uniqueTypes.indexOf(val) === -1 && descriptor[val]) {
+          uniqueTypes.push(val);
+        }
+      }
+    });
   });
 
   var deps = file.dependencies;
