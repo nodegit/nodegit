@@ -8,7 +8,7 @@ to = NanNew<String>({{= parsedName =}});
   {%endif%}
 
   {%if freeFunctionName %}
-    {{ freeFunctionName }}({{= parsedName =}});
+{{ freeFunctionName }}({{= parsedName =}});
   {%endif%}
 {%elsif cppClassName|isV8Value %}
   {%if isCppClassIntType %}
