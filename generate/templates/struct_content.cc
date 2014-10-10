@@ -16,14 +16,16 @@ extern "C" {
 using namespace v8;
 using namespace node;
 
-{{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw) {
-  this->raw = raw;
+{{ cppClassName }}::{{ cppClassName }}() {
+  {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
+  this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
+  memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
   // This is going to cause memory leaks. We'll have to solve that later
   // TODO: Clean up memory better
-  //free(this->raw);
+  free(this->raw);
 }
 
 void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
@@ -48,8 +50,7 @@ void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
 NAN_METHOD({{ cppClassName }}::New) {
   NanScope();
 
-  {{ cType }} raw = {{ cType|upper }}_INIT;
-  {{ cppClassName }}* instance = new {{ cppClassName }}(&raw);
+  {{ cppClassName }}* instance = new {{ cppClassName }}();
   instance->Wrap(args.This());
 
   NanReturnValue(args.This());

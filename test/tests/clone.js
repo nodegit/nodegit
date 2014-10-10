@@ -27,7 +27,7 @@ describe("Clone", function() {
     var url = "http://github.com/nodegit/test.git";
     var opts = new NodeGit.CloneOptions();
 
-    //opts.ignoreCertErrors = 1;
+    opts.ignoreCertErrors = 1;
 
     return Clone.clone(url, http, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
