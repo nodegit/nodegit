@@ -167,16 +167,25 @@
       "../include/checkout_options.h",
       "../include/remote_callbacks.h"
     ],
-    "fields": [
-      {
-        "name": "ignore_cert_errors",
-        "cType": "int"
-      },
-      {
-        "name": "version",
-        "cType": "int"
-      }
-    ]
+    "fields": [{
+      "name": "version",
+      "cType": "int"
+    }, {
+      "name": "remote_callbacks",
+      "cType": "git_remote_callbacks"
+    }, {
+      "name": "bare",
+      "cType": "int"
+    }, {
+      "name": "ignore_cert_errors",
+      "cType": "int"
+    }, {
+      "name": "remote_name",
+      "cType": "const char *"
+    }, {
+      "name": "checkout_branch",
+      "cType": "const char *"
+    }]
   },
 
   "commit": {
