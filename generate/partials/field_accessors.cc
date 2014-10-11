@@ -21,7 +21,7 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   {%if field.cppClassName == 'String' %}
   if (raw->{{ field.name }}) {
-    free(raw->{{ field.name }});
+    //free(raw->{{ field.name }});
   }
 
   String::Utf8Value str(value);
@@ -35,7 +35,7 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
     raw->{{ field.name }} = value->Int32Value();
   }
   {%else%}
-  raw->{{ field.name }} = ({{ field.cType }}) value->ToObject();
+  raw->{{ field.name }} = ({{ field.cType }}) value;
   {%endif%}
 
 }
