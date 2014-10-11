@@ -270,6 +270,10 @@
   "config": {
   },
 
+  "cred": {
+    "isStruct": true
+  },
+
   "cred_helpers": {
   },
 
@@ -875,6 +879,15 @@
   },
 
   "transport": {
+    "cType": null,
+    "trim": false,
+
+    "functions": {
+      "git_cred_ssh_key_from_agent": {
+        "ignore": false,
+        "isConstructorMethod": true
+      }
+    }
   },
 
   "tree": {
