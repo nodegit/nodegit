@@ -13,7 +13,6 @@ describe("Clone", function() {
 
   var Repository = require("../../lib/repository");
   var Clone = require("../../lib/clone");
-  var NodeGit = require("../../");
 
   before(function() {
     return Promise.all([
@@ -27,9 +26,7 @@ describe("Clone", function() {
 
   it("can clone with http", function() {
     var url = "http://github.com/nodegit/test.git";
-    var opts = new NodeGit.CloneOptions();
-
-    opts.ignoreCertErrors = 1;
+    var opts = { ignoreCertErrors: 1 };
 
     return Clone.clone(url, http, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
@@ -38,9 +35,7 @@ describe("Clone", function() {
 
   it("can clone with https", function() {
     var url = "https://github.com/nodegit/test.git";
-    var opts = new NodeGit.CloneOptions();
-
-    opts.ignoreCertErrors = 1;
+    var opts = { ignoreCertErrors: 1 };
 
     return Clone.clone(url, https, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
@@ -49,9 +44,7 @@ describe("Clone", function() {
 
   it("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
-    var opts = new NodeGit.CloneOptions();
-
-    opts.ignoreCertErrors = 1;
+    var opts = { ignoreCertErrors: 1 };
 
     return Clone.clone(url, ssh, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
@@ -60,9 +53,7 @@ describe("Clone", function() {
 
   it("can clone with git", function() {
     var url = "git://github.com/nodegit/test.git";
-    var opts = new NodeGit.CloneOptions();
-
-    opts.ignoreCertErrors = 1;
+    var opts = { ignoreCertErrors: 1 };
 
     return Clone.clone(url, git, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
@@ -72,7 +63,7 @@ describe("Clone", function() {
   it("can clone with filesystem", function() {
     var url = "file://" + path.resolve("test/repos/empty");
 
-    return Clone.clone(url, file, null).then(function(repository) {
+    return Clone.clone(url, file).then(function(repository) {
       assert.ok(repository instanceof Repository);
     });
   });
