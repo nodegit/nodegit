@@ -468,8 +468,8 @@
     "js": "userpass"
   },
   "git_cred **": {
-    "js": "Cred",
-    "cpp": "Cred"
+    "cpp": "GitCred",
+    "js": "Cred"
   },
   "git_diff_patch_free": {
     "js": "patchFree",
@@ -9195,5 +9195,33 @@
   "const git_strarray **": {
     "cpp": "GitStrarray",
     "js": "Strarray"
+  },
+  "git_cred": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "git_cred *": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "const git_cred **": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "const git_cred *": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "git_cred_ssh_key_from_agent": {
+    "cpp": "CredSshKeyFromAgent",
+    "js": "credSshKeyFromAgent"
+  },
+  "git_cred_ssh_key_from_agent *": {
+    "cpp": "CredSshKeyFromAgent",
+    "js": "credSshKeyFromAgent"
+  },
+  "const git_cred_ssh_key_from_agent *": {
+    "cpp": "CredSshKeyFromAgent",
+    "js": "credSshKeyFromAgent"
   }
 }
