@@ -30,6 +30,10 @@ npm install nodegit
 If you encounter problems while installing, you should try the Building from
 source instructions below.
 
+**Please note that nodegit is undergoing a large scale refactoring at the moment.** Please
+continue reporting bugs, but note that until the upcoming 0.1 release they are unlikely
+to be fixed. Older versions of the API will not be supported.
+
 ## Building from source. ##
 
 Minimum dependencies:
