@@ -342,6 +342,7 @@ fileNames.forEach(function(fileName, index) {
     }
 
     if (Object.keys(functions || {}).indexOf(descriptor.cFunctionName) > -1) {
+      descriptor.comment = funcDescriptor.comments || "";
       file.functions.push(descriptor);
     }
   });
