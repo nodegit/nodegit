@@ -3,8 +3,7 @@ NodeGit
 
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
-[![Build
-Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
+[![Build Status](https://travis-ci.org/nodegit/nodegit.svg?branch=master)](https://travis-ci.org/nodegit/nodegit)
 <a href="https://ci.appveyor.com/project/TimBranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2/branch/master" alt="Build Status: Windows" height="18" /></a>
 
 **Stable: 0.1.4**
