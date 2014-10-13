@@ -92,7 +92,7 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
 
   // Write out all the classes.
   enabled.forEach(function(idef) {
-    if (idef.isPublicStruct) {
+    if (idef.hasConstructor) {
       file.write("../src/" + idef.name + ".cc", templates.struct_content.render(idef));
       file.write("../include/" + idef.name + ".h", templates.struct_header.render(idef));
     }
