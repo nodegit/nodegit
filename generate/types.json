@@ -12,7 +12,7 @@
     "js": "Repository"
   },
   "uint32_t": {
-    "js": "Uint32",
+    "js": "Number",
     "cpp": "Number"
   },
   "const char *": {
@@ -20,7 +20,7 @@
     "cpp": "String"
   },
   "int": {
-    "js": "Int32",
+    "js": "Number",
     "cpp": "Number"
   },
   "git_attr_get_many": {
@@ -120,7 +120,7 @@
     "cpp": "Foreach"
   },
   "unsigned int": {
-    "js": "Uint32",
+    "js": "Number",
     "cpp": "Number"
   },
   "git_branch_foreach_cb": {
@@ -2281,7 +2281,7 @@
     "js": "setIgnore"
   },
   "git_submodule_ignore_t": {
-    "js": "Uint32",
+    "js": "Number",
     "cpp": "Number"
   },
   "git_submodule_update": {
