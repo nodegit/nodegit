@@ -105,6 +105,14 @@ fileNames.forEach(function(fileName, index) {
   }
 
   if (file.cType) {
+    // Add a description if one exists.
+    if (structs[file.cType]) {
+      file.description = structs[file.cType].description;
+    }
+    else {
+      file.description = "";
+    }
+
     file.freeFunctionName = "git_" + fileName + "_free";
   }
 
@@ -214,6 +222,7 @@ fileNames.forEach(function(fileName, index) {
 
     descriptor.cFunctionName = functionName;
     descriptor.ignore = functionDescriptor === ident;
+    descriptor.description = funcDescriptor.description || "";
 
     if (typeof functionDescriptor.ignore === "boolean") {
       descriptor.ignore = functionDescriptor.ignore;
@@ -234,6 +243,7 @@ fileNames.forEach(function(fileName, index) {
 
     var retVal = descriptor.return = functionDescriptor.return || {};
     retVal.cType = funcDescriptor.return.type;
+    retVal.comment = funcDescriptor.return.comment;
 
     var type = typeMap[retVal.cType];
 
