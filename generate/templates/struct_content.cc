@@ -22,6 +22,12 @@ using namespace node;
   memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
 }
 
+{{ cppClassName }}::{{ cppClassName }}({{ cType }}* raw) {
+  {{ cType }} wrappedValue = *raw;
+  this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
+  memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+}
+
 {{ cppClassName }}::~{{ cppClassName }}() {
   // This is going to cause memory leaks. We'll have to solve that later
   // TODO: Clean up memory better

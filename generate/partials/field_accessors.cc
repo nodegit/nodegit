@@ -6,7 +6,9 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cType }} *raw = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue();
 
-  {%if field.cppClassName == 'String' %}
+  {%if field.hasConstructor %}
+  NanReturnValue(NanNew(new {{ field.cppClassName }}(&raw->{{ field.name }})));
+  {%elsif field.cppClassName == 'String' %}
   NanReturnValue(NanNew<String>(raw->{{ field.name }}));
   {%elsif field.cppClassName|isV8Value %}
   NanReturnValue(NanNew<{{ field.cppClassName }}>(raw->{{ field.name }}));
@@ -19,7 +21,10 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   {{ cType }} *raw = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue();
 
-  {%if field.cppClassName == 'String' %}
+  {%if field.hasConstructor %}
+  {{ field.cType }}* wrappedStruct = ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
+  memcpy(&raw->{{ field.name }}, wrappedStruct, sizeof({{ field.cType }}));
+  {%elsif field.cppClassName == 'String' %}
   if (raw->{{ field.name }}) {
     //free(raw->{{ field.name }});
   }
@@ -28,14 +33,12 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   raw->{{ field.name }} = strdup(*str);
   {%elsif field.isCppClassIntType%}
   if (value->IsNumber()) {
-    raw->{{ field.name }} = value->field.cppClassName}}Value();
-  }
-  {%elsif field.cppClassName == 'Number' %}
-  if (value->IsNumber()) {
-    raw->{{ field.name }} = value->Int32Value();
+    raw->{{ field.name }} = value->{{field.cppClassName}}Value();
   }
   {%else%}
-  raw->{{ field.name }} = ({{ field.cType }}) value;
+  if (value->IsNumber()) {
+    raw->{{ field.name }} = ({{ field.cType }}) value->Int32Value();
+  }
   {%endif%}
 
 }

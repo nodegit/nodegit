@@ -162,7 +162,6 @@
   "clone_options": {
     "cType": "git_clone_options",
     "isStruct": true,
-    "isPublicStruct": true,
     "dependencies": [
       "../include/checkout_options.h",
       "../include/remote_callbacks.h"
