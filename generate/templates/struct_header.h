@@ -17,7 +17,7 @@ using namespace v8;
 
 class {{ cppClassName }} : public ObjectWrap {
   public:
-
+    {{ cppClassName }}({{ cType }}* raw);
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 

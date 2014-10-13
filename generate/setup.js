@@ -124,6 +124,18 @@ fileNames.forEach(function(fileName, index) {
     cFile.fields = descriptor[fileName].fields || structFile.fields || [];
   }
 
+  // This should turn 'git_clone_options' into 'git_clone_init_options'
+  var initFnName = ["git"].concat(fileName.split('_'));
+
+  initFnName.splice(-1, 0, "init");
+  initFnName = initFnName.join('_');
+
+  // Does this struct contain an init function? If so then we can create one publicly
+  // to pass into functions and other structs
+  file.hasConstructor = structFile.used && structFile.used.needs.some(function (fnName) {
+    return fnName === initFnName;
+  });
+
   // Doesn't actually exist.
   if (cFile.functions.indexOf(file.freeFunctionName) === -1) {
     delete file.freeFunctionName;
@@ -190,6 +202,22 @@ fileNames.forEach(function(fileName, index) {
       field.jsFunctionName = camelCase(field.name);
       field.cppClassName = typeMap[field.cType].cpp;
       field.jsClassName = typeMap[field.cType].js;
+
+      var struct = structs[field.cType];
+
+      // This should turn 'git_clone_options' into 'git_clone_init_options'
+      var initFnName = field.cType.split('_');
+
+      initFnName.splice(-1, 0, "init");
+      initFnName = initFnName.join('_');
+
+      // Does this struct contain an init function? If so then we can create one publicly
+      // to pass into functions and other structs
+      field.hasConstructor = struct && struct.used && struct.used.needs.some(function (fnName) {
+        return fnName === initFnName;
+      });
+
+      field.isEnum = struct && struct.type === "enum";
     } catch (ex) {
       console.error(file.filename, field.cType + " is missing a definition.");
     }
