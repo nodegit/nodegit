@@ -1,3 +1,4 @@
+
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();

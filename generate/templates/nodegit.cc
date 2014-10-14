@@ -13,7 +13,6 @@ extern "C" void init(Handle<v8::Object> target) {
   NanScope();
 
   Wrapper::Initialize(target);
-
   {%each%}
   {{ cppClassName }}::Initialize(target);
   {%endeach%}
