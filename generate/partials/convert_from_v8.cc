@@ -1,14 +1,17 @@
 {%if not isPayload %}
   {{ cType }} from_{{ name }};
   {%if isOptional %}
-    if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
+
+  if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
   {%endif%}
   {%if cppClassName == 'String' %}
-      String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
-      from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
+
+  String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
+  from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
   {%elsif cppClassName == 'Array' %}
-      Array *tmp_{{ name }} = Array::Cast(*args[{{ jsArg }}]);
-      from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|replace '**' '*' }}));
+
+  Array *tmp_{{ name }} = Array::Cast(*args[{{ jsArg }}]);
+  from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|replace '**' '*' }}));
       for (unsigned int i = 0; i < tmp_{{ name }}->Length(); i++) {
     {%--
       // FIXME: should recursively call convertFromv8.
@@ -17,11 +20,15 @@
       }
   {%elsif cppClassName == 'Function' %}
   {%elsif cppClassName == 'Buffer' %}
-      from_{{ name }} = Buffer::Data(args[{{ jsArg }}]->ToObject());
+
+  from_{{ name }} = Buffer::Data(args[{{ jsArg }}]->ToObject());
   {%elsif cppClassName|isV8Value %}
-      from_{{ name }} = ({{ cType }}) {{ additionalCast }} {{ cast }} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
+
+  from_{{ name }} = ({{ cType }}) {{ additionalCast }} {{ cast }} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
   {%else%}
-      from_{{ name }} = ObjectWrap::Unwrap<{{ cppClassName }}>(args[{{ jsArg }}]->ToObject())->GetValue();
+
+  from_{{ name }} = ObjectWrap::Unwrap<{{ cppClassName }}>(args[{{ jsArg }}]->ToObject())->GetValue();
+
   {%endif%}
 
   {%if isOptional %}
