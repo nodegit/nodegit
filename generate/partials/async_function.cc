@@ -74,6 +74,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   TryCatch try_catch;
+
   if (baton->error_code == GIT_OK) {
     {%if not .|returnsCount %}
     Handle<Value> result = NanUndefined();

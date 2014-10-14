@@ -14,7 +14,7 @@ to = NanNew<String>({{= parsedName =}});
   {%if isCppClassIntType %}
 to = NanNew<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}});
   {%else%}
-to = NanNew<{{ cppClassName }}>({{= parsedName =}});
+  to = NanNew<{{ cppClassName }}>({{= parsedName =}});
   {%endif%}
 {%elsif cppClassName == 'External' %}
 to = NanNew<External>((void *){{= parsedName =}});
@@ -33,13 +33,15 @@ Local<Array> tmpArray = NanNew<Array>({{= parsedName =}});
 to = tmpArray;
 {%else%}
   {%if copy %}
-if ({{= parsedName =}} != NULL) {
-  {{= parsedName =}} = ({{ cType|replace '**' '*' }} {%if not cType|isPointer %}*{%endif%}){{ copy }}({{= parsedName =}});
-}
+  if ({{= parsedName =}} != NULL) {
+    {{= parsedName =}} = ({{ cType|replace '**' '*' }} {%if not cType|isPointer %}*{%endif%}){{ copy }}({{= parsedName =}});
+  }
   {%endif%}
-if ({{= parsedName =}} != NULL) {
-  to = {{ cppClassName }}::New((void *){{= parsedName =}});
-} else {
-  to = NanNull();
-}
+
+    if ({{= parsedName =}} != NULL) {
+      to = {{ cppClassName }}::New((void *){{= parsedName =}});
+    } else {
+      to = NanNull();
+    }
+
 {%endif%}
