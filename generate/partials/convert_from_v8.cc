@@ -4,11 +4,11 @@
 
   if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
   {%endif%}
-  {%if cppClassName == 'String' %}
+  {%if cppClassName == 'String'%}
 
   String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
   from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
-  {%elsif cppClassName == 'Array' %}
+  {%elsif cppClassName == 'Array'%}
 
   Array *tmp_{{ name }} = Array::Cast(*args[{{ jsArg }}]);
   from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|replace '**' '*' }}));
@@ -18,8 +18,8 @@
     --%}
       from_{{ name }}[i] = ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(tmp_{{ name }}->Get(NanNew<Number>(static_cast<double>(i)))->ToObject())->GetValue();
       }
-  {%elsif cppClassName == 'Function' %}
-  {%elsif cppClassName == 'Buffer' %}
+  {%elsif cppClassName == 'Function'%}
+  {%elsif cppClassName == 'Buffer'%}
 
   from_{{ name }} = Buffer::Data(args[{{ jsArg }}]->ToObject());
   {%elsif cppClassName|isV8Value %}

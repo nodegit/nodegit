@@ -30,7 +30,8 @@
   },
 
   "blame": {
-    "cType": null,
+    "cType": "git_blame",
+    "forwardDeclare": true,
 
     "functions": {
       "git_blame_init_options": {
@@ -46,7 +47,7 @@
       },
 
       "git_blame_get_hunk_byline": {
-        "ignore": true
+        "ignore": false
       },
 
       "git_blame_file": {
