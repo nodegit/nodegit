@@ -47,7 +47,8 @@
       },
 
       "git_blame_get_hunk_byline": {
-        "ignore": false
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
       },
 
       "git_blame_file": {
