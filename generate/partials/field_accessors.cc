@@ -7,7 +7,7 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
   {%if field.hasConstructor %}
-  NanReturnValue(&wrapper->{{ field.name }});
+  NanReturnValue(wrapper->{{ field.name }});
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
     NanReturnValue(NanNew<String>(wrapper->GetValue()->{{ field.name }}));
