@@ -1,7 +1,7 @@
 
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
-  NanScope();
+  //NanScope();
   {%partial guardArguments .%}
 
   {%each .|returnsInfo 'true' as _return %}
@@ -36,7 +36,7 @@ from_{{ arg.name }}
     {%if not arg.lastArg %},{%endif%}
   {%endeach%}
   );
-
+/*
 {%each args|argsInfo as arg %}
   {%if arg.isCppClassStringOrArray %}
     {%if arg.freeFunctionName %}
@@ -46,7 +46,7 @@ from_{{ arg.name }}
     {%endif%}
   {%endif%}
 {%endeach%}
-
+*/
 {%if return.isErrorCode %}
   if (result != GIT_OK) {
   {%each args|argsInfo as arg %}

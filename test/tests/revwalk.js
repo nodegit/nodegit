@@ -58,47 +58,29 @@ describe("Revwalk", function() {
     });
   });
 
-  it("doesnt segfault when accessing commit.author() twice", function(done) {
-    if (!global.gc) {
-      assert(global.gc, 'manual garbage collection is not enabled')
-    }
-    this.timeout(10000);
-
-    function wait(time) {
-      var then = time + new Date().getTime();
-      while (then > 0 + new Date().getTime()) { }
-    }
-
-    try {
-      {
-
-        return Repository.open(reposPath).then(function(repository) {
-          try {
-            var walker = repository.createRevWalk();
-            repository.getMaster().then(function(master) {
-              try {
-                walker.walk(master, function(error, commit) {
-                  commit.author().name();
-                  commit.author().email();
-                  global.gc();
-                });
+  if (global.gc) {
+    it("doesnt segfault when accessing commit.author() twice", function(done) {
+      this.timeout(10000);
+      return Repository.open(reposPath).then(function(repository) {
+        var walker = repository.createRevWalk();
+        repository.getMaster().then(function(master) {
+          var did = false;
+          walker.walk(master, function(error, commit) {
+            for (var i = 0; i < 1000; i++) {
+              if (true) {
+                commit.author().name();
+                commit.author().email();
               }
-              catch( e) {
-                done(e);
-              }
-
-            });
-          }
-          catch(e) {
-            done(e);
-          }
+              global.gc();
+            }
+            if (!did) {
+              done();
+              did = true;
+            }
+          });
         });
-      }
-      done();
-    }
-    catch(e) {
-      done(e);
-    }
-  });
+      });
+    });
+  }
 
 });
