@@ -1,6 +1,7 @@
 // This is a generated file, modify: generate/templates/class.cc.
 #include <nan.h>
 #include <string.h>
+#include <iostream>
 
 extern "C" {
 #include <git2.h>
@@ -15,23 +16,33 @@ extern "C" {
 
 using namespace v8;
 using namespace node;
+using namespace std;
 
 {{ cppClassName }}::{{ cppClassName }}() {
   {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
   this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
   memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+
+  this->ConstructFields();
 }
 
 {{ cppClassName }}::{{ cppClassName }}({{ cType }}* raw) {
-  {{ cType }} wrappedValue = *raw;
-  this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
-  memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+  this->raw = raw;
+  this->ConstructFields();
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
   // This is going to cause memory leaks. We'll have to solve that later
   // TODO: Clean up memory better
   free(this->raw);
+}
+
+void {{ cppClassName }}::ConstructFields() {
+  {%each fields|fieldsInfo as field %}
+    {%if field.hasConstructor %}
+  {{ field.name }} = {{ field.cppClassName }}::New(&this->raw->{{ field.name }});
+    {%endif%}
+  {%endeach%}
 }
 
 void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
@@ -55,11 +66,25 @@ void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
 
 NAN_METHOD({{ cppClassName }}::New) {
   NanScope();
+  {{ cppClassName }}* instance;
 
-  {{ cppClassName }}* instance = new {{ cppClassName }}();
+  if (args.Length() == 0 || !args[0]->IsExternal()) {
+    instance = new {{ cppClassName }}();
+  }
+  else {
+    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(args[0])->Value()));
+  }
+
   instance->Wrap(args.This());
 
   NanReturnValue(args.This());
+}
+
+Handle<Value> {{ cppClassName }}::New({{ cType }}* raw) {
+  NanEscapableScope();
+
+  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(1, argv));
 }
 
 {{ cType }} *{{ cppClassName }}::GetValue() {

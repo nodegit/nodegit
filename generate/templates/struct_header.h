@@ -23,16 +23,21 @@ class {{ cppClassName }} : public ObjectWrap {
 
     {{ cType }} *GetValue();
 
-    static Handle<Value> New(void *raw);
+    static Handle<Value> New({{ cType }} *raw);
 
   private:
     {{ cppClassName }}();
     ~{{ cppClassName }}();
 
+    void ConstructFields();
+
     static NAN_METHOD(New);
 
     {%each fields as field%}
       {%if not field.ignore%}
+        {%if field.hasConstructor %}
+    Handle<Value> {{ field.name }};
+        {%endif%}
     static NAN_GETTER(Get{{ field.cppFunctionName }});
     static NAN_SETTER(Set{{ field.cppFunctionName }});
       {%endif%}

@@ -689,7 +689,10 @@
   "remote_callbacks": {
     "isStruct": true,
     "cType": "git_remote_callbacks",
-    "fields": []
+    "fields": [{
+      "name": "version",
+      "cType": "int"
+    }]
   },
 
   "repository": {

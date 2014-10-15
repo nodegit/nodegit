@@ -4,43 +4,45 @@
 NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
   NanScope();
 
-  {{ cType }} *raw = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue();
+  {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
   {%if field.hasConstructor %}
-  NanReturnValue(NanNew(new {{ field.cppClassName }}(&raw->{{ field.name }})));
+  NanReturnValue(&wrapper->{{ field.name }});
   {%elsif field.cppClassName == 'String' %}
-  NanReturnValue(NanNew<String>(raw->{{ field.name }}));
+  if (wrapper->GetValue()->{{ field.name }}) {
+    NanReturnValue(NanNew<String>(wrapper->GetValue()->{{ field.name }}));
+  }
+  else {
+    NanReturnUndefined();
+  }
   {%elsif field.cppClassName|isV8Value %}
-  NanReturnValue(NanNew<{{ field.cppClassName }}>(raw->{{ field.name }}));
+  NanReturnValue(NanNew<{{ field.cppClassName }}>(wrapper->GetValue()->{{ field.name }}));
   {%endif%}
-
 }
 
 NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   NanScope();
 
-  {{ cType }} *raw = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue();
+  {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
   {%if field.hasConstructor %}
-  {{ field.cType }}* wrappedStruct = ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
-  memcpy(&raw->{{ field.name }}, wrappedStruct, sizeof({{ field.cType }}));
+  wrapper->{{ field.name }} = value;
   {%elsif field.cppClassName == 'String' %}
-  if (raw->{{ field.name }}) {
-    //free(raw->{{ field.name }});
+  if (wrapper->GetValue()->{{ field.name }}) {
+    //free(wrapper->{{ field.name }});
   }
 
   String::Utf8Value str(value);
-  raw->{{ field.name }} = strdup(*str);
+  wrapper->GetValue()->{{ field.name }} = strdup(*str);
   {%elsif field.isCppClassIntType%}
   if (value->IsNumber()) {
-    raw->{{ field.name }} = value->{{field.cppClassName}}Value();
+    wrapper->GetValue()->{{ field.name }} = value->{{field.cppClassName}}Value();
   }
   {%else%}
   if (value->IsNumber()) {
-    raw->{{ field.name }} = ({{ field.cType }}) value->Int32Value();
+    wrapper->GetValue()->{{ field.name }} = ({{ field.cType }}) value->Int32Value();
   }
   {%endif%}
-
 }
   {%endif%}
 {%endeach%}
