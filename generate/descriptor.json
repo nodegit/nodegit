@@ -35,15 +35,17 @@
 
     "functions": {
       "git_blame_init_options": {
-        "ignore": true
+        "ignore": false
       },
 
       "git_blame_get_hunk_count": {
-        "ignore": true
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
       },
 
       "git_blame_get_hunk_byindex": {
-        "ignore": true
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
       },
 
       "git_blame_get_hunk_byline": {
