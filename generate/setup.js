@@ -251,7 +251,7 @@ fileNames.forEach(function(fileName, index) {
 
     var funcDescriptor = libgit2.functions[functionName];
     var descriptor = {};
-    var cType = file.cType || "git_" + file.filename.slice(0, -2);
+    var cType = file.altType || file.cType || "git_" + file.filename.slice(0, -2);
 
     // From the hand maintained file.
     var functionDescriptor = functions ? functions[functionName] || ident : ident;
