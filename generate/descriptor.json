@@ -282,6 +282,10 @@
     "isStruct": true
   },
 
+  "cred_acquire_cb": {
+    
+  },
+
   "cred_helpers": {
   },
 
@@ -694,7 +698,7 @@
       "cType": "int"
     }, {
       "name": "credentials",
-      "cType": "function"
+      "cType": "git_cred_acquire_cb"
     }]
   },
 
