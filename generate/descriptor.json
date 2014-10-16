@@ -692,6 +692,9 @@
     "fields": [{
       "name": "version",
       "cType": "int"
+    }, {
+      "name": "credentials",
+      "cType": "function"
     }]
   },
 

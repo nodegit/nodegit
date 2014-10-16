@@ -42,9 +42,17 @@ describe("Clone", function() {
     });
   });
 
-  it("can clone with ssh", function() {
+  it.only("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
-    var opts = { ignoreCertErrors: 1 };
+    var opts = {
+      ignoreCertErrors: 1,
+      remote_callbacks: {
+        credentials: function() {
+          console.log("here");
+          return null;
+        }
+      }
+    };
 
     return Clone.clone(url, ssh, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
