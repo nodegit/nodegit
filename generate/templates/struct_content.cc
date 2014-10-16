@@ -35,12 +35,19 @@ using namespace std;
   // This is going to cause memory leaks. We'll have to solve that later
   // TODO: Clean up memory better
   free(this->raw);
+
+  {%each fields|fieldsInfo as field %}
+    {%if field.hasConstructor %}
+  {{ field.name }}.Dispose();
+  {{ field.name }}.Clear();
+    {%endif%}
+  {%endeach%}
 }
 
 void {{ cppClassName }}::ConstructFields() {
   {%each fields|fieldsInfo as field %}
     {%if field.hasConstructor %}
-  {{ field.name }} = {{ field.cppClassName }}::New(&this->raw->{{ field.name }});
+  {{ field.name }} = Persistent<Object>::New({{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject());
     {%endif%}
   {%endeach%}
 }

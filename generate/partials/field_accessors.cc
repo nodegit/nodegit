@@ -26,7 +26,8 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
   {%if field.hasConstructor %}
-  wrapper->{{ field.name }} = value;
+  wrapper->{{ field.name }} = Persistent<Object>::New(value->ToObject());
+  wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
     //free(wrapper->{{ field.name }});

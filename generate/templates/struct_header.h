@@ -36,7 +36,7 @@ class {{ cppClassName }} : public ObjectWrap {
     {%each fields as field%}
       {%if not field.ignore%}
         {%if field.hasConstructor %}
-    Handle<Value> {{ field.name }};
+    Persistent<Object> {{ field.name }};
         {%endif%}
     static NAN_GETTER(Get{{ field.cppFunctionName }});
     static NAN_SETTER(Set{{ field.cppFunctionName }});
