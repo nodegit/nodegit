@@ -632,6 +632,7 @@
     "js": "rrLast"
   },
   "const git_error *": {
+    "cpp": "GitError",
     "js": "Error"
   },
   "giterr_clear": {
@@ -9251,5 +9252,165 @@
   "const git_blame_init_options *": {
     "cpp": "InitOptions",
     "js": "initOptions"
+  },
+  "git_buf": {
+    "cpp": "GitBuf",
+    "js": "Buf"
+  },
+  "git_buf **": {
+    "cpp": "GitBuf",
+    "js": "Buf"
+  },
+  "git_buf *": {
+    "cpp": "GitBuf",
+    "js": "Buf"
+  },
+  "const git_buf **": {
+    "cpp": "GitBuf",
+    "js": "Buf"
+  },
+  "const git_buf *": {
+    "cpp": "GitBuf",
+    "js": "Buf"
+  },
+  "git_cherry": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "git_cherry **": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "git_cherry *": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "const git_cherry **": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "const git_cherry *": {
+    "cpp": "GitCherry",
+    "js": "Cherry"
+  },
+  "git_cherry_pick_options": {
+    "cpp": "GitCherryPickOptions",
+    "js": "CherryPickOptions"
+  },
+  "git_cherry_pick_options **": {
+    "cpp": "GitCherryPickOptions",
+    "js": "CherryPickOptions"
+  },
+  "git_cherry_pick_options *": {
+    "cpp": "GitCherryPickOptions",
+    "js": "CherryPickOptions"
+  },
+  "const git_cherry_pick_options **": {
+    "cpp": "GitCherryPickOptions",
+    "js": "CherryPickOptions"
+  },
+  "const git_cherry_pick_options *": {
+    "cpp": "GitCherryPickOptions",
+    "js": "CherryPickOptions"
+  },
+  "git_merge_options": {
+    "cpp": "GitMergeOptions",
+    "js": "MergeOptions"
+  },
+  "git_merge_options **": {
+    "cpp": "GitMergeOptions",
+    "js": "MergeOptions"
+  },
+  "git_merge_options *": {
+    "cpp": "GitMergeOptions",
+    "js": "MergeOptions"
+  },
+  "const git_merge_options **": {
+    "cpp": "GitMergeOptions",
+    "js": "MergeOptions"
+  },
+  "const git_merge_options *": {
+    "cpp": "GitMergeOptions",
+    "js": "MergeOptions"
+  },
+  "git_error": {
+    "cpp": "GitError",
+    "js": "Error"
+  },
+  "git_error **": {
+    "cpp": "GitError",
+    "js": "Error"
+  },
+  "git_error *": {
+    "cpp": "GitError",
+    "js": "Error"
+  },
+  "const git_error **": {
+    "cpp": "GitError",
+    "js": "Error"
+  },
+  "git_cherry_pick": {
+    "cpp": "CherryPick",
+    "js": "cherryPick"
+  },
+  "git_cherry_pick **": {
+    "cpp": "GitCherryPick",
+    "js": "CherryPick"
+  },
+  "git_cherry_pick *": {
+    "cpp": "CherryPick",
+    "js": "cherryPick"
+  },
+  "const git_cherry_pick **": {
+    "cpp": "GitCherryPick",
+    "js": "CherryPick"
+  },
+  "const git_cherry_pick *": {
+    "cpp": "CherryPick",
+    "js": "cherryPick"
+  },
+  "git_cherrypick": {
+    "cpp": "GitCherrypick",
+    "js": "Cherrypick"
+  },
+  "git_cherrypick **": {
+    "cpp": "GitCherrypick",
+    "js": "Cherrypick"
+  },
+  "git_cherrypick *": {
+    "cpp": "GitCherrypick",
+    "js": "Cherrypick"
+  },
+  "const git_cherrypick **": {
+    "cpp": "GitCherrypick",
+    "js": "Cherrypick"
+  },
+  "const git_cherrypick *": {
+    "cpp": "GitCherrypick",
+    "js": "Cherrypick"
+  },
+  "git_cherry_pick_init_options": {
+    "cpp": "CherryPickInitOptions",
+    "js": "cherryPickInitOptions"
+  },
+  "git_cherry_pick_init_options *": {
+    "cpp": "CherryPickInitOptions",
+    "js": "cherryPickInitOptions"
+  },
+  "const git_cherry_pick_init_options *": {
+    "cpp": "CherryPickInitOptions",
+    "js": "cherryPickInitOptions"
+  },
+  "git_cherry_pick_commit": {
+    "cpp": "CherryPickCommit",
+    "js": "cherryPickCommit"
+  },
+  "git_cherry_pick_commit *": {
+    "cpp": "CherryPickCommit",
+    "js": "cherryPickCommit"
+  },
+  "const git_cherry_pick_commit *": {
+    "cpp": "CherryPickCommit",
+    "js": "cherryPickCommit"
   }
 }

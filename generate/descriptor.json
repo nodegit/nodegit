@@ -176,7 +176,25 @@
     }
   },
 
-  "buffer": {
+  "buf": {
+    "cType": "git_buf",
+
+    "functions": {
+      "git_buf_free": {
+        "ignore": true,
+        "args": [{ "shouldAlloc": true }]
+      },
+
+      "git_buf_grow": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
+      },
+
+      "git_buf_set": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
+      }
+    }
   },
 
   "checkout": {
@@ -219,6 +237,47 @@
       "../include/checkout_options.h",
       "../include/tree.h"
     ],
+    "fields": []
+  },
+
+  "cherrypick": {
+    "cType": "git_commit",
+    "altType": "git_cherry_pick",
+    "trim": false,
+
+    "dependencies": [
+      "../include/cherry_pick_options.h",
+      "../include/merge_options.h",
+      "../include/index.h",
+      "../include/repository.h",
+      "../include/commit.h"
+    ],
+
+    "functions": {
+      "git_cherry_pick": {
+        "ignore": false
+      },
+
+      "git_cherry_pick_commit": {
+        "ignore": false
+      },
+
+      "git_cherry_pick_init_options": {
+        "ignore": false
+      }
+    }
+  },
+
+  "cherry_pick_options": {
+    "cType": "git_cherry_pick_options",
+    "isStruct": true,
+
+    "dependencies": [
+      "../include/functions/copy.h",
+      "../include/cherry_pick_options.h",
+      "../include/checkout_options.h"
+    ],
+
     "fields": []
   },
 
@@ -359,10 +418,6 @@
         "args": [{ "isSelf": true }]
       }
     }
-  },
-
-  "common": {
-    "cType": null
   },
 
   "config": {
@@ -583,8 +638,9 @@
     ]
   },
 
-  "errors": {
-    "cType": null
+  "error": {
+    "cType": "git_error",
+    "altType": "giterr"
   },
 
   "filter": {
@@ -612,6 +668,11 @@
 
   "merge": {
     "cType": null
+  },
+
+  "merge_options": {
+    "cType": "git_merge_options",
+    "isStruct": true
   },
 
   "message": {
@@ -1002,14 +1063,6 @@
   },
 
   "status": {
-    "cType": null
-  },
-
-  "stdint": {
-    "cType": null
-  },
-
-  "stdarray": {
     "cType": null
   },
 
