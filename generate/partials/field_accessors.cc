@@ -45,5 +45,15 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   }
   {%endif%}
 }
+
+    {%if field.cppClassName == "Function" %}
+{{ field.returnType }} {{ field.name }}_cppCallback (
+  {%each field.args|argsInfo as arg%}
+  {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
+  {%endeach}
+  ) {
+  // code to call JS function goes here
+}
+    {%endif%}
   {%endif%}
 {%endeach%}
