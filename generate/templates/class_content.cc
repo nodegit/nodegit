@@ -17,9 +17,9 @@ using namespace v8;
 using namespace node;
 
 {%if cType%}
-{{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw) {
+{{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing) {
   this->raw = raw;
-  this->selfFreeing = true;
+  this->selfFreeing = selfFreeing;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
@@ -65,16 +65,17 @@ NAN_METHOD({{ cppClassName }}::New) {
   if (args.Length() == 0 || !args[0]->IsExternal()) {
     return NanThrowError("{{ cType }} is required.");
   }
-  {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(args[0])->Value()));
+
+  {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(args[0])->Value()), args[1]->BooleanValue());
   object->Wrap(args.This());
 
   NanReturnValue(args.This());
 }
 
-Handle<Value> {{ cppClassName }}::New(void *raw) {
+Handle<Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
   NanEscapableScope();
-  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
-  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(1, argv));
+  Handle<Value> argv[2] = { NanNew<External>((void *)raw), Boolean::New(selfFreeing) };
+  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(2, argv));
 }
 
 {{ cType }} *{{ cppClassName }}::GetValue() {

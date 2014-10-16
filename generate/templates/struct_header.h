@@ -1,6 +1,6 @@
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
-
+// generated from struct_header.h
 #include <nan.h>
 #include <string>
 
@@ -17,7 +17,7 @@ using namespace v8;
 
 class {{ cppClassName }} : public ObjectWrap {
   public:
-    {{ cppClassName }}({{ cType }}* raw);
+    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing);
     static Persistent<Function> constructor_template;
     static void Initialize (Handle<v8::Object> target);
 
@@ -73,6 +73,7 @@ class {{ cppClassName }} : public ObjectWrap {
     {%endeach%}
 
     {{ cType }} *raw;
+    bool selfFreeing;
 };
 
 #endif
