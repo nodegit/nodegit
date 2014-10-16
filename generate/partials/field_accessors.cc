@@ -54,7 +54,36 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
   {%endeach}
   ) {
-  // code to call JS function goes here
+  if ({{ field.name }} == NULL) {
+    {%if field.returnType == "int" %}
+    return {{ field.returnNoResults }}; // no results acquired
+    {%else%}
+    return;
+    {%endif%}
+  }
+
+  Local<Value> argv[{{ field.args|jsArgsCount }}] = {
+    {%each field.args|argsInfo as arg %}
+      {%if arg.isJsArg %}
+    Local<Value>::New(NanNew({{ arg.name }})){%if not arg.lastArg %},{%endif%}
+      {%endif%}
+    {%endeach%}
+  };
+
+  Local<Value> result = {{ field.name }}->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv);
+
+  {%each field|returnsInfo true false as _return%}
+  if (result->IsObject()) {
+    {{ _return.name }} = &ObjectWrap::Unwrap<{{ _return.cppClassname }}>(result->ToObject())->GetValue();
+    return {{ field.returnSuccess }};
+  }
+  else if (result->IsNativeError()) {
+    return {{ field.returnError }};
+  }
+  else {
+    return {{ field.returnNoResults }};
+  }
+  {%endeach%}
 }
     {%endif%}
   {%endif%}
