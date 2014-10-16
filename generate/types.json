@@ -1,4 +1,8 @@
 {
+  "git_cred_acquire_cb": {
+    "cpp": "Function",
+    "js": "Function"
+  },
   "git_attr_get": {
     "cpp": "Get",
     "js": "get"
