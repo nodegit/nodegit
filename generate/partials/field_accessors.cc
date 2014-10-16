@@ -6,7 +6,7 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor %}
+  {%if field.hasConstructor | or field.cppClassName == "Function" %}
   NanReturnValue(wrapper->{{ field.name }});
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -28,6 +28,8 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {%if field.hasConstructor %}
   wrapper->{{ field.name }} = Persistent<Object>::New(value->ToObject());
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
+  {elsif field.cppClassName == "Function" %}
+  wrapper->{{ field.name }} = Persistent<Function>::New(value->ToFunction());
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
     //free(wrapper->{{ field.name }});
