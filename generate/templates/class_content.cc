@@ -19,11 +19,14 @@ using namespace node;
 {%if cType%}
 {{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw) {
   this->raw = raw;
+  this->selfFreeing = true;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
   {%if freeFunctionName%}
-  {{ freeFunctionName }}(this->raw);
+  if (this->selfFreeing) {
+    {{ freeFunctionName }}(this->raw);
+  }
   {%endif%}
 }
 
@@ -76,6 +79,10 @@ Handle<Value> {{ cppClassName }}::New(void *raw) {
 
 {{ cType }} *{{ cppClassName }}::GetValue() {
   return this->raw;
+}
+
+{{ cType }} **{{ cppClassName }}::GetRefValue() {
+  return &this->raw;
 }
 {%else%}
 void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {

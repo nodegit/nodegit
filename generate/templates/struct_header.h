@@ -22,8 +22,11 @@ class {{ cppClassName }} : public ObjectWrap {
     static void Initialize (Handle<v8::Object> target);
 
     {{ cType }} *GetValue();
+    {{ cType }} **GetRefValue();
 
     static Handle<Value> New({{ cType }} *raw);
+
+    bool selfFreeing;
 
   private:
     {{ cppClassName }}();
