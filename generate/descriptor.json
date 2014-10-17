@@ -166,6 +166,7 @@
       "../include/checkout_options.h",
       "../include/remote_callbacks.h"
     ],
+
     "fields": [{
       "name": "version",
       "cType": "int"
