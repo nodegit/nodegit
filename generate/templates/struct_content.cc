@@ -52,9 +52,6 @@ void {{ cppClassName }}::ConstructFields() {
   {%each fields|fieldsInfo as field %}
     {%if field.hasConstructor %}
   {{ field.name }} = Persistent<Object>::New({{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject());
-    {%elsif field.isFunction %}
-  {{ field.name }} = Persistent<Value>::New(NanNull());
-  //this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
     {%endif%}
   {%endeach%}
 }

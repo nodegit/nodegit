@@ -30,7 +30,8 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
   {%elsif field.isFunction %}
   if (value->IsFunction()) {
-    wrapper->{{ field.name }} = Persistent<Value>::New(value);
+    wrapper->{{ field.name }} = Persistent<Function>::Cast((Persistent<Value>)value);
+    wrapper->raw->{{ field.name }} = ({{ field.cType }})&{{ cppClassName }}::{{ field.name}}_cppCallback;
   }
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -74,7 +75,7 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
     {%endeach%}
   };
 
-  Persistent<Value> result = Persistent<Value>::New(Function::Cast(*{{ field.name }})->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv));
+  Persistent<Value> result = Persistent<Value>::New(this->{{ field.name }}->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv));
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
