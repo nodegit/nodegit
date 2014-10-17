@@ -41,7 +41,7 @@ class {{ cppClassName }} : public ObjectWrap {
         {%if field.hasConstructor %}
     Persistent<Object> {{ field.name }};
         {%elsif field.isFunction %}
-    Persistent<Value> {{ field.name }};
+    Persistent<Function> {{ field.name }};
     {{ field.returnType }} {{ field.name }}_cppCallback (
       {%each field.args|argsInfo as arg%}
       {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
