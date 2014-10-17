@@ -53,7 +53,6 @@ void {{ cppClassName }}::ConstructFields() {
     {%if field.hasConstructor %}
   {{ field.name }} = Persistent<Object>::New({{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject());
     {%elsif field.isFunction %}
-  {{ field.name }} = Persistent<Value>::New(NanNull());
   // Set the static method call and set the payload for this function to be
   // the current instance
   this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
