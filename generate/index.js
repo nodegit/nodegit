@@ -44,6 +44,7 @@ var filters = {
   isPointer: require("./filters/is_pointer"),
   isDoublePointer: require("./filters/is_double_pointer"),
   unPointer: require("./filters/un_pointer"),
+  payloadFor: require("./filters/payload_for"),
   hasReturnType: require("./filters/has_return_type"),
   hasReturns: require("./filters/has_returns"),
   returnsCount: require("./filters/returns_count"),

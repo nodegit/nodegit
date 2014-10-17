@@ -34,6 +34,8 @@
 
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
+                "-Wint-conversions",
+                "-Wmissing-field-initializers"
               ],
             }
           }
