@@ -6,7 +6,7 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor | or field.cppClassName == "Function" %}
+  {%if field.hasConstructor | or field.isFunction %}
   NanReturnValue(wrapper->{{ field.name }});
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -28,8 +28,10 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {%if field.hasConstructor %}
   wrapper->{{ field.name }} = Persistent<Object>::New(value->ToObject());
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
-  {elsif field.cppClassName == "Function" %}
-  wrapper->{{ field.name }} = Persistent<Function>::New(value->ToFunction());
+  {%elsif field.isFunction %}
+  if (value->IsFunction()) {
+    wrapper->{{ field.name }} = Persistent<Value>::New(value);
+  }
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
     //free(wrapper->{{ field.name }});
@@ -48,13 +50,14 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {%endif%}
 }
 
-    {%if field.cppClassName == "Function" %}
-{{ field.returnType }} {{ field.name }}_cppCallback (
+    {%if field.isFunction %}
+{{ field.returnType }} {{ cppClassName }}::{{ field.name }}_cppCallback (
   {%each field.args|argsInfo as arg%}
   {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
-  {%endeach}
+
+  {%endeach%}
   ) {
-  if ({{ field.name }} == NULL) {
+  if (!{{ field.name }}->IsFunction()) {
     {%if field.returnType == "int" %}
     return {{ field.returnNoResults }}; // no results acquired
     {%else%}
@@ -66,15 +69,16 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
     {%each field.args|argsInfo as arg %}
       {%if arg.isJsArg %}
     Local<Value>::New(NanNew({{ arg.name }})){%if not arg.lastArg %},{%endif%}
+
       {%endif%}
     {%endeach%}
   };
 
-  Local<Value> result = {{ field.name }}->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv);
+  Local<Value> result = Function::Cast(*{{ field.name }})->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv);
 
   {%each field|returnsInfo true false as _return%}
   if (result->IsObject()) {
-    {{ _return.name }} = &ObjectWrap::Unwrap<{{ _return.cppClassname }}>(result->ToObject())->GetValue();
+    //{{ _return.name }} = &ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject())->GetValue();
     return {{ field.returnSuccess }};
   }
   else if (result->IsNativeError()) {

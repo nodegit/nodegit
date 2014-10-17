@@ -117,7 +117,7 @@ fileNames.forEach(function(fileName, index) {
   }
 
   // TODO Obsolete this.
-  if (file.isStruct) {
+  if (file.isStruct || !cFile) {
     // No functions.
     cFile = Object.create(file);
     cFile.functions = [];
@@ -202,6 +202,13 @@ fileNames.forEach(function(fileName, index) {
       field.jsFunctionName = camelCase(field.name);
       field.cppClassName = typeMap[field.cType].cpp;
       field.jsClassName = typeMap[field.cType].js;
+
+      if (field.args) {
+        field.args.forEach(function(arg) {
+          arg.cppClassName = typeMap[arg.cType].cpp;
+          arg.jsClassName = typeMap[arg.cType].js;
+        });
+      }
 
       var struct = structs[field.cType];
 

@@ -1,7 +1,7 @@
 {
   "git_cred_acquire_cb": {
-    "cpp": "Function",
-    "js": "Function"
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
   },
   "git_attr_get": {
     "cpp": "Get",
@@ -1636,10 +1636,6 @@
   "git_remote_set_cred_acquire_cb": {
     "js": "setCredAcquireCb",
     "cpp": "SetCredAcquireCb"
-  },
-  "git_cred_acquire_cb": {
-    "js": "CredAcquireCb",
-    "cpp": "CredAcquireCb"
   },
   "git_remote_set_transport": {
     "cpp": "SetTransport",
@@ -9227,5 +9223,21 @@
   "const git_cred_ssh_key_from_agent *": {
     "cpp": "CredSshKeyFromAgent",
     "js": "credSshKeyFromAgent"
+  },
+  "git_cred_acquire_cb **": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
+  },
+  "git_cred_acquire_cb *": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
+  },
+  "const git_cred_acquire_cb **": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
+  },
+  "const git_cred_acquire_cb *": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
   }
 }
