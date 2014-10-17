@@ -73,7 +73,6 @@ class {{ cppClassName }} : public ObjectWrap {
     {%endeach%}
 
     {{ cType }} *raw;
-    bool selfFreeing;
 };
 
 #endif

@@ -38,6 +38,7 @@ class {{ cppClassName }} : public ObjectWrap {
 
     static Handle<Value> New(void *raw, bool selfFreeing);
     {%endif%}
+    bool selfFreeing;
 
   private:
     {%if cType%}
@@ -91,7 +92,6 @@ class {{ cppClassName }} : public ObjectWrap {
     {%if cType%}
     {{ cType }} *raw;
     {%endif%}
-    bool selfFreeing;
 };
 
 #endif
