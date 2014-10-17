@@ -280,7 +280,8 @@
   },
 
   "cred": {
-    "isStruct": true
+    "isStruct": true,
+    "cType": "git_cred"
   },
 
   "cred_helpers": {

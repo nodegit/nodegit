@@ -24,17 +24,21 @@ using namespace std;
   memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
 
   this->ConstructFields();
+  this->selfFreeing = true;
 }
 
 {{ cppClassName }}::{{ cppClassName }}({{ cType }}* raw) {
   this->raw = raw;
   this->ConstructFields();
+  this->selfFreeing = true;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
   // This is going to cause memory leaks. We'll have to solve that later
   // TODO: Clean up memory better
-  free(this->raw);
+  if (this->selfFreeing) {
+    free(this->raw);
+  }
 
   {%each fields|fieldsInfo as field %}
     {%if field.hasConstructor %}
@@ -99,6 +103,10 @@ Handle<Value> {{ cppClassName }}::New({{ cType }}* raw) {
 
 {{ cType }} *{{ cppClassName }}::GetValue() {
   return this->raw;
+}
+
+{{ cType }} **{{ cppClassName }}::GetRefValue() {
+  return &this->raw;
 }
 
 {%partial fieldAccessors .%}

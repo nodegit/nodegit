@@ -74,19 +74,28 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
     {%endeach%}
   };
 
-  Local<Value> result = Function::Cast(*{{ field.name }})->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv);
+  Persistent<Value> result = Persistent<Value>::New(Function::Cast(*{{ field.name }})->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv));
+  {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
   if (result->IsObject()) {
-    //{{ _return.name }} = &ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject())->GetValue();
-    return {{ field.returnSuccess }};
+    {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
+    wrapper->selfFreeing = false;
+
+    {{ _return.name }} = wrapper->GetRefValue();
+    resultStatus = {{ field.returnSuccess }};
   }
   else if (result->IsNativeError()) {
-    return {{ field.returnError }};
+    resultStatus = {{ field.returnError }};
   }
   else {
-    return {{ field.returnNoResults }};
+    resultStatus = {{ field.returnNoResults }};
   }
+
+  result.Dispose();
+  result.Clear();
+
+  return resultStatus;
   {%endeach%}
 }
     {%endif%}
