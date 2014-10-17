@@ -282,10 +282,6 @@
     "isStruct": true
   },
 
-  "cred_acquire_cb": {
-    
-  },
-
   "cred_helpers": {
   },
 
@@ -693,12 +689,43 @@
   "remote_callbacks": {
     "isStruct": true,
     "cType": "git_remote_callbacks",
+    "dependencies": [
+      "../include/cred.h"
+    ],
     "fields": [{
       "name": "version",
       "cType": "int"
     }, {
       "name": "credentials",
-      "cType": "git_cred_acquire_cb"
+      "cType": "git_cred_acquire_cb",
+      "isFunction": true,
+      "args": [
+        {
+          "name": "cred",
+          "cType": "git_cred **",
+          "isReturn": true
+        },
+        {
+          "name": "url",
+          "cType": "const char *"
+        },
+        {
+          "name": "username_from_url",
+          "cType": "const char *"
+        },
+        {
+          "name": "allowed_types",
+          "cType": "unsigned int"
+        },
+        {
+          "name": "payload",
+          "cType": "void *"
+        }
+      ],
+      "returnType": "int",
+      "returnNoResults": 1,
+      "returnSuccess": 0,
+      "returnError": -1
     }]
   },
 
