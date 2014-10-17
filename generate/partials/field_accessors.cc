@@ -6,7 +6,7 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor | or field.isFunction %}
+  {%if field.hasConstructor | or field.isFunction | or field.payloadFor %}
   NanReturnValue(wrapper->{{ field.name }});
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -25,13 +25,19 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor %}
+  {%if field.hasConstructor | or field.payloadFor %}
+  wrapper->{{ field.name }}.Dispose();
+  wrapper->{{ field.name }}.Clear();
+
   wrapper->{{ field.name }} = Persistent<Object>::New(value->ToObject());
+    {%if field.hasConstructor %}
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
+    {%endif%}
   {%elsif field.isFunction %}
   if (value->IsFunction()) {
+    wrapper->{{ field.name }}.Dispose();
+    wrapper->{{ field.name }}.Clear();
     wrapper->{{ field.name }} = Persistent<Function>::Cast((Persistent<Value>)value);
-    wrapper->raw->{{ field.name }} = ({{ field.cType }})&{{ cppClassName }}::{{ field.name}}_cppCallback;
   }
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -58,7 +64,9 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   {%endeach%}
   ) {
-  if (!{{ field.name }}->IsFunction()) {
+  {{ cppClassName }} *instance = ({{ cppClassName }}*)payload;
+
+  if (!instance->{{ field.name }}->IsFunction()) {
     {%if field.returnType == "int" %}
     return {{ field.returnNoResults }}; // no results acquired
     {%else%}
@@ -68,14 +76,17 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   Local<Value> argv[{{ field.args|jsArgsCount }}] = {
     {%each field.args|argsInfo as arg %}
-      {%if arg.isJsArg %}
-    Local<Value>::New(NanNew({{ arg.name }})){%if not arg.lastArg %},{%endif%}
+      {%if arg.name == "payload" %}
+      {%-- payload is always the last arg --%}
+    Local<Value>::New(NanNew(instance->{{ fields|payloadFor field.name }}))
+      {%elsif arg.isJsArg %}
+    Local<Value>::New(NanNew({{ arg.name }})),
 
       {%endif%}
     {%endeach%}
   };
 
-  Persistent<Value> result = Persistent<Value>::New(this->{{ field.name }}->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv));
+  Persistent<Value> result = Persistent<Value>::New(instance->{{ field.name }}->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv));
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}

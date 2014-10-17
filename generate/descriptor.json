@@ -728,6 +728,10 @@
       "returnNoResults": 1,
       "returnSuccess": 0,
       "returnError": -1
+    }, {
+      "name": "payload",
+      "cType": "void *",
+      "payloadFor": "*"
     }]
   },
 

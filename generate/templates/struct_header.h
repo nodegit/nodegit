@@ -28,6 +28,18 @@ class {{ cppClassName }} : public ObjectWrap {
 
     bool selfFreeing;
 
+    {%each fields as field %}
+      {%if not field.ignore %}
+        {%if field.isFunction %}
+    static {{ field.returnType }} {{ field.name }}_cppCallback (
+          {%each field.args|argsInfo as arg%}
+      {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
+          {%endeach%}
+      );
+        {%endif%}
+      {%endif%}
+    {%endeach%}
+
   private:
     {{ cppClassName }}();
     ~{{ cppClassName }}();
@@ -38,15 +50,10 @@ class {{ cppClassName }} : public ObjectWrap {
 
     {%each fields as field%}
       {%if not field.ignore%}
-        {%if field.hasConstructor %}
+        {%if field.hasConstructor | or field.payloadFor %}
     Persistent<Object> {{ field.name }};
         {%elsif field.isFunction %}
     Persistent<Function> {{ field.name }};
-    {{ field.returnType }} {{ field.name }}_cppCallback (
-      {%each field.args|argsInfo as arg%}
-      {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
-      {%endeach%}
-      );
         {%endif%}
     static NAN_GETTER(Get{{ field.cppFunctionName }});
     static NAN_SETTER(Set{{ field.cppFunctionName }});
