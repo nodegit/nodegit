@@ -46,7 +46,7 @@ describe("Clone", function() {
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       ignoreCertErrors: 1,
-      remote_callbacks: {
+      remoteCallbacks: {
         credentials: function() {
           console.log("here");
           return null;
