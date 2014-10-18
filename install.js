@@ -154,7 +154,10 @@ var dependencies = Q.allSettled([
     // Write out a sha file for testing in the future.
     return Q.ninvoke(fs, "writeFile", paths.libssh2 + pkg.libssh2.version, "");
   }).then(function() {
-    return Q.nfcall(exec, "cd " + paths.libssh2 + " ; " + paths.libssh2 + "configure");
+    // Only run the configuration script in a BSD-like environment.
+    if (process.platform !== "win32") {
+      return Q.nfcall(exec, "cd " + paths.libssh2 + " ; " + paths.libssh2 + "configure");
+    }
   });
 })
 
