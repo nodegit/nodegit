@@ -281,7 +281,12 @@
 
   "cred": {
     "isStruct": true,
-    "cType": "git_cred"
+    "cType": "git_cred",
+    "functions": {
+      "git_cred_ssh_key_from_agent": {
+        "ignore": false
+      }
+    }
   },
 
   "cred_helpers": {
