@@ -23,7 +23,8 @@
       ],
 
       "cflags": [
-        "-Wall"
+        "-Wall",
+        "-std=c++11"
       ],
 
       "conditions": [
