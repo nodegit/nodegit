@@ -32,10 +32,20 @@ class {{ cppClassName }} : public ObjectWrap {
       {%if not field.ignore %}
         {%if field.isFunction %}
     static {{ field.returnType }} {{ field.name }}_cppCallback (
-          {%each field.args|argsInfo as arg%}
+          {%each field.args|argsInfo as arg %}
       {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
           {%endeach%}
       );
+    static void {{ field.name }}_asyncWork(uv_work_t* req);
+    static void {{ field.name }}_asyncAfter(uv_work_t* req, int status);
+    struct {{ field.name|titleCase }}Baton {
+          {%each field.args|argsInfo as arg %}
+      {{ arg.cType }} {{ arg.name}};
+          {%endeach%}
+      uv_work_t req;
+      {{ field.returnType }} result;
+      bool done;
+    };
         {%endif%}
       {%endif%}
     {%endeach%}
@@ -50,10 +60,10 @@ class {{ cppClassName }} : public ObjectWrap {
 
     {%each fields as field%}
       {%if not field.ignore%}
-        {%if field.hasConstructor | or field.payloadFor %}
+        {%if field.hasConstructor %}
     Persistent<Object> {{ field.name }};
-        {%elsif field.isFunction %}
-    Persistent<Function> {{ field.name }};
+        {%elsif field.isFunction | or field.payloadFor %}
+    Persistent<Value> {{ field.name }};
         {%endif%}
     static NAN_GETTER(Get{{ field.cppFunctionName }});
     static NAN_SETTER(Set{{ field.cppFunctionName }});
