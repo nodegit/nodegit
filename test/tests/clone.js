@@ -42,7 +42,6 @@ describe("Clone", function() {
       assert.ok(repository instanceof Repository);
     });
   });
-
   // Currently waiting on AppVeyor to support an interactive Windows Service
   // builder, so we can correctly run pageant.exe.
   var testSsh = process.platform === "win32" ? it.skip : it;
