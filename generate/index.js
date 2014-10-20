@@ -34,6 +34,7 @@ var templates = {
 var filters = {
   upper: require("./filters/upper"),
   replace: require("./filters/replace"),
+  titleCase: require("./filters/title_case"),
   or: require("./filters/or"),
   and: require("./filters/and"),
   defaultValue: require("./filters/default_value"),

@@ -1,7 +1,8 @@
 // This is a generated file, modify: generate/templates/class.cc.
 #include <nan.h>
 #include <string.h>
-#include <iostream>
+#include <chrono>
+#include <thread>
 
 extern "C" {
 #include <git2.h>
@@ -41,7 +42,7 @@ using namespace std;
   }
 
   {%each fields|fieldsInfo as field %}
-    {%if field.hasConstructor %}
+    {%if field.hasConstructor | or field.isFunction | or field.payloadFor %}
   {{ field.name }}.Dispose();
   {{ field.name }}.Clear();
     {%endif%}
@@ -51,12 +52,15 @@ using namespace std;
 void {{ cppClassName }}::ConstructFields() {
   {%each fields|fieldsInfo as field %}
     {%if field.hasConstructor %}
-  {{ field.name }} = Persistent<Object>::New({{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject());
+  this->{{ field.name }} = Persistent<Object>::New({{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject());
+    {%elsif field.payloadFor %}
+  this->{{ field.name }} = Persistent<Value>::New(NanUndefined());
     {%elsif field.isFunction %}
   // Set the static method call and set the payload for this function to be
   // the current instance
   this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
   this->raw->{{ fields|payloadFor field.name }} = (void *)this;
+  this->{{ field.name }} = Persistent<Value>::New(NanUndefined());
     {%endif%}
   {%endeach%}
 }
