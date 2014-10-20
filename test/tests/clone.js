@@ -13,6 +13,7 @@ describe("Clone", function() {
 
   var Repository = require("../../lib/repository");
   var Clone = require("../../lib/clone");
+  var NodeGit = require("../../");
 
   before(function() {
     return Promise.all([
@@ -48,8 +49,9 @@ describe("Clone", function() {
       ignoreCertErrors: 1,
       remoteCallbacks: {
         credentials: function() {
-          console.log("here");
-          return null;
+          var cred = new NodeGit.GitCred();
+          cred.keyFromSshAgent("git");
+          return cred;
         }
       }
     };

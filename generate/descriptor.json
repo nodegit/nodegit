@@ -285,8 +285,8 @@
     "functions": {
       "git_cred_ssh_key_from_agent": {
         "ignore": false,
-        "isPrototypeMethod": true,
-        "args": [{ "isSelf": true }]
+        "isConstructorMethod": true,
+        "args": [{ "isReturn": true, "shouldAlloc": true }]
       }
     }
   },
