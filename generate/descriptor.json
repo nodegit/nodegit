@@ -1,4 +1,4 @@
-{ 
+{
   "attr": {
     "cType": null,
 
@@ -286,8 +286,9 @@
     "functions": {
       "git_cred_ssh_key_from_agent": {
         "ignore": false,
-        "isPrototypeMethod": true,
-        "args": [{ "isSelf": true }]
+        "isPrototypeMethod": false,
+        "args": [{ "isSelf": false }],
+        "isAsync": false
       }
     }
   },

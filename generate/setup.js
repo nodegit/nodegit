@@ -298,7 +298,9 @@ fileNames.forEach(function(fileName, index) {
     descriptor.isConstructorMethod = isCtor;
 
     // Set the prototype method argument.
-    descriptor.isPrototypeMethod = !descriptor.isConstructorMethod;
+    if (functionDescriptor.isPrototypeMethod !== false) {
+      descriptor.isPrototypeMethod = !descriptor.isConstructorMethod;
+    }
 
     var hasReturn = false;
 
