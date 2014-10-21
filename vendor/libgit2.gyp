@@ -407,6 +407,9 @@
     {
       "target_name": "libssh2",
       "type": "static_library",
+      "defines": [
+        "NETSNMP_ENABLE_IPV6"
+      ],
       "sources": [
         "libssh2/src/agent.c",
         "libssh2/src/crypt.c",
@@ -438,8 +441,10 @@
       "conditions": [
         ["OS=='win'", {
           "include_dirs": [
+            "libssh2/src",
             "libssh2/win32",
-          ]
+            "libssh2/include",
+          ],
         }],
       ]
     },
