@@ -438,6 +438,14 @@
         ".",
         "libssh2/include",
       ],
+      "dependencies": [
+        "openssl.gyp:openssl"
+      ],
+      "direct_dependent_settings": {
+        "include_dirs": [
+          "libssh2/include"
+        ]
+      },
       "conditions": [
         ["OS=='win'", {
           "include_dirs": [
