@@ -14,7 +14,8 @@
       "dependencies": [
         "zlib",
         "http_parser",
-        "libssh2"
+        "libssh2",
+        "openssl.gyp:openssl"
       ],
       "sources": [
         "libgit2/src/array.h",
@@ -335,9 +336,7 @@
       "include_dirs": [
         "libgit2/include",
         "libgit2/src",
-        "libgit2/deps/regex",
-        "libssh2/include",
-        "libssh2/src"
+        "libgit2/deps/regex"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
@@ -451,8 +450,15 @@
           "include_dirs": [
             "libssh2/src",
             "libssh2/win32",
-            "libssh2/include",
+            "libssh2/include"
           ],
+          "direct_dependent_settings": {
+            "include_dirs": [
+                "libssh2/src",
+                "libssh2/win32",
+                "libssh2/include"
+            ]
+          }
         }],
       ]
     },
