@@ -48,10 +48,8 @@ describe("Clone", function() {
     var opts = {
       ignoreCertErrors: 1,
       remoteCallbacks: {
-        credentials: function() {
-          var cred = new NodeGit.GitCred();
-          cred.keyFromSshAgent("git");
-          return cred;
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyFromAgent(userName);
         }
       }
     };

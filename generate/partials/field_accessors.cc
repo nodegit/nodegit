@@ -66,7 +66,6 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   {%each field.args|argsInfo as arg %}
   baton->{{ arg.name }} = {{ arg.name }};
-
   {%endeach%}
   baton->req.data = baton;
   baton->done = false;
@@ -78,7 +77,7 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   }
 
   {%each field|returnsInfo true false as _return %}
-  {{ _return.name }} = baton->{{ _return.name }};
+  *{{ _return.name }} = *baton->{{ _return.name }};
   {%endeach%}
 
   return baton->result;
@@ -116,19 +115,20 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
     {%endeach%}
   };
 
+  TryCatch tryCatch;
   Local<Value> result = Local<Value>::New(Function::Cast(*instance->{{ field.name }})->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv));
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
-  if (!result->IsNull() && !result->IsUndefined()) {
+  if (result.IsEmpty() || result->IsNativeError()) {
+    baton->result = {{ field.returnError }};
+  }
+  else if (!result->IsNull() && !result->IsUndefined()) {
     {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
     wrapper->selfFreeing = false;
 
     baton->{{ _return.name }} = wrapper->GetRefValue();
     baton->result = {{ field.returnSuccess }};
-  }
-  else if (result->IsNativeError()) {
-    baton->result = {{ field.returnError }};
   }
   else {
     baton->result = {{ field.returnNoResults }};
