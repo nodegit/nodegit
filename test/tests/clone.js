@@ -69,7 +69,8 @@ describe("Clone", function() {
   });
 
   it("can clone with filesystem", function() {
-    var url = "file://" + path.resolve("test/repos/empty");
+    var prefix = process.platform === "win32" ? "" : "file://";
+    var url = prefix + path.resolve("test/repos/empty");
 
     return Clone.clone(url, file).then(function(repository) {
       assert.ok(repository instanceof Repository);
