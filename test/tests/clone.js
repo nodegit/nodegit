@@ -43,7 +43,7 @@ describe("Clone", function() {
     });
   });
 
-  it.only("can clone with ssh", function() {
+  it("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       ignoreCertErrors: 1,
