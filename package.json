@@ -10,6 +10,10 @@
     "url": "http://www.libssh2.org/download/libssh2-1.4.3.tar.gz",
     "version": "1.4.3"
   },
+  "openssl": {
+    "url": "https://www.openssl.org/source/openssl-1.0.1j.tar.gz",
+    "version": "1.0.1j"
+  },
   "homepage": "https://github.com/tbranyen/nodegit",
   "keywords": [
     "libgit2",

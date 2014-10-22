@@ -1,6 +1,7 @@
 /node_modules/
 /vendor/libgit2/
 /vendor/libssh2/
+/vendor/openssl/
 /build/
 /coverage/
 /test/repos/

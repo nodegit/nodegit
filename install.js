@@ -46,6 +46,7 @@ var paths = envOverride({
   pkg: local("package"),
   libgit2: local("vendor/libgit2/"),
   libssh2: local("vendor/libssh2/"),
+  openssl: local("vendor/openssl/"),
   sys: {
     include: local("include/sys/"),
     src: local("src/sys/"),
@@ -121,7 +122,7 @@ var dependencies = Q.allSettled([
   });
 })
 
-// Grab libssh2 if needed
+// Grab libssh2 if needed.
 .then(function() {
   console.info("[nodegit] Detecting vendor/libssh2.");
 
@@ -158,6 +159,41 @@ var dependencies = Q.allSettled([
     if (process.platform !== "win32") {
       return Q.nfcall(exec, "cd " + paths.libssh2 + " ; " + paths.libssh2 + "configure");
     }
+  });
+})
+
+// Grab openssl if needed.
+.then(function() {
+  console.info("[nodegit] Detecting vendor/openssl.");
+
+  return Q.ninvoke(fs, "stat", paths.openssl).then(function() {
+    return Q.ninvoke(fs, "stat", paths.openssl + pkg.openssl.version);
+  }).fail(function() {
+    console.info("[nodegit] Removing outdated vendor/openssl.");
+
+    // This directory is outdated, remove.
+    throw Q.ninvoke(rimraf, null, paths.openssl);
+  });
+})
+
+// If the directory already exists, no need to refetch.
+.fail(function() {
+  // Otherwise fetch the openssl source.
+  console.info("[nodegit] Fetching vendor/openssl.");
+
+  var url = pkg.openssl.url;
+
+  var extract = tar.Extract({
+    path: paths.openssl,
+    strip: true
+  });
+
+  // First extract from Zlib and then extract from Tar.
+  var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
+
+  return Q.ninvoke(expand, "on", "end").then(function() {
+    // Write out a sha file for testing in the future.
+    return Q.ninvoke(fs, "writeFile", paths.openssl + pkg.openssl.version, "");
   });
 })
 
