@@ -6,7 +6,9 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor | or field.isFunction | or field.payloadFor %}
+  {%if field.hasConstructor | or field.payloadFor %}
+  NanReturnValue(wrapper->{{ field.name }});
+  {%elsif field.isFunction%}
   NanReturnValue(wrapper->{{ field.name }}->GetFunction());
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
