@@ -101,23 +101,22 @@ var clone = require("nodegit").Repository.clone;
 
 // Clone a given repository into a specific folder.
 clone("https://github.com/nodegit/nodegit", "tmp", null)
+  // Look up this known commit.
   .then(function(repo) {
     // Use a known commit sha from this repository.
-    var sha = "59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5";
-
-    // Look up this known commit.
-    return repo.getCommit(sha);
+    return repo.getCommit("59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5");
   })
+  // Look up a specific file within that commit.
   .then(function(commit) {
-    // Look up a specific file within that commit.
     return commit.getEntry("README.md");
   })
+  // Get the blob contents from the file.
   .then(function(entry) {
-    // Get the blob contents from the file.
     return entry.getBlob();
   })
+  // Display information about the blob.
   .then(function(blob) {
-      // Show the name, sha, and filesize in byes.
+    // Show the name, sha, and filesize in byes.
     console.log(entry.name() + entry.sha() + blob.size() + "b");
 
     // Show a spacer.
@@ -135,10 +134,11 @@ var open = require("nodegit").Repository.open;
 
 // Open the repository directory.
 open("tmp")
+  // Open the master branch.
   .then(function(repo) {
-    // Open the master branch.
     return repo.getMaster();
   })
+  // Display information about commits on master.
   .then(function(branch) {
     // Create a new history event emitter.
     var history = branch.history();
