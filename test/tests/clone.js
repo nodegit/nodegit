@@ -43,7 +43,10 @@ describe("Clone", function() {
     });
   });
 
-  it("can clone with ssh", function() {
+  // FIXME: Anyone know how to start and use ssh-agent in Windows?
+  var testSsh = process.platform === "win32" ? it.skip : it;
+
+  testSsh("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       ignoreCertErrors: 1,
