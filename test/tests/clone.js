@@ -25,7 +25,7 @@ describe("Clone", function() {
     ]);
   });
 
-  it.skip("can clone with http", function() {
+  it("can clone with http", function() {
     var url = "http://github.com/nodegit/test.git";
     var opts = { ignoreCertErrors: 1 };
 
@@ -34,7 +34,7 @@ describe("Clone", function() {
     });
   });
 
-  it.skip("can clone with https", function() {
+  it("can clone with https", function() {
     var url = "https://github.com/nodegit/test.git";
     var opts = { ignoreCertErrors: 1 };
 
@@ -45,7 +45,7 @@ describe("Clone", function() {
 
   // Currently waiting on AppVeyor to support an interactive Windows Service
   // builder, so we can correctly run pageant.exe.
-  var testSsh = process.platform === "win32" ? it.skip : it.skip;
+  var testSsh = process.platform === "win32" ? it : it.skip;
 
   testSsh("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
