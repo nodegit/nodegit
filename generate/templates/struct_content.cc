@@ -40,12 +40,6 @@ using namespace std;
   if (!this->selfFreeing) {
     free(this->raw);
   }
-
-  {%each fields|fieldsInfo as field %}
-    {%if field.hasConstructor | or field.isFunction | or field.payloadFor %}
-  NanDisposePersistent({{ field.name }});
-    {%endif%}
-  {%endeach%}
 }
 
 void {{ cppClassName }}::ConstructFields() {

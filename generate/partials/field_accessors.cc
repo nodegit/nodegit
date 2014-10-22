@@ -28,13 +28,10 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {%if field.hasConstructor %}
   NanDisposePersistent(wrapper->{{ field.name }});
 
-  //Local<Object> local_{{ field.name }} = value->ToObject();
-  //wrapper->{{ field.name }} = {{ field.name }};
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
   {%elsif field.isFunction | or field.payloadFor %}
   if (value->IsFunction()) {
-    NanDisposePersistent(wrapper->{{ field.name }});
-    NanAssignPersistent(wrapper->{{ field.name }}, value);
+    wrapper->credentials = new NanCallback(value.As<Function>());
   }
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -96,7 +93,7 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
 
   Local<Value> local_{{ field.name }} = NanNew(instance->{{ field.name }});
 
-  if (!local_{{ field.name }}->IsFunction()) {
+  if (!instance->{{ field.name }}->IsEmpty()) {
     {%if field.returnType == "int" %}
     baton->result = {{ field.returnNoResults }}; // no results acquired
     {%endif%}
@@ -116,7 +113,7 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
   };
 
   TryCatch tryCatch;
-  Local<Value> result = NanNew<Function>(instance->{{ field.name }}.As<Function>())->Call(NanGetCurrentContext()->Global(), {{ field.args|jsArgsCount }}, argv);
+  Local<Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
