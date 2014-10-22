@@ -26,16 +26,15 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
   {%if field.hasConstructor %}
-  wrapper->{{ field.name }}.Dispose();
-  wrapper->{{ field.name }}.Clear();
+  NanDisposePersistent(wrapper->{{ field.name }});
 
-  wrapper->{{ field.name }} = Persistent<Object>::New(value->ToObject());
+  //Local<Object> local_{{ field.name }} = value->ToObject();
+  //wrapper->{{ field.name }} = {{ field.name }};
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
   {%elsif field.isFunction | or field.payloadFor %}
   if (value->IsFunction()) {
-    wrapper->{{ field.name }}.Dispose();
-    wrapper->{{ field.name }}.Clear();
-    wrapper->{{ field.name }} = Persistent<Value>::New(value);
+    NanDisposePersistent(wrapper->{{ field.name }});
+    NanAssignPersistent(wrapper->{{ field.name }}, value);
   }
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -107,9 +106,10 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
     {%each field.args|argsInfo as arg %}
       {%if arg.name == "payload" %}
       {%-- payload is always the last arg --%}
-    Local<Value>::New(instance->{{ fields|payloadFor field.name }})
+    NanNew<Value>(instance->{{ fields|payloadFor field.name }});
+    Local<Value>::New()
       {%elsif arg.isJsArg %}
-    Local<Value>::New(NanNew(baton->{{ arg.name }})),
+    NanNew<Value>(baton->{{ arg.name }}),
 
       {%endif%}
     {%endeach%}
