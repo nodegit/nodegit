@@ -19,6 +19,7 @@
         "GIT_THREADS",
         "GIT_SSH",
         "GIT_SSL",
+        "GIT_WINHTTP",
         # Node's util.h may be accidentally included so use this to guard
         # against compilation error.
         "SRC_UTIL_H_",
@@ -318,6 +319,7 @@
             "libgit2/src/win32/version.h",
             "libgit2/src/win32/w32_util.c",
             "libgit2/src/win32/w32_util.h",
+            "libgit2/src/transports/winhttp.c",
             "libgit2/deps/regex/regex.c",
           ],
         }, {
