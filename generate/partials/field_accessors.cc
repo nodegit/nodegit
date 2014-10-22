@@ -6,8 +6,10 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor | or field.isFunction | or field.payloadFor %}
+  {%if field.hasConstructor | or field.payloadFor %}
   NanReturnValue(wrapper->{{ field.name }});
+  {%elsif field.isFunction%}
+  NanReturnValue(wrapper->{{ field.name }}->GetFunction());
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
     NanReturnValue(NanNew<String>(wrapper->GetValue()->{{ field.name }}));
@@ -91,8 +93,6 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
   {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
   {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->payload);
 
-  Local<Value> local_{{ field.name }} = NanNew(instance->{{ field.name }});
-
   if (!instance->{{ field.name }}->IsEmpty()) {
     {%if field.returnType == "int" %}
     baton->result = {{ field.returnNoResults }}; // no results acquired
@@ -113,7 +113,7 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
   };
 
   TryCatch tryCatch;
-  Local<Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
+  Handle<Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
