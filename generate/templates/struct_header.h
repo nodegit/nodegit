@@ -62,7 +62,9 @@ class {{ cppClassName }} : public ObjectWrap {
       {%if not field.ignore%}
         {%if field.hasConstructor %}
     Persistent<Object> {{ field.name }};
-        {%elsif field.isFunction | or field.payloadFor %}
+        {%elsif field.isFunction%}
+    NanCallback* {{ field.name }};
+        {%elsif field.payloadFor %}
     Persistent<Value> {{ field.name }};
         {%endif%}
     static NAN_GETTER(Get{{ field.cppFunctionName }});
