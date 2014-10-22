@@ -94,7 +94,9 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
   {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
   {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->payload);
 
-  if (!instance->{{ field.name }}->IsFunction()) {
+  Local<Value> local_{{ field.name }} = NanNew(instance->{{ field.name }});
+
+  if (!local_{{ field.name }}->IsFunction()) {
     {%if field.returnType == "int" %}
     baton->result = {{ field.returnNoResults }}; // no results acquired
     {%endif%}
@@ -106,15 +108,15 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
     {%each field.args|argsInfo as arg %}
       {%if arg.name == "payload" %}
       {%-- payload is always the last arg --%}
-    instance->{{ fields|payloadFor field.name }},
+    NanNew(instance->{{ fields|payloadFor field.name }}),
       {%elsif arg.isJsArg %}
-    baton->{{ arg.name }},
+    NanNew(baton->{{ arg.name }}),
       {%endif%}
     {%endeach%}
   };
 
   TryCatch tryCatch;
-  Local<Value> result = Local<Value>::New(Function::Cast(*instance->{{ field.name }})->Call(NanGetCurrentContext()->Global(), {{ field.args|jsArgsCount }}, argv));
+  Local<Value> result = NanNew<Function>(instance->{{ field.name }}.As<Function>())->Call(NanGetCurrentContext()->Global(), {{ field.args|jsArgsCount }}, argv);
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
