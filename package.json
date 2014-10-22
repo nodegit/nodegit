@@ -26,6 +26,13 @@
     },
     {
       "name": "Nick Kallen"
+    },
+    {
+      "name": "John Haley",
+      "email": "johnhaley81@gmail.com"
+    },
+    {
+      "name": "Max Korp"
     }
   ],
   "main": "lib/nodegit.js",
