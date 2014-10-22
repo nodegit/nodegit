@@ -100,28 +100,32 @@ npm install nodegit --msvs_version=2013
 var clone = require("nodegit").Repository.clone;
 
 // Clone a given repository into a specific folder.
-clone("https://github.com/nodegit/nodegit", "tmp", null).then(function(repo) {
-  // Use a known commit sha from this repository.
-  var sha = "59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5";
+clone("https://github.com/nodegit/nodegit", "tmp", null)
+  .then(function(repo) {
+    // Use a known commit sha from this repository.
+    var sha = "59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5";
 
-  // Look up this known commit.
-  repo.getCommit(sha).then(function(commit) {
+    // Look up this known commit.
+    return repo.getCommit(sha);
+  })
+  .then(function(commit) {
     // Look up a specific file within that commit.
-    commit.getEntry("README.md").then(function(entry) {
-      // Get the blob contents from the file.
-      entry.getBlob().then(function(blob) {
-        // Show the name, sha, and filesize in byes.
-        console.log(entry.name() + entry.sha() + blob.size() + "b");
+    return commit.getEntry("README.md");
+  })
+  .then(function(entry) {
+    // Get the blob contents from the file.
+    return entry.getBlob();
+  })
+  .then(function(blob) {
+      // Show the name, sha, and filesize in byes.
+    console.log(entry.name() + entry.sha() + blob.size() + "b");
 
-        // Show a spacer.
-        console.log(Array(72).join("=") + "\n\n");
+    // Show a spacer.
+    console.log(Array(72).join("=") + "\n\n");
 
-        // Show the entire file.
-        console.log(String(blob));
-      });
-    });
+    // Show the entire file.
+    console.log(String(blob));
   });
-});
 ```
 
 ### Emulating git log: ###
@@ -130,9 +134,12 @@ clone("https://github.com/nodegit/nodegit", "tmp", null).then(function(repo) {
 var open = require("nodegit").Repository.open;
 
 // Open the repository directory.
-open("tmp").then(function(repo) {
-  // Open the master branch.
-  repo.getMaster().then(function(branch) {
+open("tmp")
+  .then(function(repo) {
+    // Open the master branch.
+    return repo.getMaster();
+  })
+  .then(function(branch) {
     // Create a new history event emitter.
     var history = branch.history();
 
@@ -165,7 +172,6 @@ open("tmp").then(function(repo) {
     // Start emitting events.
     history.start();
   });
-});
 ```
 
 ## Unit tests. ##
