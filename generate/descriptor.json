@@ -117,7 +117,7 @@
       },
 
       "git_checkout_init_options": {
-        "ignore": false
+        "ignore": true
       }
     }
   },
@@ -125,11 +125,68 @@
   "checkout_options": {
     "isStruct": true,
     "cType": "git_checkout_options",
+    "dependencies": [
+      "../include/strarray.h",
+      "../include/functions/copy.h",
+      "../include/checkout_options.h",
+      "../include/tree.h"
+    ],
     "fields": []
   },
 
   "clone": {
-    "cType": null
+    "cType": null,
+    "trim": false,
+
+    "dependencies": [
+      "../include/signature.h",
+      "../include/checkout_options.h",
+      "../include/repository.h",
+      "../include/remote.h"
+    ],
+
+    "functions": {
+      "git_clone": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "args": [{}, {}, {}, { "isOptional": true }]
+      },
+
+      "git_clone_into": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "args": [{}, {}, { "isOptional": true }]
+      }
+    }
+  },
+
+  "clone_options": {
+    "cType": "git_clone_options",
+    "isStruct": true,
+    "dependencies": [
+      "../include/checkout_options.h",
+      "../include/remote_callbacks.h"
+    ],
+
+    "fields": [{
+      "name": "version",
+      "cType": "int"
+    }, {
+      "name": "remote_callbacks",
+      "cType": "git_remote_callbacks"
+    }, {
+      "name": "bare",
+      "cType": "int"
+    }, {
+      "name": "ignore_cert_errors",
+      "cType": "int"
+    }, {
+      "name": "remote_name",
+      "cType": "const char *"
+    }, {
+      "name": "checkout_branch",
+      "cType": "const char *"
+    }]
   },
 
   "commit": {
@@ -221,6 +278,19 @@
   },
 
   "config": {
+  },
+
+  "cred": {
+    "isStruct": true,
+    "cType": "git_cred",
+    "functions": {
+      "git_cred_ssh_key_from_agent": {
+        "ignore": false,
+        "isPrototypeMethod": false,
+        "args": [{ "isSelf": false }],
+        "isAsync": false
+      }
+    }
   },
 
   "cred_helpers": {
@@ -627,6 +697,53 @@
     }
   },
 
+  "remote_callbacks": {
+    "isStruct": true,
+    "cType": "git_remote_callbacks",
+    "dependencies": [
+      "../include/cred.h"
+    ],
+    "fields": [{
+      "name": "version",
+      "cType": "int"
+    }, {
+      "name": "credentials",
+      "cType": "git_cred_acquire_cb",
+      "isFunction": true,
+      "args": [
+        {
+          "name": "cred",
+          "cType": "git_cred **",
+          "isReturn": true
+        },
+        {
+          "name": "url",
+          "cType": "const char *"
+        },
+        {
+          "name": "username_from_url",
+          "cType": "const char *"
+        },
+        {
+          "name": "allowed_types",
+          "cType": "unsigned int"
+        },
+        {
+          "name": "payload",
+          "cType": "void *"
+        }
+      ],
+      "returnType": "int",
+      "returnNoResults": 1,
+      "returnSuccess": 0,
+      "returnError": -1
+    }, {
+      "name": "payload",
+      "cType": "void *",
+      "payloadFor": "*"
+    }]
+  },
+
   "repository": {
     "dependencies": [
       "../include/functions/copy.h",
@@ -822,6 +939,15 @@
   },
 
   "transport": {
+    "cType": null,
+    "trim": false,
+
+    "functions": {
+      "git_cred_ssh_key_from_agent": {
+        "ignore": false,
+        "isConstructorMethod": true
+      }
+    }
   },
 
   "tree": {

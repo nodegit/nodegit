@@ -47,8 +47,11 @@ typeMap.__proto__ = {
   "git_checkout_progress_cb": { cpp: "Function", js: "Function" },
   "git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
   "const git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
-  "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" }
+  "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" },
+  "git_checkout_options *": { cpp: "GitCheckoutOptions", js: "CheckoutOptions" }
 };
+
+typeMap["void *"] = { cpp: "Function", js: "Function" };
 
 var files = [];
 
@@ -76,7 +79,7 @@ var fileNames = Object.keys(descriptor);
 
 fileNames.forEach(function(fileName, index) {
   var file = descriptor[fileName];
-  var structFile = structs["git_" + fileName];
+  var structFile = structs["git_" + fileName] || {};
 
   // Constants.
   file.filename = fileName + ".h";
@@ -102,16 +105,36 @@ fileNames.forEach(function(fileName, index) {
   }
 
   if (file.cType) {
+    // Add a description if one exists.
+    if (structs[file.cType]) {
+      file.description = structs[file.cType].description;
+    }
+    else {
+      file.description = "";
+    }
+
     file.freeFunctionName = "git_" + fileName + "_free";
   }
 
   // TODO Obsolete this.
-  if (file.isStruct) {
+  if (file.isStruct || !cFile) {
     // No functions.
     cFile = Object.create(file);
     cFile.functions = [];
-    cFile.fields = descriptor[fileName].fields || structFile.fields;
+    cFile.fields = descriptor[fileName].fields || structFile.fields || [];
   }
+
+  // This should turn 'git_clone_options' into 'git_clone_init_options'
+  var initFnName = ["git"].concat(fileName.split('_'));
+
+  initFnName.splice(-1, 0, "init");
+  initFnName = initFnName.join('_');
+
+  // Does this struct contain an init function? If so then we can create one publicly
+  // to pass into functions and other structs
+  file.hasConstructor = structFile.used && structFile.used.needs.some(function (fnName) {
+    return fnName === initFnName;
+  });
 
   // Doesn't actually exist.
   if (cFile.functions.indexOf(file.freeFunctionName) === -1) {
@@ -127,30 +150,27 @@ fileNames.forEach(function(fileName, index) {
 
   var uniqueTypes = [];
 
-  var addType = function(arg) {
-    if (!arg.type) { return; }
-    if (arg.type.indexOf("git") === 0) {
-      var val = arg.type.split(" ")[0].slice(4);
-
-      if (uniqueTypes.indexOf(val) === -1 && descriptor[val]) {
-        uniqueTypes.push(val);
-      }
-    }
-  };
-
   cFile.functions.forEach(function(functionName) {
     var funcDescriptor = libgit2.functions[functionName];
 
     var args = funcDescriptor.args || [];
 
-    args.forEach(addType);
-    addType(funcDescriptor.return.type);
+    args.forEach(function(arg) {
+      if (!arg.type) { return; }
+      if (arg.type.indexOf("git") === 0) {
+        var val = arg.type.split(" ")[0].slice(4);
+
+        if (uniqueTypes.indexOf(val) === -1 && descriptor[val]) {
+          uniqueTypes.push(val);
+        }
+      }
+    });
   });
 
   var deps = file.dependencies;
 
   file.dependencies = uniqueTypes.map(function(file) {
-    return "../include/" + file + ".h"; 
+    return "../include/" + file + ".h";
   });
 
   if (deps) {
@@ -164,10 +184,15 @@ fileNames.forEach(function(fileName, index) {
   typeMap["git_" + fileName + " **"] =
   typeMap["git_" + fileName] = {
     cpp: file.cppClassName,
-    js: file.jsClassName 
+    js: file.jsClassName
   };
 
-  var fields = file.fields || cFile.fields || (structFile ? structFile.fields || [] : []);
+  var fields = file.fields || cFile.fields || (structFile ? structFile.fields || [] : []) || [];
+
+  // Ensure fields is actually an Array.
+  if (!Array.isArray(fields)) {
+    fields = [];
+  }
 
   // Decorate fields.
   file.fields = fields.map(function(field) {
@@ -177,6 +202,29 @@ fileNames.forEach(function(fileName, index) {
       field.jsFunctionName = camelCase(field.name);
       field.cppClassName = typeMap[field.cType].cpp;
       field.jsClassName = typeMap[field.cType].js;
+
+      if (field.args) {
+        field.args.forEach(function(arg) {
+          arg.cppClassName = typeMap[arg.cType].cpp;
+          arg.jsClassName = typeMap[arg.cType].js;
+        });
+      }
+
+      var struct = structs[field.cType];
+
+      // This should turn 'git_clone_options' into 'git_clone_init_options'
+      var initFnName = field.cType.split('_');
+
+      initFnName.splice(-1, 0, "init");
+      initFnName = initFnName.join('_');
+
+      // Does this struct contain an init function? If so then we can create one publicly
+      // to pass into functions and other structs
+      field.hasConstructor = struct && struct.used && struct.used.needs.some(function (fnName) {
+        return fnName === initFnName;
+      });
+
+      field.isEnum = struct && struct.type === "enum";
     } catch (ex) {
       console.error(file.filename, field.cType + " is missing a definition.");
     }
@@ -192,7 +240,7 @@ fileNames.forEach(function(fileName, index) {
   var iterateFunctions = Object.keys(file.functions || {});
 
   file.functions = [];
-  
+
   (cFile.functions.length ? cFile.functions : iterateFunctions).forEach(function(functionName, index) {
     if (iterateFunctions.indexOf(functionName) === -1) {
       return;
@@ -209,12 +257,13 @@ fileNames.forEach(function(fileName, index) {
 
     descriptor.cFunctionName = functionName;
     descriptor.ignore = functionDescriptor === ident;
+    descriptor.description = funcDescriptor.description || "";
 
     if (typeof functionDescriptor.ignore === "boolean") {
       descriptor.ignore = functionDescriptor.ignore;
     }
 
-    var trimmedName = functionName.slice(cType.length + 1);
+    var trimmedName = file.trim !== false ? functionName.slice(cType.length + 1) : functionName.slice(4);
 
     descriptor.cppFunctionName = functionDescriptor.cppFunctionName || titleCase(trimmedName);
     descriptor.jsFunctionName = functionDescriptor.jsFunctionName || camelCase(trimmedName);
@@ -224,11 +273,12 @@ fileNames.forEach(function(fileName, index) {
     typeMap[descriptor.cFunctionName + " *"] =
     typeMap[descriptor.cFunctionName] = {
       cpp: descriptor.cppFunctionName,
-      js: descriptor.jsFunctionName 
+      js: descriptor.jsFunctionName
     };
 
     var retVal = descriptor.return = functionDescriptor.return || {};
     retVal.cType = funcDescriptor.return.type;
+    retVal.comment = funcDescriptor.return.comment;
 
     var type = typeMap[retVal.cType];
 
@@ -248,7 +298,9 @@ fileNames.forEach(function(fileName, index) {
     descriptor.isConstructorMethod = isCtor;
 
     // Set the prototype method argument.
-    descriptor.isPrototypeMethod = !descriptor.isConstructorMethod;
+    if (functionDescriptor.isPrototypeMethod !== false) {
+      descriptor.isPrototypeMethod = !descriptor.isConstructorMethod;
+    }
 
     var hasReturn = false;
 
@@ -337,6 +389,7 @@ fileNames.forEach(function(fileName, index) {
     }
 
     if (Object.keys(functions || {}).indexOf(descriptor.cFunctionName) > -1) {
+      descriptor.comment = funcDescriptor.comments || "";
       file.functions.push(descriptor);
     }
   });
@@ -344,8 +397,8 @@ fileNames.forEach(function(fileName, index) {
   files.push(file);
 });
 
-fs.writeFileSync(path.join(__dirname, "types.json"), 
+fs.writeFileSync(path.join(__dirname, "types.json"),
   JSON.stringify(typeMap, null, 2));
 
-fs.writeFileSync(path.join(__dirname, "idefs.json"), 
+fs.writeFileSync(path.join(__dirname, "idefs.json"),
   JSON.stringify(files, null, 2));

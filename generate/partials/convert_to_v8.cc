@@ -8,13 +8,13 @@ to = NanNew<String>({{= parsedName =}});
   {%endif%}
 
   {%if freeFunctionName %}
-    {{ freeFunctionName }}({{= parsedName =}});
+{{ freeFunctionName }}({{= parsedName =}});
   {%endif%}
 {%elsif cppClassName|isV8Value %}
   {%if isCppClassIntType %}
 to = NanNew<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}});
   {%else%}
-to = NanNew<{{ cppClassName }}>({{= parsedName =}});
+  to = NanNew<{{ cppClassName }}>({{= parsedName =}});
   {%endif%}
 {%elsif cppClassName == 'External' %}
 to = NanNew<External>((void *){{= parsedName =}});
@@ -22,20 +22,26 @@ to = NanNew<External>((void *){{= parsedName =}});
 {%--
   // FIXME this is not general purpose enough.
 --%}
+{%if size%}
 Local<Array> tmpArray = NanNew<Array>({{= parsedName =}}->{{ size }});
 for (unsigned int i = 0; i < {{= parsedName =}}->{{ size }}; i++) {
   tmpArray->Set(NanNew<Number>(i), NanNew<String>({{= parsedName =}}->{{ key }}[i]));
 }
+{%else%}
+Local<Array> tmpArray = NanNew<Array>({{= parsedName =}});
+{%endif%}
 to = tmpArray;
 {%else%}
   {%if copy %}
-if ({{= parsedName =}} != NULL) {
-  {{= parsedName =}} = ({{ cType|replace '**' '*' }} {%if not cType|isPointer %}*{%endif%}){{ copy }}({{= parsedName =}});
-}
+  if ({{= parsedName =}} != NULL) {
+    {{= parsedName =}} = ({{ cType|replace '**' '*' }} {%if not cType|isPointer %}*{%endif%}){{ copy }}({{= parsedName =}});
+  }
   {%endif%}
-if ({{= parsedName =}} != NULL) {
-  to = {{ cppClassName }}::New((void *){{= parsedName =}});
-} else {
-  to = NanNull();
-}
+
+    if ({{= parsedName =}} != NULL) {
+      to = {{ cppClassName }}::New((void *){{= parsedName =}});
+    } else {
+      to = NanNull();
+    }
+
 {%endif%}

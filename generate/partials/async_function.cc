@@ -1,15 +1,17 @@
+
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   NanScope();
   {%partial guardArguments .%}
-
   if (args.Length() == {{args|jsArgsCount}} || !args[{{args|jsArgsCount}}]->IsFunction()) {
     return NanThrowError("Callback is required and must be a Function.");
   }
 
   {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
+
   baton->error_code = GIT_OK;
   baton->error = NULL;
+
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
@@ -72,6 +74,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   TryCatch try_catch;
+
   if (baton->error_code == GIT_OK) {
     {%if not .|returnsCount %}
     Handle<Value> result = NanUndefined();
