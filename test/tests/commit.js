@@ -91,18 +91,18 @@ describe("Commit", function() {
     history.on("commit", function(commit) {
       historyCount++;
     });
-    
+
     history.on("end", function(commits) {
       assert.equal(historyCount, expectedHistoryCount);
       assert.equal(commits.length, expectedHistoryCount);
 
       done();
     });
-    
+
     history.on("error", function(err) {
       assert.ok(false);
     });
-    
+
     history.start();
   });
 
@@ -143,7 +143,7 @@ describe("Commit", function() {
       treeWalker.on("error", function() {
         assert.ok(false);
       });
-      
+
       treeWalker.on("end", function(entries) {
         assert.equal(commitTreeEntryCount, expectedCommitTreeEntryCount);
         done();
