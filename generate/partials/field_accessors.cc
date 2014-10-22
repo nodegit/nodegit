@@ -102,21 +102,19 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
     return;
   }
 
-  NanNew<Value>(argv[{{ field.args|jsArgsCount }}]) = {
+  Local<Value> argv[{{ field.args|jsArgsCount }}] = {
     {%each field.args|argsInfo as arg %}
       {%if arg.name == "payload" %}
       {%-- payload is always the last arg --%}
-    NanNew<Value>(instance->{{ fields|payloadFor field.name }});
-    Local<Value>::New()
+    instance->{{ fields|payloadFor field.name }},
       {%elsif arg.isJsArg %}
-    NanNew<Value>(baton->{{ arg.name }}),
-
+    baton->{{ arg.name }},
       {%endif%}
     {%endeach%}
   };
 
   TryCatch tryCatch;
-  Local<Value> result = Local<Value>::New(Function::Cast(*instance->{{ field.name }})->Call(Context::GetCurrent()->Global(), {{ field.args|jsArgsCount }}, argv));
+  Local<Value> result = Local<Value>::New(Function::Cast(*instance->{{ field.name }})->Call(NanGetCurrentContext()->Global(), {{ field.args|jsArgsCount }}, argv));
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
