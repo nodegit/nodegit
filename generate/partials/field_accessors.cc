@@ -102,7 +102,7 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
     return;
   }
 
-  Local<Value> argv[{{ field.args|jsArgsCount }}] = {
+  NanNew<Value>(argv[{{ field.args|jsArgsCount }}]) = {
     {%each field.args|argsInfo as arg %}
       {%if arg.name == "payload" %}
       {%-- payload is always the last arg --%}

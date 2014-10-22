@@ -54,13 +54,13 @@ void {{ cppClassName }}::ConstructFields() {
   Local<Object> test = {{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject();
   NanAssignPersistent(this->{{ field.name }}, test);
     {%elsif field.payloadFor %}
-  this->{{ field.name }} = Persistent<Value>::New(NanUndefined());
+  this->{{ field.name }} = NanUndefined();
     {%elsif field.isFunction %}
   // Set the static method call and set the payload for this function to be
   // the current instance
   this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
   this->raw->{{ fields|payloadFor field.name }} = (void *)this;
-  this->{{ field.name }} = Persistent<Value>::New(NanUndefined());
+  this->{{ field.name }} = NanUndefined();
     {%endif%}
   {%endeach%}
 }
