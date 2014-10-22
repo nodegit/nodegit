@@ -18,7 +18,6 @@
       "defines": [
         "GIT_THREADS",
         "GIT_SSH",
-        "GIT_SSL",
         # Node's util.h may be accidentally included so use this to guard
         # against compilation error.
         "SRC_UTIL_H_",
@@ -244,6 +243,11 @@
         "libgit2/src/xdiff/xutils.h",
       ],
       "conditions": [
+        ["OS!='win'", {
+            "defines": [
+                "GIT_SSL"
+            ],
+        }],
         ["OS=='win'", {}, {
           "sources": [
             "libgit2/src/unix/map.c",
