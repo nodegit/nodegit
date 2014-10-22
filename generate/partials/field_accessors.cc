@@ -93,7 +93,7 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
   {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
   {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->payload);
 
-  if (!instance->{{ field.name }}->IsEmpty()) {
+  if (instance->{{ field.name }}->IsEmpty()) {
     {%if field.returnType == "int" %}
     baton->result = {{ field.returnNoResults }}; // no results acquired
     {%endif%}
