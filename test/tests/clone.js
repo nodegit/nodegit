@@ -43,7 +43,8 @@ describe("Clone", function() {
     });
   });
 
-  // FIXME: Anyone know how to start and use ssh-agent in Windows?
+  // Currently waiting on AppVeyor to support an interactive Windows Service
+  // builder, so we can correctly run pageant.exe.
   var testSsh = process.platform === "win32" ? it.skip : it;
 
   testSsh("can clone with ssh", function() {
