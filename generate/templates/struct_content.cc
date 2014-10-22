@@ -43,8 +43,7 @@ using namespace std;
 
   {%each fields|fieldsInfo as field %}
     {%if field.hasConstructor | or field.isFunction | or field.payloadFor %}
-  {{ field.name }}.Dispose();
-  {{ field.name }}.Clear();
+  NanDisposePersistent({{ field.name }});
     {%endif%}
   {%endeach%}
 }
@@ -52,7 +51,8 @@ using namespace std;
 void {{ cppClassName }}::ConstructFields() {
   {%each fields|fieldsInfo as field %}
     {%if field.hasConstructor %}
-  this->{{ field.name }} = Persistent<Object>::New({{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject());
+  Local<Object> test = {{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject();
+  NanAssignPersistent(this->{{ field.name }}, test);
     {%elsif field.payloadFor %}
   this->{{ field.name }} = Persistent<Value>::New(NanUndefined());
     {%elsif field.isFunction %}
