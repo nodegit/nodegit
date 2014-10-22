@@ -16,6 +16,7 @@
       "defines": [
         "GIT_THREADS",
         "GIT_SSH",
+        "GIT_SSL",
         # Node's util.h may be accidentally included so use this to guard
         # against compilation error.
         "SRC_UTIL_H_",
@@ -23,7 +24,7 @@
       "dependencies": [
         "zlib",
         "http_parser",
-        "libssh2"
+        "libssh2",
       ],
       "sources": [
         "libgit2/src/array.h",
@@ -240,9 +241,6 @@
       ],
       "conditions": [
         ["OS!='win'", {
-          "defines": [
-            "GIT_SSL",
-          ],
           "sources": [
             "libgit2/src/unix/map.c",
             "libgit2/src/unix/posix.h",
@@ -269,6 +267,9 @@
             ],
           },
         }, {
+          "dependencies": [
+            "openssl"
+          ],
           "defines": [
             "GIT_WINHTTP",
           ],
