@@ -8,6 +8,7 @@ var request = require("request");
 var tar = require("tar");
 var which = require("which");
 var rimraf = require("rimraf");
+var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
 // This will take in an object and find any matching keys in the environment
 // to use as overrides.
@@ -57,6 +58,10 @@ var paths = envOverride({
 
 // Load the package.json.
 var pkg = require(paths.pkg);
+
+if (NODE_VERSION === 0.1) {
+  pkg.http_parser = pkg.http_parser["0.10"];
+}
 
 // Ensure all dependencies are available.
 var dependencies = Q.allSettled([
@@ -196,12 +201,6 @@ var dependencies = Q.allSettled([
     // Write out a sha file for testing in the future.
     return Q.ninvoke(fs, "writeFile", paths.http_parser +
       pkg.http_parser.version, "");
-  }).then(function() {
-    // Only run the configuration script in a BSD-like environment.
-    if (process.platform !== "win32") {
-      return Q.nfcall(exec, "cd " + paths.http_parser + " ; " +
-        paths.http_parser + "configure");
-    }
   });
 })
 

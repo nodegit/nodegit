@@ -22,7 +22,7 @@
       ],
       "dependencies": [
         "zlib",
-        "http_parser",
+        "<(module_root_dir)/vendor/http_parser/http_parser.gyp:http_parser",
         "libssh2",
         "openssl"
       ],
@@ -399,27 +399,6 @@
           "libgit2/deps/zlib",
         ],
       },
-    },
-    {
-      "target_name": "http_parser",
-      "type": "static_library",
-      "sources": [
-        "http-parser/http_parser.c",
-        "http-parser/http_parser.h",
-      ],
-      "direct_dependent_settings": {
-        "include_dirs": [
-          "http-parser",
-        ],
-      },
-      "conditions": [
-        ["OS=='win'", {
-          "msvs_disabled_warnings": [
-            # Conversion from 'ssize_t' to 'int32_t', possible loss of data.
-            4244,
-          ],
-        }],
-      ],
     },
     {
       "target_name": "libssh2",
