@@ -63,7 +63,11 @@ NAN_METHOD({{ cppClassName }}::New) {
   NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError("{{ cType }} is required.");
+    {%if createFunctionName%}
+    return NanThrowError("A new {{ cppClassName }} cannot be instantiated. Use {{ jsCreateFunctionName }} instead.");
+    {%else%}
+    return NanThrowError("A new {{ cppClassName }} cannot be instantiated.");
+    {%endif%}
   }
 
   {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(args[0])->Value()), args[1]->BooleanValue());

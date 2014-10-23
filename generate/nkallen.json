@@ -12344,8 +12344,8 @@
         "isAsync": true,
         "isConstructorMethod": false,
         "isPrototypeMethod": true,
-        "jsFunctionName": "createCommit",
-        "cppFunctionName": "CreateCommit",
+        "jsFunctionName": "create",
+        "cppFunctionName": "Create",
         "return": {
           "cType": "int",
           "cppClassName": "Int32",

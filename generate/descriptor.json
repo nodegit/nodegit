@@ -196,8 +196,8 @@
     "functions": {
       "git_commit_create": {
         "ignore": false,
-        "jsFunctionName": "createCommit",
-        "cppFunctionName": "CreateCommit",
+        "jsFunctionName": "create",
+        "cppFunctionName": "Create",
         "isConstructorMethod": true,
         "isAsync": true,
         "return": {
