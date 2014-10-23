@@ -1,6 +1,6 @@
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
-
+// generated from class_header.h
 #include <nan.h>
 #include <string>
 
@@ -36,14 +36,13 @@ class {{ cppClassName }} : public ObjectWrap {
     {{ cType }} *GetValue();
     {{ cType }} **GetRefValue();
 
-    static Handle<Value> New(void *raw);
-
-    bool selfFreeing;
+    static Handle<Value> New(void *raw, bool selfFreeing);
     {%endif%}
+    bool selfFreeing;
 
   private:
     {%if cType%}
-    {{ cppClassName }}({{ cType }} *raw);
+    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing);
     ~{{ cppClassName }}();
     {%endif%}
 

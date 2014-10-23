@@ -1,3 +1,4 @@
+// start convert_to_v8 block
 {%if cppClassName == 'String' %}
   {%if size %}
 to = NanNew<String>({{= parsedName =}}, {{ size }});
@@ -39,9 +40,15 @@ to = tmpArray;
   {%endif%}
 
     if ({{= parsedName =}} != NULL) {
+      // {{= cppClassName }} {{= parsedName }}
+      {%if cppClassName == 'Wrapper' %}
       to = {{ cppClassName }}::New((void *){{= parsedName =}});
+      {%else%}
+      to = {{ cppClassName }}::New((void *){{= parsedName =}}, false);
+      {%endif%}
     } else {
       to = NanNull();
     }
 
 {%endif%}
+// end convert_to_v8 block

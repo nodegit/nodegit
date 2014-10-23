@@ -18,7 +18,7 @@ extern "C" {
 using namespace v8;
 using namespace node;
 using namespace std;
-
+// generated from struct_content.cc
 {{ cppClassName }}::{{ cppClassName }}() {
   {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
   this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
@@ -28,10 +28,10 @@ using namespace std;
   this->selfFreeing = true;
 }
 
-{{ cppClassName }}::{{ cppClassName }}({{ cType }}* raw) {
+{{ cppClassName }}::{{ cppClassName }}({{ cType }}* raw, bool selfFreeing) {
   this->raw = raw;
   this->ConstructFields();
-  this->selfFreeing = true;
+  this->selfFreeing = selfFreeing;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
@@ -90,7 +90,7 @@ NAN_METHOD({{ cppClassName }}::New) {
     instance = new {{ cppClassName }}();
   }
   else {
-    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(args[0])->Value()));
+    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(args[0])->Value()), true);
   }
 
   instance->Wrap(args.This());
