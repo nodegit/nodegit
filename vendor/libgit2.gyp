@@ -10,8 +10,6 @@
     "is_clang%": 0,
   },
   "targets": [
-  ],
-  "targets": [
     {
       "target_name": "libgit2",
       "type": "static_library",
@@ -406,12 +404,12 @@
       "target_name": "http_parser",
       "type": "static_library",
       "sources": [
-        "libgit2/deps/http-parser/http_parser.c",
-        "libgit2/deps/http-parser/http_parser.h",
+        "http-parser/http_parser.c",
+        "http-parser/http_parser.h",
       ],
       "direct_dependent_settings": {
         "include_dirs": [
-          "libgit2/deps/http-parser",
+          "http-parser",
         ],
       },
       "conditions": [

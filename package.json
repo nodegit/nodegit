@@ -10,6 +10,10 @@
     "url": "http://www.libssh2.org/download/libssh2-1.4.3.tar.gz",
     "version": "1.4.3"
   },
+  "http_parser": {
+    "url": "https://github.com/joyent/http-parser/archive/v2.3.tar.gz",
+    "version": "2.3.0"
+  },
   "homepage": "https://github.com/tbranyen/nodegit",
   "keywords": [
     "libgit2",

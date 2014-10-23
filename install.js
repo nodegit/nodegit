@@ -46,6 +46,7 @@ var paths = envOverride({
   pkg: local("package"),
   libgit2: local("vendor/libgit2/"),
   libssh2: local("vendor/libssh2/"),
+  http_parser: local("vendor/http_parser/"),
   sys: {
     include: local("include/sys/"),
     src: local("src/sys/"),
@@ -121,7 +122,7 @@ var dependencies = Q.allSettled([
   });
 })
 
-// Grab libssh2 if needed
+// Grab libssh2 if needed.
 .then(function() {
   console.info("[nodegit] Detecting vendor/libssh2.");
 
@@ -156,10 +157,54 @@ var dependencies = Q.allSettled([
   }).then(function() {
     // Only run the configuration script in a BSD-like environment.
     if (process.platform !== "win32") {
-      return Q.nfcall(exec, "cd " + paths.libssh2 + " ; " + paths.libssh2 + "configure");
+      return Q.nfcall(exec, "cd " + paths.libssh2 + " ; " + paths.libssh2 +
+        "configure");
     }
   });
 })
+
+// Grab http-parser if needed.
+.then(function() {
+  console.info("[nodegit] Detecting vendor/http_parser.");
+
+  return Q.ninvoke(fs, "stat", paths.http_parser).then(function() {
+    return Q.ninvoke(fs, "stat", paths.http_parser + pkg.http_parser.version);
+  }).fail(function() {
+    console.info("[nodegit] Removing outdated vendor/http_parser.");
+
+    // This directory is outdated, remove.
+    throw Q.ninvoke(rimraf, null, paths.http_parser);
+  });
+})
+
+// If the directory already exists, no need to refetch.
+.fail(function() {
+  // Otherwise fetch the http_parser source.
+  console.info("[nodegit] Fetching vendor/http_parser.");
+
+  var url = pkg.http_parser.url;
+
+  var extract = tar.Extract({
+    path: paths.http_parser,
+    strip: true
+  });
+
+  // First extract from Zlib and then extract from Tar.
+  var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
+
+  return Q.ninvoke(expand, "on", "end").then(function() {
+    // Write out a sha file for testing in the future.
+    return Q.ninvoke(fs, "writeFile", paths.http_parser +
+      pkg.http_parser.version, "");
+  }).then(function() {
+    // Only run the configuration script in a BSD-like environment.
+    if (process.platform !== "win32") {
+      return Q.nfcall(exec, "cd " + paths.http_parser + " ; " +
+        paths.http_parser + "configure");
+    }
+  });
+})
+
 
 // Build the native module using node-gyp.
 .then(function() {
