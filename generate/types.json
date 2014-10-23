@@ -1877,8 +1877,8 @@
     "js": "lookup"
   },
   "git_commit_create": {
-    "cpp": "CreateCommit",
-    "js": "createCommit"
+    "cpp": "Create",
+    "js": "create"
   },
   "const git_commit **": {
     "cpp": "GitCommit",
@@ -3301,12 +3301,12 @@
     "js": "nthGenAncestor"
   },
   "git_commit_create *": {
-    "cpp": "CreateCommit",
-    "js": "createCommit"
+    "cpp": "Create",
+    "js": "create"
   },
   "const git_commit_create *": {
-    "cpp": "CreateCommit",
-    "js": "createCommit"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_commit_create_v *": {
     "cpp": "CreateV",

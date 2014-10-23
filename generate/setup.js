@@ -114,6 +114,7 @@ fileNames.forEach(function(fileName, index) {
     }
 
     file.freeFunctionName = "git_" + fileName + "_free";
+    file.createFunctionName = "git_" + fileName + "_create";
   }
 
   // TODO Obsolete this.
@@ -136,12 +137,14 @@ fileNames.forEach(function(fileName, index) {
     return fnName === initFnName;
   });
 
-  // Doesn't actually exist.
+  // Free function doesn't actually exist.
   if (cFile.functions.indexOf(file.freeFunctionName) === -1) {
     delete file.freeFunctionName;
   }
 
-
+  if (cFile.functions.indexOf(file.createFunctionName) === -1) {
+    delete file.createFunctionName;
+  }
   var legacyFile = {};
 
   if (file.jsClassName.indexOf("Git") === 0) {
@@ -393,6 +396,12 @@ fileNames.forEach(function(fileName, index) {
       file.functions.push(descriptor);
     }
   });
+
+  if (file.createFunctionName) {
+    file.cppCreateFunctionName = typeMap[file.createFunctionName].cpp;
+    file.jsCreateFunctionName = typeMap[file.createFunctionName].js;
+    delete file.createFunctionName;
+  }
 
   files.push(file);
 });

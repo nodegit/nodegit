@@ -22,4 +22,4 @@ git:
 branches:
   only:
     - master
-
+script: npm --expose-gc test

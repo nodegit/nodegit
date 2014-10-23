@@ -7,6 +7,7 @@ extern "C" {
 }
 
 #include "../include/functions/copy.h"
+#include "../include/macros.h"
 #include "../include/{{ filename }}"
 
 {%each dependencies as dependency%}
@@ -17,9 +18,9 @@ using namespace v8;
 using namespace node;
 
 {%if cType%}
-{{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw) {
+{{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing) {
   this->raw = raw;
-  this->selfFreeing = true;
+  this->selfFreeing = selfFreeing;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
@@ -63,18 +64,23 @@ NAN_METHOD({{ cppClassName }}::New) {
   NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {
-    return NanThrowError("{{ cType }} is required.");
+    {%if createFunctionName%}
+    return NanThrowError("A new {{ cppClassName }} cannot be instantiated. Use {{ jsCreateFunctionName }} instead.");
+    {%else%}
+    return NanThrowError("A new {{ cppClassName }} cannot be instantiated.");
+    {%endif%}
   }
-  {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(args[0])->Value()));
+
+  {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(args[0])->Value()), args[1]->BooleanValue());
   object->Wrap(args.This());
 
   NanReturnValue(args.This());
 }
 
-Handle<Value> {{ cppClassName }}::New(void *raw) {
+Handle<Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
   NanEscapableScope();
-  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
-  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(1, argv));
+  Handle<Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
+  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(2, argv));
 }
 
 {{ cType }} *{{ cppClassName }}::GetValue() {

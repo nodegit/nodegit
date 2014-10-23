@@ -6,7 +6,7 @@ var git = require('../'),
     ;
 
 /**
- * This example creates a certain file `newfile.txt`, adds it to the git index and 
+ * This example creates a certain file `newfile.txt`, adds it to the git index and
  * commits it to head. Similar to a `git add newfile.txt` followed by a `git commit`
 **/
 
