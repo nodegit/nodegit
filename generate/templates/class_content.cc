@@ -78,7 +78,7 @@ NAN_METHOD({{ cppClassName }}::New) {
 
 Handle<Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
   NanEscapableScope();
-  Handle<Value> argv[2] = { NanNew<External>((void *)raw), Boolean::New(selfFreeing) };
+  Handle<Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
   return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(2, argv));
 }
 
