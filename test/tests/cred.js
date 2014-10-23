@@ -21,7 +21,8 @@ describe("Cred", function() {
   });
 
   it("can create credentials using plaintext", function() {
-    var plaintextCreds = NodeGit.Cred.userpassPlaintextNew("username", "password");
+    var plaintextCreds
+      = NodeGit.Cred.userpassPlaintextNew("username", "password");
 
     assert(plaintextCreds instanceof NodeGit.Cred);
   });
