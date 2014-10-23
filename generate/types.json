@@ -1,4 +1,8 @@
 {
+  "git_cred_acquire_cb": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
+  },
   "git_attr_get": {
     "cpp": "Get",
     "js": "get"
@@ -12,7 +16,7 @@
     "js": "Repository"
   },
   "uint32_t": {
-    "js": "Uint32",
+    "js": "Number",
     "cpp": "Number"
   },
   "const char *": {
@@ -20,7 +24,7 @@
     "cpp": "String"
   },
   "int": {
-    "js": "Int32",
+    "js": "Number",
     "cpp": "Number"
   },
   "git_attr_get_many": {
@@ -40,8 +44,8 @@
     "cpp": "AttrForeachCb"
   },
   "void *": {
-    "js": "void",
-    "cpp": "void"
+    "cpp": "Function",
+    "js": "Function"
   },
   "git_attr_cache_flush": {
     "cpp": "CacheFlush",
@@ -120,7 +124,7 @@
     "cpp": "Foreach"
   },
   "unsigned int": {
-    "js": "Uint32",
+    "js": "Number",
     "cpp": "Number"
   },
   "git_branch_foreach_cb": {
@@ -172,8 +176,8 @@
     "js": "head"
   },
   "git_checkout_opts *": {
-    "js": "CheckoutOpts",
-    "cpp": "CheckoutOpts"
+    "cpp": "GitCheckoutOpts",
+    "js": "CheckoutOpts"
   },
   "git_checkout_index": {
     "cpp": "Index",
@@ -468,8 +472,8 @@
     "js": "userpass"
   },
   "git_cred **": {
-    "js": "Cred",
-    "cpp": "Cred"
+    "cpp": "GitCred",
+    "js": "Cred"
   },
   "git_diff_patch_free": {
     "js": "patchFree",
@@ -1633,10 +1637,6 @@
     "js": "setCredAcquireCb",
     "cpp": "SetCredAcquireCb"
   },
-  "git_cred_acquire_cb": {
-    "js": "CredAcquireCb",
-    "cpp": "CredAcquireCb"
-  },
   "git_remote_set_transport": {
     "cpp": "SetTransport",
     "js": "setTransport"
@@ -1650,8 +1650,8 @@
     "js": "setCallbacks"
   },
   "git_remote_callbacks *": {
-    "js": "RemoteCallbacks",
-    "cpp": "RemoteCallbacks"
+    "cpp": "GitRemoteCallbacks",
+    "js": "RemoteCallbacks"
   },
   "git_remote_stats": {
     "cpp": "Stats",
@@ -2037,12 +2037,12 @@
     "js": "list"
   },
   "git_clone": {
-    "cpp": "GitClone",
-    "js": "Clone"
+    "cpp": "Clone",
+    "js": "clone"
   },
   "const git_clone_options *": {
-    "js": "CloneOptions",
-    "cpp": "GitCloneOptions"
+    "cpp": "GitCloneOptions",
+    "js": "CloneOptions"
   },
   "git_remote_load": {
     "cpp": "Load",
@@ -2062,7 +2062,7 @@
   },
   "git_strarray*": {
     "js": "Strarray*",
-    "cpp": "GitStrarray*"
+    "cpp": "Strarray*"
   },
   "git_revparse_single": {
     "cpp": "RevparseSingle",
@@ -2281,7 +2281,7 @@
     "js": "setIgnore"
   },
   "git_submodule_ignore_t": {
-    "js": "Uint32",
+    "js": "Number",
     "cpp": "Number"
   },
   "git_submodule_update": {
@@ -3109,16 +3109,16 @@
     "js": "Clone"
   },
   "git_clone *": {
-    "cpp": "GitClone",
-    "js": "Clone"
+    "cpp": "Clone",
+    "js": "clone"
   },
   "const git_clone **": {
     "cpp": "GitClone",
     "js": "Clone"
   },
   "const git_clone *": {
-    "cpp": "GitClone",
-    "js": "Clone"
+    "cpp": "Clone",
+    "js": "clone"
   },
   "git_clone_into": {
     "cpp": "CloneInto",
@@ -9044,29 +9044,85 @@
     "cpp": "GitDiffLine",
     "js": "DiffLine"
   },
-  "git_strarray": {
-    "cpp": "GitStrarray",
-    "js": "Strarray"
+  "git_checkout_opts": {
+    "cpp": "GitCheckoutOpts",
+    "js": "CheckoutOpts"
   },
-  "git_strarray **": {
-    "cpp": "GitStrarray",
-    "js": "Strarray"
+  "git_checkout_opts **": {
+    "cpp": "GitCheckoutOpts",
+    "js": "CheckoutOpts"
   },
-  "const git_strarray **": {
-    "cpp": "GitStrarray",
-    "js": "Strarray"
+  "const git_checkout_opts **": {
+    "cpp": "GitCheckoutOpts",
+    "js": "CheckoutOpts"
   },
-  "git_remote_delete": {
-    "cpp": "Delete",
-    "js": "delete"
+  "const git_checkout_opts *": {
+    "cpp": "GitCheckoutOpts",
+    "js": "CheckoutOpts"
   },
-  "git_remote_delete *": {
-    "cpp": "Delete",
-    "js": "delete"
+  "git_clone_opts": {
+    "cpp": "GitCloneOpts",
+    "js": "CloneOpts"
   },
-  "const git_remote_delete *": {
-    "cpp": "Delete",
-    "js": "delete"
+  "git_clone_opts **": {
+    "cpp": "GitCloneOpts",
+    "js": "CloneOpts"
+  },
+  "git_clone_opts *": {
+    "cpp": "GitCloneOpts",
+    "js": "CloneOpts"
+  },
+  "const git_clone_opts **": {
+    "cpp": "GitCloneOpts",
+    "js": "CloneOpts"
+  },
+  "const git_clone_opts *": {
+    "cpp": "GitCloneOpts",
+    "js": "CloneOpts"
+  },
+  "git_clone_options": {
+    "cpp": "GitCloneOptions",
+    "js": "CloneOptions"
+  },
+  "git_clone_options **": {
+    "cpp": "GitCloneOptions",
+    "js": "CloneOptions"
+  },
+  "git_clone_options *": {
+    "cpp": "GitCloneOptions",
+    "js": "CloneOptions"
+  },
+  "const git_clone_options **": {
+    "cpp": "GitCloneOptions",
+    "js": "CloneOptions"
+  },
+  "git_remote_callbacks": {
+    "cpp": "GitRemoteCallbacks",
+    "js": "RemoteCallbacks"
+  },
+  "git_remote_callbacks **": {
+    "cpp": "GitRemoteCallbacks",
+    "js": "RemoteCallbacks"
+  },
+  "const git_remote_callbacks **": {
+    "cpp": "GitRemoteCallbacks",
+    "js": "RemoteCallbacks"
+  },
+  "const git_remote_callbacks *": {
+    "cpp": "GitRemoteCallbacks",
+    "js": "RemoteCallbacks"
+  },
+  "git_checkout_init_options": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
+  },
+  "git_checkout_init_options *": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
+  },
+  "const git_checkout_init_options *": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
   },
   "git_checkout_options": {
     "cpp": "GitCheckoutOptions",
@@ -9088,37 +9144,29 @@
     "cpp": "GitCheckoutOptions",
     "js": "CheckoutOptions"
   },
-  "git_cherry": {
-    "cpp": "GitCherry",
-    "js": "Cherry"
+  "git_remote_delete": {
+    "cpp": "Delete",
+    "js": "delete"
   },
-  "git_cherry **": {
-    "cpp": "GitCherry",
-    "js": "Cherry"
+  "git_remote_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
   },
-  "git_cherry *": {
-    "cpp": "GitCherry",
-    "js": "Cherry"
+  "const git_remote_delete *": {
+    "cpp": "Delete",
+    "js": "delete"
   },
-  "const git_cherry **": {
-    "cpp": "GitCherry",
-    "js": "Cherry"
+  "git_repository_init_init_options": {
+    "cpp": "InitInitOptions",
+    "js": "initInitOptions"
   },
-  "const git_cherry *": {
-    "cpp": "GitCherry",
-    "js": "Cherry"
+  "git_repository_init_init_options *": {
+    "cpp": "InitInitOptions",
+    "js": "initInitOptions"
   },
-  "git_checkout_init_options": {
-    "cpp": "InitOptions",
-    "js": "initOptions"
-  },
-  "git_checkout_init_options *": {
-    "cpp": "InitOptions",
-    "js": "initOptions"
-  },
-  "const git_checkout_init_options *": {
-    "cpp": "InitOptions",
-    "js": "initOptions"
+  "const git_repository_init_init_options *": {
+    "cpp": "InitInitOptions",
+    "js": "initInitOptions"
   },
   "git_repository_init_options": {
     "cpp": "GitRepositoryInitOptions",
@@ -9136,16 +9184,60 @@
     "cpp": "GitRepositoryInitOptions",
     "js": "RepositoryInitOptions"
   },
-  "git_repository_init_init_options": {
-    "cpp": "InitInitOptions",
-    "js": "initInitOptions"
+  "git_strarray": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   },
-  "git_repository_init_init_options *": {
-    "cpp": "InitInitOptions",
-    "js": "initInitOptions"
+  "git_strarray **": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
   },
-  "const git_repository_init_init_options *": {
-    "cpp": "InitInitOptions",
-    "js": "initInitOptions"
+  "const git_strarray **": {
+    "cpp": "GitStrarray",
+    "js": "Strarray"
+  },
+  "git_cred": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "git_cred *": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "const git_cred **": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "const git_cred *": {
+    "cpp": "GitCred",
+    "js": "Cred"
+  },
+  "git_cred_ssh_key_from_agent": {
+    "cpp": "CredSshKeyFromAgent",
+    "js": "credSshKeyFromAgent"
+  },
+  "git_cred_ssh_key_from_agent *": {
+    "cpp": "CredSshKeyFromAgent",
+    "js": "credSshKeyFromAgent"
+  },
+  "const git_cred_ssh_key_from_agent *": {
+    "cpp": "CredSshKeyFromAgent",
+    "js": "credSshKeyFromAgent"
+  },
+  "git_cred_acquire_cb **": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
+  },
+  "git_cred_acquire_cb *": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
+  },
+  "const git_cred_acquire_cb **": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
+  },
+  "const git_cred_acquire_cb *": {
+    "cpp": "GitCredAcquireCb",
+    "js": "CredAcquireCb"
   }
 }
