@@ -284,7 +284,29 @@
     "isStruct": true,
     "cType": "git_cred",
     "functions": {
+      "git_cred_default_new": {
+        "ignore": false,
+        "isPrototypeMethod": false,
+        "args": [{ "isSelf": false }],
+        "isAsync": false
+      },
+      "git_cred_has_username": {
+        "ignore": false,
+        "args": [{ "isSelf": true}]
+      },
       "git_cred_ssh_key_from_agent": {
+        "ignore": false,
+        "isPrototypeMethod": false,
+        "args": [{ "isSelf": false }],
+        "isAsync": false
+      },
+      "git_cred_ssh_key_new": {
+        "ignore": false,
+        "isPrototypeMethod": false,
+        "args": [{ "isSelf": false }],
+        "isAsync": false
+      },
+      "git_cred_userpass_plaintext_new": {
         "ignore": false,
         "isPrototypeMethod": false,
         "args": [{ "isSelf": false }],
