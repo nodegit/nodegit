@@ -4,6 +4,7 @@ before_install:
   - "sudo apt-get -qq update"
   - "sudo apt-get -qq install g++-4.8"
   - "export CXX='g++-4.8'"
+  - "export JOBS=4"
 # This is a random private key used purely for testing.
 before_script:
  - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
