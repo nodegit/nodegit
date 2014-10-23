@@ -10,8 +10,9 @@ Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodeg
 **Stable: 0.1.4**
 
 Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael
-Robinson [@codeofinterest](http://twitter.com/codeofinterest), and Nick Kallen
-[@nk](http://twitter.com/nk), with help from [awesome
+Robinson [@codeofinterest](http://twitter.com/codeofinterest), John Haley
+[@johnhaley81](http://twitter.com/johnhaley81), Nick Kallen [@nk](http://twitter.com/nk),
+and Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from [awesome
 contributors](https://github.com/tbranyen/nodegit/contributors)!
 
 ## API Documentation. ##
