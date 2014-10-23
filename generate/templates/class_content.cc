@@ -7,6 +7,7 @@ extern "C" {
 }
 
 #include "../include/functions/copy.h"
+#include "../include/macros.h"
 #include "../include/{{ filename }}"
 
 {%each dependencies as dependency%}

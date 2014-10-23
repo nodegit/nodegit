@@ -1,6 +1,7 @@
 
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
+  NanEscapableScope();
   {%partial guardArguments .%}
 
   {%each .|returnsInfo 'true' as _return %}
@@ -65,9 +66,9 @@ from_{{ arg.name }}
     {%endif%}
   {%endeach%}
   {%if .|returnsCount == 1 %}
-  NanReturnValue(to);
+  NodeGitPsueodoNanReturnEscapingValue(to);
   {%else%}
-  NanReturnValue(toReturn);
+  NodeGitPsueodoNanReturnEscapingValue(toReturn);
   {%endif%}
 {%endif%}
 }
