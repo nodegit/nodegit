@@ -62,27 +62,27 @@ describe("Revwalk", function() {
   // node rather than npm, with a la `node --expose-gc [pathtohmoca] [testglob]`
   var testGC = (global.gc ? it : it.skip);
 
-  testGC("doesnt segfault when accessing commit.author() twice", function(done) {
-    this.timeout(10000);
-    return Repository.open(reposPath).then(function(repository) {
-      var walker = repository.createRevWalk();
-      repository.getMaster().then(function(master) {
-        var did = false;
-        walker.walk(master, function(error, commit) {
-          for (var i = 0; i < 1000; i++) {
-            if (true) {
-              commit.author().name();
-              commit.author().email();
+  testGC("doesnt segfault when accessing .author() twice", function(done) {
+      this.timeout(10000);
+      return Repository.open(reposPath).then(function(repository) {
+        var walker = repository.createRevWalk();
+        repository.getMaster().then(function(master) {
+          var did = false;
+          walker.walk(master, function(error, commit) {
+            for (var i = 0; i < 1000; i++) {
+              if (true) {
+                commit.author().name();
+                commit.author().email();
+              }
+              global.gc();
             }
-            global.gc();
-          }
-          if (!did) {
-            done();
-            did = true;
-          }
+            if (!did) {
+              done();
+              did = true;
+            }
+          });
         });
       });
     });
-  });
 
 });
