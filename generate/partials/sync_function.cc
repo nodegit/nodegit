@@ -65,9 +65,9 @@ from_{{ arg.name }}
     {%endif%}
   {%endeach%}
   {%if .|returnsCount == 1 %}
-  return to;
+  NanReturnValue(to);
   {%else%}
-  return toReturn;
+  NanReturnValue(toReturn);
   {%endif%}
 {%endif%}
 }
