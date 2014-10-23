@@ -31,10 +31,12 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   NanDisposePersistent(wrapper->{{ field.name }});
 
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
-  {%elsif field.isFunction | or field.payloadFor %}
+  {%elsif field.isFunction %}
   if (value->IsFunction()) {
     wrapper->credentials = new NanCallback(value.As<Function>());
   }
+  {%elsif field.payloadFor %}
+  NanAssignPersistent(wrapper->{{ field.name }}, value);
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
     //free(wrapper->{{ field.name }});

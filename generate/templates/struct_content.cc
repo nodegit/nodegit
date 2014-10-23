@@ -47,11 +47,18 @@ void {{ cppClassName }}::ConstructFields() {
     {%if field.hasConstructor %}
   Local<Object> test = {{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject();
   NanAssignPersistent(this->{{ field.name }}, test);
+
     {%elsif field.isFunction %}
+
   // Set the static method call and set the payload for this function to be
   // the current instance
   this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
   this->raw->{{ fields|payloadFor field.name }} = (void *)this;
+  this->{{ field.name }} = new NanCallback();
+    {%elsif field.payloadFor %}
+
+  Local<Value> {{ field.name }} = NanUndefined();
+  NanAssignPersistent(this->{{ field.name }}, {{ field.name }});
     {%endif%}
   {%endeach%}
 }
