@@ -17,7 +17,7 @@ contributors](https://github.com/tbranyen/nodegit/contributors)!
 
 ## API Documentation. ##
 
-http://www.nodegit.org/nodegit/
+http://www.nodegit.org/
 
 ## Getting started. ##
 
