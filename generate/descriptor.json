@@ -701,7 +701,7 @@
 
       "git_remote_set_pushurl": {
         "ignore": false,
-        "args": [{ "isSelf": true }]
+        "args": [{ "isSelf": true, "isReturn": false }]
       },
 
       "git_remote_load": {
