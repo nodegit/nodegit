@@ -2,6 +2,9 @@
 # http://www.appveyor.com/docs/appveyor-yml
 project_id: "e5a5q75l9yfhnfv2"
 
+# Try out "interactive-mode"
+os: unstable
+
 # build version format
 version: "{build}"
 
