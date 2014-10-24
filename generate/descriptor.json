@@ -699,6 +699,11 @@
         "args": [{ "isSelf": true }]
       },
 
+      "git_remote_set_pushurl": {
+        "ignore": false,
+        "args": [{ "isSelf": true }]
+      },
+
       "git_remote_load": {
         "ignore": false,
         "isConstructorMethod": true,
