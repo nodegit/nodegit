@@ -61,7 +61,7 @@ describe("Remote", function() {
     });
   });
 
-  it.only("can push a remote", function() {
+  it("can push a remote", function() {
     return Remote.load(this.repository, "origin").then(function(remote) {
       assert(remote.pushurl(), "https://github.com/nodegit/nodegit");
     });

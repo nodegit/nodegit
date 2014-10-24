@@ -1,7 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 
-describe("Blob", function() {
+describe("Attr", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
 
   var Repository = require("../../lib/repository");
@@ -29,11 +29,11 @@ describe("Blob", function() {
   it.skip("can lookup the value of a git attribute", function() {
     var flags = Attr.Check.NO_SYSTEM;
     var getAttr = Attr.get(this.repository, flags, ".gitattributes", "test");
-    
+
     return getAttr.then(function(val) {
       console.log(val);
     }).catch(function(ex) {
-      console.log(ex); 
+      console.log(ex);
     });
   });
 });

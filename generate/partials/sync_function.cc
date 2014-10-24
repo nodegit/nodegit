@@ -55,9 +55,12 @@ from_{{ arg.name }}
 {%if not .|returnsCount %}
   NanReturnUndefined();
 {%else%}
+  {%if return.cType | isPointer %}
+  // null checks on pointers
   if (!result) {
-    NodeGitPsueodoNanReturnEscapingValue(NanNull());
+    NodeGitPsueodoNanReturnEscapingValue(NanUndefined());
   }
+  {%endif%}
 
   Handle<Value> to;
   {%if .|returnsCount > 1 %}
