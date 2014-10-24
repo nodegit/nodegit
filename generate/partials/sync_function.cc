@@ -55,6 +55,10 @@ from_{{ arg.name }}
 {%if not .|returnsCount %}
   NanReturnUndefined();
 {%else%}
+  if (!result) {
+    NodeGitPsueodoNanReturnEscapingValue(NanNull());
+  }
+
   Handle<Value> to;
   {%if .|returnsCount > 1 %}
   Handle<Object> toReturn = NanNew<Object>();
