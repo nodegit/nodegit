@@ -54,7 +54,7 @@ describe("Repository", function() {
     });
   });
 
-  it("can utilize repository init options", function() {
+  it.only("can utilize repository init options", function() {
     return Repository.initExt(initRepo, {});
   });
 });
