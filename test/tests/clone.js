@@ -15,6 +15,9 @@ describe("Clone", function() {
   var Clone = require("../../lib/clone");
   var NodeGit = require("../../");
 
+  // Set a reasonable timeout here now that our repository has grown.
+  this.timeout(15000);
+
   before(function() {
     return Promise.all([
       rimraf(http),
