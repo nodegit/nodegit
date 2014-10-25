@@ -100,8 +100,8 @@
     "js": "isBinary"
   },
   "git_branch_create": {
-    "cpp": "BranchCreate",
-    "js": "branchCreate"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_reference **": {
     "js": "Reference",
@@ -112,8 +112,8 @@
     "js": "Commit"
   },
   "git_branch_delete": {
-    "cpp": "BranchDelete",
-    "js": "branchDelete"
+    "cpp": "Delete",
+    "js": "delete"
   },
   "git_reference *": {
     "js": "Reference",
@@ -132,28 +132,28 @@
     "cpp": "BranchForeachCb"
   },
   "git_branch_move": {
-    "cpp": "BranchMove",
-    "js": "branchMove"
+    "cpp": "Move",
+    "js": "move"
   },
   "git_branch_lookup": {
-    "cpp": "BranchLookup",
-    "js": "branchLookup"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_branch_t": {
-    "js": "BranchT",
-    "cpp": "BranchT"
+    "js": "Number",
+    "cpp": "Int32"
   },
   "git_branch_name": {
-    "cpp": "BranchName",
-    "js": "branchName"
+    "cpp": "Name",
+    "js": "name"
   },
   "git_branch_upstream": {
-    "cpp": "BranchUpstream",
-    "js": "branchUpstream"
+    "cpp": "Upstream",
+    "js": "upstream"
   },
   "git_branch_set_upstream": {
-    "cpp": "BranchSetUpstream",
-    "js": "branchSetUpstream"
+    "cpp": "SetUpstream",
+    "js": "setUpstream"
   },
   "git_branch_upstream_name": {
     "cpp": "BranchUpstreamName",
@@ -164,8 +164,8 @@
     "cpp": "String"
   },
   "git_branch_is_head": {
-    "cpp": "BranchIsHead",
-    "js": "branchIsHead"
+    "cpp": "IsHead",
+    "js": "isHead"
   },
   "git_branch_remote_name": {
     "cpp": "BranchRemoteName",
@@ -2889,96 +2889,96 @@
     "js": "Branch"
   },
   "git_branch_create *": {
-    "cpp": "BranchCreate",
-    "js": "branchCreate"
+    "cpp": "Create",
+    "js": "create"
   },
   "const git_branch_create *": {
-    "cpp": "BranchCreate",
-    "js": "branchCreate"
+    "cpp": "Create",
+    "js": "create"
   },
   "git_branch_delete *": {
-    "cpp": "BranchDelete",
-    "js": "branchDelete"
+    "cpp": "Delete",
+    "js": "delete"
   },
   "const git_branch_delete *": {
-    "cpp": "BranchDelete",
-    "js": "branchDelete"
+    "cpp": "Delete",
+    "js": "delete"
   },
   "git_branch_iterator_new": {
-    "cpp": "BranchIteratorNew",
-    "js": "branchIteratorNew"
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
   },
   "git_branch_iterator_new *": {
-    "cpp": "BranchIteratorNew",
-    "js": "branchIteratorNew"
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
   },
   "const git_branch_iterator_new *": {
-    "cpp": "BranchIteratorNew",
-    "js": "branchIteratorNew"
+    "cpp": "IteratorNew",
+    "js": "iteratorNew"
   },
   "git_branch_next": {
-    "cpp": "BranchNext",
-    "js": "branchNext"
+    "cpp": "Next",
+    "js": "next"
   },
   "git_branch_next *": {
-    "cpp": "BranchNext",
-    "js": "branchNext"
+    "cpp": "Next",
+    "js": "next"
   },
   "const git_branch_next *": {
-    "cpp": "BranchNext",
-    "js": "branchNext"
+    "cpp": "Next",
+    "js": "next"
   },
   "git_branch_iterator_free": {
-    "cpp": "BranchIteratorFree",
-    "js": "branchIteratorFree"
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
   },
   "git_branch_iterator_free *": {
-    "cpp": "BranchIteratorFree",
-    "js": "branchIteratorFree"
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
   },
   "const git_branch_iterator_free *": {
-    "cpp": "BranchIteratorFree",
-    "js": "branchIteratorFree"
+    "cpp": "IteratorFree",
+    "js": "iteratorFree"
   },
   "git_branch_move *": {
-    "cpp": "BranchMove",
-    "js": "branchMove"
+    "cpp": "Move",
+    "js": "move"
   },
   "const git_branch_move *": {
-    "cpp": "BranchMove",
-    "js": "branchMove"
+    "cpp": "Move",
+    "js": "move"
   },
   "git_branch_lookup *": {
-    "cpp": "BranchLookup",
-    "js": "branchLookup"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "const git_branch_lookup *": {
-    "cpp": "BranchLookup",
-    "js": "branchLookup"
+    "cpp": "Lookup",
+    "js": "lookup"
   },
   "git_branch_name *": {
-    "cpp": "BranchName",
-    "js": "branchName"
+    "cpp": "Name",
+    "js": "name"
   },
   "const git_branch_name *": {
-    "cpp": "BranchName",
-    "js": "branchName"
+    "cpp": "Name",
+    "js": "name"
   },
   "git_branch_upstream *": {
-    "cpp": "BranchUpstream",
-    "js": "branchUpstream"
+    "cpp": "Upstream",
+    "js": "upstream"
   },
   "const git_branch_upstream *": {
-    "cpp": "BranchUpstream",
-    "js": "branchUpstream"
+    "cpp": "Upstream",
+    "js": "upstream"
   },
   "git_branch_set_upstream *": {
-    "cpp": "BranchSetUpstream",
-    "js": "branchSetUpstream"
+    "cpp": "SetUpstream",
+    "js": "setUpstream"
   },
   "const git_branch_set_upstream *": {
-    "cpp": "BranchSetUpstream",
-    "js": "branchSetUpstream"
+    "cpp": "SetUpstream",
+    "js": "setUpstream"
   },
   "git_branch_upstream_name *": {
     "cpp": "BranchUpstreamName",
@@ -2989,12 +2989,12 @@
     "js": "branchUpstreamName"
   },
   "git_branch_is_head *": {
-    "cpp": "BranchIsHead",
-    "js": "branchIsHead"
+    "cpp": "IsHead",
+    "js": "isHead"
   },
   "const git_branch_is_head *": {
-    "cpp": "BranchIsHead",
-    "js": "branchIsHead"
+    "cpp": "IsHead",
+    "js": "isHead"
   },
   "git_branch_remote_name *": {
     "cpp": "BranchRemoteName",
@@ -9239,5 +9239,17 @@
   "const git_cred_acquire_cb *": {
     "cpp": "GitCredAcquireCb",
     "js": "CredAcquireCb"
+	},
+  "git_blame_init_options": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
+  },
+  "git_blame_init_options *": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
+  },
+  "const git_blame_init_options *": {
+    "cpp": "InitOptions",
+    "js": "initOptions"
   }
 }

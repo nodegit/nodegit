@@ -30,6 +30,37 @@
   },
 
   "blame": {
+    "cType": "git_blame",
+    "forwardDeclare": true,
+
+    "functions": {
+      "git_blame_init_options": {
+        "ignore": false
+      },
+
+      "git_blame_get_hunk_count": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
+      },
+
+      "git_blame_get_hunk_byindex": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
+      },
+
+      "git_blame_get_hunk_byline": {
+        "ignore": false,
+        "args": [{ "shouldAlloc": true }]
+      },
+
+      "git_blame_file": {
+        "ignore": false
+      },
+
+      "git_blame_buffer": {
+        "ignore": false
+      }
+    }
   },
 
   "blob": {
@@ -85,7 +116,64 @@
   },
 
   "branch": {
-    "cType": null
+    "cType": "git_reference",
+    "altType": "git_branch",
+
+    "dependencies": [
+      "../include/wrapper.h",
+      "../include/commit.h",
+      "../include/refs.h",
+      "node_buffer.h"
+    ],
+
+    "functions": {
+      "git_branch_create": {
+        "ignore": false,
+        "isConstructorMethod": true
+      },
+
+      "git_branch_delete": {
+        "ignore": false
+      },
+
+      "git_branch_is_head": {
+        "ignore": false
+      },
+
+      "git_branch_iterator_free": {
+        "ignore": true
+      },
+
+      "git_branch_iterator_new": {
+        "ignore": true
+      },
+
+      "git_branch_lookup": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "args": [{}, {}, {}, { "isSelf": false }]
+      },
+
+      "git_branch_move": {
+        "ignore": false
+      },
+
+      "git_branch_name": {
+        "ignore": false
+      },
+
+      "git_branch_next": {
+        "ignore": true
+      },
+
+      "git_branch_set_upstream": {
+        "ignore": false
+      },
+
+      "git_branch_upstream": {
+        "ignore": false
+      }
+    }
   },
 
   "buffer": {
