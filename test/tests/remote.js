@@ -7,22 +7,33 @@ describe("Remote", function() {
   var Repository = require("../../lib/repository");
   var Remote = require("../../lib/remote");
 
+  function removeOrigins(repository) {
+    return Remote.load(repository, "origin1").then(function(remote) {
+      remote.delete();
+
+      return Remote.load(repository, "origin2").then(function(remote) {
+        remote.delete();
+      });
+    }).catch(function() {});
+  }
+
   before(function() {
     var test = this;
 
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
+
       return Remote.load(repository, "origin").then(function(remote) {
         test.remote = remote;
+
+        return removeOrigins(repository);
       });
     });
   });
 
   after(function() {
-    return Remote.load(this.repository, "origin2").then(function(remote) {
-      remote.delete();
-    });
+    return removeOrigins(this.repository);
   });
 
   it("can load a remote", function() {
@@ -33,6 +44,21 @@ describe("Remote", function() {
     assert.equal(
       this.remote.url().replace(".git", ""),
       "https://github.com/nodegit/nodegit");
+  });
+
+  it("can push a remote", function() {
+    assert.equal(this.remote.pushurl(), undefined);
+  });
+
+  it("can set a remote", function() {
+    var repository = this.repository;
+    var url = "https://github.com/nodegit/nodegit";
+
+    return Remote.create(repository, "origin1", url).then(function(remote) {
+      return remote.setPushurl("https://google.com/", function() {
+        assert(remote.pushurl(), "https://google.com/");
+      });
+    });
   });
 
   it("can read the remote name", function() {

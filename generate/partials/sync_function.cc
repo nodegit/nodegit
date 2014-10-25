@@ -55,6 +55,13 @@ from_{{ arg.name }}
 {%if not .|returnsCount %}
   NanReturnUndefined();
 {%else%}
+  {%if return.cType | isPointer %}
+  // null checks on pointers
+  if (!result) {
+    NodeGitPsueodoNanReturnEscapingValue(NanUndefined());
+  }
+  {%endif%}
+
   Handle<Value> to;
   {%if .|returnsCount > 1 %}
   Handle<Object> toReturn = NanNew<Object>();
