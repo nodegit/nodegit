@@ -909,7 +909,44 @@
   },
 
   "status": {
-    "cType": null
+    "cType": null,
+    "dependencies": [
+      "../include/status_list",
+      "../include/status_options"
+    ],
+    "functions": {
+      "git_status_byindex": {
+        "ignore": false
+      },
+
+      "git_status_file": {
+        "ignore": false
+      },
+
+      "git_status_foreach": {
+        "ignore": false
+      },
+
+      "git_status_foreach_ext": {
+        "ignore": false
+      },
+
+      "git_status_init_options": {
+        "ignore": false
+      },
+    }
+  },
+
+  "status_list": {
+    "cType": "git_status_list",
+    "isStruct": true,
+    "fields": []
+  },
+
+  "status_options": {
+    "cType": "git_status_options",
+    "isStruct": true,
+    "fields": []
   },
 
   "stdint": {
