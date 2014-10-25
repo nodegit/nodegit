@@ -28,7 +28,7 @@ install:
   - cmd: SET PATH=c:\python27;%PATH%
   - cmd: SET JOBS=4
   - cmd: SET GIT_SSH=c:\projects\nodegit\vendor\plink.exe
-  - cmd: c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
+  - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - cmd: npm install -g node-gyp
   - npm install --msvs_version=2013
 
