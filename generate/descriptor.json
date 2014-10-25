@@ -784,6 +784,12 @@
         "isConstructorMethod": true
       },
 
+      "git_reference_name_to_id": {
+        "ignore": false,
+        "isConstructorMethod": true,
+        "isAsync": false
+      },
+
       "git_reference_type": {
         "ignore": false,
         "args": [

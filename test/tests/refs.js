@@ -34,4 +34,12 @@ describe("Refs", function() {
       refs.symbolicTarget();
     });
   });
+
+  it("can look up the HEAD sha", function() {
+    return Refs.nameToId(this.repository, "HEAD").then(function(oid) {
+      var sha = oid.allocfmt();
+
+      assert.equal(sha, "79d86058c637000079d86058c637000079d86058");
+    });
+  });
 });
