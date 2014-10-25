@@ -901,8 +901,7 @@
 
   "repository_init_options": {
     "isStruct": true,
-    "cType": "git_repository_init_options",
-    "fields": []
+    "cType": "git_repository_init_options"
   },
 
   "reset": {
