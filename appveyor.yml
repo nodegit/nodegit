@@ -2,8 +2,14 @@
 # http://www.appveyor.com/docs/appveyor-yml
 project_id: "e5a5q75l9yfhnfv2"
 
+# Try out "interactive-mode"
+os: unstable
+
 # build version format
 version: "{build}"
+
+# Set a known clone folder
+clone_folder: c:\projects\nodegit
 
 # fix lineendings in Windows
 init:
@@ -21,7 +27,8 @@ install:
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
   - cmd: SET PATH=c:\python27;%PATH%
   - cmd: SET JOBS=4
-  - cmd: ssh-agent -s
+  - cmd: SET GIT_SSH=c:\projects\nodegit\vendor\plink.exe
+  - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - cmd: npm install -g node-gyp
   - npm install --msvs_version=2013
 

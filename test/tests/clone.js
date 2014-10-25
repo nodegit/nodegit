@@ -46,11 +46,7 @@ describe("Clone", function() {
     });
   });
 
-  // Currently waiting on AppVeyor to support an interactive Windows Service
-  // builder, so we can correctly run pageant.exe.
-  var testSsh = process.platform === "win32" ? it.skip : it;
-
-  testSsh("can clone with ssh", function() {
+  it("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       ignoreCertErrors: 1,
