@@ -601,6 +601,28 @@
   },
 
   "index": {
+    "cType": "git_index",
+
+    "dependencies": [
+      "../include/functions/copy.h",
+      "../include/macros.h",
+      "../include/index.h",
+      "../include/index_entry.h",
+      "../include/oid.h",
+      "../include/repository.h"
+    ],
+
+    "functions": {
+      "git_index_add": {
+        "ignore": false
+      }
+    }
+  },
+
+  "index_entry": {
+    "cType": "git_index_entry",
+    "isStruct": true,
+    "fields": []
   },
 
   "indexer": {
