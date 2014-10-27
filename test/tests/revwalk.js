@@ -9,6 +9,8 @@ describe("Revwalk", function() {
   var Oid = require("../../lib/oid");
 
   beforeEach(function(done) {
+    // These inits run extremely fast locally but time out on travis
+    this.timeout(4000);
     var test = this;
 
     return Repository.open(reposPath).then(function(repository) {
