@@ -15,7 +15,7 @@ describe("Revwalk", function() {
       test.repository = repository;
       test.walker = repository.createRevWalk();
 
-      return test.repository.getBranch('rev-walk').then(function(branch) {
+      return test.repository.getBranch("rev-walk").then(function(branch) {
         test.branch = branch;
         test.walker.push(test.branch.id());
         done();
@@ -38,16 +38,29 @@ describe("Revwalk", function() {
   it("can hide an object", function() {
     var test = this;
 
-    //this.walker.hide(Oid.fromstr("95f695136203a372751c19b6353aeb5ae32ea40e"));
-
     return test.walker.next().then(function(commit) {
-      console.log(commit.toString());
       return test.walker.next().then(function(commit) {
-        console.log(commit.toString());
         return test.walker.next().then(function(commit) {
-          console.log(commit.toString());
-          assert.equal(commit.toString(),
-            "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
+          return test.walker.next().then(function(commit) {
+            assert.equal(commit.toString(),
+              "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
+            test.walker = test.repository.createRevWalk();
+            test.walker.push(test.branch.id());
+            test.walker.hide(
+              Oid.fromstr("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
+
+            return test.walker.next().then(function(commit) {
+              return test.walker.next().then(function(commit) {
+                return test.walker.next().then(function(commit) {
+                  assert.equal(commit.toString(),
+                    "95f695136203a372751c19b6353aeb5ae32ea40e");
+                  return test.walker.next().then(function(commit) {
+                    assert.equal(commit, undefined);
+                  });
+                });
+              });
+            });
+          });
         });
       });
     });
