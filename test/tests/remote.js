@@ -41,18 +41,18 @@ describe("Remote", function() {
 
   it("can create a new remote", function() {
     var repository = this.repository;
-    var url = "https://github.com/nodegit/nodegit";
+    var url = "https://github.com/nodegit/test";
 
     return Remote.create(repository, "origin2", url).then(function() {
       return Remote.load(repository, "origin2").then(function(remote) {
-        assert(remote.url(), "https://github.com/nodegit/nodegit");
+        assert(remote.url(), "https://github.com/nodegit/test");
       });
     });
   });
 
   it("can delete a remote", function() {
     var repository = this.repository;
-    var url = "https://github.com/nodegit/nodegit";
+    var url = "https://github.com/nodegit/test";
 
     return Remote.create(repository, "origin3", url).then(function() {
       return Remote.load(repository, "origin3").then(function(remote) {
