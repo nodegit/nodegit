@@ -15,9 +15,9 @@ describe("Revwalk", function() {
       test.repository = repository;
       test.walker = repository.createRevWalk();
 
-      return test.repository.getMaster().then(function(master) {
-        test.master = master;
-        test.walker.push(test.master.id());
+      return test.repository.getBranch('rev-walk').then(function(branch) {
+        test.branch = branch;
+        test.walker.push(test.branch.id());
       });
     });
   });
@@ -27,20 +27,22 @@ describe("Revwalk", function() {
   });
 
   it("can push an object", function() {
-    var sha = this.master.sha();
+    var sha = this.branch.sha();
 
     return this.walker.next().then(function(commit) {
       assert.equal(sha, commit);
     });
   });
 
-  it.skip("can hide an object", function() {
+  it("can hide an object", function() {
     var test = this;
 
     this.walker.hide(Oid.fromstr("a03e044fcb45c654d4e15a4e495a6a0c6e632854"));
 
     return test.walker.next().then(function(commit) {
+      console.dir(commit);
       return test.walker.next().then(function(commit) {
+        console.dir(commit);
         assert.equal(commit, "1efa3354299ede235f90880383176fb5d48aaa89");
       });
     });
