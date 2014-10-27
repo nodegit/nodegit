@@ -8,21 +8,20 @@ describe("Revwalk", function() {
   var Revwalk = require("../../lib/revwalk");
   var Oid = require("../../lib/oid");
 
-  beforeEach(function(done) {
-    // These inits run extremely fast locally but time out on travis
-    this.timeout(4000);
+  before(function(done) {
     var test = this;
-
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
-      test.walker = repository.createRevWalk();
-
       return test.repository.getBranch("rev-walk").then(function(branch) {
         test.branch = branch;
-        test.walker.push(test.branch.id());
         done();
       });
     });
+  });
+
+  beforeEach(function() {
+    this.walker = this.repository.createRevWalk();
+    this.walker.push(this.branch.id());
   });
 
   it("can create a walker", function() {
