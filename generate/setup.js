@@ -336,7 +336,8 @@ fileNames.forEach(function(fileName, index) {
           return true;
         }
 
-        if ((arg.type || "").replace(/[* ]/g, "") === file.cType) {
+        var type = (arg.type || "").replace(/[* ]/g, "");
+        if (type === file.cType || type === file.altType) {
           hasReturn = true;
           return true;
         }
