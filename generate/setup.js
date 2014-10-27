@@ -26,8 +26,6 @@ typeMap.__proto__ = {
 
   // unsure
   "uint16_t": { cpp: "Integer", js: "Number" },
-  "git_blame_options": { cpp: "Integer", js: "Number" },
-  "git_blame_options *": { cpp: "Integer", js: "Number" },
   "git_buf *": { cpp: "Buf", js: "Buf" },
   "git_branch_iterator *": { cpp: "BranchIterator", js: "Iterator" },
   "git_branch_iterator **": { cpp: "BranchIterator", js: "Iterator" },
@@ -48,10 +46,13 @@ typeMap.__proto__ = {
   "git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
   "const git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
   "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" },
-  "git_checkout_options *": { cpp: "GitCheckoutOptions", js: "CheckoutOptions" }
-};
+  "git_checkout_options *": { cpp: "GitCheckoutOptions", js: "CheckoutOptions" },
+  "void *": { cpp: "Function", js: "Function" },
 
-typeMap["void *"] = { cpp: "Function", js: "Function" };
+  // stop gap. Works because not passed in, and 0 is null, so it uses git_blame_options_init
+  "git_blame_options": { cpp: "Integer", js: "Number" },
+  "git_blame_options *": { cpp: "Integer", js: "Number" },
+};
 
 var files = [];
 
@@ -284,6 +285,10 @@ fileNames.forEach(function(fileName, index) {
     retVal.comment = funcDescriptor.return.comment;
 
     var type = typeMap[retVal.cType];
+
+    if (!type) {
+      throw new Error("Missing typedef for " + retVal.cType);
+    }
 
     if (!retVal.cppClassName) {
       retVal.cppClassName = type.cpp;
