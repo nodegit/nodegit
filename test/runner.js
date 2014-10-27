@@ -9,7 +9,7 @@ var exec = promisify(function(command, callback) {
 before(function(done) {
   this.timeout(150000);
 
-  var url = "https://github.com/nodegit/nodegit";
+  var url = "https://github.com/nodegit/test";
   var done = done.bind(null, null);
 
   fs.exists("test/repos").then(function() {
