@@ -132,6 +132,22 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
 
   TryCatch tryCatch;
   Handle<Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
+
+  if (result->IsObject()) {
+    const char* constructorName = **(new NanUtf8String(result->ToObject()->GetConstructorName()));
+    string promiseConName ("Promise");
+
+    if (promiseConName.compare(constructorName) == 0) {
+      // we can be reasonbly certain that the result is a promise
+      Local<Object> promise = result->ToObject();
+
+      NanAssignPersistent(baton->promise, promise);
+
+      uv_queue_work(uv_default_loop(), &baton->req, {{ field.name }}_asyncWork, {{ field.name }}_asyncPromisePolling);
+      return;
+    }
+  }
+
   {{ field.returnType }} resultStatus;
 
   {%each field|returnsInfo true false as _return%}
@@ -150,6 +166,52 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
   }
   {%endeach%}
   baton->done = true;
+}
+
+void {{ cppClassName }}::{{ field.name }}_asyncPromisePolling(uv_work_t* req, int status) {
+  NanScope();
+
+  {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
+  Local<Object> promise = NanNew<Object>(baton->promise);
+  NanCallback* isPendingFn = new NanCallback(promise->Get(NanNew("isPending")).As<Function>());
+  Local<Value> argv[0];
+  Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
+
+  if (isPending->Value()) {
+    uv_queue_work(uv_default_loop(), &baton->req, {{ field.name }}_asyncWork, {{ field.name }}_asyncPromisePolling);
+    return;
+  }
+
+  NanCallback* isFulfilledFn = new NanCallback(promise->Get(NanNew("isFulfilled")).As<Function>());
+  Local<Boolean> isFulfilled = isFulfilledFn->Call(0, argv)->ToBoolean();
+
+  if (isFulfilled->Value()) {
+    NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
+    Handle<Value> result = resultFn->Call(0, argv);
+    {{ field.returnType }} resultStatus;
+
+    {%each field|returnsInfo true false as _return%}
+    if (result.IsEmpty() || result->IsNativeError()) {
+      baton->result = {{ field.returnError }};
+    }
+    else if (!result->IsNull() && !result->IsUndefined()) {
+      {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
+      wrapper->selfFreeing = false;
+
+      baton->{{ _return.name }} = wrapper->GetRefValue();
+      baton->result = {{ field.returnSuccess }};
+    }
+    else {
+      baton->result = {{ field.returnNoResults }};
+    }
+    {%endeach%}
+    baton->done = true;
+  }
+  else {
+    // promise was rejected
+    baton->result = {{ field.returnError }};
+    baton->done = false;
+  }
 }
     {%endif%}
   {%endif%}

@@ -41,12 +41,14 @@ class {{ cppClassName }} : public ObjectWrap {
       );
     static void {{ field.name }}_asyncWork(uv_work_t* req);
     static void {{ field.name }}_asyncAfter(uv_work_t* req, int status);
+    static void {{ field.name }}_asyncPromisePolling(uv_work_t* req, int status);
     struct {{ field.name|titleCase }}Baton {
           {%each field.args|argsInfo as arg %}
       {{ arg.cType }} {{ arg.name}};
           {%endeach%}
       uv_work_t req;
       {{ field.returnType }} result;
+      Persistent<Object> promise;
       bool done;
     };
         {%endif%}
