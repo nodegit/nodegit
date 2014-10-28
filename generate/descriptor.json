@@ -420,8 +420,7 @@
     }
   },
 
-  "config": {
-  },
+  "config": { },
 
   "cred": {
     "isStruct": true,
@@ -458,8 +457,7 @@
     }
   },
 
-  "cred_helpers": {
-  },
+  "cred_helpers": { },
 
   "delta": {
     "isStruct": true,
@@ -656,11 +654,9 @@
     "cType": null
   },
 
-  "index": {
-  },
+  "index": { },
 
-  "indexer": {
-  },
+  "indexer": { },
 
   "inttypes": {
     "cType": null
@@ -683,17 +679,13 @@
     "cType": null
   },
 
-  "notes": {
-  },
+  "notes": { },
 
-  "object": {
-  },
+  "object": { },
 
-  "odb": {
-  },
+  "odb": { },
 
-  "odb_backend": {
-  },
+  "odb_backend": { },
 
   "oid": {
     "fields": [],
@@ -716,8 +708,7 @@
     }
   },
 
-  "pack": {
-  },
+  "pack": { },
 
   "patch": {
     "isStruct": true,
@@ -768,14 +759,11 @@
     }
   },
 
-  "pathspec": {
-  },
+  "pathspec": { },
 
-  "push": {
-  },
+  "push": { },
 
-  "refdb": {
-  },
+  "refdb": { },
 
   "refs": {
     "functions": {
@@ -802,11 +790,9 @@
     }
   },
 
-  "reflog": {
-  },
+  "reflog": { },
 
-  "refspec": {
-  },
+  "refspec": { },
 
   "remote": {
     "dependencies": [
@@ -1070,11 +1056,9 @@
     "cType": "git_strarray"
   },
 
-  "submodule": {
-  },
+  "submodule": { },
 
-  "tag": {
-  },
+  "tag": { },
 
   "threads": {
     "cType": null,
