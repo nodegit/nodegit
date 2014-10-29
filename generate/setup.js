@@ -1,80 +1,61 @@
 const fs = require("fs");
 const path = require("path");
+const utils = require("utils");
 
 var version = require("../package.json").libgit2.version;
 var descriptor = require("./descriptor.json");
 var libgit2 = require("./v" + version + ".json");
 
+// Turn the types array into a hashmap of struct values
 var structs = libgit2.types.reduce(function(memo, current) {
   return memo[current[0]] = current[1], memo;
 }, {});
 
-// Extracted types.
-var typeMap = require("./types.json");
+var classes = libgit2.groups.reduce(function(hashMap, current) {
+  var className = hashMap[0];
+  var classDefOverrides = descriptor[className] || {};
+  var classDef = {
+    cType: "git_" + className,
+    functions: current[1].reduce(function(fnHashMap, currentFn) {
+      fnHashMap[currentFn] = libgit2.functions[currentFn];
+      return fnHashMap;
+    }, {}),
+    dependencies: []
+  };
 
-// Structs or new types between v0.18 and v0.20.
-typeMap.__proto__ = {
-  "git_filter_mode_t": { cpp: "Number", js: "Number" },
-  "const git_blame_hunk *": { cpp: "GitBlameHunk", js: "BlameHunk" },
-  "git_blame_hunk *": { cpp: "GitBlameHunk", js: "BlameHunk" },
-  "git_filter *": { cpp: "GitFilter", js: "Filter" },
-  "const git_status_entry *": { cpp: "StatusEntry", js: "StatusEntry" },
-  "const git_index_name_entry *": {
-    cpp: "IndexNameEntry", js: "IndexNameEntry" },
-  "git_time": { cpp: "GitTime", js: "Time", },
-  "git_vector": { cpp: "Array", js: "Array", },
+  var dependencyLookup = {};
 
-  // unsure
-  "uint16_t": { cpp: "Integer", js: "Number" },
-  "git_buf *": { cpp: "Buf", js: "Buf" },
-  "git_branch_iterator *": { cpp: "BranchIterator", js: "Iterator" },
-  "git_branch_iterator **": { cpp: "BranchIterator", js: "Iterator" },
-  "git_branch_t *": { cpp: "GitBranch", js: "Branch" },
-  "const git_commit *[]": { cpp: "Array", js: "Array" },
-  "git_diff_file": { cpp: "GitDiffFile", js: "DiffFile" },
-  "git_strarray": { cpp: "Array", js: "Array" },
-  "git_diff_notify_cb": { cpp: "GitDiffNotifyCb", js: "DiffNotifyCb" },
-  "unsigned char [20]": { cpp: "Array", js: "Array" },
-  "git_filter_init_fn": { cpp: "Function", js: "Function" },
-  "git_filter_shutdown_fn": { cpp: "Function", js: "Function" },
-  "git_filter_check_fn": { cpp: "Function", js: "Function" },
-  "git_filter_apply_fn": { cpp: "Function", js: "Function" },
-  "git_filter_cleanup_fn": { cpp: "Function", js: "Function" },
-  "const git_checkout_options *": { cpp: "GitCheckoutOptions", js: "CheckoutOptions" },
-  "git_checkout_notify_cb": { cpp: "Function", js: "Function" },
-  "git_checkout_progress_cb": { cpp: "Function", js: "Function" },
-  "git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
-  "const git_cherry_pick_options *": { cpp: "GitCherryPickOptions", js: "CherryPickOptions" },
-  "const git_merge_options *": { cpp: "GitMergeOptions", js: "MergeOptions" },
-  "git_checkout_options *": { cpp: "GitCheckoutOptions", js: "CheckoutOptions" },
-  "void *": { cpp: "Function", js: "Function" },
+  // Decorate functions and calculate dependencies
+  Object.keys(classDef.functions).forEach(function(key) {
+    var fnDef = classDef.functions[key];
 
-  // stop gap. Works because not passed in, and 0 is null, so it uses git_blame_options_init
-  "git_blame_options": { cpp: "Integer", js: "Number" },
-  "git_blame_options *": { cpp: "Integer", js: "Number" },
-};
+    fnDef.args.forEach(function(arg) {
+      // We need to find all of the libgit2 types to build the dependency chain
+      if (structs[arg.type]) {
+        dependencyLookupy[arg.type] = structs[arg.type].file;
+      }
+
+      // Mark all of the args that are either returns or are the object
+      // itself and determine if this function goes on the prototype
+      // or is a constructor method.
+      arg.isReturn = arg.name == "out" || utils.isDoublePointer(arg.type);
+      arg.isSelf
+        = utils.isPointer(arg.type)
+        && utils.normalizeCtype(arg.type) == classDef.cType;
+
+      if (arg.isReturn && arg.isSelf) {
+        arg.isSelf = false;
+        fnDef.isConstructorMethod = true;
+      }
+      else if (arg.isSelf) {
+        fnDef.isPrototypeMethod = true;
+      }
+    });
+  })
+  return hashMap;
+}, {});
 
 var files = [];
-
-function titleCase(str) {
-  return str.split(/_|\//).map(function(val, index) {
-    if (val.length) {
-      return val[0].toUpperCase() + val.slice(1);
-    }
-
-    return val;
-  }).join("");
-}
-
-function camelCase(str) {
-  return str.split(/_|\//).map(function(val, index) {
-    if (val.length) {
-      return index >= 1 ? val[0].toUpperCase() + val.slice(1) : val;
-    }
-
-    return val;
-  }).join("");
-}
 
 var fileNames = Object.keys(descriptor);
 
