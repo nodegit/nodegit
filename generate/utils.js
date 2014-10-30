@@ -1,6 +1,15 @@
 var pointerRegex = /\s*\*\s*/;
 var doublePointerRegex = /\s*\*\*\s*/;
 
+var cTypeMappings = {
+  "char": "String",
+  "int": "Number",
+  "int32_t": "Number",
+  "int64_t": "Number",
+  "size_t": "Number",
+  "uint32_t": "Number"
+}
+
 var Utils = {
   titleCase: function(str) {
     return str.split(/_|\//).map(function(val, index) {
@@ -33,18 +42,30 @@ var Utils = {
   normalizeCtype: function(cType) {
     return cType
     .replace("const ", "")
+    .replace("unsigned ", "")
     .replace(doublePointerRegex, "")
     .replace(pointerRegex, "")
     .trim();
   },
 
-  cTypeToCppClassName: function(cType) {
-    return Utils.titleCase(Utils.normalizeCtype(cType));
+  cTypeToCppName: function(cType) {
+    var normalizedType = Utils.normalizeCtype(cType);
+
+    return cTypeMappings[normalizedType] || Utils.titleCase(normalizedType);
   },
 
-  cTypeToJsClassName: function(cType) {
-    return Utils.cTypeToCppClassName(cType).replace("Git", "");
+  cTypeToJsName: function(cType) {
+    return Utils.cTypeToCppName(cType).replace("Git", "");
+  },
+
+  isConstructorFunction: function(cType, fnName) {
+    var initFnName = cType.split('_');
+
+    initFnName.splice(-1, 0, "init");
+    initFnName = initFnName.join('_');
+
+    return initFnName === fnName;
   }
 };
 
-module.export = Utils;
+module.exports = Utils;
