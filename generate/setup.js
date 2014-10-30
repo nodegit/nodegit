@@ -29,7 +29,9 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
 
   structDef.isForwardDeclared = structDef.decl === structName;
   structDef.fields = structDef.fields || [];
+  structDef.functions = [];
   structDef.dependencies = [];
+  structDef.filename = structDef.file;
 
   if (!structDef.isForwardDeclared) {
     var dependencyLookup = {};
@@ -54,6 +56,7 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       });
 
       if (libgitType) {
+        if (!libgitType.file) debugger;
         dependencyLookup[libgitType.file] = "";
 
         field.isEnum = libgitType.type === "enum";
@@ -94,10 +97,12 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
     filename: className + ".h",
     cppClassName: utils.cTypeToCppName("git_" + className),
     jsClassName: utils.cTypeToJsName("git_" + className),
-    functions: current[1].reduce(function(fnHashMap, currentFn) {
-      fnHashMap[currentFn] = libgit2.functions[currentFn];
-      return fnHashMap;
-    }, {}),
+    functions: current[1].reduce(function(fnArray, currentFn) {
+      var fnDef = libgit2.functions[currentFn];
+      fnDef.cFunctionName = currentFn;
+      fnArray.push(fnDef);
+      return fnArray;
+    }, []),
     dependencies: [],
     fields: []
   };
@@ -105,8 +110,8 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
   var dependencyLookup = {};
 
   // Decorate functions and calculate dependencies
-  Object.keys(classDef.functions).forEach(function(key) {
-    var fnDef = classDef.functions[key];
+  classDef.functions.forEach(function(fnDef) {
+    var key = fnDef.cFunctionName;
 
     // if this is the free function for the class, make the ref on the class
     if (key == classDef.cType + "_free") {
