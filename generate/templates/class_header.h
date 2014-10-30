@@ -6,6 +6,9 @@
 
 extern "C" {
 #include <git2.h>
+{%each cDependencies as dependency %}
+#include <{{ dependency }}>
+{%endeach%}
 }
 
 {%each dependencies as dependency%}

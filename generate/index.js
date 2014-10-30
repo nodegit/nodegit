@@ -77,7 +77,9 @@ var enabled = idefs.filter(function(idef) {
 
   // We need some custom data on each of the functions
   idef.functions.forEach(function(fn) {
-    fn.cppClassName = idef.cppClassName;
+    if (fn) {
+      fn.cppClassName = idef.cppClassName;
+    }
   });
 
   return !idef.ignore;
@@ -94,13 +96,18 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
 
   // Write out all the classes.
   enabled.forEach(function(idef) {
-    if (idef.hasConstructor) {
-      file.write("../src/" + idef.name + ".cc", templates.struct_content.render(idef));
-      file.write("../include/" + idef.name + ".h", templates.struct_header.render(idef));
+    try {
+      if (idef.hasConstructor) {
+        file.write("../src/" + idef.filename + ".cc", templates.struct_content.render(idef));
+        file.write("../include/" + idef.filename + ".h", templates.struct_header.render(idef));
+      }
+      else {
+        file.write("../src/" + idef.filename + ".cc", templates.class_content.render(idef));
+        file.write("../include/" + idef.filename + ".h", templates.class_header.render(idef));
+      }
     }
-    else {
-      file.write("../src/" + idef.name + ".cc", templates.class_content.render(idef));
-      file.write("../include/" + idef.name + ".h", templates.class_header.render(idef));
+    catch (e) {
+      console.log(e);
     }
   });
 });

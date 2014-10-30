@@ -19,6 +19,10 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
   }
 
   structDef.cType = structName;
+  structDef.cppClassName = utils.cTypeToCppName(structName);
+  structDef.jsClassName = utils.cTypeToJsName(structName);
+  structDef.filename = structName.replace("git_", "");
+  structDef.ignore = false;
 
   if (structDef.type === "enum") {
     structDef.isEnum = true;
@@ -28,10 +32,14 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
   }
 
   structDef.isForwardDeclared = structDef.decl === structName;
+
+  if (structDef.isForwardDeclared) {
+    return hashMap;
+  }
+
   structDef.fields = structDef.fields || [];
   structDef.functions = [];
   structDef.dependencies = [];
-  structDef.filename = structDef.file;
 
   if (!structDef.isForwardDeclared) {
     var dependencyLookup = {};
@@ -44,6 +52,7 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       field.jsFunctionName = utils.camelCase(field.name);
       field.cppClassName = utils.cTypeToCppName(field.type);
       field.jsClassName = utils.cTypeToJsName(field.type);
+      field.ignore = false;
 
       // We need to find all of the libgit2 types to build the dependency chain
       var libgitType;
@@ -56,10 +65,12 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       });
 
       if (libgitType) {
-        if (!libgitType.file) debugger;
-        dependencyLookup[libgitType.file] = "";
-
         field.isEnum = libgitType.type === "enum";
+
+        if (!field.isEnum) {
+          dependencyLookup[normalizedType.replace("git_", "")] = "";
+        }
+
         field.hasConstructor
           = libgitType.used
             && libgitType.used.needs
@@ -71,17 +82,10 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
     });
 
     Object.keys(dependencyLookup).forEach(function (dependencyFilename) {
-      structDef.dependencies.push("../include/" + dependencyFilename);
-    });
-  }
-
-  _.merge(structDef, structDefOverrides);
-
-  if (!structDef.ignore) {
-    structDef.fields = structDef.fields.filter(function (field) {
-      return !field.ignore;
+      structDef.dependencies.push("../include/" + dependencyFilename + ".h");
     });
 
+    _.merge(structDef, structDefOverrides);
     hashMap[structName] = structDef;
   }
 
@@ -93,8 +97,7 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
   var classDefOverrides = descriptor[className] || {};
   var classDef = {
     isClass: true,
-    cType: "git_" + className,
-    filename: className + ".h",
+    filename: className,
     cppClassName: utils.cTypeToCppName("git_" + className),
     jsClassName: utils.cTypeToJsName("git_" + className),
     functions: current[1].reduce(function(fnArray, currentFn) {
@@ -104,9 +107,20 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
       return fnArray;
     }, []),
     dependencies: [],
-    fields: []
+    fields: [],
+    ignore: false
   };
 
+  var cType = "git_" + className;
+  var hasCtype = libgit2.types.some(function (type) {
+    if (type[0] == cType) {
+      return true;
+    }
+  });
+
+  cType = hasCtype ? cType : null;
+
+  classDef.cType = cType;
   var dependencyLookup = {};
 
   // Decorate functions and calculate dependencies
@@ -114,37 +128,47 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
     var key = fnDef.cFunctionName;
 
     // if this is the free function for the class, make the ref on the class
+    // and then return since we don't want the free functions publicly
+    // available
     if (key == classDef.cType + "_free") {
       classDef.freeFunctionName = key;
+      fnDef.ignore = true;
+      return;
     }
 
     fnDef.cppFunctionName = utils.cTypeToCppName(key);
     fnDef.jsFunctionName = utils.cTypeToJsName(key);
     fnDef.isAsync = false; // until proven otherwise
+    fnDef.ignore = false;
+
+    if (fnDef.cppFunctionName == classDef.cppClassName) {
+      fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");
+    }
 
     fnDef.args.forEach(function(arg) {
       var normalizedType = utils.normalizeCtype(arg.type);
 
       // We need to find all of the libgit2 types to build the dependency chain
       if (structs[normalizedType]) {
-        dependencyLookup[structs[normalizedType].file] = "";
+        dependencyLookup[normalizedType.replace("git_", "")] = "";
       }
 
       arg.cppClassName = utils.cTypeToCppName(normalizedType);
       arg.jsClassName = utils.cTypeToJsName(normalizedType);
+      arg.ignore = false;
 
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
-      arg.isReturn = arg.name == "out"
-        || (
-          utils.isDoublePointer(arg.type)
+      arg.isReturn
+        = arg.name === "out"
+        || (utils.isDoublePointer(arg.type)
           && normalizedType == classDef.cType);
       arg.isSelf
         = utils.isPointer(arg.type)
         && normalizedType == classDef.cType;
 
-      if (arg.isReturn && classDef.return && classDef.return.type == int) {
+      if (arg.isReturn && classDef.return && classDef.return.type === "int") {
         classDef.return.isErrorCode = true;
         fnDef.isAsync = true;
       }
@@ -160,30 +184,26 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
   });
 
   Object.keys(dependencyLookup).forEach(function(dependencyFilename) {
-    classDef.dependencies.push("../include/" + dependencyFilename);
+    classDef.dependencies.push("../include/" + dependencyFilename + ".h");
   });
 
   _.merge(classDef, classDefOverrides);
-
-  if (!classDef.ignore) {
-    Object.keys(classDef.functions).forEach(function(key) {
-      var fn = classDef.functions[key];
-
-      if (fn.ignore) {
-        classDef.functions[key] = undefined;
-        delete classDef.functions[key];
-      }
-    });
-
-    classDef.fields = classDef.fields.filter(function (field) {
-      return !field.ignore;
-    });
-
-    hashMap[className] = classDef;
-  }
+  hashMap[className] = classDef;
 
   return hashMap;
 }, {});
+
+// if there are any collisions between structs and classes, classes will
+// overwrite the struct and grab their fields
+
+Object.keys(classes).forEach(function (key) {
+  var structKey = key.replace("git_", "");
+
+  if (structs[structKey]) {
+    classes[key].fields = structs[structKey].fields;
+    structs[structKey].ignore = true;
+  }
+});
 
 var output = [];
 

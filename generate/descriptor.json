@@ -1,1 +1,7 @@
-{}
+{
+  "git_cred_userpass_payload": {
+    "cDependencies": [
+      "git2/cred_helpers.h"
+    ]
+  }
+}
