@@ -4,6 +4,9 @@
 
 extern "C" {
 #include <git2.h>
+{%each cDependencies as dependency %}
+#include <{{ dependency }}>
+{%endeach%}
 }
 
 #include "../include/functions/copy.h"

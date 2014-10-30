@@ -6,7 +6,7 @@
 #include "../include/wrapper.h"
 #include "../include/functions/copy.h"
 {%each%}
-#include "../include/{{ filename }}"
+#include "../include/{{ filename }}.h"
 {%endeach%}
 
 extern "C" void init(Handle<v8::Object> target) {
