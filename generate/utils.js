@@ -12,7 +12,7 @@ var cTypeMappings = {
 
 var Utils = {
   titleCase: function(str) {
-    return str.split(/_|\//).map(function(val, index) {
+    return str.toLowerCase().split(/_|\//).map(function(val, index) {
       if (val.length) {
         return val[0].toUpperCase() + val.slice(1);
       }
@@ -22,7 +22,7 @@ var Utils = {
   },
 
   camelCase: function(str) {
-    return str.split(/_|\//).map(function(val, index) {
+    return str.toLowerCase().split(/_|\//).map(function(val, index) {
       if (val.length) {
         return index >= 1 ? val[0].toUpperCase() + val.slice(1) : val;
       }
@@ -41,6 +41,7 @@ var Utils = {
 
   normalizeCtype: function(cType) {
     return cType
+    .toLowerCase()
     .replace("const ", "")
     .replace("unsigned ", "")
     .replace(doublePointerRegex, "")

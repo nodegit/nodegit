@@ -13,9 +13,23 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
   var structDefOverrides = descriptor[structName] || {};
   var structDef = current[1];
 
+  // currently skipping enums
+  if (structDef.type === "enum") {
+    return hashMap;
+  }
+
   structDef.cType = structName;
-  structDef.isStruct = true;
+
+  if (structDef.type === "enum") {
+    structDef.isEnum = true;
+  }
+  else {
+    structDef.isStruct = true;
+  }
+
   structDef.isForwardDeclared = structDef.decl === structName;
+  structDef.fields = structDef.fields || [];
+  structDef.dependencies = [];
 
   if (!structDef.isForwardDeclared) {
     var dependencyLookup = {};
@@ -40,7 +54,7 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       });
 
       if (libgitType) {
-        dependencyLookup[normalizedType] = libgitType.file;
+        dependencyLookup[libgitType.file] = "";
 
         field.isEnum = libgitType.type === "enum";
         field.hasConstructor
@@ -52,10 +66,21 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
               libgitType.used.needs[1]);
       }
     });
+
+    Object.keys(dependencyLookup).forEach(function (dependencyFilename) {
+      structDef.dependencies.push("../include/" + dependencyFilename);
+    });
   }
 
   _.merge(structDef, structDefOverrides);
-  hashMap[structName] = structDef;
+
+  if (!structDef.ignore) {
+    structDef.fields = structDef.fields.filter(function (field) {
+      return !field.ignore;
+    });
+
+    hashMap[structName] = structDef;
+  }
 
   return hashMap;
 }, {});
@@ -97,7 +122,7 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
 
       // We need to find all of the libgit2 types to build the dependency chain
       if (structs[normalizedType]) {
-        dependencyLookup[normalizedType] = structs[normalizedType].file;
+        dependencyLookup[structs[normalizedType].file] = "";
       }
 
       arg.cppClassName = utils.cTypeToCppName(normalizedType);
@@ -127,14 +152,30 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
         fnDef.isPrototypeMethod = true;
       }
     });
+  });
 
-    Object.keys(dependencyLookup).forEach(function(key) {
-      classDef.dependencies.push("../include/" + dependencyLookup[key]);
-    });
+  Object.keys(dependencyLookup).forEach(function(dependencyFilename) {
+    classDef.dependencies.push("../include/" + dependencyFilename);
   });
 
   _.merge(classDef, classDefOverrides);
-  hashMap[className] = classDef;
+
+  if (!classDef.ignore) {
+    Object.keys(classDef.functions).forEach(function(key) {
+      var fn = classDef.functions[key];
+
+      if (fn.ignore) {
+        classDef.functions[key] = undefined;
+        delete classDef.functions[key];
+      }
+    });
+
+    classDef.fields = classDef.fields.filter(function (field) {
+      return !field.ignore;
+    });
+
+    hashMap[className] = classDef;
+  }
 
   return hashMap;
 }, {});
