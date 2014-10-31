@@ -4,10 +4,13 @@ var doublePointerRegex = /\s*\*\*\s*/;
 var cTypeMappings = {
   "char": "String",
   "int": "Number",
+  "int16_t": "Number",
   "int32_t": "Number",
   "int64_t": "Number",
   "size_t": "Number",
-  "uint32_t": "Number"
+  "uint16_t": "Number",
+  "uint32_t": "Number",
+  "uint64_t": "Number"
 }
 
 var Utils = {

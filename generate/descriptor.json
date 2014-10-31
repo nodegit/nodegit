@@ -1,7 +1,61 @@
 {
+  "git_blame_hunk": {
+    "fields": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
   "git_cred_userpass_payload": {
     "cDependencies": [
       "git2/cred_helpers.h"
+    ]
+  },
+  "buf": {
+    "functions": [
+      {},
+      {
+        "cppFunctionName": "Grow",
+        "jsFunctionName": "grow",
+        "args": [
+          {
+            "isReturn": true,
+            "isSelf": false,
+            "shouldAlloc": true
+          }
+        ],
+        "return": {
+          "cppClassName": "Number",
+          "jsClassName": "Number",
+          "isErrorCode": true
+        },
+        "isAsync": true
+      },
+      {
+        "cppFunctionName": "Set",
+        "jsFunctionName": "set",
+        "args": [
+          {
+            "isReturn": true,
+            "isSelf": false,
+            "shouldAlloc": true
+          }
+        ],
+        "return": {
+          "cppClassName": "Number",
+          "jsClassName": "Number",
+          "isErrorCode": true
+        },
+        "isAsync": true
+      }
     ]
   }
 }
