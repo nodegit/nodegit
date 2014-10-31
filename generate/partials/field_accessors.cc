@@ -6,7 +6,7 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor | or field.payloadFor %}
+  {%if field.isLibgitType | or field.payloadFor %}
   NanReturnValue(wrapper->{{ field.name }});
   {%elsif field.isFunction%}
   NanReturnValue(wrapper->{{ field.name }}->GetFunction());
@@ -27,7 +27,7 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor %}
+  {%if field.isLibgitType %}
   NanDisposePersistent(wrapper->{{ field.name }});
 
   wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();

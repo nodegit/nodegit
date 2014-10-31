@@ -48,8 +48,12 @@ using namespace std;
 void {{ cppClassName }}::ConstructFields() {
   {%each fields|fieldsInfo as field %}
     {%if field.hasConstructor %}
-  Local<Object> test = {{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject();
-  NanAssignPersistent(this->{{ field.name }}, test);
+  Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject();
+  NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
+
+    {%elsif field.isLibgitType %}
+  Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }}, false)->ToObject();
+  NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
 
     {%elsif field.isFunction %}
 

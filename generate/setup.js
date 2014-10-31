@@ -39,6 +39,12 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
   structDef.fields = structDef.fields || [];
   structDef.functions = [];
   structDef.dependencies = [];
+  structDef.hasConstructor
+    = structDef.used
+    && structDef.used.needs
+    && structDef.used.needs.some(function (fnName) {
+      return utils.isConstructorFunction(structDef.cType, fnName);
+    });
 
   if (!structDef.isForwardDeclared) {
     var dependencyLookup = {};
@@ -63,6 +69,7 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       });
 
       if (libgitType) {
+        field.isLibgitType = true;
         field.isEnum = libgitType.type === "enum";
 
         if (!field.isEnum) {
@@ -72,10 +79,9 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
         field.hasConstructor
           = libgitType.used
             && libgitType.used.needs
-            && libgitType.used.needs[1]
-            && utils.isConstructorFunction(
-              normalizedType,
-              libgitType.used.needs[1]);
+            && libgitType.used.needs.some(function (fnName) {
+              return utils.isConstructorFunction(normalizedType, fnName);
+            });
       }
     });
 
