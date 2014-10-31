@@ -22,7 +22,6 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
   structDef.cppClassName = utils.cTypeToCppName(structName);
   structDef.jsClassName = utils.cTypeToJsName(structName);
   structDef.filename = structName.replace("git_", "");
-  structDef.ignore = false;
 
   if (structDef.type === "enum") {
     structDef.isEnum = true;
@@ -52,7 +51,6 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       field.jsFunctionName = utils.camelCase(field.name);
       field.cppClassName = utils.cTypeToCppName(field.type);
       field.jsClassName = utils.cTypeToJsName(field.type);
-      field.ignore = false;
 
       // We need to find all of the libgit2 types to build the dependency chain
       var libgitType;
@@ -139,7 +137,6 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
     fnDef.cppFunctionName = utils.cTypeToCppName(key);
     fnDef.jsFunctionName = utils.cTypeToJsName(key);
     fnDef.isAsync = false; // until proven otherwise
-    fnDef.ignore = false;
 
     if (fnDef.cppFunctionName == classDef.cppClassName) {
       fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");
@@ -153,9 +150,9 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
         dependencyLookup[normalizedType.replace("git_", "")] = "";
       }
 
+      arg.cType = arg.type;
       arg.cppClassName = utils.cTypeToCppName(normalizedType);
       arg.jsClassName = utils.cTypeToJsName(normalizedType);
-      arg.ignore = false;
 
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
@@ -181,6 +178,12 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
         fnDef.isPrototypeMethod = true;
       }
     });
+
+    if (fnDef.return) {
+      fnDef.return.cppClassName = utils.cTypeToCppName(fnDef.return.type);
+      fnDef.return.jsClassName = utils.cTypeToJsName(fnDef.return.type);
+      fnDef.return.cType = fnDef.return.type;
+    }
   });
 
   Object.keys(dependencyLookup).forEach(function(dependencyFilename) {

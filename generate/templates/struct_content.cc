@@ -12,7 +12,7 @@ extern "C" {
 }
 
 #include "../include/functions/copy.h"
-#include "../include/{{ filename }}"
+#include "../include/{{ filename }}.h"
 
 {%each dependencies as dependency%}
 #include "{{ dependency }}"
