@@ -63,7 +63,7 @@ class {{ cppClassName }} : public ObjectWrap {
 
     {%each fields as field%}
       {%if not field.ignore%}
-        {%if field.hasConstructor %}
+        {%if field.isLibgitType %}
     Persistent<Object> {{ field.name }};
         {%elsif field.isFunction%}
     NanCallback* {{ field.name }};

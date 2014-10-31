@@ -47,6 +47,10 @@
             "isReturn": true,
             "isSelf": false,
             "shouldAlloc": true
+          },
+          {
+            "cppClassName": "Buffer",
+            "jsClassName": "Buffer"
           }
         ],
         "return": {
