@@ -9240,7 +9240,7 @@
   "const git_cred_acquire_cb *": {
     "cpp": "GitCredAcquireCb",
     "js": "CredAcquireCb"
-	},
+  },
   "git_blame_init_options": {
     "cpp": "InitOptions",
     "js": "initOptions"
