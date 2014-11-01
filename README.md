@@ -99,7 +99,7 @@ npm install nodegit --msvs_version=2013
 ### Cloning a repository and reading a file: ###
 
 ``` javascript
-var clone = require("nodegit").Repository.clone;
+var clone = require("./").Clone.clone;
 
 // Clone a given repository into a specific folder.
 clone("https://github.com/nodegit/nodegit", "tmp", null)
@@ -114,19 +114,25 @@ clone("https://github.com/nodegit/nodegit", "tmp", null)
   })
   // Get the blob contents from the file.
   .then(function(entry) {
-    return entry.getBlob();
+    // Patch the blob to contain a reference to the entry.
+    return entry.getBlob().then(function(blob) {
+      blob.entry = entry;
+      return blob;
+    });
   })
   // Display information about the blob.
   .then(function(blob) {
     // Show the name, sha, and filesize in byes.
-    console.log(entry.name() + entry.sha() + blob.size() + "b");
+    console.log(blob.entry.name() + blob.entry.sha() + blob.size() + "b");
 
     // Show a spacer.
     console.log(Array(72).join("=") + "\n\n");
 
     // Show the entire file.
     console.log(String(blob));
-  });
+  })
+  .catch(function(err) { console.log(err); });
+
 ```
 
 ### Emulating git log: ###
