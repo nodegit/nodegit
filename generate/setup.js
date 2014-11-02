@@ -7,6 +7,9 @@ var version = require("../package.json").libgit2.version;
 var descriptor = require("./descriptor.json");
 var libgit2 = require("./v" + version + ".json");
 
+// TODO: When libgit2's docs include callbacks we should be able to remove this
+var callbackDefs = require("./callbacks.json");
+
 // Turn the types array into a hashmap of struct values
 var structs = libgit2.types.reduce(function(hashMap, current) {
   var structName = current[0];
@@ -57,6 +60,67 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       field.jsFunctionName = utils.camelCase(field.name);
       field.cppClassName = utils.cTypeToCppName(field.type);
       field.jsClassName = utils.cTypeToJsName(field.type);
+
+      if (utils.isCallbackFunction(field.name)) {
+        field.isCallbackFunction = true;
+
+        if (callbackDefs[field.type]) {
+          _.merge(field, callbackDefs[field.type]);
+        }
+        else {
+          console.log("WARNGING: Couldn't find callback definition for "
+            + field.type);
+        }
+      }
+      else {
+        field.isCallbackFunction = false;
+
+        if (field.name === "payload") {
+          field.payloadFor = "*";
+        }
+        else {
+          var cbFieldName;
+
+          structDef.fields.some(function (cbField) {
+            if (utils.isPayloadFor(cbField.name, field.name)) {
+              cbFieldName = cbField.name;
+              return true;
+            }
+          });
+
+          if (cbFieldName) {
+            field.payloadFor = cbFieldName;
+          }
+        }
+      }
+
+      if (field.payloadFor) {
+        return;
+      }
+
+      if (field.isCallbackFunction) {
+        field.args.forEach(function (arg) {
+          var argNormalizedType = utils.normalizeCtype(arg.cType);
+          var argLibgitType;
+
+          arg.cppClassName = utils.cTypeToCppName(arg.cType);
+          arg.jsClassName = utils.cTypeToJsName(arg.cType);
+          arg.isLibgitType = libgit2.types.some(function (type) {
+            if (type[0] === argNormalizedType) {
+              argLibgitType = type[1];
+              return true;
+            }
+          });
+
+          if (arg.isLibgitType) {
+            arg.isEnum = argLibgitType.type === "enum";
+
+            if (!arg.isEnum) {
+              dependencyLookup[argNormalizedType.replace("git_", "")] = "";
+            }
+          }
+        });
+      }
 
       // We need to find all of the libgit2 types to build the dependency chain
       var libgitType;
