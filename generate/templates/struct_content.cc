@@ -47,25 +47,27 @@ using namespace std;
 
 void {{ cppClassName }}::ConstructFields() {
   {%each fields|fieldsInfo as field %}
-    {%if field.hasConstructor %}
-  Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }})->ToObject();
-  NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
-
-    {%elsif field.isLibgitType %}
+    {%if not field.isEnum %}
+      {%if field.hasConstructor %}
   Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }}, false)->ToObject();
   NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
 
-    {%elsif field.isFunction %}
+      {%elsif field.isLibgitType %}
+  Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }}, false)->ToObject();
+  NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
+
+      {%elsif field.isCallbackFunction %}
 
   // Set the static method call and set the payload for this function to be
   // the current instance
   this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
   this->raw->{{ fields|payloadFor field.name }} = (void *)this;
   this->{{ field.name }} = new NanCallback();
-    {%elsif field.payloadFor %}
+      {%elsif field.payloadFor %}
 
   Local<Value> {{ field.name }} = NanUndefined();
   NanAssignPersistent(this->{{ field.name }}, {{ field.name }});
+      {%endif%}
     {%endif%}
   {%endeach%}
 }
@@ -97,7 +99,7 @@ NAN_METHOD({{ cppClassName }}::New) {
     instance = new {{ cppClassName }}();
   }
   else {
-    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(args[0])->Value()), true);
+    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(args[0])->Value()), args[1]->BooleanValue());
   }
 
   instance->Wrap(args.This());
@@ -105,11 +107,11 @@ NAN_METHOD({{ cppClassName }}::New) {
   NanReturnValue(args.This());
 }
 
-Handle<Value> {{ cppClassName }}::New({{ cType }}* raw) {
+Handle<Value> {{ cppClassName }}::New({{ cType }}* raw, bool selfFreeing) {
   NanEscapableScope();
 
-  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
-  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(1, argv));
+  Handle<Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
+  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(2, argv));
 }
 
 {{ cType }} *{{ cppClassName }}::GetValue() {

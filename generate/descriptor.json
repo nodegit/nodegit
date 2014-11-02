@@ -61,5 +61,14 @@
         "isAsync": true
       }
     ]
+  },
+  "git_cherry_pick_options": {
+    "fields": [
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
   }
 }

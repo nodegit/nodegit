@@ -1,5 +1,6 @@
 var pointerRegex = /\s*\*\s*/;
 var doublePointerRegex = /\s*\*\*\s*/;
+var callbackFunctionNamePattern = /\s*_cb/;
 
 var cTypeMappings = {
   "char": "String",
@@ -69,6 +70,16 @@ var Utils = {
     initFnName = initFnName.join('_');
 
     return initFnName === fnName;
+  },
+
+  isCallbackFunction: function(fnName) {
+    return callbackFunctionNamePattern.test(fnName);
+  },
+
+  isPayloadFor: function(cbName, payloadName) {
+    return ~payloadName.indexOf("_payload")
+      && Utils.isCallbackFunction(cbName)
+      && ~cbName.indexOf(payloadName.replace("_payload", ""));
   }
 };
 
