@@ -1,4 +1,42 @@
 {
+  "blob": {
+    "functions": [
+      {
+        "args": [
+          {},
+          {},
+          {
+            "cppClassName": "Buffer",
+            "jsClassName": "Buffer"
+          }
+        ]
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "return": {
+          "cppClassName": "Wrapper",
+          "jsClassName": "Buffer"
+        }
+      }
+    ],
+    "dependencies": [
+      "../include/wrapper.h",
+      "node_buffer.h"
+    ]
+  },
   "buf": {
     "functions": [
       {},
@@ -80,6 +118,9 @@
     ]
   },
   "git_config_backend": {
+    "ignore": true
+  },
+  "git_filter_source": {
     "ignore": true
   },
   "index": {

@@ -6,6 +6,10 @@ const _ = require("lodash");
 var version = require("../package.json").libgit2.version;
 var descriptor = require("./descriptor.json");
 var libgit2 = require("./v" + version + ".json");
+var supplement = require("./libgit2-supplement.json");
+
+// libgit2's docs aren't complete so we'll add in what they're missing here
+_.merge(libgit2, supplement);
 
 // TODO: When libgit2's docs include callbacks we should be able to remove this
 var callbackDefs = require("./callbacks.json");
@@ -29,17 +33,14 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
 
   if (structDef.type === "enum") {
     structDef.isEnum = true;
+    structDef.cppClassName = "Number";
+    structDef.jsClassName = "Number";
   }
   else {
     structDef.isStruct = true;
   }
 
   structDef.isForwardDeclared = structDef.decl === structName;
-
-  if (structDef.isForwardDeclared) {
-    return hashMap;
-  }
-
   structDef.fields = structDef.fields || [];
   structDef.functions = [];
   structDef.dependencies = [];
@@ -134,6 +135,11 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
           && libgitType.used.needs.some(function (fnName) {
             return utils.isConstructorFunction(normalizedType, fnName);
           });
+
+      if (field.isEnum) {
+        field.cppClassName = "Number";
+        field.jsClassName = "Number";
+      }
     }
   });
 
@@ -202,6 +208,21 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
       arg.cppClassName = utils.cTypeToCppName(normalizedType);
       arg.jsClassName = utils.cTypeToJsName(normalizedType);
 
+      var libgitType;
+
+      libgit2.types.some(function (type) {
+        if (type[0] === normalizedType) {
+          libgitType = type[1];
+          return true;
+        }
+      });
+
+      if (libgitType && libgitType.type === "enum") {
+        arg.isEnum = true;
+        arg.cppClassName = "Number";
+        arg.jsClassName = "Number";
+      }
+
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
@@ -228,8 +249,24 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
     });
 
     if (fnDef.return) {
-      fnDef.return.cppClassName = utils.cTypeToCppName(fnDef.return.type);
-      fnDef.return.jsClassName = utils.cTypeToJsName(fnDef.return.type);
+      var libgitType;
+
+      libgit2.types.some(function(type) {
+        if (type[0] === utils.normalizeCtype(fnDef.return.type)) {
+          libgitType = type[1];
+          return true;
+        }
+      });
+
+      if (libgitType && libgitType.type === "enum") {
+        fnDef.return.cppClassName = "Number";
+        fnDef.return.jsClassName = "Number";
+      }
+      else {
+        fnDef.return.cppClassName = utils.cTypeToCppName(fnDef.return.type);
+        fnDef.return.jsClassName = utils.cTypeToJsName(fnDef.return.type);
+      }
+
       fnDef.return.cType = fnDef.return.type;
     }
   });
