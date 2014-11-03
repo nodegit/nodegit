@@ -1,24 +1,4 @@
 {
-  "git_blame_hunk": {
-    "fields": [
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-      {
-        "ignore": true
-      }
-    ]
-  },
-  "git_cred_userpass_payload": {
-    "cDependencies": [
-      "git2/cred_helpers.h"
-    ]
-  },
   "buf": {
     "functions": [
       {},
@@ -62,10 +42,127 @@
       }
     ]
   },
+  "config": {
+    "functions": [
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "git_blame_hunk": {
+    "fields": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "git_cred_userpass_payload": {
+    "cDependencies": [
+      "git2/cred_helpers.h"
+    ]
+  },
   "git_cherry_pick_options": {
     "fields": [
       {},
       {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "git_config_backend": {
+    "ignore": true
+  },
+  "index": {
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "oid": {
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "reference": {
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
       {
         "ignore": true
       }

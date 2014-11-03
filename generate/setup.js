@@ -10,7 +10,8 @@ var libgit2 = require("./v" + version + ".json");
 // TODO: When libgit2's docs include callbacks we should be able to remove this
 var callbackDefs = require("./callbacks.json");
 
-// Turn the types array into a hashmap of struct values
+// Turn the types array into a hashmap of struct values and decorate
+// the definitions with required data to build the C++ files
 var structs = libgit2.types.reduce(function(hashMap, current) {
   var structName = current[0];
   var structDefOverrides = descriptor[structName] || {};
@@ -49,117 +50,100 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
       return utils.isConstructorFunction(structDef.cType, fnName);
     });
 
-  if (!structDef.isForwardDeclared) {
-    var dependencyLookup = {};
+  structDef.fields.forEach(function (field) {
+    var normalizedType = utils.normalizeCtype(field.type);
 
-    structDef.fields.forEach(function (field) {
-      var normalizedType = utils.normalizeCtype(field.type);
+    field.cType = field.type;
+    field.cppFunctionName = utils.titleCase(field.name);
+    field.jsFunctionName = utils.camelCase(field.name);
+    field.cppClassName = utils.cTypeToCppName(field.type);
+    field.jsClassName = utils.cTypeToJsName(field.type);
 
-      field.cType = field.type;
-      field.cppFunctionName = utils.titleCase(field.name);
-      field.jsFunctionName = utils.camelCase(field.name);
-      field.cppClassName = utils.cTypeToCppName(field.type);
-      field.jsClassName = utils.cTypeToJsName(field.type);
+    if (utils.isCallbackFunction(field.name)) {
+      field.isCallbackFunction = true;
 
-      if (utils.isCallbackFunction(field.name)) {
-        field.isCallbackFunction = true;
-
-        if (callbackDefs[field.type]) {
-          _.merge(field, callbackDefs[field.type]);
-        }
-        else {
-          console.log("WARNGING: Couldn't find callback definition for "
-            + field.type);
-        }
+      if (callbackDefs[field.type]) {
+        _.merge(field, callbackDefs[field.type]);
       }
       else {
-        field.isCallbackFunction = false;
-
-        if (field.name === "payload") {
-          field.payloadFor = "*";
-        }
-        else {
-          var cbFieldName;
-
-          structDef.fields.some(function (cbField) {
-            if (utils.isPayloadFor(cbField.name, field.name)) {
-              cbFieldName = cbField.name;
-              return true;
-            }
-          });
-
-          if (cbFieldName) {
-            field.payloadFor = cbFieldName;
-          }
-        }
+        console.log("WARNGING: Couldn't find callback definition for "
+          + field.type);
       }
+    }
+    else {
+      field.isCallbackFunction = false;
 
-      if (field.payloadFor) {
-        return;
+      if (field.name === "payload") {
+        field.payloadFor = "*";
       }
+      else {
+        var cbFieldName;
 
-      if (field.isCallbackFunction) {
-        field.args.forEach(function (arg) {
-          var argNormalizedType = utils.normalizeCtype(arg.cType);
-          var argLibgitType;
-
-          arg.cppClassName = utils.cTypeToCppName(arg.cType);
-          arg.jsClassName = utils.cTypeToJsName(arg.cType);
-          arg.isLibgitType = libgit2.types.some(function (type) {
-            if (type[0] === argNormalizedType) {
-              argLibgitType = type[1];
-              return true;
-            }
-          });
-
-          if (arg.isLibgitType) {
-            arg.isEnum = argLibgitType.type === "enum";
-
-            if (!arg.isEnum) {
-              dependencyLookup[argNormalizedType.replace("git_", "")] = "";
-            }
+        structDef.fields.some(function (cbField) {
+          if (utils.isPayloadFor(cbField.name, field.name)) {
+            cbFieldName = cbField.name;
+            return true;
           }
         });
+
+        if (cbFieldName) {
+          field.payloadFor = cbFieldName;
+        }
       }
+    }
 
-      // We need to find all of the libgit2 types to build the dependency chain
-      var libgitType;
+    if (field.payloadFor) {
+      return;
+    }
 
-      libgit2.types.some(function (type) {
-        if (type[0] === normalizedType) {
-          libgitType = type[1];
-          return true;
+    if (field.isCallbackFunction) {
+      field.args.forEach(function (arg) {
+        var argNormalizedType = utils.normalizeCtype(arg.cType);
+        var argLibgitType;
+
+        arg.cppClassName = utils.cTypeToCppName(arg.cType);
+        arg.jsClassName = utils.cTypeToJsName(arg.cType);
+        arg.isLibgitType = libgit2.types.some(function (type) {
+          if (type[0] === argNormalizedType) {
+            argLibgitType = type[1];
+            return true;
+          }
+        });
+
+        if (arg.isLibgitType) {
+          arg.isEnum = argLibgitType.type === "enum";
         }
       });
+    }
 
-      if (libgitType) {
-        field.isLibgitType = true;
-        field.isEnum = libgitType.type === "enum";
+    var libgitType;
 
-        if (!field.isEnum) {
-          dependencyLookup[normalizedType.replace("git_", "")] = "";
-        }
-
-        field.hasConstructor
-          = libgitType.used
-            && libgitType.used.needs
-            && libgitType.used.needs.some(function (fnName) {
-              return utils.isConstructorFunction(normalizedType, fnName);
-            });
+    libgit2.types.some(function (type) {
+      if (type[0] === normalizedType) {
+        libgitType = type[1];
+        return true;
       }
     });
 
-    Object.keys(dependencyLookup).forEach(function (dependencyFilename) {
-      structDef.dependencies.push("../include/" + dependencyFilename + ".h");
-    });
+    if (libgitType) {
+      field.isLibgitType = true;
+      field.isEnum = libgitType.type === "enum";
+      field.hasConstructor
+        = libgitType.used
+          && libgitType.used.needs
+          && libgitType.used.needs.some(function (fnName) {
+            return utils.isConstructorFunction(normalizedType, fnName);
+          });
+    }
+  });
 
-    _.merge(structDef, structDefOverrides);
-    hashMap[structName] = structDef;
-  }
+  _.merge(structDef, structDefOverrides);
+  hashMap[structName] = structDef;
 
   return hashMap;
 }, {});
 
+// Do a similar transformation and decoration as we did with the types
 var classes = libgit2.groups.reduce(function(hashMap, current) {
   var className = current[0];
   var classDefOverrides = descriptor[className] || {};
@@ -189,9 +173,8 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
   cType = hasCtype ? cType : null;
 
   classDef.cType = cType;
-  var dependencyLookup = {};
 
-  // Decorate functions and calculate dependencies
+  // Decorate functions
   classDef.functions.forEach(function(fnDef) {
     var key = fnDef.cFunctionName;
 
@@ -214,11 +197,6 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
 
     fnDef.args.forEach(function(arg) {
       var normalizedType = utils.normalizeCtype(arg.type);
-
-      // We need to find all of the libgit2 types to build the dependency chain
-      if (structs[normalizedType]) {
-        dependencyLookup[normalizedType.replace("git_", "")] = "";
-      }
 
       arg.cType = arg.type;
       arg.cppClassName = utils.cTypeToCppName(normalizedType);
@@ -256,10 +234,6 @@ var classes = libgit2.groups.reduce(function(hashMap, current) {
     }
   });
 
-  Object.keys(dependencyLookup).forEach(function(dependencyFilename) {
-    classDef.dependencies.push("../include/" + dependencyFilename + ".h");
-  });
-
   _.merge(classDef, classDefOverrides);
   hashMap[className] = classDef;
 
@@ -286,6 +260,50 @@ Object.keys(structs).forEach(function (key) {
 
 Object.keys(classes).forEach(function (key) {
   output.push(classes[key]);
+});
+
+// Calculate dependencies
+var dependencyLookup = {};
+
+libgit2.types.forEach(function (type) {
+  if (type[1].type !== "enum") {
+    var dependencyFilename = type[0].replace("git_", "");
+    dependencyLookup[dependencyFilename] = dependencyFilename;
+  }
+});
+
+libgit2.groups.forEach(function (group) {
+  var dependencyFilename = group[0].replace("git_", "");
+  dependencyLookup[dependencyFilename] = dependencyFilename;
+});
+
+output.forEach(function (def) {
+  if (def.ignore) {
+    return;
+  }
+
+  var dependencies = {};
+  var addDependencies = function (prop) {
+    if (prop.ignore) {
+      return;
+    }
+
+    var type = utils.normalizeCtype(prop.type || prop.cType).replace("git_", "");
+    var dependencyFilename = dependencyLookup[type];
+
+    if (dependencyFilename) {
+      dependencies[dependencyFilename] = dependencyFilename;
+    }
+
+    (prop.args || []).forEach(addDependencies);
+  };
+
+  def.fields.forEach(addDependencies);
+  def.functions.forEach(addDependencies);
+
+  Object.keys(dependencies).forEach(function (dependencyFilename) {
+    def.dependencies.push("../include/" + dependencyFilename + ".h");
+  });
 });
 
 fs.writeFileSync(path.join(__dirname, "idefs.json"),
