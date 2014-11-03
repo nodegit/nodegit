@@ -1,0 +1,82 @@
+{
+  "git_checkout_notify_cb": {
+    "args": [
+      {
+        "name": "why",
+        "cType": "git_checkout_notify_t"
+      },
+      {
+        "name": "path",
+        "cType": "const char *"
+      },
+      {
+        "name": "baseline",
+        "cType": "const git_diff_file *"
+      },
+      {
+        "name": "target",
+        "cType": "const git_diff_file *"
+      },
+      {
+        "name": "workdir",
+        "cType": "const git_diff_file *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "returnType": "int",
+    "returnNoResults": 1,
+    "returnSuccess": 0,
+    "returnError": -1
+  },
+  "git_checkout_progress_cb": {
+    "args": [
+      {
+        "name": "path",
+        "cType": "const char *"
+      },
+      {
+        "name": "completed_steps",
+        "cType": "size_t"
+      },
+      {
+        "name": "total_steps",
+        "cType": "size_t"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "returnType": "int",
+    "returnNoResults": 1,
+    "returnSuccess": 0,
+    "returnError": -1
+  },
+  "git_diff_notify_cb": {
+    "args": [
+      {
+        "name": "diff_so_far",
+        "cType": "const git_diff *"
+      },
+      {
+        "name": "delta_to_add",
+        "cType": "git_diff_delta *"
+      },
+      {
+        "name": "matched_pathspec",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "returnType": "int",
+    "returnNoResults": 1,
+    "returnSuccess": 0,
+    "returnError": -1
+  }
+}

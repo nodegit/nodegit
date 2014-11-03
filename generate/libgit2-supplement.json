@@ -1,0 +1,10 @@
+{
+  "types": [
+    [
+      "git_off_t",
+      {
+        "type": "enum"
+      }
+    ]
+  ]
+}
