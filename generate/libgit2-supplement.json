@@ -1,7 +1,69 @@
 {
   "types": [
     [
+      "git_direction",
+      {
+        "type": "enum"
+      }
+    ],
+    [
+      "git_merge_options",
+      {
+        "type": "struct",
+        "fields": [
+          {
+            "type": "unsigned int",
+            "name": "version"
+          },
+          {
+            "type": "git_merge_tree_flag_t",
+            "name": "flags"
+          },
+          {
+            "type": "unsigned int",
+            "name": "rename_threshold"
+          },
+          {
+            "type": "unsigned int",
+            "name": "target_limit"
+          },
+          {
+            "type": "git_diff_similarity_metric *",
+            "name": "metric",
+            "ignore": true
+          },
+          {
+            "type": "git_merge_file_favor_t",
+            "name": "file_favor"
+          }
+        ],
+        "used": {
+          "needs": [
+            "git_merge_init_options"
+          ]
+        }
+      }
+    ],
+    [
       "git_off_t",
+      {
+        "type": "enum"
+      }
+    ],
+    [
+      "git_remote_autotag_option_t",
+      {
+        "type": "enum"
+      }
+    ],
+    [
+      "git_time_t",
+      {
+        "type": "enum"
+      }
+    ],
+    [
+      "git_trace_level_t",
       {
         "type": "enum"
       }

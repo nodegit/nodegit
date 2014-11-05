@@ -47,26 +47,28 @@ using namespace std;
 
 void {{ cppClassName }}::ConstructFields() {
   {%each fields|fieldsInfo as field %}
-    {%if not field.isEnum %}
-      {%if field.hasConstructor %}
+    {%if not field.ignore %}
+      {%if not field.isEnum %}
+        {%if field.hasConstructor %}
   Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }}, false)->ToObject();
   NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
 
-      {%elsif field.isLibgitType %}
+        {%elsif field.isLibgitType %}
   Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }}, false)->ToObject();
   NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
 
-      {%elsif field.isCallbackFunction %}
+        {%elsif field.isCallbackFunction %}
 
   // Set the static method call and set the payload for this function to be
   // the current instance
   this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
   this->raw->{{ fields|payloadFor field.name }} = (void *)this;
   this->{{ field.name }} = new NanCallback();
-      {%elsif field.payloadFor %}
+        {%elsif field.payloadFor %}
 
   Local<Value> {{ field.name }} = NanUndefined();
   NanAssignPersistent(this->{{ field.name }}, {{ field.name }});
+        {%endif%}
       {%endif%}
     {%endif%}
   {%endeach%}
