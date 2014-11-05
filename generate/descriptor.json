@@ -805,6 +805,8 @@
     ]
   },
   "reference": {
+    "cppClassName": "GitRefs",
+    "jsClassName": "Refs",
     "functions": [
       {},
       {},
