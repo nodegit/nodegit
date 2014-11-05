@@ -78,5 +78,25 @@
     "returnNoResults": 1,
     "returnSuccess": 0,
     "returnError": -1
+  },
+  "git_diff_file_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "progress",
+        "cType": "float"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "returnType": "int",
+    "returnNoResults": 1,
+    "returnSuccess": 0,
+    "returnError": -1
   }
 }

@@ -4,6 +4,7 @@ var callbackFunctionNamePattern = /\s*_cb/;
 
 var cTypeMappings = {
   "char": "String",
+  "short": "Number",
   "int": "Number",
   "int16_t": "Number",
   "int32_t": "Number",
@@ -48,6 +49,7 @@ var Utils = {
     .toLowerCase()
     .replace("const ", "")
     .replace("unsigned ", "")
+    .replace("struct", "")
     .replace(doublePointerRegex, "")
     .replace(pointerRegex, "")
     .trim();

@@ -9,7 +9,7 @@ var libgit2 = require("./v" + version + ".json");
 var supplement = require("./libgit2-supplement.json");
 
 // libgit2's docs aren't complete so we'll add in what they're missing here
-_.merge(libgit2, supplement);
+libgit2.types = libgit2.types.concat(supplement.types);
 
 // TODO: When libgit2's docs include callbacks we should be able to remove this
 var callbackDefs = require("./callbacks.json");
@@ -333,6 +333,10 @@ output.forEach(function (def) {
     }
 
     (prop.args || []).forEach(addDependencies);
+
+    if (prop.return) {
+      addDependencies(prop.return);
+    }
   };
 
   def.fields.forEach(addDependencies);

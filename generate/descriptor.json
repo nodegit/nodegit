@@ -1,4 +1,16 @@
 {
+  "attr": {
+    "functions": [
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "blame": {
+    "cType": "git_blame"
+  },
   "blob": {
     "functions": [
       {
@@ -35,6 +47,21 @@
     "dependencies": [
       "../include/wrapper.h",
       "node_buffer.h"
+    ]
+  },
+  "branch": {
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
     ]
   },
   "buf": {
@@ -80,9 +107,261 @@
       }
     ]
   },
-  "config": {
+  "commit": {
     "functions": [
       {},
+      {},
+      {},
+      {
+        "args": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "cType": "const git_commit **",
+            "cppClassName": "Array",
+            "jsClassName": "Array",
+            "arrayElementCppClassName": "GitCommit"
+          }
+        ]
+      }
+    ]
+  },
+  "config": {
+    "functions": [
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "cred": {
+    "cType": "git_cred",
+    "functions": [
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "diff": {
+    "functions": [
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "filter": {
+    "functions": [
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
       {
         "ignore": true
       }
@@ -103,13 +382,77 @@
       }
     ]
   },
+  "git_cred_ssh_custom": {
+    "ignore": true
+  },
+  "git_cred_ssh_interactive": {
+    "ignore": true
+  },
+  "git_cred_ssh_key": {
+    "ignore": true
+  },
   "git_cred_userpass_payload": {
     "cDependencies": [
       "git2/cred_helpers.h"
     ]
   },
-  "git_cherry_pick_options": {
+  "git_cred_userpass_plaintext": {
+    "ignore": true
+  },
+  "git_config_backend": {
+    "ignore": true
+  },
+  "git_diff_find_options": {
     "fields": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ],
+    "ignore": true
+  },
+  "git_diff_format_email_options": {
+    "ignore": true
+  },
+  "git_diff_similarity_metric": {
+    "ignore": true
+  },
+  "git_filter_source": {
+    "ignore": true
+  },
+  "git_index_entry": {
+    "ignore": false
+  },
+  "git_odb_stream": {
+    "ignore": true
+  },
+  "git_odb_writepack": {
+    "ignore": true
+  },
+  "git_refdb_backend": {
+    "ignore": true
+  },
+  "git_remote_head": {
+    "ignore": true
+  },
+  "git_revspec": {
+    "ignore": true
+  },
+  "graph": {
+    "functions": [
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "ignore": {
+    "functions": [
       {},
       {},
       {
@@ -117,13 +460,218 @@
       }
     ]
   },
-  "git_config_backend": {
-    "ignore": true
-  },
-  "git_filter_source": {
-    "ignore": true
-  },
   "index": {
+    "functions": [
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "indexer": {
+    "cType": "git_indexer",
+    "functions": [
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "merge": {
+    "functions": [
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "igore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "message": {
+    "functions": [
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "note": {
+    "functions": [
+      {
+        "args": [
+          {
+            "shouldAlloc": true
+          }
+        ]
+      },
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "odb": {
+    "functions": [
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "object": {
     "functions": [
       {},
       {},
@@ -133,14 +681,13 @@
       {},
       {},
       {},
+      {},
       {
-        "ignore": true
-      },
-      {
-        "ignore": true
-      },
-      {
-        "ignore": true
+        "args": [
+          {
+            "shouldAlloc": true
+          }
+        ]
       }
     ]
   },
@@ -148,10 +695,54 @@
     "functions": [
       {},
       {},
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
       {},
       {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
       {},
       {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "packbuilder": {
+    "functions": [
+      {
+        "ignore": true
+      },
       {},
       {},
       {},
@@ -162,9 +753,52 @@
       {
         "ignore": true
       },
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "patch": {
+    "functions": [
+      {},
+      {},
+      {},
       {
         "ignore": true
       },
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "push": {
+    "cType": "git_push",
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
       {
         "ignore": true
       }
@@ -178,9 +812,15 @@
       {},
       {},
       {},
-      {},
-      {},
-      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
       {},
       {},
       {},
@@ -200,10 +840,289 @@
       {},
       {},
       {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "refspec": {
+    "cType": "git_refspec",
+    "functions": [
+      {},
+      {},
+      {},
       {},
       {
         "ignore": true
       },
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "remote": {
+    "cType": "git_remote",
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "repository": {
+    "functions": [
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "revparse": {
+    "functions": [
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "revwalk": {
+    "functions": [
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "smart": {
+    "functions": [
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "stash": {
+    "functions": [
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "status": {
+    "functions": [
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "submodule": {
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "tag": {
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "trace": {
+    "functions": [
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "transport": {
+    "cType": "git_transport",
+    "functions": [
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {},
+      {
+        "ignore": true
+      },
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "tree": {
+    "functions": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "ignore": true
+      }
+    ]
+  },
+  "treebuilder": {
+    "functions": [
+      {},
+      {},
+      {},
       {
         "ignore": true
       }
