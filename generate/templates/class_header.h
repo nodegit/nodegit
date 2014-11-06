@@ -15,7 +15,7 @@ extern "C" {
 #include "{{ dependency }}"
 {%endeach%}
 
-{%if forwardDeclare%}
+{%if isForwardDeclared%}
 // Forward declaration.
 struct {{ cType }} {
   {%each fields as field%}
