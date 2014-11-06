@@ -101,7 +101,7 @@ var Utils = {
   },
 
   isClass: function(typeName, groupNames) {
-    return ~groupNames.indexOf(typeName);
+    return !!~groupNames.indexOf(typeName);
   },
 
   getLibgitType: function(normalizedType, types) {
