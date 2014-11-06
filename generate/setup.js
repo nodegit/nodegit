@@ -11,9 +11,6 @@ var supplement = require("./libgit2-supplement.json");
 // libgit2's docs aren't complete so we'll add in what they're missing here
 libgit2.types = libgit2.types.concat(supplement.types);
 
-// TODO: When libgit2's docs include callbacks we should be able to remove this
-var callbackDefs = require("./callbacks.json");
-
 // Turn the types array into a hashmap of struct values and decorate
 // the definitions with required data to build the C++ files
 var structs = libgit2.types.reduce(function(hashMap, current) {
@@ -27,120 +24,11 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
   }
 
   structDef.cType = structName;
-  structDef.cppClassName = utils.cTypeToCppName(structName);
-  structDef.jsClassName = utils.cTypeToJsName(structName);
-  structDef.filename = structName.replace("git_", "");
 
-  if (structDef.type === "enum") {
-    structDef.isEnum = true;
-    structDef.cppClassName = "Number";
-    structDef.jsClassName = "Number";
-  }
-  else {
-    structDef.isStruct = true;
-  }
+  utils.decorateStruct(structDef);
 
-  structDef.isForwardDeclared = structDef.decl === structName;
-  structDef.fields = structDef.fields || [];
-  structDef.functions = [];
-  structDef.dependencies = [];
-  structDef.hasConstructor
-    = structDef.used
-    && structDef.used.needs
-    && structDef.used.needs.some(function (fnName) {
-      return utils.isConstructorFunction(structDef.cType, fnName);
-    });
-
-  structDef.fields.forEach(function (field) {
-    var normalizedType = utils.normalizeCtype(field.type);
-
-    field.cType = field.type;
-    field.cppFunctionName = utils.titleCase(field.name);
-    field.jsFunctionName = utils.camelCase(field.name);
-    field.cppClassName = utils.cTypeToCppName(field.type);
-    field.jsClassName = utils.cTypeToJsName(field.type);
-
-    if (utils.isCallbackFunction(field.name)) {
-      field.isCallbackFunction = true;
-
-      if (callbackDefs[field.type]) {
-        _.merge(field, callbackDefs[field.type]);
-      }
-      else {
-        console.log("WARNGING: Couldn't find callback definition for "
-          + field.type);
-      }
-    }
-    else {
-      field.isCallbackFunction = false;
-
-      if (field.name === "payload") {
-        field.payloadFor = "*";
-      }
-      else {
-        var cbFieldName;
-
-        structDef.fields.some(function (cbField) {
-          if (utils.isPayloadFor(cbField.name, field.name)) {
-            cbFieldName = cbField.name;
-            return true;
-          }
-        });
-
-        if (cbFieldName) {
-          field.payloadFor = cbFieldName;
-        }
-      }
-    }
-
-    if (field.payloadFor) {
-      return;
-    }
-
-    if (field.isCallbackFunction) {
-      field.args.forEach(function (arg) {
-        var argNormalizedType = utils.normalizeCtype(arg.cType);
-        var argLibgitType;
-
-        arg.cppClassName = utils.cTypeToCppName(arg.cType);
-        arg.jsClassName = utils.cTypeToJsName(arg.cType);
-        arg.isLibgitType = libgit2.types.some(function (type) {
-          if (type[0] === argNormalizedType) {
-            argLibgitType = type[1];
-            return true;
-          }
-        });
-
-        if (arg.isLibgitType) {
-          arg.isEnum = argLibgitType.type === "enum";
-        }
-      });
-    }
-
-    var libgitType;
-
-    libgit2.types.some(function (type) {
-      if (type[0] === normalizedType) {
-        libgitType = type[1];
-        return true;
-      }
-    });
-
-    if (libgitType) {
-      field.isLibgitType = true;
-      field.isEnum = libgitType.type === "enum";
-      field.hasConstructor
-        = libgitType.used
-          && libgitType.used.needs
-          && libgitType.used.needs.some(function (fnName) {
-            return utils.isConstructorFunction(normalizedType, fnName);
-          });
-
-      if (field.isEnum) {
-        field.cppClassName = "Number";
-        field.jsClassName = "Number";
-      }
-    }
+  structDef.fields.forEach(function (field, index, allFields) {
+    utils.decorateField(field, allFields, libgit2);
   });
 
   _.merge(structDef, structDefOverrides);
@@ -153,123 +41,9 @@ var structs = libgit2.types.reduce(function(hashMap, current) {
 var classes = libgit2.groups.reduce(function(hashMap, current) {
   var className = current[0];
   var classDefOverrides = descriptor[className] || {};
-  var classDef = {
-    isClass: true,
-    filename: className,
-    cppClassName: utils.cTypeToCppName("git_" + className),
-    jsClassName: utils.cTypeToJsName("git_" + className),
-    functions: current[1].reduce(function(fnArray, currentFn) {
-      var fnDef = libgit2.functions[currentFn];
-      fnDef.cFunctionName = currentFn;
-      fnArray.push(fnDef);
-      return fnArray;
-    }, []),
-    dependencies: [],
-    fields: [],
-    ignore: false
-  };
+  var classDef = {};
 
-  var cType = "git_" + className;
-  var hasCtype = libgit2.types.some(function (type) {
-    if (type[0] == cType) {
-      return true;
-    }
-  });
-
-  cType = hasCtype ? cType : null;
-
-  classDef.cType = cType;
-
-  // Decorate functions
-  classDef.functions.forEach(function(fnDef) {
-    var key = fnDef.cFunctionName;
-
-    // if this is the free function for the class, make the ref on the class
-    // and then return since we don't want the free functions publicly
-    // available
-    if (key == classDef.cType + "_free") {
-      classDef.freeFunctionName = key;
-      fnDef.ignore = true;
-      return;
-    }
-
-    fnDef.cppFunctionName = utils.cTypeToCppName(key);
-    fnDef.jsFunctionName = utils.cTypeToJsName(key);
-    fnDef.isAsync = false; // until proven otherwise
-
-    if (fnDef.cppFunctionName == classDef.cppClassName) {
-      fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");
-    }
-
-    fnDef.args.forEach(function(arg) {
-      var normalizedType = utils.normalizeCtype(arg.type);
-
-      arg.cType = arg.type;
-      arg.cppClassName = utils.cTypeToCppName(normalizedType);
-      arg.jsClassName = utils.cTypeToJsName(normalizedType);
-
-      var libgitType;
-
-      libgit2.types.some(function (type) {
-        if (type[0] === normalizedType) {
-          libgitType = type[1];
-          return true;
-        }
-      });
-
-      if (libgitType && libgitType.type === "enum") {
-        arg.isEnum = true;
-        arg.cppClassName = "Number";
-        arg.jsClassName = "Number";
-      }
-
-      // Mark all of the args that are either returns or are the object
-      // itself and determine if this function goes on the prototype
-      // or is a constructor method.
-      arg.isReturn
-        = arg.name === "out"
-        || (utils.isDoublePointer(arg.type)
-          && normalizedType == classDef.cType);
-      arg.isSelf
-        = utils.isPointer(arg.type)
-        && normalizedType == classDef.cType;
-
-      if (arg.isReturn && classDef.return && classDef.return.type === "int") {
-        classDef.return.isErrorCode = true;
-        fnDef.isAsync = true;
-      }
-
-      if (arg.isReturn && arg.isSelf) {
-        arg.isSelf = false;
-        fnDef.isConstructorMethod = true;
-      }
-      else if (arg.isSelf) {
-        fnDef.isPrototypeMethod = true;
-      }
-    });
-
-    if (fnDef.return) {
-      var libgitType;
-
-      libgit2.types.some(function(type) {
-        if (type[0] === utils.normalizeCtype(fnDef.return.type)) {
-          libgitType = type[1];
-          return true;
-        }
-      });
-
-      if (libgitType && libgitType.type === "enum") {
-        fnDef.return.cppClassName = "Number";
-        fnDef.return.jsClassName = "Number";
-      }
-      else {
-        fnDef.return.cppClassName = utils.cTypeToCppName(fnDef.return.type);
-        fnDef.return.jsClassName = utils.cTypeToJsName(fnDef.return.type);
-      }
-
-      fnDef.return.cType = fnDef.return.type;
-    }
-  });
+  utils.decorateClass(className, classDef, current[1], libgit2);
 
   _.merge(classDef, classDefOverrides);
   hashMap[className] = classDef;
