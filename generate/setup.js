@@ -73,7 +73,6 @@ for (var groupName in groups) {
   groupDef.isClass = true;
   groupDef.isStruct = false;
 
-  groupDef.cType = "git_" + groupName;
   groupDef.typeName = groupName;
   dependencyLookup[groupName] = groupName;
   utils.decoratePrimaryType(groupDef);
