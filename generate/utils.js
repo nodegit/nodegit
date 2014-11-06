@@ -172,7 +172,7 @@ var Utils = {
     var partialOverrides = _.omit(typeDefOverrides, ["fields", "functions"]);
 
     typeDef.cppClassName = Utils.cTypeToCppName(typeDef.cType);
-    typeDef.jsClassName = Utils.cTypeToCppName(typeDef.cType);
+    typeDef.jsClassName = Utils.cTypeToJsName(typeDef.cType);
     typeDef.dependencies = [];
     typeDef.filename = typeDef.typeName;
 
