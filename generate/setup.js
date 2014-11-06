@@ -8,86 +8,81 @@ var descriptor = require("./descriptor.json");
 var libgit2 = require("./v" + version + ".json");
 var supplement = require("./libgit2-supplement.json");
 
+
 // libgit2's docs aren't complete so we'll add in what they're missing here
-libgit2.types = libgit2.types.concat(supplement.types);
-
-// Turn the types array into a hashmap of struct values and decorate
-// the definitions with required data to build the C++ files
-var structs = libgit2.types.reduce(function(hashMap, current) {
-  var structName = current[0];
-  var structDefOverrides = descriptor[structName] || {};
-  var structDef = current[1];
-
-  // currently skipping enums
-  if (structDef.type === "enum") {
-    return hashMap;
-  }
-
-  structDef.cType = structName;
-
-  utils.decorateStruct(structDef);
-
-  structDef.fields.forEach(function (field, index, allFields) {
-    utils.decorateField(field, allFields, libgit2);
-  });
-
-  _.merge(structDef, structDefOverrides);
-  hashMap[structName] = structDef;
-
-  return hashMap;
-}, {});
-
-// Do a similar transformation and decoration as we did with the types
-var classes = libgit2.groups.reduce(function(hashMap, current) {
-  var className = current[0];
-  var classDefOverrides = descriptor[className] || {};
-  var classDef = {};
-
-  utils.decorateClass(className, classDef, current[1], libgit2);
-
-  _.merge(classDef, classDefOverrides);
-  hashMap[className] = classDef;
-
-  return hashMap;
-}, {});
-
-// if there are any collisions between structs and classes, classes will
-// overwrite the struct and grab their fields
-
-Object.keys(classes).forEach(function (key) {
-  var structKey = key.replace("git_", "");
-
-  if (structs[structKey]) {
-    classes[key].fields = structs[structKey].fields;
-    structs[structKey].ignore = true;
-  }
-});
+Array.prototype.push.apply(libgit2.types, supplement.types);
 
 var output = [];
-
-Object.keys(structs).forEach(function (key) {
-  output.push(structs[key]);
-});
-
-Object.keys(classes).forEach(function (key) {
-  output.push(classes[key]);
-});
-
-// Calculate dependencies
+var groupNames = [];
 var dependencyLookup = {};
 
-libgit2.types.forEach(function (type) {
-  if (type[1].type !== "enum") {
-    var dependencyFilename = type[0].replace("git_", "");
-    dependencyLookup[dependencyFilename] = dependencyFilename;
+// reduce all of the groups into a hashmap and a name array for easy lookup
+var groups = libgit2.groups.reduce(function(memo, group) {
+  group[1].typeName = group[0];
+  memo[group[0]] = group[1];
+  groupNames.push(group[0]);
+  return memo;
+}, {});
+
+// Process each type in the types array into classes and structs and
+// decorate the definitions with required data to build the C++ files
+libgit2.types.forEach(function(current) {
+  var typeName = current[0];
+  var typeDefOverrides = descriptor[typeName] || {};
+  var typeDef = current[1];
+
+  // skip enums for now
+  if (typeDef.type === "enum") {
+    return;
   }
+
+  typeDef.cType = typeName;
+  typeName = typeName.replace("git_", "");
+  typeDef.typeName = typeName;
+  dependencyLookup[typeName] = typeName;
+
+  typeDef.isClass = utils.isClass(typeName, groupNames);
+  typeDef.isStruct = !typeDef.isClass;
+
+  utils.decoratePrimaryType(typeDef);
+
+  if (typeDef.isClass) {
+    typeDef.functions = groups[typeName];
+    utils.decorateClass(typeDef);
+    groups[typeName] = false;
+  }
+  else {
+    utils.decorateStruct(typeDef);
+  }
+
+  output.push(typeDef);
 });
 
-libgit2.groups.forEach(function (group) {
-  var dependencyFilename = group[0].replace("git_", "");
-  dependencyLookup[dependencyFilename] = dependencyFilename;
-});
+// Loop over the groups in case we missed anything (eg the types are missing in the docs);
+for (var groupName in groups) {
+  var groupDef = groups[groupName];
+  if (groupDef === false) {
+    continue;
+  }
 
+  groupDef = {
+    functions: groupDef
+  };
+
+  var classDefOverrides = descriptor[groupName] || {};
+  groupDef.isClass = true;
+  groupDef.isStruct = false;
+
+  groupDef.cType = "git_" + groupName;
+  groupDef.typeName = groupName;
+  dependencyLookup[groupName] = groupName;
+  utils.decoratePrimaryType(groupDef);
+  utils.decorateClass(groupDef, classDefOverrides);
+
+  output.push(groupDef);
+}
+
+// Calculate dependencies
 output.forEach(function (def) {
   if (def.ignore) {
     return;
