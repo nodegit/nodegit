@@ -171,8 +171,11 @@ var Utils = {
     var typeDefOverrides = descriptor[typeDef.typeName] || {};
     var partialOverrides = _.omit(typeDefOverrides, ["fields", "functions"]);
 
-    typeDef.cppClassName = Utils.cTypeToCppName(typeDef.cType);
-    typeDef.jsClassName = Utils.cTypeToJsName(typeDef.cType);
+    typeDef.cType = typeDef.cType || null;
+    if (typeDef.cType) {
+      typeDef.cppClassName = Utils.cTypeToCppName(typeDef.cType);
+      typeDef.jsClassName = Utils.cTypeToJsName(typeDef.cType);
+    }
     typeDef.dependencies = [];
     typeDef.filename = typeDef.typeName;
 
@@ -182,8 +185,6 @@ var Utils = {
       var fieldOverrides = typeDefOverrides.fields || {};
       Utils.decorateField(field, allFields, fieldOverrides[field.name] || {});
     });
-
-    typeDef.cType = typeDef.cType || null;
 
     _.merge(typeDef, partialOverrides);
   },
