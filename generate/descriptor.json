@@ -604,6 +604,7 @@
     "ignore": true
   },
   "oid": {
+    "shouldAlloc": true,
     "functions": {
       "git_oid_cpy": {
         "ignore": true
@@ -615,7 +616,8 @@
         "ignore": true
       },
       "git_oid_fromstr": {
-        "ignore": true
+        "jsFunctionName": "fromString",
+        "isAsync": false
       },
       "git_oid_fromstrn": {
         "ignore": true
@@ -639,7 +641,8 @@
         "ignore": true
       },
       "git_oid_tostr": {
-        "ignore": true
+        "ignore": true,
+        "jsFunctionName": "toString"
       }
     },
     "fields": {
