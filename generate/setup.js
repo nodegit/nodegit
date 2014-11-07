@@ -8,9 +8,15 @@ var descriptor = require("./descriptor.json");
 var libgit2 = require("./v" + version + ".json");
 var supplement = require("./libgit2-supplement.json");
 
+libgit2.types.forEach(function(type) {
+  if (supplement.types[type[0]]){
+    _.merge(type[1], supplement.types[type[0]]);
+  }
+});
 
 // libgit2's docs aren't complete so we'll add in what they're missing here
-Array.prototype.push.apply(libgit2.types, supplement.types);
+Array.prototype.push.apply(libgit2.types, supplement.new.types);
+
 
 var output = [];
 var groupNames = [];

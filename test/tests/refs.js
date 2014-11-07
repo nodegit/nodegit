@@ -27,11 +27,9 @@ describe("Refs", function() {
     assert.equal(this.refs.isSymbolic(), false);
   });
 
-  it("will fail looking up the target if not symbolic", function() {
-    var refs = this.refs;
-
-    assert.throws(function() {
-      refs.symbolicTarget();
+  it("will return undefined looking up the symbolic target if not symbolic",
+    function() {
+      var refs = this.refs;
+      assert(refs.symbolicTarget() === undefined);
     });
-  });
 });

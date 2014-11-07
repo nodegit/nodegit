@@ -186,7 +186,7 @@ var Utils = {
       Utils.decorateField(field, allFields, fieldOverrides[field.name] || {});
     });
 
-    typeDef.needsForwardDeclaration = typeDef.decl !== typeDef.cType;
+    typeDef.needsForwardDeclaration = typeDef.decl === typeDef.cType;
 
     _.merge(typeDef, partialOverrides);
   },
