@@ -25,7 +25,7 @@ var cTypeMappings = {
 
 var Utils = {
   titleCase: function(str) {
-    return str.toLowerCase().split(/_|\//).map(function(val, index) {
+    return str.split(/_|\//).map(function(val, index) {
       if (val.length) {
         return val[0].toUpperCase() + val.slice(1);
       }
@@ -35,11 +35,10 @@ var Utils = {
   },
 
   camelCase: function(str) {
-    return str.toLowerCase().split(/_|\//).map(function(val, index) {
-      if (val.length) {
-        return index >= 1 ? val[0].toUpperCase() + val.slice(1) : val;
-      }
-
+    return str.split(/_|\//).map(function(val, index) {
+        return index >= 1
+          ? val[0].toUpperCase() + val.slice(1)
+          : val[0].toLowerCase() + val.slice(1);
       return val;
     }).join("");
   },
@@ -63,14 +62,17 @@ var Utils = {
     .trim();
   },
 
-  cTypeToCppName: function(cType) {
+  cTypeToCppName: function(cType, ownerType) {
     var normalizedType = Utils.normalizeCtype(cType);
+    if (ownerType && normalizedType != ownerType) {
+      normalizedType = normalizedType.replace(ownerType, "");
+    }
 
     return cTypeMappings[normalizedType] || Utils.titleCase(normalizedType);
   },
 
-  cTypeToJsName: function(cType) {
-    return Utils.cTypeToCppName(cType).replace("Git", "");
+  cTypeToJsName: function(cType, ownerType) {
+    return Utils.camelCase(Utils.cTypeToCppName(cType, ownerType).replace("Git", ""));
   },
 
   isConstructorFunction: function(cType, fnName) {
@@ -163,7 +165,7 @@ var Utils = {
         type.jsClassName = "Number";
       }
 
-      _.merge(type, descriptor[type.cType.replace("git_", "")] || {});
+      _.merge(type, descriptor[normalizedType.replace("git_", "")] || {});
     }
   },
 
@@ -173,7 +175,7 @@ var Utils = {
 
     typeDef.cType = typeDef.cType || null;
     typeDef.cppClassName = Utils.cTypeToCppName(typeDef.cType || "git_" + typeDef.typeName);
-    typeDef.jsClassName = Utils.cTypeToJsName(typeDef.cType || "git_" + typeDef.typeName);
+    typeDef.jsClassName = Utils.titleCase(Utils.cTypeToJsName(typeDef.cType || "git_" + typeDef.typeName));
 
     typeDef.dependencies = [];
     typeDef.filename = typeDef.typeName;
@@ -184,6 +186,8 @@ var Utils = {
       var fieldOverrides = typeDefOverrides.fields || {};
       Utils.decorateField(field, allFields, fieldOverrides[field.name] || {});
     });
+
+    typeDef.needsForwardDeclaration = typeDef.decl !== typeDef.cType;
 
     _.merge(typeDef, partialOverrides);
   },
@@ -197,7 +201,6 @@ var Utils = {
       structDef.jsClassName = "Number";
     } */
 
-    structDef.isForwardDeclared = structDef.decl === structDef.cType;
     structDef.isLibgitType = true;
 
     // TODO: Structs don't *have* functions, we need to remove the code thats requiring this (if there even is any)
@@ -229,7 +232,7 @@ var Utils = {
     field.cppFunctionName = Utils.titleCase(field.name);
     field.jsFunctionName = Utils.camelCase(field.name);
     field.cppClassName = Utils.cTypeToCppName(field.type);
-    field.jsClassName = Utils.cTypeToJsName(field.type);
+    field.jsClassName = Utils.titleCase(Utils.cTypeToJsName(field.type));
 
     if (Utils.isCallbackFunction(field.name)) {
       Utils.processCallback(field);
@@ -256,7 +259,7 @@ var Utils = {
 
     arg.cType = type;
     arg.cppClassName = Utils.cTypeToCppName(arg.cType);
-    arg.jsClassName = Utils.cTypeToJsName(arg.cType);
+    arg.jsClassName = Utils.titleCase(Utils.cTypeToJsName(arg.cType));
 
     Utils.decorateLibgitType(arg, libgit2.types);
 
@@ -301,8 +304,8 @@ var Utils = {
       return;
     }
 
-    fnDef.cppFunctionName = Utils.cTypeToCppName(key);
-    fnDef.jsFunctionName = Utils.cTypeToJsName(key);
+    fnDef.cppFunctionName = Utils.cTypeToCppName(key, "git_" + classDef.typeName);
+    fnDef.jsFunctionName = Utils.cTypeToJsName(key, "git_" + classDef.typeName);
     fnDef.isAsync = false; // until proven otherwise
 
     if (fnDef.cppFunctionName == classDef.cppClassName) {
