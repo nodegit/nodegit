@@ -1,5 +1,5 @@
 var promisify = require("promisify-node");
-var fs = promisify("fs");
+var fse = promisify("fs-extra");
 
 // Have to wrap exec, since it has a weird callback signature.
 var exec = promisify(function(command, opts, callback) {
@@ -16,7 +16,9 @@ before(function(done) {
     return exec("git init test/repos/empty");
   }
 
-  fs.mkdir("test/repos").then(initEmpty, initEmpty)
+  fse.removeSync("test/repos")
+
+  fse.mkdir("test/repos").then(initEmpty, initEmpty)
     .then(function() {
       return exec("git clone " + url + " test/repos/workdir");
     }).then(function() {
@@ -27,9 +29,9 @@ before(function(done) {
       var nonrepo = "test/repos/nonrepo";
 
       function writeBogus() {
-        return fs.writeFile(nonrepo + "/file.txt", "This is a bogus file");
+        return fse.writeFile(nonrepo + "/file.txt", "This is a bogus file");
       }
 
-      return fs.mkdir(nonrepo).then(writeBogus, writeBogus);
+      return fse.mkdir(nonrepo).then(writeBogus, writeBogus);
     }).then(done, done);
 });
