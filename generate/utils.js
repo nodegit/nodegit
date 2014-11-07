@@ -36,15 +36,14 @@ var Utils = {
 
   camelCase: function(str) {
     return str.split(/_|\//).map(function(val, index) {
-        return index >= 1
+        return (index >= 1
           ? val[0].toUpperCase() + val.slice(1)
-          : val[0].toLowerCase() + val.slice(1);
-      return val;
+          : val[0].toLowerCase() + val.slice(1));
     }).join("");
   },
 
   isPointer: function(cType) {
-    return pointerRegex.test(cType);
+    return pointerRegex.test(cType) || doublePointerRegex.test(cType);
   },
 
   isDoublePointer: function(cType) {
@@ -267,16 +266,12 @@ var Utils = {
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
-      arg.isReturn
-        = arg.name === "out"
-        || (Utils.isDoublePointer(arg.type)
-          && normalizedType == classDef.cType);
-      arg.isSelf
-        = Utils.isPointer(arg.type)
-        && normalizedType == classDef.cType;
+      arg.isReturn = arg.name === "out" || (Utils.isDoublePointer(arg.type) && normalizedType == classDef.cType);
+      arg.isSelf = Utils.isPointer(arg.type) && normalizedType == classDef.cType;
 
-      if (arg.isReturn && classDef.return && classDef.return.type === "int") {
-        classDef.return.isErrorCode = true;
+      if (arg.isReturn && fnDef.return && fnDef.return.type === "int") {
+        debugger;
+        fnDef.return.isErrorCode = true;
         fnDef.isAsync = true;
       }
 
@@ -306,7 +301,8 @@ var Utils = {
 
     fnDef.cppFunctionName = Utils.cTypeToCppName(key, "git_" + classDef.typeName);
     fnDef.jsFunctionName = Utils.cTypeToJsName(key, "git_" + classDef.typeName);
-    fnDef.isAsync = false; // until proven otherwise
+    //fnDef.isAsync = false; // until proven otherwise
+
 
     if (fnDef.cppFunctionName == classDef.cppClassName) {
       fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");
@@ -318,7 +314,7 @@ var Utils = {
     });
 
     if (fnDef.return) {
-      Utils.decorateArg(fnDef.return, null, null, fnOverrides.return || {});
+      Utils.decorateArg(fnDef.return, classDef, fnDef, fnOverrides.return || {});
     }
 
     _.merge(fnDef, _.omit(fnOverrides, "args", "return"));
