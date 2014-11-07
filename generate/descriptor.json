@@ -360,7 +360,27 @@
       "git_filter_list_load": {
         "ignore": true
       }
-    }
+    },
+    "fields": {
+      "initialize": {
+        "ignore": true
+      },
+      "shutdown": {
+        "ignore": true
+      },
+      "check": {
+        "ignore": true
+      },
+      "apply": {
+        "ignore": true
+      },
+      "cleanup": {
+        "ignore": true
+      }
+    },
+    "cDependencies": [
+      "git2/sys/filter.h"
+    ]
   },
   "filter_source": {
     "ignore": true
@@ -400,6 +420,9 @@
         "ignore": true
       },
       "git_index_free": {
+        "ignore": true
+      },
+      "git_index_new": {
         "ignore": true
       },
       "git_index_remove_all": {
@@ -501,7 +524,7 @@
       "git_odb_backend_one_pack": {
         "ignore": true
       },
-      "git_odb_backedn_pack": {
+      "git_odb_backend_pack": {
         "ignore": true
       },
       "git_odb_exists": {
@@ -571,7 +594,7 @@
   },
   "oid": {
     "functions": {
-      "git_oid_copy": {
+      "git_oid_cpy": {
         "ignore": true
       },
       "git_oid_fmt": {
@@ -607,11 +630,19 @@
       "git_oid_tostr": {
         "ignore": true
       }
+    },
+    "fields": {
+      "id": {
+        "ignore": true
+      }
     }
   },
   "packbuilder": {
     "functions": {
       "git_packbuilder_foreach": {
+        "ignore": true
+      },
+      "git_packbuilder_new": {
         "ignore": true
       },
       "git_packbuilder_set_callbacks": {
@@ -644,13 +675,30 @@
       }
     }
   },
+  "pathspec": {
+    "functions": {
+      "git_pathspec_new": {
+        "ignore": true
+      }
+    }
+  },
   "push": {
     "cType": "git_push",
     "functions": {
+      "git_push_new": {
+        "ignore": true
+      },
       "git_push_set_callbacks": {
         "ignore": true
       },
       "git_push_status_foreach": {
+        "ignore": true
+      }
+    }
+  },
+  "refdb": {
+    "functions": {
+      "git_refdb_new": {
         "ignore": true
       }
     }
@@ -698,6 +746,9 @@
     "cType": "git_refspec",
     "functions": {
       "git_refspec_rtransform": {
+        "ignore": true
+      },
+      "git_refspec_string": {
         "ignore": true
       },
       "git_refspec_transform": {
@@ -776,6 +827,16 @@
       },
       "git_revwalk_next": {
         "ignore": true
+      },
+      "git_revwalk_new": {
+        "ignore": true
+      }
+    }
+  },
+  "signature": {
+    "functions": {
+      "git_signature_new": {
+        "ignore": true
       }
     }
   },
@@ -852,6 +913,9 @@
         "ignore": true
       },
       "git_transport_local": {
+        "ignore": true
+      },
+      "git_transport_new": {
         "ignore": true
       },
       "git_transport_register": {
