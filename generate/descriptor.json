@@ -230,14 +230,26 @@
   "cred": {
     "cType": "git_cred",
     "functions": {
+      "git_cred_default_new":{
+        "isAsync": false
+      },
       "git_cred_ssh_custom_new": {
         "ignore": true
       },
       "git_cred_ssh_interactive_new": {
         "ignore": true
       },
+      "git_cred_ssh_key_from_agent":{
+        "isAsync": false
+      },
+      "git_cred_ssh_key_new":{
+        "isAsync": false
+      },
       "git_cred_userpass": {
         "ignore": true
+      },
+      "git_cred_userpass_plaintext_new": {
+        "isAsync": false
       }
     }
   },
@@ -331,6 +343,13 @@
       },
       "git_diff_tree_to_index": {
         "ignore": true
+      },
+      "git_diff_tree_to_tree": {
+        "args": {
+          "opts": {
+            "isOptional": true
+          }
+        }
       },
       "git_diff_tree_to_workdir": {
         "ignore": true
@@ -675,8 +694,14 @@
       "git_patch_from_buffers": {
         "ignore": true
       },
+      "git_patch_from_diff": {
+        "isAsync": false
+      },
       "git_patch_get_hunk": {
         "ignore": true
+      },
+      "git_patch_get_line_in_hunk": {
+        "isAsync": false
       },
       "git_patch_line_stats": {
         "ignore": true
@@ -786,7 +811,11 @@
         "ignore": true
       },
       "git_remote_list": {
-        "ignore": true
+        "args": {
+          "out": {
+            "shouldAlloc": true
+          }
+        }
       },
       "git_remote_ls": {
         "ignore": true
@@ -839,11 +868,10 @@
       "git_revwalk_free": {
         "ignore": true
       },
-      "git_revwalk_next": {
-        "ignore": true
-      },
       "git_revwalk_new": {
-        "ignore": true
+        "isAsync": false,
+        "jsFunctionName": "createRevwalk",
+        "cppFunctionName": "CreateRevwalk"
       }
     }
   },

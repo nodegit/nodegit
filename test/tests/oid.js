@@ -8,7 +8,7 @@ describe("Oid", function() {
   var Oid = require("../../lib/oid");
 
   before(function() {
-    this.oid = Oid.fromstr(oid);
+    this.oid = Oid.fromString(oid);
   });
 
   it("can convert a string to an oid", function() {
