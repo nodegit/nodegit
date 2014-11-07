@@ -270,7 +270,6 @@ var Utils = {
       arg.isSelf = Utils.isPointer(arg.type) && normalizedType == classDef.cType;
 
       if (arg.isReturn && fnDef.return && fnDef.return.type === "int") {
-        debugger;
         fnDef.return.isErrorCode = true;
         fnDef.isAsync = true;
       }

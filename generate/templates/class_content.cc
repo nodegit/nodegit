@@ -9,6 +9,7 @@ extern "C" {
 {%endeach%}
 }
 
+
 #include "../include/functions/copy.h"
 #include "../include/macros.h"
 #include "../include/{{ filename }}.h"
@@ -17,6 +18,9 @@ extern "C" {
 #include "{{ dependency }}"
 {%endeach%}
 
+#include <iostream>
+
+using namespace std;
 using namespace v8;
 using namespace node;
 

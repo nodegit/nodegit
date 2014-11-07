@@ -76,4 +76,3 @@ describe("TreeEntry", function() {
     });
   });
 });
-
