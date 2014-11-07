@@ -93,6 +93,17 @@
       }
     }
   },
+  "clone": {
+    "functions": {
+      "git_clone": {
+        "args": {
+          "options": {
+            "isOptional": true
+          }
+        }
+      }
+    }
+  },
   "commit": {
     "functions": {
       "git_commit_create": {
