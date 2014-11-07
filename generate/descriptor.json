@@ -825,6 +825,16 @@
       }
     }
   },
+  "remote_callbacks": {
+    "fields": {
+      "sideband_progress": {
+        "ignore": true
+      },
+      "transfer_progress": {
+        "ignore": true
+      }
+    }
+  },
   "remote_head": {
     "ignore": true
   },

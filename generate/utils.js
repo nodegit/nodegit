@@ -1,6 +1,6 @@
 var pointerRegex = /\s*\*\s*/;
 var doublePointerRegex = /\s*\*\*\s*/;
-var callbackFunctionNamePattern = /\s*_cb/;
+var callbackTypePattern = /\s*_cb/;
 var _ = require("lodash");
 
 // TODO: When libgit2's docs include callbacks we should be able to remove this
@@ -91,14 +91,14 @@ var Utils = {
       });
   },
 
-  isCallbackFunction: function(fnName) {
-    return callbackFunctionNamePattern.test(fnName);
+  isCallbackFunction: function(cType) {
+    return callbackTypePattern.test(cType);
   },
 
-  isPayloadFor: function(cbName, payloadName) {
+  isPayloadFor: function(cbField, payloadName) {
     return ~payloadName.indexOf("_payload")
-      && Utils.isCallbackFunction(cbName)
-      && ~cbName.indexOf(payloadName.replace("_payload", ""));
+      && Utils.isCallbackFunction(cbField.cType)
+      && ~cbField.name.indexOf(payloadName.replace("_payload", ""));
   },
 
   isClass: function(typeName, groupNames) {
@@ -137,7 +137,7 @@ var Utils = {
       var cbFieldName;
 
       allFields.some(function (cbField) {
-        if (Utils.isPayloadFor(cbField.name, field.name)) {
+        if (Utils.isPayloadFor(cbField, field.name)) {
           cbFieldName = cbField.name;
           return true;
         }
@@ -233,9 +233,11 @@ var Utils = {
     field.cppClassName = Utils.cTypeToCppName(field.type);
     field.jsClassName = Utils.titleCase(Utils.cTypeToJsName(field.type));
 
-    if (Utils.isCallbackFunction(field.name)) {
+    if (Utils.isCallbackFunction(field.cType)) {
       Utils.processCallback(field);
+
       var argOverrides = fieldOverrides.args || {};
+      field.args = field.args || [];
       field.args.forEach(function (arg) {
         Utils.decorateArg(arg, null, null, argOverrides[arg.name] || {});
       });
