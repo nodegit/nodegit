@@ -93,6 +93,26 @@
         }
       ],
       [
+        "git_diff_perfdata",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "size_t",
+              "name": "stat_calls"
+            },
+            {
+              "type": "size_t",
+              "name": "oid_calculations"
+            }
+          ]
+        }
+      ],
+      [
         "git_merge_options",
         {
           "type": "struct",

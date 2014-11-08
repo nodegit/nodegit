@@ -115,11 +115,20 @@
             "arrayElementCppClassName": "GitCommit"
           }
         }
+      },
+      "git_commit_create_from_callback": {
+        "ignore": true
+      },
+      "git_commit_create_from_ids": {
+        "ignore": true
       }
     }
   },
   "config": {
     "functions": {
+      "git_config_add_backend": {
+        "ignore": true
+      },
       "git_config_add_file_ondisk": {
         "ignore": true
       },
@@ -180,6 +189,9 @@
       "git_config_iterator_new": {
         "ignore": true
       },
+      "git_config_init_backend": {
+        "ignore": true
+      },
       "git_config_lookup_map_value": {
         "ignore": true
       },
@@ -227,6 +239,9 @@
   "config_backend": {
     "ignore": true
   },
+  "config_iterator": {
+    "ignore": true
+  },
   "cred": {
     "cType": "git_cred",
     "functions": {
@@ -271,6 +286,9 @@
     "ignore": true
   },
   "diff": {
+    "cDependencies": [
+      "git2/sys/diff.h"
+    ],
     "functions": {
       "git_diff_blob_to_buffer": {
         "ignore": true
@@ -323,6 +341,12 @@
       "git_diff_print": {
         "ignore": true
       },
+      "git_diff_print_callback__to_buf": {
+        "ignore": true
+      },
+      "git_diff_print_callback__to_file_handle": {
+        "ignore": true
+      },
       "git_diff_stats_deletions": {
         "ignore": true
       },
@@ -370,6 +394,11 @@
   "diff_format_email_options": {
     "ignore": true
   },
+  "diff_perfdata": {
+    "cDependencies": [
+      "git2/sys/diff.h"
+    ]
+  },
   "diff_similarity_metric": {
     "ignore": true
   },
@@ -388,6 +417,27 @@
         "ignore": true
       },
       "git_filter_list_load": {
+        "ignore": true
+      },
+      "git_filter_list_push": {
+        "ignore": true
+      },
+      "git_filter_source_filemode": {
+        "ignore": true
+      },
+      "git_filter_source_id": {
+        "ignore": true
+      },
+      "git_filter_source_mode": {
+        "ignore": true
+      },
+      "git_filter_source_options": {
+        "ignore": true
+      },
+      "git_filter_source_path": {
+        "ignore": true
+      },
+      "git_filter_source_repo": {
         "ignore": true
       }
     },
@@ -483,6 +533,16 @@
       }
     }
   },
+  "mempack": {
+    "functions": {
+      "git_mempack_new": {
+        "ignore": true
+      },
+      "git_mempack_reset": {
+        "ignore": true
+      }
+    }
+  },
   "merge": {
     "functions": {
       "git_merge": {
@@ -548,6 +608,12 @@
   },
   "odb": {
     "functions": {
+      "git_odb_add_alternate": {
+        "ignore": true
+      },
+      "git_odb_add_backend": {
+        "ignore": true
+      },
       "git_odb_backend_loose": {
         "ignore": true
       },
@@ -566,10 +632,16 @@
       "git_odb_foreach": {
         "ignore": true
       },
+      "git_odb_get_backend": {
+        "ignore": true
+      },
       "git_odb_hash": {
         "ignore": true
       },
       "git_odb_hashfile": {
+        "ignore": true
+      },
+      "git_odb_init_backend": {
         "ignore": true
       },
       "git_odb_new": {
@@ -615,6 +687,17 @@
         "ignore": true
       }
     }
+  },
+  "odb_backend": {
+    "fields": {
+      "foreach": {
+        "ignore": true
+      },
+      "writepack": {
+        "ignore": true
+      }
+    },
+    "ignore": true
   },
   "odb_stream": {
     "ignore": true
@@ -737,6 +820,15 @@
   },
   "refdb": {
     "functions": {
+      "git_refdb_backend_fs": {
+        "ignore": true
+      },
+      "git_refdb_init_backend": {
+        "ignore": true
+      },
+      "git_refdb_set_backend": {
+        "ignore": true
+      },
       "git_refdb_new": {
         "ignore": true
       }
@@ -749,6 +841,12 @@
     "cppClassName": "GitRefs",
     "jsClassName": "Refs",
     "functions": {
+      "git_reference__alloc": {
+        "ignore": true
+      },
+      "git_reference__alloc_symbolic": {
+        "ignore": true
+      },
       "git_reference_foreach": {
         "ignore": true
       },
@@ -780,6 +878,13 @@
         "ignore": true
       }
     }
+  },
+  "reference_iterator": {
+    "cDependencies": [
+      "git2/sys/refdb_backend.h"
+    ],
+    "needsForwardDeclaration": false,
+    "ignore": true
   },
   "refspec": {
     "cType": "git_refspec",
@@ -913,6 +1018,9 @@
     }
   },
   "status": {
+    "cDependencies": [
+      "git2/sys/diff.h"
+    ],
     "functions": {
       "git_status_byindex": {
         "ignore": true
