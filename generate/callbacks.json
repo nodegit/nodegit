@@ -59,7 +59,8 @@
     "args": [
       {
         "name": "cred",
-        "cType": "git_cred **"
+        "cType": "git_cred **",
+        "isReturn": true
       },
       {
         "name": "url",
