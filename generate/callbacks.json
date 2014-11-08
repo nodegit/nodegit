@@ -55,6 +55,34 @@
     "returnSuccess": 0,
     "returnError": -1
   },
+  "git_cred_acquire_cb": {
+    "args": [
+      {
+        "name": "cred",
+        "cType": "git_cred **"
+      },
+      {
+        "name": "url",
+        "cType": "const char *"
+      },
+      {
+        "name": "username_from_url",
+        "cType": "const char *"
+      },
+      {
+        "name": "allowed_types",
+        "cType": "unsigned int"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "returnType": "int",
+    "returnNoResults": 1,
+    "returnSuccess": 0,
+    "returnError": -1
+  },
   "git_diff_notify_cb": {
     "args": [
       {
