@@ -24,9 +24,17 @@
   from_{{ name }} = Buffer::Data(args[{{ jsArg }}]->ToObject());
   {%elsif cppClassName|isV8Value %}
 
+    {%if cType|isPointer %}
+  *from_{{ name }} = ({{ cType|unPointer }}) {{ additionalCast }} {{ cast }} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
+    {%else%}
   from_{{ name }} = ({{ cType }}) {{ additionalCast }} {{ cast }} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
+    {%endif%}
   {%else%}
-    from_{{ name }} = ObjectWrap::Unwrap<{{ cppClassName }}>(args[{{ jsArg }}]->ToObject())->GetValue();
+    {%if cType|isDoublePointer %}
+  from_{{ name }} = ObjectWrap::Unwrap<{{ cppClassName }}>(args[{{ jsArg }}]->ToObject())->GetRefValue();
+    {%else%}
+  from_{{ name }} = ObjectWrap::Unwrap<{{ cppClassName }}>(args[{{ jsArg }}]->ToObject())->GetValue();
+    {%endif%}
   {%endif%}
 
   {%if isOptional %}

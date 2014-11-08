@@ -6,13 +6,16 @@
 
 extern "C" {
 #include <git2.h>
+{%each cDependencies as dependency %}
+#include <{{ dependency }}>
+{%endeach%}
 }
 
 {%each dependencies as dependency%}
 #include "{{ dependency }}"
 {%endeach%}
 
-{%if forwardDeclare%}
+{%if needsForwardDeclaration == true%}
 // Forward declaration.
 struct {{ cType }} {
   {%each fields as field%}

@@ -6,9 +6,11 @@ NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor | or field.payloadFor %}
+  {%if field.isEnum %}
+  NanReturnValue(NanNew((int)wrapper->GetValue()->{{ field.name }}));
+  {%elsif field.isLibgitType | or field.payloadFor %}
   NanReturnValue(wrapper->{{ field.name }});
-  {%elsif field.isFunction%}
+  {%elsif field.isCallbackFunction %}
   NanReturnValue(wrapper->{{ field.name }}->GetFunction());
   {%elsif field.cppClassName == 'String' %}
   if (wrapper->GetValue()->{{ field.name }}) {
@@ -27,13 +29,18 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
 
   {{ cppClassName }} *wrapper = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
-  {%if field.hasConstructor %}
+  {%if field.isEnum %}
+  if (value->IsNumber()) {
+    wrapper->GetValue()->{{ field.name }} = ({{ field.cType }}) value->Int32Value();
+  }
+
+  {%elsif field.isLibgitType %}
   NanDisposePersistent(wrapper->{{ field.name }});
 
-  wrapper->raw->{{ field.name }} = *ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
-  {%elsif field.isFunction %}
+  wrapper->raw->{{ field.name }} = {%if not field.cType | isPointer %}*{%endif%}ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
+  {%elsif field.isCallbackFunction %}
   if (value->IsFunction()) {
-    wrapper->credentials = new NanCallback(value.As<Function>());
+    wrapper->{{ field.name }} = new NanCallback(value.As<Function>());
   }
   {%elsif field.payloadFor %}
   NanAssignPersistent(wrapper->{{ field.name }}, value);
@@ -55,7 +62,7 @@ NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
   {%endif%}
 }
 
-    {%if field.isFunction %}
+    {%if field.isCallbackFunction %}
 {{ field.returnType }} {{ cppClassName }}::{{ field.name }}_cppCallback (
   {%each field.args|argsInfo as arg%}
   {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
@@ -107,9 +114,18 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
     {%each field.args|argsInfo as arg %}
       {%if arg.name == "payload" %}
       {%-- payload is always the last arg --%}
-    NanNew(instance->{{ fields|payloadFor field.name }}),
+    NanNew(instance->{{ fields|payloadFor field.name }})
       {%elsif arg.isJsArg %}
+        {%if arg.isEnum %}
+    NanNew((int)baton->{{ arg.name }}),
+        {%elsif arg.isLibgitType %}
+    NanNew({{ arg.cppClassName }}::New(&baton->{{ arg.name }}, false)),
+        {%elsif arg.cType == "size_t" %}
+    // HACK: NAN should really have an overload for NanNew to support size_t
+    NanNew((unsigned int)baton->{{ arg.name }}),
+        {%else%}
     NanNew(baton->{{ arg.name }}),
+        {%endif%}
       {%endif%}
     {%endeach%}
   };

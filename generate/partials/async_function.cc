@@ -54,7 +54,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
     {%each args|argsInfo as arg %}
       {%-- turn the pointer into a ref --%}
     {%if arg.isReturn|and arg.cType|isDoublePointer %}&{%endif%}baton->{{ arg.name }}{%if not arg.lastArg %},{%endif%}
-    
+
     {%endeach%}
     );
 
@@ -113,7 +113,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
 
     {%each args as arg %}
       {%if arg.shouldAlloc %}
-    free(baton->{{ arg.name }});
+    free((void*)baton->{{ arg.name }});
       {%endif%}
     {%endeach%}
   }

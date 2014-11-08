@@ -48,7 +48,7 @@ describe("Revwalk", function() {
             test.walker = test.repository.createRevWalk();
             test.walker.push(test.branch.id());
             test.walker.hide(
-              Oid.fromstr("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
+              Oid.fromString("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
 
             return test.walker.next().then(function(commit) {
               return test.walker.next().then(function(commit) {

@@ -4,16 +4,23 @@
 
 extern "C" {
 #include <git2.h>
+{%each cDependencies as dependency %}
+#include <{{ dependency }}>
+{%endeach%}
 }
+
 
 #include "../include/functions/copy.h"
 #include "../include/macros.h"
-#include "../include/{{ filename }}"
+#include "../include/{{ filename }}.h"
 
 {%each dependencies as dependency%}
 #include "{{ dependency }}"
 {%endeach%}
 
+#include <iostream>
+
+using namespace std;
 using namespace v8;
 using namespace node;
 

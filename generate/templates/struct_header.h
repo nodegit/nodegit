@@ -6,6 +6,9 @@
 
 extern "C" {
 #include <git2.h>
+{%each cDependencies as dependency %}
+#include <{{ dependency }}>
+{%endeach%}
 }
 
 {%each dependencies as dependency%}
@@ -24,13 +27,13 @@ class {{ cppClassName }} : public ObjectWrap {
     {{ cType }} *GetValue();
     {{ cType }} **GetRefValue();
 
-    static Handle<Value> New({{ cType }} *raw);
+    static Handle<Value> New({{ cType }} *raw, bool selfFreeing);
 
     bool selfFreeing;
 
     {%each fields as field %}
       {%if not field.ignore %}
-        {%if field.isFunction %}
+        {%if field.isCallbackFunction %}
     static {{ field.returnType }} {{ field.name }}_cppCallback (
           {%each field.args|argsInfo as arg %}
       {{ arg.cType }} {{ arg.name}}{%if not arg.lastArg %},{%endif%}
@@ -60,12 +63,14 @@ class {{ cppClassName }} : public ObjectWrap {
 
     {%each fields as field%}
       {%if not field.ignore%}
-        {%if field.hasConstructor %}
+        {%if not field.isEnum %}
+          {%if field.isLibgitType %}
     Persistent<Object> {{ field.name }};
-        {%elsif field.isFunction%}
+          {%elsif field.isCallbackFunction %}
     NanCallback* {{ field.name }};
-        {%elsif field.payloadFor %}
+          {%elsif field.payloadFor %}
     Persistent<Value> {{ field.name }};
+          {%endif%}
         {%endif%}
     static NAN_GETTER(Get{{ field.cppFunctionName }});
     static NAN_SETTER(Set{{ field.cppFunctionName }});

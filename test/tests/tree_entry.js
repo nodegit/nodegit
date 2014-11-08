@@ -36,7 +36,7 @@ describe("TreeEntry", function() {
 
   it("provides the filename", function() {
     return this.commit.getEntry("test/raw-commit.js").then(function(entry) {
-      var name = entry.name();
+      var name = entry.filename();
 
       assert.equal(name, "raw-commit.js");
     });
@@ -76,4 +76,3 @@ describe("TreeEntry", function() {
     });
   });
 });
-

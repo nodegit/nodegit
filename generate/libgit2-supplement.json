@@ -1,0 +1,159 @@
+{
+  "types": {
+    "git_cred_default": {
+      "decl": "git_cred"
+    },
+    "git_diff_hunk": {
+      "decl": [
+        "int old_start",
+        "int old_lines",
+        "int new_start",
+        "int new_lines",
+        "size_t header_len",
+        "char header[128]"
+      ]
+    },
+    "git_diff_line": {
+      "decl": [
+        "int origin",
+        "int old_lineno",
+        "int new_lineno",
+        "int num_lines",
+        "size_t, content_len",
+        "git_off_t content_offset",
+        "const char * content"
+      ],
+      "fields": [
+        {
+          "name": "origin",
+          "type": "int"
+        },
+        {
+          "name": "old_lineno",
+          "type": "int"
+        },
+        {
+          "name": "new_lineno",
+          "type": "int"
+        },
+        {
+          "name": "num_lines",
+          "type": "int"
+        },
+        {
+          "name": "content_len",
+          "type": "size_t"
+        },
+        {
+          "name": "content_offset",
+          "type": "git_off_t"
+        },
+        {
+          "name": "content",
+          "type": "const char *"
+        }
+      ]
+    },
+    "git_note_iterator": {
+      "decl": "git_iterator"
+    },
+    "git_tree_entry": {
+      "fields": [
+        {
+          "name": "removed",
+          "type": "uint16_t"
+        },
+        {
+          "name": "attr",
+          "type": "uint16_t"
+        },
+        {
+          "name": "oid",
+          "type": "git_oid"
+        },
+        {
+          "name": "filename_len",
+          "type": "size_t"
+        },
+        {
+          "name": "filename",
+          "structType": "char",
+          "structName": "filename[1]",
+          "type": "char *"
+        }
+      ]
+    }
+  },
+  "new" : {
+    "types": [
+      [
+        "git_direction",
+        {
+          "type": "enum"
+        }
+      ],
+      [
+        "git_merge_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "git_merge_tree_flag_t",
+              "name": "flags"
+            },
+            {
+              "type": "unsigned int",
+              "name": "rename_threshold"
+            },
+            {
+              "type": "unsigned int",
+              "name": "target_limit"
+            },
+            {
+              "type": "git_diff_similarity_metric *",
+              "name": "metric",
+              "ignore": true
+            },
+            {
+              "type": "git_merge_file_favor_t",
+              "name": "file_favor"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_merge_init_options"
+            ]
+          }
+        }
+      ],
+      [
+        "git_off_t",
+        {
+          "type": "enum"
+        }
+      ],
+      [
+        "git_remote_autotag_option_t",
+        {
+          "type": "enum"
+        }
+      ],
+      [
+        "git_time_t",
+        {
+          "type": "enum"
+        }
+      ],
+      [
+        "git_trace_level_t",
+        {
+          "type": "enum"
+        }
+      ]
+    ]
+  }
+}
