@@ -25,9 +25,9 @@
   {%elsif cppClassName|isV8Value %}
 
     {%if cType|isPointer %}
-  *from_{{ name }} = ({{ cType|unPointer }}) {{ additionalCast }} {{ cast }} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
+  *from_{{ name }} = ({{ cType|unPointer }}) {{ cast }} {%if isEnum %}(int){%endif%} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
     {%else%}
-  from_{{ name }} = ({{ cType }}) {{ additionalCast }} {{ cast }} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
+  from_{{ name }} = ({{ cType }}) {{ cast }} {%if isEnum %}(int){%endif%} args[{{ jsArg }}]->To{{ cppClassName }}()->Value();
     {%endif%}
   {%else%}
     {%if cType|isDoublePointer %}

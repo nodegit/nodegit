@@ -932,10 +932,16 @@
   },
   "remote_callbacks": {
     "fields": {
+      "completion": {
+        "ignore": true
+      },
       "sideband_progress": {
         "ignore": true
       },
       "transfer_progress": {
+        "ignore": true
+      },
+      "update_tips": {
         "ignore": true
       }
     }
