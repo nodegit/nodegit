@@ -125,7 +125,7 @@ var Utils = {
       _.merge(field, callbackDefs[field.type]);
     }
     else {
-      console.log("WARNGING: Couldn't find callback definition for " + field.type);
+      console.log("WARNING: Couldn't find callback definition for " + field.type);
     }
   },
 
