@@ -32,4 +32,11 @@ describe("Refs", function() {
       var refs = this.refs;
       assert(refs.symbolicTarget() === undefined);
     });
+
+  it("can look up the HEAD sha", function() {
+    return Refs.nameToId(this.repository, "HEAD").then(function(oid) {
+      var sha = oid.allocfmt();
+      assert.equal(sha, "32789a79e71fbc9e04d3eff7425e1771eb595150");
+    });
+  });
 });

@@ -876,9 +876,6 @@
       "git_reference_iterator_new": {
         "ignore": true
       },
-      "git_reference_name_to_id": {
-        "ignore": true
-      },
       "git_reference_next": {
         "ignore": true
       },
