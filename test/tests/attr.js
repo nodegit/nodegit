@@ -25,15 +25,8 @@ describe("Attr", function() {
     Attr.cacheFlush(this.repository);
   });
 
-  // FIXME Currently segfaults.
-  it.skip("can lookup the value of a git attribute", function() {
+  it("can lookup the value of a git attribute", function() {
     var flags = Attr.Check.NO_SYSTEM;
-    var getAttr = Attr.get(this.repository, flags, ".gitattributes", "test");
-
-    return getAttr.then(function(val) {
-      console.log(val);
-    }).catch(function(ex) {
-      console.log(ex);
-    });
+    Attr.get(this.repository, flags, ".gitattributes", "test");
   });
 });

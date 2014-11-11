@@ -1,12 +1,18 @@
 // start convert_to_v8 block
 {%if cppClassName == 'String' %}
+  if ({{= parsedName =}}){
   {%if size %}
-to = NanNew<String>({{= parsedName =}}, {{ size }});
+    to = NanNew<String>({{= parsedName =}}, {{ size }});
   {%elsif cType == 'char **' %}
-to = NanNew<String>(*{{= parsedName =}});
+
+    to = NanNew<String>(*{{= parsedName =}});
   {%else%}
-to = NanNew<String>({{= parsedName =}});
+    to = NanNew<String>({{= parsedName =}});
   {%endif%}
+  }
+  else {
+    to = NanNull();
+  }
 
   {%if freeFunctionName %}
 {{ freeFunctionName }}({{= parsedName =}});
