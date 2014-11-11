@@ -121,5 +121,9 @@ output.forEach(function (def) {
   });
 });
 
+if (process.argv[2] != "--documentation") {
+  utils.filterDocumentation(output);
+}
+
 fs.writeFileSync(path.join(__dirname, "idefs.json"),
   JSON.stringify(output, null, 2));
