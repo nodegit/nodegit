@@ -253,9 +253,6 @@
   "cred": {
     "cType": "git_cred",
     "functions": {
-      "git_cred_default_new":{
-        "isAsync": false
-      },
       "git_cred_ssh_custom_new": {
         "ignore": true
       },
@@ -265,14 +262,8 @@
       "git_cred_ssh_key_from_agent":{
         "isAsync": false
       },
-      "git_cred_ssh_key_new":{
-        "isAsync": false
-      },
       "git_cred_userpass": {
         "ignore": true
-      },
-      "git_cred_userpass_plaintext_new": {
-        "isAsync": false
       }
     }
   },
