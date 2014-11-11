@@ -3,6 +3,14 @@
     "functions": {
       "git_attr_foreach": {
         "ignore": true
+      },
+      "git_attr_get": {
+        "isAsync": true,
+        "args": {
+          "value_out": {
+            "isReturn": true
+          }
+        }
       }
     }
   },
