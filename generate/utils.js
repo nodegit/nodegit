@@ -319,6 +319,48 @@ var Utils = {
     }
 
     _.merge(fnDef, _.omit(fnOverrides, "args", "return"));
+  },
+
+  filterIgnored: function (arr, callback) {
+    for (var i = arr.length - 1; i >= 0; i--) {
+      if (arr[i].ignore) {
+        arr.splice(i, 1);
+      }
+      else if (callback) {
+        callback(arr[i]);
+      }
+    }
+  },
+
+  deleteProperties: function(obj) {
+    delete obj.line;
+    delete obj.lineto;
+    delete obj.block;
+    delete obj.description;
+    delete obj.comments;
+    delete obj.tdef;
+    delete obj.decl;
+    delete obj.comments;
+    delete obj.argline;
+    delete obj.sig;
+  },
+
+  filterDocumentation: function(idefs) {
+    Utils.filterIgnored(idefs, function (idef) {
+      Utils.deleteProperties(idef);
+
+      Utils.filterIgnored(idef.fields, Utils.deleteProperties);
+
+
+      Utils.filterIgnored(idef.functions, function (fn) {
+        Utils.deleteProperties(fn);
+
+        Utils.filterIgnored(fn.args, function(arg) {
+          Utils.deleteProperties(arg);
+          delete arg.functions;
+        });
+      });
+    });
   }
 };
 
