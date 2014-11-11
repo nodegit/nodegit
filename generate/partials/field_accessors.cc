@@ -133,11 +133,10 @@ void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status)
   TryCatch tryCatch;
   Handle<Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
 
-  if (result->IsObject()) {
-    const char* constructorName = **(new NanUtf8String(result->ToObject()->GetConstructorName()));
-    string promiseConName ("Promise");
+  if (result->IsObject() && result->ToObject()->Has(NanNew("then"))) {
+    Handle<Value> thenProp = result->ToObject()->Get(NanNew("then"));
 
-    if (promiseConName.compare(constructorName) == 0) {
+    if (thenProp->IsFunction()) {
       // we can be reasonbly certain that the result is a promise
       Local<Object> promise = result->ToObject();
 
