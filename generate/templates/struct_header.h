@@ -22,7 +22,7 @@ class {{ cppClassName }} : public ObjectWrap {
   public:
     {{ cppClassName }}({{ cType }}* raw, bool selfFreeing);
     static Persistent<Function> constructor_template;
-    static void Initialize (Handle<v8::Object> target);
+    static void InitializeComponent (Handle<v8::Object> target);
 
     {{ cType }} *GetValue();
     {{ cType }} **GetRefValue();
