@@ -173,7 +173,7 @@ void {{ cppClassName }}::{{ field.name }}_asyncPromisePolling(uv_work_t* req, in
   {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
   Local<Object> promise = NanNew<Object>(baton->promise);
   NanCallback* isPendingFn = new NanCallback(promise->Get(NanNew("isPending")).As<Function>());
-  Local<Value> argv[0];
+  Local<Value> argv[1]; // MSBUILD won't assign an array of length 0
   Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
 
   if (isPending->Value()) {
