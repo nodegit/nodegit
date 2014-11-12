@@ -38,7 +38,7 @@ using namespace node;
   {%endif%}
 }
 
-void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
+void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
   NanScope();
 
   Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
@@ -98,7 +98,7 @@ Handle<Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
   return &this->raw;
 }
 {%else%}
-void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
+void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
   NanScope();
 
   Local<Object> object = NanNew<Object>();

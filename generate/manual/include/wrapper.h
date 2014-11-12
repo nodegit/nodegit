@@ -17,7 +17,7 @@ class Wrapper : public ObjectWrap {
   public:
 
     static Persistent<FunctionTemplate> constructor_template;
-    static void Initialize (Handle<v8::Object> target);
+    static void InitializeComponent (Handle<v8::Object> target);
 
     void *GetValue();
     static Handle<Value> New(void *raw);

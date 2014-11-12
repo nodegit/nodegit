@@ -15,14 +15,14 @@ Wrapper::Wrapper(void *raw) {
   this->raw = raw;
 }
 
-void Wrapper::Initialize(Handle<v8::Object> target) {
+void Wrapper::InitializeComponent(Handle<v8::Object> target) {
   NanScope();
 
   Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(NanNew<String>("Wrapper"));
-  
+
   NODE_SET_PROTOTYPE_METHOD(tpl, "toBuffer", ToBuffer);
 
   NanAssignPersistent(constructor_template, tpl);
@@ -44,12 +44,12 @@ NAN_METHOD(Wrapper::New) {
 
 Handle<Value> Wrapper::New(void *raw) {
   NanEscapableScope();
-  
+
   Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
   Local<Object> instance;
   Local<FunctionTemplate> constructorHandle = NanNew(constructor_template);
   instance = constructorHandle->GetFunction()->NewInstance(1, argv);
-  
+
   return NanEscapeScope(instance);
 }
 
@@ -67,7 +67,7 @@ NAN_METHOD(Wrapper::ToBuffer) {
   int len = args[0]->ToNumber()->Value();
 
   Local<Function> bufferConstructor = Local<Function>::Cast(
-    NanGetCurrentContext()->Global()->Get(NanNew<String>("Buffer"))); 
+    NanGetCurrentContext()->Global()->Get(NanNew<String>("Buffer")));
 
   Handle<Value> constructorArgs[1] = { NanNew<Integer>(len) };
   Local<Object> nodeBuffer = bufferConstructor->NewInstance(1, constructorArgs);

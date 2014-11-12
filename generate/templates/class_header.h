@@ -33,7 +33,7 @@ class {{ cppClassName }} : public ObjectWrap {
   public:
 
     static Persistent<Function> constructor_template;
-    static void Initialize (Handle<v8::Object> target);
+    static void InitializeComponent (Handle<v8::Object> target);
 
     {%if cType%}
     {{ cType }} *GetValue();

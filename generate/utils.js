@@ -23,6 +23,10 @@ var cTypeMappings = {
   "uint64_t": "Number"
 }
 
+var collisionMappings = {
+  "new": "create"
+}
+
 var Utils = {
   titleCase: function(str) {
     return str.split(/_|\//).map(function(val, index) {
@@ -317,6 +321,16 @@ var Utils = {
     if (fnDef.return) {
       Utils.decorateArg(fnDef.return, classDef, fnDef, fnOverrides.return || {});
     }
+
+    _(collisionMappings).forEach(function(newName, collidingName) {
+      if (fnDef.cppFunctionName == Utils.titleCase(collidingName)) {
+        fnDef.cppFunctionName = Utils.titleCase(newName);
+      }
+
+      if (fnDef.jsFunctionName == Utils.camelCase(collidingName)) {
+        fnDef.jsFunctionName = Utils.camelCase(newName);
+      }
+    });
 
     _.merge(fnDef, _.omit(fnOverrides, "args", "return"));
   },

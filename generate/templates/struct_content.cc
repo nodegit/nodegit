@@ -75,7 +75,7 @@ void {{ cppClassName }}::ConstructFields() {
   {%endeach%}
 }
 
-void {{ cppClassName }}::Initialize(Handle<v8::Object> target) {
+void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
   NanScope();
 
   Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);

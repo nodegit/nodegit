@@ -986,9 +986,7 @@
         "ignore": true
       },
       "git_revwalk_new": {
-        "isAsync": false,
-        "jsFunctionName": "createRevwalk",
-        "cppFunctionName": "CreateRevwalk"
+        "isAsync": false
       }
     }
   },
