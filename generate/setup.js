@@ -17,7 +17,6 @@ libgit2.types.forEach(function(type) {
 // libgit2's docs aren't complete so we'll add in what they're missing here
 Array.prototype.push.apply(libgit2.types, supplement.new.types);
 
-
 var output = [];
 var groupNames = [];
 var dependencyLookup = {};

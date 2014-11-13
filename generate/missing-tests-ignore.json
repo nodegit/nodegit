@@ -1,0 +1,34 @@
+{
+  "blob": {
+    "functions": [
+      "createFrombuffer",
+      "isBinary",
+      "lookup",
+      "rawcontent",
+      "rawsize"
+    ]
+  },
+  "clone": {
+    "functions": [
+      "initOptions"
+    ]
+  },
+  "commit": {
+    "functions": [
+      "parentCount",
+      "parentId",
+      "treeId"
+    ]
+  },
+  "diff": {
+    "functions": [
+      "getDelta",
+      "numDeltas"
+    ]
+  },
+  "object": {
+    "functions": [
+      "type"
+    ]
+  }
+}
