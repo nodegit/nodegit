@@ -48,7 +48,7 @@ After you write your test make sure to run `npm run missing-tests` again to conf
 
 ### The test passes ###
 
-Excellent!! Make sure that the test is working correctly and testing what you're expecting it to test and then move onto the [next section](https://github.com/nodegit/nodegit/test#making-a-pull-request).
+Excellent!! Make sure that the test is working correctly and testing what you're expecting it to test and then move onto the [next section](https://github.com/nodegit/nodegit/tree/master/test#making-a-pull-request).
 
 ### The test fails ###
 
