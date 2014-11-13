@@ -66,11 +66,13 @@ So after you have your branch and your change is ready to go make sure your subj
 
 Example:
 
-> Added tests for oid
->
-> fromString
-> allocfmt
-> inspect
+```
+Added tests for oid
+
+fromString
+allocfmt
+inspect
+```
 
 This will help us know what each commit contains at a glance and should expedite merging your pull request.
 
