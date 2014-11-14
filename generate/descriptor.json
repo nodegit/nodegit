@@ -116,6 +116,12 @@
     "functions": {
       "git_commit_create": {
         "args": {
+          "id": {
+            "isReturn": true
+          },
+          "message_encoding": {
+            "isOptional": true
+          },
           "parents": {
             "cType": "const git_commit **",
             "cppClassName": "Array",
@@ -483,6 +489,9 @@
       "git_index_add_all": {
         "ignore": true
       },
+      "git_index_add_bypath": {
+        "jsFunctionName": "addByPath"
+      },
       "git_index_conflict_get": {
         "ignore": true
       },
@@ -508,9 +517,6 @@
         "ignore": true
       },
       "git_index_update_all": {
-        "ignore": true
-      },
-      "git_index_write_tree": {
         "ignore": true
       },
       "git_index_write_tree_to": {
@@ -987,13 +993,6 @@
       },
       "git_revwalk_new": {
         "isAsync": false
-      }
-    }
-  },
-  "signature": {
-    "functions": {
-      "git_signature_new": {
-        "ignore": true
       }
     }
   },

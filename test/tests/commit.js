@@ -1,5 +1,8 @@
 var assert = require("assert");
 var path = require("path");
+var Promise = require("nodegit-promise");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 
 var NodeGit = require("../../");
 var Repository = NodeGit.Repository;
@@ -44,6 +47,71 @@ describe("Commit", function() {
 
   it("has a time offset", function() {
     assert.equal(this.commit.timeOffset(), 780);
+  });
+
+  it("can create a commit", function() {
+    var expectedCommitId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
+    var fileName = "newfile.txt";
+    var fileContent = "hello world";
+
+    var repo;
+    var index;
+    var treeOid;
+    var parent;
+
+    return NodeGit.Repository.open(reposPath)
+    .then(function(repoResult) {
+      repo = repoResult;
+      return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
+    })
+    .then(function() {
+      return repo.openIndex();
+    })
+    .then(function(indexResult) {
+      index = indexResult;
+      return index.read(1);
+    })
+    .then(function() {
+      return index.addByPath(fileName);
+    })
+    .then(function() {
+      return index.write();
+    })
+    .then(function() {
+      return index.writeTree();
+    })
+    .then(function(oidResult) {
+      treeOid = oidResult;
+      return NodeGit.Refs.nameToId(repo, "HEAD");
+    })
+    .then(function(head) {
+      return repo.getCommit(head);
+    })
+    .then(function(parentResult) {
+      parent = parentResult;
+
+      return Promise.all([
+        NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
+        NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
+      ]);
+    })
+    .then(function(signatures){
+      var author = signatures[0];
+      var committer = signatures[1];
+
+      return repo.createCommit(
+        "HEAD",
+        author,
+        committer,
+        "message",
+        treeOid,
+        [parent]);
+    })
+    .then(function(commitId) {
+      assert.equal(expectedCommitId, commitId);
+    }, function(rejected) {
+      assert.fail();
+    });
   });
 
   describe("author", function() {

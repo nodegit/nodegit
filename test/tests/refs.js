@@ -1,5 +1,11 @@
 var assert = require("assert");
 var path = require("path");
+var promisify = require("promisify-node");
+
+// Have to wrap exec, since it has a weird callback signature.
+var exec = promisify(function(command, opts, callback) {
+  return require("child_process").exec(command, opts, callback);
+});
 
 describe("Refs", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
@@ -10,12 +16,17 @@ describe("Refs", function() {
   before(function() {
     var test = this;
 
-    return Repository.open(reposPath).then(function(repository) {
+    return exec("git reset --hard origin/master", {cwd: "test/repos/workdir"})
+    .then(function() {
+      return Repository.open(reposPath);
+    })
+    .then(function(repository) {
       test.repository = repository;
 
-      return repository.getReference("refs/heads/master").then(function(refs) {
-        test.refs = refs;
-      });
+      return repository.getReference("refs/heads/master");
+    })
+    .then(function(refs) {
+      test.refs = refs;
     });
   });
 
