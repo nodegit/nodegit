@@ -786,7 +786,15 @@
         "isAsync": false
       },
       "git_patch_get_hunk": {
-        "ignore": true
+        "args": {
+          "out": {
+            "returnName": "hunk"
+          },
+          "lines_in_hunk": {
+            "isReturn": true
+          }
+        },
+        "isAsync": false
       },
       "git_patch_get_line_in_hunk": {
         "isAsync": false

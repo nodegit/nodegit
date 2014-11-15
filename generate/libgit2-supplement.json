@@ -11,6 +11,32 @@
         "int new_lines",
         "size_t header_len",
         "char header[128]"
+      ],
+      "fields": [
+        {
+          "name": "old_start",
+          "type": "int"
+        },
+        {
+          "name": "old_lines",
+          "type": "int"
+        },
+        {
+          "name": "new_start",
+          "type": "int"
+        },
+        {
+          "name": "new_lines",
+          "type": "int"
+        },
+        {
+          "name": "header_len",
+          "type": "size_t"
+        },
+        {
+          "name": "header",
+          "type": "char *"
+        }
       ]
     },
     "git_diff_line": {

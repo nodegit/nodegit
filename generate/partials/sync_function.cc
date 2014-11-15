@@ -69,7 +69,7 @@ from_{{ arg.name }}
   {%each .|returnsInfo as _return %}
     {%partial convertToV8 _return %}
     {%if .|returnsCount > 1 %}
-  toReturn->Set(NanNew<String>("{{ _return.jsNameOrName }}"), to);
+  toReturn->Set(NanNew<String>("{{ _return.returnNameOrName }}"), to);
     {%endif%}
   {%endeach%}
   {%if .|returnsCount == 1 %}
