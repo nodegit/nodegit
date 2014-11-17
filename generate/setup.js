@@ -16,6 +16,7 @@ libgit2.types.forEach(function(type) {
 
 // libgit2's docs aren't complete so we'll add in what they're missing here
 Array.prototype.push.apply(libgit2.types, supplement.new.types);
+Array.prototype.push.apply(libgit2.groups, supplement.new.groups);
 
 var output = [];
 var groupNames = [];
@@ -23,9 +24,20 @@ var dependencyLookup = {};
 
 // reduce all of the groups into a hashmap and a name array for easy lookup
 var groups = libgit2.groups.reduce(function(memo, group) {
-  group[1].typeName = group[0];
-  memo[group[0]] = group[1];
-  groupNames.push(group[0]);
+  var groupName = group[0];
+
+  // Some functions are in the wrong group so we can't just ignore them.
+  // We have to completely remove them from one group and manually add them
+  // into the other.
+  var functionNames = group[1].filter(function(fnName) {
+    return !supplement.remove[groupName] ||
+      !supplement.remove[groupName].functions ||
+      !~supplement.remove[groupName].functions.indexOf(fnName);
+  });
+
+  functionNames.typeName = groupName;
+  memo[groupName] = functionNames;
+  groupNames.push(groupName);
   return memo;
 }, {});
 

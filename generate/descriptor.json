@@ -655,9 +655,6 @@
       "git_odb_num_backends": {
         "ignore": true
       },
-      "git_odb_object_data": {
-        "ignore": true
-      },
       "git_odb_open_rstream": {
         "ignore": true
       },
@@ -703,6 +700,20 @@
       }
     },
     "ignore": true
+  },
+  "odb_object": {
+    "functions": {
+      "git_odb_object_data": {
+        "return": {
+          "cppClassName": "Wrapper",
+          "jsClassName": "Buffer"
+        }
+      }
+    },
+    "dependencies": [
+      "../include/wrapper.h",
+      "node_buffer.h"
+    ]
   },
   "odb_stream": {
     "ignore": true

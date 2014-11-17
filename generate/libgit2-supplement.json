@@ -200,6 +200,31 @@
           "type": "enum"
         }
       ]
+    ],
+    "groups": [
+      [
+        "odb_object",
+        [
+          "git_odb_object_data",
+          "git_odb_object_dup",
+          "git_odb_object_free",
+          "git_odb_object_id",
+          "git_odb_object_size",
+          "git_odb_object_type"
+        ]
+      ]
     ]
+  },
+  "remove": {
+    "odb": {
+      "functions": [
+        "git_odb_object_data",
+        "git_odb_object_dup",
+        "git_odb_object_free",
+        "git_odb_object_id",
+        "git_odb_object_size",
+        "git_odb_object_type"
+      ]
+    }
   }
 }
