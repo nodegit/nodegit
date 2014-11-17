@@ -683,7 +683,12 @@
         "ignore": true
       },
       "git_odb_write": {
-        "ignore": true
+        "args": {
+          "data": {
+            "cppClassName": "Wrapper",
+            "jsClassName": "Buffer"
+          }
+        }
       },
       "git_odb_write_pack": {
         "ignore": true
