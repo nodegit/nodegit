@@ -8,6 +8,10 @@
 
   String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
   from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
+  {%elsif cppClassName == 'Wrapper'%}
+  
+  String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
+  from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
   {%elsif cppClassName == 'Array'%}
 
   Array *tmp_{{ name }} = Array::Cast(*args[{{ jsArg }}]);
