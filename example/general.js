@@ -1,4 +1,4 @@
-var git = require('../');
+var nodegit = require('../');
 var path = require('path');
 var Promise = require('nodegit-promise');
 var oid;
@@ -20,7 +20,7 @@ var repo;
 // Nearly, all git operations in the context of a repository.
 // To open a repository,
 
-git.Repository.open(path.resolve(__dirname, '../.git'))
+nodegit.Repository.open(path.resolve(__dirname, '../.git'))
 .then(function(repoResult) {
   repo = repoResult;
   console.log("Opened repository.");
@@ -31,7 +31,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // **nodegit** uses a simple wrapper around hash values called an `Oid`.
   // The oid validates that the SHA is well-formed.
 
-  oid = git.Oid.fromString('c27d9c35e3715539d941254f2ce57042b978c49c');
+  oid = nodegit.Oid.fromString('c27d9c35e3715539d941254f2ce57042b978c49c');
 
   // Most functions in in **nodegit** that take an oid will also take a
   // string, so for example, you can look up a commit by a string SHA or
@@ -73,7 +73,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // it gives you direct access to the key/value properties of Git. Here
   // we'll write a new blob object that just contains a simple string.
   // Notice that we have to specify the object type.
-  return odb.write("test data", "test data".length, git.Object.Type.Blob);
+  return odb.write("test data", "test data".length, nodegit.Object.Type.Blob);
 }).then(function(oid) {
   // Now that we've written the object, we can check out what SHA1 was
   // generated when the object was written to our database.
@@ -91,7 +91,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // data in the commit - the author (name, email, datetime), committer
   // (same), tree, message, encoding and parent(s).
 
-  oid = git.Oid.fromString("698c74e817243efe441a5d1f3cbaf3998282ca86");
+  oid = nodegit.Oid.fromString("698c74e817243efe441a5d1f3cbaf3998282ca86");
 
   // Many methods in **nodegit** are asynchronous, because they do file
   // or network I/O. By convention, all asynchronous methods are named
@@ -120,14 +120,14 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
 
   // nodegit provides a couple of methods to create commit objects easily as
   // well.
-  var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
-  var committer = git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
+  var author = nodegit.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
+  var committer = nodegit.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
 
   // Commit objects need a tree to point to and optionally one or more
   // parents. Here we're creating oid objects to create the commit with,
   // but you can also use existing ones:
-  var treeId = git.Oid.fromString("4170d10f19600b9cb086504e8e05fe7d863358a2");
-  var parentId = git.Oid.fromString("eebd0ead15d62eaf0ba276da53af43bbc3ce43ab");
+  var treeId = nodegit.Oid.fromString("4170d10f19600b9cb086504e8e05fe7d863358a2");
+  var parentId = nodegit.Oid.fromString("eebd0ead15d62eaf0ba276da53af43bbc3ce43ab");
 
   return repo.getTree(treeId).then(function(tree) {
     return repo.getCommit(parentId).then(function(parent) {
@@ -152,7 +152,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // functions very similarly to the commit lookup, parsing and creation
   // methods, since the objects themselves are very similar.
 
-  oid = git.Oid.fromString("dcc4aa9fcdaced037434cb149ed3b6eab4d0709d");
+  oid = nodegit.Oid.fromString("dcc4aa9fcdaced037434cb149ed3b6eab4d0709d");
   return repo.getTag(oid);
 }).then(function(tag) {
   // Now that we have the tag object, we can extract the information it
@@ -176,7 +176,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // object type in Git, but a useful structure for parsing and traversing
   // tree entries.
 
-  oid = git.Oid.fromString("e1b0c7ea57bfc5e30ec279402a98168a27838ac9");
+  oid = nodegit.Oid.fromString("e1b0c7ea57bfc5e30ec279402a98168a27838ac9");
   return repo.getTree(oid);
 }).then(function(tree) {
   console.log("Tree Size:", tree.size());
@@ -216,7 +216,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // from disk and writing it to the db and getting the oid back so you
   // don't have to do all those steps yourself.
 
-  oid = git.Oid.fromString("991c06b7b1ec6f939488427e4b41a4fa3e1edd5f");
+  oid = nodegit.Oid.fromString("991c06b7b1ec6f939488427e4b41a4fa3e1edd5f");
   return repo.getBlob(oid);
 }).then(function(blob) {
   // You can access a node.js Buffer with the raw contents of the blob directly.
@@ -236,7 +236,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // that were ancestors of (reachable from) a given starting point. This
   // can allow you to create `git log` type functionality.
 
-  oid = git.Oid.fromString("698c74e817243efe441a5d1f3cbaf3998282ca86");
+  oid = nodegit.Oid.fromString("698c74e817243efe441a5d1f3cbaf3998282ca86");
 
   // To use the revwalker, create a new walker, tell it how you want to sort
   // the output and then push one or more starting points onto the walker.
@@ -248,7 +248,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // of `branch1`.
   var revWalk = repo.createRevWalk();
 
-  revWalk.sorting(git.Revwalk.Sort.Topological, git.Revwalk.Sort.Reverse);
+  revWalk.sorting(nodegit.Revwalk.Sort.Topological, nodegit.Revwalk.Sort.Reverse);
 
   revWalk.push(oid);
 
@@ -294,7 +294,7 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
   // references such as branches, tags and remote references (everything in
   // the .git/refs directory).
 
-  return repo.getReferenceNames(git.Refs.Type.All);
+  return repo.getReferenceNames(nodegit.Refs.Type.All);
 }).then(function(referenceNames) {
   var promises = [];
 

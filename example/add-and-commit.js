@@ -1,4 +1,4 @@
-var git = require('../');
+var nodegit = require('../');
 var path = require('path');
 var Promise = require('nodegit-promise');
 var promisify = require('promisify-node');
@@ -16,7 +16,7 @@ var index;
 var oid;
 var parent;
 
-git.Repository.open(path.resolve(__dirname, '../.git'))
+nodegit.Repository.open(path.resolve(__dirname, '../.git'))
 .then(function(repoResult) {
   repo = repoResult;
   return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
@@ -39,14 +39,14 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
 })
 .then(function(oidResult) {
   oid = oidResult;
-  return git.Refs.nameToId(repo, 'HEAD');
+  return nodegit.Refs.nameToId(repo, 'HEAD');
 })
 .then(function(head) {
   return repo.getCommit(head);
 })
 .then(function(parent) {
-  var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
-  var committer = git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
+  var author = nodegit.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
+  var committer = nodegit.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
 
   return repo.createCommit('HEAD', author, committer, 'message', oid, [parent]);
 })

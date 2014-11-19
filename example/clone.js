@@ -1,11 +1,11 @@
-var git = require('../');
+var nodegit = require('../');
 var rimraf = require('rimraf');
 var path = "/tmp/nodegit-clone-demo";
 
 rimraf(path, function() {
   var entry;
 
-  git.Clone.clone(
+  nodegit.Clone.clone(
     "https://github.com/nodegit/nodegit.git",
     path,
     { ignoreCertErrors: 1})
