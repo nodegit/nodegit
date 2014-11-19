@@ -40,30 +40,30 @@ describe("Revwalk", function() {
     var test = this;
 
     return test.walker.next().then(function(commit) {
-      return test.walker.next().then(function(commit) {
-        return test.walker.next().then(function(commit) {
-          return test.walker.next().then(function(commit) {
-            assert.equal(commit.toString(),
-              "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
-            test.walker = test.repository.createRevWalk();
-            test.walker.push(test.branch.id());
-            test.walker.hide(
-              Oid.fromString("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
+      return test.walker.next();
+    }).then(function() {
+      return test.walker.next();
+    }).then(function() {
+      return test.walker.next();
+    }).then(function(commit) {
+      assert.equal(commit.toString(),
+        "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
+      test.walker = test.repository.createRevWalk();
+      test.walker.push(test.branch.id());
+      test.walker.hide(
+        Oid.fromString("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
 
-            return test.walker.next().then(function(commit) {
-              return test.walker.next().then(function(commit) {
-                return test.walker.next().then(function(commit) {
-                  assert.equal(commit.toString(),
-                    "95f695136203a372751c19b6353aeb5ae32ea40e");
-                  return test.walker.next().then(function(commit) {
-                    assert.equal(commit, undefined);
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
+      return test.walker.next();
+    }).then(function() {
+      return test.walker.next();
+    }).then(function() {
+      return test.walker.next();
+    }).then(function(commit) {
+      assert.equal(commit.toString(),
+        "95f695136203a372751c19b6353aeb5ae32ea40e");
+      return test.walker.next();
+    }).then(function(commit) {
+      assert.equal(commit, undefined);
     });
   });
 
@@ -71,13 +71,13 @@ describe("Revwalk", function() {
     var test = this;
 
     test.walker.simplifyFirstParent();
-    return test.walker.next().then(function(commit) {
-      return test.walker.next().then(function(commit) {
-        return test.walker.next().then(function(commit) {
-          assert.equal(commit.toString(),
-            "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
-        });
-      });
+    return test.walker.next().then(function() {
+      return test.walker.next();
+    }).then(function() {
+      return test.walker.next();
+    }).then(function(commit) {
+      assert.equal(commit.toString(),
+        "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
     });
   });
 
@@ -86,26 +86,26 @@ describe("Revwalk", function() {
   var testGC = (global.gc ? it : it.skip);
 
   testGC("doesnt segfault when accessing .author() twice", function(done) {
-      this.timeout(10000);
-      return Repository.open(reposPath).then(function(repository) {
-        var walker = repository.createRevWalk();
-        repository.getMaster().then(function(master) {
-          var did = false;
-          walker.walk(master, function(error, commit) {
-            for (var i = 0; i < 1000; i++) {
-              if (true) {
-                commit.author().name();
-                commit.author().email();
-              }
-              global.gc();
+    this.timeout(10000);
+    return Repository.open(reposPath).then(function(repository) {
+      var walker = repository.createRevWalk();
+      return repository.getMaster().then(function(master) {
+        var did = false;
+        walker.walk(master, function(error, commit) {
+          for (var i = 0; i < 1000; i++) {
+            if (true) {
+              commit.author().name();
+              commit.author().email();
             }
-            if (!did) {
-              done();
-              did = true;
-            }
-          });
+            global.gc();
+          }
+          if (!did) {
+            done();
+            did = true;
+          }
         });
       });
     });
+  });
 
 });

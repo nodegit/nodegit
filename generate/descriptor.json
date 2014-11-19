@@ -116,11 +116,20 @@
     "functions": {
       "git_commit_create": {
         "args": {
+          "id": {
+            "isReturn": true
+          },
+          "message_encoding": {
+            "isOptional": true
+          },
           "parents": {
             "cType": "const git_commit **",
             "cppClassName": "Array",
             "jsClassName": "Array",
             "arrayElementCppClassName": "GitCommit"
+          },
+          "update_ref": {
+            "isOptional": true
           }
         }
       },
@@ -483,6 +492,9 @@
       "git_index_add_all": {
         "ignore": true
       },
+      "git_index_add_bypath": {
+        "jsFunctionName": "addByPath"
+      },
       "git_index_conflict_get": {
         "ignore": true
       },
@@ -495,23 +507,43 @@
       "git_index_conflict_next": {
         "ignore": true
       },
+      "git_index_entrycount": {
+        "jsFunctionName": "size"
+      },
       "git_index_find": {
         "ignore": true
       },
       "git_index_free": {
         "ignore": true
       },
+      "git_index_get_byindex": {
+        "jsFunctionName": "entry"
+      },
       "git_index_new": {
         "ignore": true
+      },
+      "git_index_read": {
+        "args": {
+          "force": {
+            "isOptional": true
+          }
+        }
       },
       "git_index_remove_all": {
         "ignore": true
       },
+      "git_index_remove_bypath": {
+        "jsFunctionName": "removeByPath"
+      },
       "git_index_update_all": {
         "ignore": true
       },
-      "git_index_write_tree": {
-        "ignore": true
+      "git_index_write": {
+        "args": {
+          "force": {
+            "isOptional": true
+          }
+        }
       },
       "git_index_write_tree_to": {
         "ignore": true
@@ -649,9 +681,6 @@
       "git_odb_num_backends": {
         "ignore": true
       },
-      "git_odb_object_data": {
-        "ignore": true
-      },
       "git_odb_open_rstream": {
         "ignore": true
       },
@@ -680,7 +709,12 @@
         "ignore": true
       },
       "git_odb_write": {
-        "ignore": true
+        "args": {
+          "data": {
+            "cppClassName": "Wrapper",
+            "jsClassName": "Buffer"
+          }
+        }
       },
       "git_odb_write_pack": {
         "ignore": true
@@ -697,6 +731,20 @@
       }
     },
     "ignore": true
+  },
+  "odb_object": {
+    "functions": {
+      "git_odb_object_data": {
+        "return": {
+          "cppClassName": "Wrapper",
+          "jsClassName": "Buffer"
+        }
+      }
+    },
+    "dependencies": [
+      "../include/wrapper.h",
+      "node_buffer.h"
+    ]
   },
   "odb_stream": {
     "ignore": true
@@ -780,7 +828,15 @@
         "isAsync": false
       },
       "git_patch_get_hunk": {
-        "ignore": true
+        "args": {
+          "out": {
+            "returnName": "hunk"
+          },
+          "lines_in_hunk": {
+            "isReturn": true
+          }
+        },
+        "isAsync": false
       },
       "git_patch_get_line_in_hunk": {
         "isAsync": false
@@ -866,6 +922,19 @@
       },
       "git_reference_iterator_new": {
         "ignore": true
+      },
+      "git_reference_list": {
+        "args": {
+          "array": {
+            "isReturn": true,
+            "shouldAlloc": true,
+            "cppClassName": "Array",
+            "jsClassName": "Array",
+            "size": "count",
+            "key": "strings"
+          }
+        },
+        "isAsync": true
       },
       "git_reference_next": {
         "ignore": true
@@ -993,7 +1062,7 @@
   "signature": {
     "functions": {
       "git_signature_new": {
-        "ignore": true
+        "isAsync": false
       }
     }
   },
@@ -1056,6 +1125,13 @@
     "functions": {
       "git_tag_foreach": {
         "ignore": true
+      },
+      "git_tag_target": {
+        "args": {
+          "target_out": {
+            "isReturn": true
+          }
+        }
       }
     }
   },

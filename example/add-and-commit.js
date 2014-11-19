@@ -1,59 +1,55 @@
-var git = require('../'),
-    path = require('path'),
-    fs = require('fs'),
-    fileName = 'newfile.txt',
-    fileContent = 'hello world'
-    ;
+var nodegit = require('../');
+var path = require('path');
+var Promise = require('nodegit-promise');
+var promisify = require('promisify-node');
+var fse = promisify(require('fs-extra'));
+var fileName = 'newfile.txt';
+var fileContent = 'hello world';
 
 /**
  * This example creates a certain file `newfile.txt`, adds it to the git index and
  * commits it to head. Similar to a `git add newfile.txt` followed by a `git commit`
 **/
 
-//open a git repo
-git.Repo.open(path.resolve(__dirname, '../.git'), function(openReporError, repo) {
-  if (openReporError) throw openReporError;
+var repo;
+var index;
+var oid;
+var parent;
 
-  //create the file in the repo's workdir
-  fs.writeFile(path.join(repo.workdir(), fileName), fileContent, function(writeError) {
-    if (writeError) throw writeError;
+nodegit.Repository.open(path.resolve(__dirname, '../.git'))
+.then(function(repoResult) {
+  repo = repoResult;
+  return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
+})
+.then(function() {
+  return repo.openIndex();
+})
+.then(function(indexResult) {
+  index = indexResult;
+  return index.read(1);
+})
+.then(function() {
+  return index.addByPath(fileName);
+})
+.then(function() {
+  return index.write();
+})
+.then(function() {
+  return index.writeTree();
+})
+.then(function(oidResult) {
+  oid = oidResult;
+  return nodegit.Refs.nameToId(repo, 'HEAD');
+})
+.then(function(head) {
+  return repo.getCommit(head);
+})
+.then(function(parent) {
+  var author = nodegit.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
+  var committer = nodegit.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
 
-    //add the file to the index...
-    repo.openIndex(function(openIndexError, index) {
-      if (openIndexError) throw openIndexError;
-
-      index.read(function(readError) {
-        if (readError) throw readError;
-
-        index.addByPath(fileName, function(addByPathError) {
-          if (addByPathError) throw addByPathError;
-
-          index.write(function(writeError) {
-            if (writeError) throw writeError;
-
-            index.writeTree(function(writeTreeError, oid) {
-              if (writeTreeError) throw writeTreeError;
-
-              //get HEAD
-              git.Reference.oidForName(repo, 'HEAD', function(oidForName, head) {
-                if (oidForName) throw oidForName;
-
-                //get latest commit (will be the parent commit)
-                repo.getCommit(head, function(getCommitError, parent) {
-                  if (getCommitError) throw getCommitError;
-                  var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
-                  var committer = git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
-
-                  //commit
-                  repo.createCommit('HEAD', author, committer, 'message', oid, [parent], function(error, commitId) {
-                    console.log("New Commit:", commitId.sha());
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
-    });
-  });
+  return repo.createCommit('HEAD', author, committer, 'message', oid, [parent]);
+})
+.done(function(commitId) {
+  console.log('New Commit: ', commitId);
 });

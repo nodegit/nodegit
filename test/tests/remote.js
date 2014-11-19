@@ -86,4 +86,19 @@ describe("Remote", function() {
       });
     });
   });
+
+  it("can fetch from a remote", function() {
+    var repo = this.repository;
+
+    return Remote.load(repo, "origin")
+    .then(function(remote) {
+      remote.connect(0);
+      return remote.download();
+    })
+    .then(function() {
+      assert(true);
+    }, function() {
+      assert(false);
+    });
+  });
 });
