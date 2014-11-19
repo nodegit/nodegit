@@ -127,6 +127,9 @@
             "cppClassName": "Array",
             "jsClassName": "Array",
             "arrayElementCppClassName": "GitCommit"
+          },
+          "update_ref": {
+            "isOptional": true
           }
         }
       },
@@ -1079,6 +1082,13 @@
     "functions": {
       "git_tag_foreach": {
         "ignore": true
+      },
+      "git_tag_target": {
+        "args": {
+          "target_out": {
+            "isReturn": true
+          }
+        }
       }
     }
   },
