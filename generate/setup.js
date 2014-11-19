@@ -19,8 +19,9 @@ Array.prototype.push.apply(libgit2.types, supplement.new.types);
 Array.prototype.push.apply(libgit2.groups, supplement.new.groups);
 
 var output = [];
-var groupNames = [];
 var dependencyLookup = {};
+var types = [];
+var enums = [];
 
 // reduce all of the groups into a hashmap and a name array for easy lookup
 var groups = libgit2.groups.reduce(function(memo, group) {
@@ -35,42 +36,68 @@ var groups = libgit2.groups.reduce(function(memo, group) {
       !~supplement.remove[groupName].functions.indexOf(fnName);
   });
 
-  functionNames.typeName = groupName;
   memo[groupName] = functionNames;
-  groupNames.push(groupName);
   return memo;
 }, {});
 
-// Process each type in the types array into classes and structs and
-// decorate the definitions with required data to build the C++ files
-libgit2.types.forEach(function(current) {
-  var typeName = current[0];
-  var typeDefOverrides = descriptor[typeName] || {};
-  var typeDef = current[1];
 
-  // skip enums for now
-  if (typeDef.type === "enum") {
-    return;
+// Split each type from the array into classes/structs and enums
+// each entry is of type ['name', {definingobject}]
+libgit2.types.forEach(function(current) {
+  current[1].typeName = current[0];
+
+  // just log these out to a file for fun
+  if (current[1].type === "enum") {
+    enums.push(current[1]);
+  }
+  else {
+    types.push(current[1]);
+  }
+});
+
+var previous = "";
+enums = _(enums).sortBy("name").reduce(function(enumMemo, enumerable) {
+  if (previous == enumerable.typeName) {
+    console.log('WARNING: duplicate definition for enum ' + enumerable.typeName +
+      ". skipped.");
+  }
+  else if (!enumerable.fields) {
+    console.log('WARNING: incomplete definition for enum ' + enumerable.typeName +
+      ". skipped.");
+  }
+  else {
+    enumMemo[enumerable.typeName] = {
+      typeName: enumerable.typeName.replace(/^git_/, "").replace(/_t$/, ""),
+      type: "enum",
+      cType: enumerable.typeName,
+      isMask: (/_t$/).test(enumerable.typeName),
+      values: enumerable.fields.map(function(field) {
+        return {
+          name: field.name,
+          value: field.value
+        }
+      })
+    };
   }
 
+  previous = enumerable.typeName;
+  return enumMemo;
+}, {}).valueOf();
+
+// decorate the definitions with required data to build the C++ files
+types.forEach(function(typeDef) {
+  var typeName = typeDef.typeName;
   typeDef.cType = typeName;
   typeName = typeName.replace("git_", "");
   typeDef.typeName = typeName;
   dependencyLookup[typeName] = typeName;
 
-  typeDef.isClass = utils.isClass(typeName, groupNames);
-  typeDef.isStruct = !typeDef.isClass;
+  typeDef.functions = groups[typeName] || [];
+  utils.decoratePrimaryType(typeDef, enums);
 
-  utils.decoratePrimaryType(typeDef);
+  groups[typeName] = false;
 
-  if (typeDef.isClass) {
-    typeDef.functions = groups[typeName];
-    utils.decorateClass(typeDef);
-    groups[typeName] = false;
-  }
-  else {
-    utils.decorateStruct(typeDef);
-  }
+  typeDef.type = typeDef.hasConstructor ? "struct" : "class";
 
   output.push(typeDef);
 });
@@ -86,14 +113,11 @@ for (var groupName in groups) {
     functions: groupDef
   };
 
-  var classDefOverrides = descriptor[groupName] || {};
-  groupDef.isClass = true;
-  groupDef.isStruct = false;
+  groupDef.type = "class";
 
   groupDef.typeName = groupName;
   dependencyLookup[groupName] = groupName;
-  utils.decoratePrimaryType(groupDef);
-  utils.decorateClass(groupDef, classDefOverrides);
+  utils.decoratePrimaryType(groupDef, enums);
 
   output.push(groupDef);
 }
@@ -130,7 +154,57 @@ output.forEach(function (def) {
   Object.keys(dependencies).forEach(function (dependencyFilename) {
     def.dependencies.push("../include/" + dependencyFilename + ".h");
   });
+
+  // Additionally provide a friendly name to the actual filename.
+  def.name = path.basename(def.filename, ".h");
+
+  def.functions.forEach(function(fn) {
+    if (fn) {
+      fn.cppClassName = def.cppClassName;
+    }
+  });
 });
+
+// Process enums
+_(enums).forEach(function(enumerable) {
+  output.some(function(obj) {
+    if (enumerable.typeName.indexOf(obj.typeName) == 0) {
+        enumerable.owner = obj.jsClassName;
+    }
+    else if (enumerable.owner) {
+      return true;
+    }
+  });
+
+  var override = descriptor.enums[enumerable.typeName] || {};
+
+  enumerable.owner = enumerable.owner || "Enums";
+
+  enumerable.JsName = enumerable.typeName
+    .replace(new RegExp("^" + enumerable.owner.toLowerCase()), "")
+    .replace(/^_/, "")
+    .toUpperCase();
+
+  enumerable.values.forEach(function(value) {
+    value.JsName = value.name
+      .replace(/^GIT_/, "")
+      .replace(new RegExp("^" + enumerable.owner.toUpperCase()), "")
+      .replace(/^_/, "")
+      .replace(new RegExp("^" + enumerable.JsName), "")
+      .replace(/^_/, "")
+      .toUpperCase();
+
+    if (override.values && override.values[value.name]) {
+      _.merge(value, override.values[value.name]);
+    }
+  });
+
+  _.merge(enumerable, _.omit(override, ["values"]));
+
+  output.push(enumerable);
+});
+
+output = _.sortBy(output, "typeName");
 
 if (process.argv[2] != "--documentation") {
   utils.filterDocumentation(output);

@@ -28,7 +28,8 @@ var templates = {
   class_header: file.read("templates/class_header.h"),
   struct_header: file.read("templates/struct_header.h"),
   binding: file.read("templates/binding.gyp"),
-  nodegit: file.read("templates/nodegit.cc")
+  nodegit: file.read("templates/nodegit.cc"),
+  enums: file.read("templates/enums.js")
 };
 
 var filters = {
@@ -71,17 +72,8 @@ Object.keys(partials).forEach(function(partial) {
 
 
 // Determine which definitions to actually include in the source code.
+// This might not be needed anymore but to be frank I'm not totally positive
 var enabled = idefs.filter(function(idef) {
-  // Additionally provide a friendly name to the actual filename.
-  idef.name = path.basename(idef.filename, ".h");
-
-  // We need some custom data on each of the functions
-  idef.functions.forEach(function(fn) {
-    if (fn) {
-      fn.cppClassName = idef.cppClassName;
-    }
-  });
-
   return !idef.ignore;
 });
 
@@ -94,20 +86,43 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
   file.write("../binding.gyp", templates.binding.render(enabled));
   file.write("../src/nodegit.cc", templates.nodegit.render(enabled));
 
+
   // Write out all the classes.
+  var enums = [];
   enabled.forEach(function(idef) {
     try {
-      if (idef.hasConstructor) {
+
+      if (idef.type == "struct") {
         file.write("../src/" + idef.filename + ".cc", templates.struct_content.render(idef));
         file.write("../include/" + idef.filename + ".h", templates.struct_header.render(idef));
       }
-      else {
+      else if (idef.type == "class") {
         file.write("../src/" + idef.filename + ".cc", templates.class_content.render(idef));
         file.write("../include/" + idef.filename + ".h", templates.class_header.render(idef));
+      }
+      else if (idef.type == "enum") {
+        enums.push(idef);
       }
     }
     catch (e) {
       console.log(e);
     }
   });
+
+  enums = enums.reduce(function(memo, enumerable) {
+
+    memo[enumerable.owner] = memo[enumerable.owner] || [];
+
+    memo[enumerable.owner].push(enumerable);
+    delete enumerable.owner;
+    return memo;
+  }, {});
+
+
+  var output = [];
+  Object.keys(enums).forEach(function(key) {
+    output.push({owner: key, enums: enums[key]});
+  });
+
+  file.write("../lib/enums.js", templates.enums.render(output));
 });
