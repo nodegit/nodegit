@@ -522,11 +522,28 @@
       "git_index_new": {
         "ignore": true
       },
+      "git_index_read": {
+        "args": {
+          "force": {
+            "isOptional": true
+          }
+        }
+      },
       "git_index_remove_all": {
         "ignore": true
       },
+      "git_index_remove_bypath": {
+        "jsFunctionName": "removeByPath"
+      },
       "git_index_update_all": {
         "ignore": true
+      },
+      "git_index_write": {
+        "args": {
+          "force": {
+            "isOptional": true
+          }
+        }
       },
       "git_index_write_tree_to": {
         "ignore": true
@@ -1038,6 +1055,13 @@
         "ignore": true
       },
       "git_revwalk_new": {
+        "isAsync": false
+      }
+    }
+  },
+  "signature": {
+    "functions": {
+      "git_signature_new": {
         "isAsync": false
       }
     }
