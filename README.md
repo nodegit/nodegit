@@ -10,11 +10,7 @@ Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodeg
 **Stable: 0.1.4**
 **Unstable: 0.2.0**
 
-Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael
-Robinson [@codeofinterest](http://twitter.com/codeofinterest), John Haley
-[@johnhaley81](http://twitter.com/johnhaley81), Nick Kallen [@nk](http://twitter.com/nk),
-and Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from [awesome
-contributors](https://github.com/tbranyen/nodegit/contributors)!
+Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), John Haley [@johnhaley81](http://twitter.com/johnhaley81), Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp), and Nick Kallen [@nk](http://twitter.com/nk) with help from [awesome contributors](https://github.com/tbranyen/nodegit/contributors)!
 
 ## API Documentation. ##
 
@@ -29,12 +25,9 @@ dependencies.
 npm install nodegit
 ```
 
-If you encounter problems while installing, you should try the Building from
-source instructions below.
+If you encounter problems while installing, you should try the Building from source instructions below.
 
-**Please note that nodegit is undergoing a large scale refactoring at the moment.** Please
-continue reporting bugs, but note that until the upcoming 0.2 release they are unlikely
-to be fixed. Older versions of the API will not be supported.
+**Please note that nodegit is undergoing a large scale refactoring at the moment.** Please continue reporting bugs, but note that until the upcoming 0.2 release they are unlikely to be fixed. Older versions of the API will not be supported.
 
 ## Building from source. ##
 
@@ -55,8 +48,7 @@ cd nodegit
 npm install
 ```
 
-If you encounter errors, you most likely have not configured the dependencies
-correctly.
+If you encounter errors, you most likely have not configured the dependencies correctly.
 
 ### Installing dependencies: ###
 
@@ -83,11 +75,9 @@ sudo pacman -S base-devel
 - [Download and install Python](https://www.python.org/download/windows).
 - [Download and install VS Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop).
 
-You may have to add a build flag to the installation process to successfully
-install.  Try first without, if the build fails, try again with the flag.
+You may have to add a build flag to the installation process to successfully install.  Try first without, if the build fails, try again with the flag.
 
-*Allegedly the order in which you install Visual Studio could trigger this
-error.*
+*Allegedly the order in which you install Visual Studio could trigger this error.*
 
 ``` bash
 npm install nodegit --msvs_version=2013
