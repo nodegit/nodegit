@@ -19,6 +19,7 @@ describe("Oid", function() {
     var string = this.oid.allocfmt();
 
     assert.equal(string, oid);
+    assert.equal(this.oid.toString(), oid);
   });
 
   it("provides a custom inspect method to improve debugging", function() {
