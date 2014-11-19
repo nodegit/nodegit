@@ -120,37 +120,29 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
 
   // nodegit provides a couple of methods to create commit objects easily as
   // well.
+  var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
+  var committer = git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
 
-  return Promise.all([
-    git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60),
-    git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90)
-  ]).then(function(signatures) {
-    var author = signatures[0];
-    var committer = signatures[1];
+  // Commit objects need a tree to point to and optionally one or more
+  // parents. Here we're creating oid objects to create the commit with,
+  // but you can also use existing ones:
+  var treeId = git.Oid.fromString("4170d10f19600b9cb086504e8e05fe7d863358a2");
+  var parentId = git.Oid.fromString("eebd0ead15d62eaf0ba276da53af43bbc3ce43ab");
 
-    // Commit objects need a tree to point to and optionally one or more
-    // parents. Here we're creating oid objects to create the commit with,
-    // but you can also use existing ones:
-
-    var treeId = git.Oid.fromString("4170d10f19600b9cb086504e8e05fe7d863358a2");
-    var parentId = git.Oid.fromString("eebd0ead15d62eaf0ba276da53af43bbc3ce43ab");
-
-    return repo.getTree(treeId).then(function(tree) {
-      return repo.getCommit(parentId).then(function(parent) {
-        // Here we actually create the commit object with a single call with all
-        // the values we need to create the commit. The SHA key is written to the
-        // `commit_id` variable here.
-        return repo.createCommit(
-          null /* do not update the HEAD */,
-          author,
-          committer,
-          "example commit",
-          tree,
-          [parent]);
-      })
-      .then(function(oid) {
-        console.log("New Commit:", oid.toString());
-      });
+  return repo.getTree(treeId).then(function(tree) {
+    return repo.getCommit(parentId).then(function(parent) {
+      // Here we actually create the commit object with a single call with all
+      // the values we need to create the commit. The SHA key is written to the
+      // `commit_id` variable here.
+      return repo.createCommit(
+        null /* do not update the HEAD */,
+        author,
+        committer,
+        "example commit",
+        tree,
+        [parent]);
+    }).then(function(oid) {
+      console.log("New Commit:", oid.toString());
     });
   });
 }).then(function() {
