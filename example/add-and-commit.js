@@ -44,15 +44,9 @@ git.Repository.open(path.resolve(__dirname, '../.git'))
 .then(function(head) {
   return repo.getCommit(head);
 })
-.then(function(parentResult) {
-  return Promise.all([
-    git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60),
-    git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90)
-  ])
-})
-.then(function(signatures){
-  var author = signatures[0];
-  var committer = signatures[1];
+.then(function(parent) {
+  var author = git.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
+  var committer = git.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
 
   return repo.createCommit('HEAD', author, committer, 'message', oid, [parent]);
 })
