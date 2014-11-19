@@ -13,7 +13,9 @@
         "src/wrapper.cc",
         "src/functions/copy.cc",
         {%each%}
+          {% if type != "enum" %}
         "src/{{ name }}.cc",
+          {% endif %}
         {%endeach%}
       ],
 
