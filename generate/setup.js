@@ -114,6 +114,7 @@ for (var groupName in groups) {
   };
 
   groupDef.type = "class";
+  groupDef.cType = (descriptor.types[groupName] || {}).cType || groupDef.cType;
 
   groupDef.typeName = groupName;
   dependencyLookup[groupName] = groupName;
