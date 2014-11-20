@@ -1,4 +1,7 @@
-# Install GCC 4.8 for C++11 support.
+env:
+  matrix:
+    - export NODE_VERSION="0.10"
+    - export NODE_VERSION="0.11"
 before_install:
   - git clone https://github.com/creationix/nvm.git ./.nvm
   - source ./.nvm/nvm.sh
@@ -17,10 +20,6 @@ before_script:
  - chmod 600 ~/.ssh/id_rsa*
  - eval `ssh-agent -s`
  - ssh-add ~/.ssh/id_rsa
-language: node_js
-node_js:
-  - "0.10"
-  - 0.11
 git:
   depth: 1
 branches:
