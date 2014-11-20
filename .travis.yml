@@ -1,5 +1,9 @@
 # Install GCC 4.8 for C++11 support.
 before_install:
+  - git clone https://github.com/creationix/nvm.git ./.nvm
+  - source ./.nvm/nvm.sh
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
   - "sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test"
   - "sudo apt-get -qq update"
   - "sudo apt-get -qq install g++-4.8"
