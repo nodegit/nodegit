@@ -85,8 +85,32 @@
     },
     "branch": {
       "functions": {
+        "git_branch_create": {
+          "args": {
+            "force": {
+              "isOptional": true
+            },
+            "signature": {
+              "isOptional": true
+            },
+            "log_message": {
+              "isOptional": true
+            }
+          }
+        },
         "git_branch_next": {
           "ignore": true
+        },
+        "git_branch_set_upstream": {
+          "isAsync": false,
+          "args": {
+            "upstream_name": {
+              "isOptional": true
+            }
+          }
+        },
+        "git_branch_upstream": {
+          "isAsync": false
         }
       }
     },

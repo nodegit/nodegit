@@ -12,8 +12,8 @@ describe("Revwalk", function() {
     var test = this;
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
-      return test.repository.getBranch("rev-walk").then(function(branch) {
-        test.branch = branch;
+      return test.repository.getBranchCommit("rev-walk").then(function(commit) {
+        test.commit = commit;
         done();
       });
     });
@@ -21,7 +21,7 @@ describe("Revwalk", function() {
 
   beforeEach(function() {
     this.walker = this.repository.createRevWalk();
-    this.walker.push(this.branch.id());
+    this.walker.push(this.commit.id());
   });
 
   it("can create a walker", function() {
@@ -29,7 +29,7 @@ describe("Revwalk", function() {
   });
 
   it("can push an object", function() {
-    var sha = this.branch.sha();
+    var sha = this.commit.sha();
 
     return this.walker.next().then(function(commit) {
       assert.equal(sha, commit);
@@ -49,7 +49,7 @@ describe("Revwalk", function() {
       assert.equal(commit.toString(),
         "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
       test.walker = test.repository.createRevWalk();
-      test.walker.push(test.branch.id());
+      test.walker.push(test.commit.id());
       test.walker.hide(
         Oid.fromString("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
 
@@ -89,9 +89,9 @@ describe("Revwalk", function() {
     this.timeout(10000);
     return Repository.open(reposPath).then(function(repository) {
       var walker = repository.createRevWalk();
-      return repository.getMaster().then(function(master) {
+      return repository.getMasterCommit().then(function(firstCommitOnMaster) {
         var did = false;
-        walker.walk(master, function(error, commit) {
+        walker.walk(firstCommitOnMaster, function(error, commit) {
           for (var i = 0; i < 1000; i++) {
             if (true) {
               commit.author().name();
