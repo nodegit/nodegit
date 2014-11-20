@@ -5,16 +5,20 @@
 
 #include "../include/wrapper.h"
 #include "../include/functions/copy.h"
-{%each%}
+{% each %}
+  {% if type != "enum" %}
 #include "../include/{{ filename }}.h"
-{%endeach%}
+  {% endif %}
+{% endeach %}
 
 extern "C" void init(Handle<v8::Object> target) {
   NanScope();
 
   Wrapper::InitializeComponent(target);
   {%each%}
+    {% if type != "enum" %}
   {{ cppClassName }}::InitializeComponent(target);
+    {% endif %}
   {%endeach%}
 }
 

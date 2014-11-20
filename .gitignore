@@ -7,6 +7,8 @@
 /test/repos/
 /src/
 /include/
+/lib/enums.js
+
 
 /vendor/Release
 /vendor/*.vcxproj
@@ -17,4 +19,6 @@
 /generate/missing-tests.json
 /binding.gyp
 
+
 *.log
+.DS_STORE

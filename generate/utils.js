@@ -105,10 +105,6 @@ var Utils = {
       && ~cbField.name.indexOf(payloadName.replace("_payload", ""));
   },
 
-  isClass: function(typeName, groupNames) {
-    return !!~groupNames.indexOf(typeName);
-  },
-
   getLibgitType: function(normalizedType, types) {
     var libgitType;
 
@@ -153,7 +149,7 @@ var Utils = {
     }
   },
 
-  decorateLibgitType: function(type, types) {
+  decorateLibgitType: function(type, types, enums) {
     var normalizedType = Utils.normalizeCtype(type.cType);
     var libgitType = Utils.getLibgitType(normalizedType, types);
 
@@ -166,69 +162,52 @@ var Utils = {
       if (type.isEnum) {
         type.cppClassName = "Number";
         type.jsClassName = "Number";
+        if (enums[type.cType]) {
+          type.isMask = enums[type.cType].isMask || false
+        }
       }
-
-      _.merge(type, descriptor[normalizedType.replace("git_", "")] || {});
+      _.merge(type, descriptor.types[normalizedType.replace("git_", "")] || {});
     }
   },
 
-  decoratePrimaryType: function(typeDef) {
-    var typeDefOverrides = descriptor[typeDef.typeName] || {};
+  decoratePrimaryType: function(typeDef, enums) {
+    var typeDefOverrides = descriptor.types[typeDef.typeName] || {};
     var partialOverrides = _.omit(typeDefOverrides, ["fields", "functions"]);
 
     typeDef.cType = typeDef.cType || null;
     typeDef.cppClassName = Utils.cTypeToCppName(typeDef.cType || "git_" + typeDef.typeName);
     typeDef.jsClassName = Utils.titleCase(Utils.cTypeToJsName(typeDef.cType || "git_" + typeDef.typeName));
-
-    typeDef.dependencies = [];
     typeDef.filename = typeDef.typeName;
+    typeDef.isLibgitType = true;
+    typeDef.dependencies = [];
 
     typeDef.fields = typeDef.fields || [];
-
     typeDef.fields.forEach(function (field, index, allFields) {
       var fieldOverrides = typeDefOverrides.fields || {};
-      Utils.decorateField(field, allFields, fieldOverrides[field.name] || {});
+      Utils.decorateField(field, allFields, fieldOverrides[field.name] || {}, enums);
     });
 
     typeDef.needsForwardDeclaration = typeDef.decl === typeDef.cType;
 
-    _.merge(typeDef, partialOverrides);
-  },
+    var normalizedType = Utils.normalizeCtype(typeDef.cType);
+    typeDef.hasConstructor = Utils.hasConstructor(typeDef, normalizedType);
 
-  decorateStruct: function(structDef) {
-    /* There are no enums for now, and when we get there I'm gonna argue they should have
-        their own process
-    if (structDef.type === "enum") {
-      structDef.isEnum = true;
-      structDef.cppClassName = "Number";
-      structDef.jsClassName = "Number";
-    } */
-
-    structDef.isLibgitType = true;
-
-    // TODO: Structs don't *have* functions, we need to remove the code thats requiring this (if there even is any)
-    structDef.functions = [];
-
-    var normalizedType = Utils.normalizeCtype(structDef.cType);
-    structDef.hasConstructor = Utils.hasConstructor(structDef, normalizedType);
-  },
-
-  decorateClass: function(classDef) {
-    var typeDefOverrides = descriptor[classDef.typeName] || {};
-
-    classDef.functions = (classDef.functions || []).map(function(fn) {
+    typeDef.functions = (typeDef.functions).map(function(fn) {
       var fnDef = libgit2.functions[fn];
       fnDef.cFunctionName = fn;
       return fnDef;
     });
 
+    var typeDefOverrides = descriptor.types[typeDef.typeName] || {};
     var functionOverrides = typeDefOverrides.functions || {};
-    classDef.functions.forEach(function(fnDef) {
-      Utils.decorateFunction(fnDef, classDef, functionOverrides[fnDef.cFunctionName] || {});
+    typeDef.functions.forEach(function(fnDef) {
+      Utils.decorateFunction(fnDef, typeDef, functionOverrides[fnDef.cFunctionName] || {}, enums);
     });
+
+    _.merge(typeDef, partialOverrides);
   },
 
-  decorateField: function(field, allFields, fieldOverrides) {
+  decorateField: function(field, allFields, fieldOverrides, enums) {
     var normalizeType = Utils.normalizeCtype(field.type);
 
     field.cType = field.type;
@@ -243,7 +222,7 @@ var Utils = {
       var argOverrides = fieldOverrides.args || {};
       field.args = field.args || [];
       field.args.forEach(function (arg) {
-        Utils.decorateArg(arg, null, null, argOverrides[arg.name] || {});
+        Utils.decorateArg(arg, null, null, argOverrides[arg.name] || {}, enums);
       });
     }
     else {
@@ -254,11 +233,11 @@ var Utils = {
       }
     }
 
-    Utils.decorateLibgitType(field, libgit2.types);
+    Utils.decorateLibgitType(field, libgit2.types, enums);
     _.merge(field, fieldOverrides);
   },
 
-  decorateArg: function(arg, classDef, fnDef, argOverrides) {
+  decorateArg: function(arg, typeDef, fnDef, argOverrides, enums) {
     var type = arg.cType || arg.type;
     var normalizedType = Utils.normalizeCtype(type);
 
@@ -266,14 +245,14 @@ var Utils = {
     arg.cppClassName = Utils.cTypeToCppName(arg.cType);
     arg.jsClassName = Utils.titleCase(Utils.cTypeToJsName(arg.cType));
 
-    Utils.decorateLibgitType(arg, libgit2.types);
+    Utils.decorateLibgitType(arg, libgit2.types, enums);
 
-    if (classDef && fnDef) {
+    if (typeDef && fnDef) {
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
-      arg.isReturn = arg.name === "out" || (Utils.isDoublePointer(arg.type) && normalizedType == classDef.cType);
-      arg.isSelf = Utils.isPointer(arg.type) && normalizedType == classDef.cType;
+      arg.isReturn = arg.name === "out" || (Utils.isDoublePointer(arg.type) && normalizedType == typeDef.cType);
+      arg.isSelf = Utils.isPointer(arg.type) && normalizedType == typeDef.cType;
 
       if (arg.isReturn && fnDef.return && fnDef.return.type === "int") {
         fnDef.return.isErrorCode = true;
@@ -292,34 +271,34 @@ var Utils = {
     _.merge(arg, argOverrides);
   },
 
-  decorateFunction: function(fnDef, classDef, fnOverrides) {
+  decorateFunction: function(fnDef, typeDef, fnOverrides, enums) {
     var key = fnDef.cFunctionName;
 
     // if this is the free function for the class, make the ref on the class
     // and then return since we don't want the free functions publicly
     // available
-    if (key == classDef.cType + "_free") {
-      classDef.freeFunctionName = key;
+    if (key == typeDef.cType + "_free") {
+      typeDef.freeFunctionName = key;
       fnDef.ignore = true;
       return;
     }
 
-    fnDef.cppFunctionName = Utils.cTypeToCppName(key, "git_" + classDef.typeName);
-    fnDef.jsFunctionName = Utils.cTypeToJsName(key, "git_" + classDef.typeName);
+    fnDef.cppFunctionName = Utils.cTypeToCppName(key, "git_" + typeDef.typeName);
+    fnDef.jsFunctionName = Utils.cTypeToJsName(key, "git_" + typeDef.typeName);
     //fnDef.isAsync = false; // until proven otherwise
 
 
-    if (fnDef.cppFunctionName == classDef.cppClassName) {
+    if (fnDef.cppFunctionName == typeDef.cppClassName) {
       fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");
     }
 
     var argOverrides = fnOverrides.args || {};
     fnDef.args.forEach(function(arg) {
-      Utils.decorateArg(arg, classDef, fnDef, argOverrides[arg.name] || {});
+      Utils.decorateArg(arg, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
     });
 
     if (fnDef.return) {
-      Utils.decorateArg(fnDef.return, classDef, fnDef, fnOverrides.return || {});
+      Utils.decorateArg(fnDef.return, typeDef, fnDef, fnOverrides.return || {}, enums);
     }
 
     _(collisionMappings).forEach(function(newName, collidingName) {
@@ -336,6 +315,9 @@ var Utils = {
   },
 
   filterIgnored: function (arr, callback) {
+    if (!arr) {
+      return;
+    }
     for (var i = arr.length - 1; i >= 0; i--) {
       if (arr[i].ignore) {
         arr.splice(i, 1);
