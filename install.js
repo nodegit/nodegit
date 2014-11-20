@@ -208,7 +208,7 @@ var dependencies = Q.allSettled([
 // Build the native module using node-gyp.
 .then(function() {
   console.info("[nodegit] Building native node module.");
-  var pythonFlag = " --python " + python;
+  var pythonFlag = " --python \"" + python + "\"";
 
   return Q.nfcall(exec, systemPath([
     ".", "node_modules", ".bin", "node-gyp clean configure build" + pythonFlag
