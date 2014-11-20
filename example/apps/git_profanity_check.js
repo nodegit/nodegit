@@ -35,32 +35,25 @@ else {
 }
 
 // Open repository.
-git.Repo.open(path, function(err, repo) {
-  if (err) {
-    throw new Error(err);
-  }
-
+git.Repo.open(path)
+.then(function(repo) {
   // Open branch, default to master.
-  repo.getBranch(branch, function(err, branch) { 
-    if (err) {
-      throw new Error(err);
+  return repo.getBranchCommit(branch);
+}).then(function(firstCommit) {
+  // Iterate history
+  var history = firstCommit.history();
+
+  // Iterate over every commit message and test for words.
+  history.on('commit', function(commit) {
+    var message = commit.message();
+
+    if (reCurse.test(message)) {
+      console.log('Curse detected in commit', commit.sha());
+      console.log('=> ', message);
+      return;
     }
-
-    // Iterate history
-    var history = branch.history();
-
-    // Iterate over every commit message and test for words.
-    history.on('commit', function(commit) {
-      var message = commit.message();
-
-      if (reCurse.test(message)) {
-        console.log('Curse detected in commit', commit.sha()); 
-        console.log('=> ', message);
-        return;
-      }
-    });
-
-    // Start history iteration.
-    history.start();
   });
+
+  // Start history iteration.
+  history.start();
 });

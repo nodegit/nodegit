@@ -177,8 +177,8 @@ describe("Commit", function() {
   it("can fetch the master branch HEAD", function() {
     var repository = this.repository;
 
-    return repository.getBranch("master").then(function(branch) {
-      return repository.getCommit(branch.sha());
+    return repository.getBranchCommit("master").then(function(commit) {
+      return repository.getCommit(commit.sha());
     });
   });
 

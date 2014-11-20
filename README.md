@@ -134,12 +134,12 @@ var open = require("nodegit").Repository.open;
 open("tmp")
   // Open the master branch.
   .then(function(repo) {
-    return repo.getMaster();
+    return repo.getMasterCommit();
   })
   // Display information about commits on master.
-  .then(function(branch) {
+  .then(function(firstCommitOnMaster) {
     // Create a new history event emitter.
-    var history = branch.history();
+    var history = firstCommitOnMaster.history();
 
     // Create a counter to only show up to 9 entries.
     var count = 0;

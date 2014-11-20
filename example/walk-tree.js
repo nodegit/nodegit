@@ -6,9 +6,9 @@ var nodegit = require('../'),
 // tree (directory), or a file.
 
 nodegit.Repository.open(path.resolve(__dirname, '../.git')).then(function(repo) {
-  return repo.getMaster();
-}).then(function(branch) {
-    return branch.getTree();
+  return repo.getMasterCommit();
+}).then(function(firstCommitOnMaster) {
+    return firstCommitOnMaster.getTree();
 }).then(function(tree) {
   // `walk()` returns an event.
   var walker = tree.walk();

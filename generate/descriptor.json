@@ -87,6 +87,19 @@
       "functions": {
         "git_branch_next": {
           "ignore": true
+        },
+        "git_branch_create": {
+          "args": {
+            "force": {
+              "isOptional": true
+            },
+            "signature": {
+              "isOptional": true
+            },
+            "log_message": {
+              "isOptional": true
+            }
+          }
         }
       }
     },
