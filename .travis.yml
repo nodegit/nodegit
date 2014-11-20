@@ -7,11 +7,14 @@ before_install:
   - source ./.nvm/nvm.sh
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
-  - "sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test"
-  - "sudo apt-get -qq update"
-  - "sudo apt-get -qq install g++-4.8"
+  - if [ $TRAVIS_OS_NAME == "linux" ]; then
+      sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
+      sudo apt-get -qq update;
+      sudo apt-get -qq install g++-4.8;
+    fi
   - "export CXX='g++-4.8'"
   - "export JOBS=4"
+  - npm install
 # This is a random private key used purely for testing.
 before_script:
  - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
