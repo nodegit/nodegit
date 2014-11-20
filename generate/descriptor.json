@@ -554,9 +554,6 @@
         "git_index_add_all": {
           "ignore": true
         },
-        "git_index_add_bypath": {
-          "jsFunctionName": "addByPath"
-        },
         "git_index_conflict_get": {
           "ignore": true
         },
@@ -584,13 +581,13 @@
         "git_index_new": {
           "ignore": true
         },
-	      "git_index_read": {
-	        "args": {
-	          "force": {
-	            "isOptional": true
-	          }
-	        }
-	      },
+        "git_index_read": {
+          "args": {
+            "force": {
+              "isOptional": true
+            }
+          }
+        },
         "git_index_remove_all": {
           "ignore": true
         },
@@ -599,7 +596,7 @@
 	      },
         "git_index_update_all": {
           "ignore": true
-   	   },
+   	    },
 	      "git_index_write": {
 	        "args": {
 	          "force": {
@@ -827,7 +824,6 @@
           "ignore": true
         },
         "git_oid_fromstr": {
-          "jsFunctionName": "fromString",
           "isAsync": false
         },
         "git_oid_fromstrn": {
@@ -852,8 +848,7 @@
           "ignore": true
         },
         "git_oid_tostr": {
-          "ignore": true,
-          "jsFunctionName": "toString"
+          "ignore": true
         }
       },
       "fields": {

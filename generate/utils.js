@@ -75,7 +75,18 @@ var Utils = {
   },
 
   cTypeToJsName: function(cType, ownerType) {
-    return Utils.camelCase(Utils.cTypeToCppName(cType, ownerType).replace("Git", ""));
+    var output = Utils.camelCase(Utils.cTypeToCppName(cType, ownerType).replace(/^Git/, ""));
+    var mergedPrefixes = ["from", "by"];
+
+    mergedPrefixes.forEach(function(prefix) {
+      var reg = new RegExp("(^" + prefix + "|" + Utils.titleCase(prefix) + ")([a-z]+)$");
+      output = output.replace(reg, function(all, prefixMatch, otherWord) {
+        return prefixMatch + Utils.titleCase(otherWord);
+      });
+    });
+
+    output = output.replace(/([a-z])Str$/, "$1String")
+    return output;
   },
 
   isConstructorFunction: function(cType, fnName) {
@@ -286,7 +297,6 @@ var Utils = {
     fnDef.cppFunctionName = Utils.cTypeToCppName(key, "git_" + typeDef.typeName);
     fnDef.jsFunctionName = Utils.cTypeToJsName(key, "git_" + typeDef.typeName);
     //fnDef.isAsync = false; // until proven otherwise
-
 
     if (fnDef.cppFunctionName == typeDef.cppClassName) {
       fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");
