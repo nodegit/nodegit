@@ -22,6 +22,9 @@ git:
 branches:
   only:
     - master
+os:
+  - linux
+  - osx
 script: npm --expose-gc test
 notifications:
   slack:
