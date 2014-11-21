@@ -73,7 +73,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   // it gives you direct access to the key/value properties of Git. Here
   // we'll write a new blob object that just contains a simple string.
   // Notice that we have to specify the object type.
-  return odb.write("test data", "test data".length, nodegit.Object.Type.Blob);
+  return odb.write("test data", "test data".length, nodegit.Object.TYPE.BLOB);
 }).then(function(oid) {
   // Now that we've written the object, we can check out what SHA1 was
   // generated when the object was written to our database.
@@ -179,7 +179,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   oid = nodegit.Oid.fromString("e1b0c7ea57bfc5e30ec279402a98168a27838ac9");
   return repo.getTree(oid);
 }).then(function(tree) {
-  console.log("Tree Size:", tree.size());
+  console.log("Tree Size:", tree.entryCount());
 
   function dfs(tree) {
     var promises = [];
@@ -248,7 +248,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   // of `branch1`.
   var revWalk = repo.createRevWalk();
 
-  revWalk.sorting(nodegit.Revwalk.Sort.Topological, nodegit.Revwalk.Sort.Reverse);
+  revWalk.sorting(nodegit.Revwalk.SORT.TOPOLOGICAL, nodegit.Revwalk.SORT.REVERSE);
 
   revWalk.push(oid);
 
@@ -294,7 +294,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   // references such as branches, tags and remote references (everything in
   // the .git/refs directory).
 
-  return repo.getReferenceNames(nodegit.Refs.Type.All);
+  return repo.getReferenceNames(nodegit.Reference.TYPE.ALL);
 }).then(function(referenceNames) {
   var promises = [];
 

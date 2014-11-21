@@ -6,6 +6,7 @@ describe("Attr", function() {
 
   var Repository = require("../../lib/repository");
   var Attr = require("../../lib/attr");
+  var Status = require("../../lib/status");
 
   before(function() {
     var test = this;
@@ -26,7 +27,7 @@ describe("Attr", function() {
   });
 
   it("can lookup the value of a git attribute", function() {
-    var flags = Attr.Check.NO_SYSTEM;
-    Attr.get(this.repository, flags, ".gitattributes", "test");
+    var flags = Status.SHOW.INDEX_AND_WORKDIR;
+    return Attr.get(this.repository, flags, ".gitattributes", "test");
   });
 });

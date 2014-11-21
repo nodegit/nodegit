@@ -12,6 +12,9 @@
         }
       }
     },
+    "delta": {
+      "owner": "Diff"
+    },
     "error": {
       "JsName": "ERROR",
       "isMask": false
@@ -22,6 +25,26 @@
           "JsName": "ERROR"
         }
       }
+    },
+    "filemode": {
+      "owner": "TreeEntry",
+      "values": {
+        "GIT_FILEMODE_BLOB_EXECUTABLE": {
+          "JsName": "EXECUTABLE"
+        }
+      }
+    },
+    "otype": {
+      "JsName": "TYPE",
+      "owner": "Object",
+      "removeString": "OBJ_"
+    },
+    "ref": {
+      "owner": "Reference",
+      "JsName": "TYPE"
+    },
+    "sort": {
+      "owner": "Revwalk"
     },
     "status": {
       "JsName": "STATUS",
@@ -554,9 +577,6 @@
         "git_index_add_all": {
           "ignore": true
         },
-        "git_index_add_bypath": {
-          "jsFunctionName": "addByPath"
-        },
         "git_index_conflict_get": {
           "ignore": true
         },
@@ -570,7 +590,7 @@
           "ignore": true
         },
         "git_index_entrycount": {
-          "jsFunctionName": "size"
+          "jsFunctionName": "entryCount"
         },
         "git_index_find": {
           "ignore": true
@@ -578,28 +598,22 @@
         "git_index_free": {
           "ignore": true
         },
-        "git_index_get_byindex": {
-          "jsFunctionName": "entry"
-        },
         "git_index_new": {
           "ignore": true
         },
-	      "git_index_read": {
-	        "args": {
-	          "force": {
-	            "isOptional": true
-	          }
-	        }
-	      },
+        "git_index_read": {
+          "args": {
+            "force": {
+              "isOptional": true
+            }
+          }
+        },
         "git_index_remove_all": {
           "ignore": true
         },
-	      "git_index_remove_bypath": {
-	        "jsFunctionName": "removeByPath"
-	      },
         "git_index_update_all": {
           "ignore": true
-   	   },
+   	    },
 	      "git_index_write": {
 	        "args": {
 	          "force": {
@@ -827,7 +841,6 @@
           "ignore": true
         },
         "git_oid_fromstr": {
-          "jsFunctionName": "fromString",
           "isAsync": false
         },
         "git_oid_fromstrn": {
@@ -852,8 +865,7 @@
           "ignore": true
         },
         "git_oid_tostr": {
-          "ignore": true,
-          "jsFunctionName": "toString"
+          "ignore": true
         }
       },
       "fields": {
@@ -956,7 +968,6 @@
     },
     "reference": {
       "cppClassName": "GitRefs",
-      "jsClassName": "Refs",
       "functions": {
         "git_reference__alloc": {
           "ignore": true
@@ -1227,6 +1238,12 @@
     },
     "tree": {
       "functions": {
+        "git_tree_entry_byindex": {
+          "jsFunctionName": "_entryByIndex"
+        },
+        "git_tree_entrycount": {
+          "jsFunctionName": "entryCount"
+        },
         "git_tree_walk": {
           "ignore": true
         }

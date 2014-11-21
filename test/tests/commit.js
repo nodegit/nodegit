@@ -82,7 +82,7 @@ describe("Commit", function() {
     })
     .then(function(oidResult) {
       treeOid = oidResult;
-      return NodeGit.Refs.nameToId(repo, "HEAD");
+      return NodeGit.Reference.nameToId(repo, "HEAD");
     })
     .then(function(head) {
       return repo.getCommit(head);
@@ -197,27 +197,35 @@ describe("Commit", function() {
     });
   });
 
-  it("can retrieve and walk a commit tree", function(done) {
+  it("can retrieve and walk a commit tree", function() {
     var commitTreeEntryCount = 0;
     var expectedCommitTreeEntryCount = 198;
 
-    this.commit.getTree().then(function(tree) {
-      var treeWalker = tree.walk();
+    return this.commit.getTree().then(function(tree) {
+      return new Promise(function(resolve, fail) {
 
-      treeWalker.on("entry", function(entry) {
-        commitTreeEntryCount++;
+        var treeWalker = tree.walk();
+
+        treeWalker.on("entry", function(entry) {
+          commitTreeEntryCount++;
+        });
+
+        treeWalker.on("error", function(error) {
+          fail(error);
+        });
+
+        treeWalker.on("end", function(entries) {
+          try {
+            assert.equal(commitTreeEntryCount, expectedCommitTreeEntryCount);
+            resolve();
+          }
+          catch (e) {
+            fail(e);
+          }
+        });
+
+        treeWalker.start();
       });
-
-      treeWalker.on("error", function() {
-        assert.ok(false);
-      });
-
-      treeWalker.on("end", function(entries) {
-        assert.equal(commitTreeEntryCount, expectedCommitTreeEntryCount);
-        done();
-      });
-
-      treeWalker.start();
     });
   });
 

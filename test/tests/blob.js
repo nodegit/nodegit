@@ -6,7 +6,7 @@ describe("Blob", function() {
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
 
   var Repository = require("../../lib/repository");
-  var FileMode = require("../../lib/tree_entry").FileMode;
+  var FileMode = require("../../lib/tree_entry").FILEMODE;
 
   before(function() {
     var test = this;
@@ -34,6 +34,6 @@ describe("Blob", function() {
   });
 
   it("can determine if a blob is not a binary", function() {
-    assert.equal(this.blob.filemode(), FileMode.Blob);
+    assert.equal(this.blob.filemode(), FileMode.BLOB);
   });
 });

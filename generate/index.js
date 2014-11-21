@@ -88,10 +88,8 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
 
 
   // Write out all the classes.
-  var enums = [];
   enabled.forEach(function(idef) {
     try {
-
       if (idef.type == "struct") {
         file.write("../src/" + idef.filename + ".cc", templates.struct_content.render(idef));
         file.write("../include/" + idef.filename + ".h", templates.struct_header.render(idef));
@@ -100,29 +98,11 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
         file.write("../src/" + idef.filename + ".cc", templates.class_content.render(idef));
         file.write("../include/" + idef.filename + ".h", templates.class_header.render(idef));
       }
-      else if (idef.type == "enum") {
-        enums.push(idef);
-      }
     }
     catch (e) {
       console.log(e);
     }
   });
 
-  enums = enums.reduce(function(memo, enumerable) {
-
-    memo[enumerable.owner] = memo[enumerable.owner] || [];
-
-    memo[enumerable.owner].push(enumerable);
-    delete enumerable.owner;
-    return memo;
-  }, {});
-
-
-  var output = [];
-  Object.keys(enums).forEach(function(key) {
-    output.push({owner: key, enums: enums[key]});
-  });
-
-  file.write("../lib/enums.js", templates.enums.render(output));
+  file.write("../lib/enums.js", templates.enums.render(enabled));
 });
