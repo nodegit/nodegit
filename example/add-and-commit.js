@@ -3,7 +3,6 @@ var path = require('path');
 var Promise = require('nodegit-promise');
 var promisify = require('promisify-node');
 var fse = promisify(require('fs-extra'));
-var mkdirp = promisify(require('mkdirp'));
 var fileName = 'newfile.txt';
 var fileContent = 'hello world';
 var directoryName = 'salad/toast/strangerinastrangeland/theresnowaythisexists';

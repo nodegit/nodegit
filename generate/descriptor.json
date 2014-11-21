@@ -34,6 +34,9 @@
         }
       }
     },
+    "repository_init_flag": {
+      "removeString": "INIT_"
+    },
     "otype": {
       "JsName": "TYPE",
       "owner": "Object",
