@@ -91,7 +91,7 @@ fse.remove(path.resolve(__dirname, repoDir))
 
 // Merge the two commits
 .then(function() {
-  return nodegit.Merge.commits(repository, ourCommit, theirCommit, null);
+  return nodegit.Merge.commits(repository, ourCommit, theirCommit);
 })
 
 // Merging returns an index that isn't backed by the repository. You have to write it to the repository,
