@@ -5,7 +5,6 @@ var promisify = require('promisify-node');
 var fse = promisify(require('fs-extra'));
 fse.ensureDir = promisify(fse.ensureDir);
 
-var normalizeOptions = require('../lib/util/normalize_options');
 var ourFileName = 'ourNewFile.txt';
 var ourFileContent = 'I like Toll Roads. I have an EZ-Pass!';
 var ourBranchName = "ours";
@@ -25,6 +24,7 @@ var theirBranch;
 var ourSignature = nodegit.Signature.create("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
 var theirSignature = nodegit.Signature.create("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
+// Create a new repository in a clean directory, and add our first file
 fse.remove(path.resolve(__dirname, repoDir))
 .then(function() {
   return fse.ensureDir(path.resolve(__dirname, repoDir));
@@ -36,6 +36,8 @@ fse.remove(path.resolve(__dirname, repoDir))
   repository = repo;
   return fse.writeFile(path.join(repository.workdir(), ourFileName), ourFileContent);
 })
+
+// Load up the repository index and make our initial commit to HEAD
 .then(function() {
   return repository.openIndex();
 })
@@ -48,8 +50,10 @@ fse.remove(path.resolve(__dirname, repoDir))
 })
 .then(function(oid) {
   return repository.createCommit('HEAD', ourSignature, ourSignature, 'we made a commit', oid, []);
-}).then(function(commitOid) {
+})
 
+// Get commit object from the oid, and create our new branches at that position
+.then(function(commitOid) {
   return repository.getCommit(commitOid).then(function(commit) {
     ourCommit = commit;
   }).then(function() {
@@ -58,13 +62,11 @@ fse.remove(path.resolve(__dirname, repoDir))
       return repository.createBranch(theirBranchName, commitOid);
     });
   });
-}).then(function(branch) {
-  theirBranch = branch;
+})
 
-  return nodegit.Reference.lookup(repository, 'HEAD').then(function(head) {
-    return head.symbolicSetTarget(theirBranch.name(), theirSignature, "");
-  });
-}).then(function() {
+// Create a new file, stage it and commit it to our second branch
+.then(function(branch) {
+  theirBranch = branch;
   return fse.writeFile(path.join(repository.workdir(), theirFileName), theirFileContent);
 })
 .then(function() {
@@ -78,27 +80,32 @@ fse.remove(path.resolve(__dirname, repoDir))
   return index.writeTree();
 })
 .then(function(oid) {
-  return repository.createCommit('HEAD', theirSignature, theirSignature, 'they made a commit', oid, [ourCommit]);
+  // You don't have to change head to make a commit to a different branch.
+  return repository.createCommit(theirBranch.name(), theirSignature, theirSignature, 'they made a commit', oid, [ourCommit]);
 })
 .then(function(commitOid) {
   return repository.getCommit(commitOid).then(function(commit) {
     theirCommit = commit;
-  }).then(function() {
-    return nodegit.Reference.lookup(repository, 'HEAD').then(function(head) {
-      return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
-    });
   });
 })
+
+// Merge the two commits
 .then(function() {
-  return nodegit.Merge.commits(repository, ourCommit, theirCommit, new nodegit.MergeOptions());
+  return nodegit.Merge.commits(repository, ourCommit, theirCommit, null);
 })
+
+// Merging returns an index that isn't backed by the repository. You have to write it to the repository,
+// instead of just writing it. You have to manually check for merge conflicts, which will reject the promise
 .then(function(index) {
   index.write()
   return index.writeTreeTo(repository);
 })
+
+// Create our merge commit back on our branch
 .then(function(oid) {
   return repository.createCommit(ourBranch.name(), ourSignature, ourSignature, 'we merged their commit', oid, [ourCommit, theirCommit]);
 })
 .done(function(commitId) {
+  // We never changed the HEAD after the initial commit; it should still be the same as master.
   console.log('New Commit: ', commitId);
 });
