@@ -73,7 +73,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   // it gives you direct access to the key/value properties of Git. Here
   // we'll write a new blob object that just contains a simple string.
   // Notice that we have to specify the object type.
-  return odb.write("test data", "test data".length, nodegit.Object.Type.Blob);
+  return odb.write("test data", "test data".length, nodegit.Object.TYPE.BLOB);
 }).then(function(oid) {
   // Now that we've written the object, we can check out what SHA1 was
   // generated when the object was written to our database.
@@ -294,7 +294,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   // references such as branches, tags and remote references (everything in
   // the .git/refs directory).
 
-  return repo.getReferenceNames(nodegit.Reference.Type.All);
+  return repo.getReferenceNames(nodegit.Reference.TYPE.ALL);
 }).then(function(referenceNames) {
   var promises = [];
 
