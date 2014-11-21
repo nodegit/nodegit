@@ -3,8 +3,14 @@ var path = require('path');
 var Promise = require('nodegit-promise');
 var promisify = require('promisify-node');
 var fse = promisify(require('fs-extra'));
+var mkdirp = promisify(require('mkdirp'));
 var fileName = 'newfile.txt';
 var fileContent = 'hello world';
+var directoryName = 'salad/toast/strangerinastrangeland/theresnowaythisexists';
+// ensureDir is an alias to mkdirp, which has the callback with a weird name
+// and in the 3rd position of 4 (the 4th being used for recursion). We have to force
+// promisify it, because promisify-node won't detect it on its own and assumes sync
+fse.ensureDir = promisify(fse.ensureDir);
 
 /**
  * This example creates a certain file `newfile.txt`, adds it to the git index and
@@ -19,7 +25,12 @@ var parent;
 nodegit.Repository.open(path.resolve(__dirname, '../.git'))
 .then(function(repoResult) {
   repo = repoResult;
+  return fse.ensureDir(path.join(repo.workdir(), directoryName));
+}).then(function(){
   return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
+})
+.then(function() {
+  return fse.writeFile(path.join(repo.workdir(), directoryName, fileName), fileContent);
 })
 .then(function() {
   return repo.openIndex();
@@ -30,6 +41,9 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
 })
 .then(function() {
   return index.addByPath(fileName);
+})
+.then(function() {
+  return index.addByPath(path.join(directoryName, fileName));
 })
 .then(function() {
   return index.write();
