@@ -590,7 +590,7 @@
           "ignore": true
         },
         "git_index_entrycount": {
-          "jsFunctionName": "size"
+          "jsFunctionName": "entryCount"
         },
         "git_index_find": {
           "ignore": true
@@ -611,9 +611,6 @@
         "git_index_remove_all": {
           "ignore": true
         },
-	      "git_index_remove_bypath": {
-	        "jsFunctionName": "removeByPath"
-	      },
         "git_index_update_all": {
           "ignore": true
    	    },
