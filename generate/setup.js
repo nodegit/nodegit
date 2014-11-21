@@ -187,6 +187,7 @@ _(enums).forEach(function(enumerable) {
   enumerable.values.forEach(function(value) {
     value.JsName = value.name
       .replace(/^GIT_/, "")
+      .replace(override.removeString || "", "")
       .replace(new RegExp("^" + enumerable.owner.toUpperCase()), "")
       .replace(/^_/, "")
       .replace(new RegExp("^" + enumerable.JsName), "")

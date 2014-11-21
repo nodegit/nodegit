@@ -37,38 +37,7 @@
     "otype": {
       "JsName": "TYPE",
       "owner": "Object",
-      "values": {
-        "GIT_OBJ_ANY": {
-          "JsName": "ANY"
-        },
-        "GIT_OBJ_BAD": {
-          "JsName": "BAD"
-        },
-        "GIT_OBJ__EXT1": {
-          "JsName": "EXT1"
-        },
-        "GIT_OBJ_COMMIT": {
-          "JsName": "COMMIT"
-        },
-        "GIT_OBJ_TREE": {
-          "JsName": "TREE"
-        },
-        "GIT_OBJ_BLOB": {
-          "JsName": "BLOB"
-        },
-        "GIT_OBJ_TAG": {
-          "JsName": "TAG"
-        },
-        "GIT_OBJ__EXT2": {
-          "JsName": "EXT2"
-        },
-        "GIT_OBJ_OFS_DELTA": {
-          "JsName": "OFS_DELTA"
-        },
-        "GIT_OBJ_REF_DELTA": {
-          "JsName": "REF_DELTA"
-        }
-      }
+      "removeString": "OBJ_"
     },
     "ref": {
       "owner": "Reference",
