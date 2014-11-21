@@ -82,7 +82,7 @@ describe("Commit", function() {
     })
     .then(function(oidResult) {
       treeOid = oidResult;
-      return NodeGit.Refs.nameToId(repo, "HEAD");
+      return NodeGit.Reference.nameToId(repo, "HEAD");
     })
     .then(function(head) {
       return repo.getCommit(head);

@@ -71,7 +71,7 @@
       }
     },
     "ref": {
-      "owner": "Refs",
+      "owner": "Reference",
       "JsName": "TYPE"
     },
     "sort": {
@@ -1002,7 +1002,6 @@
     },
     "reference": {
       "cppClassName": "GitRefs",
-      "jsClassName": "Refs",
       "functions": {
         "git_reference__alloc": {
           "ignore": true

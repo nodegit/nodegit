@@ -294,7 +294,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   // references such as branches, tags and remote references (everything in
   // the .git/refs directory).
 
-  return repo.getReferenceNames(nodegit.Refs.Type.All);
+  return repo.getReferenceNames(nodegit.Reference.Type.All);
 }).then(function(referenceNames) {
   var promises = [];
 

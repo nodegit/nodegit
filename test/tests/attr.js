@@ -26,7 +26,7 @@ describe("Attr", function() {
     Attr.cacheFlush(this.repository);
   });
 
-  it.only("can lookup the value of a git attribute", function() {
+  it("can lookup the value of a git attribute", function() {
     var flags = Status.SHOW.INDEX_AND_WORKDIR;
     return Attr.get(this.repository, flags, ".gitattributes", "test");
   });

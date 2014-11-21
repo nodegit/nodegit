@@ -27,7 +27,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git')).then(function(repo) 
   return _index.writeTree();
 }).then(function(oid) {
   _oid = oid;
-  return nodegit.Refs.nameToId(_repository, "HEAD");
+  return nodegit.Reference.nameToId(_repository, "HEAD");
 }).then(function(head) {
   return _repository.getCommit(head);
 }).then(function(parent) {
