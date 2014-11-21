@@ -28,14 +28,14 @@ describe("Odb", function() {
     var oid = Oid.fromString("32789a79e71fbc9e04d3eff7425e1771eb595150");
 
     return this.odb.read(oid).then(function (object) {
-      assert.equal(object.type(), Obj.Type.Commit);
+      assert.equal(object.type(), Obj.TYPE.COMMIT);
     });
   });
 
   it("can read objects directly from the odb using a string", function() {
     return this.odb.read("32789a79e71fbc9e04d3eff7425e1771eb595150")
     .then(function (object) {
-      assert.equal(object.type(), Obj.Type.Commit);
+      assert.equal(object.type(), Obj.TYPE.COMMIT);
     });
   });
 
@@ -43,12 +43,12 @@ describe("Odb", function() {
     var obj = "test data";
     var odb = this.odb;
 
-    return odb.write(obj, obj.length, Obj.Type.Blob).then(function(oid) {
+    return odb.write(obj, obj.length, Obj.TYPE.BLOB).then(function(oid) {
       assert.ok(oid instanceof Oid);
 
       return odb.read(oid);
     }).then(function(object) {
-      assert.equal(object.type(), Obj.Type.Blob);
+      assert.equal(object.type(), Obj.TYPE.BLOB);
       assert.equal(object.toString(), obj);
       assert.equal(object.size(), obj.length);
     });

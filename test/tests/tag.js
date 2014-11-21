@@ -16,7 +16,7 @@ describe("Tag", function() {
 
   function testTag(tag) {
     assert.equal(tag.name(), tagName);
-    assert.equal(tag.targetType(), Obj.Type.Commit);
+    assert.equal(tag.targetType(), Obj.TYPE.COMMIT);
     assert.equal(tag.message(), tagMessage);
 
     var target = tag.target();

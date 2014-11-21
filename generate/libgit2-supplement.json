@@ -189,6 +189,40 @@
         }
       ],
       [
+        "git_sort_t",
+        {
+          "type": "enum",
+          "description": "Flags to specify the sorting which a revwalk should perform.",
+          "fields": [
+            {
+              "type": "int",
+              "name": "GIT_SORT_NONE",
+              "comments": "Sort the repository contents in no particular ordering; this sorting is arbitrary, implementation-specific and subject to change at any time. This is the default sorting for new walkers.",
+              "value": 0
+            },
+            {
+              "type": "int",
+              "name": "GIT_SORT_TOPOLOGICAL",
+              "comments": "Sort the repository contents in topological order (parents before children); this sorting mode can be combined with time sorting.",
+              "value": 1
+            },
+            {
+              "type": "int",
+              "name": "GIT_SORT_TIME",
+              "comments": "Sort the repository contents by commit time; this sorting mode can be combined with topological sorting.",
+              "value": 2
+            },
+            {
+              "type": "int",
+              "name": "GIT_SORT_REVERSE",
+              "comments": "Iterate through the repository contents in reverse order; this sorting mode can be combined with any of the above.",
+              "value": 4
+            }
+          ],
+          "comments": ""
+        }
+      ],
+      [
         "git_time_t",
         {
           "type": "enum"

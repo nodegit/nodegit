@@ -179,7 +179,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   oid = nodegit.Oid.fromString("e1b0c7ea57bfc5e30ec279402a98168a27838ac9");
   return repo.getTree(oid);
 }).then(function(tree) {
-  console.log("Tree Size:", tree.size());
+  console.log("Tree Size:", tree.entryCount());
 
   function dfs(tree) {
     var promises = [];
@@ -248,7 +248,7 @@ nodegit.Repository.open(path.resolve(__dirname, '../.git'))
   // of `branch1`.
   var revWalk = repo.createRevWalk();
 
-  revWalk.sorting(nodegit.Revwalk.Sort.Topological, nodegit.Revwalk.Sort.Reverse);
+  revWalk.sorting(nodegit.Revwalk.SORT.TOPOLOGICAL, nodegit.Revwalk.SORT.REVERSE);
 
   revWalk.push(oid);
 

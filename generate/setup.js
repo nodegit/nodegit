@@ -160,9 +160,7 @@ output.forEach(function (def) {
   def.name = path.basename(def.filename, ".h");
 
   def.functions.forEach(function(fn) {
-    if (fn) {
-      fn.cppClassName = def.cppClassName;
-    }
+    fn.cppClassName = def.cppClassName;
   });
 });
 
@@ -179,7 +177,7 @@ _(enums).forEach(function(enumerable) {
 
   var override = descriptor.enums[enumerable.typeName] || {};
 
-  enumerable.owner = enumerable.owner || "Enums";
+  enumerable.owner = override.owner || enumerable.owner || "Enums";
 
   enumerable.JsName = enumerable.typeName
     .replace(new RegExp("^" + enumerable.owner.toLowerCase()), "")
