@@ -598,6 +598,13 @@
         "git_index_free": {
           "ignore": true
         },
+        "git_index_get_bypath": {
+          "args": {
+            "stage": {
+              "isOptional": true
+            }
+          }
+        },
         "git_index_new": {
           "ignore": true
         },
