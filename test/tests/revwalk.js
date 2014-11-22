@@ -9,7 +9,7 @@ describe("Revwalk", function() {
   var Oid = require("../../lib/oid");
 
   // Set a reasonable timeout here now that our repository has grown.
-  this.timeout(150000);
+  this.timeout(60000);
 
   before(function(done) {
     var test = this;
@@ -99,11 +99,13 @@ describe("Revwalk", function() {
             return done();
           }
 
-          for (var i = 0; i < 1000; i++) {
+          for (var i = 0; i < 500; i++) {
             commit.author().name();
             commit.author().email();
 
-            global.gc();
+            if ( i % 250 === 0) {
+              global.gc();
+            }
           }
         });
       });
