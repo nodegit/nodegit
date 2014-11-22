@@ -8,6 +8,9 @@ describe("Revwalk", function() {
   var Revwalk = require("../../lib/revwalk");
   var Oid = require("../../lib/oid");
 
+  // Set a reasonable timeout here now that our repository has grown.
+  this.timeout(150000);
+
   before(function(done) {
     var test = this;
     return Repository.open(reposPath).then(function(repository) {
@@ -81,34 +84,29 @@ describe("Revwalk", function() {
     });
   });
 
-  // This test requires forcing garbage collection, so mocha needs to be run via
-  // node rather than npm, with a la `node --expose-gc [pathtohmoca] [testglob]`
-  var testGC = (global.gc ? it : it.skip);
+  // This test requires forcing garbage collection, so mocha needs to be run
+  // via node rather than npm, with a la `node --expose-gc [pathtohmoca]
+  // [testglob]`
+  var testGC = global.gc ? it : it.skip;
 
   testGC("doesnt segfault when accessing .author() twice", function(done) {
-    this.timeout(10000);
-
-    return Repository.open(reposPath).then(function(repository) {
+    Repository.open(reposPath).then(function(repository) {
       var walker = repository.createRevWalk();
-      return repository.getMasterCommit().then(function(firstCommitOnMaster) {
-        var did = false;
-        walker.walk(firstCommitOnMaster, function(error, commit) {
-          for (var i = 0; i < 1000; i++) {
-            if (true) {
-              commit.author().name();
-              commit.author().email();
-            }
-            global.gc();
+
+      repository.getMasterCommit().then(function(firstCommitOnMaster) {
+        walker.walk(firstCommitOnMaster, function(err, commit) {
+          if (!err && !commit) {
+            return done();
           }
-          if (!did) {
-            done();
-            did = true;
+
+          for (var i = 0; i < 1000; i++) {
+            commit.author().name();
+            commit.author().email();
+
+            global.gc();
           }
         });
       });
-    }).then(function() {
-      global.gc();
     });
   });
-
 });
