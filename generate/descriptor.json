@@ -946,9 +946,6 @@
     "push": {
       "cType": "git_push",
       "functions": {
-        "git_push_new": {
-          "ignore": true
-        },
         "git_push_set_callbacks": {
           "ignore": true
         },
