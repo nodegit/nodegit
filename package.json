@@ -89,7 +89,7 @@
   },
   "scripts": {
     "lint": "jshint lib test/tests",
-    "cov": "istanbul cover node_modules/mocha/bin/_mocha -- test/runner test/tests --report=lcov",
+    "cov": "node --expose-gc ./node_modules/istanbul/lib/cli.js cover _mocha -- test/runner test/tests --report=lcov",
     "mocha": "mocha test/runner test/tests",
     "test": "npm run lint && npm run cov",
     "missing-tests": "node generate/missing-tests",

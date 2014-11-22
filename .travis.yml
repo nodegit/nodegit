@@ -31,7 +31,7 @@ branches:
 os:
   - linux
   - osx
-script: npm --expose-gc test
+script: npm test
 notifications:
   slack:
     secure: KglNSqZiid9YudCwkPFDh+sZfW5BwFlM70y67E4peHwwlbbV1sSBPHcs74ZHP/lqgEZ4hMv4N2NI58oYFD5/1a+tKIQP1TkdIMuq4j2LXheuirA2HDcydOVrsC8kRx5XFGKdVRg/uyX2dlRHcOWFhxrS6yc6IxtxYWlRTD2SmEc=

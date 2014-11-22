@@ -87,6 +87,7 @@ describe("Revwalk", function() {
 
   testGC("doesnt segfault when accessing .author() twice", function(done) {
     this.timeout(10000);
+
     return Repository.open(reposPath).then(function(repository) {
       var walker = repository.createRevWalk();
       return repository.getMasterCommit().then(function(firstCommitOnMaster) {
