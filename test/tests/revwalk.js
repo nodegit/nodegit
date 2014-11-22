@@ -106,6 +106,8 @@ describe("Revwalk", function() {
           }
         });
       });
+    }).then(function() {
+      global.gc();
     });
   });
 

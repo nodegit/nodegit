@@ -7,7 +7,7 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 before(function(done) {
-  this.timeout(150000);
+  this.timeout(350000);
 
   var url = "https://github.com/nodegit/test";
   var done = done.bind(null, null);

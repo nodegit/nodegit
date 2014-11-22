@@ -10,6 +10,14 @@ var which = require("which");
 var rimraf = require("rimraf");
 var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
+// If the build only flag is set
+var buildOnly = process.argv.indexOf("--build-only") > -1;
+
+if (buildOnly) {
+  console.log("buildOnly");
+  return;
+}
+
 // This will take in an object and find any matching keys in the environment
 // to use as overrides.
 //
