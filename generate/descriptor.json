@@ -630,9 +630,6 @@
 	            "isOptional": true
 	          }
 	        }
-        },
-        "git_index_write_tree_to": {
-          "ignore": true
         }
       }
     },
@@ -668,14 +665,18 @@
         "git_merge_analysis": {
           "ignore": true
         },
-        "git_merge_base": {
-          "ignore": true
-        },
         "git_merge_base_many": {
           "ignore": true
         },
         "git_merge_base_octopus": {
           "ignore": true
+        },
+        "git_merge_commits": {
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          }
         },
         "git_merge_file": {
           "ignore": true
@@ -1027,6 +1028,16 @@
         },
         "git_reference_next_name": {
           "ignore": true
+        },
+        "git_reference_symbolic_set_target": {
+          "args": {
+            "signature": {
+              "isOptional": true
+            },
+            "log_message": {
+              "isOptional": true
+            }
+          }
         }
       }
     },

@@ -261,6 +261,16 @@
           "git_odb_object_size",
           "git_odb_object_type"
         ]
+      ],
+      [
+        "merge_head",
+        [
+          "git_merge_head_free",
+          "git_merge_head_from_fetchhead",
+          "git_merge_head_from_id",
+          "git_merge_head_from_ref",
+          "git_merge_head_id"
+        ]
       ]
     ]
   },
@@ -273,6 +283,15 @@
         "git_odb_object_id",
         "git_odb_object_size",
         "git_odb_object_type"
+      ]
+    },
+    "merge": {
+      "functions": [
+        "git_merge_head_free",
+        "git_merge_head_from_fetchhead",
+        "git_merge_head_from_id",
+        "git_merge_head_from_ref",
+        "git_merge_head_id"
       ]
     }
   }
