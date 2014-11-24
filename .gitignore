@@ -3,7 +3,7 @@
 /vendor/libssh2/
 /vendor/http_parser/
 /build/
-/coverage/
+/test/coverage/
 /test/repos/
 /src/
 /include/
