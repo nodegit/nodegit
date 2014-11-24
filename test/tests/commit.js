@@ -33,6 +33,19 @@ describe("Commit", function() {
     assert.equal(this.commit.message(), "Update README.md");
   });
 
+  it("has a raw message", function() {
+    assert.equal(this.commit.messageRaw(), "Update README.md");
+  });
+
+  it("has a message encoding", function() {
+    var encoding = this.commit.messageEncoding();
+    assert.ok(encoding === "UTF-8" || encoding === undefined);
+  });
+
+  it("has a summary", function() {
+    assert.equal(this.commit.summary(), "Update README.md");
+  });
+
   it("has a sha", function() {
     assert.equal(this.commit.sha(), oid);
   });
@@ -150,6 +163,11 @@ describe("Commit", function() {
     });
   });
 
+  it("has owner", function() {
+    var owner = this.commit.owner();
+    assert.ok(owner instanceof Repository);
+  });
+
   it("can walk its repository's history", function(done) {
     var historyCount = 0;
     var expectedHistoryCount = 364;
@@ -195,6 +213,10 @@ describe("Commit", function() {
     return this.commit.getParents(0).then(function(parents) {
       assert.equal(parents.length, 0);
     });
+  });
+
+  it("has a parent count", function() {
+    assert.equal(1, this.commit.parentcount());
   });
 
   it("can retrieve and walk a commit tree", function() {
