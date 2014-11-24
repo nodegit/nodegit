@@ -92,7 +92,7 @@ describe("Remote", function() {
     var repo = this.repository;
 
     return Remote.load(repo, "origin")
-    .then(function(remote)
+    .then(function(remote) {
       remote.connect(NodeGit.Enums.DIRECTION.FETCH);
       return remote.download();
     })

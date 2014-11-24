@@ -946,6 +946,12 @@
     "push": {
       "cType": "git_push",
       "functions": {
+        "git_push_finish": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_push_set_callbacks": {
           "ignore": true
         },
@@ -1049,9 +1055,6 @@
       "cType": "git_remote",
       "functions": {
         "git_remote_default_branch": {
-          "ignore": true
-        },
-        "git_remote_get_callbacks": {
           "ignore": true
         },
         "git_remote_get_fetch_refspecs": {
