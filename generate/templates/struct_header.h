@@ -27,7 +27,7 @@ class {{ cppClassName }} : public ObjectWrap {
     {{ cType }} *GetValue();
     {{ cType }} **GetRefValue();
 
-    static Handle<Value> New({{ cType }} *raw, bool selfFreeing);
+    static Handle<Value> New(void *raw, bool selfFreeing);
 
     bool selfFreeing;
 

@@ -115,7 +115,22 @@
       [
         "git_direction",
         {
-          "type": "enum"
+          "type": "enum",
+          "description": "Enum to indicate the direction that a remote connection is going to go",
+          "fields": [
+            {
+              "type": "int",
+              "name": "GIT_DIRECTION_FETCH",
+              "comments": "Fetching from the remote repository",
+              "value": 0
+            },
+            {
+              "type": "int",
+              "name": "GIT_DIRECTION_PUSH",
+              "comments": "Pushing to a remote repository",
+              "value": 1
+            }
+          ]
         }
       ],
       [

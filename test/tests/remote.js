@@ -4,6 +4,7 @@ var path = require("path");
 describe("Remote", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
 
+  var NodeGit = require("../../");
   var Repository = require("../../lib/repository");
   var Remote = require("../../lib/remote");
 
@@ -92,7 +93,7 @@ describe("Remote", function() {
 
     return Remote.load(repo, "origin")
     .then(function(remote) {
-      remote.connect(0);
+      remote.connect(NodeGit.Enums.DIRECTION.FETCH);
       return remote.download();
     })
     .then(function() {

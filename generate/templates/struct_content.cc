@@ -110,7 +110,7 @@ NAN_METHOD({{ cppClassName }}::New) {
   NanReturnValue(args.This());
 }
 
-Handle<Value> {{ cppClassName }}::New({{ cType }}* raw, bool selfFreeing) {
+Handle<Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
   NanEscapableScope();
 
   Handle<Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
