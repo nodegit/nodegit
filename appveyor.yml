@@ -27,6 +27,7 @@ install:
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
   - cmd: SET PATH=c:\python27;%PATH%
   - cmd: SET JOBS=4
+  - cmd: SET BUILD_ONLY=true
   - cmd: SET GIT_SSH=c:\projects\nodegit\vendor\plink.exe
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - cmd: npm install -g node-gyp

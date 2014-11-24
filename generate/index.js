@@ -100,7 +100,9 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
       }
     }
     catch (e) {
-      console.log(e);
+      if (process.env.BUILD_ONLY) {
+        console.log(e);
+      }
     }
   });
 

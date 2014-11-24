@@ -136,7 +136,9 @@ var Utils = {
       _.merge(field, callbackDefs[field.type]);
     }
     else {
-      console.log("WARNING: Couldn't find callback definition for " + field.type);
+      if (process.env.BUILD_ONLY) {
+        console.warn("Couldn't find callback definition for " + field.type);
+      }
     }
   },
 

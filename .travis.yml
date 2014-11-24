@@ -14,7 +14,7 @@ before_install:
       export CXX='g++-4.8';
     fi
   - "export JOBS=4"
-  - npm install
+  - BUILD_ONLY=true npm install
 # This is a random private key used purely for testing.
 before_script:
  - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
