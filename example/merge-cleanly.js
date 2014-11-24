@@ -89,17 +89,24 @@ fse.remove(path.resolve(__dirname, repoDir))
   });
 })
 
+
 // Merge the two commits
 .then(function() {
   return nodegit.Merge.commits(repository, ourCommit, theirCommit);
 })
 
-// Merging returns an index that isn't backed by the repository. You have to write it to the repository,
-// instead of just writing it. You have to manually check for merge conflicts, which will reject the promise
+
+// Merging returns an index that isn't backed by the repository.
+// You have to manually check for merge conflicts. If there are none
+// you just have to write the index. You do have to write it to
+// the repository instead of just writing it.
 .then(function(index) {
-  index.write()
-  return index.writeTreeTo(repository);
+  if (!index.hasConflicts()) {
+    index.write()
+    return index.writeTreeTo(repository);
+  }
 })
+
 
 // Create our merge commit back on our branch
 .then(function(oid) {

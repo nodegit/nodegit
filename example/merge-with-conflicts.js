@@ -8,10 +8,10 @@ fse.ensureDir = promisify(fse.ensureDir);
 var repoDir = '../../newRepo';
 var fileName = 'newFile.txt';
 
-var baseFileContent = 'All Bobs are created equal. ish.';
-var ourFileContent = "Big Bobs are best, IMHO.";
-var theirFileContent = "Nobody expects the small Bobquisition!";
-var finalFileContent = "Big Bobs are beautiful, and the small are unexpected!";
+var baseFileContent = 'All Bobs are created equal. ish.\n';
+var ourFileContent = "Big Bobs are best, IMHO.\n";
+var theirFileContent = "Nobody expects the small Bobquisition!\n";
+var finalFileContent = "Big Bobs are beautiful, and the small are unexpected!\n";
 
 var baseSignature = nodegit.Signature.create("Peaceful Bob", "justchill@bob.net", 123456789, 60);
 var ourSignature = nodegit.Signature.create("Big Bob", "impressive@bob.net", 123456789, 60);
@@ -87,13 +87,6 @@ fse.remove(path.resolve(__dirname, repoDir))
     index.addByPath(fileName);
     index.write()
 
-    console.log('OURS');
-    for (var i = 0, l = index.entryCount(); i < l; i++) {
-      var entry = index.getByIndex(i);
-      console.log(entry.id().toString() + " " + entry.path());
-    }
-    console.log('\n\n');
-
     return index.writeTree();
   });
 })
@@ -116,12 +109,6 @@ fse.remove(path.resolve(__dirname, repoDir))
     index.read(1);
     index.addByPath(fileName);
     index.write()
-    console.log('Theirs');
-    for (var i = 0, l = index.entryCount(); i < l; i++) {
-      var entry = index.getByIndex(i);
-      console.log(entry.id().toString() + " " + entry.path());
-    }
-    console.log('\n\n');
 
     return index.writeTree();
   });
@@ -135,6 +122,15 @@ fse.remove(path.resolve(__dirname, repoDir))
   });
 })
 
+
+// move the head to our branch, just to keep things tidy
+.then(function() {
+  return nodegit.Reference.lookup(repository, 'HEAD').then(function(head) {
+    return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
+  })
+})
+
+
 // Merge their branch into our branch
 .then(function() {
   return nodegit.Merge.commits(repository, ourCommit, theirCommit, null);
@@ -143,29 +139,25 @@ fse.remove(path.resolve(__dirname, repoDir))
 // Merging returns an index that isn't backed by the repository.
 // You have to write it to the repository instead of just writing it.
 .then(function(index) {
-  return nodegit.Reference.lookup(repository, 'HEAD').then(function(head) {
-    return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
-  }).then(function() {
-    if (index.hasConflicts) {
-      console.log('Conflict time!');
-      for (var i = 0, l = index.entryCount(); i < l; i++) {
-        var entry = index.getByIndex(i);
-        console.log(entry.id().toString() + " " + entry.path());
-      }
-      console.log('\n\n');
-      //if the merge had comflicts, solve them (in this case, we simply overwrite the file)
-      fse.writeFileSync(path.join(repository.workdir(), fileName), finalFileContent);
-      // read the fs updates into the index
-      index.read(1);
+  if (index.hasConflicts()) {
+    console.log('Conflict time!');
 
-      index.addByPath(fileName);
-      // mark all conflicts as resolved
-      index.conflictCleanup();
-      // write back to the index
-      index.write();
-    }
+    // if the merge had comflicts, solve them
+    // (in this case, we simply overwrite the file)
+    fse.writeFileSync(path.join(repository.workdir(), fileName), finalFileContent);
+  }
+})
 
-    return index.writeTreeTo(repository);
+// we need to get a new index as the other one isnt backed to
+// the repository in the usual fashion, and just behaves weirdly
+.then(function() {
+  return repository.openIndex().then(function(index) {
+
+    index.read(1);
+    index.addByPath(fileName);
+    index.write();
+
+    return index.writeTree();
   });
 })
 .then(function(oid) {
