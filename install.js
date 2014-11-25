@@ -1,13 +1,18 @@
 var os = require("os");
-var fs = require("fs");
 var path = require("path");
 var zlib = require("zlib");
-var exec = require("child_process").exec;
-var Q = require("q");
-var request = require("request");
 var tar = require("tar");
-var which = require("which");
-var rimraf = require("rimraf");
+
+var Promise = require("nodegit-promise");
+var promisify = require("promisify-node");
+var request = require("request");
+var fse = promisify(require("fs-extra"));
+fse.ensureDir = promisify(fse.ensureDir);
+
+var exec = promisify(function(command, opts, callback) {
+  return require("child_process").exec(command, opts, callback);
+});
+
 var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
 // If the build only flag is set.
@@ -41,7 +46,7 @@ function systemPath(parts) {
 }
 
 // Will be used near the end to configure `node-gyp`.
-var python;
+var pythonPath = '/usr/bin/python';
 
 var local = path.join.bind(path, __dirname);
 
@@ -66,197 +71,129 @@ if (NODE_VERSION === 0.1) {
   pkg.http_parser = pkg.http_parser["0.10"];
 }
 
-// Attempt to fallback on a prebuilt binary.
-function fetchPrebuilt() {
+fse.ensureDir(path.resolve(__dirname, paths.release))
+.then(fetch)
+.then(finish, compile)
+.done()
+
+function fetch() {
   if (!buildOnly) {
     console.info("[nodegit] Fetching binary from S3.");
 
     // Using the node-pre-gyp module, attempt to fetch a compatible build.
-    return Q.nfcall(exec, "node-pre-gyp install");
+    return exec("node-pre-gyp install");
   }
 
-  throw new Error("Build only");
+  throw new Error("BUILD_ONLY is set to true, no fetching allowed.");
 }
 
-// Attempt to fetch prebuilt binary.
-Q.ninvoke(fs, "mkdir", paths.release).then(fetchPrebuilt, fetchPrebuilt)
-
-.fail(function() {
+function compile() {
   if (!buildOnly) {
     console.info("[nodegit] Failed to install prebuilt, attempting compile.");
   }
 
-  // Ensure all dependencies are available.
-  return Q.allSettled([
-    // This will prioritize `python2` over `python`, because we always want to
-    // work with Python 2.* if it"s available.
-    Q.nfcall(which, "python2"),
-    Q.nfcall(which, "python")
-  ])
-})
-
-// Determine if all the dependency requirements are met.
-.then(function(results) {
   console.info("[nodegit] Determining dependencies.");
 
-  // Assign to reusable variables.
-  python = results[0].value || results[1].value;
+  return python()
+    .then(getVendorLib("libgit2", "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha))
+    .then(getVendorLib("libssh2", pkg.libssh2.url))
+    .then(getVendorLib("http_parser", pkg.http_parser.url))
+    .then(buildNative)
+    .then(finish, fail);
 
-  // Missing Python.
-  if (!python) {
-    throw new Error("Python is required to build libgit2.");
+}
+
+function python() {
+  return exec("which python2")
+    .then(function(which){
+      return which;
+    }, function(err) {
+      return null;
+    })
+    .then(function(path) {
+      return path || exec("which python");
+    })
+    .then(function(which) {
+      return which;
+    }, function(err) {
+      return null;
+    })
+    .then(function(path) {
+      pythonPath = path.trim();
+      if (!pythonPath) {
+        throw new Error("Python is required to build libgit2.");
+      }
+    })
+    .then(function() {
+      return exec(pythonPath + " -V 2>&1");
+    })
+    .then(function(version) {
+      if (version[1].indexOf("Python 3") === 0) {
+        throw new Error("Incorrect version of Python, gyp requires < 3.");
+      }
+    });
+}
+
+function getVendorLib(name, url) {
+  return function() {
+    var version = pkg[name].sha || pkg[name].version;
+    console.info("[nodegit] Detecting vendor/" + name + ".");
+    if (fse.existsSync(paths[name] + version)) {
+      console.info("[nodegit] vendor/" + name + " already exists.");
+      return new Promise(function(resolve, reject) {resolve() });
+    }
+    else {
+      console.info("[nodegit] Removing outdated vendor/" + name + ".");
+      return fse.remove(paths[name])
+        .then(function() {
+          return new Promise(function (resolve, reject) {
+
+            console.info("[nodegit] Fetching vendor/" + name + ".");
+
+            var extract = tar.Extract({
+              path: paths[name],
+              strip: true
+            });
+
+            request.get(url).pipe(zlib.createUnzip()).pipe(extract)
+              .on("error", reject)
+              .on("end", resolve);
+          });
+        }).then(function() {
+          return fse.writeFile(paths[name] + version, "");
+        }).then(function() {
+          if ((name == "libssh2") && (process.platform !== "win32")) {
+
+            return exec(paths[name] + "configure", {cwd: paths[name]});
+          }
+        });
+    }
   }
+}
 
-  // Now lets check the Python version to ensure it"s < 3.
-  return Q.nfcall(exec, python + " --version").then(function(version) {
-    if (version[1].indexOf("Python 3") === 0) {
-      throw new Error("Incorrect version of Python, gyp requires < 3.");
-    }
-  });
-})
+function buildNative() {
+  return exec("cd " + __dirname).then(function() {
+    console.info("[nodegit] Building native node module.");
+    var pythonFlag = " --python \"" + pythonPath + "\"";
+    var cmd = path.resolve(systemPath([
+      ".", "node_modules", ".bin", "node-gyp clean configure build" + pythonFlag
+      ]));
+    var opts = {
+      cwd: __dirname,
+      maxBuffer: Number.MAX_VALUE
+    };
+    return exec(cmd, opts);
+  })
+}
 
-// Successfully found all dependencies.  First step is to detect the vendor
-// directory.
-.then(function() {
-  console.info("[nodegit] Detecting vendor/libgit2.");
+function finish() {
+  console.info("[nodegit] Completed installation successfully.");
+  return Promise.resolve().done();
+}
 
-  return Q.ninvoke(fs, "stat", paths.libgit2).then(function() {
-    return Q.ninvoke(fs, "stat", paths.libgit2 + pkg.libgit2.sha);
-  }).fail(function() {
-    console.info("[nodegit] Removing outdated vendor/libgit2.");
-
-    // This directory is outdated, remove.
-    throw Q.ninvoke(rimraf, null, paths.libgit2);
-  });
-})
-
-// If the directory already exists, no need to refetch.
-.fail(function() {
-  // Otherwise fetch the libgit2 source from GitHub.
-  console.info("[nodegit] Fetching vendor/libgit2.");
-
-  var url = "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha;
-
-  var extract = tar.Extract({
-    path: paths.libgit2,
-    strip: true
-  });
-
-  // First extract from Zlib and then extract from Tar.
-  var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
-
-  return Q.ninvoke(expand, "on", "end").then(function() {
-    // Write out a sha file for testing in the future.
-    return Q.ninvoke(fs, "writeFile", paths.libgit2 + pkg.libgit2.sha, "");
-  });
-})
-
-// Grab libssh2 if needed.
-.then(function() {
-  console.info("[nodegit] Detecting vendor/libssh2.");
-
-  return Q.ninvoke(fs, "stat", paths.libssh2).then(function() {
-    return Q.ninvoke(fs, "stat", paths.libssh2 + pkg.libssh2.version);
-  }).fail(function() {
-    console.info("[nodegit] Removing outdated vendor/libssh2.");
-
-    // This directory is outdated, remove.
-    throw Q.ninvoke(rimraf, null, paths.libssh2);
-  });
-})
-
-// If the directory already exists, no need to refetch.
-.fail(function() {
-  // Otherwise fetch the libssh2 source.
-  console.info("[nodegit] Fetching vendor/libssh2.");
-
-  var url = pkg.libssh2.url;
-
-  var extract = tar.Extract({
-    path: paths.libssh2,
-    strip: true
-  });
-
-  // First extract from Zlib and then extract from Tar.
-  var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
-
-  return Q.ninvoke(expand, "on", "end").then(function() {
-    // Write out a sha file for testing in the future.
-    return Q.ninvoke(fs, "writeFile", paths.libssh2 + pkg.libssh2.version, "");
-  }).then(function() {
-    // Only run the configuration script in a BSD-like environment.
-    if (process.platform !== "win32") {
-      return Q.nfcall(exec, "cd " + paths.libssh2 + " ; " + paths.libssh2 +
-        "configure");
-    }
-  });
-})
-
-// Grab http-parser if needed.
-.then(function() {
-  console.info("[nodegit] Detecting vendor/http_parser.");
-
-  return Q.ninvoke(fs, "stat", paths.http_parser).then(function() {
-    return Q.ninvoke(fs, "stat", paths.http_parser + pkg.http_parser.version);
-  }).fail(function() {
-    console.info("[nodegit] Removing outdated vendor/http_parser.");
-
-    // This directory is outdated, remove.
-    throw Q.ninvoke(rimraf, null, paths.http_parser);
-  });
-})
-
-// If the directory already exists, no need to refetch.
-.fail(function() {
-  // Otherwise fetch the http_parser source.
-  console.info("[nodegit] Fetching vendor/http_parser.");
-
-  var url = pkg.http_parser.url;
-
-  var extract = tar.Extract({
-    path: paths.http_parser,
-    strip: true
-  });
-
-  // First extract from Zlib and then extract from Tar.
-  var expand = request.get(url).pipe(zlib.createUnzip()).pipe(extract);
-
-  return Q.ninvoke(expand, "on", "end").then(function() {
-    // Write out a sha file for testing in the future.
-    return Q.ninvoke(fs, "writeFile", paths.http_parser +
-      pkg.http_parser.version, "");
-  });
-})
-
-
-// Build the native module using node-gyp.
-.then(function() {
-  console.info("[nodegit] Building native node module.");
-  var pythonFlag = " --python \"" + python + "\"";
-
-  return Q.nfcall(exec, systemPath([
-    ".", "node_modules", ".bin", "node-gyp clean configure build" + pythonFlag
-  ]), {
-    cwd: ".",
-    maxBuffer: Number.MAX_VALUE
-  });
-})
-
-// Display a warning message about failing to build native node module.
-.fail(function(message) {
+function fail(message) {
   console.info("[nodegit] Failed to build and install nodegit.");
   console.info(message.message);
-  console.info(message.stack);
-})
-
-// Display a success message.
-.then(function() {
-  console.info("[nodegit] Completed installation successfully.");
-})
-
-// Display a warning message about failing to build native node module.
-.fail(function(message) {
-  console.info("[nodegit] Failed to build nodegit.");
-  console.info(message.message);
-  console.info(message.stack);
-});
+  //console.info(message.stack);
+  return Promise.resolve().done();
+}

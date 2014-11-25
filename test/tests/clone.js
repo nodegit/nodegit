@@ -1,8 +1,8 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("promise");
+var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
-var rimraf = promisify("rimraf");
+var fse = promisify(require("fs-extra"));
 
 describe("Clone", function() {
   var http = path.resolve("test/repos/http");
@@ -20,11 +20,11 @@ describe("Clone", function() {
 
   before(function() {
     return Promise.all([
-      rimraf(http),
-      rimraf(https),
-      rimraf(ssh),
-      rimraf(git),
-      rimraf(file),
+      fse.remove(http),
+      fse.remove(https),
+      fse.remove(ssh),
+      fse.remove(git),
+      fse.remove(file),
     ]);
   });
 

@@ -1,8 +1,9 @@
 var nodegit = require('../');
-var rimraf = require('rimraf');
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 var path = "/tmp/nodegit-clone-demo";
 
-rimraf(path, function() {
+fse.remove(path).then(function() {
   var entry;
 
   nodegit.Clone.clone(
