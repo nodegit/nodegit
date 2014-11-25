@@ -86,6 +86,7 @@
     "lint": "jshint lib test/tests",
     "cov": "node test",
     "mocha": "mocha test/runner test/tests",
+    "mochaDebug": "mocha --debug-brk test/runner test/tests",
     "test": "npm run lint && npm run cov",
     "generateJson": "node generate/scripts/generateJson",
     "generateNativeCode": "node generate/scripts/generateNativeCode",

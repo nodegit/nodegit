@@ -88,7 +88,7 @@ describe("Remote", function() {
     });
   });
 
-  it("can fetch from a remote", function() {
+  it("can download from a remote", function() {
     var repo = this.repository;
 
     return Remote.load(repo, "origin")
@@ -96,6 +96,15 @@ describe("Remote", function() {
       remote.connect(NodeGit.Enums.DIRECTION.FETCH);
       return remote.download();
     })
+    .then(function() {
+      assert(true);
+    }, function() {
+      assert(false);
+    });
+  });
+
+  it("can fetch from a remote", function() {
+    return this.repository.fetch("origin")
     .then(function() {
       assert(true);
     }, function() {
