@@ -1,0 +1,6 @@
+--style=linux
+--indent=spaces=2
+--attach-namespaces
+--attach-classes
+--attach-inlines
+--attach-extern-c

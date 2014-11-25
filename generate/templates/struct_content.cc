@@ -5,23 +5,25 @@
 #include <thread>
 
 extern "C" {
-#include <git2.h>
-{%each cDependencies as dependency %}
-#include <{{ dependency }}>
-{%endeach%}
+  #include <git2.h>
+  {% each cDependencies as dependency %}
+    #include <{{ dependency }}>
+  {% endeach %}
 }
 
+#include <iostream>
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
 
-{%each dependencies as dependency%}
-#include "{{ dependency }}"
-{%endeach%}
-#include <iostream>
+{% each dependencies as dependency %}
+  #include "{{ dependency }}"
+{% endeach %}
 
 using namespace v8;
 using namespace node;
 using namespace std;
+
+
 // generated from struct_content.cc
 {{ cppClassName }}::{{ cppClassName }}() {
   {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
@@ -47,32 +49,31 @@ using namespace std;
 }
 
 void {{ cppClassName }}::ConstructFields() {
-  {%each fields|fieldsInfo as field %}
-    {%if not field.ignore %}
-      {%if not field.isEnum %}
-        {%if field.hasConstructor %}
-  Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }}, false)->ToObject();
-  NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
+  {% each fields|fieldsInfo as field %}
+    {% if not field.ignore %}
+      {% if not field.isEnum %}
+        {% if field.hasConstructor |or field.isLibgitType %}
+          Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(
+            &this->raw->{{ field.name }},
+            false
+          )->ToObject();
+          NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
 
-        {%elsif field.isLibgitType %}
-  Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(&this->raw->{{ field.name }}, false)->ToObject();
-  NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
+        {% elsif field.isCallbackFunction %}
 
-        {%elsif field.isCallbackFunction %}
+          // Set the static method call and set the payload for this function to be
+          // the current instance
+          this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
+          this->raw->{{ fields|payloadFor field.name }} = (void *)this;
+          this->{{ field.name }} = new NanCallback();
+        {% elsif field.payloadFor %}
 
-  // Set the static method call and set the payload for this function to be
-  // the current instance
-  this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
-  this->raw->{{ fields|payloadFor field.name }} = (void *)this;
-  this->{{ field.name }} = new NanCallback();
-        {%elsif field.payloadFor %}
-
-  Local<Value> {{ field.name }} = NanUndefined();
-  NanAssignPersistent(this->{{ field.name }}, {{ field.name }});
-        {%endif%}
-      {%endif%}
-    {%endif%}
-  {%endeach%}
+          Local<Value> {{ field.name }} = NanUndefined();
+          NanAssignPersistent(this->{{ field.name }}, {{ field.name }});
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endeach %}
 }
 
 void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
@@ -83,11 +84,11 @@ void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(NanNew<String>("{{ jsClassName }}"));
 
-  {%each fields as field%}
-    {%if not field.ignore%}
-  tpl->InstanceTemplate()->SetAccessor(NanNew<String>("{{ field.jsFunctionName }}"), Get{{ field.cppFunctionName}}, Set{{ field.cppFunctionName}});
-    {%endif%}
-  {%endeach%}
+  {% each fields as field %}
+    {% if not field.ignore %}
+      tpl->InstanceTemplate()->SetAccessor(NanNew<String>("{{ field.jsFunctionName }}"), Get{{ field.cppFunctionName}}, Set{{ field.cppFunctionName}});
+    {% endif %}
+  {% endeach %}
 
   Local<Function> _constructor_template = tpl->GetFunction();
   NanAssignPersistent(constructor_template, _constructor_template);
@@ -125,6 +126,6 @@ Handle<Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
   return &this->raw;
 }
 
-{%partial fieldAccessors .%}
+{% partial fieldAccessors . %}
 
 Persistent<Function> {{ cppClassName }}::constructor_template;
