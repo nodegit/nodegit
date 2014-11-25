@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "libgit2": {
     "sha": "4af08d9f69f151f6362df51d7d7f41527e2af05c",
     "version": "0.21.2"
