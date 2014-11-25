@@ -1,7 +1,7 @@
 0.2.0 / 2014-11-24
 ===================
 
-  * Shifted to promises; asynchronous methods are now promise only.
+  * Shifted to promises; asynchronous methods now provide promises.
   * Lots of new methods exposed for merging, pushing, blaming and more.
   * SSH transport now works.
   * Switched generation of native module code from ejsg to Combyne.

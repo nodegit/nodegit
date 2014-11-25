@@ -184,5 +184,4 @@ https://github.com/nodegit/nodegit/compare/refs/tags/0.1.4...0.2.0
 
 This update is wholly and entirely a breaking one, and older versions won't be
 maintained. For the purpose of migration, perhaps the biggest point to make
-is that async methods now use promises, rather than taking callbacks. additionally,
-lots of method and property names have changed.
+is that async methods can now use promises, rather than just taking callbacks. Additionally, lots of method and property names have changed.
