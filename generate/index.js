@@ -4,6 +4,21 @@ const file = require("./util/file");
 const idefs = require("./idefs");
 const promisify = require("promisify-node");
 const fse = promisify(require("fs-extra"));
+const js_beautify = require('js-beautify').js_beautify;
+const beautify = function (input) {
+  return js_beautify(input, {
+    "brace_style": "end-expand",
+    "max_preserve_newlines": 2,
+    "preserve_newlines": true,
+    "indent_size": 2,
+    "indent_char": " "
+  });
+}
+
+
+var exec = promisify(function(command, opts, callback) {
+  return require("child_process").exec(command, opts, callback);
+});
 
 // Customize the delimiters so as to not process `{{{` or `}}}`.
 combyne.settings.delimiters = {
@@ -83,7 +98,7 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
   return fse.copy(path.resolve(__dirname, "./manual/"), path.resolve(__dirname, "../"));
 }).then(function() {
   // Write out single purpose templates.
-  file.write("../binding.gyp", templates.binding.render(enabled));
+  file.write("../binding.gyp", beautify(templates.binding.render(enabled)));
   file.write("../src/nodegit.cc", templates.nodegit.render(enabled));
 
 
@@ -106,5 +121,22 @@ fse.remove(path.resolve(__dirname, "../src")).then(function() {
     }
   });
 
-  file.write("../lib/enums.js", templates.enums.render(enabled));
+
+  file.write("../lib/enums.js", beautify(templates.enums.render(enabled)));
+}).then(function() {
+  return exec('command -v astyle').then(function(astyle) {
+    if (astyle) {
+      return exec(
+        'astyle --options=\".astylerc\" '
+        + path.resolve(__dirname, "../src") + "/*.cc "
+        + path.resolve(__dirname, "../include") + "/*.h"
+      ).then(function() {
+        return exec(
+          'rm '
+          + path.resolve(__dirname, "../src") + "/*.cc.orig "
+          + path.resolve(__dirname, "../include") + "/*.h.orig "
+        );
+      });
+    }
+  })
 });
