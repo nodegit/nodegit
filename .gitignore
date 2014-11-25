@@ -5,7 +5,7 @@
 /build/
 /test/coverage/
 /test/repos/
-/test/test/repos/
+/test/test/
 /src/
 /include/
 /lib/enums.js
