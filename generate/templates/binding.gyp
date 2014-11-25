@@ -1,4 +1,5 @@
-# This is a generated file, modify: generate/templates/binding.gyp.
+# // This is a generated file, modify: generate/templates/binding.gyp.
+
 {
   "targets": [
     {
@@ -12,11 +13,11 @@
         "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
-        {%each%}
+        {% each %}
           {% if type != "enum" %}
-        "src/{{ name }}.cc",
+            "src/{{ name }}.cc",
           {% endif %}
-        {%endeach%}
+        {% endeach %}
       ],
 
       "include_dirs": [
