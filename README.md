@@ -4,13 +4,12 @@ NodeGit
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
 [![Build
-Status](https://travis-ci.org/tbranyen/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
+Status](https://travis-ci.org/nodegit/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
 <a href="https://ci.appveyor.com/project/TimBranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2/branch/master" alt="Build Status: Windows" height="18" /></a>
 
-**Stable: 0.1.4**
-**Unstable: 0.2.0**
+**Stable: 0.2.0**
 
-Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), John Haley [@johnhaley81](http://twitter.com/johnhaley81), Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp), and Nick Kallen [@nk](http://twitter.com/nk) with help from [awesome contributors](https://github.com/tbranyen/nodegit/contributors)!
+Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), John Haley [@johnhaley81](http://twitter.com/johnhaley81), Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp), and Nick Kallen [@nk](http://twitter.com/nk) with help from [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
 
 ## API Documentation. ##
 
@@ -27,8 +26,6 @@ npm install nodegit
 
 If you encounter problems while installing, you should try the Building from source instructions below.
 
-**Please note that nodegit is undergoing a large scale refactoring at the moment.** Please continue reporting bugs, but note that until the upcoming 0.2 release they are unlikely to be fixed. Older versions of the API will not be supported.
-
 ## Building from source. ##
 
 Minimum dependencies:
@@ -39,7 +36,7 @@ If you wish to help contribute to nodegit it is useful to build locally.
 
 ``` bash
 # Fetch this project.
-git clone git://github.com/tbranyen/nodegit.git
+git clone git://github.com/nodegit/nodegit.git
 
 # Enter the repository.
 cd nodegit
@@ -179,3 +176,12 @@ You will need to build locally before running the tests.  See above.
 ``` bash
 npm test
 ```
+
+## Migrating from old versions. ##
+
+The bump from 0.1.4 to 0.2.0 was a big one. Many things changed, see here:
+https://github.com/nodegit/nodegit/compare/refs/tags/0.1.4...0.2.0
+
+This update is wholly and entirely a breaking one, and older versions won't be
+maintained. For the purpose of migration, perhaps the biggest point to make
+is that async methods can now use promises, rather than just taking callbacks. Additionally, lots of method and property names have changed.
