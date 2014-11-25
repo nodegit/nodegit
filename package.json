@@ -85,11 +85,12 @@
     "cov": "node test",
     "mocha": "mocha test/runner test/tests",
     "test": "npm run lint && npm run cov",
-    "missing-tests": "node generate/missing-tests",
+    "generateJson": "node generate/scripts/generateJson",
+    "generateNativeCode": "node generate/scripts/generateNativeCode",
+    "generateMissingTests": "node generate/scripts/generateMissingTests",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
-    "generate": "node generate/setup && node generate",
-    "install": "npm run generate && node install",
+    "install": "node generate && node install",
     "recompile": "BUILD_ONLY=true npm install",
-    "rebuild": "BUILD_ONLY=true npm run generate && node-gyp configure build"
+    "rebuild": "BUILD_ONLY=true node generate && node-gyp configure build"
   }
 }
