@@ -16,7 +16,10 @@
 /vendor/*.filters
 /vendor/*.sln
 
-/generate/idefs.json
+/generate/output
+/generate/**/*.json
+!/generate/input/*.json
+
 /generate/missing-tests.json
 /binding.gyp
 

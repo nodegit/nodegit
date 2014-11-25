@@ -1,13 +1,15 @@
-var pointerRegex = /\s*\*\s*/;
-var doublePointerRegex = /\s*\*\*\s*/;
+
 var callbackTypePattern = /\s*_cb/;
+
+var utils = require("./utils");
 var _ = require("lodash");
 
 // TODO: When libgit2's docs include callbacks we should be able to remove this
-var callbackDefs = require("./callbacks.json");
-var descriptor = require("./descriptor.json");
-var version = require("../package.json").libgit2.version;
-var libgit2 = require("./v" + version + ".json");
+var version = require("../../package.json").libgit2.version;
+var callbackDefs = require("../input/callbacks.json");
+var descriptor = require("../input/descriptor.json");
+var libgit2 = require("../input/v" + version + ".json");
+
 var cTypes = libgit2.groups.map(function(group) { return group[0];});
 
 var cTypeMappings = {
@@ -27,61 +29,35 @@ var collisionMappings = {
   "new": "create"
 }
 
-var Utils = {
-  titleCase: function(str) {
-    return str.split(/_|\//).map(function(val, index) {
-      if (val.length) {
-        return val[0].toUpperCase() + val.slice(1);
-      }
-
-      return val;
-    }).join("");
-  },
-
-  camelCase: function(str) {
-    return str.split(/_|\//).map(function(val, index) {
-        return (index >= 1
-          ? val[0].toUpperCase() + val.slice(1)
-          : val[0].toLowerCase() + val.slice(1));
-    }).join("");
-  },
-
-  isPointer: function(cType) {
-    return pointerRegex.test(cType) || doublePointerRegex.test(cType);
-  },
-
-  isDoublePointer: function(cType) {
-    return doublePointerRegex.test(cType);
-  },
-
+var Helpers = {
   normalizeCtype: function(cType) {
     return (cType || "")
     .toLowerCase()
     .replace("const ", "")
     .replace("unsigned ", "")
     .replace("struct", "")
-    .replace(doublePointerRegex, "")
-    .replace(pointerRegex, "")
+    .replace(utils.doublePointerRegex, "")
+    .replace(utils.pointerRegex, "")
     .trim();
   },
 
   cTypeToCppName: function(cType, ownerType) {
-    var normalizedType = Utils.normalizeCtype(cType);
+    var normalizedType = Helpers.normalizeCtype(cType);
     if (ownerType && normalizedType != ownerType) {
       normalizedType = normalizedType.replace(ownerType, "");
     }
 
-    return cTypeMappings[normalizedType] || Utils.titleCase(normalizedType);
+    return cTypeMappings[normalizedType] || utils.titleCase(normalizedType);
   },
 
   cTypeToJsName: function(cType, ownerType) {
-    var output = Utils.camelCase(Utils.cTypeToCppName(cType, ownerType).replace(/^Git/, ""));
+    var output = utils.camelCase(Helpers.cTypeToCppName(cType, ownerType).replace(/^Git/, ""));
     var mergedPrefixes = ["from", "by"];
 
     mergedPrefixes.forEach(function(prefix) {
-      var reg = new RegExp("(^" + prefix + "|" + Utils.titleCase(prefix) + ")([a-z]+)$");
+      var reg = new RegExp("(^" + prefix + "|" + utils.titleCase(prefix) + ")([a-z]+)$");
       output = output.replace(reg, function(all, prefixMatch, otherWord) {
-        return prefixMatch + Utils.titleCase(otherWord);
+        return prefixMatch + utils.titleCase(otherWord);
       });
     });
 
@@ -102,7 +78,7 @@ var Utils = {
     return type.used
       && type.used.needs
       && type.used.needs.some(function (fnName) {
-        return Utils.isConstructorFunction(normalizedType, fnName);
+        return Helpers.isConstructorFunction(normalizedType, fnName);
       });
   },
 
@@ -112,7 +88,7 @@ var Utils = {
 
   isPayloadFor: function(cbField, payloadName) {
     return ~payloadName.indexOf("_payload")
-      && Utils.isCallbackFunction(cbField.cType)
+      && Helpers.isCallbackFunction(cbField.cType)
       && ~cbField.name.indexOf(payloadName.replace("_payload", ""));
   },
 
@@ -150,7 +126,7 @@ var Utils = {
       var cbFieldName;
 
       allFields.some(function (cbField) {
-        if (Utils.isPayloadFor(cbField, field.name)) {
+        if (Helpers.isPayloadFor(cbField, field.name)) {
           cbFieldName = cbField.name;
           return true;
         }
@@ -163,13 +139,13 @@ var Utils = {
   },
 
   decorateLibgitType: function(type, types, enums) {
-    var normalizedType = Utils.normalizeCtype(type.cType);
-    var libgitType = Utils.getLibgitType(normalizedType, types);
+    var normalizedType = Helpers.normalizeCtype(type.cType);
+    var libgitType = Helpers.getLibgitType(normalizedType, types);
 
     if (libgitType) {
       type.isLibgitType = true;
       type.isEnum = libgitType.type === "enum";
-      type.hasConstructor = Utils.hasConstructor(type, normalizedType);
+      type.hasConstructor = Helpers.hasConstructor(type, normalizedType);
 
       // there are no enums at the struct level currently, but we still need to override function args
       if (type.isEnum) {
@@ -188,8 +164,8 @@ var Utils = {
     var partialOverrides = _.omit(typeDefOverrides, ["fields", "functions"]);
 
     typeDef.cType = typeDef.cType || null;
-    typeDef.cppClassName = Utils.cTypeToCppName(typeDef.cType || "git_" + typeDef.typeName);
-    typeDef.jsClassName = Utils.titleCase(Utils.cTypeToJsName(typeDef.cType || "git_" + typeDef.typeName));
+    typeDef.cppClassName = Helpers.cTypeToCppName(typeDef.cType || "git_" + typeDef.typeName);
+    typeDef.jsClassName = utils.titleCase(Helpers.cTypeToJsName(typeDef.cType || "git_" + typeDef.typeName));
     typeDef.filename = typeDef.typeName;
     typeDef.isLibgitType = true;
     typeDef.dependencies = [];
@@ -197,13 +173,13 @@ var Utils = {
     typeDef.fields = typeDef.fields || [];
     typeDef.fields.forEach(function (field, index, allFields) {
       var fieldOverrides = typeDefOverrides.fields || {};
-      Utils.decorateField(field, allFields, fieldOverrides[field.name] || {}, enums);
+      Helpers.decorateField(field, allFields, fieldOverrides[field.name] || {}, enums);
     });
 
     typeDef.needsForwardDeclaration = typeDef.decl === typeDef.cType;
 
-    var normalizedType = Utils.normalizeCtype(typeDef.cType);
-    typeDef.hasConstructor = Utils.hasConstructor(typeDef, normalizedType);
+    var normalizedType = Helpers.normalizeCtype(typeDef.cType);
+    typeDef.hasConstructor = Helpers.hasConstructor(typeDef, normalizedType);
 
     typeDef.functions = (typeDef.functions).map(function(fn) {
       var fnDef = libgit2.functions[fn];
@@ -214,58 +190,58 @@ var Utils = {
     var typeDefOverrides = descriptor.types[typeDef.typeName] || {};
     var functionOverrides = typeDefOverrides.functions || {};
     typeDef.functions.forEach(function(fnDef) {
-      Utils.decorateFunction(fnDef, typeDef, functionOverrides[fnDef.cFunctionName] || {}, enums);
+      Helpers.decorateFunction(fnDef, typeDef, functionOverrides[fnDef.cFunctionName] || {}, enums);
     });
 
     _.merge(typeDef, partialOverrides);
   },
 
   decorateField: function(field, allFields, fieldOverrides, enums) {
-    var normalizeType = Utils.normalizeCtype(field.type);
+    var normalizeType = Helpers.normalizeCtype(field.type);
 
     field.cType = field.type;
-    field.cppFunctionName = Utils.titleCase(field.name);
-    field.jsFunctionName = Utils.camelCase(field.name);
-    field.cppClassName = Utils.cTypeToCppName(field.type);
-    field.jsClassName = Utils.titleCase(Utils.cTypeToJsName(field.type));
+    field.cppFunctionName = utils.titleCase(field.name);
+    field.jsFunctionName = utils.camelCase(field.name);
+    field.cppClassName = Helpers.cTypeToCppName(field.type);
+    field.jsClassName = utils.titleCase(Helpers.cTypeToJsName(field.type));
 
-    if (Utils.isCallbackFunction(field.cType)) {
-      Utils.processCallback(field);
+    if (Helpers.isCallbackFunction(field.cType)) {
+      Helpers.processCallback(field);
 
       var argOverrides = fieldOverrides.args || {};
       field.args = field.args || [];
       field.args.forEach(function (arg) {
-        Utils.decorateArg(arg, null, null, argOverrides[arg.name] || {}, enums);
+        Helpers.decorateArg(arg, null, null, argOverrides[arg.name] || {}, enums);
       });
     }
     else {
       field.isCallbackFunction = false;
-      Utils.processPayload(field, allFields);
+      Helpers.processPayload(field, allFields);
       if (field.payloadFor) {
         return;
       }
     }
 
-    Utils.decorateLibgitType(field, libgit2.types, enums);
+    Helpers.decorateLibgitType(field, libgit2.types, enums);
     _.merge(field, fieldOverrides);
   },
 
   decorateArg: function(arg, typeDef, fnDef, argOverrides, enums) {
     var type = arg.cType || arg.type;
-    var normalizedType = Utils.normalizeCtype(type);
+    var normalizedType = Helpers.normalizeCtype(type);
 
     arg.cType = type;
-    arg.cppClassName = Utils.cTypeToCppName(arg.cType);
-    arg.jsClassName = Utils.titleCase(Utils.cTypeToJsName(arg.cType));
+    arg.cppClassName = Helpers.cTypeToCppName(arg.cType);
+    arg.jsClassName = utils.titleCase(Helpers.cTypeToJsName(arg.cType));
 
-    Utils.decorateLibgitType(arg, libgit2.types, enums);
+    Helpers.decorateLibgitType(arg, libgit2.types, enums);
 
     if (typeDef && fnDef) {
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
-      arg.isReturn = arg.name === "out" || (Utils.isDoublePointer(arg.type) && normalizedType == typeDef.cType);
-      arg.isSelf = Utils.isPointer(arg.type) && normalizedType == typeDef.cType;
+      arg.isReturn = arg.name === "out" || (utils.isDoublePointer(arg.type) && normalizedType == typeDef.cType);
+      arg.isSelf = utils.isPointer(arg.type) && normalizedType == typeDef.cType;
 
       if (arg.isReturn && fnDef.return && fnDef.return.type === "int") {
         fnDef.return.isErrorCode = true;
@@ -296,8 +272,8 @@ var Utils = {
       return;
     }
 
-    fnDef.cppFunctionName = Utils.cTypeToCppName(key, "git_" + typeDef.typeName);
-    fnDef.jsFunctionName = Utils.cTypeToJsName(key, "git_" + typeDef.typeName);
+    fnDef.cppFunctionName = Helpers.cTypeToCppName(key, "git_" + typeDef.typeName);
+    fnDef.jsFunctionName = Helpers.cTypeToJsName(key, "git_" + typeDef.typeName);
     //fnDef.isAsync = false; // until proven otherwise
 
     if (fnDef.cppFunctionName == typeDef.cppClassName) {
@@ -306,20 +282,20 @@ var Utils = {
 
     var argOverrides = fnOverrides.args || {};
     fnDef.args.forEach(function(arg) {
-      Utils.decorateArg(arg, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
+      Helpers.decorateArg(arg, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
     });
 
     if (fnDef.return) {
-      Utils.decorateArg(fnDef.return, typeDef, fnDef, fnOverrides.return || {}, enums);
+      Helpers.decorateArg(fnDef.return, typeDef, fnDef, fnOverrides.return || {}, enums);
     }
 
     _(collisionMappings).forEach(function(newName, collidingName) {
-      if (fnDef.cppFunctionName == Utils.titleCase(collidingName)) {
-        fnDef.cppFunctionName = Utils.titleCase(newName);
+      if (fnDef.cppFunctionName == utils.titleCase(collidingName)) {
+        fnDef.cppFunctionName = utils.titleCase(newName);
       }
 
-      if (fnDef.jsFunctionName == Utils.camelCase(collidingName)) {
-        fnDef.jsFunctionName = Utils.camelCase(newName);
+      if (fnDef.jsFunctionName == utils.camelCase(collidingName)) {
+        fnDef.jsFunctionName = utils.camelCase(newName);
       }
     });
 
@@ -354,17 +330,17 @@ var Utils = {
   },
 
   filterDocumentation: function(idefs) {
-    Utils.filterIgnored(idefs, function (idef) {
-      Utils.deleteProperties(idef);
+    Helpers.filterIgnored(idefs, function (idef) {
+      Helpers.deleteProperties(idef);
 
-      Utils.filterIgnored(idef.fields, Utils.deleteProperties);
+      Helpers.filterIgnored(idef.fields, Helpers.deleteProperties);
 
 
-      Utils.filterIgnored(idef.functions, function (fn) {
-        Utils.deleteProperties(fn);
+      Helpers.filterIgnored(idef.functions, function (fn) {
+        Helpers.deleteProperties(fn);
 
-        Utils.filterIgnored(fn.args, function(arg) {
-          Utils.deleteProperties(arg);
+        Helpers.filterIgnored(fn.args, function(arg) {
+          Helpers.deleteProperties(arg);
           delete arg.functions;
         });
       });
@@ -372,4 +348,4 @@ var Utils = {
   }
 };
 
-module.exports = Utils;
+module.exports = Helpers;
