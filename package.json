@@ -90,6 +90,7 @@
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "generate": "node generate/setup && node generate",
     "install": "npm run generate && node install",
+    "recompile": "BUILD_ONLY=true npm install",
     "rebuild": "BUILD_ONLY=true npm run generate && node-gyp configure build"
   }
 }
