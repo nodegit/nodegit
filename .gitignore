@@ -3,8 +3,9 @@
 /vendor/libssh2/
 /vendor/http_parser/
 /build/
-/coverage/
+/test/coverage/
 /test/repos/
+/test/test/repos/
 /src/
 /include/
 /lib/enums.js

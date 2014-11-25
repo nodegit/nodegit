@@ -10,6 +10,9 @@ var which = require("which");
 var rimraf = require("rimraf");
 var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
+// If the build only flag is set.
+var buildOnly = process.env.BUILD_ONLY;
+
 // This will take in an object and find any matching keys in the environment
 // to use as overrides.
 //
@@ -63,13 +66,34 @@ if (NODE_VERSION === 0.1) {
   pkg.http_parser = pkg.http_parser["0.10"];
 }
 
-// Ensure all dependencies are available.
-var dependencies = Q.allSettled([
-  // This will prioritize `python2` over `python`, because we always want to
-  // work with Python 2.* if it"s available.
-  Q.nfcall(which, "python2"),
-  Q.nfcall(which, "python")
-])
+// Attempt to fallback on a prebuilt binary.
+function fetchPrebuilt() {
+  if (!buildOnly) {
+    console.info("[nodegit] Fetching binary from S3.");
+
+    // Using the node-pre-gyp module, attempt to fetch a compatible build.
+    return Q.nfcall(exec, "node-pre-gyp install");
+  }
+
+  throw new Error("Build only");
+}
+
+// Attempt to fetch prebuilt binary.
+Q.ninvoke(fs, "mkdir", paths.release).then(fetchPrebuilt, fetchPrebuilt)
+
+.fail(function() {
+  if (!buildOnly) {
+    console.info("[nodegit] Failed to install prebuilt, attempting compile.");
+  }
+
+  // Ensure all dependencies are available.
+  return Q.allSettled([
+    // This will prioritize `python2` over `python`, because we always want to
+    // work with Python 2.* if it"s available.
+    Q.nfcall(which, "python2"),
+    Q.nfcall(which, "python")
+  ])
+})
 
 // Determine if all the dependency requirements are met.
 .then(function(results) {
@@ -216,25 +240,6 @@ var dependencies = Q.allSettled([
     cwd: ".",
     maxBuffer: Number.MAX_VALUE
   });
-})
-
-// Attempt to fallback on a prebuilt binary.
-.fail(function(message) {
-  console.info("[nodegit] Failed to build nodegit.");
-  console.info("[nodegit] Attempting to fallback on a prebuilt binary.");
-
-  console.log(message.stack);
-
-  function fetchPrebuilt() {
-    console.info("[nodegit] Fetching binary from S3.");
-
-    // Using the node-pre-gyp module, attempt to fetch a compatible build.
-    return Q.nfcall(exec, "node-pre-gyp install");
-  }
-
-  // Attempt to fetch prebuilt binary.
-  return Q.ninvoke(fs, "mkdir", paths.release)
-    .then(fetchPrebuilt, fetchPrebuilt);
 })
 
 // Display a warning message about failing to build native node module.

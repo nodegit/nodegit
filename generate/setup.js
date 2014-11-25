@@ -58,12 +58,16 @@ libgit2.types.forEach(function(current) {
 var previous = "";
 enums = _(enums).sortBy("name").reduce(function(enumMemo, enumerable) {
   if (previous == enumerable.typeName) {
-    console.log('WARNING: duplicate definition for enum ' + enumerable.typeName +
-      ". skipped.");
+    if (process.env.BUILD_ONLY) {
+      console.warn('Duplicate definition for enum ' + enumerable.typeName +
+        ". skipped.");
+    }
   }
   else if (!enumerable.fields) {
-    console.log('WARNING: incomplete definition for enum ' + enumerable.typeName +
-      ". skipped.");
+    if (process.env.BUILD_ONLY) {
+      console.warn('Incomplete definition for enum ' + enumerable.typeName +
+        ". skipped.");
+    }
   }
   else {
     enumMemo[enumerable.typeName] = {

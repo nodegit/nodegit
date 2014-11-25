@@ -89,13 +89,13 @@
   },
   "scripts": {
     "lint": "jshint lib test/tests",
-    "cov": "istanbul cover node_modules/mocha/bin/_mocha -- test/runner test/tests --report=lcov",
+    "cov": "node test",
     "mocha": "mocha test/runner test/tests",
     "test": "npm run lint && npm run cov",
     "missing-tests": "node generate/missing-tests",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "generate": "node generate/setup && node generate",
     "install": "npm run generate && node install",
-    "rebuild": "npm run generate && node-gyp configure build"
+    "rebuild": "BUILD_ONLY=true npm run generate && node-gyp configure build"
   }
 }
