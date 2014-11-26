@@ -44,7 +44,8 @@ module.exports = function() {
     class_header: utils.readFile("combyne/templates/class_header.h"),
     struct_header: utils.readFile("combyne/templates/struct_header.h"),
     binding: utils.readFile("combyne/templates/binding.gyp"),
-    nodegit: utils.readFile("combyne/templates/nodegit.cc"),
+    nodegitCC: utils.readFile("combyne/templates/nodegit.cc"),
+    nodegitJS: utils.readFile("combyne/templates/nodegit.js"),
     enums: utils.readFile("combyne/templates/enums.js")
   };
 
@@ -101,19 +102,18 @@ module.exports = function() {
   }).then(function() {
     // Write out single purpose templates.
     utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)));
-    utils.writeFile("../src/nodegit.cc", templates.nodegit.render(enabled));
-
-
+    utils.writeFile("../src/nodegit.cc", templates.nodegitCC.render(enabled));
+    utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)));
     // Write out all the classes.
     enabled.forEach(function(idef) {
       try {
-        if (idef.type == "struct") {
-          utils.writeFile("../src/" + idef.filename + ".cc", templates.struct_content.render(idef));
-          utils.writeFile("../include/" + idef.filename + ".h", templates.struct_header.render(idef));
-        }
-        else if (idef.type == "class") {
-          utils.writeFile("../src/" + idef.filename + ".cc", templates.class_content.render(idef));
-          utils.writeFile("../include/" + idef.filename + ".h", templates.class_header.render(idef));
+        if (idef.type && idef.type != "enum") {
+          utils.writeFile(
+            "../src/" + idef.filename + ".cc", templates[idef.type + "_content"].render(idef)
+          );
+          utils.writeFile(
+            "../include/" + idef.filename + ".h", templates[idef.type + "_header"].render(idef)
+          );
         }
       }
       catch (e) {
@@ -122,7 +122,6 @@ module.exports = function() {
         }
       }
     });
-
 
     utils.writeFile("../lib/enums.js", beautify(templates.enums.render(enabled)));
   }).then(function() {

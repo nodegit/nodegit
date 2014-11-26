@@ -1,6 +1,5 @@
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
-var descriptors = require("../generate/output/idefs.json");
 var rawApi;
 
 // Attempt to load the production release first, if it fails fall back to the
@@ -13,31 +12,40 @@ catch (e) {
   rawApi = require("../build/Debug/nodegit");
 }
 
-// Native methods do not return an identifiable function, so this function will
-// filter down the function identity to match the libgit2 descriptor.
-descriptors.forEach(function(descriptor) {
-  if (descriptor.type == "enum") {
-    return;
-  }
-  var Ctor =  rawApi[descriptor.jsClassName];
+// Native methods do not return an identifiable function, so we
+// have to override them here
+/* jshint ignore:start */
+{% each . as idef %}
+  {% if idef.type != "enum" %}
 
-  // Iterate over each function in the file.
-  descriptor.functions.filter(function(func) {
-    return func.isAsync;
-  }).forEach(function(asyncFunc) {
-    var original = null;
+    var _{{ idef.jsClassName }}
+      = rawApi.{{idef.jsClassName}};
 
-    // Special case when you have a prototype method.
-    if (asyncFunc.isPrototypeMethod && Ctor.prototype) {
-      original = Ctor.prototype[asyncFunc.jsFunctionName];
-      Ctor.prototype[asyncFunc.jsFunctionName] = promisify(original);
-    }
-    else {
-      original = Ctor[asyncFunc.jsFunctionName];
-      Ctor[asyncFunc.jsFunctionName] = promisify(original);
-    }
-  });
-});
+    {% each idef.functions as fn %}
+      {% if fn.isAsync %}
+
+        {% if fn.isPrototypeMethod %}
+
+          var _{{ idef.jsClassName }}_{{ fn.jsFunctionName}}
+            = _{{ idef.jsClassName }}.prototype.{{ fn.jsFunctionName }};
+          _{{ idef.jsClassName }}.prototype.{{ fn.jsFunctionName }}
+            = promisify(_{{ idef.jsClassName }}_{{ fn.jsFunctionName}});
+
+        {% else %}
+
+          var _{{ idef.jsClassName }}_{{ fn.jsFunctionName}}
+            = _{{ idef.jsClassName }}.{{ fn.jsFunctionName }};
+          _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}
+            = promisify(_{{ idef.jsClassName }}_{{ fn.jsFunctionName}});
+
+        {% endif %}
+
+      {% endif %}
+    {% endeach %}
+
+  {% endif %}
+{% endeach %}
+/* jshint ignore:end */
 
 // Set the exports prototype to the raw API.
 exports.__proto__ = rawApi;
