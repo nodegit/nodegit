@@ -5,6 +5,7 @@ describe("Tag", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
 
   var Repository = require("../../lib/repository");
+  var Tag = require("../../lib/tag");
   var Obj = require("../../lib/object");
   var Oid = require("../../lib/oid");
 
@@ -58,6 +59,16 @@ describe("Tag", function() {
 
     return this.repo.getTag(oid).then(function(tag) {
       testTag(tag);
+    });
+  });
+
+  it("can list tags in a repo", function() {
+    return Tag.list(this.repo).then(function(tagNames) {
+      tagNames = tagNames.filter(function(tagNameTest) {
+        return tagNameTest == tagName;
+      });
+
+      assert.equal(tagNames.length, 1);
     });
   });
 });

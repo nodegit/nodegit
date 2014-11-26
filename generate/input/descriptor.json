@@ -1221,6 +1221,19 @@
         "git_tag_foreach": {
           "ignore": true
         },
+        "git_tag_list": {
+          "args": {
+            "tag_names": {
+              "isReturn": true,
+              "shouldAlloc": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "size": "count",
+              "key": "strings"
+            }
+          },
+          "isAsync": true
+        },
         "git_tag_target": {
           "args": {
             "target_out": {
