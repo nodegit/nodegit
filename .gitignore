@@ -9,6 +9,7 @@
 /src/
 /include/
 /lib/enums.js
+/lib/nodegit.js
 
 
 /vendor/Release
