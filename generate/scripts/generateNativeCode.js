@@ -2,7 +2,7 @@ const path = require("path");
 const combyne = require("combyne");
 const promisify = require("promisify-node");
 const fse = promisify(require("fs-extra"));
-const js_beautify = require('js-beautify').js_beautify;
+const js_beautify = require("js-beautify").js_beautify;
 const beautify = function (input) {
   return js_beautify(input, {
     "brace_style": "end-expand",
@@ -126,15 +126,15 @@ module.exports = function() {
 
     utils.writeFile("../lib/enums.js", beautify(templates.enums.render(enabled)));
   }).then(function() {
-    return exec('command -v astyle').then(function(astyle) {
+    return exec("command -v astyle").then(function(astyle) {
       if (astyle) {
         return exec(
-          'astyle --options=\".astylerc\" '
+          "astyle --options=\".astylerc\" "
           + path.resolve(__dirname, "../../src") + "/*.cc "
           + path.resolve(__dirname, "../../include") + "/*.h"
         ).then(function() {
           return exec(
-            'rm '
+            "rm "
             + path.resolve(__dirname, "../../src") + "/*.cc.orig "
             + path.resolve(__dirname, "../../include") + "/*.h.orig "
           );
