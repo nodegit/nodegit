@@ -6,6 +6,7 @@ NodeGit
 [![Build
 Status](https://travis-ci.org/nodegit/nodegit.png)](https://travis-ci.org/nodegit/nodegit)
 <a href="https://ci.appveyor.com/project/TimBranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2/branch/master" alt="Build Status: Windows" height="18" /></a>
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **Stable: 0.2.3**
 
