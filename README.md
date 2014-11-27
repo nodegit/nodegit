@@ -1,5 +1,6 @@
 NodeGit
 -------
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
