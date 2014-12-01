@@ -69,7 +69,7 @@ class {{ cppClassName }} : public ObjectWrap {
       {{ arg.cType|replace "**" "*" }} {{ arg.name }};
         {%else%}
       {{ arg.cType }} {{ arg.name }};
-          {%if arg.cppClassName | isOid %}
+          {%if arg | isOid %}
       bool {{ arg.name }}NeedsFree;
           {%endif%}
         {%endif%}

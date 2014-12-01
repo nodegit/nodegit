@@ -41,7 +41,7 @@ from_{{ arg.name }}
   {%each args|argsInfo as arg %}
     {%if arg.shouldAlloc %}
     free({{ arg.name }});
-    {%elsif arg.cppClassName | isOid %}
+    {%elsif arg | isOid %}
     if (args[{{ arg.jsArg }}]->IsString()) {
       free({{ arg.name }});
     }
@@ -57,9 +57,9 @@ from_{{ arg.name }}
 {%endif%}
 
 {%each args|argsInfo as arg %}
-  {%if arg.cppClassName | isOid %}
+  {%if arg | isOid %}
   if (args[{{ arg.jsArg }}]->IsString()) {
-    free(from_{{ arg.name }});
+    free(&from_{{ arg.name }});
   }
   {%endif%}
 {%endeach%}

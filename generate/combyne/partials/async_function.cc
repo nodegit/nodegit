@@ -20,7 +20,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%partial convertFromV8 arg%}
         {%if not arg.isPayload %}
   baton->{{ arg.name }} = from_{{ arg.name }};
-          {%if arg.cppClassName | isOid %}
+          {%if arg | isOid %}
   baton->{{ arg.name }}NeedsFree = args[{{ arg.jsArg }}]->IsString();
           {%endif%}
         {%endif%}
@@ -132,7 +132,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%else%}
   free((void *)baton->{{ arg.name }});
       {%endif%}
-    {%elsif arg.cppClassName | isOid %}
+    {%elsif arg | isOid %}
   if (baton->{{ arg.name}}NeedsFree) {
     free((void *)baton->{{ arg.name }});
   }
