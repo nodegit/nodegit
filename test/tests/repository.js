@@ -52,4 +52,10 @@ describe("Repository", function() {
       assert.equal(remotes.strings(), "origin");
     });
   });
+
+  it("can get the current branch", function() {
+    return this.repository.getCurrentBranch().then(function(branch) {
+      assert.equal(branch.shorthand(), "master");
+    });
+  });
 });
