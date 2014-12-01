@@ -225,7 +225,7 @@ describe("Merge", function() {
     });
   });
 
-  it.only("can merge using the convenience method", function() {
+  it.only("can merge cleanly using the convenience method", function() {
     var initialFileName = "initialFile.txt";
     var ourFileName = "ourNewFile.txt";
     var theirFileName = "theirNewFile.txt";
@@ -303,11 +303,11 @@ describe("Merge", function() {
       "af60aa06b3537f75b427f6268a130c842c84a137");
 
       return repository.createCommit(ourBranch.name(), ourSignature,
-      ourSignature, "we made a commit", oid, [initialCommit]);
+        ourSignature, "we made a commit", oid, [initialCommit]);
     })
     .then(function(commitOid) {
       assert.equal(commitOid.toString(),
-      "7ce31c05427659986d50abfb90c8f7db88ef4fa1");
+        "7ce31c05427659986d50abfb90c8f7db88ef4fa1");
 
       return repository.getCommit(commitOid).then(function(commit) {
         ourCommit = commit;
@@ -343,7 +343,7 @@ describe("Merge", function() {
       });
     })
     .then(function() {
-      return repository.mergeBranches(theirBranchName, ourBranchName);
+      return repository.mergeBranches(ourBranchName, theirBranchName);
     })
     .then(function(commitId) {
       assert.equal(commitId.toString(),
