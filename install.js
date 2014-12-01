@@ -7,7 +7,7 @@ var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var request = require("request");
 var fse = promisify(require("fs-extra"));
-fse.ensureDir = promisify(fse.ensureDir);
+fse.ensureDir = promisify(fse.ensureDir, function() { return true; });
 
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
