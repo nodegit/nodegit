@@ -7,6 +7,7 @@ var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var request = require("request");
 var fse = promisify(require("fs-extra"));
+var findParentDir = promisify(require('find-parent-dir'));
 fse.ensureDir = promisify(fse.ensureDir, function() { return true; });
 
 var exec = promisify(function(command, opts, callback) {
@@ -17,6 +18,7 @@ var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
 // If the build only flag is set.
 var buildOnly = process.env.BUILD_ONLY;
+var nodeWebkit = false;
 
 // This will take in an object and find any matching keys in the environment
 // to use as overrides.
@@ -72,23 +74,31 @@ if (NODE_VERSION === 0.1) {
 }
 
 fse.ensureDir(path.resolve(__dirname, paths.release))
+.then(detectNodeWebkit.call(null, __dirname))
 .then(fetch)
 .then(finish, compile)
 .done()
 
 function fetch() {
-  if (!buildOnly) {
-    console.info("[nodegit] Fetching binary from S3.");
+  console.info("[nodegit] Fetching binary from S3.");
 
-    // Using the node-pre-gyp module, attempt to fetch a compatible build.
-    return exec("node-pre-gyp install");
+  if (nodeWebkit) {
+    throw new Error("Must build for node-webkit");
   }
 
-  throw new Error("BUILD_ONLY is set to true, no fetching allowed.");
+  if (buildOnly) {
+    throw new Error("BUILD_ONLY is set to true, no fetching allowed.");
+  }
+
+  // Using the node-pre-gyp module, attempt to fetch a compatible build.
+  return exec("node-pre-gyp install");
 }
 
-function compile() {
-  if (!buildOnly) {
+function compile(err) {
+  if (buildOnly || nodeWebkit) {
+    console.info("[nodegit] " + err.message);
+  }
+  else  {
     console.info("[nodegit] Failed to install prebuilt, attempting compile.");
   }
 
@@ -173,17 +183,41 @@ function getVendorLib(name, url) {
 
 function buildNative() {
   return exec("cd " + __dirname).then(function() {
-    console.info("[nodegit] Building native node module.");
-    var pythonFlag = " --python \"" + pythonPath + "\"";
-    var cmd = path.resolve(systemPath([
-      ".", "node_modules", ".bin", "node-gyp clean configure build" + pythonFlag
-      ]));
+    if (nodeWebkit) {
+      console.info("[nodegit] Building native node-webkit module.");
+    }
+    else {
+      console.info("[nodegit] Building native node module.");
+    }
+
+    var builder = nodeWebkit ? "nw-gyp" : "node-gyp";
+
+    var cmd = path.resolve(".", "node_modules", ".bin", builder)
+      + " clean configure "
+      + (nodeWebkit ? "--target=\"" + nodeWebkit + "\"": "")
+      + " build " + pythonFlag
+      + "--python \"" + pythonPath + "\""
+
     var opts = {
       cwd: __dirname,
       maxBuffer: Number.MAX_VALUE
     };
     return exec(cmd, opts);
   })
+}
+
+function detectNodeWebkit(directory) {
+  if (directory) {
+    var pkg = require(path.resolve(directory, "package.json"));
+
+    nodeWebkit = pkg.engines && pkg.engines["node-webkit"];
+
+    return findParentDir(path.resolve(directory, ".."), "package.json")
+        .then(detectNodeWebkit);
+  }
+  else {
+    return Promise.resolve();
+  }
 }
 
 function finish() {
@@ -194,6 +228,6 @@ function finish() {
 function fail(message) {
   console.info("[nodegit] Failed to build and install nodegit.");
   console.info(message.message);
-  //console.info(message.stack);
+
   return Promise.resolve().done();
 }
