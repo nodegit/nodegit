@@ -195,8 +195,7 @@ function buildNative() {
     var cmd = path.resolve(".", "node_modules", ".bin", builder)
       + " clean configure "
       + (nodeWebkit ? "--target=\"" + nodeWebkit + "\"": "")
-      + " build " + pythonFlag
-      + "--python \"" + pythonPath + "\""
+      + " build --python \"" + pythonPath + "\""
 
     var opts = {
       cwd: __dirname,
