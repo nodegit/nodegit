@@ -186,3 +186,12 @@ https://github.com/nodegit/nodegit/compare/refs/tags/0.1.4...0.2.0
 This update is wholly and entirely a breaking one, and older versions won't be
 maintained. For the purpose of migration, perhaps the biggest point to make
 is that async methods can now use promises, rather than just taking callbacks. Additionally, lots of method and property names have changed.
+
+## Node-Webkit ##
+
+A common issue is with nodegit not functioning properly inside of
+[node-webkit](http://github.com/rogerwang/node-webkit) applications. Because nodegit
+is a native module, it has to be rebuilt for node-webkit using
+[nw-gyp](http://github.com/rogerwang/nw-gyp). By default, nodegit will look in the root package's package.json for an `engines` property, and within look for a `node-webkit` property that holds a specific version of node-webkit. The value of this property is what will get passed as the `--target` argument to `nw-gyp configure`.
+
+Currently, support for node-webkit is limited, although we intend to support it better in the future.
