@@ -1158,7 +1158,10 @@
 	    "functions": {
 	      "git_signature_new": {
 	        "isAsync": false
-	      }
+	      },
+        "git_signature_now": {
+          "isAsync": false
+        }
 	    }
 	  },
     "smart": {
