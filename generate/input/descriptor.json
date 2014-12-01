@@ -1068,6 +1068,13 @@
         "git_remote_default_branch": {
           "ignore": true
         },
+        "git_remote_fetch": {
+          "args": {
+            "reflog_message": {
+              "isOptional": true
+            }
+          }
+        },
         "git_remote_get_fetch_refspecs": {
           "ignore": true
         },
@@ -1156,6 +1163,9 @@
     },
 	  "signature": {
 	    "functions": {
+        "git_signature_default": {
+          "isAsync": false
+        },
 	      "git_signature_new": {
 	        "isAsync": false
 	      },

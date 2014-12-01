@@ -5,6 +5,7 @@ describe("Blob", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
 
+  var Oid = require("../../lib/oid");
   var Repository = require("../../lib/repository");
   var FileMode = require("../../lib/tree_entry").FILEMODE;
 
@@ -35,5 +36,12 @@ describe("Blob", function() {
 
   it("can determine if a blob is not a binary", function() {
     assert.equal(this.blob.filemode(), FileMode.BLOB);
+  });
+
+  it("can get a blob with an Oid object", function() {
+    var oidObject = Oid.fromString(oid);
+    this.repository.getBlob(oidObject).then(function(blob) {
+      assert.equal(this.blob.id().toString(), oid);
+    });
   });
 });

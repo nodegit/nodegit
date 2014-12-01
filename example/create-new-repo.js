@@ -14,37 +14,29 @@ var index;
 
 fse.ensureDir(path.resolve(__dirname, repoDir))
 .then(function() {
-  console.log('a');
   return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
 })
 .then(function(repo) {
-  console.log('b');
   repository = repo;
   return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
 })
 .then(function(){
-  console.log('c');
   return repository.openIndex();
 })
 .then(function(idx) {
-  console.log('d');
   index = idx;
   return index.read(1);
 })
 .then(function() {
-  console.log('e');
   return index.addByPath(fileName);
 })
 .then(function() {
-  console.log('f');
   return index.write();
 })
 .then(function() {
-  console.log('g');
   return index.writeTree();
 })
 .then(function(oid) {
-  console.log('j');
   var author = nodegit.Signature.create("Scott Chacon", "schacon@gmail.com", 123456789, 60);
   var committer = nodegit.Signature.create("Scott A Chacon", "scott@github.com", 987654321, 90);
 

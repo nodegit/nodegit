@@ -62,6 +62,7 @@ module.exports = function() {
     isV8Value: require("../combyne/filters/is_v8_value"),
     isPointer: require("../combyne/filters/is_pointer"),
     isDoublePointer: require("../combyne/filters/is_double_pointer"),
+    isOid: require("../combyne/filters/is_oid"),
     unPointer: require("../combyne/filters/un_pointer"),
     payloadFor: require("../combyne/filters/payload_for"),
     hasReturnType: require("../combyne/filters/has_return_type"),

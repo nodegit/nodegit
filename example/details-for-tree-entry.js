@@ -7,8 +7,7 @@ var path = require('path');
 
 nodegit.Repository.open(path.resolve(__dirname, '../.git'))
 .then(function(repo) {
-  return repo.getTree(
-    nodegit.Oid.fromString("e1b0c7ea57bfc5e30ec279402a98168a27838ac9"))
+  return repo.getTree("e1b0c7ea57bfc5e30ec279402a98168a27838ac9")
   .then(function(tree) {
     var treeEntry = tree.entryByIndex(0);
 
