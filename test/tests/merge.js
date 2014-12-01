@@ -219,13 +219,14 @@ describe("Merge", function() {
       assert.equal(oid.toString(),
       "0e9231d489b3f4303635fc4b0397830da095e7e7");
 
-      return repository.getBranchCommit(ourBranchName).then(function(branchCommit) {
-        assert.equal(oid.toString(), branchCommit.toString());
-      });
+      return repository.getBranchCommit(ourBranchName)
+        .then(function(branchCommit) {
+          assert.equal(oid.toString(), branchCommit.toString());
+        });
     });
   });
 
-  it.only("can merge cleanly using the convenience method", function() {
+  it("can merge cleanly using the convenience method", function() {
     var initialFileName = "initialFile.txt";
     var ourFileName = "ourNewFile.txt";
     var theirFileName = "theirNewFile.txt";
@@ -343,11 +344,12 @@ describe("Merge", function() {
       });
     })
     .then(function() {
-      return repository.mergeBranches(ourBranchName, theirBranchName);
+      return repository.mergeBranches(ourBranchName, theirBranchName,
+        ourSignature);
     })
     .then(function(commitId) {
       assert.equal(commitId.toString(),
-      "0e9231d489b3f4303635fc4b0397830da095e7e7");
+      "5384feb481d9c29081b3a0c1478fcc24a3953efa");
     });
   });
 
