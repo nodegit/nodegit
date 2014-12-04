@@ -48,7 +48,7 @@ function systemPath(parts) {
 }
 
 // Will be used near the end to configure `node-gyp`.
-var pythonPath = '/usr/bin/python';
+var pythonPath = "";
 
 var local = path.join.bind(path, __dirname);
 
@@ -58,12 +58,7 @@ var paths = envOverride({
   libgit2: local("vendor/libgit2/"),
   libssh2: local("vendor/libssh2/"),
   http_parser: local("vendor/http_parser/"),
-  sys: {
-    include: local("include/sys/"),
-    src: local("src/sys/"),
-    build: local("build/Release/obj.target/src/sys/")
-  },
-  release: local("build/Release/")
+  release: local("build/Release/"),
 });
 
 // Load the package.json.
@@ -76,8 +71,7 @@ if (NODE_VERSION === 0.1) {
 fse.ensureDir(path.resolve(__dirname, paths.release))
 .then(detectNodeWebkit.call(null, __dirname))
 .then(fetch)
-.then(finish, compile)
-.done()
+.then(finish, compile);
 
 function fetch() {
   console.info("[nodegit] Fetching binary from S3.");
@@ -104,81 +98,101 @@ function compile(err) {
 
   console.info("[nodegit] Determining dependencies.");
 
-  return python()
-    .then(getVendorLib("libgit2", "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha))
-    .then(getVendorLib("libssh2", pkg.libssh2.url))
-    .then(getVendorLib("http_parser", pkg.http_parser.url))
-    .then(buildNative)
-    .then(finish, fail);
-
+  return Promise.all([
+    python(),
+    getVendorLib("libgit2", "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha),
+    getVendorLib("libssh2", pkg.libssh2.url),
+    getVendorLib("http_parser", pkg.http_parser.url),
+    guardGenerated()
+  ])
+  .then(buildNative)
+  .then(finish, fail);
 }
 
 function python() {
-  return exec("which python2")
+  var pathFinderCommand = process.platform === "win32" ? "where" : "which";
+
+  return exec(pathFinderCommand + " python2")
     .then(function(which){
       return which;
     }, function(err) {
       return null;
     })
     .then(function(path) {
-      return path || exec("which python");
+      return path || exec(pathFinderCommand + " python");
     })
-    .then(function(which) {
-      return which;
+    .then(function(path) {
+      return path;
     }, function(err) {
       return null;
     })
     .then(function(path) {
-      pythonPath = path.trim();
-      if (!pythonPath) {
+      if (!path) {
         throw new Error("Python is required to build libgit2.");
       }
+      return path.trim();
+    }, function(err) {
+      throw new Error("Error finding python.");
     })
-    .then(function() {
-      return exec(pythonPath + " -V 2>&1");
+    .then(function(path) {
+      pythonPath = path;
+      return exec(path + " -V 2>&1");
     })
     .then(function(version) {
-      if (version[1].indexOf("Python 3") === 0) {
+      if (version.trim().indexOf("Python 3") === 0) {
         throw new Error("Incorrect version of Python, gyp requires < 3.");
       }
     });
 }
 
 function getVendorLib(name, url) {
-  return function() {
-    var version = pkg[name].sha || pkg[name].version;
-    console.info("[nodegit] Detecting vendor/" + name + ".");
-    if (fse.existsSync(paths[name] + version)) {
-      console.info("[nodegit] vendor/" + name + " already exists.");
-      return new Promise(function(resolve, reject) {resolve() });
-    }
-    else {
-      console.info("[nodegit] Removing outdated vendor/" + name + ".");
-      return fse.remove(paths[name])
-        .then(function() {
-          return new Promise(function (resolve, reject) {
-
-            console.info("[nodegit] Fetching vendor/" + name + ".");
-
-            var extract = tar.Extract({
-              path: paths[name],
-              strip: true
-            });
-
-            request.get(url).pipe(zlib.createUnzip()).pipe(extract)
-              .on("error", reject)
-              .on("end", resolve);
-          });
-        }).then(function() {
-          return fse.writeFile(paths[name] + version, "");
-        }).then(function() {
-          if ((name == "libssh2") && (process.platform !== "win32")) {
-
-            return exec(paths[name] + "configure", {cwd: paths[name]});
-          }
-        });
-    }
+  var version = pkg[name].sha || pkg[name].version;
+  console.info("[nodegit] Detecting vendor/" + name + ".");
+  if (fse.existsSync(paths[name] + version)) {
+    console.info("[nodegit] vendor/" + name + " already exists.");
+    return Promise.resolve();
   }
+  else {
+    console.info("[nodegit] Removing outdated vendor/" + name + ".");
+    return fse.remove(paths[name])
+      .then(function() {
+        return new Promise(function (resolve, reject) {
+
+          console.info("[nodegit] Fetching vendor/" + name + ".");
+
+          var extract = tar.Extract({
+            path: paths[name],
+            strip: true
+          });
+
+          request.get(url).pipe(zlib.createUnzip()).pipe(extract)
+            .on("error", reject)
+            .on("end", resolve);
+        });
+      }).then(function() {
+        return fse.writeFile(paths[name] + version, "");
+      }).then(function() {
+        if ((name == "libssh2") && (process.platform !== "win32")) {
+          return exec(paths[name] + "configure", {cwd: paths[name]});
+        }
+      });
+  }
+}
+
+function guardGenerated() {
+  return Promise.all([
+    fse.stat(path.resolve(__dirname, "src/")),
+    fse.stat(path.resolve(__dirname, "include/"))
+  ]).then(function() {
+    return Promise.resolve();
+  }, function() {
+    console.info("[nodegit] C++ files not found, generating now.");
+    console.info("[nodegit] Installing all devDependencies");
+    return exec("npm install --ignore-scripts --dont-prepublish")
+      .then(function() {
+        return exec("node generate");
+      });
+  });
 }
 
 function buildNative() {
@@ -221,7 +235,21 @@ function detectNodeWebkit(directory) {
 
 function finish() {
   console.info("[nodegit] Completed installation successfully.");
-  return Promise.resolve().done();
+  if (!buildOnly) {
+    console.info("[nodegit] Cleaning up");
+    return Promise.all([
+      fse.remove(path.resolve(__dirname, "src")),
+      fse.remove(path.resolve(__dirname, "include")),
+      fse.remove(path.resolve(__dirname, "generate/output")),
+      fse.remove(path.resolve(__dirname, paths.libgit2)),
+      fse.remove(path.resolve(__dirname, paths.libssh2)),
+      fse.remove(path.resolve(__dirname, paths.http_parser))
+      // exec("npm prune --production")
+    ]).done();
+  }
+  else {
+    return Promise.resolve().done();
+  }
 }
 
 function fail(message) {
