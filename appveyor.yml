@@ -14,6 +14,8 @@ clone_folder: c:\projects\nodegit
 # fix lineendings in Windows
 init:
   - git config --global core.autocrlf input
+  - git config --global user.name "John Doe"
+  - git config --global user.email johndoe@example.com
 
 # what combinations to test
 environment:
@@ -39,3 +41,9 @@ test_script:
   - cmd: npm test
 
 build: off
+
+notifications:
+  - provider: Slack
+    auth_token:
+      secure: ZsaMCvRMfDZhNsiUvZtvszXXF3z4pLIGJmAj5MuDaa40JvmMC6wnBWIR+LHJuJPM
+    channel: nodegit
