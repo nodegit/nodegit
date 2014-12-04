@@ -10,4 +10,6 @@ var args = [
 
 require("child_process").fork("../node_modules/istanbul/lib/cli.js", args, {
   cwd: __dirname
+}).on("close", function(code) {
+  process.exit(code);
 });
