@@ -9,7 +9,7 @@ var libgit2 = require("../input/v" + version + ".json");
 var descriptor = require("../input/descriptor.json");
   var supplement = require("../input/libgit2-supplement.json");
 
-module.exports = function() {
+module.exports = (function generateJson() {
   libgit2.types.forEach(function(type) {
     if (supplement.types[type[0]]){
       _.merge(type[1], supplement.types[type[0]]);
@@ -219,4 +219,4 @@ module.exports = function() {
 
   utils.writeFile("output/idefs.json", output);
 
-}
+}());

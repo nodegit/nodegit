@@ -20,7 +20,7 @@ const exec = promisify(function(command, opts, callback) {
 const utils = require("./utils");
 const idefs = require("../output/idefs");
 
-module.exports = function() {
+module.exports = (function generateNativeCode() {
   // Customize the delimiters so as to not process `{{{` or `}}}`.
   combyne.settings.delimiters = {
     START_RAW: "{{=",
@@ -143,4 +143,4 @@ module.exports = function() {
     })
   });
 
-}
+}());
