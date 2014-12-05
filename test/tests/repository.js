@@ -1,5 +1,7 @@
 var assert = require("assert");
 var path = require("path");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 
 describe("Repository", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
@@ -38,6 +40,14 @@ describe("Repository", function() {
   it("can initialize a repository into a folder", function() {
     return Repository.init(newRepo, 1).then(function(path, isBare) {
       return Repository.open(newRepo);
+    });
+  });
+
+  it("can utilize repository init options", function() {
+    return fse.remove(newRepo).then(function() {
+      return Repository.initExt(newRepo, {
+        flags: Repository.INIT_FLAG.MKPATH
+      });
     });
   });
 
