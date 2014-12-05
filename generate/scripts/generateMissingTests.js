@@ -8,7 +8,7 @@ const testFilesPath = "../test/tests";
 const idefs = require("../output/idefs");
 const missingFileIgnores = require("../input/ignored-missing-tests");
 
-module.exports = function() {
+module.exports = (function generateMissingTests() {
   var output = {};
 
   function findMissingTest(idef) {
@@ -70,4 +70,5 @@ module.exports = function() {
     }
   );
 
-}
+}());
+
