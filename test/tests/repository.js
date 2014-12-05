@@ -7,6 +7,7 @@ describe("Repository", function() {
 
   var Repository = require("../../lib/repository");
   var Index = require("../../lib/index");
+  var Signature = require("../../lib/signature");
 
   before(function() {
     var test = this;
@@ -57,5 +58,11 @@ describe("Repository", function() {
     return this.repository.getCurrentBranch().then(function(branch) {
       assert.equal(branch.shorthand(), "master");
     });
+  });
+
+  it("can get the default signature", function() {
+    var sig = this.repository.defaultSignature();
+
+    assert(sig instanceof Signature);
   });
 });

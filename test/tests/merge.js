@@ -213,7 +213,10 @@ describe("Merge", function() {
       });
     })
     .then(function() {
-      return repository.mergeBranches(ourBranchName, theirBranchName);
+      return repository.mergeBranches(
+        ourBranchName,
+        theirBranchName,
+        ourSignature);
     })
     .then(function(oid) {
       assert.equal(oid.toString(),
