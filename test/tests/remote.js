@@ -104,11 +104,22 @@ describe("Remote", function() {
   });
 
   it("can fetch from a remote", function() {
-    return this.repository.fetch("origin")
-    .then(function() {
-      assert(true);
-    }, function() {
-      assert(false);
-    });
+    return this.repository.fetch("origin", {
+      credentials: function(url, userName) {
+        return NodeGit.Cred.sshKeyFromAgent(userName);
+      }
+    }, true);
   });
+
+  it("can fetch from all remotes", function() {
+    // Set a reasonable timeout here for the fetchAll test
+    this.timeout(15000);
+    
+    return this.repository.fetchAll({
+      credentials: function(url, userName) {
+        return NodeGit.Cred.sshKeyFromAgent(userName);
+      }
+    }, true);
+  });
+
 });

@@ -1073,18 +1073,47 @@
             "reflog_message": {
               "isOptional": true
             }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_remote_get_fetch_refspecs": {
-          "ignore": true
+          "args": {
+            "array": {
+              "isReturn": true,
+              "shouldAlloc": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "size": "count",
+              "key": "strings"
+            }
+          },
+          "isAsync": true
         },
         "git_remote_get_push_refspecs": {
-          "ignore": true
+          "args": {
+            "array": {
+              "isReturn": true,
+              "shouldAlloc": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "size": "count",
+              "key": "strings"
+            }
+          },
+          "isAsync": true
         },
         "git_remote_list": {
           "args": {
             "out": {
-              "shouldAlloc": true
+              "isReturn": true,
+              "shouldAlloc": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "size": "count",
+              "key": "strings"
             }
           }
         },
@@ -1092,6 +1121,12 @@
           "ignore": true
         },
         "git_remote_rename": {
+          "ignore": true
+        },
+        "git_remote_set_fetch_refspecs": {
+          "ignore": true
+        },
+        "git_remote_set_push_refspecs": {
           "ignore": true
         }
       }
