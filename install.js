@@ -1,11 +1,11 @@
 var os = require("os");
 var path = require("path");
 var zlib = require("zlib");
-var tar = require("tar");
+var tar;
+var request;
 
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
-var request = require("request");
 var fse = promisify(require("fs-extra"));
 var findParentDir = promisify(require('find-parent-dir'));
 fse.ensureDir = promisify(fse.ensureDir, function() { return true; });
@@ -13,6 +13,7 @@ fse.ensureDir = promisify(fse.ensureDir, function() { return true; });
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
+
 
 var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
 
@@ -96,17 +97,23 @@ function compile(err) {
     console.info("[nodegit] Failed to install prebuilt, attempting compile.");
   }
 
-  console.info("[nodegit] Determining dependencies.");
+  tar = require("tar");
+  request = require("request");
 
-  return Promise.all([
-    python(),
-    getVendorLib("libgit2", "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha),
-    getVendorLib("libssh2", pkg.libssh2.url),
-    getVendorLib("http_parser", pkg.http_parser.url),
-    guardGenerated()
-  ])
-  .then(buildNative)
-  .then(finish, fail);
+  console.info("[nodegit] Installing all devDependencies");
+  return exec("npm install --ignore-scripts --dont-prepublish")
+    .then(function() {
+      console.info("[nodegit] Determining source dependencies.");
+      return Promise.all([
+        python(),
+        getVendorLib("libgit2", "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha),
+        getVendorLib("libssh2", pkg.libssh2.url),
+        getVendorLib("http_parser", pkg.http_parser.url),
+        guardGenerated()
+      ]);
+    })
+    .then(buildNative)
+    .then(finish, fail);
 }
 
 function python() {
@@ -187,11 +194,7 @@ function guardGenerated() {
     return Promise.resolve();
   }, function() {
     console.info("[nodegit] C++ files not found, generating now.");
-    console.info("[nodegit] Installing all devDependencies");
-    return exec("npm install --ignore-scripts --dont-prepublish")
-      .then(function() {
-        return exec("node generate");
-      });
+    return exec("node generate");
   });
 }
 
