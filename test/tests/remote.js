@@ -112,6 +112,9 @@ describe("Remote", function() {
   });
 
   it("can fetch from all remotes", function() {
+    // Set a reasonable timeout here for the fetchAll test
+    this.timeout(15000);
+    
     return this.repository.fetchAll({
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
