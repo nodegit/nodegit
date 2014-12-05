@@ -47,3 +47,7 @@ notifications:
     auth_token:
       secure: ZsaMCvRMfDZhNsiUvZtvszXXF3z4pLIGJmAj5MuDaa40JvmMC6wnBWIR+LHJuJPM
     channel: nodegit
+
+branches:
+  only:
+    - master
