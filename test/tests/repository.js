@@ -49,8 +49,8 @@ describe("Repository", function() {
 
   it("can list remotes", function() {
     return this.repository.getRemotes().then(function(remotes) {
-      assert.equal(remotes.count(), 1);
-      assert.equal(remotes.strings(), "origin");
+      assert.equal(remotes.length, 1);
+      assert.equal(remotes[0], "origin");
     });
   });
 

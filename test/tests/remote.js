@@ -104,11 +104,10 @@ describe("Remote", function() {
   });
 
   it("can fetch from a remote", function() {
-    return this.repository.fetch("origin")
-    .then(function() {
-      assert(true);
-    }, function() {
-      assert(false);
+    return this.repository.fetch("origin", {
+      credentials: function(url, userName) {
+        return NodeGit.Cred.sshKeyFromAgent(userName);
+      }
     });
   });
 });
