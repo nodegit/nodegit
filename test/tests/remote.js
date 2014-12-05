@@ -108,6 +108,15 @@ describe("Remote", function() {
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
       }
-    });
+    }, true);
   });
+
+  it("can fetch from all remotes", function() {
+    return this.repository.fetchAll({
+      credentials: function(url, userName) {
+        return NodeGit.Cred.sshKeyFromAgent(userName);
+      }
+    }, true);
+  });
+
 });
