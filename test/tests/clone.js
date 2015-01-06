@@ -8,8 +8,12 @@ describe("Clone", function() {
   var http = path.resolve("test/repos/http");
   var https = path.resolve("test/repos/https");
   var ssh = path.resolve("test/repos/ssh");
+  var sshManual = path.resolve("test/repos/sshmanual");
   var git = path.resolve("test/repos/git");
   var file = path.resolve("test/repos/file");
+
+  var sshPublicKey = path.resolve("./id_rsa.pub");
+  var sshPrivateKey = path.resolve("./id_rsa");
 
   var Repository = require("../../lib/repository");
   var Clone = require("../../lib/clone");
@@ -58,6 +62,26 @@ describe("Clone", function() {
     };
 
     return Clone.clone(url, ssh, opts).then(function(repository) {
+      assert.ok(repository instanceof Repository);
+    });
+  });
+
+  it("can clone with ssh while manually loading a key", function() {
+    var url = "git@github.com:nodegit/test.git";
+    var opts = {
+      ignoreCertErrors: 1,
+      remoteCallbacks: {
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyNew(
+            userName,
+            sshPublicKey,
+            sshPrivateKey,
+            "");
+        }
+      }
+    };
+
+    return Clone.clone(url, sshManual, opts).then(function(repository) {
       assert.ok(repository instanceof Repository);
     });
   });
