@@ -352,6 +352,9 @@
         "git_cred_ssh_key_from_agent":{
           "isAsync": false
         },
+        "git_cred_ssh_key_new": {
+          "isAsync": false
+        },
         "git_cred_userpass": {
           "ignore": true
         }
