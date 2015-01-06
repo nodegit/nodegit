@@ -1,7 +1,10 @@
 var assert = require("assert");
+var path = require("path");
 
 describe("Cred", function() {
   var NodeGit = require("../../");
+  var sshPublicKey = path.resolve("./id_rsa.pub");
+  var sshPrivateKey = path.resolve("./id_rsa");
 
   it("can create default credentials", function() {
     NodeGit.Cred.defaultNew().then(function (defaultCreds) {
@@ -10,14 +13,13 @@ describe("Cred", function() {
   });
 
   it("can create ssh credentials using passed keys", function() {
-    NodeGit.Cred.sshKeyNew(
+    var cred = NodeGit.Cred.sshKeyNew(
       "username",
-      "public key",
-      "private key",
-      "passphrase")
-    .then(function (sshCreds) {
-      assert(sshCreds instanceof NodeGit.Cred);
-    });
+      sshPublicKey,
+      sshPrivateKey,
+      "");
+
+    assert(cred instanceof NodeGit.Cred);
   });
 
   it("can create credentials using plaintext", function() {
