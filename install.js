@@ -8,7 +8,6 @@ var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var findParentDir = promisify(require('find-parent-dir'));
-fse.ensureDir = promisify(fse.ensureDir, function() { return true; });
 
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
@@ -69,10 +68,17 @@ if (NODE_VERSION === 0.1) {
   pkg.http_parser = pkg.http_parser["0.10"];
 }
 
-fse.ensureDir(path.resolve(__dirname, paths.release))
-.then(detectNodeWebkit.call(null, __dirname))
-.then(fetch)
-.then(finish, compile);
+// ensureDir doesn't promisify correctly so right now just use the callback
+fse.ensureDir(path.resolve(__dirname, paths.release), function(err) {
+  if (err) {
+    console.log(err);
+  }
+  else {
+    detectNodeWebkit.call(null, __dirname)
+    .then(fetch)
+    .then(finish, compile);
+  }
+});
 
 function fetch() {
   console.info("[nodegit] Fetching binary from S3.");
