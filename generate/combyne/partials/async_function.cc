@@ -114,9 +114,17 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       callback->Call(0, NULL);
     }
 
-    {%each args as arg %}
+    {%each args|argsInfo as arg %}
       {%if arg.shouldAlloc %}
+        {%if not arg.isCppClassStringOrArray %}
+        {%elsif arg | isOid %}
+    if (baton->{{ arg.name}}NeedsFree) {
+      baton->{{ arg.name}}NeedsFree = false;
+      free((void*)baton->{{ arg.name }});
+    }
+        {%else%}
     free((void*)baton->{{ arg.name }});
+        {%endif%}
       {%endif%}
     {%endeach%}
   }
@@ -134,6 +142,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%endif%}
     {%elsif arg | isOid %}
   if (baton->{{ arg.name}}NeedsFree) {
+    baton->{{ arg.name}}NeedsFree = false;
     free((void *)baton->{{ arg.name }});
   }
     {%endif%}
