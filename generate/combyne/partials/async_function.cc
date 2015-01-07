@@ -114,8 +114,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       callback->Call(0, NULL);
     }
 
-    {%each args as arg %}
+    {%each args|argsInfo as arg %}
       {%if arg.shouldAlloc %}
+        {%if not arg.isCppClassStringOrArray %}
+        {%elsif arg | isOid %}
+    baton->{{ arg.name}}NeedsFree = false;
+        {%endif%}
     free((void*)baton->{{ arg.name }});
       {%endif%}
     {%endeach%}
