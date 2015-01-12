@@ -6,11 +6,14 @@ NodeGit
 [![Build
 Status](https://travis-ci.org/nodegit/nodegit.svg)](https://travis-ci.org/nodegit/nodegit)
 <a href="https://ci.appveyor.com/project/TimBranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2/branch/master" alt="Build Status: Windows" height="18" /></a>
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **Stable: 0.2.4**
 
 Maintained by Tim Branyen [@tbranyen](http://twitter.com/tbranyen), Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), John Haley [@johnhaley81](http://twitter.com/johnhaley81), Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp), and Nick Kallen [@nk](http://twitter.com/nk) with help from [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
+
+## Have a problem? Come chat with us! ##
+
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## API Documentation. ##
 
