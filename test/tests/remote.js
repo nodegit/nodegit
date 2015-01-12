@@ -91,15 +91,9 @@ describe("Remote", function() {
   it("can download from a remote", function() {
     var repo = this.repository;
 
-    return Remote.load(repo, "origin")
-    .then(function(remote) {
+    return Remote.load(repo, "origin").then(function(remote) {
       remote.connect(NodeGit.Enums.DIRECTION.FETCH);
       return remote.download();
-    })
-    .then(function() {
-      assert(true);
-    }, function() {
-      assert(false);
     });
   });
 
@@ -114,7 +108,7 @@ describe("Remote", function() {
   it("can fetch from all remotes", function() {
     // Set a reasonable timeout here for the fetchAll test
     this.timeout(15000);
-    
+
     return this.repository.fetchAll({
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
