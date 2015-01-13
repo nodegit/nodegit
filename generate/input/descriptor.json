@@ -489,10 +489,24 @@
           }
         },
         "git_diff_tree_to_workdir": {
-          "ignore": true
+          "args": {
+            "old_tree": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          }
         },
         "git_diff_tree_to_workdir_with_index": {
-          "ignore": true
+          "args": {
+            "old_tree": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          }
         }
       }
     },
