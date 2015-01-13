@@ -62,18 +62,18 @@
   "dependencies": {
     "find-parent-dir": "^0.3.0",
     "fs-extra": "~0.14.0",
-    "node-pre-gyp": "~0.6",
+    "node-pre-gyp": "~0.6.1",
     "nodegit-promise": "~1.0.0",
     "promisify-node": "~0.1.2"
   },
   "devDependencies": {
-    "mocha": "~2.1",
+    "mocha": "~2.1.0",
     "combyne": "~0.6.2",
     "istanbul": "~0.3.2",
     "js-beautify": "^1.5.4",
     "jshint": "~2.5.6",
     "lodash": "^2.4.1",
-    "nan": "~1.4",
+    "nan": "~1.4.1",
     "node-gyp": "~1.0.2",
     "nw-gyp": "^0.12.4",
     "request": "~2.51.0",
