@@ -62,7 +62,7 @@
   "dependencies": {
     "find-parent-dir": "^0.3.0",
     "fs-extra": "~0.14.0",
-    "node-pre-gyp": "~0.5.27",
+    "node-pre-gyp": "~0.6",
     "nodegit-promise": "~1.0.0",
     "promisify-node": "~0.1.2"
   },
