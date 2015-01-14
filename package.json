@@ -97,6 +97,7 @@
     "generateMissingTests": "node generate/scripts/generateMissingTests",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "install": "node lifecycleScripts/install",
+    "postinstall": "node lifecycleScripts/clean",
     "recompile": "BUILD_ONLY=true npm install",
     "rebuild": "BUILD_ONLY=true node generate && node-gyp configure build",
     "buildDebug": "node generate && BUILD_DEBUG=true npm install",
