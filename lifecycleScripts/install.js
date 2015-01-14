@@ -26,7 +26,7 @@ forNodeWebkit(local(".."))
       return checkAndBuild(nodeWebkitVersion);
     }
     if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
-      checkAndBuild();
+      return checkAndBuild();
     }
     if (process.env.BUILD_DEBUG) {
       console.info("[nodegit] Doing a debug build, no fetching allowed.");
