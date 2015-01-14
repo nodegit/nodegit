@@ -70,8 +70,11 @@ function getVendorLib(name, url) {
           .then(function() {
             if ((name == "libssh2") && (process.platform !== "win32")) {
               return new Promise(function(resolve, reject) {
+                console.info("[nodegit] Configuring libssh2.");
                 cp.exec(rooted(vendorPath) + "configure", {cwd: rooted(vendorPath)}, function(err, stdout, stderr) {
                   if (err) {
+                    console.error(err);
+                    console.error(stderr);
                     reject(err, stderr);
                   }
                   else {
