@@ -1,15 +1,17 @@
 const fs = require("fs");
 const path = require("path");
-const helpers = require("./helpers");
 const utils = require("./utils");
-const _ = require("lodash");
+var _;
 
 var version = require("../../package.json").libgit2.version;
 var libgit2 = require("../input/v" + version + ".json");
 var descriptor = require("../input/descriptor.json");
-  var supplement = require("../input/libgit2-supplement.json");
+var supplement = require("../input/libgit2-supplement.json");
 
-module.exports = (function generateJson() {
+module.exports = function generateJson() {
+  var helpers = require("./helpers");
+  _ = require("lodash");
+
   libgit2.types.forEach(function(type) {
     if (supplement.types[type[0]]){
       _.merge(type[1], supplement.types[type[0]]);
@@ -219,4 +221,8 @@ module.exports = (function generateJson() {
 
   utils.writeFile("output/idefs.json", output);
 
-}());
+};
+
+if (require.main === module) {
+  module.exports();
+}
