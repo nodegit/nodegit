@@ -60,7 +60,6 @@
     "node-pre-gyp"
   ],
   "dependencies": {
-    "find-parent-dir": "^0.3.0",
     "for-node-webkit": "0.0.2",
     "fs-extra": "~0.14.0",
     "node-pre-gyp": "~0.6.1",

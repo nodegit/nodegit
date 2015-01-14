@@ -58,7 +58,6 @@ npm.load({
   ];
 
   var modulesToPrune = [
-    "find-parent-dir",
     "for-node-webkit",
     "fs-extra",
     "node-pre-gyp",
