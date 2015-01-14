@@ -93,7 +93,6 @@
     "generateJson": "node generate/scripts/generateJson",
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "generateMissingTests": "node generate/scripts/generateMissingTests",
-    "prepublish": "node prepublish",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "install": "node install",
     "recompile": "BUILD_ONLY=true npm install",
