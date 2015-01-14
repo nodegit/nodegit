@@ -12,6 +12,7 @@
 .jshintrc
 .travis.yml
 .appveyor.yml
+.didntcomefromthenpmregistry
 
 *.vcxproj
 *.filters
