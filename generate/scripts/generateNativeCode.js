@@ -1,26 +1,25 @@
 const path = require("path");
-const combyne = require("combyne");
 const promisify = require("promisify-node");
 const fse = promisify(require("fs-extra"));
-const js_beautify = require("js-beautify").js_beautify;
-const beautify = function (input) {
-  return js_beautify(input, {
-    "brace_style": "end-expand",
-    "max_preserve_newlines": 2,
-    "preserve_newlines": true,
-    "indent_size": 2,
-    "indent_char": " "
-  });
-}
 const exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
-
 const utils = require("./utils");
-const idefs = require("../output/idefs");
 
-module.exports = (function generateNativeCode() {
+module.exports = function generateNativeCode() {
+  const combyne = require("combyne");
+  const js_beautify = require("js-beautify").js_beautify;
+  const beautify = function (input) {
+    return js_beautify(input, {
+      "brace_style": "end-expand",
+      "max_preserve_newlines": 2,
+      "preserve_newlines": true,
+      "indent_size": 2,
+      "indent_char": " "
+    });
+  };
+
   // Customize the delimiters so as to not process `{{{` or `}}}`.
   combyne.settings.delimiters = {
     START_RAW: "{{=",
@@ -91,6 +90,7 @@ module.exports = (function generateNativeCode() {
 
   // Determine which definitions to actually include in the source code.
   // This might not be needed anymore but to be frank I'm not totally positive
+  const idefs = require("../output/idefs");
   var enabled = idefs.filter(function(idef) {
     return !idef.ignore;
   });
@@ -119,7 +119,7 @@ module.exports = (function generateNativeCode() {
       }
       catch (e) {
         if (process.env.BUILD_ONLY) {
-          console.log(e);
+          console.error(e);
         }
       }
     });
@@ -143,4 +143,8 @@ module.exports = (function generateNativeCode() {
     })
   });
 
-}());
+};
+
+if (require.main === module) {
+  module.exports();
+}
