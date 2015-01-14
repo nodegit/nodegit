@@ -4,7 +4,7 @@ NodeGit
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
 [![Build Status] (https://travis-ci.org/nodegit/nodegit.svg)](https://travis-ci.org/nodegit/nodegit) 
-[![Build status] (https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true)](https://ci.appveyor.com/project/tbranyen/nodegit)
+[![Build status] (https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true)](https://ci.appveyor.com/project/timbranyen/nodegit)
 [![Dependency Status] (https://david-dm.org/nodegit/nodegit.svg)](https://david-dm.org/nodegit/nodegit) [![devDependency Status](https://david-dm.org/nodegit/nodegit/dev-status.svg)](https://david-dm.org/nodegit/nodegit#info=devDependencies)
 
 
