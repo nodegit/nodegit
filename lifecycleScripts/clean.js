@@ -6,6 +6,7 @@ var Promise = require("nodegit-promise");
 
 var rooted = path.join.bind(path, __dirname, "..");
 if (fse.existsSync(rooted(".didntcomefromthenpmregistry"))) {
+  console.error("[nodegit] We only clean when downloaded from the npm registry. Skipping clean.");
   return;
 }
 
