@@ -25,7 +25,7 @@ forNodeWebkit(local(".."))
       console.info("[nodegit] Must build for node-webkit");
       return checkAndBuild(nodeWebkitVersion);
     }
-    if (!fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
+    if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
       checkAndBuild();
     }
     if (process.env.BUILD_DEBUG) {
