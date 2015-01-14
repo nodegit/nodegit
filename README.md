@@ -52,6 +52,20 @@ npm install
 
 If you encounter errors, you most likely have not configured the dependencies correctly.
 
+### Debug build
+
+In order to track down possible bugs, you will need a debug buid so you
+can get a backtrace with [gdb](http://www.gnu.org/software/gdb/) or
+[lldb](http://lldb.llvm.org/).
+
+In order to do so, follow these steps:
+
+  1. `BUILLD_ONLY=true npm install`, or `BUILLD_ONLY=true npm link .` if
+     you are into it
+  2. `rm -rf build/Release`
+  3. `node-gyp configure --debug`
+  4. `node-gyp build --debug`
+
 ### Installing dependencies: ###
 
 #### Mac OS X ####
