@@ -5,7 +5,7 @@ var npm = require("npm");
 var Promise = require("nodegit-promise");
 
 var rooted = path.join.bind(path, __dirname, "..");
-if (!fse.existsSync(rooted(".didntcomefromthenpmregistry"))) {
+if (fse.existsSync(rooted(".didntcomefromthenpmregistry"))) {
   return;
 }
 
