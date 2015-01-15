@@ -43,7 +43,7 @@ using namespace std;
 {{ cppClassName }}::~{{ cppClassName }}() {
   // This is going to cause memory leaks. We'll have to solve that later
   // TODO: Clean up memory better
-  if (this->selfFreeing) {
+  if (this->selfFreeing && this->raw) {
     free(this->raw);
   }
 }
