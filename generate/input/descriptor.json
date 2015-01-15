@@ -182,6 +182,27 @@
         }
       }
     },
+    "checkout": {
+      "functions": {
+        "git_checkout_head": {
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_checkout_index": {
+          "ignore": true
+        },
+        "git_checkout_tree": {
+          "ignore": true
+        }
+      }
+    },
     "clone": {
       "functions": {
         "git_clone": {
