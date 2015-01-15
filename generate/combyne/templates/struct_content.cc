@@ -79,7 +79,7 @@ void {{ cppClassName }}::ConstructFields() {
 void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
   NanScope();
 
-  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(JSNewFunction);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(NanNew<String>("{{ jsClassName }}"));
@@ -95,7 +95,7 @@ void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
   target->Set(NanNew<String>("{{ jsClassName }}"), _constructor_template);
 }
 
-NAN_METHOD({{ cppClassName }}::New) {
+NAN_METHOD({{ cppClassName }}::JSNewFunction) {
   NanScope();
   {{ cppClassName }}* instance;
 

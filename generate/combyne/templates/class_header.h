@@ -49,7 +49,7 @@ class {{ cppClassName }} : public ObjectWrap {
     ~{{ cppClassName }}();
     {%endif%}
 
-    static NAN_METHOD(New);
+    static NAN_METHOD(JSNewFunction);
 
     {%each fields as field%}
       {%if not field.ignore%}

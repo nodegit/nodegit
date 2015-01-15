@@ -66,7 +66,7 @@ class {{ cppClassName }} : public ObjectWrap {
 
     void ConstructFields();
 
-    static NAN_METHOD(New);
+    static NAN_METHOD(JSNewFunction);
 
     {% each fields as field %}
       {% if not field.ignore %}

@@ -2,6 +2,7 @@
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
 #include <nan.h>
+#include <node.h>
 #include <string>
 #include <cstring>
 
@@ -18,7 +19,7 @@ Wrapper::Wrapper(void *raw) {
 void Wrapper::InitializeComponent(Handle<v8::Object> target) {
   NanScope();
 
-  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(JSNewFunction);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(NanNew<String>("Wrapper"));
@@ -29,7 +30,7 @@ void Wrapper::InitializeComponent(Handle<v8::Object> target) {
   target->Set(NanNew<String>("Wrapper"), tpl->GetFunction());
 }
 
-NAN_METHOD(Wrapper::New) {
+NAN_METHOD(Wrapper::JSNewFunction) {
   NanScope();
 
   if (args.Length() == 0 || !args[0]->IsExternal()) {

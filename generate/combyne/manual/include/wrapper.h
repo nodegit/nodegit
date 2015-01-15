@@ -25,7 +25,7 @@ class Wrapper : public ObjectWrap {
   private:
     Wrapper(void *raw);
 
-    static NAN_METHOD(New);
+    static NAN_METHOD(JSNewFunction);
     static NAN_METHOD(ToBuffer);
 
     void *raw;
