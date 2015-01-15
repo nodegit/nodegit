@@ -41,7 +41,7 @@ using namespace node;
   void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
     NanScope();
 
-    Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
+    Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(JSNewFunction);
 
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
     tpl->SetClassName(NanNew<String>("{{ jsClassName }}"));
@@ -67,7 +67,7 @@ using namespace node;
     target->Set(NanNew<String>("{{ jsClassName }}"), _constructor_template);
   }
 
-  NAN_METHOD({{ cppClassName }}::New) {
+  NAN_METHOD({{ cppClassName }}::JSNewFunction) {
     NanScope();
 
     if (args.Length() == 0 || !args[0]->IsExternal()) {
