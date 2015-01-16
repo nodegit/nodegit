@@ -60,7 +60,7 @@ can get a backtrace with [gdb](http://www.gnu.org/software/gdb/) or
 
 In order to do so, follow these steps:
 
-  1. `BUILLD_ONLY=true npm install`, or `BUILLD_ONLY=true npm link .` if
+  1. `BUILD_ONLY=true npm install`, or `BUILD_ONLY=true npm link .` if
      you are into it
   2. `rm -rf build/Release`
   3. `node-gyp configure --debug`
