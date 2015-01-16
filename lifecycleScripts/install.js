@@ -57,15 +57,15 @@ function checkAndBuild(nwVersion) {
   return checkPrepared.checkAll()
     .then(function(allGood) {
       if (allGood) {
-        return build(nwVersion);
+        return Promise.resolve();
       }
       else {
         console.info("[nodegit] Something is missing, retrieving dependencies and regenerating code");
-        return prepareForBuild()
-          .then(function() {
-            return build(nwVersion);
-          });
+        return prepareForBuild();
       }
+    })
+    .then(function() {
+      return build(nwVersion);
     });
 }
 
