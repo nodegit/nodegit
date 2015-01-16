@@ -27,3 +27,4 @@
 
 *.log
 .DS_STORE
+.idea

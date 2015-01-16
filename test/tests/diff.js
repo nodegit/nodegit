@@ -1,24 +1,34 @@
 var assert = require("assert");
 var path = require("path");
+var fs = require("fs");
+var exec = require("child_process").exec;
+var Diff = require("../../lib/diff");
 
 describe("Diff", function() {
   var reposPath = path.resolve("test/repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
   var Repository = require("../../lib/repository");
-  var Diff = require("../../lib/diff");
 
-  before(function() {
+  before(function(done) {
     var test = this;
 
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
-      return repository.getCommit(oid).then(function(commit) {
-        test.commit = commit;
+      return repository.getBranchCommit("master").then(function(masterCommit) {
 
-        return commit.getDiff().then(function(diff) {
-          test.diff = diff;
+        return masterCommit.getTree().then(function(tree) {
+          test.masterCommitTree = tree;
+
+          return repository.getCommit(oid).then(function(commit) {
+            test.commit = commit;
+
+            return commit.getDiff().then(function(diff) {
+              test.diff = diff;
+              done();
+            });
+          });
         });
       });
     });
@@ -52,5 +62,27 @@ describe("Diff", function() {
     assert.equal(lines[3].content(), newContent);
     assert.equal(lines[4].origin(), Diff.LINE.ADDITION);
     assert.equal(lines[3].contentLen(), 162);
+  });
+
+  it("can diff the workdir with index", function(done) {
+    var test = this;
+    var newFilePath = path.join(path.resolve("test/repos/workdir"), "wddiff.txt");
+
+    fs.writeFileSync(newFilePath, "1 line\n2 line\n3 line\n\n4");
+
+    exec("git add wddiff.txt", {cwd: path.resolve("test/repos/workdir")}, function() {
+      Diff.treeToWorkdirWithIndex(test.repository, test.masterCommitTree, null)
+        .then(function(workdirDiff) {
+          var patches = workdirDiff.patches();
+          assert.equal(patches.length, 1);
+
+          var hunks = patches[0].hunks();
+          assert.equal(hunks.length, 1);
+
+          var lines = hunks[0].lines();
+          assert.equal(lines[0].content(), "1 line\n");
+          done();
+        });
+    });
   });
 });
