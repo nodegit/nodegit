@@ -3,8 +3,9 @@ var path = require("path");
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
+var fixAppveyor = process.env.APPVEYOR ? describe.skip : describe;
 
-describe("Clone", function() {
+fixAppveyor("Clone", function() {
   var http = path.resolve("test/repos/http");
   var https = path.resolve("test/repos/https");
   var ssh = path.resolve("test/repos/ssh");
