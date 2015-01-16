@@ -4,6 +4,8 @@ var fs = require("fs");
 var rooted = path.join.bind(path, __dirname, "..");
 var pkg = require(rooted("package"));
 
+var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+
 module.exports.checkAll = function checkAll() {
   return Promise.all([
     checkVendor("libgit2"),
@@ -31,7 +33,15 @@ function checkExists(name) {
 module.exports.checkExists = checkExists;
 
 function checkVendor(name, skipVersion) {
-  var version = skipVersion ? "" : (pkg[name].sha || pkg[name].version);
+  var version = "";
+  if (!skipVersion) {
+    var vendorPackage = pkg[name];
+    if (NODE_VERSION === 0.1 && vendorPackage["0.10"]) {
+      vendorPackage = vendorPackage["0.10"];
+    }
+    version = vendorPackage.sha || vendorPackage.version;
+  }
+
   var vendorPath = "vendor/" + name + "/" + version;
   return checkExists(vendorPath);
 }
