@@ -15,8 +15,7 @@ var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
-
-forNodeWebkit(local(".."))
+return forNodeWebkit(local(".."))
   .then(function(results) {
     return results.nwVersion;
   })
@@ -41,14 +40,13 @@ forNodeWebkit(local(".."))
       .then(
         function() {
           console.info("[nodegit] Completed installation successfully.");
-          return Promise.done();
         },
         function() {
           console.info("[nodegit] Failed to install prebuilt binary, building manually.");
           return checkAndBuild();
         }
       );
-  })
+  });
 
 
 function checkAndBuild(nwVersion) {
