@@ -3,8 +3,8 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.2.4",
   "libgit2": {
-    "sha": "e476e7beba01efc496ba880f463a8ac61f948270",
-    "version": "0.21.3"
+    "sha": "bce9484813ad6aa3d365b11d5f6171e7f33cbbc5",
+    "version": "0.21.4"
   },
   "libssh2": {
     "url": "http://www.libssh2.org/download/libssh2-1.4.3.tar.gz",
