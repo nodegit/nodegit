@@ -35,11 +35,11 @@ function getVendorLib(name, url) {
 
   var version = vendorPackage.sha || vendorPackage.version;
 
-  console.info("[nodegit] Detecting " + vendorPath + ".");
+  console.info("[nodegit] Detecting " + vendorPath + version + ".");
   return check(name)
     .then(function(exists) {
       if (exists) {
-        console.info("[nodegit] " + vendorPath + " already exists.");
+        console.info("[nodegit] " + vendorPath + version + " already exists.");
         return Promise.resolve();
       }
       else {
@@ -95,7 +95,7 @@ function getVendorLib(name, url) {
             }
           })
           .then(function() {
-            console.info("[nodegit] Successfully updated " + vendorPath + ".");
+            console.info("[nodegit] Successfully updated " + vendorPath + version + ".");
           });
       }
     });
