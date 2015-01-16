@@ -13,6 +13,8 @@ var pkg = require(rooted("package"));
 var tar;
 var request;
 
+var NODE_VERSION = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+
 module.exports = function retrieveExternalDependencies() {
   tar = require("tar");
   request = require("request");
@@ -26,7 +28,12 @@ module.exports = function retrieveExternalDependencies() {
 
 function getVendorLib(name, url) {
   var vendorPath = "vendor/" + name + "/";
-  var version = pkg[name].sha || pkg[name].version;
+  var vendorPackage = pkg[name];
+  if (NODE_VERSION === 0.1 && vendorPackage["0.10"]) {
+    vendorPackage = vendorPackage["0.10"];
+  }
+
+  var version = vendorPackage.sha || vendorPackage.version;
 
   console.info("[nodegit] Detecting " + vendorPath + ".");
   return check(name)
