@@ -3,6 +3,7 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.2.7",
   "libgit2": {
+    "url": "https://github.com/libgit2/libgit2/tarball/d853fb9f24e0fe63b3dce9fbc04fd9cfe17a030b",
     "sha": "d853fb9f24e0fe63b3dce9fbc04fd9cfe17a030b",
     "version": "0.21.5"
   },

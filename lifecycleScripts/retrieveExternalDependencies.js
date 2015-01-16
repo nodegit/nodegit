@@ -19,14 +19,14 @@ module.exports = function retrieveExternalDependencies() {
   tar = require("tar");
   request = require("request");
   return Promise.all([
-    getVendorLib("libgit2", "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha),
-    getVendorLib("libssh2", pkg.libssh2.url),
-    getVendorLib("http_parser", pkg.http_parser.url)
+    getVendorLib("libgit2"),
+    getVendorLib("libssh2"),
+    getVendorLib("http_parser")
   ])
 };
 
 
-function getVendorLib(name, url) {
+function getVendorLib(name) {
   var vendorPath = "vendor/" + name + "/";
   var vendorPackage = pkg[name];
   if (NODE_VERSION === 0.1 && vendorPackage["0.10"]) {
@@ -63,7 +63,7 @@ function getVendorLib(name, url) {
                 strip: true
               });
 
-              request.get(url)
+              request.get(vendorPackage.url)
                 .pipe(zlib.createUnzip())
                 .pipe(extract)
                 .on("error", reject)
