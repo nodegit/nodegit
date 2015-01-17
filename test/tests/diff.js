@@ -12,6 +12,7 @@ describe("Diff", function() {
 
   before(function(done) {
     var test = this;
+    var newFilePath = path.join(path.resolve("test/repos/workdir"), "wddiff.txt");
 
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
@@ -26,7 +27,15 @@ describe("Diff", function() {
 
             return commit.getDiff().then(function(diff) {
               test.diff = diff;
-              done();
+              fs.writeFileSync(newFilePath, "1 line\n2 line\n3 line\n\n4");
+
+              exec("git add wddiff.txt", {cwd: path.resolve("test/repos/workdir")}, function() {
+                Diff.treeToWorkdirWithIndex(test.repository, test.masterCommitTree, null)
+                .then(function(workdirDiff) {
+                    test.workdirDiff = workdirDiff;
+                    done();
+                });
+              });
             });
           });
         });
@@ -64,25 +73,14 @@ describe("Diff", function() {
     assert.equal(lines[3].contentLen(), 162);
   });
 
-  it("can diff the workdir with index", function(done) {
-    var test = this;
-    var newFilePath = path.join(path.resolve("test/repos/workdir"), "wddiff.txt");
+  it("can diff the workdir with index", function() {
+    var patches = this.workdirDiff.patches();
+    assert.equal(patches.length, 1);
 
-    fs.writeFileSync(newFilePath, "1 line\n2 line\n3 line\n\n4");
+    var hunks = patches[0].hunks();
+    assert.equal(hunks.length, 1);
 
-    exec("git add wddiff.txt", {cwd: path.resolve("test/repos/workdir")}, function() {
-      Diff.treeToWorkdirWithIndex(test.repository, test.masterCommitTree, null)
-        .then(function(workdirDiff) {
-          var patches = workdirDiff.patches();
-          assert.equal(patches.length, 1);
-
-          var hunks = patches[0].hunks();
-          assert.equal(hunks.length, 1);
-
-          var lines = hunks[0].lines();
-          assert.equal(lines[0].content(), "1 line\n");
-          done();
-        });
-    });
+    var lines = hunks[0].lines();
+    assert.equal(lines[0].content(), "1 line\n");
   });
 });
