@@ -215,6 +215,25 @@ describe("Commit", function() {
     });
   });
 
+  it("can specify limit higher than actual parents", function() {
+    return this.commit.getParents(2).then(function(parents) {
+      assert.equal(parents.length, 1);
+    });
+  });
+
+  it("can fetch parents of a merge commit", function () {
+    return NodeGit.Repository.open(reposPath)
+    .then(function (repo) {
+      return repo.getCommit("bf1da765e357a9b936d6d511f2c7b78e0de53632");
+    })
+    .then(function (commit) {
+      return commit.getParents();
+    })
+    .then(function (parents) {
+      assert.equal(parents.length, 2);
+    });
+  });
+
   it("has a parent count", function() {
     assert.equal(1, this.commit.parentcount());
   });
