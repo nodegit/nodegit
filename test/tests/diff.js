@@ -81,6 +81,6 @@ describe("Diff", function() {
     assert.equal(hunks.length, 1);
 
     var lines = hunks[0].lines();
-    assert.equal(lines[0].content(), "1 line\n");
+    assert.equal(lines[0].content().substr(0, lines[0].contentLen()), "1 line\n");
   });
 });
