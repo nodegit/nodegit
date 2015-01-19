@@ -30,6 +30,7 @@ git:
 branches:
   only:
     - master
+    - v0.3
 os:
   - linux
   - osx
