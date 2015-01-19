@@ -1,21 +1,23 @@
-var nodegit = require('../');
-var path = require('path');
-var Promise = require('nodegit-promise');
-var promisify = require('promisify-node');
-var fse = promisify(require('fs-extra'));
+var nodegit = require("../");
+var path = require("path");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 fse.ensureDir = promisify(fse.ensureDir);
 
-var repoDir = '../../newRepo';
-var fileName = 'newFile.txt';
+var repoDir = "../../newRepo";
+var fileName = "newFile.txt";
 
-var baseFileContent = 'All Bobs are created equal. ish.\n';
+var baseFileContent = "All Bobs are created equal. ish.\n";
 var ourFileContent = "Big Bobs are best, IMHO.\n";
 var theirFileContent = "Nobody expects the small Bobquisition!\n";
-var finalFileContent = "Big Bobs are beautiful, and the small are unexpected!\n";
+var finalFileContent = "Big Bobs are beautiful and the small are unexpected!\n";
 
-var baseSignature = nodegit.Signature.create("Peaceful Bob", "justchill@bob.net", 123456789, 60);
-var ourSignature = nodegit.Signature.create("Big Bob", "impressive@bob.net", 123456789, 60);
-var theirSignature = nodegit.Signature.create("Small Bob", "underestimated@bob.net", 123456789, 60);
+var baseSignature = nodegit.Signature.create("Peaceful Bob",
+  "justchill@bob.net", 123456789, 60);
+var ourSignature = nodegit.Signature.create("Big Bob",
+  "impressive@bob.net", 123456789, 60);
+var theirSignature = nodegit.Signature.create("Small Bob",
+  "underestimated@bob.net", 123456789, 60);
 
 var ourBranchName = "ours";
 var theirBranchName = "theirs";
@@ -38,7 +40,10 @@ fse.remove(path.resolve(__dirname, repoDir))
 })
 .then(function(repo) {
   repository = repo;
-  return fse.writeFile(path.join(repository.workdir(), fileName), baseFileContent);
+  return fse.writeFile(
+    path.join(repository.workdir(), fileName),
+    baseFileContent
+  );
 })
 
 
@@ -49,49 +54,58 @@ fse.remove(path.resolve(__dirname, repoDir))
 .then(function(index) {
   index.read(1);
   index.addByPath(fileName);
-  index.write()
+  index.write();
 
   return index.writeTree();
 })
 .then(function(oid) {
-  return repository.createCommit('HEAD', baseSignature, baseSignature, 'bobs are all ok', oid, []);
+  return repository.createCommit("HEAD", baseSignature,
+    baseSignature, "bobs are all ok", oid, []);
 })
 .then(function(commitOid) {
   baseCommitOid = commitOid;
-  return repository.getCommit(commitOid).then(function(commit) {
-    baseCommit = commit;
-  });
+  return repository.getCommit(commitOid)
+    .then(function(commit) {
+      baseCommit = commit;
+    });
 })
 
 
 // create our branches
 .then(function() {
-  return repository.createBranch(ourBranchName, baseCommitOid).then(function(branch) {
-    ourBranch = branch;
-  });
+  return repository.createBranch(ourBranchName, baseCommitOid)
+    .then(function(branch) {
+      ourBranch = branch;
+    });
 })
 .then(function() {
-  return repository.createBranch(theirBranchName, baseCommitOid).then(function(branch) {
-    theirBranch = branch;
-  });
+  return repository.createBranch(theirBranchName, baseCommitOid)
+    .then(function(branch) {
+      theirBranch = branch;
+    });
 })
 
 
 // Write and commit our version of the file
 .then(function() {
-  return fse.writeFile(path.join(repository.workdir(), fileName), ourFileContent);
+  return fse.writeFile(
+    path.join(repository.workdir(), fileName),
+    ourFileContent
+  );
 })
 .then(function() {
-  return repository.openIndex().then(function(index) {
-    index.read(1);
-    index.addByPath(fileName);
-    index.write()
+  return repository.openIndex()
+    .then(function(index) {
+      index.read(1);
+      index.addByPath(fileName);
+      index.write();
 
-    return index.writeTree();
-  });
+      return index.writeTree();
+    });
 })
 .then(function(oid) {
-  return repository.createCommit(ourBranch.name(), ourSignature, ourSignature, 'lol big bobs :yesway:', oid, [baseCommit]);
+  return repository.createCommit(ourBranch.name(), ourSignature,
+    ourSignature, "lol big bobs :yesway:", oid, [baseCommit]);
 })
 .then(function(commitOid) {
   return repository.getCommit(commitOid).then(function(commit) {
@@ -102,19 +116,23 @@ fse.remove(path.resolve(__dirname, repoDir))
 
 // Write and commit their version of the file
 .then(function() {
-  return fse.writeFile(path.join(repository.workdir(), fileName), theirFileContent);
+  return fse.writeFile(
+    path.join(repository.workdir(), fileName),
+    theirFileContent
+  );
 })
 .then(function() {
   return repository.openIndex().then(function(index) {
     index.read(1);
     index.addByPath(fileName);
-    index.write()
+    index.write();
 
     return index.writeTree();
   });
 })
 .then(function(oid) {
-  return repository.createCommit(theirBranch.name(), theirSignature, theirSignature, 'lol big bobs :poop:', oid, [baseCommit]);
+  return repository.createCommit(theirBranch.name(), theirSignature,
+    theirSignature, "lol big bobs :poop:", oid, [baseCommit]);
 })
 .then(function(commitOid) {
   return repository.getCommit(commitOid).then(function(commit) {
@@ -125,9 +143,10 @@ fse.remove(path.resolve(__dirname, repoDir))
 
 // move the head to our branch, just to keep things tidy
 .then(function() {
-  return nodegit.Reference.lookup(repository, 'HEAD').then(function(head) {
-    return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
-  })
+  return nodegit.Reference.lookup(repository, "HEAD");
+})
+.then(function(head) {
+  return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
 })
 
 
@@ -140,11 +159,14 @@ fse.remove(path.resolve(__dirname, repoDir))
 // You have to write it to the repository instead of just writing it.
 .then(function(index) {
   if (index.hasConflicts()) {
-    console.log('Conflict time!');
+    console.log("Conflict time!");
 
     // if the merge had comflicts, solve them
     // (in this case, we simply overwrite the file)
-    fse.writeFileSync(path.join(repository.workdir(), fileName), finalFileContent);
+    fse.writeFileSync(
+      path.join(repository.workdir(), fileName),
+      finalFileContent
+    );
   }
 })
 
@@ -162,8 +184,9 @@ fse.remove(path.resolve(__dirname, repoDir))
 })
 .then(function(oid) {
   // create the new merge commit on our branch
-  return repository.createCommit(ourBranch.name(), baseSignature, baseSignature, 'Stop this bob sized fued', oid, [ourCommit, theirCommit]);
+  return repository.createCommit(ourBranch.name(), baseSignature,
+    baseSignature, "Stop this bob sized fued", oid, [ourCommit, theirCommit]);
 })
 .done(function(commitId) {
-  console.log('New Commit: ', commitId);
+  console.log("New Commit: ", commitId);
 });

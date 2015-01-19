@@ -34,7 +34,7 @@ In the file each `{className}` corresponds to a file found at `test/tests/{class
 
 In the file that your test is going in you can just append it to the file inside of the `describe` function block.
 
-It can be helpful to reference the [libgit2 API docs](https://libgit2.github.com/libgit2/#v0.21.2) to know what the field or function is doing inside of libgit2 and referencing the [NodeGit API docs](http://www.nodegit.org/) can also help. Looking at examples inside of `/example` can show you how we wrap the libgit2 library and how you can call into it from JavaScript.
+It can be helpful to reference the [libgit2 API docs](https://libgit2.github.com/libgit2/#v0.21.2) to know what the field or function is doing inside of libgit2 and referencing the [NodeGit API docs](http://www.nodegit.org/) can also help. Looking at examples inside of `/examples` can show you how we wrap the libgit2 library and how you can call into it from JavaScript.
 
 The idea is to test the basic functionality of the field/function and to confirm that it's returning or setting the value(s) correctly. Bugs inside of libgit2 will have to either have a work-around or be ignored.
 
