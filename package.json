@@ -3,6 +3,7 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.2.4",
   "libgit2": {
+    "url": "https://github.com/libgit2/libgit2/tarball/4af08d9f69f151f6362df51d7d7f41527e2af05c",
     "sha": "4af08d9f69f151f6362df51d7d7f41527e2af05c",
     "version": "0.21.2"
   },
@@ -60,10 +61,11 @@
     "node-pre-gyp"
   ],
   "dependencies": {
-    "find-parent-dir": "^0.3.0",
+    "for-node-webkit": "0.0.2",
     "fs-extra": "~0.14.0",
     "node-pre-gyp": "~0.6.1",
     "nodegit-promise": "~1.0.0",
+    "npm": "^2.1.18",
     "promisify-node": "~0.1.2"
   },
   "devDependencies": {
@@ -85,7 +87,7 @@
     "host": "https://s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
-    "lint": "jshint lib test/tests examples",
+    "lint": "jshint lib test/tests examples lifecycleScripts",
     "cov": "node test",
     "mocha": "mocha test/runner test/tests",
     "mochaDebug": "mocha --debug-brk test/runner test/tests",
@@ -93,10 +95,12 @@
     "generateJson": "node generate/scripts/generateJson",
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "generateMissingTests": "node generate/scripts/generateMissingTests",
-    "prepublish": "node prepublish",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
-    "install": "node install",
+    "install": "node lifecycleScripts/install",
+    "postinstall": "node lifecycleScripts/clean",
     "recompile": "BUILD_ONLY=true npm install",
-    "rebuild": "BUILD_ONLY=true node generate && node-gyp configure build"
+    "rebuild": "BUILD_ONLY=true node generate && node-gyp configure build",
+    "buildDebug": "node generate && BUILD_DEBUG=true npm install",
+    "prepublish": "node lifecycleScripts/prepareForBuild.js"
   }
 }
