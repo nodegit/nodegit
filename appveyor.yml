@@ -19,7 +19,6 @@ init:
 # what combinations to test
 environment:
   matrix:
-    - nodejs_version: 0.11
     - nodejs_version: 0.10
 
 # Get the latest stable version of Node 0.STABLE.latest
