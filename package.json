@@ -85,7 +85,7 @@
     "host": "https://s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
-    "lint": "jshint lib test/tests",
+    "lint": "jshint lib test/tests examples",
     "cov": "node test",
     "mocha": "mocha test/runner test/tests",
     "mochaDebug": "mocha --debug-brk test/runner test/tests",
