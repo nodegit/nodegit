@@ -45,7 +45,7 @@ function checkVendor(name, skipVersion) {
   var vendorPath = "vendor/" + name + "/" + version;
   return checkExists(vendorPath);
 }
-module.exports.checkVendor = checkVendor
+module.exports.checkVendor = checkVendor;
 
 function checkGenerated() {
   return Promise.all([
