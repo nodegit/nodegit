@@ -4,8 +4,6 @@ var path = require("path");
 var fs = require("fs");
 
 var local = path.join.bind(path, __dirname);
-var pkg = require(local("../package"));
-var cp = require("child_process");
 
 var checkPrepared = require(local("checkPrepared"));
 var forNodeWebkit = require("for-node-webkit");
@@ -42,7 +40,8 @@ return forNodeWebkit(local(".."))
           console.info("[nodegit] Completed installation successfully.");
         },
         function() {
-          console.info("[nodegit] Failed to install prebuilt binary, building manually.");
+          console.info("[nodegit] Failed to install prebuilt binary, " +
+            "building manually.");
           return checkAndBuild();
         }
       );
@@ -50,7 +49,8 @@ return forNodeWebkit(local(".."))
 
 
 function checkAndBuild(nwVersion) {
-  console.info("[nodegit] Making sure dependencies are available and native code is generated");
+  console.info("[nodegit] Making sure dependencies are available and native " +
+    "code is generated");
 
   return checkPrepared.checkAll()
     .then(function(allGood) {
@@ -58,7 +58,8 @@ function checkAndBuild(nwVersion) {
         return Promise.resolve();
       }
       else {
-        console.info("[nodegit] Something is missing, retrieving dependencies and regenerating code");
+        console.info("[nodegit] Something is missing, retrieving " +
+        "dependencies and regenerating code");
         return prepareForBuild();
       }
     })
@@ -84,11 +85,11 @@ function build(nwVersion) {
   var builder = nwVersion ? "nw-gyp" : "node-gyp";
   var target = (nwVersion ? "--target=\"" + nwVersion + "\"": "");
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
-  var cmd = path.resolve(".", "node_modules", ".bin", builder)
-    + " clean configure"
-    + debug
-    + target
-    + " build";
+  var cmd = path.resolve(".", "node_modules", ".bin", builder) +
+    " clean configure" +
+    debug +
+    target +
+    " build";
 
   return exec(cmd, opts)
     .then(function() {
