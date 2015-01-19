@@ -20,7 +20,7 @@ module.exports = function prepareForBuild() {
         resolve();
         console.info(stdout);
       }
-    })
+    });
   }).then(function() {
     return Promise.all([
       retrieve(),
@@ -37,7 +37,8 @@ function doGenerate() {
       return Promise.resolve();
     }
     else {
-      console.info("[nodegit] Generated code is missing or incomplete, regenerating now.");
+      console.info("[nodegit] Generated code is missing or incomplete, " +
+        "regenerating now.");
 
       return new Promise(function(resolve, reject) {
         try {
@@ -51,7 +52,7 @@ function doGenerate() {
           //console.info(stderr);
           reject(e);
         }
-      })
+      });
     }
   });
 }

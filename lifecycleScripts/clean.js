@@ -1,12 +1,12 @@
 var fse = require("fs-extra");
 var path = require("path");
-var cp = require("child_process");
 var npm = require("npm");
 var Promise = require("nodegit-promise");
 
 var rooted = path.join.bind(path, __dirname, "..");
 if (fse.existsSync(rooted(".didntcomefromthenpmregistry"))) {
-  console.error("[nodegit] We only clean when downloaded from the npm registry. Skipping clean.");
+  console.error("[nodegit] We only clean when downloaded from the npm " +
+    "registry. Skipping clean.");
   return;
 }
 
@@ -86,10 +86,11 @@ npm.load({
       var failures = filesToDelete.some(function(deletable) {
         try {
           fse.removeSync(rooted(deletable));
-          return false
+          return false;
         }
         catch (e) {
-          console.info("[nodegit] Error deleting files. Errored on " + rooted(deletable)) + ".";
+          console.info("[nodegit] Error deleting files. Errored on " +
+            rooted(deletable) + ".");
           console.error(e);
 
           reject(e);
