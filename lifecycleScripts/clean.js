@@ -22,6 +22,7 @@ npm.load({
     "build/nodegit.target.mk",
     "build/vendor",
 
+    "build/Release/.deps",
     "build/Release/git2.a",
     "build/Release/http_parser.a",
     "build/Release/linker.lock",
@@ -30,6 +31,7 @@ npm.load({
     "build/Release/ssh2.a",
     "build/Release/zlib.a",
 
+    "build/Debug/.deps",
     "build/Debug/git2.a",
     "build/Debug/http_parser.a",
     "build/Debug/linker.lock",
