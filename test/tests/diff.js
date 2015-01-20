@@ -1,18 +1,21 @@
 var assert = require("assert");
 var path = require("path");
-var fs = require("fs");
-var exec = require("child_process").exec;
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 var Diff = require("../../lib/diff");
 
 describe("Diff", function() {
+  var Repository = require("../../lib/repository");
   var reposPath = path.resolve("test/repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
-
-  var Repository = require("../../lib/repository");
+  var diffFilename = "wddiff.txt";
+  var diffFilepath = path.join(
+    path.resolve("test/repos/workdir"),
+    diffFilename
+  );
 
   before(function(done) {
     var test = this;
-    var newFilePath = path.join(path.resolve("test/repos/workdir"), "wddiff.txt");
 
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
@@ -27,13 +30,33 @@ describe("Diff", function() {
 
             return commit.getDiff().then(function(diff) {
               test.diff = diff;
-              fs.writeFileSync(newFilePath, "1 line\n2 line\n3 line\n\n4");
 
-              exec("git add wddiff.txt", {cwd: path.resolve("test/repos/workdir")}, function() {
-                Diff.treeToWorkdirWithIndex(test.repository, test.masterCommitTree, null)
+              fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4")
+              .then(function() {
+                return test.repository.openIndex();
+              })
+              .then(function(indexResult) {
+                test.index = indexResult;
+                return test.index.read(1);
+              })
+              .then(function() {
+                return test.index.addByPath(diffFilename);
+              })
+              .then(function() {
+                return test.index.write();
+              })
+              .then(function() {
+                return test.index.writeTree();
+              })
+              .then(function() {
+                Diff.treeToWorkdirWithIndex(
+                  test.repository,
+                  test.masterCommitTree,
+                  null
+                )
                 .then(function(workdirDiff) {
-                    test.workdirDiff = workdirDiff;
-                    done();
+                  test.workdirDiff = workdirDiff;
+                  done();
                 });
               });
             });
@@ -81,6 +104,9 @@ describe("Diff", function() {
     assert.equal(hunks.length, 1);
 
     var lines = hunks[0].lines();
-    assert.equal(lines[0].content().substr(0, lines[0].contentLen()), "1 line\n");
+    assert.equal(
+      lines[0].content().substr(0, lines[0].contentLen()),
+      "1 line\n"
+    );
   });
 });
