@@ -103,13 +103,14 @@ function compile(err) {
     console.info("[nodegit] Failed to install prebuilt, attempting compile.");
   }
 
-  tar = require("tar");
-  request = require("request");
-
   console.info("[nodegit] Installing all devDependencies");
   return exec("npm install --ignore-scripts --dont-prepublish")
     .then(function() {
       console.info("[nodegit] Determining source dependencies.");
+
+      tar = require("tar");
+      request = require("request");
+
       return Promise.all([
         python(),
         getVendorLib("libgit2", "https://github.com/libgit2/libgit2/tarball/" + pkg.libgit2.sha),
