@@ -11,7 +11,7 @@ NodeGit
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**Stable: 0.2.5**
+**Stable: 0.2.6**
 
 ## Maintained by ##
 Tim Branyen [@tbranyen](http://twitter.com/tbranyen), John Haley [@johnhaley81](http://twitter.com/johnhaley81), and Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
