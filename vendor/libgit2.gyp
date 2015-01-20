@@ -323,6 +323,8 @@
             "libgit2/src/win32/version.h",
             "libgit2/src/win32/w32_util.c",
             "libgit2/src/win32/w32_util.h",
+            "libgit2/src/win32/path_w32.c",
+            "libgit2/src/win32/path_w32.h",
             "libgit2/src/transports/winhttp.c",
             "libgit2/deps/regex/regex.c",
           ],
