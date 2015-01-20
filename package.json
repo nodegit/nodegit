@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "libgit2": {
     "sha": "bce9484813ad6aa3d365b11d5f6171e7f33cbbc5",
     "version": "0.21.4"
@@ -28,13 +28,6 @@
   "license": "MIT",
   "author": "Tim Branyen (@tbranyen)",
   "contributors": [
-    {
-      "name": "Michael Robinson",
-      "email": "mike@pagesofinterest.net"
-    },
-    {
-      "name": "Nick Kallen"
-    },
     {
       "name": "John Haley",
       "email": "john@haley.io"
