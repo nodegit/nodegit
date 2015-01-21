@@ -208,11 +208,17 @@ This update is wholly and entirely a breaking one, and older versions won't be
 maintained. For the purpose of migration, perhaps the biggest point to make
 is that async methods can now use promises, rather than just taking callbacks. Additionally, lots of method and property names have changed.
 
-## Node-Webkit ##
+## nw.js (Node-Webkit) ##
 
+### Native compilation for nw.js ###
 A common issue is with nodegit not functioning properly inside of
-[node-webkit](http://github.com/rogerwang/node-webkit) applications. Because nodegit
+[nw.js](http://github.com/nwjs/nw.js) applications. Because nodegit
 is a native module, it has to be rebuilt for node-webkit using
-[nw-gyp](http://github.com/rogerwang/nw-gyp). By default, nodegit will look in the root package's package.json for an `engines` property, and within look for a `node-webkit` property that holds a specific version of node-webkit. The value of this property is what will get passed as the `--target` argument to `nw-gyp configure`.
+[nw-gyp](http://github.com/rogerwang/nw-gyp). By default, nodegit will look in the root package's package.json for an `engines` property, and within look for a `nw.js` property (or a `node-webkit` if the prior isn't found) that holds a specific version of nw.js. The value of this property is what will get passed as the `--target` argument to `nw-gyp configure`.
 
-Currently, support for node-webkit is limited, although we intend to support it better in the future.
+### Version incompatibiltiy ###
+Prior to version 0.2.6, nodegit used [nan](http://github.com/rvagg/nan) v1.4.3. As of 0.2.6, nodegit uses nan v1.5.1 to provide support for io.js. Unfortunately, this breaks some nw.js compatability. With nw.js 0.12+, the name was changed to nw.js from node-webkit. The alpha currently still breaks with nodegit due to the nan update, but should be fixed in the final v0.12.0 release. Åpplications using previous versions of node webkit have 2 options:
+1) Use an older version (v0.2.4 or earlier) of nodegit
+2) Use [npm shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap) to force nodegit to use nan v1.4.3. Since the binary always recompiles when being used with nw.js, you shouldnt have to do anything else to make sure it works. As of nodegit v0.2.6, the change to nan v1.4.3 doesn't cause any problems.  
+
+Currently, support for nw.js is limited, although we intend to support it better in the future.
