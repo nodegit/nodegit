@@ -3,21 +3,34 @@ NodeGit
 
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
-[![Build Status] (https://travis-ci.org/nodegit/nodegit.svg)](https://travis-ci.org/nodegit/nodegit)
-[![Build status] (https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true)](https://ci.appveyor.com/project/timbranyen/nodegit)
-[![Dependency Status] (https://david-dm.org/nodegit/nodegit.svg)](https://david-dm.org/nodegit/nodegit)
+[![Build Status] (https://travis-ci.org/nodegit/nodegit.svg)]
+(https://travis-ci.org/nodegit/nodegit)
+[![Build status] (https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true)]
+(https://ci.appveyor.com/project/timbranyen/nodegit)
+[![Dependency Status] (https://david-dm.org/nodegit/nodegit.svg)]
+(https://david-dm.org/nodegit/nodegit)
 
-## Have a problem? Come chat with us! ##
 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **Stable: 0.2.7**
 
+**Working: 0.3.0**
+
+
+
+## Have a problem? Come chat with us! ##
+
+[![Gitter](https://badges.gitter.im/Join Chat.svg)]
+(https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ## Maintained by ##
-Tim Branyen [@tbranyen](http://twitter.com/tbranyen), John Haley [@johnhaley81](http://twitter.com/johnhaley81), and Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
+Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
+John Haley [@johnhaley81](http://twitter.com/johnhaley81), and
+Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from tons of
+[awesome contributors](https://github.com/nodegit/nodegit/contributors)!
 
 ### Alumni Maintainers ###
-Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), and Nick Kallen [@nk](http://twitter.com/nk)
+Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), and
+Nick Kallen [@nk](http://twitter.com/nk)
 
 ## API Documentation. ##
 
@@ -40,7 +53,7 @@ Minimum dependencies:
 
 - [Python 2](https://www.python.org/)
 
-If you wish to help contribute to nodegit it is useful to build locally.
+If you wish to help contribute to NodeGit it is useful to build locally.
 
 ``` bash
 # Fetch this project.
@@ -49,7 +62,7 @@ git clone git://github.com/nodegit/nodegit.git
 # Enter the repository.
 cd nodegit
 
-# Installs the template engine, run the code generation script, and build.
+# Install all dependencies, run the code generation scripts, and build.
 npm install
 ```
 
@@ -63,11 +76,16 @@ can get a backtrace with [gdb](http://www.gnu.org/software/gdb/) or
 
 In order to do so, follow these steps:
 
-  1. `BUILD_ONLY=true npm install`, or `BUILD_ONLY=true npm link .` if
-     you are into it
-  2. `rm -rf build/Release`
-  3. `node-gyp configure --debug`
-  4. `node-gyp build --debug`
+  1. `BUILD_ONLY=true npm install` (or `BUILD_ONLY=true npm link`)
+  3. `node-gyp rebuild --debug` (the same as `node-gyp clean configure --debug build`)
+
+If you're doing a subsequent rebuild of NodeGit in debug, the clean function will cause
+a lot of extraneous recompilation of things you probably didn't change (like the vendor
+dependencies).
+
+  1. `BUILD_ONLY=true npm install` (or `BUILD_ONLY=true npm link`)
+  2. `rm -rf build/Release` to make sure a release build doesnt get loaded instead of the debug build.
+  3. `node-gyp configure build --debug`
 
 ### Installing dependencies: ###
 
@@ -89,12 +107,15 @@ Using Pacman in Arch Linux:
 sudo pacman -S base-devel
 ```
 
+Note that GCC/G++ 4.7+ are required, as the library makes use of some c++11 std calls.
+
 #### Windows ####
 
 - [Download and install Python](https://www.python.org/download/windows).
 - [Download and install VS Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop).
 
-You may have to add a build flag to the installation process to successfully install.  Try first without, if the build fails, try again with the flag.
+You may have to add a build flag to the installation process to successfully install.  
+Try first without, if the build fails, try again with the flag.
 
 *Allegedly the order in which you install Visual Studio could trigger this error.*
 
@@ -102,6 +123,16 @@ You may have to add a build flag to the installation process to successfully ins
 npm install nodegit --msvs_version=2013
 # Or whatever version you've installed.
 ```
+
+##### A note on environment variables in Windows #####
+In many of the npm scripts (and examples above), things are run like
+`BUILD_ONLY=true npm install`. This sets the `BUILD_ONLY` environment variable
+to true for the duration of that command. This doesn't work in windows, however
+there is a solution. You can use cmd to call a command inside of cmd (very meta)
+with the variable set, and it only lasts for the duration of the inner call to cmd.
+So for the above example, you would run `cmd /C "set BUILD_ONLY=true && npm install"`.
+See here for more details:
+[SuperUser](http://superuser.com/questions/223104/setting-environment-variable-for-just-one-command-in-windows-cmd-exe).
 
 ## API examples. ##
 
@@ -191,6 +222,8 @@ open("tmp")
   });
 ```
 
+For more examples, check the `examples/` folder.
+
 ## Unit tests. ##
 
 You will need to build locally before running the tests.  See above.
@@ -206,19 +239,33 @@ https://github.com/nodegit/nodegit/compare/refs/tags/0.1.4...0.2.0
 
 This update is wholly and entirely a breaking one, and older versions won't be
 maintained. For the purpose of migration, perhaps the biggest point to make
-is that async methods can now use promises, rather than just taking callbacks. Additionally, lots of method and property names have changed.
+is that async methods can now use promises, rather than just taking callbacks.
+Additionally, lots of method and property names have changed.
 
 ## nw.js (Node-Webkit) ##
 
 ### Native compilation for nw.js ###
-A common issue is with nodegit not functioning properly inside of
-[nw.js](http://github.com/nwjs/nw.js) applications. Because nodegit
+A common issue is with NodeGit not functioning properly inside of
+[nw.js](http://github.com/nwjs/nw.js) applications. Because NodeGit
 is a native module, it has to be rebuilt for node-webkit using
-[nw-gyp](http://github.com/rogerwang/nw-gyp). By default, nodegit will look in the root package's package.json for an `engines` property, and within look for a `nw.js` property (or a `node-webkit` if the prior isn't found) that holds a specific version of nw.js. The value of this property is what will get passed as the `--target` argument to `nw-gyp configure`.
+[nw-gyp](http://github.com/rogerwang/nw-gyp). By default, NodeGit will look
+in the root package's package.json for an `engines` property, and within look
+for a `nw.js` property (or a `node-webkit` if the prior isn't found) that holds
+a specific version of nw.js. The value of this property is what will get passed
+as the `--target` argument to `nw-gyp configure`.
 
-### Version incompatibiltiy ###
-Prior to version 0.2.6, nodegit used [nan](http://github.com/rvagg/nan) v1.4.3. As of 0.2.6, nodegit uses nan v1.5.1 to provide support for io.js. Unfortunately, this breaks some nw.js compatability. With nw.js 0.12+, the name was changed to nw.js from node-webkit. The alpha currently still breaks with nodegit due to the nan update, but should be fixed in the final v0.12.0 release. Åpplications using previous versions of node webkit have 2 options:
-1) Use an older version (v0.2.4 or earlier) of nodegit
-2) Use [npm shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap) to force nodegit to use nan v1.4.3. Since the binary always recompiles when being used with nw.js, you shouldnt have to do anything else to make sure it works. As of nodegit v0.2.6, the change to nan v1.4.3 doesn't cause any problems.  
+### Version incompatibility ###
+Prior to version 0.2.6, NodeGit used [nan](http://github.com/rvagg/nan) v1.4.3.
+As of 0.2.6, NodeGit uses nan v1.5.1 to provide support for io.js. Unfortunately,
+this breaks some nw.js compatibility. With nw.js 0.12+, the name was changed to
+nw.js from node-webkit. The alpha currently still breaks with NodeGit due to the
+nan update, but should be fixed in the final v0.12.0 release. Åpplications using
+previous versions of node webkit have 2 options:
+1) Use an older version (v0.2.4 or earlier) of NodeGit
+2) Use [npm shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap) to force NodeGit to
+use nan v1.4.3. Since the binary always recompiles when being used with nw.js, you
+shouldn't have to do anything else to make sure it works. As of NodeGit v0.2.6,
+the change to nan v1.4.3 doesn't cause any problems.  
 
-Currently, support for nw.js is limited, although we intend to support it better in the future.
+Currently, support for nw.js is limited, although we intend to support it better
+in the future.
