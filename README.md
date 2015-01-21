@@ -12,7 +12,7 @@ NodeGit
 
 
 
-**Stable: 0.2.6**
+**Stable: 0.2.7**
 
 **Working: 0.3.0**
 
