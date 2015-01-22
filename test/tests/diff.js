@@ -3,6 +3,8 @@ var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var Diff = require("../../lib/diff");
+var normalizeOptions = require("../../lib/util/normalize_options");
+var NodeGit = require("../../");
 
 describe("Diff", function() {
   var Repository = require("../../lib/repository");
@@ -33,32 +35,16 @@ describe("Diff", function() {
 
               fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4")
               .then(function() {
-                return test.repository.openIndex();
-              })
-              .then(function(indexResult) {
-                test.index = indexResult;
-                return test.index.read(1);
-              })
-              .then(function() {
-                return test.index.addByPath(diffFilename);
-              })
-              .then(function() {
-                return test.index.write();
-              })
-              .then(function() {
-                return test.index.writeTree();
-              })
-              .then(function() {
                 Diff.treeToWorkdirWithIndex(
                   test.repository,
                   test.masterCommitTree,
-                  null
+                  normalizeOptions({ flags: Diff.OPTION.INCLUDE_UNTRACKED }, NodeGit.DiffOptions)
                 )
                 .then(function(workdirDiff) {
                   test.workdirDiff = workdirDiff;
                   done();
                 });
-              });
+              })
             });
           });
         });
