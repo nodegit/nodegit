@@ -19,7 +19,7 @@ describe("Checkout", function() {
   it("can checkout the head", function() {
     var repo = this.repo;
 
-    Checkout.head(repo)
+    return Checkout.head(repo)
     .then(function() {
       return repo.getBlob(packageJsonOid);
     })
