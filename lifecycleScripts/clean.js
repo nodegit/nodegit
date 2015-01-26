@@ -128,7 +128,7 @@ npm.load({
     return new Promise(function (resolve, reject) {
       npm.commands.uninstall(modulesToPrune, function(err) {
         if (err) {
-          console.drror("[nodegit] Failed cleaning unneeded dependencies.");
+          console.error("[nodegit] Failed cleaning unneeded dependencies.");
           reject(err);
         }
         else {
