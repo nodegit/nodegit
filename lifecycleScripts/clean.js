@@ -62,6 +62,7 @@ npm.load({
 
   var modulesToPrune = [
     "for-node-webkit",
+    "which-native-nodish",
     "fs-extra",
     "node-pre-gyp",
     "npm"
