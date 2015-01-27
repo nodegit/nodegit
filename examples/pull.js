@@ -19,7 +19,7 @@ nodegit.Repository.open(path.resolve(__dirname, repoDir))
   // Now that we're finished fetching, go ahead and merge our local branch
   // with the new one
   .then(function() {
-    repository.mergeBranches("master", "origin/master");
+    return repository.mergeBranches("master", "origin/master");
   })
   .done(function() {
     console.log("Done!");
