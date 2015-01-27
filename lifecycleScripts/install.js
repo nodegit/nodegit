@@ -6,21 +6,28 @@ var fs = require("fs");
 var local = path.join.bind(path, __dirname);
 
 var checkPrepared = require(local("checkPrepared"));
-var forNodeWebkit = require("for-node-webkit");
+var whichNativeNodish = require("which-native-nodish");
 var prepareForBuild = require(local("prepareForBuild"));
 
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
+var nwVersion = null;
+var asVersion = null;
 
-return forNodeWebkit(local(".."))
+return whichNativeNodish(local(".."))
   .then(function(results) {
-    return results.nwVersion;
+    nwVersion = results.nwVersion;
+    asVersion = results.asVersion;
   })
-  .then(function(nodeWebkitVersion) {
-    if (nodeWebkitVersion) {
-      console.info("[nodegit] Must build for node-webkit");
-      return checkAndBuild(nodeWebkitVersion);
+  .then(function() {
+    if (nwVersion) {
+      console.info("[nodegit] Must build for node-webkit/nw.js");
+      return checkAndBuild();
+    }
+    else if (asVersion) {
+      console.info("[nodegit] Must build for atom-shell");
+      return checkAndBuild();
     }
     if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
       return checkAndBuild();
@@ -48,7 +55,7 @@ return forNodeWebkit(local(".."))
   });
 
 
-function checkAndBuild(nwVersion) {
+function checkAndBuild() {
   console.info("[nodegit] Making sure dependencies are available and native " +
     "code is generated");
 
@@ -64,11 +71,11 @@ function checkAndBuild(nwVersion) {
       }
     })
     .then(function() {
-      return build(nwVersion);
+      return build();
     });
 }
 
-function build(nwVersion) {
+function build() {
   console.info("[nodegit] Everything is ready to go, attempting compilation");
   if (nwVersion) {
     console.info("[nodegit] Building native node-webkit module.");
@@ -82,14 +89,30 @@ function build(nwVersion) {
     maxBuffer: Number.MAX_VALUE
   };
 
-  var builder = nwVersion ? "nw-gyp" : "node-gyp";
-  var target = (nwVersion ? "--target=\"" + nwVersion + "\"": "");
+  var prefix = "";
+  var target = "";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
-  var cmd = path.resolve(".", "node_modules", ".bin", builder) +
-    " clean configure" +
-    debug +
-    target +
-    " build";
+  var builder = "node-gyp";
+  var distUrl = "";
+
+  if (asVersion) {
+    prefix = (process.platform == "win32" ?
+      "SET HOME=\"~/.atom-shell-gyp\" && " :
+      "HOME=~/.atom-shell-gyp");
+
+    target = "--target=" + asVersion;
+
+    distUrl = "--dist-url=https://gh-contractor-zcbenz.s3." +
+      "amazonaws.com/atom-shell/dist";
+  }
+  else if (nwVersion) {
+    builder = "nw-gyp";
+    target = "--target=" + nwVersion;
+  }
+
+  builder = path.resolve(".", "node_modules", ".bin", builder);
+  var cmd = [prefix, builder, "rebuild", target, debug, distUrl]
+    .join(" ").trim();
 
   return exec(cmd, opts)
     .then(function() {
