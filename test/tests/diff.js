@@ -109,4 +109,22 @@ describe("Diff", function() {
       "1 line\n"
     );
   });
+
+  it("can diff with a null tree", function() {
+    var repo = this.repository;
+    var tree = this.masterCommitTree;
+    return Diff.treeToTree(repo, null, tree, null).then(function(diff) {
+      assert.equal(diff.patches().length, 85);
+    });
+  });
+
+  it("can diff the initial commit of a repository", function() {
+    var repo = this.repository;
+    var oid = "99c88fd2ac9c5e385bd1fe119d89c83dce326219"; // First commit
+    return repo.getCommit(oid).then(function(commit) {
+      return commit.getDiff().then(function(diffs) {
+        assert.equal(diffs[0].patches().length, 8);
+      });
+    });
+  });
 });

@@ -483,6 +483,12 @@
         },
         "git_diff_tree_to_tree": {
           "args": {
+            "old_tree": {
+              "isOptional": true
+            },
+            "new_tree": {
+              "isOptional": true
+            },
             "opts": {
               "isOptional": true
             }
