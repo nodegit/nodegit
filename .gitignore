@@ -10,6 +10,7 @@
 /include/
 /lib/enums.js
 /lib/nodegit.js
+/coverage/
 
 
 /vendor/Release
