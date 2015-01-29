@@ -91,7 +91,7 @@ describe("Remote", function() {
   it("can download from a remote", function() {
     var repo = this.repository;
 
-    return Remote.load(repo, "origin").then(function(remote) {
+    return repo.getRemote("origin").then(function(remote) {
       remote.connect(NodeGit.Enums.DIRECTION.FETCH);
       return remote.download();
     });
