@@ -300,6 +300,15 @@
           "git_merge_head_from_ref",
           "git_merge_head_id"
         ]
+      ],
+      [
+        "status_list",
+        [
+          "git_status_list_entrycount",
+          "git_status_list_free",
+          "git_status_list_get_perfdata",
+          "git_status_list_new"
+        ]
       ]
     ]
   },
@@ -321,6 +330,14 @@
         "git_merge_head_from_id",
         "git_merge_head_from_ref",
         "git_merge_head_id"
+      ]
+    },
+    "status": {
+      "functions": [
+        "git_status_list_entrycount",
+        "git_status_list_free",
+        "git_status_list_get_perfdata",
+        "git_status_list_new"
       ]
     }
   }
