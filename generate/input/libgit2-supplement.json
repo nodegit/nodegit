@@ -273,7 +273,9 @@
           ],
           "used": {
             "needs": [
-              "git_status_init_options"
+              "git_status_init_options",
+              "git_status_foreach_ext",
+              "git_status_list_new"
             ]
           }
         }
