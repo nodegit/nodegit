@@ -378,6 +378,9 @@
         },
         "git_cred_userpass": {
           "ignore": true
+        },
+        "git_cred_userpass_plaintext_new": {
+          "isAsync": false
         }
       }
     },
