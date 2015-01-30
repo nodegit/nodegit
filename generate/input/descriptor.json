@@ -1274,6 +1274,10 @@
       }
     },
     "status": {
+      "dependencies": [
+        "status_options.h",
+        "status_list.h"
+      ],
       "cDependencies": [
         "git2/sys/diff.h"
       ],
@@ -1289,9 +1293,16 @@
         },
         "git_status_init_options": {
           "ignore": true
-        },
+        }
+      }
+    },
+    "status_list": {
+      "functions": {
         "git_status_list_new": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
