@@ -7,6 +7,10 @@ var token = "{Your GitHub user token}";
 var repoOwner = "{The orgname or username that owns the repo}";
 var repoName = "{The name of the repo}";
 
+// To clone with 2 factor auth enabled, you have to use a github oauth token
+// over https, it can't be done with actual 2 factor.
+// https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth
+
 // The token has to be included in the URL if the repo is private.
 // Otherwise, github just wont respond, so a normal credential callback
 // wont work.
@@ -24,14 +28,12 @@ var opts = {
   ignoreCertErrors: 1,
   remoteCallbacks: {
     credentials: function() {
-      return NodeGit.Cred.userpassPlaintextNew (token, "x-oauth-basic");
+      return nodegit.Cred.userpassPlaintextNew (token, "x-oauth-basic");
     }
   }
-}
+};
 
 fse.remove(path).then(function() {
-  var entry;
-
   nodegit.Clone.clone(repoUrl, path, opts)
     .done(function(repo) {
       if (repo instanceof nodegit.Repository) {
