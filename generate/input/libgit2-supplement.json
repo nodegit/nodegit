@@ -263,7 +263,7 @@
               "name": "show"
             },
             {
-              "type": "git_merge_tree_flag_t",
+              "type": "git_status_opt_t",
               "name": "flags"
             },
             {
