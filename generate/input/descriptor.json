@@ -1306,6 +1306,9 @@
         }
       }
     },
+    "status_options": {
+      "ignore": true
+    },
     "submodule": {
       "functions": {
         "git_submodule_foreach": {
