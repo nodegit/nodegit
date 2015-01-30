@@ -248,6 +248,35 @@
         {
           "type": "enum"
         }
+      ],
+      [
+        "git_status_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "git_status_show_t",
+              "name": "show"
+            },
+            {
+              "type": "git_merge_tree_flag_t",
+              "name": "flags"
+            },
+            {
+              "type": "git_strarray",
+              "name": "pathspec"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_status_init_options"
+            ]
+          }
+        }
       ]
     ],
     "groups": [

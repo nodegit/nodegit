@@ -1274,10 +1274,6 @@
       }
     },
     "status": {
-      "dependencies": [
-        "status_options.h",
-        "status_list.h"
-      ],
       "cDependencies": [
         "git2/sys/diff.h"
       ],
@@ -1305,9 +1301,6 @@
           }
         }
       }
-    },
-    "status_options": {
-      "ignore": true
     },
     "submodule": {
       "functions": {
