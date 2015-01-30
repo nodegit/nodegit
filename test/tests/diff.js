@@ -16,41 +16,42 @@ describe("Diff", function() {
     diffFilename
   );
 
-  before(function(done) {
+  before(function() {
     var test = this;
 
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
-      return repository.getBranchCommit("master").then(function(masterCommit) {
+      return repository.getBranchCommit("master");
+    })
+    .then(function(masterCommit) {
+      return masterCommit.getTree();
+    })
+    .then(function(tree) {
+      test.masterCommitTree = tree;
 
-        return masterCommit.getTree().then(function(tree) {
-          test.masterCommitTree = tree;
+      return test.repository.getCommit(oid);
+    })
+    .then(function(commit) {
+      test.commit = commit;
 
-          return repository.getCommit(oid).then(function(commit) {
-            test.commit = commit;
+      return commit.getDiff();
+    }).then(function(diff) {
+      test.diff = diff;
 
-            return commit.getDiff().then(function(diff) {
-              test.diff = diff;
-
-              fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4")
-              .then(function() {
-                Diff.treeToWorkdirWithIndex(
-                  test.repository,
-                  test.masterCommitTree,
-                  normalizeOptions({
-                    flags: Diff.OPTION.INCLUDE_UNTRACKED
-                  }, NodeGit.DiffOptions)
-                )
-                .then(function(workdirDiff) {
-                  test.workdirDiff = workdirDiff;
-                  done();
-                });
-              });
-            });
-          });
-        });
-      });
+      return fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4");
+    })
+    .then(function() {
+      return Diff.treeToWorkdirWithIndex(
+        test.repository,
+        null,
+        normalizeOptions({
+          flags: Diff.OPTION.INCLUDE_UNTRACKED
+        }, NodeGit.DiffOptions)
+      )
+    })
+    .then(function(workdirDiff) {
+      test.workdirDiff = workdirDiff;
     });
   });
 
