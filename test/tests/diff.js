@@ -38,13 +38,15 @@ describe("Diff", function() {
                 Diff.treeToWorkdirWithIndex(
                   test.repository,
                   test.masterCommitTree,
-                  normalizeOptions({ flags: Diff.OPTION.INCLUDE_UNTRACKED }, NodeGit.DiffOptions)
+                  normalizeOptions({
+                    flags: Diff.OPTION.INCLUDE_UNTRACKED
+                  }, NodeGit.DiffOptions)
                 )
                 .then(function(workdirDiff) {
                   test.workdirDiff = workdirDiff;
                   done();
                 });
-              })
+              });
             });
           });
         });
