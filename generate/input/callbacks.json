@@ -127,5 +127,25 @@
     "returnNoResults": 1,
     "returnSuccess": 0,
     "returnError": -1
+  },
+  "git_status_cb": {
+    "args": [
+      {
+        "name": "path",
+        "cType": "const char"
+      },
+      {
+        "name": "status_flags",
+        "cType": "unsigned int"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "returnType": "int",
+    "returnNoResults": 1,
+    "returnSuccess": 0,
+    "returnError": -1
   }
 }

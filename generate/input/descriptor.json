@@ -1282,10 +1282,10 @@
           "ignore": true
         },
         "git_status_foreach": {
-          "ignore": true
+          "isAsync": true
         },
         "git_status_foreach_ext": {
-          "ignore": true
+          "isAsync": true
         },
         "git_status_init_options": {
           "ignore": true
