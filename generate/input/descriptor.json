@@ -1295,7 +1295,12 @@
     "status_list": {
       "functions": {
         "git_status_list_new": {
-          "isAsync": true,
+          "isAsync": false,
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
