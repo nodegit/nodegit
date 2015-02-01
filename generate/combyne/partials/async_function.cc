@@ -7,6 +7,14 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     return NanThrowError("Callback is required and must be a Function.");
   }
 
+  {%each args|argsInfo as arg %}
+    {%if arg.isCallbackFunction %}
+  CallbackWrapper* {{ arg.name }}_cbWrapper = malloc(sizeof(CallbackWrapper));
+  {{ arg.name }}_cbWrapper->jsCallback = args[{{ arg.jsArg }}];
+  {{ arg.name }}_cbWrapper->payload = {{ args|payloadFor arg.name }};
+    {%%endif%}
+  {%endeach%}
+
   {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
 
   baton->error_code = GIT_OK;
@@ -16,6 +24,10 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
+      {%elsif arg.isCallbackFunction %}
+  baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback
+      {%elsif arg.payloadFor %}
+  baton->{{ arg.name }} = {{ arg.payloadFor }}_cbWrapper
       {%elsif arg.name %}
   {%partial convertFromV8 arg%}
         {%if not arg.isPayload %}
@@ -36,7 +48,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   worker->SaveToPersistent("{{ arg.name }}", args.This());
-      {%else%}
+      {%elsif not arg.isCallbackFunction %}
   if (!args[{{ arg.jsArg }}]->IsUndefined() && !args[{{ arg.jsArg }}]->IsNull())
     worker->SaveToPersistent("{{ arg.name }}", args[{{ arg.jsArg }}]->ToObject());
       {%endif%}
@@ -125,6 +137,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {%else%}
     free((void*)baton->{{ arg.name }});
         {%endif%}
+      {%elsif arg.payloadFor%}
+    free(baton->{{ arg.name }});
       {%endif%}
     {%endeach%}
   }
@@ -145,8 +159,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     baton->{{ arg.name}}NeedsFree = false;
     free((void *)baton->{{ arg.name }});
   }
+    {%elsif arg.payloadFor%}
+  free(baton->{{ arg.name }});
     {%endif%}
   {%endeach%}
 
   delete baton;
 }
+
+{%partial callbackHelpers .%}

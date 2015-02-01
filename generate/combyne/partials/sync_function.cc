@@ -15,11 +15,22 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%each args|argsInfo as arg %}
     {%if not arg.isSelf %}
       {%if not arg.isReturn %}
-        {%partial convertFromV8 arg %}
+        {%if not arg.isCallbackFunction %}
+          {%if not arg.payloadFor %}
+            {%partial convertFromV8 arg %}
+          {%endif%}
+        {%endif%}
       {%endif%}
     {%endif%}
   {%endeach%}
 
+{%each args|argsInfo as arg %}
+  {%if arg.isCallbackFunction %}
+CallbackWrapper* {{ arg.name }}_cbWrapper = malloc(sizeof(CallbackWrapper));
+{{ arg.name }}_cbWrapper->jsCallback = args[{{ arg.jsArg }}];
+{{ arg.name }}_cbWrapper->payload = {{ args|payloadFor arg.name }};
+  {%%endif%}
+{%endeach%}
 {%if .|hasReturns %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
   {%each args|argsInfo as arg %}
@@ -30,12 +41,23 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue()
     {%elsif arg.isReturn %}
 {{ arg.name }}
+    {%elsif arg.isCallbackFunction %}
+{{ cppFunctionName }}_{{ arg.name }}_cppCallback
+    {%elsif arg.payloadFor %}
+{{ arg.payloadFor }}_cbWrapper
     {%else%}
 from_{{ arg.name }}
     {%endif%}
     {%if not arg.lastArg %},{%endif%}
   {%endeach%}
   );
+
+{%each args|argsInfo as arg %}
+  {%if arg.isCallbackFunction %}
+  free({{ arg.name }}_cbWrapper);
+  {%%endif%}
+{%endeach%}
+
 {%if return.isErrorCode %}
   if (result != GIT_OK) {
   {%each args|argsInfo as arg %}
@@ -91,3 +113,5 @@ from_{{ arg.name }}
   {%endif%}
 {%endif%}
 }
+
+{%partial callbackHelpers .%}

@@ -7,7 +7,10 @@
     || (!args[{{arg.jsArg}}]->IsObject() && !args[{{arg.jsArg}}]->IsString())) {
     return NanThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
   }
-
+      {%elsif arg.isCallbackFunction %}
+  if (args.Length() == {{arg.jsArg}} || !args[{{arg.jsArg}}]->IsFunction()) {
+    return NanThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
+  }
       {%else%}
   if (args.Length() == {{arg.jsArg}} || !args[{{arg.jsArg}}]->Is{{arg.cppClassName|cppToV8}}()) {
     return NanThrowError("{{arg.jsClassName}} {{arg.name}} is required.");

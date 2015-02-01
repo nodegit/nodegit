@@ -87,7 +87,7 @@ var Helpers = {
   },
 
   isPayloadFor: function(cbField, payloadName) {
-    return ~payloadName.indexOf("_payload")
+    return payloadName && ~payloadName.indexOf("_payload")
       && Helpers.isCallbackFunction(cbField.cType)
       && ~cbField.name.indexOf(payloadName.replace("_payload", ""));
   },
@@ -121,6 +121,7 @@ var Helpers = {
   processPayload: function(field, allFields) {
     if (field.name === "payload") {
       field.payloadFor = "*";
+      field.isOptional = true;
     }
     else {
       var cbFieldName;
@@ -134,6 +135,7 @@ var Helpers = {
 
       if (cbFieldName) {
         field.payloadFor = cbFieldName;
+        field.isOptional = true;
       }
     }
   },
@@ -211,7 +213,7 @@ var Helpers = {
       var argOverrides = fieldOverrides.args || {};
       field.args = field.args || [];
       field.args.forEach(function (arg) {
-        Helpers.decorateArg(arg, null, null, argOverrides[arg.name] || {}, enums);
+        Helpers.decorateArg(arg, field.args, null, null, argOverrides[arg.name] || {}, enums);
       });
     }
     else {
@@ -226,7 +228,7 @@ var Helpers = {
     _.merge(field, fieldOverrides);
   },
 
-  decorateArg: function(arg, typeDef, fnDef, argOverrides, enums) {
+  decorateArg: function(arg, allArgs, typeDef, fnDef, argOverrides, enums) {
     var type = arg.cType || arg.type;
     var normalizedType = Helpers.normalizeCtype(type);
 
@@ -236,7 +238,22 @@ var Helpers = {
 
     Helpers.decorateLibgitType(arg, libgit2.types, enums);
 
-    if (typeDef && fnDef) {
+    // Some arguments can be callbacks
+    if (Helpers.isCallbackFunction(type)) {
+      Helpers.processCallback(arg);
+
+      var argOverrides = argOverrides.args || {};
+      arg.args = arg.args || [];
+      arg.args.forEach(function (argForCallback) {
+        Helpers.decorateArg(argForCallback, arg.args, null, null, argOverrides[argForCallback.name] || {}, enums);
+      });
+    }
+    else if (typeDef && fnDef) {
+      Helpers.processPayload(arg, allArgs);
+      if(arg.payloadFor) {
+        return;
+      }
+
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
@@ -282,11 +299,11 @@ var Helpers = {
 
     var argOverrides = fnOverrides.args || {};
     fnDef.args.forEach(function(arg) {
-      Helpers.decorateArg(arg, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
+      Helpers.decorateArg(arg, fnDef.args, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
     });
 
     if (fnDef.return) {
-      Helpers.decorateArg(fnDef.return, typeDef, fnDef, fnOverrides.return || {}, enums);
+      Helpers.decorateArg(fnDef.return, fnDef.args, typeDef, fnDef, fnOverrides.return || {}, enums);
     }
 
     _(collisionMappings).forEach(function(newName, collidingName) {

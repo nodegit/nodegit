@@ -28,6 +28,7 @@ module.exports = function generateNativeCode() {
 
   var partials = {
     asyncFunction: utils.readFile("combyne/partials/async_function.cc"),
+    callbackHelpers: utils.readFile("combyne/partials/callback_helpers.cc"),
     convertFromV8: utils.readFile("combyne/partials/convert_from_v8.cc"),
     convertToV8: utils.readFile("combyne/partials/convert_to_v8.cc"),
     doc: utils.readFile("combyne/partials/doc.cc"),
