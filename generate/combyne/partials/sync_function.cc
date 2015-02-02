@@ -29,7 +29,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 CallbackWrapper* {{ arg.name }}_cbWrapper = malloc(sizeof(CallbackWrapper));
 {{ arg.name }}_cbWrapper->jsCallback = args[{{ arg.jsArg }}];
 {{ arg.name }}_cbWrapper->payload = {{ args|payloadFor arg.name }};
-  {%%endif%}
+  {%endif%}
 {%endeach%}
 {%if .|hasReturns %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
@@ -55,7 +55,7 @@ from_{{ arg.name }}
 {%each args|argsInfo as arg %}
   {%if arg.isCallbackFunction %}
   free({{ arg.name }}_cbWrapper);
-  {%%endif%}
+  {%endif%}
 {%endeach%}
 
 {%if return.isErrorCode %}

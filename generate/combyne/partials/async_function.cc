@@ -12,7 +12,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   CallbackWrapper* {{ arg.name }}_cbWrapper = malloc(sizeof(CallbackWrapper));
   {{ arg.name }}_cbWrapper->jsCallback = args[{{ arg.jsArg }}];
   {{ arg.name }}_cbWrapper->payload = {{ args|payloadFor arg.name }};
-    {%%endif%}
+    {%endif%}
   {%endeach%}
 
   {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
