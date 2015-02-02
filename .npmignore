@@ -1,9 +1,12 @@
 /build/
 /example/
 /examples/
-/generate/
 /test/
 /vendor/Release/
+
+/generate/output
+/generate/**/*.json
+!/generate/input/*.json
 
 .astylerc
 .editorconfig
@@ -11,7 +14,7 @@
 .gitmodules
 .jshintrc
 .travis.yml
-.appveyor.yml
+appveyor.yml
 .didntcomefromthenpmregistry
 
 *.vcxproj
