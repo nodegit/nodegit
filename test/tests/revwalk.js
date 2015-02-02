@@ -84,7 +84,7 @@ describe("Revwalk", function() {
     });
   });
 
-  it.only("can get a specified number of commits", function() {
+  it("can get a specified number of commits", function() {
     var test = this;
     var storedCommits;
     return test.walker.getCommits()
@@ -101,6 +101,21 @@ describe("Revwalk", function() {
         for (var i = 0; i < 8; i++) {
           assert.equal(commits[i].toString(), storedCommits[i].toString());
         }
+      });
+  });
+
+  it("can get commits until you tell it not to", function() {
+    var test = this;
+    var magicSha = "b8a94aefb22d0534cc0e5acf533989c13d8725dc";
+
+    function checkCommit(commit) {
+      return commit.toString() != magicSha;
+    }
+
+    return test.walker.getCommitsUntil(checkCommit)
+      .then(function(commits) {
+        assert.equal(commits.length, 4);
+        assert.equal(commits[commits.length-1].toString(), magicSha);
       });
   });
 
