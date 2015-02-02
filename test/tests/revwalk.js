@@ -84,6 +84,26 @@ describe("Revwalk", function() {
     });
   });
 
+  it.only("can get a specified number of commits", function() {
+    var test = this;
+    var storedCommits;
+    return test.walker.getCommits()
+      .then(function(commits) {
+        assert.equal(commits.length, 10);
+        storedCommits = commits;
+        test.walker = test.repository.createRevWalk();
+        test.walker.push(test.commit.id());
+
+        return test.walker.getCommits(8);
+      })
+      .then(function(commits) {
+        assert.equal(commits.length, 8);
+        for (var i = 0; i < 8; i++) {
+          assert.equal(commits[i].toString(), storedCommits[i].toString());
+        }
+      });
+  });
+
   // This test requires forcing garbage collection, so mocha needs to be run
   // via node rather than npm, with a la `node --expose-gc [pathtohmoca]
   // [testglob]`
