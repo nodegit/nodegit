@@ -39,13 +39,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
 
-  CallbackWrapper* cbWrapper = (CallbackWrapper *)baton->payload;
+  NanCallback* callback = (NanCallback *)baton->payload;
 
   Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
     {% each cbFunction.args|argsInfo as arg %}
       {% if arg.name == "payload" %}
         {%-- payload is always the last arg --%}
-        NanNew(cbWrapper->payload)
+        // payload is null because we can use closure scope in javascript
+        NanUndefined()
       {% elsif arg.isJsArg %}
         {% if arg.isEnum %}
           NanNew((int)baton->{{ arg.name }}),
@@ -62,7 +63,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
   };
 
   TryCatch tryCatch;
-  Handle<Value> result = cbWrapper->jsCallback->Call({{ cbFunction.args|jsArgsCount }}, argv);
+  Handle<Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
 
   if (result->IsObject() && result->ToObject()->Has(NanNew("then"))) {
     Handle<Value> thenProp = result->ToObject()->Get(NanNew("then"));

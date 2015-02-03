@@ -15,8 +15,6 @@ extern "C" {
 #include "{{ dependency }}"
 {%endeach%}
 
-#include "../include/callbackWrapper.h"
-
 {%if needsForwardDeclaration %}
 // Forward declaration.
 struct {{ cType }} {

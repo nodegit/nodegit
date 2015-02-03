@@ -26,9 +26,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
 {%each args|argsInfo as arg %}
   {%if arg.isCallbackFunction %}
-CallbackWrapper* {{ arg.name }}_cbWrapper = (CallbackWrapper *)malloc(sizeof(CallbackWrapper));
-{{ arg.name }}_cbWrapper->jsCallback = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
-NanAssignPersistent({{ arg.name }}_cbWrapper->payload, args[{{ arg.payload.jsArg }}]);
+NanCallback* {{ arg.name }}_callback = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
   {%endif%}
 {%endeach%}
 {%if .|hasReturns %}
@@ -43,7 +41,7 @@ ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue()
 {{ arg.name }}
     {%elsif arg.isCallbackFunction %}
 {{ cppFunctionName }}_{{ arg.name }}_cppCallback,
-{{ arg.name }}_cbWrapper
+{{ arg.name }}_callback
     {%elsif arg.payloadFor %}
 {%-- payloads are handled inside of the callback condition --%}
     {%else%}
@@ -55,7 +53,7 @@ from_{{ arg.name }}
 
 {%each args|argsInfo as arg %}
   {%if arg.isCallbackFunction %}
-  free({{ arg.name }}_cbWrapper);
+delete {{ arg.name }}_callback;
   {%endif%}
 {%endeach%}
 
