@@ -26,10 +26,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_checkout_progress_cb": {
     "args": [
@@ -50,10 +52,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_cred_acquire_cb": {
     "args": [
@@ -79,10 +83,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_diff_notify_cb": {
     "args": [
@@ -103,10 +109,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_diff_file_cb": {
     "args": [
@@ -123,16 +131,18 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_status_cb": {
     "args": [
       {
         "name": "path",
-        "cType": "const char"
+        "cType": "const char *"
       },
       {
         "name": "status_flags",
@@ -143,9 +153,11 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   }
 }

@@ -69,7 +69,7 @@
     }
 
     {% if field.isCallbackFunction %}
-      {{ field.returnType }} {{ cppClassName }}::{{ field.name }}_cppCallback (
+      {{ field.return.type }} {{ cppClassName }}::{{ field.name }}_cppCallback (
         {% each field.args|argsInfo as arg %}
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
         {% endeach %}
@@ -109,8 +109,8 @@
         {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->payload);
 
         if (instance->{{ field.name }}->IsEmpty()) {
-          {% if field.returnType == "int" %}
-            baton->result = {{ field.returnNoResults }}; // no results acquired
+          {% if field.return.type == "int" %}
+            baton->result = {{ field.return.noResults }}; // no results acquired
           {% endif %}
 
           baton->done = true;
@@ -154,21 +154,21 @@
           }
         }
 
-        {{ field.returnType }} resultStatus;
+        {{ field.return.type }} resultStatus;
 
         {% each field|returnsInfo true false as _return %}
           if (result.IsEmpty() || result->IsNativeError()) {
-            baton->result = {{ field.returnError }};
+            baton->result = {{ field.return.error }};
           }
           else if (!result->IsNull() && !result->IsUndefined()) {
             {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
             wrapper->selfFreeing = false;
 
             baton->{{ _return.name }} = wrapper->GetRefValue();
-            baton->result = {{ field.returnSuccess }};
+            baton->result = {{ field.return.success }};
           }
           else {
-            baton->result = {{ field.returnNoResults }};
+            baton->result = {{ field.return.noResults }};
           }
         {% endeach %}
         baton->done = true;
@@ -194,28 +194,28 @@
         if (isFulfilled->Value()) {
           NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
           Handle<Value> result = resultFn->Call(0, argv);
-          {{ field.returnType }} resultStatus;
+          {{ field.return.type }} resultStatus;
 
           {% each field|returnsInfo true false as _return %}
             if (result.IsEmpty() || result->IsNativeError()) {
-              baton->result = {{ field.returnError }};
+              baton->result = {{ field.return.error }};
             }
             else if (!result->IsNull() && !result->IsUndefined()) {
               {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
               wrapper->selfFreeing = false;
 
               baton->{{ _return.name }} = wrapper->GetRefValue();
-              baton->result = {{ field.returnSuccess }};
+              baton->result = {{ field.return.success }};
             }
             else {
-              baton->result = {{ field.returnNoResults }};
+              baton->result = {{ field.return.noResults }};
             }
           {% endeach %}
           baton->done = true;
         }
         else {
           // promise was rejected
-          baton->result = {{ field.returnError }};
+          baton->result = {{ field.return.error }};
           baton->done = false;
         }
       }

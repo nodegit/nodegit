@@ -49,7 +49,7 @@ class {{ cppClassName }} : public ObjectWrap {
       {% if not function.ignore %}
         {%each function.args as arg %}
           {%if arg.isCallbackFunction %}
-    static {{ arg.returnType }} {{ function.cppFunctionName }}_{{ arg.name }}_cppCallback (
+    static {{ arg.return.type }} {{ function.cppFunctionName }}_{{ arg.name }}_cppCallback (
             {% each arg.args|argsInfo as cbArg %}
       {{ cbArg.cType }} {{ cbArg.name }}
               {% if not cbArg.lastArg %}
@@ -66,8 +66,8 @@ class {{ cppClassName }} : public ObjectWrap {
       {{ cbArg.cType }} {{ cbArg.name }};
       {% endeach %}
 
-      uv_work_t* req;
-      {{ arg.returnType }} result;
+      uv_work_t req;
+      {{ arg.return.type }} result;
       Persistent<Object> promise;
       bool done;
     };

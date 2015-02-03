@@ -1,58 +1,48 @@
-{%each args as cbArg %}
-  {%if cbArg.isCallbackFunction %}
+{%each args as cbFunction %}
+  {%if cbFunction.isCallbackFunction %}
 
-{{ cbArg.returnType }} {{ cppClassName }}::{{ cppFunctionName }}_{{ cbArg.name }}_cppCallback (
-  {% each cbArg.args|argsInfo as arg %}
+{{ cbFunction.return.type }} {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_cppCallback (
+  {% each cbFunction.args|argsInfo as arg %}
     {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
   {% endeach %}
 ) {
-  {{ cppFunctionName }}_{{ cbArg.name|titleCase }}Baton* baton = new {{ cppFunctionName }}_{{ cbArg.name|titleCase }}Baton();
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton();
 
-  {% each cbArg.args|argsInfo as arg %}
+  {% each cbFunction.args|argsInfo as arg %}
     baton->{{ arg.name }} = {{ arg.name }};
   {% endeach %}
 
   baton->req.data = baton;
   baton->done = false;
 
-  uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbArg.name }}_asyncWork, {{ cppFunctionName }}_{{ cbArg.name }}_asyncAfter);
+  uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter);
 
   while(!baton->done) {
     this_thread::sleep_for(chrono::milliseconds(1));
   }
 
-  {% each cbArg|returnsInfo true false as _return %}
+  {% each cbFunction|returnsInfo true false as _return %}
     *{{ _return.name }} = *baton->{{ _return.name }};
   {% endeach %}
 
   return baton->result;
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbArg.name }}_asyncWork(uv_work_t* req) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork(uv_work_t* req) {
   // We aren't doing any work on a seperate thread, just need to
   // access the main node thread in the async after method.
   // However, this worker method is still needed
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbArg.name }}_asyncAfter(uv_work_t* req, int status) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(uv_work_t* req, int status) {
   NanScope();
 
-  {{ cppFunctionName }}_{{ cbArg.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbArg.name|titleCase }}Baton*>(req->data);
-  {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->payload);
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
 
-  if (instance->{{ cbArg.name }}->IsEmpty()) {
-    {% if cbArg.returnType == "int" %}
-      baton->result = {{ cbArg.returnNoResults }}; // no results acquired
-    {% endif %}
+  CallbackWrapper* cbWrapper = (CallbackWrapper *)baton->payload;
 
-    baton->done = true;
-    return;
-  }
-
-  CallbackWrapper* cbWrapper = baton->payload;
-
-  Local<Value> argv[{{ cbArg.args|jsArgsCount }}] = {
-    {% each cbArg.args|argsInfo as arg %}
+  Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
+    {% each cbFunction.args|argsInfo as arg %}
       {% if arg.name == "payload" %}
         {%-- payload is always the last arg --%}
         NanNew(cbWrapper->payload)
@@ -72,7 +62,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbArg.name }}_asyncAfter(uv_wo
   };
 
   TryCatch tryCatch;
-  Handle<Value> result = cbWrapper->jsFunction->Call({{ cbArg.args|jsArgsCount }}, argv);
+  Handle<Value> result = cbWrapper->jsCallback->Call({{ cbFunction.args|jsArgsCount }}, argv);
 
   if (result->IsObject() && result->ToObject()->Has(NanNew("then"))) {
     Handle<Value> thenProp = result->ToObject()->Get(NanNew("then"));
@@ -83,42 +73,42 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbArg.name }}_asyncAfter(uv_wo
 
       NanAssignPersistent(baton->promise, promise);
 
-      uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbArg.name }}_asyncWork, {{ cppFunctionName }}_{{ cbArg.name }}_asyncPromisePolling);
+      uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
       return;
     }
   }
 
-  {{ cbArg.returnType }} resultStatus;
+  {{ cbFunction.return.type }} resultStatus;
 
-  {% each cbArg|returnsInfo true false as _return %}
+  {% each cbFunction|returnsInfo true false as _return %}
     if (result.IsEmpty() || result->IsNativeError()) {
-      baton->result = {{ cbArg.returnError }};
+      baton->result = {{ cbFunction.return.error }};
     }
     else if (!result->IsNull() && !result->IsUndefined()) {
       {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
       wrapper->selfFreeing = false;
 
       baton->{{ _return.name }} = wrapper->GetRefValue();
-      baton->result = {{ cbArg.returnSuccess }};
+      baton->result = {{ cbFunction.return.success }};
     }
     else {
-      baton->result = {{ cbArg.returnNoResults }};
+      baton->result = {{ cbFunction.return.noResults }};
     }
   {% endeach %}
   baton->done = true;
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbArg.name }}_asyncPromisePolling(uv_work_t* req, int status) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling(uv_work_t* req, int status) {
   NanScope();
 
-  {{ cppFunctionName }}_{{ cbArg.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbArg.name|titleCase }}Baton*>(req->data);
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
   Local<Object> promise = NanNew<Object>(baton->promise);
   NanCallback* isPendingFn = new NanCallback(promise->Get(NanNew("isPending")).As<Function>());
   Local<Value> argv[1]; // MSBUILD won't assign an array of length 0
   Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
 
   if (isPending->Value()) {
-    uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbArg.name }}_asyncWork, {{ cppFunctionName }}_{{ cbArg.name }}_asyncPromisePolling);
+    uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
     return;
   }
 
@@ -128,28 +118,28 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbArg.name }}_asyncPromisePoll
   if (isFulfilled->Value()) {
     NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
     Handle<Value> result = resultFn->Call(0, argv);
-    {{ cbArg.returnType }} resultStatus;
+    {{ cbFunction.return.type }} resultStatus;
 
-    {% each cbArg|returnsInfo true false as _return %}
+    {% each cbFunction|returnsInfo true false as _return %}
       if (result.IsEmpty() || result->IsNativeError()) {
-        baton->result = {{ cbArg.returnError }};
+        baton->result = {{ cbFunction.return.error }};
       }
       else if (!result->IsNull() && !result->IsUndefined()) {
         {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
         wrapper->selfFreeing = false;
 
         baton->{{ _return.name }} = wrapper->GetRefValue();
-        baton->result = {{ cbArg.returnSuccess }};
+        baton->result = {{ cbFunction.return.success }};
       }
       else {
-        baton->result = {{ cbArg.returnNoResults }};
+        baton->result = {{ cbFunction.return.noResults }};
       }
     {% endeach %}
     baton->done = true;
   }
   else {
     // promise was rejected
-    baton->result = {{ cbArg.returnError }};
+    baton->result = {{ cbFunction.return.error }};
     baton->done = false;
   }
 }

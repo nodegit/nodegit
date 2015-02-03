@@ -9,9 +9,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
   {%each args|argsInfo as arg %}
     {%if arg.isCallbackFunction %}
-  CallbackWrapper* {{ arg.name }}_cbWrapper = malloc(sizeof(CallbackWrapper));
-  {{ arg.name }}_cbWrapper->jsCallback = args[{{ arg.jsArg }}];
-  {{ arg.name }}_cbWrapper->payload = {{ args|payloadFor arg.name }};
+  CallbackWrapper* {{ arg.name }}_cbWrapper = (CallbackWrapper *)malloc(sizeof(CallbackWrapper));
+  {{ arg.name }}_cbWrapper->jsCallback = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+  NanAssignPersistent({{ arg.name }}_cbWrapper->payload, args[{{ arg.payload.jsArg }}]);
     {%endif%}
   {%endeach%}
 
@@ -25,9 +25,10 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
       {%elsif arg.isCallbackFunction %}
-  baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback
+  baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
+  baton->{{ arg.payload.name }} = {{ arg.name }}_cbWrapper;
       {%elsif arg.payloadFor %}
-  baton->{{ arg.name }} = {{ arg.payloadFor }}_cbWrapper
+        {%-- payloads are handled inside of the callback condition --%}
       {%elsif arg.name %}
   {%partial convertFromV8 arg%}
         {%if not arg.isPayload %}
@@ -159,8 +160,10 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     baton->{{ arg.name}}NeedsFree = false;
     free((void *)baton->{{ arg.name }});
   }
-    {%elsif arg.payloadFor%}
-  free(baton->{{ arg.name }});
+    {%elsif arg.isCallbackFunction%}
+  CallbackWrapper* cbWrapper = (CallbackWrapper *)baton->{{ arg.payload.name }};
+  NanDisposePersistent(cbWrapper->payload);
+  free(baton->{{ arg.payload.name }});
     {%endif%}
   {%endeach%}
 

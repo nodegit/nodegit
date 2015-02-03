@@ -11,7 +11,7 @@ using namespace node;
 
 struct CallbackWrapper {
   NanCallback* jsCallback;
-  void * payload;
+  Persistent<Value> payload;
 };
 
 #endif

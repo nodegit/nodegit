@@ -19,6 +19,7 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
   });
 
   if (!result.length
+      && !fn.isCallbackFunction
       && !argReturnsOnly
       && fn.return
       && !fn.return.isErrorCode
