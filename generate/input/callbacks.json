@@ -26,10 +26,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_checkout_progress_cb": {
     "args": [
@@ -50,10 +52,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_cred_acquire_cb": {
     "args": [
@@ -79,10 +83,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_diff_notify_cb": {
     "args": [
@@ -103,10 +109,12 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_diff_file_cb": {
     "args": [
@@ -123,9 +131,523 @@
         "cType": "void *"
       }
     ],
-    "returnType": "int",
-    "returnNoResults": 1,
-    "returnSuccess": 0,
-    "returnError": -1
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_diff_line_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "hunk",
+        "cType": "const git_diff_hunk *"
+      },
+      {
+        "name": "line",
+        "cType": "const git_diff_line *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_status_cb": {
+    "args": [
+      {
+        "name": "path",
+        "cType": "const char *"
+      },
+      {
+        "name": "status_flags",
+        "cType": "unsigned int"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_blob_chunk_cb": {
+    "args": [
+      {
+        "name": "content",
+        "cType": "const char *"
+      },
+      {
+        "name": "max_length",
+        "cType": "size_t"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_blob_chunk_cb": {
+    "args": [
+      {
+        "name": "entry",
+        "cType": "const git_config_entry *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_diff_hunk_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "hunk",
+        "cType": "const git_diff_hunk *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_diff_hunk_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "hunk",
+        "cType": "const git_diff_hunk *"
+      },
+      {
+        "name": "line",
+        "cType": "const git_diff_line *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_index_matched_path_cb": {
+    "args": [
+      {
+        "name": "path",
+        "cType": "const char *"
+      },
+      {
+        "name": "matched_pathspec",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_note_foreach_cb": {
+    "args": [
+      {
+        "name": "blob_id",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "annotated_object_id",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_note_foreach_cb": {
+    "args": [
+      {
+        "name": "id",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_transfer_progress_cb": {
+    "args": [
+      {
+        "name": "stats",
+        "cType": "const git_transfer_progress *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_packbuilder_foreach_cb": {
+    "args": [
+      {
+        "name": "buf",
+        "cType": "void *"
+      },
+      {
+        "name": "size",
+        "cType": "size_t"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_reference_foreach_cb": {
+    "args": [
+      {
+        "name": "refname",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_reference_foreach_name_cb": {
+    "args": [
+      {
+        "name": "name",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_transport_message_cb": {
+    "args": [
+      {
+        "name": "str",
+        "cType": "const char *"
+      },
+      {
+        "name": "len",
+        "cType": "int"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_repository_fetchhead_foreach_cb": {
+    "args": [
+      {
+        "name": "refname",
+        "cType": "const char *"
+      },
+      {
+        "name": "remote_url",
+        "cType": "const char *"
+      },
+      {
+        "name": "oid",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "is_merge",
+        "cType": "unsigned int"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_repository_mergehead_foreach_cb": {
+    "args": [
+      {
+        "name": "oid",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_revwalk_hide_cb": {
+    "args": [
+      {
+        "name": "commit_id",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_tag_foreach_cb": {
+    "args": [
+      {
+        "name": "name",
+        "cType": "const char *"
+      },
+      {
+        "name": "oid",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_treewalk_cb": {
+    "args": [
+      {
+        "name": "root",
+        "cType": "const char *"
+      },
+      {
+        "name": "entry",
+        "cType": "const git_tree_entry *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_treebuilder_filter_cb": {
+    "args": [
+      {
+        "name": "entry",
+        "cType": "const git_tree_entry *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_attr_foreach_cb": {
+    "args": [
+      {
+        "name": "name",
+        "cType": "const char *"
+      },
+      {
+        "name": "value",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_stash_cb": {
+    "args": [
+      {
+        "name": "index",
+        "cType": "size_t"
+      },
+      {
+        "name": "message",
+        "cType": "const char *"
+      },
+      {
+        "name": "stash_id",
+        "cType": "const int *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_transport_cb": {
+    "args": [
+      {
+        "name": "out",
+        "cType": "const git_transport *"
+      },
+      {
+        "name": "owner",
+        "cType": "const git_remote *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_config_foreach_cb": {
+    "args": [
+      {
+        "name": "entry",
+        "cType": "const git_config_entry *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   }
 }

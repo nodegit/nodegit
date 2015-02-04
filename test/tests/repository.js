@@ -75,4 +75,21 @@ describe("Repository", function() {
 
     assert(sig instanceof Signature);
   });
+
+  it("gets statuses with StatusFile", function() {
+    var fileName = "my-new-file-that-shouldnt-exist";
+    var fileContent = "new file";
+    var repo = this.repository;
+    var filePath = path.join(repo.workdir(), fileName);
+
+    return fse.writeFile(filePath, fileContent)
+      .then(function() {
+        return repo.getStatus().then(function(statuses) {
+          assert.equal(statuses.length, 1);
+          assert.equal(statuses[0].path(), fileName);
+          assert.ok(statuses[0].isNew());
+          return fse.unlink(filePath);
+        });
+      });
+  });
 });

@@ -28,6 +28,7 @@ module.exports = function generateNativeCode() {
 
   var partials = {
     asyncFunction: utils.readFile("templates/partials/async_function.cc"),
+    callbackHelpers: utils.readFile("templates/partials/callback_helpers.cc"),
     convertFromV8: utils.readFile("templates/partials/convert_from_v8.cc"),
     convertToV8: utils.readFile("templates/partials/convert_to_v8.cc"),
     doc: utils.readFile("templates/partials/doc.cc"),

@@ -16,9 +16,14 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
+      {%elsif arg.isCallbackFunction %}
+  baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
+  baton->{{ arg.payload.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+      {%elsif arg.payloadFor %}
+        {%-- payloads are ignored --%}
       {%elsif arg.name %}
   {%partial convertFromV8 arg%}
-        {%if not arg.isPayload %}
+        {%if not arg.payloadFor %}
   baton->{{ arg.name }} = from_{{ arg.name }};
           {%if arg | isOid %}
   baton->{{ arg.name }}NeedsFree = args[{{ arg.jsArg }}]->IsString();
@@ -36,7 +41,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   worker->SaveToPersistent("{{ arg.name }}", args.This());
-      {%else%}
+      {%elsif not arg.isCallbackFunction %}
   if (!args[{{ arg.jsArg }}]->IsUndefined() && !args[{{ arg.jsArg }}]->IsNull())
     worker->SaveToPersistent("{{ arg.name }}", args[{{ arg.jsArg }}]->ToObject());
       {%endif%}
@@ -122,6 +127,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       baton->{{ arg.name}}NeedsFree = false;
       free((void*)baton->{{ arg.name }});
     }
+        {%elsif arg.isCallbackFunction %}
+    delete baton->{{ arg.payload.name }};
         {%else%}
     free((void*)baton->{{ arg.name }});
         {%endif%}
@@ -145,8 +152,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     baton->{{ arg.name}}NeedsFree = false;
     free((void *)baton->{{ arg.name }});
   }
+    {%elsif arg.isCallbackFunction %}
+  delete (NanCallback *)baton->{{ arg.payload.name }};
     {%endif%}
   {%endeach%}
 
   delete baton;
 }
+
+{%partial callbackHelpers .%}

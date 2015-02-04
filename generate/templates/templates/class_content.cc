@@ -1,6 +1,8 @@
 // This is a generated file, modify: generate/templates/class_content.cc.
 #include <nan.h>
 #include <string.h>
+#include <chrono>
+#include <thread>
 
 extern "C" {
   #include <git2.h>
@@ -8,7 +10,6 @@ extern "C" {
     #include <{{ dependency }}>
   {% endeach %}
 }
-
 
 #include "../include/functions/copy.h"
 #include "../include/macros.h"

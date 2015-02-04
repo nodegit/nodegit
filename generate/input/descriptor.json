@@ -1288,16 +1288,34 @@
           "ignore": true
         },
         "git_status_foreach": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_status_foreach_ext": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_status_init_options": {
           "ignore": true
-        },
+        }
+      }
+    },
+    "status_list": {
+      "functions": {
         "git_status_list_new": {
-          "ignore": true
+          "isAsync": false,
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },

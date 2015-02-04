@@ -43,6 +43,36 @@ class {{ cppClassName }} : public ObjectWrap {
     {%endif%}
     bool selfFreeing;
 
+    {% each functions as function %}
+      {% if not function.ignore %}
+        {%each function.args as arg %}
+          {%if arg.isCallbackFunction %}
+    static {{ arg.return.type }} {{ function.cppFunctionName }}_{{ arg.name }}_cppCallback (
+            {% each arg.args|argsInfo as cbArg %}
+      {{ cbArg.cType }} {{ cbArg.name }}
+              {% if not cbArg.lastArg %}
+      ,
+              {% endif %}
+            {% endeach %}
+    );
+
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncWork(uv_work_t* req);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncAfter(uv_work_t* req, int status);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncPromisePolling(uv_work_t* req, int status);
+    struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton {
+      {% each arg.args|argsInfo as cbArg %}
+      {{ cbArg.cType }} {{ cbArg.name }};
+      {% endeach %}
+
+      uv_work_t req;
+      {{ arg.return.type }} result;
+      Persistent<Object> promise;
+      bool done;
+    };
+          {% endif %}
+        {% endeach %}
+      {% endif %}
+    {% endeach %}
   private:
     {%if cType%}
     {{ cppClassName }}({{ cType }} *raw, bool selfFreeing);
@@ -90,6 +120,13 @@ class {{ cppClassName }} : public ObjectWrap {
         {{ function.cppFunctionName }}Baton *baton;
     };
         {%endif%}
+
+        {%each function.args as arg %}
+          {%if arg.payloadFor %}
+
+    Persistent<Value> {{ function.cppFunctionName }}_{{ arg.name }};
+          {%endif%}
+        {%endeach%}
 
     static NAN_METHOD({{ function.cppFunctionName }});
       {%endif%}

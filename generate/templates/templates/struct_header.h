@@ -34,7 +34,7 @@ class {{ cppClassName }} : public ObjectWrap {
     {% each fields as field %}
       {% if not field.ignore %}
         {% if field.isCallbackFunction %}
-          static {{ field.returnType }} {{ field.name }}_cppCallback (
+          static {{ field.return.type }} {{ field.name }}_cppCallback (
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name}}
               {% if not arg.lastArg %}
@@ -52,7 +52,7 @@ class {{ cppClassName }} : public ObjectWrap {
             {% endeach %}
 
             uv_work_t req;
-            {{ field.returnType }} result;
+            {{ field.return.type }} result;
             Persistent<Object> promise;
             bool done;
           };

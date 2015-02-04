@@ -248,6 +248,37 @@
         {
           "type": "enum"
         }
+      ],
+      [
+        "git_status_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "git_status_show_t",
+              "name": "show"
+            },
+            {
+              "type": "git_status_opt_t",
+              "name": "flags"
+            },
+            {
+              "type": "git_strarray",
+              "name": "pathspec"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_status_init_options",
+              "git_status_foreach_ext",
+              "git_status_list_new"
+            ]
+          }
+        }
       ]
     ],
     "groups": [
@@ -271,6 +302,15 @@
           "git_merge_head_from_ref",
           "git_merge_head_id"
         ]
+      ],
+      [
+        "status_list",
+        [
+          "git_status_list_entrycount",
+          "git_status_list_free",
+          "git_status_list_get_perfdata",
+          "git_status_list_new"
+        ]
       ]
     ]
   },
@@ -292,6 +332,14 @@
         "git_merge_head_from_id",
         "git_merge_head_from_ref",
         "git_merge_head_id"
+      ]
+    },
+    "status": {
+      "functions": [
+        "git_status_list_entrycount",
+        "git_status_list_free",
+        "git_status_list_get_perfdata",
+        "git_status_list_new"
       ]
     }
   }
