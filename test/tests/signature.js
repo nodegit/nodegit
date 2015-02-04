@@ -1,8 +1,9 @@
 var assert = require("assert");
-
+var path = require("path");
+var local = path.join.bind(path, __dirname);
 describe("Signature", function() {
 
-  var Signature = require("../../lib/signature");
+  var Signature = require(local("../../lib/signature"));
   var name = "Bob Gnarley";
   var email = "gnarlee@bob.net";
   var arbitraryDate = 123456789;

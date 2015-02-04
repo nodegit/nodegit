@@ -1,13 +1,14 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Tag", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
 
-  var Repository = require("../../lib/repository");
-  var Tag = require("../../lib/tag");
-  var Obj = require("../../lib/object");
-  var Oid = require("../../lib/oid");
+  var Repository = require(local("../../lib/repository"));
+  var Tag = require(local("../../lib/tag"));
+  var Obj = require(local("../../lib/object"));
+  var Oid = require(local("../../lib/oid"));
 
   var tagName = "annotated-tag";
   var tagFullName = "refs/tags/" + tagName;

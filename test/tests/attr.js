@@ -1,12 +1,13 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Attr", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
 
-  var Repository = require("../../lib/repository");
-  var Attr = require("../../lib/attr");
-  var Status = require("../../lib/status");
+  var Repository = require(local("../../lib/repository"));
+  var Attr = require(local("../../lib/attr"));
+  var Status = require(local("../../lib/status"));
 
   before(function() {
     var test = this;

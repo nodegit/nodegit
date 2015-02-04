@@ -1,10 +1,11 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Cred", function() {
-  var NodeGit = require("../../");
-  var sshPublicKey = path.resolve("./id_rsa.pub");
-  var sshPrivateKey = path.resolve("./id_rsa");
+  var NodeGit = require(local("../../"));
+  var sshPublicKey = local("../id_rsa.pub");
+  var sshPrivateKey = local("../id_rsa");
 
   it("can create default credentials", function() {
     var defaultCreds = NodeGit.Cred.defaultNew();

@@ -1,37 +1,33 @@
 var promisify = require("promisify-node");
 var fse = promisify("fs-extra");
+var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 // Have to wrap exec, since it has a weird callback signature.
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
-before(function(done) {
+before(function() {
   this.timeout(350000);
 
   var url = "https://github.com/nodegit/test";
-  var done = done.bind(null, null);
+  fse.removeSync(local("repos"));
 
-  function initEmpty() {
-    return exec("git init test/repos/empty");
-  }
-
-  fse.removeSync("test/repos")
-
-  fse.mkdir("test/repos").then(initEmpty, initEmpty)
+  return fse.mkdir(local("repos"))
     .then(function() {
-      return exec("git clone " + url + " test/repos/workdir");
+      return exec("git init " + local("repos", "empty"));
+    })
+    .then(function() {
+      return exec("git clone " + url + " " + local("repos", "workdir"));
     }).then(function() {
-      return exec("git checkout rev-walk", {cwd: "test/repos/workdir"})
+      return exec("git checkout rev-walk", {cwd: local("repos", "workdir")})
     }).then(function() {
-      return exec("git checkout master", {cwd: "test/repos/workdir"})
+      return exec("git checkout master", {cwd: local("repos", "workdir")})
     }).then(function() {
-      var nonrepo = "test/repos/nonrepo";
-
-      function writeBogus() {
-        return fse.writeFile(nonrepo + "/file.txt", "This is a bogus file");
-      }
-
-      return fse.mkdir(nonrepo).then(writeBogus, writeBogus);
-    }).then(done, done);
+      return fse.mkdir(local("repos", "nonrepo"));
+    }).then(function() {
+      return fse.writeFile(local("repos", "nonrepo", "file.txt"),
+        "This is a bogus file");
+    });
 });

@@ -2,23 +2,25 @@ var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
+var local = path.join.bind(path, __dirname);
+
 fse.ensureDir = promisify(fse.ensureDir);
 
 describe("Merge", function() {
-  var nodegit = require("../../");
+  var nodegit = require(local("../../"));
 
-  var repoDir = path.resolve("test/repos/merge");
+  var reposPath = local("../repos/merge");
   var ourBranchName = "ours";
   var theirBranchName = "theirs";
 
   beforeEach(function() {
     var test = this;
-    return fse.remove(path.resolve(__dirname, repoDir))
+    return fse.remove(reposPath)
       .then(function() {
-        return fse.ensureDir(path.resolve(__dirname, repoDir));
+        return fse.ensureDir(reposPath);
       })
       .then(function() {
-        return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
+        return nodegit.Repository.init(reposPath, 0);
       })
       .then(function(repo) {
         test.repository = repo;

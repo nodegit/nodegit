@@ -3,12 +3,13 @@ var path = require("path");
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
+var local = path.join.bind(path, __dirname);
 
-var NodeGit = require("../../");
+var NodeGit = require(local("../../"));
 var Repository = NodeGit.Repository;
 
 describe("Commit", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
   beforeEach(function() {

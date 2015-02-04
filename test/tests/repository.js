@@ -2,14 +2,15 @@ var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
+var local = path.join.bind(path, __dirname);
 
 describe("Repository", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
-  var newRepo = path.resolve("test/repos/newrepo");
+  var reposPath = local("../repos/workdir/.git");
+  var newRepo = local("../repos/newrepo");
 
-  var Repository = require("../../lib/repository");
-  var Index = require("../../lib/index");
-  var Signature = require("../../lib/signature");
+  var Repository = require(local("../../lib/repository"));
+  var Index = require(local("../../lib/index"));
+  var Signature = require(local("../../lib/signature"));
 
   before(function() {
     var test = this;

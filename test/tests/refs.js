@@ -1,6 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
+var local = path.join.bind(path, __dirname);
 
 // Have to wrap exec, since it has a weird callback signature.
 var exec = promisify(function(command, opts, callback) {
@@ -8,26 +9,27 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 describe("Reference", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
 
-  var Repository = require("../../lib/repository");
-  var Reference = require("../../lib/reference");
+  var Repository = require(local("../../lib/repository"));
+  var Reference = require(local("../../lib/reference"));
 
   before(function() {
     var test = this;
 
-    return exec("git reset --hard origin/master", {cwd: "test/repos/workdir"})
-    .then(function() {
-      return Repository.open(reposPath);
-    })
-    .then(function(repository) {
-      test.repository = repository;
+    return exec("git reset --hard origin/master",
+      {cwd: local("../repos/workdir")} )
+      .then(function() {
+        return Repository.open(reposPath);
+      })
+      .then(function(repository) {
+        test.repository = repository;
 
-      return repository.getReference("refs/heads/master");
-    })
-    .then(function(reference) {
-      test.reference = reference;
-    });
+        return repository.getReference("refs/heads/master");
+      })
+      .then(function(reference) {
+        test.reference = reference;
+      });
   });
 
   it("can look up a reference", function() {

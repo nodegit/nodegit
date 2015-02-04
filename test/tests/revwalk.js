@@ -1,12 +1,13 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Revwalk", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
 
-  var Repository = require("../../lib/repository");
-  var Revwalk = require("../../lib/revwalk");
-  var Oid = require("../../lib/oid");
+  var Repository = require(local("../../lib/repository"));
+  var Revwalk = require(local("../../lib/revwalk"));
+  var Oid = require(local("../../lib/oid"));
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(60000);

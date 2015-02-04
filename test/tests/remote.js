@@ -1,12 +1,13 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Remote", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
 
-  var NodeGit = require("../../");
-  var Repository = require("../../lib/repository");
-  var Remote = require("../../lib/remote");
+  var NodeGit = require(local("../../"));
+  var Repository = require(local("../../lib/repository"));
+  var Remote = require(local("../../lib/remote"));
 
   function removeOrigins(repository) {
     return Remote.load(repository, "origin1").then(function(remote) {

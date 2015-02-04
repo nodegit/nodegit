@@ -1,11 +1,12 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Branch", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
 
-  var Repository = require("../../lib/repository");
-  var Branch = require("../../lib/branch");
+  var Repository = require(local("../../lib/repository"));
+  var Branch = require(local("../../lib/branch"));
   var branchName = "test-branch";
   var fullBranchName = "refs/heads/" + branchName;
 

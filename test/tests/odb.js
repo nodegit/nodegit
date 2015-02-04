@@ -1,12 +1,13 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Odb", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
 
-  var Repository = require("../../lib/repository");
-  var Oid = require("../../lib/oid");
-  var Obj = require("../../lib/object");
+  var Repository = require(local("../../lib/repository"));
+  var Oid = require(local("../../lib/oid"));
+  var Obj = require(local("../../lib/object"));
 
   before(function() {
     var test = this;

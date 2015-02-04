@@ -3,22 +3,23 @@ var path = require("path");
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
+var local = path.join.bind(path, __dirname);
 var fixAppveyor = process.env.APPVEYOR ? describe.skip : describe;
 
 fixAppveyor("Clone", function() {
-  var http = path.resolve("test/repos/http");
-  var https = path.resolve("test/repos/https");
-  var ssh = path.resolve("test/repos/ssh");
-  var sshManual = path.resolve("test/repos/sshmanual");
-  var git = path.resolve("test/repos/git");
-  var file = path.resolve("test/repos/file");
+  var http = local("../repos/http");
+  var https = local("../repos/https");
+  var ssh = local("../repos/ssh");
+  var sshManual = local("../repos/sshmanual");
+  var git = local("../repos/git");
+  var file = local("../repos/file");
 
-  var sshPublicKey = path.resolve("./id_rsa.pub");
-  var sshPrivateKey = path.resolve("./id_rsa");
+  var sshPublicKey = local("../id_rsa.pub");
+  var sshPrivateKey = local("../id_rsa");
 
-  var Repository = require("../../lib/repository");
-  var Clone = require("../../lib/clone");
-  var NodeGit = require("../../");
+  var Repository = require(local("../../lib/repository"));
+  var Clone = require(local("../../lib/clone"));
+  var NodeGit = require(local("../../"));
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(15000);
@@ -98,7 +99,7 @@ fixAppveyor("Clone", function() {
 
   it("can clone with filesystem", function() {
     var prefix = process.platform === "win32" ? "" : "file://";
-    var url = prefix + path.resolve("test/repos/empty");
+    var url = prefix + local("../repos/empty");
 
     return Clone.clone(url, file).then(function(repository) {
       assert.ok(repository instanceof Repository);

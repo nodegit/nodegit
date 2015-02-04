@@ -1,13 +1,14 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Blob", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
 
-  var Oid = require("../../lib/oid");
-  var Repository = require("../../lib/repository");
-  var FileMode = require("../../lib/tree_entry").FILEMODE;
+  var Oid = require(local("../../lib/oid"));
+  var Repository = require(local("../../lib/repository"));
+  var FileMode = require(local("../../lib/tree_entry")).FILEMODE;
 
   before(function() {
     var test = this;

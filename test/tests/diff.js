@@ -2,19 +2,18 @@ var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
-var Diff = require("../../lib/diff");
-var normalizeOptions = require("../../lib/util/normalize_options");
-var NodeGit = require("../../");
+var local = path.join.bind(path, __dirname);
 
 describe("Diff", function() {
-  var Repository = require("../../lib/repository");
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var NodeGit = require("../../");
+  var Repository = require(local("../../lib/repository"));
+  var Diff = require(local("../../lib/diff"));
+  var normalizeOptions = require(local("../../lib/util/normalize_options"));
+
+  var reposPath = local("../repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
   var diffFilename = "wddiff.txt";
-  var diffFilepath = path.join(
-    path.resolve("test/repos/workdir"),
-    diffFilename
-  );
+  var diffFilepath = local("../repos/workdir", diffFilename);
 
   before(function() {
     var test = this;

@@ -1,12 +1,13 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("TreeEntry", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var reposPath = local("../repos/workdir/.git");
   var oid = "5716e9757886eaf38d51c86b192258c960d9cfea";
 
-  var Repository = require("../../lib/repository");
-  var Tree = require("../../lib/tree");
+  var Repository = require(local("../../lib/repository"));
+  var Tree = require(local("../../lib/tree"));
 
   beforeEach(function() {
     var test = this;
