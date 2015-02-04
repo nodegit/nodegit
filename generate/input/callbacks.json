@@ -138,6 +138,32 @@
       "error": -1
     }
   },
+  "git_diff_line_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "hunk",
+        "cType": "const git_diff_hunk *"
+      },
+      {
+        "name": "line",
+        "cType": "const git_diff_line *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
   "git_status_cb": {
     "args": [
       {
@@ -408,7 +434,7 @@
       "error": -1
     }
   },
-  "git_transport_message_cb": {
+  "git_repository_fetchhead_foreach_cb": {
     "args": [
       {
         "name": "refname",
@@ -593,6 +619,24 @@
       {
         "name": "owner",
         "cType": "const git_remote *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_config_foreach_cb": {
+    "args": [
+      {
+        "name": "entry",
+        "cType": "const git_config_entry *"
       },
       {
         "name": "payload",
