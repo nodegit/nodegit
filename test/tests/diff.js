@@ -55,10 +55,8 @@ describe("Diff", function() {
     });
   });
 
-  after(function(done) {
-    return fse.unlink(diffFilepath).then(function() {
-      done();
-    });
+  after(function() {
+    return fse.unlink(diffFilepath);
   });
 
   it("can walk a DiffList", function() {
