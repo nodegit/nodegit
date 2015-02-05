@@ -44,11 +44,11 @@ describe("Diff", function() {
     .then(function() {
       return Diff.treeToWorkdirWithIndex(
         test.repository,
-        null,
+        test.masterCommitTree,
         normalizeOptions({
           flags: Diff.OPTION.INCLUDE_UNTRACKED
         }, NodeGit.DiffOptions)
-      )
+      );
     })
     .then(function(workdirDiff) {
       test.workdirDiff = workdirDiff;
