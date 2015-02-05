@@ -88,15 +88,15 @@ describe("Diff", function() {
   it.only("can diff the workdir with index", function() {
     var patches = this.workdirDiff.patches();
     assert.equal(patches.length, 1);
+    assert(patches[0].isUntracked());
 
-    var hunks = patches[0].hunks();
-    assert.equal(hunks.length, 1);
+    var oldFile = patches[0].delta.oldFile();
+    assert.equal(oldFile.path(), "wddiff.txt");
+    assert.equal(oldFile.size(), 0);
 
-    var lines = hunks[0].lines();
-    assert.equal(
-      lines[0].content().substr(0, lines[0].contentLen()),
-      "1 line\n"
-    );
+    var newFile = patches[0].delta.newFile();
+    assert.equal(newFile.path(), "wddiff.txt");
+    assert.equal(newFile.size(), 23);
   });
 
   it("can diff with a null tree", function() {
