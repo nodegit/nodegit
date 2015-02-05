@@ -63,7 +63,7 @@ void {{ cppClassName }}::ConstructFields() {
 
           // Set the static method call and set the payload for this function to be
           // the current instance
-          this->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
+          this->raw->{{ field.name }} = NULL;
           this->raw->{{ fields|payloadFor field.name }} = (void *)this;
           this->{{ field.name }} = new NanCallback();
         {% elsif field.payloadFor %}

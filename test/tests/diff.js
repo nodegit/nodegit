@@ -3,6 +3,8 @@ var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var Diff = require("../../lib/diff");
+var normalizeOptions = require("../../lib/util/normalize_options");
+var NodeGit = require("../../");
 
 describe("Diff", function() {
   var Repository = require("../../lib/repository");
@@ -14,55 +16,48 @@ describe("Diff", function() {
     diffFilename
   );
 
-  before(function(done) {
+  before(function() {
     var test = this;
 
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
-      return repository.getBranchCommit("master").then(function(masterCommit) {
+      return repository.getBranchCommit("master");
+    })
+    .then(function(masterCommit) {
+      return masterCommit.getTree();
+    })
+    .then(function(tree) {
+      test.masterCommitTree = tree;
 
-        return masterCommit.getTree().then(function(tree) {
-          test.masterCommitTree = tree;
+      return test.repository.getCommit(oid);
+    })
+    .then(function(commit) {
+      test.commit = commit;
 
-          return repository.getCommit(oid).then(function(commit) {
-            test.commit = commit;
+      return commit.getDiff();
+    }).then(function(diff) {
+      test.diff = diff;
 
-            return commit.getDiff().then(function(diff) {
-              test.diff = diff;
+      return fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4");
+    })
+    .then(function() {
+      return Diff.treeToWorkdirWithIndex(
+        test.repository,
+        test.masterCommitTree,
+        normalizeOptions({
+          flags: Diff.OPTION.INCLUDE_UNTRACKED
+        }, NodeGit.DiffOptions)
+      );
+    })
+    .then(function(workdirDiff) {
+      test.workdirDiff = workdirDiff;
+    });
+  });
 
-              fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4")
-              .then(function() {
-                return test.repository.openIndex();
-              })
-              .then(function(indexResult) {
-                test.index = indexResult;
-                return test.index.read(1);
-              })
-              .then(function() {
-                return test.index.addByPath(diffFilename);
-              })
-              .then(function() {
-                return test.index.write();
-              })
-              .then(function() {
-                return test.index.writeTree();
-              })
-              .then(function() {
-                Diff.treeToWorkdirWithIndex(
-                  test.repository,
-                  test.masterCommitTree,
-                  null
-                )
-                .then(function(workdirDiff) {
-                  test.workdirDiff = workdirDiff;
-                  done();
-                });
-              });
-            });
-          });
-        });
-      });
+  after(function(done) {
+    return fse.unlink(diffFilepath).then(function() {
+      done();
     });
   });
 
@@ -99,15 +94,15 @@ describe("Diff", function() {
   it("can diff the workdir with index", function() {
     var patches = this.workdirDiff.patches();
     assert.equal(patches.length, 1);
+    assert(patches[0].isUntracked());
 
-    var hunks = patches[0].hunks();
-    assert.equal(hunks.length, 1);
+    var oldFile = patches[0].delta.oldFile();
+    assert.equal(oldFile.path(), "wddiff.txt");
+    assert.equal(oldFile.size(), 0);
 
-    var lines = hunks[0].lines();
-    assert.equal(
-      lines[0].content().substr(0, lines[0].contentLen()),
-      "1 line\n"
-    );
+    var newFile = patches[0].delta.newFile();
+    assert.equal(newFile.path(), "wddiff.txt");
+    assert.equal(newFile.size(), 23);
   });
 
   it("can diff with a null tree", function() {

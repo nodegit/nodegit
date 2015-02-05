@@ -279,6 +279,70 @@
             ]
           }
         }
+      ],
+      [
+        "git_diff_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "uint32_t",
+              "name": "flags"
+            },
+            {
+              "type": "git_submodule_ignore_t",
+              "name": "ignore_submodules"
+            },
+            {
+              "type": "git_strarray",
+              "name": "pathspec"
+            },
+            {
+              "type": "git_diff_notify_cb",
+              "name": "notify_cb"
+            },
+            {
+              "type": "void *",
+              "name": "notify_payload"
+            },
+            {
+              "type": "uint32_t",
+              "name": "context_lines"
+            },
+            {
+              "type": "uint32_t",
+              "name": "interhunk_lines"
+            },
+            {
+              "type": "uint16_t",
+              "name": "id_abbrev"
+            },
+            {
+              "type": "git_off_t",
+              "name": "max_size"
+            },
+            {
+              "type": "const char *",
+              "name": "old_prefix"
+            },
+            {
+              "type": "const char *",
+              "name": "new_prefix"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_diff_init_options",
+              "git_diff_tree_to_workdir",
+              "git_diff_tree_to_workdirext",
+              "git_diff_tree_to_tree"
+            ]
+          }
+        }
       ]
     ],
     "groups": [
