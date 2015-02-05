@@ -85,7 +85,7 @@ describe("Diff", function() {
     assert.equal(lines[4].contentLen(), 162);
   });
 
-  it("can diff the workdir with index", function() {
+  it.only("can diff the workdir with index", function() {
     var patches = this.workdirDiff.patches();
     assert.equal(patches.length, 1);
 
