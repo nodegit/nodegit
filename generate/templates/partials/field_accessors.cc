@@ -43,6 +43,10 @@
 
       {% elsif field.isCallbackFunction %}
         if (value->IsFunction()) {
+          if (!wrapper->raw->{{ field.name }}) {
+            wrapper->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
+          }
+
           wrapper->{{ field.name }} = new NanCallback(value.As<Function>());
         }
 

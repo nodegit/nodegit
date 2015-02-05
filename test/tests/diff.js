@@ -85,7 +85,7 @@ describe("Diff", function() {
     assert.equal(lines[4].contentLen(), 162);
   });
 
-  it.only("can diff the workdir with index", function() {
+  it("can diff the workdir with index", function() {
     var patches = this.workdirDiff.patches();
     assert.equal(patches.length, 1);
     assert(patches[0].isUntracked());
