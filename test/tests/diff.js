@@ -55,6 +55,12 @@ describe("Diff", function() {
     });
   });
 
+  after(function(done) {
+    return fse.unlink(diffFilepath).then(function() {
+      done();
+    });
+  });
+
   it("can walk a DiffList", function() {
     var patch = this.diff[0].patches()[0];
 
