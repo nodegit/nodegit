@@ -92,7 +92,10 @@ describe("Remote", function() {
     var repo = this.repository;
 
     return repo.getRemote("origin").then(function(remote) {
+      remote.checkCert(0);
+
       remote.connect(NodeGit.Enums.DIRECTION.FETCH);
+
       return remote.download();
     });
   });
