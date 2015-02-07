@@ -358,16 +358,6 @@
         ]
       ],
       [
-        "merge_head",
-        [
-          "git_merge_head_free",
-          "git_merge_head_from_fetchhead",
-          "git_merge_head_from_id",
-          "git_merge_head_from_ref",
-          "git_merge_head_id"
-        ]
-      ],
-      [
         "status_list",
         [
           "git_status_list_entrycount",

@@ -214,6 +214,22 @@
         }
       }
     },
+    "clone_options": {
+      "fields": {
+        "repository_cb": {
+          "ignore": true
+        },
+        "repository_cb_payload": {
+          "ignore": true
+        },
+        "remote_cb": {
+          "ignore": true
+        },
+        "remote_cb_payload": {
+          "ignore": true
+        }
+      }
+    },
     "commit": {
       "functions": {
         "git_commit_create": {

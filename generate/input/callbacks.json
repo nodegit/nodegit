@@ -522,6 +522,32 @@
       "error": -1
     }
   },
+  "git_transport_certificate_check_cb": {
+    "args": [
+      {
+        "name": "cert",
+        "cType": "git_cert *"
+      },
+      {
+        "name": "valid",
+        "cType": "int"
+      },
+      {
+        "name": "host",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
   "git_transport_message_cb": {
     "args": [
       {
