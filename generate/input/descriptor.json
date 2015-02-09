@@ -443,7 +443,14 @@
           "ignore": true
         },
         "git_diff_index_to_workdir": {
-          "ignore": true
+          "args": {
+            "index": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          }
         },
         "git_diff_init_options": {
           "ignore": true
@@ -485,7 +492,17 @@
           "ignore": true
         },
         "git_diff_tree_to_index": {
-          "ignore": true
+          "args": {
+            "old_tree": {
+              "isOptional": true
+            },
+            "index": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          }
         },
         "git_diff_tree_to_tree": {
           "args": {
