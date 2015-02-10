@@ -54,7 +54,7 @@
     "node-pre-gyp"
   ],
   "dependencies": {
-    "fs-extra": "^0.15.0",
+    "fs-extra": "^0.16.3",
     "node-pre-gyp": "~0.6.1",
     "nodegit-promise": "~1.0.0",
     "npm": "^2.1.18",
