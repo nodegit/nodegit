@@ -1,20 +1,20 @@
 var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
+var Promise = require("nodegit-promise");
 var fse = promisify(require("fs-extra"));
-var Diff = require("../../lib/diff");
-var normalizeOptions = require("../../lib/util/normalize_options");
-var NodeGit = require("../../");
+var local = path.join.bind(path, __dirname);
 
 describe("Diff", function() {
-  var Repository = require("../../lib/repository");
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var NodeGit = require("../../");
+  var Repository = require(local("../../lib/repository"));
+  var Diff = require(local("../../lib/diff"));
+  var normalizeOptions = require(local("../../lib/util/normalize_options"));
+
+  var reposPath = local("../repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
   var diffFilename = "wddiff.txt";
-  var diffFilepath = path.join(
-    path.resolve("test/repos/workdir"),
-    diffFilename
-  );
+  var diffFilepath = local("../repos/workdir", diffFilename);
 
   before(function() {
     var test = this;
@@ -36,7 +36,8 @@ describe("Diff", function() {
       test.commit = commit;
 
       return commit.getDiff();
-    }).then(function(diff) {
+    })
+    .then(function(diff) {
       test.diff = diff;
 
       return fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4");
@@ -52,11 +53,16 @@ describe("Diff", function() {
     })
     .then(function(workdirDiff) {
       test.workdirDiff = workdirDiff;
+    })
+    .then(function() {
+      return fse.remove(diffFilepath);
+    })
+    .catch(function(e) {
+      return fse.remove(diffFilepath)
+        .then(function() {
+          return Promise.reject(e);
+        });
     });
-  });
-
-  after(function() {
-    return fse.unlink(diffFilepath);
   });
 
   it("can walk a DiffList", function() {
@@ -106,18 +112,21 @@ describe("Diff", function() {
   it("can diff with a null tree", function() {
     var repo = this.repository;
     var tree = this.masterCommitTree;
-    return Diff.treeToTree(repo, null, tree, null).then(function(diff) {
-      assert.equal(diff.patches().length, 85);
-    });
+    return Diff.treeToTree(repo, null, tree, null)
+      .then(function(diff) {
+        assert.equal(diff.patches().length, 85);
+      });
   });
 
   it("can diff the initial commit of a repository", function() {
     var repo = this.repository;
     var oid = "99c88fd2ac9c5e385bd1fe119d89c83dce326219"; // First commit
-    return repo.getCommit(oid).then(function(commit) {
-      return commit.getDiff().then(function(diffs) {
+    return repo.getCommit(oid)
+      .then(function(commit) {
+        return commit.getDiff();
+      })
+      .then(function(diffs) {
         assert.equal(diffs[0].patches().length, 8);
       });
-    });
   });
 });

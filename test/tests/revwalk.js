@@ -1,25 +1,27 @@
 var assert = require("assert");
 var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Revwalk", function() {
-  var reposPath = path.resolve("test/repos/workdir/.git");
+  var Repository = require(local("../../lib/repository"));
+  var Revwalk = require(local("../../lib/revwalk"));
+  var Oid = require(local("../../lib/oid"));
 
-  var Repository = require("../../lib/repository");
-  var Revwalk = require("../../lib/revwalk");
-  var Oid = require("../../lib/oid");
+  var reposPath = local("../repos/workdir/.git");
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(60000);
 
-  before(function(done) {
+  before(function() {
     var test = this;
-    return Repository.open(reposPath).then(function(repository) {
-      test.repository = repository;
-      return test.repository.getBranchCommit("rev-walk").then(function(commit) {
+    return Repository.open(reposPath)
+      .then(function(repository) {
+        test.repository = repository;
+        return test.repository.getBranchCommit("rev-walk");
+      })
+      .then(function(commit) {
         test.commit = commit;
-        done();
       });
-    });
   });
 
   beforeEach(function() {
@@ -34,54 +36,46 @@ describe("Revwalk", function() {
   it("can push an object", function() {
     var sha = this.commit.sha();
 
-    return this.walker.next().then(function(commit) {
-      assert.equal(sha, commit);
-    });
+    return this.walker.next()
+      .then(function(commit) {
+        assert.equal(sha, commit);
+      });
   });
 
   it("can hide an object", function() {
     var test = this;
 
-    return test.walker.next().then(function(commit) {
-      return test.walker.next();
-    }).then(function() {
-      return test.walker.next();
-    }).then(function() {
-      return test.walker.next();
-    }).then(function(commit) {
-      assert.equal(commit.toString(),
-        "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
-      test.walker = test.repository.createRevWalk();
-      test.walker.push(test.commit.id());
-      test.walker.hide(
-        Oid.fromString("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
+    return next(test.walker, 4)
+      .then(function(commit) {
+        assert.equal(commit.toString(),
+          "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
 
-      return test.walker.next();
-    }).then(function() {
-      return test.walker.next();
-    }).then(function() {
-      return test.walker.next();
-    }).then(function(commit) {
-      assert.equal(commit.toString(),
-        "95f695136203a372751c19b6353aeb5ae32ea40e");
-      return test.walker.next();
-    }).then(function(commit) {
-      assert.equal(commit, undefined);
-    });
+        test.walker = test.repository.createRevWalk();
+        test.walker.push(test.commit.id());
+        test.walker.hide(
+          Oid.fromString("b8a94aefb22d0534cc0e5acf533989c13d8725dc"));
+
+        return next(test.walker, 3);
+      })
+      .then(function(commit) {
+        assert.equal(commit.toString(),
+          "95f695136203a372751c19b6353aeb5ae32ea40e");
+          return next(test.walker, 1);
+      })
+      .then(function(commit) {
+        assert.equal(commit, undefined);
+      });
   });
 
   it("can simplify to first parent", function() {
     var test = this;
 
     test.walker.simplifyFirstParent();
-    return test.walker.next().then(function() {
-      return test.walker.next();
-    }).then(function() {
-      return test.walker.next();
-    }).then(function(commit) {
-      assert.equal(commit.toString(),
-        "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
-    });
+    return next(test.walker, 3)
+      .then(function(commit) {
+        assert.equal(commit.toString(),
+          "b8a94aefb22d0534cc0e5acf533989c13d8725dc");
+      });
   });
 
   it("can get a specified number of commits", function() {
@@ -146,4 +140,21 @@ describe("Revwalk", function() {
       });
     });
   });
+
+  function next(walker, count) {
+    var promise = null;
+    for (var i = 0; i < count; i++) {
+      if (!promise) {
+        promise = walker.next();
+      }
+      else {
+        promise = promise.then(getNext);
+      }
+    }
+    return promise;
+    
+    function getNext() {
+      return walker.next();
+    }
+  }
 });

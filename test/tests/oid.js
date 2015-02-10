@@ -1,18 +1,18 @@
 var assert = require("assert");
-
-var NodeGit = require("../../");
+var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Oid", function() {
-  var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
+  var Oid = require(local("../../lib/oid"));
 
-  var Oid = require("../../lib/oid");
+  var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
   before(function() {
     this.oid = Oid.fromString(oid);
   });
 
   it("can convert a string to an oid", function() {
-    assert.ok(this.oid instanceof NodeGit.Oid);
+    assert.ok(this.oid instanceof Oid);
   });
 
   it("can convert an oid to a string", function() {
