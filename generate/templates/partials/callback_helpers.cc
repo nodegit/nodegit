@@ -82,7 +82,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
   {{ cbFunction.return.type }} resultStatus;
 
-  {}
   {% each cbFunction|returnsInfo true false as _return %}
     if (result.IsEmpty() || result->IsNativeError()) {
       baton->result = {{ cbFunction.return.error }};
