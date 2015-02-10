@@ -7,7 +7,7 @@ var local = path.join.bind(path, __dirname);
 fse.ensureDir = promisify(fse.ensureDir);
 
 describe("Merge", function() {
-  var nodegit = require(local("../../"));
+  var NodeGit = require(local("../../"));
 
   var reposPath = local("../repos/merge");
   var ourBranchName = "ours";
@@ -20,7 +20,7 @@ describe("Merge", function() {
         return fse.ensureDir(reposPath);
       })
       .then(function() {
-        return nodegit.Repository.init(reposPath, 0);
+        return NodeGit.Repository.init(reposPath, 0);
       })
       .then(function(repo) {
         test.repository = repo;
@@ -34,9 +34,9 @@ describe("Merge", function() {
     var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
     var theirFileContent = "I'm skeptical about Toll Roads";
 
-    var ourSignature = nodegit.Signature.create
+    var ourSignature = NodeGit.Signature.create
           ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
-    var theirSignature = nodegit.Signature.create
+    var theirSignature = NodeGit.Signature.create
           ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
     var repository = this.repository;
@@ -110,7 +110,7 @@ describe("Merge", function() {
         });
       })
       .then(function() {
-        return nodegit.Merge.commits(repository, ourCommit, theirCommit);
+        return NodeGit.Merge.commits(repository, ourCommit, theirCommit);
       })
       .then(function(index) {
         assert(!index.hasConflicts());
@@ -138,9 +138,9 @@ describe("Merge", function() {
     var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
     var theirFileContent = "I'm skeptical about Toll Roads";
 
-    var ourSignature = nodegit.Signature.create
+    var ourSignature = NodeGit.Signature.create
     ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
-    var theirSignature = nodegit.Signature.create
+    var theirSignature = NodeGit.Signature.create
     ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
     var repository = this.repository;
@@ -240,9 +240,9 @@ describe("Merge", function() {
     var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
     var theirFileContent = "I'm skeptical about Toll Roads";
 
-    var ourSignature = nodegit.Signature.create
+    var ourSignature = NodeGit.Signature.create
     ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
-    var theirSignature = nodegit.Signature.create
+    var theirSignature = NodeGit.Signature.create
     ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
     var repository = this.repository;
@@ -365,11 +365,11 @@ describe("Merge", function() {
     var finalFileContent =
       "Big Bobs are beautiful, and the small are unexpected!\n";
 
-    var baseSignature = nodegit.Signature.create
+    var baseSignature = NodeGit.Signature.create
           ("Peaceful Bob", "justchill@bob.net", 123456789, 60);
-    var ourSignature = nodegit.Signature.create
+    var ourSignature = NodeGit.Signature.create
           ("Big Bob", "impressive@bob.net", 123456789, 60);
-    var theirSignature = nodegit.Signature.create
+    var theirSignature = NodeGit.Signature.create
           ("Small Bob", "underestimated@bob.net", 123456789, 60);
 
     var repository = this.repository;
@@ -478,13 +478,13 @@ describe("Merge", function() {
         });
       })
       .then(function() {
-        return nodegit.Reference.lookup(repository, "HEAD")
+        return NodeGit.Reference.lookup(repository, "HEAD")
           .then(function(head) {
             return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
           });
       })
       .then(function() {
-        return nodegit.Merge.commits(repository, ourCommit, theirCommit, null);
+        return NodeGit.Merge.commits(repository, ourCommit, theirCommit, null);
       })
       .then(function(index) {
         assert(index.hasConflicts());

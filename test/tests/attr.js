@@ -3,18 +3,19 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Attr", function() {
-  var reposPath = local("../repos/workdir/.git");
-
   var Repository = require(local("../../lib/repository"));
   var Attr = require(local("../../lib/attr"));
   var Status = require(local("../../lib/status"));
 
+  var reposPath = local("../repos/workdir/.git");
+
   before(function() {
     var test = this;
 
-    return Repository.open(reposPath).then(function(repository) {
-      test.repository = repository;
-    });
+    return Repository.open(reposPath)
+      .then(function(repository) {
+        test.repository = repository;
+      });
   });
 
   it("can add a macro definition", function() {

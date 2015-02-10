@@ -5,10 +5,10 @@ var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
-var NodeGit = require(local("../../"));
-var Repository = NodeGit.Repository;
-
 describe("Commit", function() {
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+
   var reposPath = local("../repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
@@ -137,41 +137,7 @@ describe("Commit", function() {
     });
   });
 
-  describe("author", function() {
-    before(function() {
-      this.author = this.commit.author();
-    });
 
-    it("is available", function() {
-      assert.ok(this.author instanceof NodeGit.Signature);
-    });
-
-    it("has a name", function() {
-      assert.equal(this.author.name(), "Michael Robinson");
-    });
-
-    it("has an email", function() {
-      assert.equal(this.author.email(), "mike@panmedia.co.nz");
-    });
-  });
-
-  describe("committer", function() {
-    before(function() {
-      this.committer = this.commit.committer();
-    });
-
-    it("is available", function() {
-      assert.ok(this.committer instanceof NodeGit.Signature);
-    });
-
-    it("has a name", function() {
-      assert.equal(this.committer.name(), "Michael Robinson");
-    });
-
-    it("has an email", function() {
-      assert.equal(this.committer.email(), "mike@panmedia.co.nz");
-    });
-  });
 
   it("has an owner", function() {
     var owner = this.commit.owner();
@@ -210,7 +176,7 @@ describe("Commit", function() {
     });
   });
 
-  it("can fetch all its parents", function() {
+  it("can fetch all of its parents", function() {
     return this.commit.getParents().then(function(parents) {
       assert.equal(parents.length, 1);
 
@@ -283,6 +249,42 @@ describe("Commit", function() {
   it("can get the commit diff", function() {
     return this.commit.getDiff().then(function(diff) {
       assert.equal(diff.length, 1);
+    });
+  });
+
+  describe("Commit's Author", function() {
+    before(function() {
+      this.author = this.commit.author();
+    });
+
+    it("is available", function() {
+      assert.ok(this.author instanceof NodeGit.Signature);
+    });
+
+    it("has a name", function() {
+      assert.equal(this.author.name(), "Michael Robinson");
+    });
+
+    it("has an email", function() {
+      assert.equal(this.author.email(), "mike@panmedia.co.nz");
+    });
+  });
+
+  describe("Commit's Committer", function() {
+    before(function() {
+      this.committer = this.commit.committer();
+    });
+
+    it("is available", function() {
+      assert.ok(this.committer instanceof NodeGit.Signature);
+    });
+
+    it("has a name", function() {
+      assert.equal(this.committer.name(), "Michael Robinson");
+    });
+
+    it("has an email", function() {
+      assert.equal(this.committer.email(), "mike@panmedia.co.nz");
     });
   });
 });

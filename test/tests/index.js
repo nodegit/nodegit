@@ -3,9 +3,9 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Index", function() {
-  var reposPath = local("../repos/workdir/.git");
-
   var Repository = require(local("../../lib/repository"));
+
+  var reposPath = local("../repos/workdir/.git");
 
   before(function() {
     var test = this;

@@ -9,14 +9,16 @@ describe("StatusFile", function() {
   var pathName = "README.md";
   var statusCode = Status.STATUS.WT_NEW;
 
-  var status = new StatusFile(pathName, statusCode);
+  before(function() {
+    this.status = new StatusFile(pathName, statusCode);
+  });
 
   it("passes the path to the working function", function() {
-    assert.equal(status.path(), pathName);
+    assert.equal(this.status.path(), pathName);
   });
 
   it("identifies the proper statuses", function() {
-    assert.ok(status.isNew());
-    assert.ok(!status.isModified());
+    assert.ok(this.status.isNew());
+    assert.ok(!this.status.isModified());
   });
 });

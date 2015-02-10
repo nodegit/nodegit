@@ -5,6 +5,10 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Clone", function() {
+  var Repository = require(local("../../lib/repository"));
+  var Clone = require(local("../../lib/clone"));
+  var NodeGit = require(local("../../"));
+
   var http = local("../repos/http");
   var https = local("../repos/https");
   var ssh = local("../repos/ssh");
@@ -14,10 +18,6 @@ describe("Clone", function() {
 
   var sshPublicKey = local("../id_rsa.pub");
   var sshPrivateKey = local("../id_rsa");
-
-  var Repository = require(local("../../lib/repository"));
-  var Clone = require(local("../../lib/clone"));
-  var NodeGit = require(local("../../"));
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(15000);

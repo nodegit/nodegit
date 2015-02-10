@@ -9,16 +9,15 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 describe("Reference", function() {
-  var reposPath = local("../repos/workdir/.git");
-
   var Repository = require(local("../../lib/repository"));
   var Reference = require(local("../../lib/reference"));
+
+  var reposPath = local("../repos/workdir");
 
   before(function() {
     var test = this;
 
-    return exec("git reset --hard origin/master",
-      {cwd: local("../repos/workdir")} )
+    return exec("git reset --hard origin/master", {cwd: reposPath})
       .then(function() {
         return Repository.open(reposPath);
       })
@@ -42,14 +41,14 @@ describe("Reference", function() {
 
   it("will return undefined looking up the symbolic target if not symbolic",
     function() {
-      var reference = this.reference;
-      assert(reference.symbolicTarget() === undefined);
+      assert(this.reference.symbolicTarget() === undefined);
     });
 
   it("can look up the HEAD sha", function() {
-    return Reference.nameToId(this.repository, "HEAD").then(function(oid) {
-      var sha = oid.allocfmt();
-      assert.equal(sha, "32789a79e71fbc9e04d3eff7425e1771eb595150");
-    });
+    return Reference.nameToId(this.repository, "HEAD")
+      .then(function(oid) {
+        var sha = oid.allocfmt();
+        assert.equal(sha, "32789a79e71fbc9e04d3eff7425e1771eb595150");
+      });
   });
 });

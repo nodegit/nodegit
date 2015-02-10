@@ -3,23 +3,25 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Blob", function() {
-  var reposPath = local("../repos/workdir/.git");
-  var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
-
   var Oid = require(local("../../lib/oid"));
   var Repository = require(local("../../lib/repository"));
   var FileMode = require(local("../../lib/tree_entry")).FILEMODE;
 
+  var reposPath = local("../repos/workdir/.git");
+  var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
+
   before(function() {
     var test = this;
 
-    return Repository.open(reposPath).then(function(repository) {
-      test.repository = repository;
+    return Repository.open(reposPath)
+      .then(function(repository) {
+        test.repository = repository;
 
-      return repository.getBlob(oid).then(function(blob) {
+        return repository.getBlob(oid);
+      })
+      .then(function(blob) {
         test.blob = blob;
       });
-    });
   });
 
   it("can provide content as a buffer", function() {
@@ -41,8 +43,9 @@ describe("Blob", function() {
 
   it("can get a blob with an Oid object", function() {
     var oidObject = Oid.fromString(oid);
-    this.repository.getBlob(oidObject).then(function(blob) {
-      assert.equal(this.blob.id().toString(), oid);
-    });
+    return this.repository.getBlob(oidObject)
+      .then(function(blob) {
+        assert.equal(blob.id().toString(), oid);
+      });
   });
 });

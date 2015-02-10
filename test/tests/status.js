@@ -8,12 +8,11 @@ var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
-
 describe("Status", function() {
-  var reposPath = local("../repos/workdir/.git");
-
   var Status = require(local("../../lib/status"));
   var Repository = require(local("../../lib/repository"));
+
+  var reposPath = local("../repos/workdir/.git");
 
   beforeEach(function() {
     var test = this;
@@ -29,9 +28,11 @@ describe("Status", function() {
     var statusCallback = function(path, status) {
       statuses.push({path: path, status: status});
     };
-    return Status.foreach(this.repository, statusCallback).then(function() {
-      assert.equal(statuses.length, 0);
-    });
+
+    return Status.foreach(this.repository, statusCallback)
+      .then(function() {
+        assert.equal(statuses.length, 0);
+      });
   });
 
   it("gets a status on changing file directory", function() {
@@ -39,31 +40,34 @@ describe("Status", function() {
     var fileContent = "Cha-cha-cha-chaaaaaangessssss";
     var repo = this.repository;
     var filePath = path.join(repo.workdir(), fileName);
-
+    var oldContent;
     var statuses = [];
 
-    return fse.readFile(filePath).then(function(content) {
-      return fse.writeFile(filePath, fileContent)
-        .then(function() {
-          var statusCallback = function(path, status) {
-            statuses.push({path: path, status: status});
-          };
-          return Status.foreach(repo, statusCallback);
-        })
-        .then(function() {
-          assert.equal(statuses.length, 1);
-          assert.equal(statuses[0].path, fileName);
-          assert.equal(statuses[0].status, 256);
-        })
-        .then(function () {
-          return fse.writeFile(filePath, content);
-        }, function(e) {
-          return fse.writeFile(filePath, content)
-            .then(function() {
-              return Promise.reject(e);
-            });
-        });
-    });
+    return fse.readFile(filePath)
+      .then(function(content) {
+        oldContent = content;
+        return fse.writeFile(filePath, fileContent);
+      })
+      .then(function() {
+        var statusCallback = function(path, status) {
+          statuses.push({path: path, status: status});
+        };
+        return Status.foreach(repo, statusCallback);
+      })
+      .then(function() {
+        assert.equal(statuses.length, 1);
+        assert.equal(statuses[0].path, fileName);
+        assert.equal(statuses[0].status, 256);
+      })
+      .then(function () {
+        return fse.writeFile(filePath, oldContent);
+      })
+      .catch(function(e) {
+        return fse.writeFile(filePath, oldContent)
+          .then(function() {
+            return Promise.reject(e);
+          });
+      });
   });
 
   it("gets status with options", function() {
@@ -91,15 +95,17 @@ describe("Status", function() {
             assert.equal(statuses.length, 1);
             assert.equal(statuses[0].path, fileName);
             assert.equal(statuses[0].status, 128);
-          })
-          .then(function() {
-            return fse.remove(filePath);
-          }, function(e) {
-            return fse.remove(filePath)
-              .then(function() {
-                return Promise.reject(e);
-              });
           });
+      })
+      .then(function() {
+        return fse.remove(filePath);
+      })
+      .catch(function(e) {
+        return fse.remove(filePath)
+          .then(function() {
+            return Promise.reject(e);
+          });
+
       });
   });
 });
