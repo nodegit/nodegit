@@ -54,7 +54,7 @@
     "node-pre-gyp"
   ],
   "dependencies": {
-    "fs-extra": "~0.15.0",
+    "fs-extra": "^0.15.0",
     "node-pre-gyp": "~0.6.1",
     "nodegit-promise": "~1.0.0",
     "npm": "^2.1.18",
@@ -62,16 +62,16 @@
     "which-native-nodish": "^1.0.3"
   },
   "devDependencies": {
-    "mocha": "~2.1.0",
     "combyne": "~0.6.2",
     "istanbul": "~0.3.2",
     "js-beautify": "^1.5.4",
-    "jshint": "~2.5.6",
+    "jshint": "^2.6.0",
     "lodash": "^2.4.1",
-    "nan": "~1.5.0",
+    "mocha": "~2.1.0",
+    "nan": "^1.6.2",
     "node-gyp": "~1.0.2",
     "nw-gyp": "^0.12.4",
-    "request": "~2.51.0",
+    "request": "^2.53.0",
     "tar": "~1.0.1"
   },
   "binary": {
@@ -85,19 +85,14 @@
     "mocha": "mocha test/runner test/tests",
     "mochaDebug": "mocha --debug-brk test/runner test/tests",
     "test": "npm run lint && npm run cov",
-
     "generateJson": "node generate/scripts/generateJson",
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "generateMissingTests": "node generate/scripts/generateMissingTests",
-
-
     "prepublish": "node lifecycleScripts/prepareForBuild.js",
     "publish": "node-pre-gyp package && node-pre-gyp publish",
-
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
     "postinstall": "node lifecycleScripts/clean",
-
     "recompile": "node-gyp configure build",
     "rebuild": "node generate && node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
