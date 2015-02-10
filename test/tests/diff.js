@@ -1,6 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
+var Promise = require("nodegit-promise");
 var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
@@ -35,7 +36,8 @@ describe("Diff", function() {
       test.commit = commit;
 
       return commit.getDiff();
-    }).then(function(diff) {
+    })
+    .then(function(diff) {
       test.diff = diff;
 
       return fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4");
@@ -51,11 +53,16 @@ describe("Diff", function() {
     })
     .then(function(workdirDiff) {
       test.workdirDiff = workdirDiff;
+    })
+    .then(function() {
+      return fse.remove(diffFilepath);
+    })
+    .catch(function(e) {
+      return fse.remove(diffFilepath)
+        .then(function() {
+          return Promise.reject(e);
+        });
     });
-  });
-
-  after(function() {
-    return fse.unlink(diffFilepath);
   });
 
   it("can walk a DiffList", function() {

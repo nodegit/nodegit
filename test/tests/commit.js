@@ -12,16 +12,20 @@ describe("Commit", function() {
   var reposPath = local("../repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
-  beforeEach(function() {
-    var test = this;
+  function reinitialize(test) {
+    return Repository.open(reposPath)
+      .then(function(repository) {
+        test.repository = repository;
 
-    return Repository.open(reposPath).then(function(repository) {
-      test.repository = repository;
-
-      return repository.getCommit(oid).then(function(commit) {
+        return repository.getCommit(oid);
+      })
+      .then(function(commit) {
         test.commit = commit;
       });
-    });
+  }
+
+  before(function() {
+    return reinitialize(this);
   });
 
   it("will fail with an invalid sha", function() {
@@ -64,6 +68,7 @@ describe("Commit", function() {
   });
 
   it("can create a commit", function() {
+    var test = this;
     var expectedCommitId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
     var fileName = "newfile.txt";
     var fileContent = "hello world";
@@ -123,8 +128,12 @@ describe("Commit", function() {
     })
     .then(function(commitId) {
       assert.equal(expectedCommitId, commitId);
-    }, function(rejected) {
-      assert.fail();
+      return reinitialize(test);
+    }, function(reason) {
+      return reinitialize(test)
+        .then(function() {
+          return Promise.reject();
+        });
     });
   });
 
@@ -148,23 +157,23 @@ describe("Commit", function() {
 
   describe("committer", function() {
     before(function() {
-      this.author = this.commit.committer();
+      this.committer = this.commit.committer();
     });
 
     it("is available", function() {
-      assert.ok(this.author instanceof NodeGit.Signature);
+      assert.ok(this.committer instanceof NodeGit.Signature);
     });
 
     it("has a name", function() {
-      assert.equal(this.author.name(), "Michael Robinson");
+      assert.equal(this.committer.name(), "Michael Robinson");
     });
 
     it("has an email", function() {
-      assert.equal(this.author.email(), "mike@panmedia.co.nz");
+      assert.equal(this.committer.email(), "mike@panmedia.co.nz");
     });
   });
 
-  it("has owner", function() {
+  it("has an owner", function() {
     var owner = this.commit.owner();
     assert.ok(owner instanceof Repository);
   });

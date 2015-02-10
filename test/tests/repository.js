@@ -1,6 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
+var Promise = require("nodegit-promise");
 var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
@@ -78,8 +79,8 @@ describe("Repository", function() {
   });
 
   it("gets statuses with StatusFile", function() {
-    var fileName = "my-new-file-that-shouldnt-exist";
-    var fileContent = "new file";
+    var fileName = "my-new-file-that-shouldnt-exist.file";
+    var fileContent = "new file from repository test";
     var repo = this.repository;
     var filePath = path.join(repo.workdir(), fileName);
 
@@ -89,8 +90,15 @@ describe("Repository", function() {
           assert.equal(statuses.length, 1);
           assert.equal(statuses[0].path(), fileName);
           assert.ok(statuses[0].isNew());
-          return fse.unlink(filePath);
         });
+      })
+      .then(function() {
+        return fse.remove(filePath);
+      }, function (e) {
+        return fse.remove(filePath)
+          .then(function() {
+            return Promise.reject(e);
+          });
       });
   });
 });

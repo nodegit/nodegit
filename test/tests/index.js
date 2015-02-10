@@ -10,15 +10,18 @@ describe("Index", function() {
   before(function() {
     var test = this;
 
-    return Repository.open(reposPath).then(function(repo) {
-      test.repo = repo;
-
-      return repo.openIndex().then(function(index) {
+    return Repository.open(reposPath)
+      .then(function(repo) {
+        test.repo = repo;
+        return repo.openIndex();
+      })
+      .then(function(index) {
         test.index = index;
-
-        return index;
       });
-    });
+  });
+
+  after(function() {
+    this.index.clear();
   });
 
   it("can get the index of a repo and examine entries", function() {
