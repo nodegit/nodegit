@@ -314,7 +314,7 @@ var Helpers = {
       if (fnDef.jsFunctionName == utils.camelCase(collidingName)) {
         fnDef.jsFunctionName = utils.camelCase(newName);
       }
-    });
+    }).value();
 
     _.merge(fnDef, _.omit(fnOverrides, "args", "return"));
   },

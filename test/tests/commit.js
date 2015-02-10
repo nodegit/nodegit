@@ -132,7 +132,7 @@ describe("Commit", function() {
     }, function(reason) {
       return reinitialize(test)
         .then(function() {
-          return Promise.reject();
+          return Promise.reject(reason);
         });
     });
   });
