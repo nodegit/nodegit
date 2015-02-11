@@ -6,10 +6,8 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Diff", function() {
-  var NodeGit = require("../../");
   var Repository = require(local("../../lib/repository"));
   var Diff = require(local("../../lib/diff"));
-  var normalizeOptions = require(local("../../lib/util/normalize_options"));
 
   var reposPath = local("../repos/workdir/.git");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
@@ -22,7 +20,12 @@ describe("Diff", function() {
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
-      return repository.getBranchCommit("master");
+      return repository.openIndex();
+    })
+    .then(function(index) {
+      test.index = index;
+
+      return test.repository.getBranchCommit("master");
     })
     .then(function(masterCommit) {
       return masterCommit.getTree();
@@ -46,13 +49,19 @@ describe("Diff", function() {
       return Diff.treeToWorkdirWithIndex(
         test.repository,
         test.masterCommitTree,
-        normalizeOptions({
-          flags: Diff.OPTION.INCLUDE_UNTRACKED
-        }, NodeGit.DiffOptions)
+        { flags: Diff.OPTION.INCLUDE_UNTRACKED }
       );
     })
     .then(function(workdirDiff) {
       test.workdirDiff = workdirDiff;
+    })
+    .then(function() {
+      var opts = { flags: Diff.OPTION.INCLUDE_UNTRACKED };
+
+      return Diff.indexToWorkdir(test.repository, test.index, opts);
+    })
+    .then(function(diff) {
+      test.indexToWorkdirDiff = diff;
     })
     .then(function() {
       return fse.remove(diffFilepath);
@@ -128,5 +137,20 @@ describe("Diff", function() {
       .then(function(diffs) {
         assert.equal(diffs[0].patches().length, 8);
       });
+  });
+
+  it("can diff tree to index", function() {
+    var repo = this.repository;
+    var tree = this.masterCommitTree;
+    var index = this.index;
+    var opts = { flags: Diff.OPTION.INCLUDE_UNTRACKED };
+
+    return Diff.treeToIndex(repo, tree, index, opts).then(function(diff) {
+      assert.equal(diff.patches().length, 0);
+    });
+  });
+
+  it("can diff index to workdir", function() {
+    assert.equal(this.indexToWorkdirDiff.patches().length, 1);
   });
 });
