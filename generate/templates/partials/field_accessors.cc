@@ -142,10 +142,10 @@
         };
 
         TryCatch tryCatch;
-        Handle<Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
+        Handle<v8::Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
 
         if (result->IsObject() && result->ToObject()->Has(NanNew("then"))) {
-          Handle<Value> thenProp = result->ToObject()->Get(NanNew("then"));
+          Handle<v8::Value> thenProp = result->ToObject()->Get(NanNew("then"));
 
           if (thenProp->IsFunction()) {
             // we can be reasonbly certain that the result is a promise
@@ -197,7 +197,7 @@
 
         if (isFulfilled->Value()) {
           NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
-          Handle<Value> result = resultFn->Call(0, argv);
+          Handle<v8::Value> result = resultFn->Call(0, argv);
           {{ field.return.type }} resultStatus;
 
           {% each field|returnsInfo true false as _return %}

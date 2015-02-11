@@ -43,10 +43,10 @@ NAN_METHOD(Wrapper::JSNewFunction) {
   NanReturnValue(args.This());
 }
 
-Handle<Value> Wrapper::New(void *raw) {
+Handle<v8::Value> Wrapper::New(void *raw) {
   NanEscapableScope();
 
-  Handle<Value> argv[1] = { NanNew<External>((void *)raw) };
+  Handle<v8::Value> argv[1] = { NanNew<External>((void *)raw) };
   Local<Object> instance;
   Local<FunctionTemplate> constructorHandle = NanNew(constructor_template);
   instance = constructorHandle->GetFunction()->NewInstance(1, argv);
@@ -70,7 +70,7 @@ NAN_METHOD(Wrapper::ToBuffer) {
   Local<Function> bufferConstructor = Local<Function>::Cast(
     NanGetCurrentContext()->Global()->Get(NanNew<String>("Buffer")));
 
-  Handle<Value> constructorArgs[1] = { NanNew<Integer>(len) };
+  Handle<v8::Value> constructorArgs[1] = { NanNew<Integer>(len) };
   Local<Object> nodeBuffer = bufferConstructor->NewInstance(1, constructorArgs);
 
   std::memcpy(node::Buffer::Data(nodeBuffer), ObjectWrap::Unwrap<Wrapper>(args.This())->GetValue(), len);
