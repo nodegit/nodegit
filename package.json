@@ -3,8 +3,8 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.2.7",
   "libgit2": {
-    "url": "https://github.com/libgit2/libgit2/tarball/1ce9ea3ba9b4fa666602d52a5281d41a482cc58b",
-    "sha": "1ce9ea3ba9b4fa666602d52a5281d41a482cc58b",
+    "url": "https://github.com/nodegit/libgit2/tarball/4b3a1899ff37dddba0a095487505fed9ede101b1",
+    "sha": "4b3a1899ff37dddba0a095487505fed9ede101b1",
     "version": "0.22.1"
   },
   "libssh2": {
