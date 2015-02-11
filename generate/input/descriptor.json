@@ -651,6 +651,11 @@
         }
       }
     },
+    "hashsig": {
+      "cDependencies": [
+        "git2/sys/hashsig.h"
+      ]
+    },
     "ignore": {
       "functions": {
         "git_ignore_path_is_ignored": {
@@ -749,6 +754,9 @@
           "ignore": true
         },
         "git_merge_base_many": {
+          "ignore": true
+        },
+        "git_merge_bases_many": {
           "ignore": true
         },
         "git_merge_base_octopus": {
@@ -1363,6 +1371,11 @@
         }
       }
     },
+    "stream": {
+      "cDependencies": [
+        "git2/sys/stream.h"
+      ]
+    },
     "submodule": {
       "functions": {
         "git_submodule_foreach": {
@@ -1428,7 +1441,10 @@
         "git_transport_smart": {
           "ignore": true
         }
-      }
+      },
+      "cDependencies": [
+        "git2/sys/transport.h"
+      ]
     },
     "tree": {
       "functions": {

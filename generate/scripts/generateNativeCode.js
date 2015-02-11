@@ -108,7 +108,6 @@ module.exports = function generateNativeCode() {
     utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)));
     // Write out all the classes.
     enabled.forEach(function(idef) {
-if (idef.filename == 'clone_options') debugger;
       try {
         if (idef.type && idef.type != "enum") {
           utils.writeFile(
