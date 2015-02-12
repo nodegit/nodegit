@@ -60,6 +60,7 @@ module.exports = function generateNativeCode() {
     isDoublePointer: require("../templates/filters/is_double_pointer"),
     isFixedLengthString: require("../templates/filters/is_fixed_length_string"),
     isOid: require("../templates/filters/is_oid"),
+    isPayload: require("../templates/filters/is_payload"),
     isPointer: require("../templates/filters/is_pointer"),
     isV8Value: require("../templates/filters/is_v8_value"),
     jsArgsCount: require("../templates/filters/js_args_count"),

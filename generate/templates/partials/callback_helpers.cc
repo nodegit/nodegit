@@ -40,11 +40,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
 
-  NanCallback* callback = (NanCallback *)baton->payload;
+  {% each cbFunction.args|argsInfo as arg %}
+    {% if arg | isPayload %}
+  NanCallback* callback = (NanCallback *)baton->{{ arg.name }};
+    {% endif %}
+  {% endeach %}
 
   Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
     {% each cbFunction.args|argsInfo as arg %}
-      {% if arg.name == "payload" %}
+      {% if arg | isPayload %}
         {%-- payload is always the last arg --%}
         // payload is null because we can use closure scope in javascript
         NanUndefined()
