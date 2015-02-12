@@ -452,6 +452,9 @@
     "cred_userpass_plaintext": {
       "ignore": true
     },
+    "describe": {
+      "ignore": true
+    },
     "diff": {
       "cDependencies": [
         "git2/sys/diff.h"
