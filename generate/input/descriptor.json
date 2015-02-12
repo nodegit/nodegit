@@ -1011,6 +1011,11 @@
         }
       }
     },
+    "openssl": {
+      "cDependencies": [
+        "git2/sys/openssl.h"
+      ]
+    },
     "packbuilder": {
       "functions": {
         "git_packbuilder_foreach": {
