@@ -1284,7 +1284,7 @@
           "ignore": true
         },
         "git_remote_set_transport": {
-          "isAsync": true
+          "ignore": true
         },
         "git_remote_set_push_refspecs": {
           "ignore": true
