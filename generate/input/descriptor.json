@@ -20,6 +20,9 @@
         }
       }
     },
+    "describe_strategy": {
+      "ignore": true
+    },
     "delta": {
       "owner": "Diff"
     },
