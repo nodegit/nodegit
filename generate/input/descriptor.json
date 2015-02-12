@@ -194,6 +194,18 @@
         }
       }
     },
+    "cert_x509": {
+      "fields": {
+        "data": {
+          "cppClassName": "Wrapper",
+          "jsClassName": "Buffer"
+        }
+      },
+      "dependencies": [
+        "../include/wrapper.h",
+        "node_buffer.h"
+      ]
+    },
     "checkout": {
       "functions": {
         "git_checkout_head": {
