@@ -3,29 +3,42 @@ NodeGit
 
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
-[![Build Status] (https://travis-ci.org/nodegit/nodegit.svg)]
-(https://travis-ci.org/nodegit/nodegit)
-[![Build status] (https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true)]
-(https://ci.appveyor.com/project/timbranyen/nodegit)
-[![Dependency Status] (https://david-dm.org/nodegit/nodegit.svg)]
-(https://david-dm.org/nodegit/nodegit)
-
-
+<table>
+  <thead>
+    <tr>
+      <th>Linux</th>
+      <th>OS X</th>
+      <th>Windows</th>
+      <th>Dependencies</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2" align="center">
+        <a href="https://travis-ci.org/nodegit/nodegit"><img src="https://travis-ci.org/nodegit/nodegit.svg"></a>
+      </td>
+      <td align="center">
+        <a href="https://ci.appveyor.com/project/timbranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true"></a>
+      </td>
+      <td align="center">
+        <a href="https://david-dm.org/nodegit/nodegit"><img src="https://david-dm.org/nodegit/nodegit.svg"></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 **Stable: 0.2.7**
-
-**Working: 0.3.0**
-
-
 
 ## Have a problem? Come chat with us! ##
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)]
-(https://gitter.im/nodegit/nodegit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+(https://gitter.im/nodegit/nodegit)
+
 ## Maintained by ##
 Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
-John Haley [@johnhaley81](http://twitter.com/johnhaley81), and
-Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from tons of
+John Haley [@johnhaley81](http://twitter.com/johnhaley81),
+Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp), and
+Steve Smith [@orderedlist](https://twitter.com/orderedlist) with help from tons of
 [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
 
 ### Alumni Maintainers ###
@@ -45,13 +58,10 @@ dependencies.
 npm install nodegit
 ```
 
-If you encounter problems while installing, you should try the Building from source instructions below.
+If you encounter problems while installing, you should try the Building from
+source instructions below.
 
 ## Building from source. ##
-
-Minimum dependencies:
-
-- [Python 2](https://www.python.org/)
 
 If you wish to help contribute to NodeGit it is useful to build locally.
 
@@ -67,18 +77,6 @@ npm install
 ```
 
 If you encounter errors, you most likely have not configured the dependencies correctly.
-
-### Debug build
-
-In order to track down possible bugs, you will need a debug buid so you
-can get a backtrace with [gdb](http://www.gnu.org/software/gdb/) or
-[lldb](http://lldb.llvm.org/).
-
-If you're building for the first time, run `npm run installDebug` (or `BUILD_ONLY=true npm link`)
-
-Note that you should run `rm -rf build/Release` (or `rd /s /q build/Release` in Windows) to make sure a release build doesn't get loaded instead of the debug build.
-
-If you're doing a subsequent rebuild of NodeGit in debug, the clean function will cause a lot of extraneous recompilation of things you probably didn't change (like the vendor dependencies). If you need to regenerate the C++ files and recompile you can run `npm run rebuildDebug`, or `npm run recompileDebug` if you've manually updated the C++ files and don't want them to regenerate.
 
 ### Installing dependencies: ###
 
@@ -126,6 +124,18 @@ with the variable set, and it only lasts for the duration of the inner call to c
 So for the above example, you would run `cmd /C "set BUILD_ONLY=true && npm install"`.
 See here for more details:
 [SuperUser](http://superuser.com/questions/223104/setting-environment-variable-for-just-one-command-in-windows-cmd-exe).
+
+### Debug build: ###
+
+In order to track down possible bugs, you will need a debug buid so you
+can get a backtrace with [gdb](http://www.gnu.org/software/gdb/) or
+[lldb](http://lldb.llvm.org/).
+
+If you're building for the first time, run `npm run installDebug` (or `BUILD_ONLY=true npm link`)
+
+Note that you should run `rm -rf build/Release` (or `rd /s /q build/Release` in Windows) to make sure a release build doesn't get loaded instead of the debug build.
+
+If you're doing a subsequent rebuild of NodeGit in debug, the clean function will cause a lot of extraneous recompilation of things you probably didn't change (like the vendor dependencies). If you need to regenerate the C++ files and recompile you can run `npm run rebuildDebug`, or `npm run recompileDebug` if you've manually updated the C++ files and don't want them to regenerate.
 
 ## API examples. ##
 
