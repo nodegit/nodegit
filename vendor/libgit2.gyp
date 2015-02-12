@@ -214,6 +214,8 @@
         "libgit2/src/hash/hash_generic.c",
         "libgit2/src/hash/hash_generic.h",
         "libgit2/src/hash/hash_openssl.h",
+        "libgit2/src/transports/auth.c",
+        "libgit2/src/transports/auth.h",
         "libgit2/src/transports/cred.c",
         "libgit2/src/transports/cred_helpers.c",
         "libgit2/src/transports/git.c",
