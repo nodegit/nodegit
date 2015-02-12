@@ -81,7 +81,7 @@
   },
   "scripts": {
     "lint": "jshint lib test/tests examples lifecycleScripts",
-    "cov": "node test",
+    "cov": "node --expose-gc test",
     "mocha": "mocha test/runner test/tests",
     "mochaDebug": "mocha --debug-brk test/runner test/tests",
     "test": "npm run lint && npm run cov",
