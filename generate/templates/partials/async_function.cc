@@ -90,13 +90,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     Handle<v8::Value> to;
       {%if .|returnsCount > 1 %}
     Handle<Object> result = NanNew<Object>();
-        {%each .|returnsInfo 0 1 as _return %}
-          {%partial convertToV8 _return %}
-          {%if .|returnsCount > 1 %}
+      {%endif%}
+      {%each .|returnsInfo 0 1 as _return %}
+        {%partial convertToV8 _return %}
+        {%if .|returnsCount > 1 %}
     result->Set(NanNew<String>("{{ _return.returnNameOrName }}"), to);
-          {%endif%}
-        {%endeach%}
-      {%elsif .|returnsCount == 1 %}
+        {%endif%}
+      {%endeach%}
+      {%if .|returnsCount == 1 %}
     Handle<v8::Value> result = to;
       {%endif%}
     {%endif%}
