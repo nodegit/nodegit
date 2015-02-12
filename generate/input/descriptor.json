@@ -1418,6 +1418,7 @@
       }
     },
     "stream": {
+      "ignore": true,
       "cDependencies": [
         "git2/sys/stream.h"
       ]
