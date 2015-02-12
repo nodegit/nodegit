@@ -1367,6 +1367,9 @@
         }
       }
     },
+    "smart_subtransport_definition": {
+      "ignore": true
+    },
     "stash": {
       "functions": {
         "git_stash_foreach": {
