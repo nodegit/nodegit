@@ -436,6 +436,14 @@
     "cred_ssh_key": {
       "ignore": true
     },
+    "cred_username": {
+      "fields": {
+        "username": {
+          "cppClassName": "String",
+          "cType": "char *"
+        }
+      }
+    },
     "cred_userpass_payload": {
       "cDependencies": [
         "git2/cred_helpers.h"
