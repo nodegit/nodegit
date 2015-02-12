@@ -1,7 +1,15 @@
 {
   "enums": {
+    "attr": {
+      "JsName": "STATES",
+      "isMask": false
+    },
     "branch": {
       "JsName": "BRANCH",
+      "isMask": false
+    },
+    "cert": {
+      "JsName": "TYPE",
       "isMask": false
     },
     "clone_local": {
@@ -45,6 +53,10 @@
     "ref": {
       "owner": "Reference",
       "JsName": "TYPE"
+    },
+    "reset": {
+      "JsName": "TYPE",
+      "isMask": false
     },
     "sort": {
       "owner": "Revwalk"
