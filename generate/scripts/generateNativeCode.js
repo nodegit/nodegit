@@ -50,26 +50,27 @@ module.exports = function generateNativeCode() {
   };
 
   var filters = {
-    upper: require("../templates/filters/upper"),
-    replace: require("../templates/filters/replace"),
-    titleCase: require("../templates/filters/title_case"),
-    or: require("../templates/filters/or"),
     and: require("../templates/filters/and"),
-    defaultValue: require("../templates/filters/default_value"),
     argsInfo: require("../templates/filters/args_info"),
     cppToV8: require("../templates/filters/cpp_to_v8"),
-    jsArgsCount: require("../templates/filters/js_args_count"),
-    isV8Value: require("../templates/filters/is_v8_value"),
-    isPointer: require("../templates/filters/is_pointer"),
-    isDoublePointer: require("../templates/filters/is_double_pointer"),
-    isOid: require("../templates/filters/is_oid"),
-    unPointer: require("../templates/filters/un_pointer"),
-    payloadFor: require("../templates/filters/payload_for"),
+    defaultValue: require("../templates/filters/default_value"),
+    fieldsInfo: require("../templates/filters/fields_info"),
     hasReturnType: require("../templates/filters/has_return_type"),
     hasReturns: require("../templates/filters/has_returns"),
+    isDoublePointer: require("../templates/filters/is_double_pointer"),
+    isFixedLengthString: require("../templates/filters/is_fixed_length_string"),
+    isOid: require("../templates/filters/is_oid"),
+    isPointer: require("../templates/filters/is_pointer"),
+    isV8Value: require("../templates/filters/is_v8_value"),
+    jsArgsCount: require("../templates/filters/js_args_count"),
+    or: require("../templates/filters/or"),
+    payloadFor: require("../templates/filters/payload_for"),
+    replace: require("../templates/filters/replace"),
     returnsCount: require("../templates/filters/returns_count"),
     returnsInfo: require("../templates/filters/returns_info"),
-    fieldsInfo: require("../templates/filters/fields_info")
+    titleCase: require("../templates/filters/title_case"),
+    unPointer: require("../templates/filters/un_pointer"),
+    upper: require("../templates/filters/upper")
   };
 
   // Convert Buffers to Combyne templates.

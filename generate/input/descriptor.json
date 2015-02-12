@@ -182,6 +182,18 @@
         }
       }
     },
+    "cert_hostkey": {
+      "fields": {
+        "hash_md5": {
+          "cppClassName": "String",
+          "size": 16
+        },
+        "hash_sha1": {
+          "cppClassName": "String",
+          "size": 20
+        }
+      }
+    },
     "checkout": {
       "functions": {
         "git_checkout_head": {
