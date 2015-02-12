@@ -1268,6 +1268,9 @@
         "git_remote_set_fetch_refspecs": {
           "ignore": true
         },
+        "git_remote_set_transport": {
+          "isAsync": true
+        },
         "git_remote_set_push_refspecs": {
           "ignore": true
         }

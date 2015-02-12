@@ -504,15 +504,16 @@
     "args": [
       {
         "name": "out",
-        "cType": "const git_transport *"
+        "cType": "git_transport **"
       },
       {
         "name": "owner",
-        "cType": "const git_remote *"
+        "cType": "git_remote *"
       },
       {
-        "name": "payload",
-        "cType": "void *"
+        "name": "param",
+        "cType": "void *",
+        "payload": true
       }
     ],
     "return": {
