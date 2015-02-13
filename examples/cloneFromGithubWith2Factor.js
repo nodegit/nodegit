@@ -25,10 +25,12 @@ var opts = { ignoreCertErrors: 1};
 var repoUrl = "https://github.com/" + repoOwner + "/" + repoName + ".git";
 
 var opts = {
-  ignoreCertErrors: 1,
   remoteCallbacks: {
     credentials: function() {
       return nodegit.Cred.userpassPlaintextNew (token, "x-oauth-basic");
+    },
+    certificateCheck: function() {
+      return 1;
     }
   }
 };

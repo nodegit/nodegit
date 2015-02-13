@@ -9,7 +9,15 @@ fse.remove(path).then(function() {
   nodegit.Clone.clone(
     "https://github.com/nodegit/nodegit.git",
     path,
-    { ignoreCertErrors: 1})
+    {
+      remoteCallbacks: {
+        certificateCheck: function() {
+          // github will fail cert check on some OSX machines
+          // this overrides that check
+          return 1;
+        }
+      }
+    })
   .then(function(repo) {
     return repo.getCommit("59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5");
   })
