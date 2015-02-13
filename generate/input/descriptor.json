@@ -199,7 +199,18 @@
           "ignore": true
         },
         "git_checkout_tree": {
-          "ignore": true
+          "args": {
+            "treeish": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },

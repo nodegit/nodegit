@@ -31,4 +31,16 @@ describe("Checkout", function() {
       assert.ok(~packageJson.indexOf("\"ejs\": \"~1.0.0\","));
     });
   });
+
+  it("can checkout by tree", function() {
+    var test = this;
+
+    return test.repo.getTagByName("annotated-tag").then(function(tag) {
+      return Checkout.tree(test.repo, test.tag);
+    }).then(function() {
+      return test.repo.getHeadCommit();
+    }).then(function(commit) {
+      assert.equal(commit, "32789a79e71fbc9e04d3eff7425e1771eb595150");
+    });
+  });
 });
