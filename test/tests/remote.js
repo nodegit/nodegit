@@ -19,7 +19,7 @@ describe("Remote", function() {
     ]).catch(function() {});
 
     function removeOrigin(origin) {
-      return Remote.load(repository, origin)
+      return Remote.lookup(repository, origin)
         .then(function(remote) {
           remote.delete();
         });
@@ -33,7 +33,7 @@ describe("Remote", function() {
       .then(function(repository) {
         test.repository = repository;
 
-        return Remote.load(repository, "origin");
+        return Remote.lookup(repository, "origin");
       })
       .then(function(remote) {
         test.remote = remote;
@@ -81,7 +81,7 @@ describe("Remote", function() {
 
     return Remote.create(repository, "origin2", url)
       .then(function() {
-        return Remote.load(repository, "origin2");
+        return Remote.lookup(repository, "origin2");
       })
       .then(function(remote) {
         assert(remote.url(), url);
@@ -98,7 +98,7 @@ describe("Remote", function() {
         remote.delete();
       })
       .then(function() {
-        return Remote.load(repository, "origin3");
+        return Remote.lookup(repository, "origin3");
       })
       .then(Promise.reject, Promise.resolve);
   });
