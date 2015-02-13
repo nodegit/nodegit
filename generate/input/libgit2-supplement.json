@@ -86,10 +86,6 @@
     "git_tree_entry": {
       "fields": [
         {
-          "name": "removed",
-          "type": "uint16_t"
-        },
-        {
           "name": "attr",
           "type": "uint16_t"
         },
