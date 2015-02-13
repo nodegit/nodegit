@@ -32,16 +32,28 @@ describe("Clone", function() {
       });
   }
 
-  it("can clone with http", function() {
+  it.skip("can clone with http", function() {
     var url = "http://github.com/nodegit/test.git";
-    var opts = { ignoreCertErrors: 1 };
+    var opts = {
+      remoteCallbacks: {
+        certificateCheck: function() {
+          return 1;
+        }
+      }
+    };
 
     return prepTestAndClean(url, http, opts);
   });
 
-  it("can clone with https", function() {
+  it.only("can clone with https", function() {
     var url = "https://github.com/nodegit/test.git";
-    var opts = { ignoreCertErrors: 1 };
+    var opts = {
+      remoteCallbacks: {
+        certificateCheck: function() {
+          return 1;
+        }
+      }
+    };
 
     return prepTestAndClean(url, https, opts);
   });
