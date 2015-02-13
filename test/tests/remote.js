@@ -110,6 +110,28 @@ describe("Remote", function() {
       });
   });
 
+  it("can monitor transfer progress while downloading", function() {
+    var repo = this.repository;
+    var wasCalled = false;
+
+    return repo.getRemote("origin")
+      .then(function(remote) {
+        remote.checkCert(0);
+        remote.setCallbacks({
+          transferProgress: function() {
+            wasCalled = true;
+          }
+        });
+
+        remote.connect(NodeGit.Enums.DIRECTION.FETCH);
+
+        return remote.download();
+      })
+      .then(function() {
+        assert.ok(wasCalled);
+      });
+  });
+
   it("can fetch from a remote", function() {
     return this.repository.fetch("origin", {
       credentials: function(url, userName) {
