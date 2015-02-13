@@ -13,8 +13,11 @@ nodegit.Repository.open(path.resolve(__dirname, repoDir))
     return repository.fetchAll({
       credentials: function(url, userName) {
         return nodegit.Cred.sshKeyFromAgent(userName);
+      },
+      certificateCheck: function() {
+        return 1;
       }
-    }, true);
+    });
   })
   // Now that we're finished fetching, go ahead and merge our local branch
   // with the new one

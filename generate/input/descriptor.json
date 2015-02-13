@@ -1212,11 +1212,20 @@
       "cType": "git_remote",
       "functions": {
         "git_remote_connect": {
+          "isAsync": true,
           "return": {
             "isErrorCode": true
           }
         },
+        "git_remote_disconnect": {
+          "isAsync": true
+        },
         "git_remote_download": {
+          "args": {
+            "refspecs": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -1228,6 +1237,9 @@
         "git_remote_fetch": {
           "args": {
             "reflog_message": {
+              "isOptional": true
+            },
+            "refspecs": {
               "isOptional": true
             }
           },
