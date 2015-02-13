@@ -45,7 +45,7 @@ describe("Clone", function() {
     return prepTestAndClean(url, http, opts);
   });
 
-  it.only("can clone with https", function() {
+  it("can clone with https", function() {
     var url = "https://github.com/nodegit/test.git";
     var opts = {
       remoteCallbacks: {
