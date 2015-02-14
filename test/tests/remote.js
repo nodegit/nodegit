@@ -12,18 +12,9 @@ describe("Remote", function() {
   var url = "https://github.com/nodegit/test";
 
   function removeOrigins(repository) {
-    return Promise.all([
-      removeOrigin("origin1"),
-      removeOrigin("origin2"),
-      removeOrigin("origin3")
-    ]).catch(function() {});
-
-    function removeOrigin(origin) {
-      return Remote.lookup(repository, origin)
-        .then(function(remote) {
-          remote.delete();
-        });
-    }
+    Remote.delete(repository, "origin1");
+    Remote.delete(repository, "origin2");
+    Remote.delete(repository, "origin3");
   }
 
   before(function() {
