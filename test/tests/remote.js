@@ -125,20 +125,15 @@ describe("Remote", function() {
     });
   });
 
-  it.skip("can fetch from all remotes", function() {
+  it("can fetch from all remotes", function() {
     // Set a reasonable timeout here for the fetchAll test
     this.timeout(15000);
 
     return this.repository.fetchAll({
       credentials: function(url, userName) {
-        console.log("a\n\n\n\n\n");
         return NodeGit.Cred.sshKeyFromAgent(userName);
-      },
-      certificateCheck: function() {
-        console.log("b\n\n\n\n\n");
-        return 1;
       }
-    });
+    }, true);
   });
 
 });
