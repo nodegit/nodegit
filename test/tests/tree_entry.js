@@ -54,7 +54,7 @@ describe("TreeEntry", function() {
       });
   });
 
-  it("provides the blob representation viacallback", function() {
+  it("provides the blob representation via callback", function() {
     return this.commit.getEntry("test/raw-commit.js")
       .then(function(entry) {
         entry.getBlob(function (error, blob) {
