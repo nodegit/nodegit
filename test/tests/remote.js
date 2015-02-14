@@ -83,12 +83,8 @@ describe("Remote", function() {
     var repository = this.repository;
 
     return Remote.create(repository, "origin3", url)
-      .then(function() {
-        })
       .then(function(remote) {
-        remote.delete();
-      })
-      .then(function() {
+        Remote.delete(repository, "origin3");
         return Remote.lookup(repository, "origin3");
       })
       .then(Promise.reject, Promise.resolve);
@@ -132,8 +128,11 @@ describe("Remote", function() {
     return this.repository.fetchAll({
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
+      },
+      certificateCheck: function() {
+        return 1;
       }
-    }, true);
+    });
   });
 
 });
