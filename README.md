@@ -238,7 +238,7 @@ npm test
 ## Migrating from old versions. ##
 
 The bump from 0.1.4 to 0.2.0 was a big one. Many things changed, see here:
-https://github.com/nodegit/nodegit/compare/refs/tags/0.1.4...0.2.0
+https://github.com/nodegit/nodegit/compare/v0.1.4...v0.2.0
 
 This update is wholly and entirely a breaking one, and older versions won't be
 maintained. For the purpose of migration, perhaps the biggest point to make
