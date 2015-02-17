@@ -116,16 +116,19 @@ describe("Remote", function() {
 
     return repo.getRemote("origin")
       .then(function(remote) {
-        remote.checkCert(0);
         remote.setCallbacks({
+          certificateCheck: function() {
+            return 0;
+          },
+
           transferProgress: function() {
             wasCalled = true;
           }
         });
 
-        remote.connect(NodeGit.Enums.DIRECTION.FETCH);
-
-        return remote.download();
+        return remote.connect(NodeGit.Enums.DIRECTION.FETCH).then(function() {
+          return remote.download(null);
+        });
       })
       .then(function() {
         assert.ok(wasCalled);
