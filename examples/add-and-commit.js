@@ -42,12 +42,15 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   return index.read(1);
 })
 .then(function() {
+  // this file is in the root of the directory and doesn't need a full path
   return index.addByPath(fileName);
 })
 .then(function() {
+  // this file is in a subdirectory and can use a relative path
   return index.addByPath(path.join(directoryName, fileName));
 })
 .then(function() {
+  // this will write both files to the index
   return index.write();
 })
 .then(function() {
