@@ -27,6 +27,8 @@
         "openssl"
       ],
       "sources": [
+        "libgit2/src/annotated_commit.h",
+        "libgit2/src/annotated_commit.c",
         "libgit2/src/array.h",
         "libgit2/src/attr.c",
         "libgit2/src/attr.h",
@@ -138,6 +140,8 @@
         "libgit2/src/offmap.h",
         "libgit2/src/oid.c",
         "libgit2/src/oid.h",
+        "libgit2/src/oidarray.c",
+        "libgit2/src/oidarray.h",
         "libgit2/src/oidmap.h",
         "libgit2/src/openssl_stream.c",
         "libgit2/src/openssl_stream.h",
@@ -157,6 +161,7 @@
         "libgit2/src/pqueue.h",
         "libgit2/src/push.c",
         "libgit2/src/push.h",
+        "libgit2/src/rebase.c",
         "libgit2/src/refdb.c",
         "libgit2/src/refdb.h",
         "libgit2/src/refdb_fs.c",
@@ -202,6 +207,7 @@
         "libgit2/src/thread-utils.h",
         "libgit2/src/trace.c",
         "libgit2/src/trace.h",
+        "libgit2/src/transaction.c",
         "libgit2/src/transport.c",
         "libgit2/src/tree-cache.c",
         "libgit2/src/tree-cache.h",
