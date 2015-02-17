@@ -12,18 +12,9 @@ describe("Remote", function() {
   var url = "https://github.com/nodegit/test";
 
   function removeOrigins(repository) {
-    return Promise.all([
-      removeOrigin("origin1"),
-      removeOrigin("origin2"),
-      removeOrigin("origin3")
-    ]).catch(function() {});
-
-    function removeOrigin(origin) {
-      return Remote.load(repository, origin)
-        .then(function(remote) {
-          remote.delete();
-        });
-    }
+    Remote.delete(repository, "origin1");
+    Remote.delete(repository, "origin2");
+    Remote.delete(repository, "origin3");
   }
 
   before(function() {
@@ -33,7 +24,7 @@ describe("Remote", function() {
       .then(function(repository) {
         test.repository = repository;
 
-        return Remote.load(repository, "origin");
+        return Remote.lookup(repository, "origin");
       })
       .then(function(remote) {
         test.remote = remote;
@@ -81,7 +72,7 @@ describe("Remote", function() {
 
     return Remote.create(repository, "origin2", url)
       .then(function() {
-        return Remote.load(repository, "origin2");
+        return Remote.lookup(repository, "origin2");
       })
       .then(function(remote) {
         assert(remote.url(), url);
@@ -92,13 +83,9 @@ describe("Remote", function() {
     var repository = this.repository;
 
     return Remote.create(repository, "origin3", url)
-      .then(function() {
-        })
       .then(function(remote) {
-        remote.delete();
-      })
-      .then(function() {
-        return Remote.load(repository, "origin3");
+        Remote.delete(repository, "origin3");
+        return Remote.lookup(repository, "origin3");
       })
       .then(Promise.reject, Promise.resolve);
   });
@@ -108,10 +95,18 @@ describe("Remote", function() {
 
     return repo.getRemote("origin")
       .then(function(remote) {
-        remote.checkCert(0);
-        remote.connect(NodeGit.Enums.DIRECTION.FETCH);
+        remote.setCallbacks({
+          certificateCheck: function() {
+            return 1;
+          }
+        });
 
-        return remote.download();
+        return remote.connect(NodeGit.Enums.DIRECTION.FETCH)
+        .then(function() {
+          return remote.download(null);
+        }).then(function() {
+          return remote.disconnect();
+        });
       });
   });
 
@@ -119,8 +114,11 @@ describe("Remote", function() {
     return this.repository.fetch("origin", {
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
+      },
+      certificateCheck: function() {
+        return 1;
       }
-    }, true);
+    });
   });
 
   it("can fetch from all remotes", function() {
@@ -130,8 +128,11 @@ describe("Remote", function() {
     return this.repository.fetchAll({
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
+      },
+      certificateCheck: function() {
+        return 1;
       }
-    }, true);
+    });
   });
 
 });

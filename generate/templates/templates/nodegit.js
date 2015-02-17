@@ -86,5 +86,5 @@ exports.version = require("../package").version;
 // Expose Promise implementation.
 exports.Promise = Promise;
 
-// Initialize threads.
-exports.Threads.init();
+// Initialize libgit2.
+exports.Libgit2.init();

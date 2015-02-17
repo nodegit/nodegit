@@ -95,7 +95,7 @@ delete {{ arg.name }}_callback;
   }
   {%endif%}
 
-  Handle<Value> to;
+  Handle<v8::Value> to;
   {%if .|returnsCount > 1 %}
   Handle<Object> toReturn = NanNew<Object>();
   {%endif%}

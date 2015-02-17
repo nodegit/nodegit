@@ -40,11 +40,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
 
-  NanCallback* callback = (NanCallback *)baton->payload;
+  {% each cbFunction.args|argsInfo as arg %}
+    {% if arg | isPayload %}
+  NanCallback* callback = (NanCallback *)baton->{{ arg.name }};
+    {% endif %}
+  {% endeach %}
 
   Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
     {% each cbFunction.args|argsInfo as arg %}
-      {% if arg.name == "payload" %}
+      {% if arg | isPayload %}
         {%-- payload is always the last arg --%}
         // payload is null because we can use closure scope in javascript
         NanUndefined()
@@ -64,10 +68,10 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
   };
 
   TryCatch tryCatch;
-  Handle<Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
+  Handle<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
 
   if (result->IsObject() && result->ToObject()->Has(NanNew("then"))) {
-    Handle<Value> thenProp = result->ToObject()->Get(NanNew("then"));
+    Handle<v8::Value> thenProp = result->ToObject()->Get(NanNew("then"));
 
     if (thenProp->IsFunction()) {
       // we can be reasonbly certain that the result is a promise
@@ -119,7 +123,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
 
   if (isFulfilled->Value()) {
     NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
-    Handle<Value> result = resultFn->Call(0, argv);
+    Handle<v8::Value> result = resultFn->Call(0, argv);
     {{ cbFunction.return.type }} resultStatus;
 
     {% each cbFunction|returnsInfo true false as _return %}

@@ -85,9 +85,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
 
   if (baton->error_code == GIT_OK) {
     {%if not .|returnsCount %}
-    Handle<Value> result = NanUndefined();
+    Handle<v8::Value> result = NanUndefined();
     {%else%}
-    Handle<Value> to;
+    Handle<v8::Value> to;
       {%if .|returnsCount > 1 %}
     Handle<Object> result = NanNew<Object>();
       {%endif%}
@@ -98,17 +98,17 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {%endif%}
       {%endeach%}
       {%if .|returnsCount == 1 %}
-    Handle<Value> result = to;
+    Handle<v8::Value> result = to;
       {%endif%}
     {%endif%}
-    Handle<Value> argv[2] = {
+    Handle<v8::Value> argv[2] = {
       NanNull(),
       result
     };
     callback->Call(2, argv);
   } else {
     if (baton->error) {
-      Handle<Value> argv[1] = {
+      Handle<v8::Value> argv[1] = {
         NanError(baton->error->message)
       };
       callback->Call(1, argv);

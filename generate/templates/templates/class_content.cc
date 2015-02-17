@@ -85,9 +85,9 @@ using namespace node;
     NanReturnValue(args.This());
   }
 
-  Handle<Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
+  Handle<v8::Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
     NanEscapableScope();
-    Handle<Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
+    Handle<v8::Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
     return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(2, argv));
   }
 

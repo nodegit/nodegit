@@ -1,7 +1,15 @@
 {
   "enums": {
+    "attr": {
+      "JsName": "STATES",
+      "isMask": false
+    },
     "branch": {
       "JsName": "BRANCH",
+      "isMask": false
+    },
+    "cert": {
+      "JsName": "TYPE",
       "isMask": false
     },
     "clone_local": {
@@ -11,6 +19,9 @@
           "JsName": "LOCAL"
         }
       }
+    },
+    "describe_strategy": {
+      "ignore": true
     },
     "delta": {
       "owner": "Diff"
@@ -45,6 +56,10 @@
     "ref": {
       "owner": "Reference",
       "JsName": "TYPE"
+    },
+    "reset": {
+      "JsName": "TYPE",
+      "isMask": false
     },
     "sort": {
       "owner": "Revwalk"
@@ -182,6 +197,30 @@
         }
       }
     },
+    "cert_hostkey": {
+      "fields": {
+        "hash_md5": {
+          "cppClassName": "String",
+          "size": 16
+        },
+        "hash_sha1": {
+          "cppClassName": "String",
+          "size": 20
+        }
+      }
+    },
+    "cert_x509": {
+      "fields": {
+        "data": {
+          "cppClassName": "Wrapper",
+          "jsClassName": "Buffer"
+        }
+      },
+      "dependencies": [
+        "../include/wrapper.h",
+        "node_buffer.h"
+      ]
+    },
     "checkout": {
       "functions": {
         "git_checkout_head": {
@@ -222,6 +261,22 @@
               "isOptional": true
             }
           }
+        }
+      }
+    },
+    "clone_options": {
+      "fields": {
+        "repository_cb": {
+          "ignore": true
+        },
+        "repository_cb_payload": {
+          "ignore": true
+        },
+        "remote_cb": {
+          "ignore": true
+        },
+        "remote_cb_payload": {
+          "ignore": true
         }
       }
     },
@@ -407,12 +462,23 @@
     "cred_ssh_key": {
       "ignore": true
     },
+    "cred_username": {
+      "fields": {
+        "username": {
+          "cppClassName": "String",
+          "cType": "char *"
+        }
+      }
+    },
     "cred_userpass_payload": {
       "cDependencies": [
         "git2/cred_helpers.h"
       ]
     },
     "cred_userpass_plaintext": {
+      "ignore": true
+    },
+    "describe": {
       "ignore": true
     },
     "diff": {
@@ -646,6 +712,11 @@
         }
       }
     },
+    "hashsig": {
+      "cDependencies": [
+        "git2/sys/hashsig.h"
+      ]
+    },
     "ignore": {
       "functions": {
         "git_ignore_path_is_ignored": {
@@ -744,6 +815,9 @@
           "ignore": true
         },
         "git_merge_base_many": {
+          "ignore": true
+        },
+        "git_merge_bases_many": {
           "ignore": true
         },
         "git_merge_base_octopus": {
@@ -963,6 +1037,11 @@
         }
       }
     },
+    "openssl": {
+      "cDependencies": [
+        "git2/sys/openssl.h"
+      ]
+    },
     "packbuilder": {
       "functions": {
         "git_packbuilder_foreach": {
@@ -1144,11 +1223,20 @@
       "cType": "git_remote",
       "functions": {
         "git_remote_connect": {
+          "isAsync": true,
           "return": {
             "isErrorCode": true
           }
         },
+        "git_remote_disconnect": {
+          "isAsync": true
+        },
         "git_remote_download": {
+          "args": {
+            "refspecs": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -1160,6 +1248,9 @@
         "git_remote_fetch": {
           "args": {
             "reflog_message": {
+              "isOptional": true
+            },
+            "refspecs": {
               "isOptional": true
             }
           },
@@ -1215,6 +1306,9 @@
         "git_remote_set_fetch_refspecs": {
           "ignore": true
         },
+        "git_remote_set_transport": {
+          "ignore": true
+        },
         "git_remote_set_push_refspecs": {
           "ignore": true
         }
@@ -1223,6 +1317,15 @@
     "remote_callbacks": {
       "fields": {
         "completion": {
+          "ignore": true
+        },
+        "pack_progress": {
+          "ignore": true
+        },
+        "push_transfer_progress": {
+          "ignore": true
+        },
+        "push_update_reference": {
           "ignore": true
         },
         "sideband_progress": {
@@ -1311,6 +1414,9 @@
         }
       }
     },
+    "smart_subtransport_definition": {
+      "ignore": true
+    },
     "stash": {
       "functions": {
         "git_stash_foreach": {
@@ -1357,6 +1463,12 @@
           }
         }
       }
+    },
+    "stream": {
+      "ignore": true,
+      "cDependencies": [
+        "git2/sys/stream.h"
+      ]
     },
     "submodule": {
       "functions": {
@@ -1423,7 +1535,10 @@
         "git_transport_smart": {
           "ignore": true
         }
-      }
+      },
+      "cDependencies": [
+        "git2/sys/transport.h"
+      ]
     },
     "tree": {
       "functions": {

@@ -20,7 +20,7 @@ class Wrapper : public ObjectWrap {
     static void InitializeComponent (Handle<v8::Object> target);
 
     void *GetValue();
-    static Handle<Value> New(void *raw);
+    static Handle<v8::Value> New(void *raw);
 
   private:
     Wrapper(void *raw);
