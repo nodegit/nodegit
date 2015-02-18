@@ -3,12 +3,17 @@
   {{ cType }} from_{{ name }};
   {%if isOptional | or isBoolean %}
 
+    {%if cppClassName != 'GitStrarray'%}
   if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
+    {%endif%}
   {%endif%}
   {%if cppClassName == 'String'%}
 
   String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
   from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
+  {%elsif cppClassName == 'GitStrarray' %}
+
+  from_{{ name }} = StrArrayConverter::Convert(args[{{ jsArg }}]);
   {%elsif cppClassName == 'Wrapper'%}
 
   String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
@@ -77,11 +82,12 @@
     from_{{ name }} = args[{{ jsArg }}]->IsTrue() ? 1 : 0;
   }
   {%elsif isOptional %}
+    {%if cppClassName != 'GitStrarray'%}
   }
   else {
     from_{{ name }} = 0;
   }
-
+    {%endif%}
   {%endif%}
 // end convert_from_v8 block
 {%endif%}

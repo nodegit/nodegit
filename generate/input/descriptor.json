@@ -727,7 +727,21 @@
     "index": {
       "functions": {
         "git_index_add_all": {
-          "ignore": true
+          "args": {
+            "pathspec": {
+              "isOptional": true
+            },
+            "flags": {
+              "isOptional": true
+            },
+            "callback": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_conflict_get": {
           "ignore": true
@@ -780,7 +794,10 @@
 	          }
 	        }
         }
-      }
+      },
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ]
     },
     "index_entry": {
       "ignore": false

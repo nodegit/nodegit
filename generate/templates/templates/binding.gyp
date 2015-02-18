@@ -13,6 +13,7 @@
         "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
+        "src/str_array_converter.cc",
         {% each %}
           {% if type != "enum" %}
             "src/{{ name }}.cc",
