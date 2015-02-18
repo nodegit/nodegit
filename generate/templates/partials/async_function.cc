@@ -17,8 +17,14 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
       {%elsif arg.isCallbackFunction %}
-  baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
-  baton->{{ arg.payload.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+  if (!args[{{ arg.jsArg }}]->IsFunction()) {
+    baton->{{ arg.name }} = NULL;
+    baton->{{ arg.payload.name }} = NULL;
+  }
+  else {
+    baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
+    baton->{{ arg.payload.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+  }
       {%elsif arg.payloadFor %}
         {%-- payloads are ignored --%}
       {%elsif arg.name %}
