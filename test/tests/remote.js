@@ -16,6 +16,7 @@ describe("Remote", function() {
     Remote.delete(repository, "origin1");
     Remote.delete(repository, "origin2");
     Remote.delete(repository, "origin3");
+    Remote.delete(repository, "test2");
   }
 
   before(function() {
