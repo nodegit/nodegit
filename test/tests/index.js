@@ -33,7 +33,7 @@ describe("Index", function() {
     assert.equal(entries[0].path(), ".gitignore");
   });
 
-  it.only("can add all entries to the index", function() {
+  it("can add all entries to the index", function() {
     var repo = this.repo;
     var index = this.index;
     var fileContent = {
