@@ -138,6 +138,8 @@ describe("Remote", function() {
     })
     .then(function() {
       assert.ok(wasCalled);
+      
+      Remote.delete(repo, "test2");
     });
   });
 
