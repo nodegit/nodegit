@@ -126,7 +126,7 @@ describe("Remote", function() {
     .then(function(remote) {
       remote.setCallbacks({
         certificateCheck: function() {
-          return 0;
+          return 1;
         },
 
         transferProgress: function() {
@@ -138,7 +138,7 @@ describe("Remote", function() {
     })
     .then(function() {
       assert.ok(wasCalled);
-      
+
       Remote.delete(repo, "test2");
     });
   });
