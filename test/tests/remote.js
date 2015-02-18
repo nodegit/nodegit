@@ -125,6 +125,9 @@ describe("Remote", function() {
     })
     .then(function(remote) {
       remote.setCallbacks({
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyFromAgent(userName);
+        },
         certificateCheck: function() {
           return 1;
         },
