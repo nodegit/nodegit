@@ -244,10 +244,10 @@ var Helpers = {
     if (Helpers.isCallbackFunction(type)) {
       Helpers.processCallback(arg);
 
-      var argOverrides = argOverrides.args || {};
+      var callBackArgOverrides = argOverrides.args || {};
       arg.args = arg.args || [];
       arg.args.forEach(function (argForCallback) {
-        Helpers.decorateArg(argForCallback, arg.args, null, null, argOverrides[argForCallback.name] || {}, enums);
+        Helpers.decorateArg(argForCallback, arg.args, null, null, callBackArgOverrides[argForCallback.name] || {}, enums);
       });
     }
     else if (typeDef && fnDef) {

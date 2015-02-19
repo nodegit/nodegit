@@ -1,0 +1,22 @@
+#ifndef STR_ARRAY_H
+#define STR_ARRAY_H
+
+#include <v8.h>
+
+#include "nan.h"
+#include "git2/strarray.h"
+
+using namespace v8;
+
+class StrArrayConverter {
+  public:
+
+    static git_strarray *Convert (Handle<v8::Value> val);
+
+  private:
+    static git_strarray *ConvertArray(Array *val);
+    static git_strarray *ConvertString(Handle<String> val);
+    static git_strarray *ConstructStrArray(int argc, char** argv);
+};
+
+#endif
