@@ -1425,9 +1425,6 @@
           "args": {
             "target": {
               "isOptional": true
-            },
-            "pathspecs": {
-              "isOptional": true
             }
           },
           "isAsync": true,
