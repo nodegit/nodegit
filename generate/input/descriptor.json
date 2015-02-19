@@ -782,10 +782,38 @@
           }
         },
         "git_index_remove_all": {
-          "ignore": true
+          "args": {
+            "pathspec": {
+              "isOptional": true
+            },
+            "flags": {
+              "isOptional": true
+            },
+            "callback": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_update_all": {
-          "ignore": true
+          "args": {
+            "pathspec": {
+              "isOptional": true
+            },
+            "flags": {
+              "isOptional": true
+            },
+            "callback": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
    	    },
 	      "git_index_write": {
 	        "args": {
