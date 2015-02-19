@@ -11,16 +11,22 @@ var supplement = require("../input/libgit2-supplement.json");
 module.exports = function generateJson() {
   var helpers = require("./helpers");
   _ = require("lodash");
-
+  // libgit2's docs aren't complete so we'll add in what they're missing here
   libgit2.types.forEach(function(type) {
-    if (supplement.types[type[0]]){
+    if (supplement.types[type[0]]) {
       _.merge(type[1], supplement.types[type[0]]);
     }
   });
 
-  // libgit2's docs aren't complete so we'll add in what they're missing here
+  libgit2.groups.forEach(function(group) {
+    if (supplement.groups[group[0]]) {
+      Array.prototype.push.apply(group[1], supplement.groups[group[0]]);
+    }
+  });
+
   Array.prototype.push.apply(libgit2.types, supplement.new.types);
   Array.prototype.push.apply(libgit2.groups, supplement.new.groups);
+  _.merge(libgit2.functions, supplement.new.functions);
 
   var output = [];
   var dependencyLookup = {};

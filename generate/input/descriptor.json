@@ -1415,6 +1415,12 @@
     },
     "reset": {
       "functions": {
+        "git_reset": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_reset_default": {
           "args": {
             "target": {
