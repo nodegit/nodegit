@@ -114,7 +114,7 @@ describe("Remote", function() {
 
   it("can monitor transfer progress while downloading", function() {
     // Set a reasonable timeout here now that our repository has grown.
-    this.timeout(30000);
+    this.timeout(600000);
 
     var repo = this.repository;
     var wasCalled = false;
