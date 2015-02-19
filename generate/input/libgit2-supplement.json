@@ -107,6 +107,64 @@
     }
   },
   "new" : {
+    "functions": {
+      "git_reset": {
+        "type": "function",
+        "file": "reset.h",
+        "args": [
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "target",
+            "type": "git_object *"
+          },
+          {
+            "name": "reset_type",
+            "type": "git_reset_t"
+          },
+          {
+            "name": "checkout_opts",
+            "type": "git_checkout_options *"
+          },
+          {
+            "name": "signature",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "log_message",
+            "type": "const char *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "reset"
+      }
+    },
+    "groups": [
+      [
+        "odb_object",
+        [
+          "git_odb_object_data",
+          "git_odb_object_dup",
+          "git_odb_object_free",
+          "git_odb_object_id",
+          "git_odb_object_size",
+          "git_odb_object_type"
+        ]
+      ],
+      [
+        "status_list",
+        [
+          "git_status_list_entrycount",
+          "git_status_list_free",
+          "git_status_list_get_perfdata",
+          "git_status_list_new"
+        ]
+      ]
+    ],
     "types": [
       [
         "git_direction",
@@ -340,28 +398,6 @@
           }
         }
       ]
-    ],
-    "groups": [
-      [
-        "odb_object",
-        [
-          "git_odb_object_data",
-          "git_odb_object_dup",
-          "git_odb_object_free",
-          "git_odb_object_id",
-          "git_odb_object_size",
-          "git_odb_object_type"
-        ]
-      ],
-      [
-        "status_list",
-        [
-          "git_status_list_entrycount",
-          "git_status_list_free",
-          "git_status_list_get_perfdata",
-          "git_status_list_new"
-        ]
-      ]
     ]
   },
   "remove": {
@@ -392,5 +428,10 @@
         "git_status_list_new"
       ]
     }
+  },
+  "groups": {
+    "reset": [
+      "git_reset"
+    ]
   }
 }

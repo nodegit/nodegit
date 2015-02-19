@@ -1413,6 +1413,38 @@
         }
       }
     },
+    "reset": {
+      "functions": {
+        "git_reset": {
+          "args": {
+            "checkout_opts": {
+              "isOptional": true
+            },
+            "log_message": {
+              "isOptional": true
+            },
+            "signature": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_reset_default": {
+          "args": {
+            "target": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
+    },
     "revspec": {
       "ignore": true
     },
