@@ -1413,6 +1413,24 @@
         }
       }
     },
+    "reset": {
+      "functions": {
+        "git_reset_default": {
+          "args": {
+            "target": {
+              "isOptional": true
+            },
+            "pathspecs": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
+    },
     "revspec": {
       "ignore": true
     },
