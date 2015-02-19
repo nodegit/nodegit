@@ -84,6 +84,7 @@
           baton->{{ arg.name }} = {{ arg.name }};
         {% endeach %}
 
+        baton->result = 0;
         baton->req.data = baton;
         baton->done = false;
 

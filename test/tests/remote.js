@@ -10,11 +10,13 @@ describe("Remote", function() {
 
   var reposPath = local("../repos/workdir/.git");
   var url = "https://github.com/nodegit/test";
+  var url2 = "https://github.com/nodegit/test2";
 
   function removeOrigins(repository) {
     Remote.delete(repository, "origin1");
     Remote.delete(repository, "origin2");
     Remote.delete(repository, "origin3");
+    Remote.delete(repository, "test2");
   }
 
   before(function() {
@@ -108,6 +110,40 @@ describe("Remote", function() {
           return remote.disconnect();
         });
       });
+  });
+
+  it("can monitor transfer progress while downloading", function() {
+    // Set a reasonable timeout here now that our repository has grown.
+    this.timeout(600000);
+
+    var repo = this.repository;
+    var wasCalled = false;
+
+    return Remote.create(repo, "test2", url2)
+    .then(function() {
+      return repo.getRemote("test2");
+    })
+    .then(function(remote) {
+      remote.setCallbacks({
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyFromAgent(userName);
+        },
+        certificateCheck: function() {
+          return 1;
+        },
+
+        transferProgress: function() {
+          wasCalled = true;
+        }
+      });
+
+      return remote.fetch(null, repo.defaultSignature(), null);
+    })
+    .then(function() {
+      assert.ok(wasCalled);
+
+      Remote.delete(repo, "test2");
+    });
   });
 
   it("can fetch from a remote", function() {
