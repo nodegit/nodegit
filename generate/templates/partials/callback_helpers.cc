@@ -22,8 +22,10 @@
     this_thread::sleep_for(chrono::milliseconds(1));
   }
 
-  {% each cbFunction|returnsInfo true false as _return %}
+  {% each cbFunction|returnsInfo false true as _return %}
+    {% if _return.isOutParam %}
     *{{ _return.name }} = *baton->{{ _return.name }};
+    {% endif %}
   {% endeach %}
 
   return baton->result;
@@ -84,8 +86,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
     }
   }
 
-  {{ cbFunction.return.type }} resultStatus;
-
   {% each cbFunction|returnsInfo false true as _return %}
     if (result.IsEmpty() || result->IsNativeError()) {
       baton->result = {{ cbFunction.return.error }};
@@ -99,7 +99,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
       baton->result = {{ cbFunction.return.success }};
       {% else %}
       if (result->IsNumber()) {
-        baton->result = (int)   result->ToNumber()->Value();
+        baton->result = (int)result->ToNumber()->Value();
       }
       else {
         baton->result = {{ cbFunction.return.noResults }};
@@ -133,7 +133,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   if (isFulfilled->Value()) {
     NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
     Handle<v8::Value> result = resultFn->Call(0, argv);
-    {{ cbFunction.return.type }} resultStatus;
 
     {% each cbFunction|returnsInfo false true as _return %}
       if (result.IsEmpty() || result->IsNativeError()) {
@@ -148,7 +147,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
         baton->result = {{ cbFunction.return.success }};
         {% else %}
         if (result->IsNumber()) {
-          baton->result = (int)   result->ToNumber()->Value();
+          baton->result = (int)result->ToNumber()->Value();
         }
         else {
           baton->result = {{ cbFunction.return.noResults }};

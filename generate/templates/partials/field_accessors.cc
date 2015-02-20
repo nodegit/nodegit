@@ -94,8 +94,10 @@
           this_thread::sleep_for(chrono::milliseconds(1));
         }
 
-        {% each field|returnsInfo true false as _return %}
+        {% each field|returnsInfo false true as _return %}
+          {% if _return.isOutParam %}
           *{{ _return.name }} = *baton->{{ _return.name }};
+          {% endif %}
         {% endeach %}
 
         return baton->result;
@@ -173,18 +175,25 @@
           }
         }
 
-        {{ field.return.type }} resultStatus;
-
-        {% each field|returnsInfo true false as _return %}
+        {% each field|returnsInfo false true as _return %}
           if (result.IsEmpty() || result->IsNativeError()) {
             baton->result = {{ field.return.error }};
           }
           else if (!result->IsNull() && !result->IsUndefined()) {
+            {% if _return.isOutParam %}
             {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
             wrapper->selfFreeing = false;
 
             baton->{{ _return.name }} = wrapper->GetRefValue();
             baton->result = {{ field.return.success }};
+            {% else %}
+            if (result->IsNumber()) {
+              baton->result = (int)result->ToNumber()->Value();
+            }
+            else {
+              baton->result = {{ field.return.noResults }};
+            }
+            {% endif %}
           }
           else {
             baton->result = {{ field.return.noResults }};
@@ -213,18 +222,26 @@
         if (isFulfilled->Value()) {
           NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
           Handle<v8::Value> result = resultFn->Call(0, argv);
-          {{ field.return.type }} resultStatus;
 
-          {% each field|returnsInfo true false as _return %}
+          {% each field|returnsInfo false true as _return %}
             if (result.IsEmpty() || result->IsNativeError()) {
               baton->result = {{ field.return.error }};
             }
             else if (!result->IsNull() && !result->IsUndefined()) {
+              {% if _return.isOutParam %}
               {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
               wrapper->selfFreeing = false;
 
               baton->{{ _return.name }} = wrapper->GetRefValue();
               baton->result = {{ field.return.success }};
+              {% else %}
+              if (result->IsNumber()) {
+                baton->result = (int)result->ToNumber()->Value();
+              }
+              else{
+                baton->result = {{ field.return.noResults }};
+              }
+              {% endif %}
             }
             else {
               baton->result = {{ field.return.noResults }};
