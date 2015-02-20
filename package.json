@@ -62,7 +62,7 @@
     "which-native-nodish": "^1.0.3"
   },
   "devDependencies": {
-    "combyne": "^0.6.4",
+    "combyne": "^0.6.5",
     "istanbul": "^0.3.5",
     "js-beautify": "^1.5.4",
     "jshint": "^2.6.0",

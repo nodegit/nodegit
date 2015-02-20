@@ -86,16 +86,25 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
   {{ cbFunction.return.type }} resultStatus;
 
-  {% each cbFunction|returnsInfo true false as _return %}
+  {% each cbFunction|returnsInfo false true as _return %}
     if (result.IsEmpty() || result->IsNativeError()) {
       baton->result = {{ cbFunction.return.error }};
     }
     else if (!result->IsNull() && !result->IsUndefined()) {
+      {% if _return.isOutParam %}
       {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
       wrapper->selfFreeing = false;
 
       baton->{{ _return.name }} = wrapper->GetRefValue();
       baton->result = {{ cbFunction.return.success }};
+      {% else %}
+      if (result->IsNumber()) {
+        baton->result = (int)   result->ToNumber()->Value();
+      }
+      else {
+        baton->result = {{ cbFunction.return.noResults }};
+      }
+      {% endif %}
     }
     else {
       baton->result = {{ cbFunction.return.noResults }};
@@ -126,16 +135,25 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
     Handle<v8::Value> result = resultFn->Call(0, argv);
     {{ cbFunction.return.type }} resultStatus;
 
-    {% each cbFunction|returnsInfo true false as _return %}
+    {% each cbFunction|returnsInfo false true as _return %}
       if (result.IsEmpty() || result->IsNativeError()) {
         baton->result = {{ cbFunction.return.error }};
       }
       else if (!result->IsNull() && !result->IsUndefined()) {
+        {% if _return.isOutParam %}
         {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
         wrapper->selfFreeing = false;
 
         baton->{{ _return.name }} = wrapper->GetRefValue();
         baton->result = {{ cbFunction.return.success }};
+        {% else %}
+        if (result->IsNumber()) {
+          baton->result = (int)   result->ToNumber()->Value();
+        }
+        else {
+          baton->result = {{ cbFunction.return.noResults }};
+        }
+        {% endif %}
       }
       else {
         baton->result = {{ cbFunction.return.noResults }};
