@@ -302,6 +302,11 @@ var Helpers = {
     var argOverrides = fnOverrides.args || {};
     fnDef.args.forEach(function(arg) {
       Helpers.decorateArg(arg, fnDef.args, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
+
+      // if a function has any callbacks then it MUST be async
+      if (arg.isCallbackFunction) {
+        fnDef.isAsync = true;
+      }
     });
 
     if (fnDef.return) {
