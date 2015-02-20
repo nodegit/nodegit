@@ -44,7 +44,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
   {% each cbFunction.args|argsInfo as arg %}
     {% if arg | isPayload %}
+      {% if cbFunction.payload.globalPayload %}
+  NanCallback* callback = (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbFunction.name }};
+      {% else %}
   NanCallback* callback = (NanCallback *)baton->{{ arg.name }};
+      {% endif %}
     {% endif %}
   {% endeach %}
 

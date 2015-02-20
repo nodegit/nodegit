@@ -15,27 +15,20 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%each args|argsInfo as arg %}
     {%if not arg.isSelf %}
       {%if not arg.isReturn %}
-        {%if not arg.isCallbackFunction %}
-          {%if not arg.payloadFor %}
-            {%partial convertFromV8 arg %}
-            {%if arg.saveArg %}
+        {%partial convertFromV8 arg %}
+        {%if arg.saveArg %}
   Handle<Object> {{ arg.name }}(args[{{ arg.jsArg }}]->ToObject());
   {{ cppClassName }} *thisObj = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
 
   NanDisposePersistent(thisObj->{{ cppFunctionName }}_{{ arg.name }});
 
   NanAssignPersistent(thisObj->{{ cppFunctionName }}_{{ arg.name }}, {{ arg.name }});
-            {%endif%}
-          {%endif%}
         {%endif%}
       {%endif%}
     {%endif%}
   {%endeach%}
 
 {%each args|argsInfo as arg %}
-  {%if arg.isCallbackFunction %}
-NanCallback* {{ arg.name }}_callback = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
-  {%endif%}
 {%endeach%}
 {%if .|hasReturns %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
@@ -47,23 +40,12 @@ NanCallback* {{ arg.name }}_callback = new NanCallback(args[{{ arg.jsArg }}].As<
 ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue()
     {%elsif arg.isReturn %}
 {{ arg.name }}
-    {%elsif arg.isCallbackFunction %}
-{{ cppFunctionName }}_{{ arg.name }}_cppCallback,
-{{ arg.name }}_callback
-    {%elsif arg.payloadFor %}
-{%-- payloads are handled inside of the callback condition --%}
     {%else%}
 from_{{ arg.name }}
     {%endif%}
     {%if not arg.lastArg %},{%endif%}
   {%endeach%}
   );
-
-{%each args|argsInfo as arg %}
-  {%if arg.isCallbackFunction %}
-delete {{ arg.name }}_callback;
-  {%endif%}
-{%endeach%}
 
 {%if return.isErrorCode %}
   if (result != GIT_OK) {
@@ -120,5 +102,3 @@ delete {{ arg.name }}_callback;
   {%endif%}
 {%endif%}
 }
-
-{%partial callbackHelpers .%}

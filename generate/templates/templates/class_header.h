@@ -135,15 +135,23 @@ class {{ cppClassName }} : public ObjectWrap {
     };
         {%endif%}
 
-        {%each function.args as arg %}
-          {%if arg.payloadFor %}
-
-    Persistent<Value> {{ function.cppFunctionName }}_{{ arg.name }};
-          {%endif%}
-        {%endeach%}
-
     static NAN_METHOD({{ function.cppFunctionName }});
       {%endif%}
+    {%endeach%}
+
+    {%each functions as function%}
+      {%each function.args as arg %}
+        {% if arg.globalPayload %}
+
+    struct {{ function.cppFunctionName }}_globalPayload {
+          {%each function.args as arg %}
+            {%if arg.isCallbackFunction %}
+        NanCallback * {{ arg.name }};
+            {%endif%}
+          {%endeach%}
+    };
+        {%endif%}
+      {%endeach%}
     {%endeach%}
 
     {%if cType%}

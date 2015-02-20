@@ -121,6 +121,7 @@ var Helpers = {
   processPayload: function(field, allFields) {
     if (field.name === "payload") {
       field.payloadFor = "*";
+      field.globalPayload = true;
       field.isOptional = true;
     }
     else {
