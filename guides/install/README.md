@@ -1,3 +1,12 @@
+---
+layout: default
+menu_item: guides
+return_to:
+  "All Guides": /guides/
+title: Install Guide
+description: How to install NodeGit
+---
+
 Install
 =======
 

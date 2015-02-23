@@ -1,12 +1,5 @@
----
-layout: default
-menu_item: guides
-return_to:
-  "Clone": ../
-  "All Guides": ../../
-title: HTTP Clone Guide
-description: How to clone with HTTP
----
+Cloning
+=======
 
 **In order to run examples, you will need to [Install NodeGit](../../install)
 first.**
@@ -130,3 +123,4 @@ cloneRepository.catch(errorAndAttemptOpen)
     console.log('Is the repository bare? %s', Boolean(repository.isBare()));
   });
 ```
+
