@@ -4,9 +4,13 @@
 // var NodeGit = require('nodegit');
 var Git = require('../../../');
 
+// To clone with two factor auth enabled, you have to use a GitHub OAuth token
+// over HTTPS.
+var GITHUB_TOKEN = '<GH_TOKEN>';
+
 // Using the `clone` method from the `Git.Clone` module, bring down the NodeGit
 // test repository from GitHub.
-var cloneURL = 'https://github.com/nodegit/test';
+var cloneURL = 'https://github.com/nodegit/private';
 
 // Ensure that the `tmp` directory is local to this file and not the CWD.
 var localPath = require('path').join(__dirname, 'tmp');
@@ -17,7 +21,10 @@ var cloneOptions = {};
 // This is a required callback for OS X machines.  There is a known issue
 // with libgit2 being able to verify certificates from GitHub.
 cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; }
+  certificateCheck: function() { return 1; },
+  credentials: function() {
+    return Git.Cred.userpassPlaintextNew(GITHUB_TOKEN, 'x-oauth-basic');
+  }
 };
 
 // Invoke the clone operation and store the returned Promise.
@@ -35,4 +42,7 @@ cloneRepository.catch(errorAndAttemptOpen)
   .then(function(repository) {
     // Access any repository methods here.
     console.log('Is the repository bare? %s', Boolean(repository.isBare()));
+  })
+  .catch(function(ex) {
+    console.log(ex, ex.stack);
   });

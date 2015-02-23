@@ -1,5 +1,11 @@
-Cloning
-=======
+---
+layout: default
+menu_item: guides
+return_to:
+  "All Guides": ../
+title: Cloning Guides
+description: How to clone repositories
+---
 
 ### [HTTP/HTTPS clone](http/)
 
