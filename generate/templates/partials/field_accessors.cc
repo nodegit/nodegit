@@ -42,6 +42,10 @@
         wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
 
       {% elsif field.isCallbackFunction %}
+        if (wrapper->{{ field.name }} != NULL) {
+          delete wrapper->{{ field.name }};
+        }
+
         if (value->IsFunction()) {
           if (!wrapper->raw->{{ field.name }}) {
             wrapper->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;

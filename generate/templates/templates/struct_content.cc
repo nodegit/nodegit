@@ -41,8 +41,19 @@ using namespace std;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
-  // This is going to cause memory leaks. We'll have to solve that later
-  // TODO: Clean up memory better
+  {% each fields|fieldsInfo as field %}
+    {% if not field.ignore %}
+      {% if not field.isEnum %}
+        {% if field.isCallbackFunction %}
+  if (this->{{ field.name }} != NULL) {
+    delete this->{{ field.name }};
+    this->raw->{{ fields|payloadFor field.name }} = NULL;
+  }
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endeach %}
+
   if (this->selfFreeing) {
     free(this->raw);
   }
@@ -65,7 +76,7 @@ void {{ cppClassName }}::ConstructFields() {
           // the current instance
           this->raw->{{ field.name }} = NULL;
           this->raw->{{ fields|payloadFor field.name }} = (void *)this;
-          this->{{ field.name }} = new NanCallback();
+          this->{{ field.name }} = NULL;
         {% elsif field.payloadFor %}
 
           Local<Value> {{ field.name }} = NanUndefined();
