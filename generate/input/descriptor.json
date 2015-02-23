@@ -71,6 +71,13 @@
   },
   "types":
   {
+    "annotated": {
+      "functions": {
+        "git_annotated_commit_free": {
+          "ignore": true
+        }
+      }
+    },
     "attr": {
       "functions": {
         "git_attr_foreach": {
@@ -81,6 +88,14 @@
           "args": {
             "value_out": {
               "isReturn": true
+            }
+          }
+        },
+        "git_attr_get_many": {
+          "args": {
+            "values_out": {
+              "isReturn": true,
+              "jsClassName": "Array"
             }
           }
         }
@@ -126,6 +141,9 @@
     },
     "branch": {
       "functions": {
+        "git_branch_iterator_free": {
+          "ignore": true
+        },
         "git_branch_create": {
           "args": {
             "force": {
@@ -853,6 +871,9 @@
     },
     "note": {
       "functions": {
+        "git_note_iterator_free": {
+          "ignore": true
+        },
         "git_note_create": {
           "args": {
             "out": {
@@ -1096,6 +1117,9 @@
     },
     "pathspec": {
       "functions": {
+        "git_pathspec_match_list_free": {
+          "ignore": true
+        },
         "git_pathspec_new": {
           "ignore": true
         }
@@ -1344,6 +1368,9 @@
     },
     "repository": {
       "functions": {
+        "git_repository_init_init_options": {
+          "ignore": true
+        },
         "git_repository_discover": {
           "ignore": true
         },
@@ -1360,6 +1387,13 @@
           "ignore": true
         },
         "git_repository_message": {
+          "ignore": true
+        }
+      }
+    },
+    "revert": {
+      "functions": {
+        "git_revert_init_options": {
           "ignore": true
         }
       }
@@ -1542,6 +1576,9 @@
     },
     "tree": {
       "functions": {
+        "git_tree_entry_free": {
+          "ignore": true
+        },
         "git_tree_entry_byindex": {
           "jsFunctionName": "_entryByIndex"
         },
