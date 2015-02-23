@@ -47,7 +47,9 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      return writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return writeFile(
+        path.join(repo.workdir(), fileName),
+        fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
@@ -80,7 +82,9 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      return writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return writeFile(
+        path.join(repo.workdir(), fileName),
+        fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
@@ -121,7 +125,9 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      return writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return writeFile(
+        path.join(repo.workdir(), fileName),
+        fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
