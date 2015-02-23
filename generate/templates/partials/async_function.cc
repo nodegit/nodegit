@@ -180,7 +180,13 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     free((void *)baton->{{ arg.name }});
   }
     {%elsif arg.isCallbackFunction %}
-      {%if not arg.payload.globalPayload %}
+      {%if arg.payload.globalPayload %}
+        {%each args|argsInfo as cbArg %}
+          {%if cbArg.isCallbackFunction %}
+  delete (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbArg.name }};
+          {%endif%}
+        {%endeach%}
+      {%else%}
   delete (NanCallback *)baton->{{ arg.payload.name }};
       {%endif%}
     {%elsif arg.globalPayload %}
