@@ -146,9 +146,27 @@ class {{ cppClassName }} : public ObjectWrap {
     struct {{ function.cppFunctionName }}_globalPayload {
           {%each function.args as arg %}
             {%if arg.isCallbackFunction %}
-        NanCallback * {{ arg.name }};
+      NanCallback * {{ arg.name }};
             {%endif%}
           {%endeach%}
+
+      {{ function.cppFunctionName }}_globalPayload() {
+          {%each function.args as arg %}
+            {%if arg.isCallbackFunction %}
+        {{ arg.name }} = NULL;
+            {%endif%}
+          {%endeach%}
+      }
+
+      ~{{ function.cppFunctionName }}_globalPayload() {
+          {%each function.args as arg %}
+            {%if arg.isCallbackFunction %}
+        if ({{ arg.name }} != NULL) {
+          delete {{ arg.name }};
+        }
+            {%endif%}
+          {%endeach%}
+      }
     };
         {%endif%}
       {%endeach%}

@@ -25,7 +25,11 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%elsif arg.isCallbackFunction %}
   if (!args[{{ arg.jsArg }}]->IsFunction()) {
     baton->{{ arg.name }} = NULL;
+        {%if arg.payload.globalPayload %}
+    globalPayload->{{ arg.name }} = NULL;
+        {%else%}
     baton->{{ arg.payload.name }} = NULL;
+        {%endif%}
   }
   else {
     baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
@@ -150,12 +154,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     delete baton->{{ arg.payload.name }};
           {%endif%}
         {%elsif arg.globalPayload %}
-          {%each args|argsInfo as cbArg %}
-            {%if cbArg.isCallbackFunction %}
-    delete (({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }})->{{ cbArg.name }};
-            {%endif%}
-          {%endeach%}
-    free((void *)baton->{{ arg.name }});
+    delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
         {%else%}
     free((void*)baton->{{ arg.name }});
         {%endif%}
@@ -180,22 +179,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     free((void *)baton->{{ arg.name }});
   }
     {%elsif arg.isCallbackFunction %}
-      {%if arg.payload.globalPayload %}
-        {%each args|argsInfo as cbArg %}
-          {%if cbArg.isCallbackFunction %}
-  delete (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbArg.name }};
-          {%endif%}
-        {%endeach%}
-      {%else%}
-  delete (NanCallback *)baton->{{ arg.payload.name }};
+      {%if not arg.payload.globalPayload %}
+  delete baton->{{ arg.payload.name }};
       {%endif%}
     {%elsif arg.globalPayload %}
-      {%each args|argsInfo as cbArg %}
-        {%if cbArg.isCallbackFunction %}
-  delete (({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }})->{{ cbArg.name }};
-        {%endif%}
-      {%endeach%}
-  free((void *)baton->{{ arg.name }});
+  delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
     {%endif%}
   {%endeach%}
 
