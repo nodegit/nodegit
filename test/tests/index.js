@@ -43,7 +43,7 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
@@ -57,7 +57,7 @@ describe("Index", function() {
     })
     .then(function() {
       return Promise.all(fileNames.map(function(fileName) {
-        fse.remove(path.join(repo.workdir(), fileName));
+        return fse.remove(path.join(repo.workdir(), fileName));
       }));
     })
     .then(function() {
@@ -76,7 +76,7 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
@@ -99,7 +99,7 @@ describe("Index", function() {
     })
     .then(function() {
       return Promise.all(fileNames.map(function(fileName) {
-        fse.remove(path.join(repo.workdir(), fileName));
+        return fse.remove(path.join(repo.workdir(), fileName));
       }));
     })
     .then(function() {
@@ -117,7 +117,7 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
