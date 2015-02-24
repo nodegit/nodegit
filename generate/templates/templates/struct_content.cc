@@ -26,7 +26,11 @@ using namespace std;
 
 // generated from struct_content.cc
 {{ cppClassName }}::{{ cppClassName }}() {
+  {% if ignoreInit == true %}
+  {{ cType }}* wrappedValue = new {{ cType }};
+  {% else %}
   {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
+  {% endif %}
   this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
   memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
 

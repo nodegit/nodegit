@@ -34,7 +34,7 @@ describe("Index", function() {
   it("can get the index of a repo and examine entries", function() {
     var entries = this.index.entries();
 
-    assert.equal(entries[0].path(), ".gitignore");
+    assert.equal(entries[0].path, ".gitignore");
   });
 
   it("can add all entries to the index", function() {
@@ -56,7 +56,7 @@ describe("Index", function() {
     })
     .then(function() {
       var newFiles = index.entries().filter(function(entry) {
-        return ~fileNames.indexOf(entry.path());
+        return ~fileNames.indexOf(entry.path);
       });
 
       assert.equal(newFiles.length, 2);
@@ -91,7 +91,7 @@ describe("Index", function() {
     })
     .then(function() {
       var newFiles = index.entries().filter(function(entry) {
-        return ~fileNames.indexOf(entry.path());
+        return ~fileNames.indexOf(entry.path);
       });
 
       assert.equal(newFiles.length, 3);
@@ -100,7 +100,7 @@ describe("Index", function() {
     })
     .then(function() {
       var newFiles = index.entries().filter(function(entry) {
-        return ~fileNames.indexOf(entry.path());
+        return ~fileNames.indexOf(entry.path);
       });
 
       assert.equal(newFiles.length, 1);
@@ -134,7 +134,7 @@ describe("Index", function() {
     })
     .then(function() {
       var newFiles = index.entries().filter(function(entry) {
-        return ~fileNames.indexOf(entry.path());
+        return ~fileNames.indexOf(entry.path);
       });
 
       assert.equal(newFiles.length, 2);
@@ -146,7 +146,7 @@ describe("Index", function() {
     })
     .then(function() {
       var newFiles = index.entries().filter(function(entry) {
-        return ~fileNames.indexOf(entry.path());
+        return ~fileNames.indexOf(entry.path);
       });
 
       assert.equal(newFiles.length, 1);

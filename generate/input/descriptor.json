@@ -114,7 +114,11 @@
     "blob": {
       "functions": {
         "git_blob_create_frombuffer": {
+          "isAsync": false,
           "args": {
+            "id": {
+              "isReturn": true
+            },
             "buffer": {
               "cppClassName": "Buffer",
               "jsClassName": "Buffer"
@@ -846,7 +850,8 @@
       ]
     },
     "index_entry": {
-      "ignore": false
+      "hasConstructor": true,
+      "ignoreInit": true
     },
     "indexer": {
       "cType": "git_indexer",
