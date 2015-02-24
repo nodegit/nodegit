@@ -122,6 +122,20 @@
           return;
         }
 
+        {% each field.args|argsInfo as arg %}
+          {% if arg.name == "payload" %}
+            {%-- Do nothing --%}
+          {% elsif arg.isJsArg %}
+          if (baton->{{ arg.name }} == NULL) {
+            {% if arg.cType == "const char *" %}
+              baton->{{ arg.name }} = "";
+            {% elsif arg.cType == "unsigned int" %}
+              baton->{{ arg.name }} = 0;
+            {% endif %}
+          }
+          {% endif %}
+        {% endeach %}
+
         Local<Value> argv[{{ field.args|jsArgsCount }}] = {
           {% each field.args|argsInfo as arg %}
             {% if arg.name == "payload" %}
