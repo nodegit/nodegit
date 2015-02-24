@@ -18,6 +18,18 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%if not arg.isCallbackFunction %}
           {%if not arg.payloadFor %}
             {%partial convertFromV8 arg %}
+            {%if arg.saveArg %}
+  Persistent<Object> {{ arg.name }};
+  Handle<Object> {{ arg.name }}Handle(args[{{ arg.jsArg }}]->ToObject());
+  NanAssignPersistent({{ arg.name }}, {{ arg.name }}Handle);
+  {{ cppClassName }} *thisObj = ObjectWrap::Unwrap<{{ cppClassName }}>(args.This());
+
+  if (thisObj->{{ cppFunctionName }}_{{ arg.name }} != NULL) {
+    NanDisposePersistent(*thisObj->{{ cppFunctionName }}_{{ arg.name }});
+  }
+
+  thisObj->{{ cppFunctionName }}_{{ arg.name }} = &{{ arg.name }};
+            {%endif%}
           {%endif%}
         {%endif%}
       {%endif%}

@@ -73,11 +73,25 @@ class {{ cppClassName }} : public ObjectWrap {
         {% endeach %}
       {% endif %}
     {% endeach %}
+
+
   private:
+
+
     {%if cType%}
     {{ cppClassName }}({{ cType }} *raw, bool selfFreeing);
     ~{{ cppClassName }}();
     {%endif%}
+
+    {% each functions as function %}
+      {% if not function.ignore %}
+        {% each function.args as arg %}
+          {% if arg.saveArg %}
+    Persistent<Object> *{{ function.cppFunctionName }}_{{ arg.name }};
+          {% endif %}
+        {% endeach %}
+      {% endif %}
+    {% endeach %}
 
     static NAN_METHOD(JSNewFunction);
 
