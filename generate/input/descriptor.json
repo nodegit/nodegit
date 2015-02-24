@@ -846,7 +846,8 @@
       ]
     },
     "index_entry": {
-      "ignore": false
+      "hasConstructor": true,
+      "ignoreInit": true
     },
     "indexer": {
       "cType": "git_indexer",
