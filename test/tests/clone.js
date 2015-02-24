@@ -103,4 +103,18 @@ describe("Clone", function() {
 
     return prepTestAndClean(url, file);
   });
+
+  it("will not segfault when accessing a url without username", function() {
+    var url = "https://github.com/nodegit/private";
+
+    return Clone.clone(url, git, {
+      certificateCheck: function() { return 1; },
+      remoteCallbacks: {
+        credentials: function() {
+          return NodeGit.Cred.userpassPlaintextNew("fake-token",
+            "x-oauth-basic");
+        }
+      }
+    }).catch();
+  });
 });
