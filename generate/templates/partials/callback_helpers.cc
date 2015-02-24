@@ -22,8 +22,10 @@
     this_thread::sleep_for(chrono::milliseconds(1));
   }
 
-  {% each cbFunction|returnsInfo true false as _return %}
+  {% each cbFunction|returnsInfo false true as _return %}
+    {% if _return.isOutParam %}
     *{{ _return.name }} = *baton->{{ _return.name }};
+    {% endif %}
   {% endeach %}
 
   return baton->result;
@@ -42,7 +44,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
   {% each cbFunction.args|argsInfo as arg %}
     {% if arg | isPayload %}
+      {% if cbFunction.payload.globalPayload %}
+  NanCallback* callback = (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbFunction.name }};
+      {% else %}
   NanCallback* callback = (NanCallback *)baton->{{ arg.name }};
+      {% endif %}
     {% endif %}
   {% endeach %}
 
@@ -84,18 +90,25 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
     }
   }
 
-  {{ cbFunction.return.type }} resultStatus;
-
-  {% each cbFunction|returnsInfo true false as _return %}
+  {% each cbFunction|returnsInfo false true as _return %}
     if (result.IsEmpty() || result->IsNativeError()) {
       baton->result = {{ cbFunction.return.error }};
     }
     else if (!result->IsNull() && !result->IsUndefined()) {
+      {% if _return.isOutParam %}
       {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
       wrapper->selfFreeing = false;
 
       baton->{{ _return.name }} = wrapper->GetRefValue();
       baton->result = {{ cbFunction.return.success }};
+      {% else %}
+      if (result->IsNumber()) {
+        baton->result = (int)result->ToNumber()->Value();
+      }
+      else {
+        baton->result = {{ cbFunction.return.noResults }};
+      }
+      {% endif %}
     }
     else {
       baton->result = {{ cbFunction.return.noResults }};
@@ -124,18 +137,26 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   if (isFulfilled->Value()) {
     NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
     Handle<v8::Value> result = resultFn->Call(0, argv);
-    {{ cbFunction.return.type }} resultStatus;
 
-    {% each cbFunction|returnsInfo true false as _return %}
+    {% each cbFunction|returnsInfo false true as _return %}
       if (result.IsEmpty() || result->IsNativeError()) {
         baton->result = {{ cbFunction.return.error }};
       }
       else if (!result->IsNull() && !result->IsUndefined()) {
+        {% if _return.isOutParam %}
         {{ _return.cppClassName }}* wrapper = ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
         wrapper->selfFreeing = false;
 
         baton->{{ _return.name }} = wrapper->GetRefValue();
         baton->result = {{ cbFunction.return.success }};
+        {% else %}
+        if (result->IsNumber()) {
+          baton->result = (int)result->ToNumber()->Value();
+        }
+        else {
+          baton->result = {{ cbFunction.return.noResults }};
+        }
+        {% endif %}
       }
       else {
         baton->result = {{ cbFunction.return.noResults }};

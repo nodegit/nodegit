@@ -5,6 +5,10 @@ var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
+var writeFile = promisify(function(filename, data, callback) {
+  return require("fs").writeFile(filename, data, {}, callback);
+});
+
 describe("Index", function() {
   var Repository = require(local("../../lib/repository"));
 
@@ -43,7 +47,9 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return writeFile(
+        path.join(repo.workdir(), fileName),
+        fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
@@ -57,7 +63,7 @@ describe("Index", function() {
     })
     .then(function() {
       return Promise.all(fileNames.map(function(fileName) {
-        fse.remove(path.join(repo.workdir(), fileName));
+        return fse.remove(path.join(repo.workdir(), fileName));
       }));
     })
     .then(function() {
@@ -76,7 +82,9 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return writeFile(
+        path.join(repo.workdir(), fileName),
+        fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();
@@ -99,7 +107,7 @@ describe("Index", function() {
     })
     .then(function() {
       return Promise.all(fileNames.map(function(fileName) {
-        fse.remove(path.join(repo.workdir(), fileName));
+        return fse.remove(path.join(repo.workdir(), fileName));
       }));
     })
     .then(function() {
@@ -117,7 +125,9 @@ describe("Index", function() {
     var fileNames = Object.keys(fileContent);
 
     return Promise.all(fileNames.map(function(fileName) {
-      fse.writeFile(path.join(repo.workdir(), fileName), fileContent[fileName]);
+      return writeFile(
+        path.join(repo.workdir(), fileName),
+        fileContent[fileName]);
     }))
     .then(function() {
       return index.addAll();

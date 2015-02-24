@@ -30,7 +30,7 @@ git_strarray *StrArrayConverter::ConvertArray(Array *val) {
   git_strarray *result;
 
   for(int i = 0; i < count; i++) {
-    NanUtf8String entry(val->CloneElementAt(i));
+    NanUtf8String entry(val->Get(i));
     strings[i] = *entry;
   }
 

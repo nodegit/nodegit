@@ -13,20 +13,36 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   baton->error = NULL;
 
   {%each args|argsInfo as arg %}
+    {%if arg.globalPayload %}
+  {{ cppFunctionName }}_globalPayload* globalPayload = new {{ cppFunctionName }}_globalPayload;
+    {%endif%}
+  {%endeach%}
+
+  {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
   baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
       {%elsif arg.isCallbackFunction %}
   if (!args[{{ arg.jsArg }}]->IsFunction()) {
     baton->{{ arg.name }} = NULL;
+        {%if arg.payload.globalPayload %}
+    globalPayload->{{ arg.name }} = NULL;
+        {%else%}
     baton->{{ arg.payload.name }} = NULL;
+        {%endif%}
   }
   else {
     baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
+        {%if arg.payload.globalPayload %}
+    globalPayload->{{ arg.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+        {%else%}
     baton->{{ arg.payload.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+        {%endif%}
   }
       {%elsif arg.payloadFor %}
-        {%-- payloads are ignored --%}
+        {%if arg.globalPayload %}
+  baton->{{ arg.name }} = globalPayload;
+        {%endif%}
       {%elsif arg.name %}
   {%partial convertFromV8 arg%}
         {%if not arg.payloadFor %}
@@ -134,7 +150,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       free((void*)baton->{{ arg.name }});
     }
         {%elsif arg.isCallbackFunction %}
+          {%if not arg.payload.globalPayload %}
     delete baton->{{ arg.payload.name }};
+          {%endif%}
+        {%elsif arg.globalPayload %}
+    delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
         {%else%}
     free((void*)baton->{{ arg.name }});
         {%endif%}
@@ -159,7 +179,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     free((void *)baton->{{ arg.name }});
   }
     {%elsif arg.isCallbackFunction %}
-  delete (NanCallback *)baton->{{ arg.payload.name }};
+      {%if not arg.payload.globalPayload %}
+  delete baton->{{ arg.payload.name }};
+      {%endif%}
+    {%elsif arg.globalPayload %}
+  delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
     {%endif%}
   {%endeach%}
 

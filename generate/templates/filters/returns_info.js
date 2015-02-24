@@ -14,12 +14,12 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
     return_info.returnNameOrName = return_info.returnName || return_info.name;
     return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;
+    return_info.isOutParam = true;
 
     result.push(return_info);
   });
 
   if (!result.length
-      && !fn.isCallbackFunction
       && !argReturnsOnly
       && fn.return
       && !fn.return.isErrorCode

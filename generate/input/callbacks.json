@@ -455,7 +455,7 @@
     ],
     "return": {
       "type": "int",
-      "noResults": 1,
+      "noResults": 0,
       "success": 0,
       "error": -1
     }
@@ -495,7 +495,7 @@
     ],
     "return": {
       "type": "int",
-      "noResults": 1,
+      "noResults": 0,
       "success": 0,
       "error": -1
     }

@@ -19,7 +19,7 @@ describe("Clone", function() {
   var sshPrivateKey = local("../id_rsa");
 
   // Set a reasonable timeout here now that our repository has grown.
-  this.timeout(15000);
+  this.timeout(30000);
 
   beforeEach(function() {
     return NodeGit.Promise.all([
