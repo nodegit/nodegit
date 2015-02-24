@@ -12,7 +12,6 @@ describe("Clone", function() {
   var http = local("../repos/http");
   var https = local("../repos/https");
   var ssh = local("../repos/ssh");
-  var sshManual = local("../repos/sshmanual");
   var git = local("../repos/git");
   var file = local("../repos/file");
 
@@ -22,15 +21,15 @@ describe("Clone", function() {
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(15000);
 
-  function prepTestAndClean(url, location, opts) {
-    return fse.remove(location)
-      .then(function() {
-        return Clone.clone(url, location, opts);
-      })
-      .then(function(repo) {
-        assert.ok(repo instanceof Repository);
-      });
-  }
+  beforeEach(function() {
+    return NodeGit.Promise.all([
+      fse.remove(http),
+      fse.remove(https),
+      fse.remove(ssh),
+      fse.remove(git),
+      fse.remove(file)
+    ]);
+  });
 
   it.skip("can clone with http", function() {
     var url = "http://github.com/nodegit/test.git";
@@ -42,7 +41,9 @@ describe("Clone", function() {
       }
     };
 
-    return prepTestAndClean(url, http, opts);
+    return Clone.clone(url, http, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+    });
   });
 
   it("can clone with https", function() {
@@ -55,28 +56,36 @@ describe("Clone", function() {
       }
     };
 
-    return prepTestAndClean(url, https, opts);
+    return Clone.clone(url, https, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+    });
   });
 
   it("can clone with ssh", function() {
     var url = "git@github.com:nodegit/test.git";
     var opts = {
-      ignoreCertErrors: 1,
       remoteCallbacks: {
+        certificateCheck: function() {
+          return 1;
+        },
         credentials: function(url, userName) {
           return NodeGit.Cred.sshKeyFromAgent(userName);
         }
       }
     };
 
-    return prepTestAndClean(url, ssh, opts);
+    return Clone.clone(url, ssh, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+    });
   });
 
   it("can clone with ssh while manually loading a key", function() {
     var url = "git@github.com:nodegit/test.git";
     var opts = {
-      ignoreCertErrors: 1,
       remoteCallbacks: {
+        certificateCheck: function() {
+          return 1;
+        },
         credentials: function(url, userName) {
           return NodeGit.Cred.sshKeyNew(
             userName,
@@ -87,34 +96,48 @@ describe("Clone", function() {
       }
     };
 
-    return prepTestAndClean(url, sshManual, opts);
+    return Clone.clone(url, ssh, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+    });
   });
 
   it("can clone with git", function() {
     var url = "git://github.com/nodegit/test.git";
-    var opts = { ignoreCertErrors: 1 };
+    var opts = { 
+      remoteCallbacks: {
+        certificateCheck: function() {
+          return 1;
+        }
+      }
+    };
 
-    return prepTestAndClean(url, git, opts);
+    return Clone.clone(url, git, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+    });
   });
 
   it("can clone with filesystem", function() {
     var prefix = process.platform === "win32" ? "" : "file://";
     var url = prefix + local("../repos/empty");
 
-    return prepTestAndClean(url, file);
+    return Clone.clone(url, file).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+    });
   });
 
   it("will not segfault when accessing a url without username", function() {
     var url = "https://github.com/nodegit/private";
 
     return Clone.clone(url, git, {
-      certificateCheck: function() { return 1; },
       remoteCallbacks: {
+        certificateCheck: function() {
+          return 1;
+        },
         credentials: function() {
           return NodeGit.Cred.userpassPlaintextNew("fake-token",
             "x-oauth-basic");
         }
       }
-    }).catch();
+    }).catch(function unhandledError() { });
   });
 });
