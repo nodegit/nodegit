@@ -1372,6 +1372,13 @@
         "git_remote_rename": {
           "ignore": true
         },
+        "git_remote_set_callbacks": {
+          "args": {
+            "callbacks": {
+              "saveArg": true
+            }
+          }
+        },
         "git_remote_set_fetch_refspecs": {
           "ignore": true
         },
