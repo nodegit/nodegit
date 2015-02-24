@@ -29,16 +29,6 @@ using namespace node;
   {{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing) {
     this->raw = raw;
     this->selfFreeing = selfFreeing;
-
-    {% each functions as function %}
-      {% if not function.ignore %}
-        {% each function.args as arg %}
-          {% if arg.saveArg %}
-    {{ function.cppFunctionName }}_{{ arg.name }} = NULL;
-          {% endif %}
-        {% endeach %}
-      {% endif %}
-    {% endeach %}
   }
 
   {{ cppClassName }}::~{{ cppClassName }}() {
@@ -51,17 +41,18 @@ using namespace node;
     // this will cause an error if you have a non-self-freeing object that also needs
     // to save values. Since the object that will eventually free the object has no
     // way of knowing to free these values.
-    {% each function as function %}
+    {% each functions as function %}
       {% if not function.ignore %}
         {% each function.args as arg %}
           {% if arg.saveArg %}
-    if ({{ function.cppFunctionName }}_{{ arg.name }} != NULL) {
-      NanDisposePersistent(&{{ function.cppFunctionName }}_{{ arg.name }});
-    }
+
+      NanDisposePersistent({{ function.cppFunctionName }}_{{ arg.name }});
+
           {% endif %}
         {% endeach %}
       {% endif %}
     {% endeach %}
+
   }
 
   void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
