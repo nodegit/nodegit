@@ -28,7 +28,7 @@ describe("Clone", function() {
       fse.remove(ssh),
       fse.remove(git),
       fse.remove(file)
-    ]);
+    ]).catch(function unhandledFunction() {});
   });
 
   it.skip("can clone with http", function() {
@@ -103,7 +103,7 @@ describe("Clone", function() {
 
   it("can clone with git", function() {
     var url = "git://github.com/nodegit/test.git";
-    var opts = { 
+    var opts = {
       remoteCallbacks: {
         certificateCheck: function() {
           return 1;
