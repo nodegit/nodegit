@@ -87,7 +87,7 @@ class {{ cppClassName }} : public ObjectWrap {
       {% if not function.ignore %}
         {% each function.args as arg %}
           {% if arg.saveArg %}
-    Persistent<Object> *{{ function.cppFunctionName }}_{{ arg.name }};
+    Persistent<Object> {{ function.cppFunctionName }}_{{ arg.name }};
           {% endif %}
         {% endeach %}
       {% endif %}
