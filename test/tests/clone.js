@@ -28,7 +28,7 @@ describe("Clone", function() {
     }
 
     process.nextTick(function() {
-      gc();
+      global.gc();
       done();
     });
   });
