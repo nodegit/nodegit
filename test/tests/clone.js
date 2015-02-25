@@ -140,6 +140,7 @@ describe("Clone", function() {
     test.clonePath = local("../repos/git");
 
     return Clone.clone(url, test.clonePath, opts).then(function(repo) {
+      test.repository = repo;
       assert.ok(repo instanceof Repository);
     });
   });
