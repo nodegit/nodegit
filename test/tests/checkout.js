@@ -14,16 +14,16 @@ describe("Checkout", function() {
 
     return Repository.open(reposPath)
       .then(function(repo) {
-        test.repo = repo;
+        test.repository = repo;
       });
   });
 
   it("can checkout the head", function() {
     var test = this;
 
-    return Checkout.head(test.repo)
+    return Checkout.head(test.repository)
     .then(function() {
-      return test.repo.getBlob(packageJsonOid);
+      return test.repository.getBlob(packageJsonOid);
     })
     .then(function(blob) {
       var packageJson = blob.toString();
@@ -35,10 +35,10 @@ describe("Checkout", function() {
   it("can checkout by tree", function() {
     var test = this;
 
-    return test.repo.getTagByName("annotated-tag").then(function(tag) {
-      return Checkout.tree(test.repo, test.tag);
+    return test.repository.getTagByName("annotated-tag").then(function(tag) {
+      return Checkout.tree(test.repository, test.tag);
     }).then(function() {
-      return test.repo.getHeadCommit();
+      return test.repository.getHeadCommit();
     }).then(function(commit) {
       assert.equal(commit, "32789a79e71fbc9e04d3eff7425e1771eb595150");
     });

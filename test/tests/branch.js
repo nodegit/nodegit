@@ -16,13 +16,13 @@ describe("Branch", function() {
 
     return Repository.open(reposPath)
       .then(function(repository) {
-        test.repo = repository;
+        test.repository = repository;
       });
   });
 
   beforeEach(function() {
     var test = this;
-    var repo = test.repo;
+    var repo = test.repository;
 
     return repo.getMasterCommit()
       .then(function(masterCommit) {
@@ -44,7 +44,7 @@ describe("Branch", function() {
   });
 
   it("can delete a branch", function() {
-    var repo = this.repo;
+    var repo = this.repository;
 
     Branch.delete(this.branch);
 
@@ -54,7 +54,7 @@ describe("Branch", function() {
   });
 
   it("can see if the branch is pointed to by head", function() {
-    var repo = this.repo;
+    var repo = this.repository;
 
     return repo.getBranch("master")
       .then(function(branch) {

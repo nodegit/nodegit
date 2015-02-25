@@ -45,3 +45,18 @@ beforeEach(function() {
       return exec("git reset --hard", {cwd: workdirPath});
     });
 });
+
+afterEach(function(done) {
+  // In Windows if you do not clean up the repository, there may become a
+  // conflict with file locking.
+  if (this.repository && process.platform === "win32") {
+    this.repository.stateCleanup();
+    this.repository.free();
+    delete this.repository;
+  }
+
+  process.nextTick(function() {
+    global.gc();
+    done();
+  });
+});
