@@ -24,7 +24,7 @@ describe("Commit", function() {
       });
   }
 
-  before(function() {
+  beforeEach(function() {
     return reinitialize(this);
   });
 

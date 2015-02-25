@@ -26,31 +26,31 @@ describe("Tag", function() {
     assert.equal(target.id().toString(), commitPointedTo);
   }
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)
       .then(function(repo) {
-        test.repo = repo;
+        test.repository = repo;
       });
   });
 
   it("can get a tag from a repo via the tag name", function() {
-    return this.repo.getTagByName(tagName)
+    return this.repository.getTagByName(tagName)
       .then(function(tag) {
         testTag(tag);
       });
   });
 
   it("can get a tag from a repo via the long tag name", function() {
-    return this.repo.getTagByName(tagFullName)
+    return this.repository.getTagByName(tagFullName)
       .then(function(tag) {
         testTag(tag);
       });
   });
 
   it("can get a tag from a repo via the tag's OID as a string", function() {
-    return this.repo.getTag(tagOid)
+    return this.repository.getTag(tagOid)
       .then(function(tag) {
         testTag(tag);
       });
@@ -59,14 +59,14 @@ describe("Tag", function() {
   it("can get a tag from a repo via the tag's OID object", function() {
     var oid = Oid.fromString(tagOid);
 
-    return this.repo.getTag(oid)
+    return this.repository.getTag(oid)
       .then(function(tag) {
         testTag(tag);
       });
   });
 
   it("can list tags in a repo", function() {
-    return Tag.list(this.repo)
+    return Tag.list(this.repository)
       .then(function(tagNames) {
         tagNames = tagNames.filter(function(tagNameTest) {
           return tagNameTest == tagName;

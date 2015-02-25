@@ -9,7 +9,7 @@ describe("Attr", function() {
 
   var reposPath = local("../repos/workdir/.git");
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)

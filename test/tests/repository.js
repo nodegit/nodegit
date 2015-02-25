@@ -13,7 +13,7 @@ describe("Repository", function() {
   var Index = require(local("../../lib/index"));
   var Signature = require(local("../../lib/signature"));
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)

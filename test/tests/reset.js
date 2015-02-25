@@ -13,7 +13,7 @@ describe("Reset", function() {
   var previousCommitOid = "c82fb078a192ea221c9f1093c64321c60d64aa0d";
   var filePath = "package.json";
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)

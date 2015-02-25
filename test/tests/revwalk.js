@@ -12,7 +12,7 @@ describe("Revwalk", function() {
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(60000);
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
     return Repository.open(reposPath)
       .then(function(repository) {
@@ -152,7 +152,7 @@ describe("Revwalk", function() {
       }
     }
     return promise;
-    
+
     function getNext() {
       return walker.next();
     }

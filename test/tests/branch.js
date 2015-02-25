@@ -11,24 +11,18 @@ describe("Branch", function() {
 
   var reposPath = local("../repos/workdir/.git");
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)
       .then(function(repository) {
         test.repository = repository;
-      });
-  });
-
-  beforeEach(function() {
-    var test = this;
-    var repo = test.repository;
-
-    return repo.getMasterCommit()
+        return repository.getMasterCommit();
+      })
       .then(function(masterCommit) {
         test.masterCommit = masterCommit;
 
-        return repo.createBranch(branchName, masterCommit, true);
+        return test.repository.createBranch(branchName, masterCommit, true);
       })
       .then(function(branch) {
         test.branch = branch;

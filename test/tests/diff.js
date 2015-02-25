@@ -14,7 +14,7 @@ describe("Diff", function() {
   var diffFilename = "wddiff.txt";
   var diffFilepath = local("../repos/workdir", diffFilename);
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath).then(function(repository) {

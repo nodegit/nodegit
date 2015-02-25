@@ -19,7 +19,7 @@ describe("Remote", function() {
     Remote.delete(repository, "test2");
   }
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)
