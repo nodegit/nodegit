@@ -74,8 +74,7 @@ from_{{ arg.name }}
 {%endif%}
 
 {% if cppFunctionName == "Free" %}
-// FIXME Stuck here unable to NULL out this->repo
-// ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->SetValue(NULL);
+  ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->ClearValue();
 }
 {% endif %}
 

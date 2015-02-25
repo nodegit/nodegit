@@ -113,7 +113,11 @@ using namespace node;
   }
 
   {{ cType }} **{{ cppClassName }}::GetRefValue() {
-    return &this->raw;
+    return this->raw == NULL ? NULL : &this->raw;
+  }
+
+  void {{ cppClassName }}::ClearValue() {
+    this->raw = NULL;
   }
 
 {% else %}
