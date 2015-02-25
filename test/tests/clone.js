@@ -18,11 +18,13 @@ describe("Clone", function() {
   this.timeout(30000);
 
   beforeEach(function() {
-    return fse.remove(this.clonePath).catch(function(err) {
-      console.log(err);
+    if (this.clonePath) {
+      return fse.remove(this.clonePath).catch(function(err) {
+        console.log(err);
 
-      throw err;
-    });
+        throw err;
+      });
+    }
   });
 
   afterEach(function(done) {
