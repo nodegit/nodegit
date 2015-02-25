@@ -45,3 +45,15 @@ beforeEach(function() {
       return exec("git reset --hard", {cwd: workdirPath});
     });
 });
+
+afterEach(function() {
+  if (this.repository) {
+    this.repository.free();
+    delete this.repository;
+  }
+
+  else if (this.repo) {
+    this.repo.free();
+    delete this.repo;
+  }
+});
