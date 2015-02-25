@@ -127,6 +127,7 @@ describe("Clone", function() {
   });
 
   it("can clone with git", function() {
+    var test = this;
     var url = "git://github.com/nodegit/test.git";
     var opts = {
       remoteCallbacks: {
