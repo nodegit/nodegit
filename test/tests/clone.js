@@ -18,7 +18,7 @@ describe("Clone", function() {
   this.timeout(30000);
 
   beforeEach(function() {
-    return fse.remove(clonePath).catch(function(err) {
+    return fse.remove(this.clonePath).catch(function(err) {
       console.log(err);
 
       throw err;
@@ -49,7 +49,9 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, clonePath, opts).then(function(repo) {
+    test.clonePath = local("../repos/http");
+
+    return Clone.clone(url, test.clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -66,7 +68,9 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, clonePath, opts).then(function(repo) {
+    test.clonePath = local("../repos/https");
+
+    return Clone.clone(url, test.clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -86,7 +90,9 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, clonePath, opts).then(function(repo) {
+    test.clonePath = local("../repos/ssh");
+
+    return Clone.clone(url, test.clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -110,7 +116,9 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, clonePath, opts).then(function(repo) {
+    test.clonePath = local("../repos/sshManual");
+
+    return Clone.clone(url, test.clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -126,7 +134,9 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, clonePath, opts).then(function(repo) {
+    test.clonePath = local("../repos/git");
+
+    return Clone.clone(url, test.clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
     });
   });
@@ -136,7 +146,9 @@ describe("Clone", function() {
     var prefix = process.platform === "win32" ? "" : "file://";
     var url = prefix + local("../repos/empty");
 
-    return Clone.clone(url, clonePath).then(function(repo) {
+    test.clonePath = local("../repos/filesystem");
+
+    return Clone.clone(url, test.clonePath).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
