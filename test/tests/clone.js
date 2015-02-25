@@ -28,7 +28,9 @@ describe("Clone", function() {
       fse.remove(ssh),
       fse.remove(git),
       fse.remove(file)
-    ]).catch(function unhandledFunction() {});
+    ]).catch(function unhandledFunction(ex) {
+      console.log(ex.message);
+    });
   });
 
   it.skip("can clone with http", function() {
@@ -43,6 +45,7 @@ describe("Clone", function() {
 
     return Clone.clone(url, http, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      repo.free();
     });
   });
 
@@ -58,6 +61,8 @@ describe("Clone", function() {
 
     return Clone.clone(url, https, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      repo.stateCleanup();
+      repo.free();
     });
   });
 
@@ -76,6 +81,8 @@ describe("Clone", function() {
 
     return Clone.clone(url, ssh, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      repo.stateCleanup();
+      repo.free();
     });
   });
 
@@ -98,6 +105,8 @@ describe("Clone", function() {
 
     return Clone.clone(url, ssh, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      repo.stateCleanup();
+      repo.free();
     });
   });
 
@@ -113,6 +122,8 @@ describe("Clone", function() {
 
     return Clone.clone(url, git, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      repo.stateCleanup();
+      repo.free();
     });
   });
 
@@ -122,6 +133,8 @@ describe("Clone", function() {
 
     return Clone.clone(url, file).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      repo.stateCleanup();
+      repo.free();
     });
   });
 

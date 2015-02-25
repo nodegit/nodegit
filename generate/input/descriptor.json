@@ -1431,9 +1431,6 @@
         "git_repository_fetchhead_foreach": {
           "ignore": true
         },
-        "git_repository_free": {
-          "ignore": true
-        },
         "git_repository_hashfile": {
           "ignore": true
         },
