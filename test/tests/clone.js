@@ -27,6 +27,7 @@ describe("Clone", function() {
 
   afterEach(function(done) {
     if (this.repository) {
+      this.repository.stateCleanup();
       this.repository.free();
       delete this.repository;
     }
