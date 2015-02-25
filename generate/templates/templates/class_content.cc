@@ -35,6 +35,7 @@ using namespace node;
     {% if freeFunctionName %}
       if (this->selfFreeing) {
         {{ freeFunctionName }}(this->raw);
+        this->raw = NULL;
       }
     {% endif %}
 

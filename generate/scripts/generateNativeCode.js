@@ -144,7 +144,7 @@ module.exports = function generateNativeCode() {
         });
       }
     })
-  });
+  }).catch(console.log);
 
 };
 

@@ -18,7 +18,11 @@ describe("Clone", function() {
   this.timeout(30000);
 
   beforeEach(function() {
-    return fse.remove(clonePath);
+    return fse.remove(clonePath).catch(function(err) {
+      console.log(err);
+
+      throw err;
+    });
   });
 
   afterEach(function(done) {
