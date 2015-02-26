@@ -2,7 +2,7 @@
 # http://www.appveyor.com/docs/appveyor-yml
 
 # Try out "interactive-mode"
-os: unstable
+os: Windows Server 2012 R2
 
 # build version format
 version: "{build}"
