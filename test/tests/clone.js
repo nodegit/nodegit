@@ -9,11 +9,7 @@ describe("Clone", function() {
   var Clone = require(local("../../lib/clone"));
   var NodeGit = require(local("../../"));
 
-  var http = local("../repos/http");
-  var https = local("../repos/https");
-  var ssh = local("../repos/ssh");
-  var git = local("../repos/git");
-  var file = local("../repos/file");
+  var clonePath = local("../repos/clone");
 
   var sshPublicKey = local("../id_rsa.pub");
   var sshPrivateKey = local("../id_rsa");
@@ -21,17 +17,31 @@ describe("Clone", function() {
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(30000);
 
+  beforeEach(function(done) {
+    // In Windows if you do not clean up the repository, there may become a
+    // conflict with file locking.
+    if (this.repository && process.platform === "win32") {
+      this.repository.stateCleanup();
+      this.repository.free();
+      delete this.repository;
+    }
+
+    process.nextTick(function() {
+      global.gc();
+      done();
+    });
+  });
+
   beforeEach(function() {
-    return NodeGit.Promise.all([
-      fse.remove(http),
-      fse.remove(https),
-      fse.remove(ssh),
-      fse.remove(git),
-      fse.remove(file)
-    ]).catch(function unhandledFunction() {});
+    return fse.remove(clonePath).catch(function(err) {
+      console.log(err);
+
+      throw err;
+    });
   });
 
   it.skip("can clone with http", function() {
+    var test = this;
     var url = "http://github.com/nodegit/test.git";
     var opts = {
       remoteCallbacks: {
@@ -41,12 +51,14 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, http, opts).then(function(repo) {
+    return Clone.clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      test.repository = repo;
     });
   });
 
   it("can clone with https", function() {
+    var test = this;
     var url = "https://github.com/nodegit/test.git";
     var opts = {
       remoteCallbacks: {
@@ -56,12 +68,14 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, https, opts).then(function(repo) {
+    return Clone.clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      test.repository = repo;
     });
   });
 
   it("can clone with ssh", function() {
+    var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       remoteCallbacks: {
@@ -74,12 +88,14 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, ssh, opts).then(function(repo) {
+    return Clone.clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      test.repository = repo;
     });
   });
 
   it("can clone with ssh while manually loading a key", function() {
+    var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       remoteCallbacks: {
@@ -96,12 +112,14 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, ssh, opts).then(function(repo) {
+    return Clone.clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      test.repository = repo;
     });
   });
 
   it("can clone with git", function() {
+    var test = this;
     var url = "git://github.com/nodegit/test.git";
     var opts = {
       remoteCallbacks: {
@@ -111,24 +129,27 @@ describe("Clone", function() {
       }
     };
 
-    return Clone.clone(url, git, opts).then(function(repo) {
+    return Clone.clone(url, clonePath, opts).then(function(repo) {
+      test.repository = repo;
       assert.ok(repo instanceof Repository);
     });
   });
 
   it("can clone with filesystem", function() {
+    var test = this;
     var prefix = process.platform === "win32" ? "" : "file://";
     var url = prefix + local("../repos/empty");
 
-    return Clone.clone(url, file).then(function(repo) {
+    return Clone.clone(url, clonePath).then(function(repo) {
       assert.ok(repo instanceof Repository);
+      test.repository = repo;
     });
   });
 
   it("will not segfault when accessing a url without username", function() {
     var url = "https://github.com/nodegit/private";
 
-    return Clone.clone(url, git, {
+    return Clone.clone(url, clonePath, {
       remoteCallbacks: {
         certificateCheck: function() {
           return 1;

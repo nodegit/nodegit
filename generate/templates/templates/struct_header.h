@@ -26,6 +26,7 @@ class {{ cppClassName }} : public ObjectWrap {
 
     {{ cType }} *GetValue();
     {{ cType }} **GetRefValue();
+    void ClearValue();
 
     static Handle<v8::Value> New(void *raw, bool selfFreeing);
 

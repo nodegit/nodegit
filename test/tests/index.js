@@ -14,12 +14,12 @@ describe("Index", function() {
 
   var reposPath = local("../repos/workdir/.git");
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)
       .then(function(repo) {
-        test.repo = repo;
+        test.repository = repo;
         return repo.openIndex();
       })
       .then(function(index) {
@@ -38,7 +38,7 @@ describe("Index", function() {
   });
 
   it("can add all entries to the index", function() {
-    var repo = this.repo;
+    var repo = this.repository;
     var index = this.index;
     var fileContent = {
       newFile1: "this has some content",
@@ -72,7 +72,7 @@ describe("Index", function() {
   });
 
   it("can remove entries from the index", function() {
-    var repo = this.repo;
+    var repo = this.repository;
     var index = this.index;
     var fileContent = {
       newFile1: "this has some content",
@@ -116,7 +116,7 @@ describe("Index", function() {
   });
 
   it("can update entries in the index", function() {
-    var repo = this.repo;
+    var repo = this.repository;
     var index = this.index;
     var fileContent = {
       newFile1: "this has some content",

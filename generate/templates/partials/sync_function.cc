@@ -30,6 +30,12 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
 {%each args|argsInfo as arg %}
 {%endeach%}
+
+{%-- Inside a free call, if the value is already free'd don't do it again.--%}
+{% if cppFunctionName == "Free" %}
+if (ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue() != NULL) {
+{% endif %}
+
 {%if .|hasReturns %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
   {%each args|argsInfo as arg %}
@@ -66,6 +72,12 @@ from_{{ arg.name }}
     }
   }
 {%endif%}
+
+{% if cppFunctionName == "Free" %}
+  ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->ClearValue();
+}
+{% endif %}
+
 
 {%each args|argsInfo as arg %}
   {%if arg | isOid %}

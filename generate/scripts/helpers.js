@@ -288,8 +288,8 @@ var Helpers = {
     // available
     if (key == typeDef.cType + "_free") {
       typeDef.freeFunctionName = key;
-      fnDef.ignore = true;
-      return;
+      //fnDef.ignore = true;
+      //return;
     }
 
     fnDef.cppFunctionName = Helpers.cTypeToCppName(key, "git_" + typeDef.typeName);

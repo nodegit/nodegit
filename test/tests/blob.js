@@ -10,7 +10,7 @@ describe("Blob", function() {
   var reposPath = local("../repos/workdir/.git");
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
 
-  before(function() {
+  beforeEach(function() {
     var test = this;
 
     return Repository.open(reposPath)

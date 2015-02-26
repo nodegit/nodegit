@@ -138,7 +138,11 @@ Handle<v8::Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
 }
 
 {{ cType }} **{{ cppClassName }}::GetRefValue() {
-  return &this->raw;
+  return this->raw == NULL ? NULL : &this->raw;
+}
+
+void {{ cppClassName }}::ClearValue() {
+  this->raw = NULL;
 }
 
 {% partial fieldAccessors . %}
