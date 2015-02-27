@@ -16,7 +16,8 @@
   baton->req.data = baton;
   baton->done = false;
 
-  uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter);
+  uv_async_init(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  uv_async_send(&baton->req);
 
   while(!baton->done) {
     this_thread::sleep_for(chrono::milliseconds(1));
@@ -31,13 +32,7 @@
   return baton->result;
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork(uv_work_t* req) {
-  // We aren't doing any work on a seperate thread, just need to
-  // access the main node thread in the async after method.
-  // However, this worker method is still needed
-}
-
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(uv_work_t* req, int status) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_async_t* req, int status) {
   NanScope();
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
@@ -85,7 +80,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
       NanAssignPersistent(baton->promise, promise);
 
-      uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+      uv_async_init(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+      uv_async_send(&baton->req);
       return;
     }
   }
@@ -117,7 +113,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
   baton->done = true;
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling(uv_work_t* req, int status) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling(uv_async_t* req, int status) {
   NanScope();
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
@@ -127,7 +123,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
 
   if (isPending->Value()) {
-    uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+    uv_async_send(&baton->req);
     return;
   }
 
