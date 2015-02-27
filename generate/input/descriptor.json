@@ -1657,6 +1657,12 @@
               "isReturn": true
             }
           }
+        },
+        "git_tag_delete": {
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
         }
       }
     },
