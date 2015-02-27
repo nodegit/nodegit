@@ -9,14 +9,21 @@
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton();
 
   {% each cbFunction.args|argsInfo as arg %}
-    baton->{{ arg.name }} = {{ arg.name }};
+  baton->{{ arg.name }} = {{ arg.name }};
+    {% if arg | isPayload %}
+      {% if cbFunction.payload.globalPayload %}
+  baton->req = &(({{ cppFunctionName }}_globalPayload*){{ arg.name }})->{{ cbFunction.name }}->handle;
+      {% else %}
+  baton->req = &((PayloadWrapper *){{ arg.name }})->handle;
+      {% endif %}
+    {% endif %}
   {% endeach %}
 
   baton->result = 0;
-  baton->req.data = baton;
+  baton->req->data = baton;
   baton->done = false;
 
-  uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter);
+  uv_async_send(baton->req);
 
   while(!baton->done) {
     this_thread::sleep_for(chrono::milliseconds(1));
@@ -31,13 +38,7 @@
   return baton->result;
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork(uv_work_t* req) {
-  // We aren't doing any work on a seperate thread, just need to
-  // access the main node thread in the async after method.
-  // However, this worker method is still needed
-}
-
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(uv_work_t* req, int status) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_async_t* req, int status) {
   NanScope();
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
@@ -45,9 +46,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
   {% each cbFunction.args|argsInfo as arg %}
     {% if arg | isPayload %}
       {% if cbFunction.payload.globalPayload %}
-  NanCallback* callback = (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbFunction.name }};
+  NanCallback* callback = (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbFunction.name }}->jsCallback;
       {% else %}
-  NanCallback* callback = (NanCallback *)baton->{{ arg.name }};
+  NanCallback* callback = ((PayloadWrapper *)baton->{{ arg.name }})->jsCallback;
       {% endif %}
     {% endif %}
   {% endeach %}
@@ -85,7 +86,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
 
       NanAssignPersistent(baton->promise, promise);
 
-      uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+      baton->req = new uv_async_t();
+      uv_async_init(uv_default_loop(), baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+      uv_async_send(baton->req);
       return;
     }
   }
@@ -117,7 +120,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncAfter(
   baton->done = true;
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling(uv_work_t* req, int status) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling(uv_async_t* req, int status) {
   NanScope();
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
@@ -127,9 +130,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
 
   if (isPending->Value()) {
-    uv_queue_work(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncWork, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+    uv_async_send(baton->req);
     return;
   }
+
+  // We're done scheduling JS callbacks to poll the promise so clean up the handle we created
+  delete baton->req;
 
   NanCallback* isFulfilledFn = new NanCallback(promise->Get(NanNew("isFulfilled")).As<Function>());
   Local<Boolean> isFulfilled = isFulfilledFn->Call(0, argv)->ToBoolean();
