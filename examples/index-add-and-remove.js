@@ -27,7 +27,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       })
       .then(function() {
         var newFiles = index.entries().filter(function(entry) {
-          return ~fileNames.indexOf(entry.path());
+          return ~fileNames.indexOf(entry.path);
         });
 
         console.log(
@@ -35,7 +35,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
           "Added files: " +
           "\n-------------------\n");
         newFiles.forEach(function(entry) {
-          console.log(entry.path());
+          console.log(entry.path);
         });
       })
       .then(function() {
@@ -44,7 +44,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       })
       .then(function() {
         var newFiles = index.entries().filter(function(entry) {
-          return ~fileNames.indexOf(entry.path());
+          return ~fileNames.indexOf(entry.path);
         });
 
         console.log("New files in index: " + newFiles.length);
@@ -58,7 +58,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       })
       .then(function() {
         var newFiles = index.entries().filter(function(entry) {
-          return ~fileNames.indexOf(entry.path());
+          return ~fileNames.indexOf(entry.path);
         });
 
         console.log(
@@ -66,7 +66,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
           "Added files with pattern: " +
           "\n-------------------\n");
         newFiles.forEach(function(entry) {
-          console.log(entry.path());
+          console.log(entry.path);
         });
       })
       .then(function() {
@@ -75,7 +75,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       })
       .then(function() {
         var newFiles = index.entries().filter(function(entry) {
-          return ~fileNames.indexOf(entry.path());
+          return ~fileNames.indexOf(entry.path);
         });
 
         console.log("New files in index: " + newFiles.length);
@@ -99,7 +99,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       })
       .then(function() {
         var newFiles = index.entries().filter(function(entry) {
-          return ~fileNames.indexOf(entry.path());
+          return ~fileNames.indexOf(entry.path);
         });
 
         console.log(
@@ -107,7 +107,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
           "Added files with callback: " +
           "\n-------------------\n");
         newFiles.forEach(function(entry) {
-          console.log(entry.path());
+          console.log(entry.path);
         });
       })
       .then(function() {
@@ -122,7 +122,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       })
       .then(function() {
         var newFiles = index.entries().filter(function(entry) {
-          return ~fileNames.indexOf(entry.path());
+          return ~fileNames.indexOf(entry.path);
         });
 
         console.log("Total: " + index.entries().length);
