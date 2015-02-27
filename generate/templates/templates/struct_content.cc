@@ -101,7 +101,9 @@ void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
 
   {% each fields as field %}
     {% if not field.ignore %}
+    {% if not field | isPayload %}
       tpl->InstanceTemplate()->SetAccessor(NanNew<String>("{{ field.jsFunctionName }}"), Get{{ field.cppFunctionName}}, Set{{ field.cppFunctionName}});
+    {% endif %}
     {% endif %}
   {% endeach %}
 
