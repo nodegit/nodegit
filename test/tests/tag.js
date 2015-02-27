@@ -15,8 +15,8 @@ describe("Tag", function() {
   var commitPointedTo = "32789a79e71fbc9e04d3eff7425e1771eb595150";
   var tagMessage = "This is an annotated tag\n";
 
-  function testTag(tag) {
-    assert.equal(tag.name(), tagName);
+  function testTag(tag, name) {
+    assert.equal(tag.name(), name || tagName);
     assert.equal(tag.targetType(), Obj.TYPE.COMMIT);
     assert.equal(tag.message(), tagMessage);
 
