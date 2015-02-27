@@ -14,6 +14,7 @@ extern "C" {
 {%each dependencies as dependency%}
 #include "{{ dependency }}"
 {%endeach%}
+#include "payload_wrapper.h"
 
 {%if needsForwardDeclaration %}
 // Forward declaration.
@@ -64,7 +65,7 @@ class {{ cppClassName }} : public ObjectWrap {
       {{ cbArg.cType }} {{ cbArg.name }};
       {% endeach %}
 
-      uv_async_t req;
+      uv_async_t* req;
       {{ arg.return.type }} result;
       Persistent<Object> promise;
       bool done;
@@ -146,7 +147,7 @@ class {{ cppClassName }} : public ObjectWrap {
     struct {{ function.cppFunctionName }}_globalPayload {
           {%each function.args as arg %}
             {%if arg.isCallbackFunction %}
-      NanCallback * {{ arg.name }};
+      PayloadWrapper * {{ arg.name }};
             {%endif%}
           {%endeach%}
 

@@ -34,9 +34,13 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   else {
     baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
         {%if arg.payload.globalPayload %}
-    globalPayload->{{ arg.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+    globalPayload->{{ arg.name }} = new PayloadWrapper();
+    globalPayload->{{ arg.name }}->jsCallback = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+    uv_async_init(uv_default_loop(), &globalPayload->{{ arg.name }}->handle, {{ cppFunctionName }}_{{ arg.name }}_async);
         {%else%}
-    baton->{{ arg.payload.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+    baton->{{ arg.payload.name }} = new PayloadWrapper();
+    baton->{{ arg.payload.name }}->jsCallback = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+    uv_async_init(uv_default_loop(), &baton->{{ arg.payload.name }}->handle, {{ cppFunctionName }}_{{ arg.name }}_async);
         {%endif%}
   }
       {%elsif arg.payloadFor %}

@@ -1,5 +1,5 @@
-#ifndef CALLBACK_WRAPPER_H
-#define CALLBACK_WRAPPER_H
+#ifndef PAYLOAD_WRAPPER_H
+#define PAYLOAD_WRAPPER_H
 
 #include <v8.h>
 #include <node.h>
@@ -9,9 +9,9 @@
 using namespace v8;
 using namespace node;
 
-struct CallbackWrapper {
+struct PayloadWrapper {
   NanCallback* jsCallback;
-  void * payload;
+  uv_async_t handle;
 };
 
 #endif

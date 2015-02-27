@@ -9,15 +9,21 @@
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton();
 
   {% each cbFunction.args|argsInfo as arg %}
-    baton->{{ arg.name }} = {{ arg.name }};
+  baton->{{ arg.name }} = {{ arg.name }};
+    {% if arg | isPayload %}
+      {% if cbFunction.payload.globalPayload %}
+  baton->req = &(({{ cppFunctionName }}_globalPayload*){{ arg.name }})->{{ cbFunction.name }}->handle;
+      {% else %}
+  baton->req = &((PayloadWrapper *){{ arg.name }})->handle;
+      {% endif %}
+    {% endif %}
   {% endeach %}
 
   baton->result = 0;
-  baton->req.data = baton;
+  baton->req->data = baton;
   baton->done = false;
 
-  uv_async_init(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_async);
-  uv_async_send(&baton->req);
+  uv_async_send(baton->req);
 
   while(!baton->done) {
     this_thread::sleep_for(chrono::milliseconds(1));
@@ -40,9 +46,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
   {% each cbFunction.args|argsInfo as arg %}
     {% if arg | isPayload %}
       {% if cbFunction.payload.globalPayload %}
-  NanCallback* callback = (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbFunction.name }};
+  NanCallback* callback = (({{ cppFunctionName }}_globalPayload*)baton->{{ arg.name }})->{{ cbFunction.name }}->jsCallback;
       {% else %}
-  NanCallback* callback = (NanCallback *)baton->{{ arg.name }};
+  NanCallback* callback = ((PayloadWrapper *)baton->{{ arg.name }})->jsCallback;
       {% endif %}
     {% endif %}
   {% endeach %}
@@ -80,8 +86,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
 
       NanAssignPersistent(baton->promise, promise);
 
-      uv_async_init(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
-      uv_async_send(&baton->req);
+      baton->req = new uv_async_t();
+      uv_async_init(uv_default_loop(), baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+      uv_async_send(baton->req);
       return;
     }
   }
@@ -123,9 +130,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
 
   if (isPending->Value()) {
-    uv_async_send(&baton->req);
+    uv_async_send(baton->req);
     return;
   }
+
+  // We're done scheduling JS callbacks to poll the promise so clean up the handle we created
+  delete baton->req;
 
   NanCallback* isFulfilledFn = new NanCallback(promise->Get(NanNew("isFulfilled")).As<Function>());
   Local<Boolean> isFulfilled = isFulfilledFn->Call(0, argv)->ToBoolean();
