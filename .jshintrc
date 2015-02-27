@@ -1,26 +1,29 @@
 {
-  "evil": true,
   "boss": true,
-  "immed": false,
-  "eqnull": true,
-  "maxlen": 80,
-  "node": true,
-  "proto": true,
   "curly": true,
-  "quotmark": "double",
-  "trailing": true,
-  "unused": "vars",
-  "undef": true,
-  "validthis": true,
+  "eqnull": true,
+  "evil": true,
+  "futurehostile": true,
   "globals": {
-    "global": true,
-    "define": true,
-    "it": true,
-    "describe": true,
+    "after": true,
+    "afterEach": true,
     "before": true,
     "beforeEach": true,
-    "after": true,
-    "afterEach": true
+    "define": true,
+    "describe": true,
+    "global": true,
+    "it": true
   },
-  "predef": ["-Promise"]
+  "immed": false,
+  "maxlen": 80,
+  "node": true,
+  "predef": [
+    "-Promise"
+  ],
+  "proto": true,
+  "quotmark": "double",
+  "trailing": true,
+  "undef": true,
+  "unused": "vars",
+  "validthis": true
 }
