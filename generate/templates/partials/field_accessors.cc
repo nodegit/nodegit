@@ -96,7 +96,8 @@
         baton->req.data = baton;
         baton->done = false;
 
-        uv_queue_work(uv_default_loop(), &baton->req, {{ field.name }}_asyncWork, {{ field.name }}_asyncAfter);
+        uv_async_init(uv_default_loop(), &baton->req, {{ field.name }}_async);
+        uv_async_send(&baton->req);
 
         while(!baton->done) {
           this_thread::sleep_for(chrono::milliseconds(1));
@@ -111,13 +112,7 @@
         return baton->result;
       }
 
-      void {{ cppClassName }}::{{ field.name }}_asyncWork(uv_work_t* req) {
-        // We aren't doing any work on a seperate thread, just need to
-        // access the main node thread in the async after method.
-        // However, this worker method is still needed
-      }
-
-      void {{ cppClassName }}::{{ field.name }}_asyncAfter(uv_work_t* req, int status) {
+      void {{ cppClassName }}::{{ field.name }}_async(uv_async_t* req, int status) {
         NanScope();
 
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
@@ -178,7 +173,8 @@
 
             NanAssignPersistent(baton->promise, promise);
 
-            uv_queue_work(uv_default_loop(), &baton->req, {{ field.name }}_asyncWork, {{ field.name }}_asyncPromisePolling);
+            uv_async_init(uv_default_loop(), &baton->req, {{ field.name }}_asyncPromisePolling);
+            uv_async_send(&baton->req);
             return;
           }
         }
@@ -210,7 +206,7 @@
         baton->done = true;
       }
 
-      void {{ cppClassName }}::{{ field.name }}_asyncPromisePolling(uv_work_t* req, int status) {
+      void {{ cppClassName }}::{{ field.name }}_asyncPromisePolling(uv_async_t* req, int status) {
         NanScope();
 
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
@@ -220,7 +216,7 @@
         Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
 
         if (isPending->Value()) {
-          uv_queue_work(uv_default_loop(), &baton->req, {{ field.name }}_asyncWork, {{ field.name }}_asyncPromisePolling);
+          uv_async_send(&baton->req);
           return;
         }
 

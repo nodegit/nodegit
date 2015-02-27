@@ -57,15 +57,14 @@ class {{ cppClassName }} : public ObjectWrap {
             {% endeach %}
     );
 
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncWork(uv_work_t* req);
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncAfter(uv_work_t* req, int status);
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncPromisePolling(uv_work_t* req, int status);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_async(uv_async_t* req, int status);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncPromisePolling(uv_async_t* req, int status);
     struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton {
       {% each arg.args|argsInfo as cbArg %}
       {{ cbArg.cType }} {{ cbArg.name }};
       {% endeach %}
 
-      uv_work_t req;
+      uv_async_t req;
       {{ arg.return.type }} result;
       Persistent<Object> promise;
       bool done;
