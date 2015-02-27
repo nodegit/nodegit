@@ -1616,6 +1616,9 @@
           },
           "isAsync": true
         },
+        "git_tag_create_frombuffer": {
+          "ignore": true
+        },
         "git_tag_create_lightweight": {
           "args": {
             "oid": {
