@@ -14,9 +14,8 @@ describe("Status", function() {
 
   var reposPath = local("../repos/workdir/.git");
 
-  beforeEach(function() {
+  before(function() {
     var test = this;
-    delete test.repository;
     return Repository.open(reposPath)
       .then(function(repository) {
         test.repository = repository;

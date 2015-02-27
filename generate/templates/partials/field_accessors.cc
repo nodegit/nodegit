@@ -38,8 +38,12 @@
         }
 
       {% elsif field.isLibgitType %}
+        Handle<Object> {{ field.name }}(value->ToObject());
         NanDisposePersistent(wrapper->{{ field.name }});
-        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}ObjectWrap::Unwrap<{{ field.cppClassName }}>(value->ToObject())->GetValue();
+
+        NanAssignPersistent(wrapper->{{ field.name }}, {{ field.name }});
+
+        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }}->ToObject())->GetValue();
 
       {% elsif field.isCallbackFunction %}
         if (wrapper->{{ field.name }} != NULL) {
