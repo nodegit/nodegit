@@ -60,7 +60,11 @@ fse.remove(path.resolve(__dirname, repoDir))
       });
 
       // Create the push object for this remote
-      return nodegit.Push.create(remote)
+      return remote.push(
+        ["refs/heads/master:refs/heads/master"],
+        null,
+        repository.defaultSignature(),
+        "Push to master")
       .then(function(pushResult) {
         push = pushResult;
 
