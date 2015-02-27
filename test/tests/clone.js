@@ -17,21 +17,6 @@ describe("Clone", function() {
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(30000);
 
-  beforeEach(function(done) {
-    // In Windows if you do not clean up the repository, there may become a
-    // conflict with file locking.
-    if (this.repository && process.platform === "win32") {
-      this.repository.stateCleanup();
-      this.repository.free();
-      delete this.repository;
-    }
-
-    process.nextTick(function() {
-      global.gc();
-      done();
-    });
-  });
-
   beforeEach(function() {
     return fse.remove(clonePath).catch(function(err) {
       console.log(err);
