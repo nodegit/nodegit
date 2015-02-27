@@ -12,6 +12,7 @@
   "unused": "vars",
   "undef": true,
   "validthis": true,
+  "futurehostile": true,
   "globals": {
     "global": true,
     "define": true,

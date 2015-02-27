@@ -1605,6 +1605,42 @@
         "git_tag_foreach": {
           "ignore": true
         },
+        "git_tag_create": {
+          "args": {
+            "oid": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
+        },
+        "git_tag_create_frombuffer": {
+          "ignore": true
+        },
+        "git_tag_create_lightweight": {
+          "args": {
+            "oid": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
+        },
+        "git_tag_annotation_create": {
+          "args": {
+            "oid": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
+        },
         "git_tag_list": {
           "args": {
             "tag_names": {
@@ -1624,6 +1660,12 @@
               "isReturn": true
             }
           }
+        },
+        "git_tag_delete": {
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
         }
       }
     },
