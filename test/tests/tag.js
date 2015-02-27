@@ -109,4 +109,39 @@ describe("Tag", function() {
         return Promise.resolve();
       });
   });
+
+  it("can create a new lightweight tag in a repo and delete it", function() {
+    var oid = Oid.fromString(commitPointedTo);
+    var name = "created-lightweight-tag";
+    var repository = this.repository;
+
+    return repository.createLightweightTag(oid, name)
+      .then(function(reference) {
+        return reference.target();
+      })
+      .then(function(refOid) {
+        assert.equal(refOid.toString(), oid.toString());
+      })
+      .then(function() {
+        return repository.createLightweightTag(oid, name);
+      })
+      .then(function() {
+        return Promise.reject(new Error("should not be able to create the '" +
+          name + "' tag twice"));
+      }, function() {
+        return Promise.resolve();
+      })
+      .then(function() {
+        return repository.deleteTagByName(name);
+      })
+      .then(function() {
+        return Reference.lookup(repository, "refs/tags/" + name);
+      })
+      .then(function() {
+        return Promise.reject(new Error("the tag '" + name +
+          "' should not exist"));
+      }, function() {
+        return Promise.resolve();
+      });
+  });
 });
