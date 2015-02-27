@@ -112,7 +112,7 @@ describe("Remote", function() {
       });
   });
 
-  it.skip("can monitor transfer progress while downloading", function() {
+  it("can monitor transfer progress while downloading", function() {
     // Set a reasonable timeout here now that our repository has grown.
     this.timeout(600000);
 
