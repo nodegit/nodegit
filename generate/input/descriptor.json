@@ -1377,6 +1377,12 @@
         "git_remote_rename": {
           "ignore": true
         },
+        "git_remote_push": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_remote_set_callbacks": {
           "args": {
             "callbacks": {
