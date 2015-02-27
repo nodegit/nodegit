@@ -7,6 +7,8 @@ describe("Tag", function() {
   var Tag = require(local("../../lib/tag"));
   var Obj = require(local("../../lib/object"));
   var Oid = require(local("../../lib/oid"));
+  var Reference = require(local("../../lib/reference"));
+  var Promise = require("nodegit-promise");
 
   var reposPath = local("../repos/workdir/.git");
   var tagName = "annotated-tag";
@@ -73,6 +75,38 @@ describe("Tag", function() {
         });
 
         assert.equal(tagNames.length, 1);
+      });
+  });
+
+  it("can create a new annotated tag in a repo and delete it", function() {
+    var oid = Oid.fromString(commitPointedTo);
+    var name = "created-annotated-tag";
+    var repository = this.repository;
+
+    return repository.createTag(oid, name, tagMessage)
+      .then(function(tag) {
+        testTag(tag, name);
+      })
+      .then(function() {
+        return repository.createTag(oid, name, tagMessage);
+      })
+      .then(function() {
+        return Promise.reject(new Error("should not be able to create the '" +
+          name + "' tag twice"));
+      }, function() {
+        return Promise.resolve();
+      })
+      .then(function() {
+        return repository.deleteTagByName(name);
+      })
+      .then(function() {
+        return Reference.lookup(repository, "refs/tags/" + name);
+      })
+      .then(function() {
+        return Promise.reject(new Error("the tag '" + name +
+          "' should not exist"));
+      }, function() {
+        return Promise.resolve();
       });
   });
 });
