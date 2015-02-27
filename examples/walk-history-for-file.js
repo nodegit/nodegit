@@ -18,7 +18,10 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       return commit.getDiff()
       .then(function(diffList) {
         var addCommit = diffList.reduce(function(prevVal, diff) {
-          var result = prevVal || diff.patches().reduce(function(prevValDiff, patch) {
+          var result =
+            prevVal ||
+            diff.patches().reduce(function(prevValDiff, patch) {
+
             var result =
               prevValDiff ||
               !!~patch.oldFile().path().indexOf("descriptor.json") ||
