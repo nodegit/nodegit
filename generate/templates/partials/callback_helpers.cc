@@ -16,7 +16,7 @@
   baton->req.data = baton;
   baton->done = false;
 
-  uv_async_init(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_async);
   uv_async_send(&baton->req);
 
   while(!baton->done) {
@@ -80,7 +80,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
 
       NanAssignPersistent(baton->promise, promise);
 
-      uv_async_init(uv_default_loop(), &baton->req, {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+      uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
       uv_async_send(&baton->req);
       return;
     }
