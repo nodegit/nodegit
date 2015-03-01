@@ -1,13 +1,12 @@
-var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
 
 var local = path.join.bind(path, __dirname);
 
-var checkPrepared = require(local("checkPrepared"));
 var whichNativeNodish = require("which-native-nodish");
-var prepareForBuild = require(local("prepareForBuild"));
+var checkPrepared = require("./checkPrepared");
+var prepareForBuild = require("./prepareForBuild");
 
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
@@ -60,15 +59,9 @@ function checkAndBuild() {
     "code is generated");
 
   return checkPrepared.checkAll()
-    .then(function(allGood) {
-      if (allGood) {
-        return Promise.resolve();
-      }
-      else {
-        console.info("[nodegit] Something is missing, retrieving " +
-        "dependencies and regenerating code");
-        return prepareForBuild();
-      }
+    .then(function() {
+      console.info("[nodegit] Retrieving dependencies and regenerating code");
+      return prepareForBuild();
     })
     .then(function() {
       return build();

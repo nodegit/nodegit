@@ -7,8 +7,13 @@ var version = require("../../package.json").libgit2.version;
 var libgit2 = require("../input/v" + version + ".json");
 var descriptor = require("../input/descriptor.json");
 var supplement = require("../input/libgit2-supplement.json");
+var Promise = require("nodegit-promise");
 
 module.exports = function generateJson() {
+  var resolve, reject;
+  var state = new Promise(function() {
+    resolve = arguments[0]; reject = arguments[1];
+  });
   var helpers = require("./helpers");
   _ = require("lodash");
   // libgit2's docs aren't complete so we'll add in what they're missing here
@@ -224,9 +229,10 @@ module.exports = function generateJson() {
     helpers.filterDocumentation(output);
   }
 
-
-  utils.writeFile("output/idefs.json", output);
-
+  return new Promise(function(resolve, reject) {
+    utils.writeFile("output/idefs.json", output);
+    resolve();
+  });
 };
 
 if (require.main === module) {

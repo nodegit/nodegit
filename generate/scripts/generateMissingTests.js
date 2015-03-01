@@ -59,7 +59,7 @@ module.exports = function generateMissingTests() {
     return findMissingTest(idef);
   });
 
-  Promise.all(promises).then(
+  return Promise.all(promises).then(
     function() {
       utils.writeFile("output/missing-tests.json", output);
     },
