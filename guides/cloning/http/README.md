@@ -1,9 +1,6 @@
 ---
 layout: default
 menu_item: guides
-return_to:
-  "Clone": ../
-  "All Guides": ../../
 title: HTTP Clone Guide
 description: How to clone with HTTP
 ---
@@ -11,7 +8,7 @@ description: How to clone with HTTP
 **In order to run examples, you will need to [Install NodeGit](../../install)
 first.**
 
-[Return to cloning examples](../)
+[Return to cloning guides](../)
 
 HTTP/HTTPS clone
 ----------------
