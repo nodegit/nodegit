@@ -96,7 +96,7 @@
         baton->req.data = baton;
         baton->done = false;
 
-        uv_async_init(uv_default_loop(), &baton->req, {{ field.name }}_async);
+        uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ field.name }}_async);
         uv_async_send(&baton->req);
 
         while(!baton->done) {
@@ -173,7 +173,7 @@
 
             NanAssignPersistent(baton->promise, promise);
 
-            uv_async_init(uv_default_loop(), &baton->req, {{ field.name }}_asyncPromisePolling);
+            uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ field.name }}_asyncPromisePolling);
             uv_async_send(&baton->req);
             return;
           }
