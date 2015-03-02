@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: full
 menu_item: guides
 title: HTTP Clone Guide
 description: How to clone with HTTP
