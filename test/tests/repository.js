@@ -110,4 +110,30 @@ describe("Repository", function() {
           });
       });
   });
+
+  it("gets extended statuses", function() {
+    var fileName = "my-new-file-that-shouldnt-exist.file";
+    var fileContent = "new file from repository test";
+    var repo = this.repository;
+    var filePath = path.join(repo.workdir(), fileName);
+
+    return fse.writeFile(filePath, fileContent)
+      .then(function() {
+        return repo.getStatusExt().then(function(statuses) {
+          assert.equal(statuses.length, 1);
+          assert.equal(statuses[0].path(), fileName);
+          assert.equal(statuses[0].indexToWorkdir().newFile().path(), fileName);
+          assert.ok(statuses[0].isNew());
+        });
+      })
+      .then(function() {
+        return fse.remove(filePath);
+      })
+      .catch(function (e) {
+        return fse.remove(filePath)
+          .then(function() {
+            return Promise.reject(e);
+          });
+      });
+  });
 });

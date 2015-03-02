@@ -10,7 +10,7 @@ describe("StatusFile", function() {
   var statusCode = Status.STATUS.WT_NEW;
 
   before(function() {
-    this.status = new StatusFile(pathName, statusCode);
+    this.status = new StatusFile({path: pathName, status: statusCode});
   });
 
   it("passes the path to the working function", function() {
