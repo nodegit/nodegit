@@ -24,13 +24,13 @@ In the guides directory, we like to keep our NodeGit relative to the project
 root.
 
 ``` javascript
-var Git = require('../../../');
+var Git = require("../../../");
 ```
 
 However, in your project you will most likely be using the following command:
 
 ``` javascript
-var Git = require('nodegit');
+var Git = require("nodegit");
 ```
 
 ### Clone URL
@@ -42,7 +42,7 @@ You could easily substitute this with any valid http or https Git repository
 URL.
 
 ``` javascript
-var cloneURL = 'https://github.com/nodegit/test';
+var cloneURL = "https://github.com/nodegit/test";
 ```
 
 ### Clone path
@@ -56,7 +56,7 @@ current working directory in NodeGit, so you will need to normalize it first.
 This is very simple in Node:
 
 ``` javascript
-var localPath = require('path').join(__dirname, 'tmp');
+var localPath = require("path").join(__dirname, "tmp");
 ```
 
 Now this `tmp` directory will be created along side your script, no matter how
@@ -124,6 +124,6 @@ and work with the `Git.Repository` instance result.
 cloneRepository.catch(errorAndAttemptOpen)
   .then(function(repository) {
     // Access any repository methods here.
-    console.log('Is the repository bare? %s', Boolean(repository.isBare()));
+    console.log("Is the repository bare? %s", Boolean(repository.isBare()));
   });
 ```
