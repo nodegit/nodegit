@@ -94,7 +94,7 @@ has a static method `clone` that we can use to bring down a repository.
 While it may look a bit verbose, it is symptomatic of a rigid convention.
 
 ``` javascript
-var cloneRepository = Git.Clone.clone(cloneURL, localPath, cloneOptions);
+var cloneRepository = Git.Clone(cloneURL, localPath, cloneOptions);
 ```
 
 Notice how we store the return value from `Clone.clone`.  This is a [Promise]()
