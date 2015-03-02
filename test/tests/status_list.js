@@ -38,7 +38,9 @@ describe("StatusList", function() {
                  Status.OPT.RECURSE_UNTRACKED_DIRS
         };
 
-        var list = StatusList.create(repo, opts);
+        return StatusList.create(repo, opts);
+      })
+      .then(function(list) {
         assert.equal(list.entrycount(), 1);
 
         for (var i = 0; i < list.entrycount(); i++) {
