@@ -70,6 +70,8 @@ The third argument to the `clone` method is an optional simple object.
 var cloneOptions = {};
 ```
 
+**If you are using HTTP the OS X issue below does not affect you.**
+
 #### GitHub certificate issue in OS X
 
 Unfortunately in OS X there is a problem where libgit2 is unable to look up
