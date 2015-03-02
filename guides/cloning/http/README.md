@@ -1,8 +1,8 @@
 ---
 layout: full
 menu_item: guides
-title: HTTP Clone Guide
-description: How to clone with HTTP
+title: HTTP/HTTPS Guide
+description: How to clone with HTTP/HTTPS
 ---
 
 **In order to run examples, you will need to [Install NodeGit](../../install)
@@ -10,8 +10,8 @@ first.**
 
 [Return to cloning guides](../)
 
-HTTP/HTTPS clone
-----------------
+HTTP/HTTPS
+----------
 
 This guide explains how to clone a repository, and in the case of failure,
 attempt to open the existing path.
@@ -86,20 +86,17 @@ cloneOptions.remoteCallbacks = {
 
 ### Invoking the clone method
 
-The way NodeGit is structured is that all [libgit2](http://libgit2.org) C
-methods are dynamically generated into C++.  Since we're taking a
-class-oriented approach, we make a top level class named `Clone`.  This class
-has a static method `clone` that we can use to bring down a repository.
-
-While it may look a bit verbose, it is symptomatic of a rigid convention.
+You can easily invoke our top-level Clone as a function passing along the three
+aforementioned arguments.
 
 ``` javascript
 var cloneRepository = Git.Clone(cloneURL, localPath, cloneOptions);
 ```
 
-Notice how we store the return value from `Clone.clone`.  This is a [Promise]()
-to represent the asynchronous operation.  It offers finer control flow by
-allowing us to capture errors and fallback if there is a clone failure.
+Notice how we store the return value from `Git.Clone`.  This is a
+[Promise](https://www.promisejs.org/) to represent the asynchronous operation.
+It offers finer control flow by allowing us to capture errors and fallback if
+there is a clone failure.
 
 ### Handling clone failure
 

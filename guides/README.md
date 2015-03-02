@@ -26,7 +26,7 @@ description: Learning NodeGit
 
 > How to clone repositories
 
-- [HTTP/HTTPS clone](cloning/http/)
+- [HTTP/HTTPS](cloning/http/)
 - [SSH w/ Agent](cloning/ssh-with-agent/)
 - [GitHub Two Factor Auth](cloning/gh-two-factor/)
 

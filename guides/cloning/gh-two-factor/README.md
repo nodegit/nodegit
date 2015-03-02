@@ -1,7 +1,7 @@
 ---
 layout: full
 menu_item: guides
-title: HTTP Clone Guide
+title: GitHub Two Factor Auth Guide
 description: How to clone with GitHub Two Factor Authorization
 ---
 
@@ -10,8 +10,8 @@ first.**
 
 [Return to cloning guides](../)
 
-HTTP/HTTPS clone
-----------------
+GitHub Two Factor Auth
+----------------------
 
 This guide explains how to clone a repository, and in the case of failure,
 attempt to open the existing path.
@@ -33,16 +33,35 @@ However, in your project you will most likely be using the following command:
 var Git = require("nodegit");
 ```
 
+### GitHub Personal OAuth Token
+
+Before you can clone a repository, you'll need a GitHub OAuth application
+token.  You can find more information on generating one here:
+
+[Creating an access token for command-line use](
+https://help.github.com/articles/creating-an-access-token-for-command-line-use/
+)
+
+Once you have this token you'll assign it to a variable in your project, for
+this example, we'll call it `GITHUB_TOKEN`.
+
+``` javascript
+var GITHUB_TOKEN = "<GH_TOKEN>";
+```
+
+Keep this variable a secret.  If you accidentally commit this key to a public
+GitHub repository they will immediately revoke it.
+
 ### Clone URL
 
 The first argument to the `clone` method is a URL.
 
-In this example we're going to clone one of our test repositories from GitHub.
-You could easily substitute this with any valid http or https Git repository
-URL.
+In this example we're going to clone one of our private test repositories from
+GitHub.  You could easily substitute this with any valid http or https Git
+repository URL.
 
 ``` javascript
-var cloneURL = "https://github.com/nodegit/test";
+var cloneURL = "https://github.com/nodegit/private";
 ```
 
 ### Clone path
@@ -84,22 +103,38 @@ cloneOptions.remoteCallbacks = {
 };
 ```
 
+#### GitHub credentials for Two Factor Auth
+
+In order to authorize the clone operation, we'll need to respond to a low-level
+callback that expects credentials to be passed.
+
+This function will be attached below, the above `certificateCheck` and will
+respond back with the OAuth token.
+
+The `remoteCallbacks` object now looks like this:
+
+``` javascript
+cloneOptions.remoteCallbacks = {
+  certificateCheck: function() { return 1; },
+  credentials: function() {
+    return Git.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
+  }
+};
+```
+
 ### Invoking the clone method
 
-The way NodeGit is structured is that all [libgit2](http://libgit2.org) C
-methods are dynamically generated into C++.  Since we're taking a
-class-oriented approach, we make a top level class named `Clone`.  This class
-has a static method `clone` that we can use to bring down a repository.
-
-While it may look a bit verbose, it is symptomatic of a rigid convention.
+You can easily invoke our top-level Clone as a function passing along the three
+aforementioned arguments.
 
 ``` javascript
 var cloneRepository = Git.Clone(cloneURL, localPath, cloneOptions);
 ```
 
-Notice how we store the return value from `Clone.clone`.  This is a [Promise]()
-to represent the asynchronous operation.  It offers finer control flow by
-allowing us to capture errors and fallback if there is a clone failure.
+Notice how we store the return value from `Git.Clone`.  This is a
+[Promise](https://www.promisejs.org/) to represent the asynchronous operation.
+It offers finer control flow by allowing us to capture errors and fallback if
+there is a clone failure.
 
 ### Handling clone failure
 
