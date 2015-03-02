@@ -25,17 +25,15 @@ git_strarray *StrArrayConverter::Convert(Handle<v8::Value> val) {
 }
 
 git_strarray *StrArrayConverter::ConvertArray(Array *val) {
-  int count = val->Length();
-  char **strings = (char **)malloc(sizeof(char*) * count);
-  git_strarray *result;
+  git_strarray *result = (git_strarray *)malloc(sizeof(git_strarray*));
+  result->count = val->Length();
+  result->strings = (char **)malloc(sizeof(char*) * result->count);
 
-  for(size_t i = 0; i < count; i++) {
+  for(size_t i = 0; i < result->count; i++) {
     NanUtf8String entry(val->Get(i));
-    strings[i] = *entry;
+    result->strings[i] = strdup(*entry);
   }
 
-  result = ConstructStrArray(count, strings);
-  free(strings);
   return result;
 }
 
