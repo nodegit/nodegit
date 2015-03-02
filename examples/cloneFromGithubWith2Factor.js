@@ -36,7 +36,7 @@ var opts = {
 };
 
 fse.remove(path).then(function() {
-  nodegit.Clone.clone(repoUrl, path, opts)
+  nodegit.Clone(repoUrl, path, opts)
     .done(function(repo) {
       if (repo instanceof nodegit.Repository) {
         console.info("We cloned the repo!");
