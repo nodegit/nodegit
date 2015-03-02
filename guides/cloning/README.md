@@ -1,13 +1,11 @@
 ---
 layout: full
 menu_item: guides
-return_to:
-  "All Guides": ../
 title: Cloning Guides
 description: How to clone repositories
 ---
 
-### [HTTP/HTTPS clone](http/)
+### [HTTP/HTTPS](http/)
 
   > Emulates `git clone https://github.com/nodegit/test`
 
