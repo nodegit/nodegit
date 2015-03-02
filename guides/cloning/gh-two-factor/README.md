@@ -1,10 +1,14 @@
-Cloning
-=======
+---
+layout: full
+menu_item: guides
+title: HTTP Clone Guide
+description: How to clone with GitHub Two Factor Authorization
+---
 
 **In order to run examples, you will need to [Install NodeGit](../../install)
 first.**
 
-[Return to cloning examples](../)
+[Return to cloning guides](../)
 
 HTTP/HTTPS clone
 ----------------

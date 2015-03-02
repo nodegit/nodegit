@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: full
 menu_item: guides
 return_to:
   "All Guides": ../
