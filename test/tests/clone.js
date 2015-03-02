@@ -25,18 +25,11 @@ describe("Clone", function() {
     });
   });
 
-  it.skip("can clone with http", function() {
+  it("can clone with http", function() {
     var test = this;
-    var url = "http://github.com/nodegit/test.git";
-    var opts = {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
-        }
-      }
-    };
+    var url = "http://git.tbranyen.com/smart/site-content";
 
-    return Clone.clone(url, clonePath, opts).then(function(repo) {
+    return Clone.clone(url, clonePath).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
