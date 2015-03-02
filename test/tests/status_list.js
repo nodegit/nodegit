@@ -8,7 +8,7 @@ var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
-describe.only("StatusList", function() {
+describe("StatusList", function() {
   var Status = require(local("../../lib/status"));
   var StatusList = require(local("../../lib/status_list"));
   var Repository = require(local("../../lib/repository"));

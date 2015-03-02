@@ -7,8 +7,19 @@
       {% if field | isFixedLengthString %}
       char* {{ field.name }} = (char *)ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue()->{{ field.name }};
       {% else %}
-      {{ field.cType }} {% if not field.cppClassName|isV8Value %}*{% endif %}{{ field.name }} =
-        {% if not field.cppClassName|isV8Value %}&{% endif %}ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue()->{{ field.name }};
+      {{ field.cType }}
+        {% if not field.cppClassName|isV8Value %}
+          {% if not field.cType|isPointer %}
+        *
+          {% endif %}
+        {% endif %}
+        {{ field.name }} =
+        {% if not field.cppClassName|isV8Value %}
+          {% if not field.cType|isPointer %}
+        &
+          {% endif %}
+        {% endif %}
+        ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue()->{{ field.name }};
       {% endif %}
 
       {% partial convertToV8 field %}
