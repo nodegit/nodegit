@@ -74,7 +74,7 @@ var cloneOptions = {};
 
 Unfortunately in OS X there is a problem where libgit2 is unable to look up
 GitHub certificates correctly.  In order to bypass this problem, we're going
-to bypass the certificate check.
+to passthrough the certificate check.
 
 *Note: this is not a problem with Windows or Linux*
 
