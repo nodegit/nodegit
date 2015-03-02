@@ -188,6 +188,25 @@
         }
       ],
       [
+        "git_status_entry",
+        {
+          "fields": [
+            {
+              "type": "git_status_t",
+              "name": "status"
+            },
+            {
+              "type": "git_diff_delta *",
+              "name": "head_to_index"
+            },
+            {
+              "type": "git_diff_delta *",
+              "name": "index_to_workdir"
+            }
+          ]
+        }
+      ],
+      [
         "git_diff_perfdata",
         {
           "type": "struct",

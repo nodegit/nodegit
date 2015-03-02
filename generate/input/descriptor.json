@@ -1553,7 +1553,7 @@
       ],
       "functions": {
         "git_status_byindex": {
-          "ignore": true
+          "isAsync": false
         },
         "git_status_foreach": {
           "isAsync": true,
