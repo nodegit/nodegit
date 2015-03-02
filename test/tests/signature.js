@@ -1,9 +1,19 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
+var promisify = require("promisify-node");
+var Promise = require("nodegit-promise");
+
+// Have to wrap exec, since it has a weird callback signature.
+var exec = promisify(function(command, opts, callback) {
+  return require("child_process").exec(command, opts, callback);
+});
 
 describe("Signature", function() {
   var Signature = require(local("../../lib/signature"));
+  var Repository = require(local("../../lib/repository"));
+
+  var reposPath = local("../repos/workdir/.git");
 
   var name = "Bob Gnarley";
   var email = "gnarlee@bob.net";
@@ -32,5 +42,54 @@ describe("Signature", function() {
 
     // libgit2 does its timezone offsets backwards from javascript
     assert.equal(when.offset(), -now.getTimezoneOffset());
+  });
+
+  it("can get a default signature when no user name is set", function() {
+    var savedUserName;
+    var savedUserEmail;
+
+    var cleanUp = function() {
+      return exec("git config --global user.name \"" + savedUserName + "\"")
+      .then(function() {
+        return exec(
+          "git config --global user.email \"" +
+          savedUserEmail +
+          "\"");
+      });
+    };
+
+    return exec("git config --global user.name")
+    .then(function(userName) {
+      savedUserName = userName.trim();
+
+      return exec("git config --global user.email");
+    })
+    .then(function(userEmail) {
+      savedUserEmail = userEmail.trim();
+
+      return exec("git config --global --unset user.name");
+    })
+    .then(function() {
+      return exec("git config --global --unset user.email");
+    })
+    .then(function() {
+      return Repository.open(reposPath);
+    })
+    .then(function(repo) {
+      var sig = repo.defaultSignature();
+
+      assert.equal(sig.name(), "unknown");
+      assert.equal(sig.email(), "unknown@unknown.com");
+
+    })
+    .then(function() {
+      cleanUp();
+    })
+    .catch(function(e) {
+      cleanUp()
+      .then(function() {
+        return Promise.reject(e);
+      });
+    });
   });
 });
