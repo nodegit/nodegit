@@ -1394,6 +1394,11 @@
           "isAsync": true,
           "return": {
             "isErrorCode": true
+          },
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
           }
         },
         "git_remote_set_callbacks": {
