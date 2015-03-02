@@ -14,6 +14,12 @@ describe("Diff", function() {
   var diffFilename = "wddiff.txt";
   var diffFilepath = local("../repos/workdir", diffFilename);
 
+  var moveFromFile = "README.md";
+  var moveToFile = "MOVED_README.md";
+
+  var moveFromPath = local("../repos/workdir", moveFromFile);
+  var moveToPath = local("../repos/workdir", moveToFile);
+
   beforeEach(function() {
     var test = this;
 
@@ -46,6 +52,9 @@ describe("Diff", function() {
       return fse.writeFile(diffFilepath, "1 line\n2 line\n3 line\n\n4");
     })
     .then(function() {
+      return fse.move(moveFromPath, moveToPath);
+    })
+    .then(function() {
       return Diff.treeToWorkdirWithIndex(
         test.repository,
         test.masterCommitTree,
@@ -56,7 +65,10 @@ describe("Diff", function() {
       test.workdirDiff = workdirDiff;
     })
     .then(function() {
-      var opts = { flags: Diff.OPTION.INCLUDE_UNTRACKED };
+      var opts = {
+        flags: Diff.OPTION.INCLUDE_UNTRACKED |
+               Diff.OPTION.RECURSE_UNTRACKED_DIRS
+      };
 
       return Diff.indexToWorkdir(test.repository, test.index, opts);
     })
@@ -65,6 +77,9 @@ describe("Diff", function() {
     })
     .then(function() {
       return fse.remove(diffFilepath);
+    })
+    .then(function() {
+      return fse.move(moveToPath, moveFromPath);
     })
     .catch(function(e) {
       return fse.remove(diffFilepath)
@@ -106,14 +121,14 @@ describe("Diff", function() {
 
   it("can diff the workdir with index", function() {
     var patches = this.workdirDiff.patches();
-    assert.equal(patches.length, 1);
-    assert(patches[0].isUntracked());
+    assert.equal(patches.length, 3);
+    assert(patches[2].isUntracked());
 
-    var oldFile = patches[0].delta.oldFile();
+    var oldFile = patches[2].delta.oldFile();
     assert.equal(oldFile.path(), "wddiff.txt");
     assert.equal(oldFile.size(), 0);
 
-    var newFile = patches[0].delta.newFile();
+    var newFile = patches[2].delta.newFile();
     assert.equal(newFile.path(), "wddiff.txt");
     assert.equal(newFile.size(), 23);
   });
@@ -151,6 +166,22 @@ describe("Diff", function() {
   });
 
   it("can diff index to workdir", function() {
-    assert.equal(this.indexToWorkdirDiff.patches().length, 1);
+    assert.equal(this.indexToWorkdirDiff.patches().length, 3);
+  });
+
+  it("can find similar files in a diff", function() {
+    var diff = this.indexToWorkdirDiff;
+    var opts = {
+      flags: Diff.FIND.RENAMES |
+             Diff.FIND.RENAMES_FROM_REWRITES |
+             Diff.FIND.FOR_UNTRACKED
+    };
+
+    assert.equal(diff.patches().length, 3);
+
+    diff.findSimilar(opts).then(function() {
+      // Renamed file now treated as one diff, so 3 patches -> 2
+      assert.equal(diff.patches().length, 2);
+    });
   });
 });

@@ -524,7 +524,20 @@
           "ignore": true
         },
         "git_diff_find_similar": {
-          "ignore": true
+          "args": {
+            "diff": {
+              "isSelf": true
+            },
+            "options": {
+              "isOptional": true
+            }
+          },
+          "return": {
+            "cppClassName": "Number",
+            "jsClassName": "Number",
+            "isErrorCode": true
+          },
+          "isAsync": true
         },
         "git_diff_foreach": {
           "ignore": true
@@ -639,12 +652,12 @@
       }
     },
     "diff_find_options": {
+      "hasConstructor": true,
       "fields": {
         "git_diff_similarity_metric": {
           "ignore": true
         }
-      },
-      "ignore": true
+      }
     },
     "diff_format_email_options": {
       "ignore": true
