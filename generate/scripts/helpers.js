@@ -324,6 +324,9 @@ var Helpers = {
       }
     }).value();
 
+    if ("git_" + typeDef.typeName == fnDef.cFunctionName) {
+      fnDef.useAsOnRootProto = true;
+    }
     _.merge(fnDef, _.omit(fnOverrides, "args", "return"));
   },
 

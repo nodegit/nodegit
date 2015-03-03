@@ -66,6 +66,29 @@ var importExtension = function(name) {
 //must go last!
 require("./enums");
 
+/* jshint ignore:start */
+{% each . as idef %}
+  {% if idef.type != "enum" %}
+    {% each idef.functions as fn %}
+
+      {% if fn.useAsOnRootProto %}
+        // Inherit directly from the original {{idef.jsClassName}} object.
+        _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}.__proto__ =
+          _{{ idef.jsClassName }};
+
+        // Ensure we're using the correct prototype.
+        _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}.prototype =
+          _{{ idef.jsClassName }}.prototype;
+
+        // Assign the function as the root
+        rawApi.{{idef.jsClassName}} =
+          _{{ idef.jsClassName }}.{{ fn.jsFunctionName }};
+      {% endif %}
+    {% endeach %}
+  {% endif %}
+{% endeach %}
+/* jshint ignore:end */
+
 // Wrap asynchronous methods to return promises.
 promisify(exports);
 
