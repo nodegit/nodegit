@@ -171,4 +171,43 @@ describe("Remote", function() {
     });
   });
 
+  it("cannot push to a repository", function() {
+    this.timeout(5000);
+    var repo = this.repository;
+    var branch = "should-not-exist";
+    return Remote.lookup(repo, "origin")
+      .then(function(remote) {
+        remote.setCallbacks({
+          credentials: function(url, userName) {
+            if (url.indexOf("https") === -1) {
+              return NodeGit.Cred.sshKeyFromAgent(userName);
+            } else {
+              return NodeGit.Cred.userpassPlaintextNew(userName, "");
+            }
+          },
+          certificateCheck: function() {
+            return 1;
+          }
+        });
+        return remote;
+      })
+      .then(function(remote) {
+        var ref = "refs/heads/" + branch;
+        var refs = [ref + ":" + ref];
+        var signature = repo.defaultSignature();
+        return remote.push(refs, null, signature,
+          "Pushed '" + branch + "' for test");
+      })
+      .then(function() {
+        return Promise.reject(
+          new Error("should not be able to push to the repository"));
+      }, function(err) {
+        if (err.message.indexOf(401) === -1) {
+          return Promise.reject(
+            new Error("failed to return unauthorized status code"));
+        } else {
+          return Promise.resolve();
+        }
+      });
+  });
 });
