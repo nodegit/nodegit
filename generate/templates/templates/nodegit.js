@@ -70,8 +70,8 @@ require("./enums");
 {% each . as idef %}
   {% if idef.type != "enum" %}
     {% each idef.functions as fn %}
-
       {% if fn.useAsOnRootProto %}
+
         // Inherit directly from the original {{idef.jsClassName}} object.
         _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}.__proto__ =
           _{{ idef.jsClassName }};
@@ -83,6 +83,7 @@ require("./enums");
         // Assign the function as the root
         rawApi.{{idef.jsClassName}} =
           _{{ idef.jsClassName }}.{{ fn.jsFunctionName }};
+
       {% endif %}
     {% endeach %}
   {% endif %}
