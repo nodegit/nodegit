@@ -25,7 +25,7 @@ git_strarray *StrArrayConverter::Convert(Handle<v8::Value> val) {
 }
 
 git_strarray *StrArrayConverter::ConvertArray(Array *val) {
-  git_strarray *result = (git_strarray *)malloc(sizeof(git_strarray*));
+  git_strarray *result = (git_strarray *)malloc(sizeof(git_strarray));
   result->count = val->Length();
   result->strings = (char **)malloc(sizeof(char*) * result->count);
 
@@ -47,7 +47,7 @@ git_strarray* StrArrayConverter::ConvertString(Handle<String> val) {
 }
 
 git_strarray *StrArrayConverter::ConstructStrArray(int argc, char** argv) {
-  git_strarray *result = (git_strarray *)malloc(sizeof(git_strarray*));
+  git_strarray *result = (git_strarray *)malloc(sizeof(git_strarray));
   result->count = argc;
   result->strings = (char **)malloc(sizeof(char*) * result->count);
 
