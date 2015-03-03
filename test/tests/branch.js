@@ -4,8 +4,9 @@ var Promise = require("nodegit-promise");
 var local = path.join.bind(path, __dirname);
 
 describe("Branch", function() {
-  var Repository = require(local("../../lib/repository"));
-  var Branch = require(local("../../lib/branch"));
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  var Branch = NodeGit.Branch;
   var branchName = "test-branch";
   var fullBranchName = "refs/heads/" + branchName;
 

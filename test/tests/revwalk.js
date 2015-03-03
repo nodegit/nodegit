@@ -3,9 +3,10 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Revwalk", function() {
-  var Repository = require(local("../../lib/repository"));
-  var Revwalk = require(local("../../lib/revwalk"));
-  var Oid = require(local("../../lib/oid"));
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  var Revwalk = NodeGit.Revwalk;
+  var Oid = NodeGit.Oid;
 
   var reposPath = local("../repos/workdir/.git");
 

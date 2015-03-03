@@ -3,8 +3,9 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("TreeEntry", function() {
-  var Repository = require(local("../../lib/repository"));
-  var Tree = require(local("../../lib/tree"));
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  var Tree = NodeGit.Tree;
 
   var reposPath = local("../repos/workdir/.git");
   var oid = "5716e9757886eaf38d51c86b192258c960d9cfea";

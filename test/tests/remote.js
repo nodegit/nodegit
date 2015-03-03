@@ -5,8 +5,8 @@ var local = path.join.bind(path, __dirname);
 
 describe("Remote", function() {
   var NodeGit = require(local("../../"));
-  var Repository = require(local("../../lib/repository"));
-  var Remote = require(local("../../lib/remote"));
+  var Repository = NodeGit.Repository;
+  var Remote = NodeGit.Remote;
 
   var reposPath = local("../repos/workdir/.git");
   var url = "https://github.com/nodegit/test";

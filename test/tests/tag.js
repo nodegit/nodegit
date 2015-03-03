@@ -1,14 +1,15 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
+var Promise = require("nodegit-promise");
 
 describe("Tag", function() {
-  var Repository = require(local("../../lib/repository"));
-  var Tag = require(local("../../lib/tag"));
-  var Obj = require(local("../../lib/object"));
-  var Oid = require(local("../../lib/oid"));
-  var Reference = require(local("../../lib/reference"));
-  var Promise = require("nodegit-promise");
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  var Tag = NodeGit.Tag;
+  var Obj = NodeGit.Object;
+  var Oid = NodeGit.Oid;
+  var Reference = NodeGit.Reference;
 
   var reposPath = local("../repos/workdir/.git");
   var tagName = "annotated-tag";

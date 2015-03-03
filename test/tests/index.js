@@ -10,8 +10,9 @@ var writeFile = promisify(function(filename, data, callback) {
 });
 
 describe("Index", function() {
-  var Repository = require(local("../../lib/repository"));
-
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  
   var reposPath = local("../repos/workdir/.git");
 
   beforeEach(function() {

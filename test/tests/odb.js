@@ -3,9 +3,10 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Odb", function() {
-  var Repository = require(local("../../lib/repository"));
-  var Oid = require(local("../../lib/oid"));
-  var Obj = require(local("../../lib/object"));
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  var Oid = NodeGit.Oid;
+  var Obj = NodeGit.Object;
 
   var reposPath = local("../repos/workdir/.git");
 

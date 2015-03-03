@@ -3,7 +3,8 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Oid", function() {
-  var Oid = require(local("../../lib/oid"));
+  var NodeGit = require(local("../../"));
+  var Oid = NodeGit.Oid;
 
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 

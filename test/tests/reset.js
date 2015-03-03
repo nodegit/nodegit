@@ -5,8 +5,9 @@ var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
 describe("Reset", function() {
-  var Repository = require(local("../../lib/repository"));
-  var Reset = require(local("../../lib/reset"));
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  var Reset = NodeGit.Reset;
 
   var reposPath = local("../repos/workdir/.git");
   var currentCommitOid = "32789a79e71fbc9e04d3eff7425e1771eb595150";

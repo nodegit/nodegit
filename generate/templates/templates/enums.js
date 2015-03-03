@@ -4,7 +4,8 @@ NodeGit.Enums = {};
 {% each . as enumerable %}
   {% if not enumerable.ignore %}
     {% if enumerable.type == "enum" %}
-      NodeGit.{{ enumerable.owner }}.{{ enumerable.JsName }} = {
+      NodeGit.{{ enumerable.owner }}.{{ enumerable.JsName }} =
+        NodeGit.{{ enumerable.owner }}.__proto__.{{ enumerable.JsName }} = {
         {% each enumerable.values as value %}
           {{ value.JsName }}: {{ value.value }},
         {% endeach %}

@@ -9,9 +9,10 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 describe("StatusList", function() {
-  var Status = require(local("../../lib/status"));
-  var StatusList = require(local("../../lib/status_list"));
-  var Repository = require(local("../../lib/repository"));
+  var NodeGit = require(local("../../"));
+  var Repository = NodeGit.Repository;
+  var Status = NodeGit.Status;
+  var StatusList = NodeGit.StatusList;
 
   var reposPath = local("../repos/workdir/.git");
 

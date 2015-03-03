@@ -3,9 +3,11 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Blob", function() {
-  var Oid = require(local("../../lib/oid"));
-  var Repository = require(local("../../lib/repository"));
-  var FileMode = require(local("../../lib/tree_entry")).FILEMODE;
+  var NodeGit = require(local("../../"));
+
+  var Oid = NodeGit.Oid;
+  var Repository = NodeGit.Repository;
+  var FileMode = NodeGit.TreeEntry.FILEMODE;
 
   var reposPath = local("../repos/workdir/.git");
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
