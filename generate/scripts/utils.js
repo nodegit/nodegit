@@ -21,19 +21,13 @@ var util = {
   },
 
   writeFile: function(file, content) {
-    try {
-      var file = local(file);
-      if (typeof content == "object") {
-        content = JSON.stringify(content, null, 2)
-      }
+    var file = local(file);
+    if (typeof content == "object") {
+      content = JSON.stringify(content, null, 2)
+    }
 
-      fse.ensureFileSync(file);
-      fse.writeFileSync(file, content);
-      return true;
-    }
-    catch (exception) {
-      return false;
-    }
+    fse.ensureFileSync(file);
+    fse.writeFileSync(file, content);
   },
 
   titleCase: function(str) {

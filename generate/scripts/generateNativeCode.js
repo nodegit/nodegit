@@ -99,7 +99,7 @@ module.exports = function generateNativeCode() {
   });
 
 
-  fse.remove(path.resolve(__dirname, "../../src")).then(function() {
+  return fse.remove(path.resolve(__dirname, "../../src")).then(function() {
     return fse.remove(path.resolve(__dirname, "../../include"));
   }).then(function() {
     return fse.copy(path.resolve(__dirname, "../templates/manual/"), path.resolve(__dirname, "../../"));

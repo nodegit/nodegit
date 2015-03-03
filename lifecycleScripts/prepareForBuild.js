@@ -1,12 +1,9 @@
 var Promise = require("nodegit-promise");
 var cp = require("child_process");
-var path = require("path");
 
-var local = path.join.bind(path, __dirname);
-
-var check = require(local("checkPrepared")).checkGenerated;
-var retrieve = require(local("retrieveExternalDependencies"));
-var generate = require(local("../generate"));
+var retrieve = require("./retrieveExternalDependencies");
+var check = require("./checkPrepared").checkGenerated;
+var generate = require("../generate");
 
 module.exports = function prepareForBuild() {
 
@@ -32,28 +29,19 @@ module.exports = function prepareForBuild() {
 function doGenerate() {
   console.info("[nodegit] Detecting generated code.");
   return check().then(function(allThere) {
-    if (allThere) {
-      console.info("[nodegit] Generated code is intact.");
-      return Promise.resolve();
-    }
-    else {
-      console.info("[nodegit] Generated code is missing or incomplete, " +
-        "regenerating now.");
-
-      return new Promise(function(resolve, reject) {
-        try {
-          generate();
-          console.info("[nodegit] Code regenerated.");
-          resolve();
-        }
-        catch (e) {
-          console.info("[nodegit] Error generating code.");
-          console.info(e);
-          //console.info(stderr);
-          reject(e);
-        }
-      });
-    }
+    return new Promise(function(resolve, reject) {
+      try {
+        generate();
+        console.info("[nodegit] Code regenerated.");
+        resolve();
+      }
+      catch (e) {
+        console.info("[nodegit] Error generating code.");
+        console.info(e);
+        //console.info(stderr);
+        reject(e);
+      }
+    });
   });
 }
 // Called on the command line
