@@ -134,7 +134,7 @@ describe("Reset", function() {
       assert(resetContents == currentCommitContents);
       assert(resetContents != previousCommitContents);
 
-      return Reset.reset(test.repo, test.currentCommit, Reset.TYPE.HARD);
+      return Reset(test.repo, test.currentCommit, Reset.TYPE.HARD);
     });
   });
 

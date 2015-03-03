@@ -108,13 +108,12 @@ describe("Commit", function() {
     })
     .then(function(parentResult) {
       parent = parentResult;
-
       return Promise.all([
         NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
         NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
       ]);
     })
-    .then(function(signatures){
+    .then(function(signatures) {
       var author = signatures[0];
       var committer = signatures[1];
 

@@ -1,5 +1,7 @@
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
+var path = require("path");
+var local = path.join.bind(path, __dirname);
 var rawApi;
 
 // Attempt to load the production release first, if it fails fall back to the
@@ -52,9 +54,25 @@ exports.__proto__ = rawApi;
 
 var importExtension = function(name) {
   try {
-    require("./" + name);
-  } catch (unhandledException) {}
+    require(local(name));
+  }
+  catch (unhandledException) {
+    if (unhandledException.code != "MODULE_NOT_FOUND") {
+      throw unhandledException;
+    }
+  }
 };
+
+// Load up utils
+rawApi.Utils = {};
+require(local("utils", "lookup_wrapper"));
+require(local("utils", "normalize_options"));
+
+// Load up extra types;
+require(local("convenient_hunk"));
+require(local("convenient_patch"));
+require(local("status_file"));
+require(local("enums.js"));
 
 // Import extensions
 {% each %}
@@ -62,10 +80,6 @@ var importExtension = function(name) {
     importExtension("{{ filename }}");
   {% endif %}
 {% endeach %}
-
-//must go last!
-require("./enums");
-
 /* jshint ignore:start */
 {% each . as idef %}
   {% if idef.type != "enum" %}
