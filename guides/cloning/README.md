@@ -5,6 +5,10 @@ title: Cloning Guides
 description: How to clone repositories
 ---
 
+[Return to all guides](../)
+
+* * *
+
 ### [HTTP/HTTPS](http/)
 
   > Emulates `git clone https://github.com/nodegit/test`

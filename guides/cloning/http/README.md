@@ -10,6 +10,8 @@ first.**
 
 [Return to cloning guides](../)
 
+* * *
+
 HTTP/HTTPS
 ----------
 

@@ -1,4 +1,4 @@
-// Require in NodeGit, since we want to use the local copy, we"re using a
+// Require in NodeGit, since we want to use the local copy, we're using a
 // relative path.  In your project, you will use:
 //
 // var NodeGit = require("nodegit");

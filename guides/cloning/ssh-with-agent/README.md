@@ -2,7 +2,7 @@
 layout: full
 menu_item: guides
 title: SSH w/ Agent Guide
-description: How to clone SSH with an agent
+description: How to clone with SSH using an agent
 ---
 
 **In order to run examples, you will need to [Install NodeGit](../../install)
@@ -10,8 +10,10 @@ first.**
 
 [Return to cloning guides](../)
 
-SSH clone
-----------------
+* * *
+
+SSH w/ Agent
+------------
 
 This guide explains how to clone a repository, and in the case of failure,
 attempt to open the existing path.
@@ -38,11 +40,11 @@ var Git = require("nodegit");
 The first argument to the `clone` method is a URL.
 
 In this example we're going to clone one of our test repositories from GitHub.
-You could easily substitute this with any valid http or https Git repository
-URL.
+You could easily substitute this with any valid Git repository that is
+accessible by SSH.
 
 ``` javascript
-var cloneURL = "https://github.com/nodegit/test";
+var cloneURL = "git@github.com:nodegit/test";
 ```
 
 ### Clone path
@@ -84,6 +86,31 @@ cloneOptions.remoteCallbacks = {
 };
 ```
 
+#### SSH credentials via agent
+
+In order to authorize the clone operation, we'll need to respond to a low-level
+callback that expects credentials to be passed.
+
+This function will be attached below the above `certificateCheck`, and will
+respond back with the credentials from the agent.  You'll notice we handle
+the second argument passed to credentials, `userName`.
+
+The `remoteCallbacks` object now looks like this:
+
+``` javascript
+cloneOptions.remoteCallbacks = {
+  certificateCheck: function() { return 1; },
+  credentials: function(url, userName) {
+    return Git.Cred.sshKeyFromAgent(userName);
+  }
+};
+```
+
+There are many other methods you can use to authorize the SSH connection without
+using an agent.  For now they are documented in the [unit tests](
+https://github.com/nodegit/nodegit/blob/master/test/tests/clone.js
+).
+
 ### Invoking the clone method
 
 You can easily invoke our top-level Clone as a function passing along the three
@@ -124,4 +151,3 @@ cloneRepository.catch(errorAndAttemptOpen)
     console.log("Is the repository bare? %s", Boolean(repository.isBare()));
   });
 ```
-

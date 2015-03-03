@@ -10,6 +10,8 @@ first.**
 
 [Return to cloning guides](../)
 
+* * *
+
 GitHub Two Factor Auth
 ----------------------
 
@@ -108,7 +110,7 @@ cloneOptions.remoteCallbacks = {
 In order to authorize the clone operation, we'll need to respond to a low-level
 callback that expects credentials to be passed.
 
-This function will be attached below, the above `certificateCheck` and will
+This function will be attached below the above `certificateCheck`, and will
 respond back with the OAuth token.
 
 The `remoteCallbacks` object now looks like this:
