@@ -5,7 +5,7 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Clone", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Clone = NodeGit.Clone;
 

@@ -9,7 +9,7 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 describe("Reference", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Reference = NodeGit.Reference;
 

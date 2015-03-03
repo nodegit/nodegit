@@ -10,11 +10,11 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 describe("Signature", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Signature = NodeGit.Signature;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
 
   var name = "Bob Gnarley";
   var email = "gnarlee@bob.net";

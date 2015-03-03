@@ -6,12 +6,12 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Repository", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Index = NodeGit.Index;
   var Signature = NodeGit.Signature;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
   var newRepo = local("../repos/newrepo");
 
   beforeEach(function() {

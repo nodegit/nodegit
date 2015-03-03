@@ -3,12 +3,12 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Attr", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Attr = NodeGit.Attr;
   var Status = NodeGit.Status;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
 
   beforeEach(function() {
     var test = this;

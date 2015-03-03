@@ -3,12 +3,12 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Checkout", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Checkout = NodeGit.Checkout;
 
   var packageJsonOid = "0fa56e90e096a4c24c785206b826ab914ea3de1e";
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
 
   beforeEach(function() {
     var test = this;

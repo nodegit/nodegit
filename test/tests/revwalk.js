@@ -3,12 +3,12 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Revwalk", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Revwalk = NodeGit.Revwalk;
   var Oid = NodeGit.Oid;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(60000);

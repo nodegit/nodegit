@@ -5,11 +5,11 @@ var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
 describe("Reset", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Reset = NodeGit.Reset;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
   var currentCommitOid = "32789a79e71fbc9e04d3eff7425e1771eb595150";
   var previousCommitOid = "c82fb078a192ea221c9f1093c64321c60d64aa0d";
   var filePath = "package.json";

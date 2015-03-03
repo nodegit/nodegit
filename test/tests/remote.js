@@ -4,11 +4,11 @@ var Promise = require("nodegit-promise");
 var local = path.join.bind(path, __dirname);
 
 describe("Remote", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Remote = NodeGit.Remote;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
   var url = "https://github.com/nodegit/test";
   var url2 = "https://github.com/nodegit/test2";
 

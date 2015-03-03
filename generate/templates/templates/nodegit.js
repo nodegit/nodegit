@@ -1,7 +1,5 @@
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
-var path = require("path");
-var local = path.join.bind(path, __dirname);
 var rawApi;
 
 // Attempt to load the production release first, if it fails fall back to the
@@ -54,7 +52,7 @@ exports.__proto__ = rawApi;
 
 var importExtension = function(name) {
   try {
-    require(local(name));
+    require("./" + name);
   }
   catch (unhandledException) {
     if (unhandledException.code != "MODULE_NOT_FOUND") {
@@ -65,14 +63,14 @@ var importExtension = function(name) {
 
 // Load up utils
 rawApi.Utils = {};
-require(local("utils", "lookup_wrapper"));
-require(local("utils", "normalize_options"));
+require("./utils/lookup_wrapper");
+require("./utils/normalize_options");
 
 // Load up extra types;
-require(local("convenient_hunk"));
-require(local("convenient_patch"));
-require(local("status_file"));
-require(local("enums.js"));
+require("./convenient_hunk");
+require("./convenient_patch");
+require("./status_file");
+require("./enums.js");
 
 // Import extensions
 {% each %}

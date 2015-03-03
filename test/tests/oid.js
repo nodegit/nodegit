@@ -1,9 +1,7 @@
 var assert = require("assert");
-var path = require("path");
-var local = path.join.bind(path, __dirname);
 
 describe("Oid", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Oid = NodeGit.Oid;
 
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";

@@ -4,14 +4,14 @@ var local = path.join.bind(path, __dirname);
 var Promise = require("nodegit-promise");
 
 describe("Tag", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Tag = NodeGit.Tag;
   var Obj = NodeGit.Object;
   var Oid = NodeGit.Oid;
   var Reference = NodeGit.Reference;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
   var tagName = "annotated-tag";
   var tagFullName = "refs/tags/" + tagName;
   var tagOid = "dc800017566123ff3c746b37284a24a66546667e";

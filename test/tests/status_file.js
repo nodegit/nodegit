@@ -1,9 +1,7 @@
 var assert = require("assert");
-var path = require("path");
-var local = path.join.bind(path, __dirname);
 
 describe("StatusFile", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Status = NodeGit.Status;
   var StatusFile = NodeGit.StatusFile;
 
