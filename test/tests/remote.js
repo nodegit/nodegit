@@ -203,8 +203,7 @@ describe("Remote", function() {
           new Error("should not be able to push to the repository"));
       }, function(err) {
         if (err.message.indexOf(401) === -1) {
-          return Promise.reject(
-            new Error("failed to return unauthorized status code"));
+          throw err;
         } else {
           return Promise.resolve();
         }
