@@ -9,10 +9,11 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 describe("Status", function() {
-  var Status = require(local("../../lib/status"));
-  var Repository = require(local("../../lib/repository"));
+  var NodeGit = require("../../");
+  var Repository = NodeGit.Repository;
+  var Status = NodeGit.Status;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
 
   before(function() {
     var test = this;
@@ -74,7 +75,7 @@ describe("Status", function() {
     var fileContent = "new file from status tests";
     var repo = this.repository;
     var filePath = path.join(repo.workdir(), fileName);
-    return exec("git clean -xdf", {cwd: local("../repos/workdir")})
+    return exec("git clean -xdf", {cwd: reposPath})
       .then(function() {
         return fse.writeFile(filePath, fileContent);
       })

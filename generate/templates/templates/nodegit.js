@@ -53,8 +53,24 @@ exports.__proto__ = rawApi;
 var importExtension = function(name) {
   try {
     require("./" + name);
-  } catch (unhandledException) {}
+  }
+  catch (unhandledException) {
+    if (unhandledException.code != "MODULE_NOT_FOUND") {
+      throw unhandledException;
+    }
+  }
 };
+
+// Load up utils
+rawApi.Utils = {};
+require("./utils/lookup_wrapper");
+require("./utils/normalize_options");
+
+// Load up extra types;
+require("./convenient_hunk");
+require("./convenient_patch");
+require("./status_file");
+require("./enums.js");
 
 // Import extensions
 {% each %}
@@ -62,9 +78,29 @@ var importExtension = function(name) {
     importExtension("{{ filename }}");
   {% endif %}
 {% endeach %}
+/* jshint ignore:start */
+{% each . as idef %}
+  {% if idef.type != "enum" %}
+    {% each idef.functions as fn %}
+      {% if fn.useAsOnRootProto %}
 
-//must go last!
-require("./enums");
+        // Inherit directly from the original {{idef.jsClassName}} object.
+        _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}.__proto__ =
+          _{{ idef.jsClassName }};
+
+        // Ensure we're using the correct prototype.
+        _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}.prototype =
+          _{{ idef.jsClassName }}.prototype;
+
+        // Assign the function as the root
+        rawApi.{{idef.jsClassName}} =
+          _{{ idef.jsClassName }}.{{ fn.jsFunctionName }};
+
+      {% endif %}
+    {% endeach %}
+  {% endif %}
+{% endeach %}
+/* jshint ignore:end */
 
 // Wrap asynchronous methods to return promises.
 promisify(exports);

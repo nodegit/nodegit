@@ -4,11 +4,11 @@ var Promise = require("nodegit-promise");
 var local = path.join.bind(path, __dirname);
 
 describe("Remote", function() {
-  var NodeGit = require(local("../../"));
-  var Repository = require(local("../../lib/repository"));
-  var Remote = require(local("../../lib/remote"));
+  var NodeGit = require("../../");
+  var Repository = NodeGit.Repository;
+  var Remote = NodeGit.Remote;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
   var url = "https://github.com/nodegit/test";
   var url2 = "https://github.com/nodegit/test2";
 
@@ -203,8 +203,7 @@ describe("Remote", function() {
           new Error("should not be able to push to the repository"));
       }, function(err) {
         if (err.message.indexOf(401) === -1) {
-          return Promise.reject(
-            new Error("failed to return unauthorized status code"));
+          throw err;
         } else {
           return Promise.resolve();
         }

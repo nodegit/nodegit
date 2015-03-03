@@ -6,10 +6,11 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Diff", function() {
-  var Repository = require(local("../../lib/repository"));
-  var Diff = require(local("../../lib/diff"));
+  var NodeGit = require("../../");
+  var Repository = NodeGit.Repository;
+  var Diff = NodeGit.Diff;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
   var diffFilename = "wddiff.txt";
   var diffFilepath = local("../repos/workdir", diffFilename);

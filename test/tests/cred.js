@@ -3,7 +3,7 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 describe("Cred", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   
   var sshPublicKey = local("../id_rsa.pub");
   var sshPrivateKey = local("../id_rsa");

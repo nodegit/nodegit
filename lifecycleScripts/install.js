@@ -3,11 +3,9 @@ var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
 
-var local = path.join.bind(path, __dirname);
-
-var checkPrepared = require(local("checkPrepared"));
+var checkPrepared = require("./checkPrepared");
 var whichNativeNodish = require("which-native-nodish");
-var prepareForBuild = require(local("prepareForBuild"));
+var prepareForBuild = require("./prepareForBuild");
 
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
@@ -15,7 +13,7 @@ var exec = promisify(function(command, opts, callback) {
 var nwVersion = null;
 var asVersion = null;
 
-return whichNativeNodish(local(".."))
+return whichNativeNodish("..")
   .then(function(results) {
     nwVersion = results.nwVersion;
     asVersion = results.asVersion;
@@ -29,7 +27,7 @@ return whichNativeNodish(local(".."))
       console.info("[nodegit] Must build for atom-shell");
       return checkAndBuild();
     }
-    if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
+    if (fs.existsSync("../.didntcomefromthenpmregistry")) {
       return checkAndBuild();
     }
     if (process.env.BUILD_DEBUG) {
@@ -85,7 +83,7 @@ function build() {
   }
 
   var opts = {
-    cwd: local(".."),
+    cwd: ".",
     maxBuffer: Number.MAX_VALUE
   };
 

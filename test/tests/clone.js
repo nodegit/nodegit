@@ -5,9 +5,9 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Clone", function() {
-  var Repository = require(local("../../lib/repository"));
-  var clone = require(local("../../lib/clone"));
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
+  var Repository = NodeGit.Repository;
+  var Clone = NodeGit.Clone;
 
   var clonePath = local("../repos/clone");
 
@@ -29,7 +29,7 @@ describe("Clone", function() {
     var test = this;
     var url = "http://git.tbranyen.com/smart/site-content";
 
-    return clone(url, clonePath).then(function(repo) {
+    return Clone(url, clonePath).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -46,7 +46,24 @@ describe("Clone", function() {
       }
     };
 
-    return clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+      test.repository = repo;
+    });
+  });
+
+  it("can clone using nested function", function() {
+    var test = this;
+    var url = "https://github.com/nodegit/test.git";
+    var opts = {
+      remoteCallbacks: {
+        certificateCheck: function() {
+          return 1;
+        }
+      }
+    };
+
+    return Clone.clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -66,7 +83,7 @@ describe("Clone", function() {
       }
     };
 
-    return clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -90,7 +107,7 @@ describe("Clone", function() {
       }
     };
 
-    return clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -107,7 +124,7 @@ describe("Clone", function() {
       }
     };
 
-    return clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function(repo) {
       test.repository = repo;
       assert.ok(repo instanceof Repository);
     });
@@ -118,7 +135,7 @@ describe("Clone", function() {
     var prefix = process.platform === "win32" ? "" : "file://";
     var url = prefix + local("../repos/empty");
 
-    return clone(url, clonePath).then(function(repo) {
+    return Clone(url, clonePath).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -127,7 +144,7 @@ describe("Clone", function() {
   it("will not segfault when accessing a url without username", function() {
     var url = "https://github.com/nodegit/private";
 
-    return clone(url, clonePath, {
+    return Clone(url, clonePath, {
       remoteCallbacks: {
         certificateCheck: function() {
           return 1;

@@ -6,10 +6,10 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Commit", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
 
-  var reposPath = local("../repos/workdir/.git");
+  var reposPath = local("../repos/workdir");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
 
   function reinitialize(test) {
@@ -108,13 +108,12 @@ describe("Commit", function() {
     })
     .then(function(parentResult) {
       parent = parentResult;
-
       return Promise.all([
         NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
         NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
       ]);
     })
-    .then(function(signatures){
+    .then(function(signatures) {
       var author = signatures[0];
       var committer = signatures[1];
 

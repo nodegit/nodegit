@@ -7,7 +7,7 @@ var local = path.join.bind(path, __dirname);
 fse.ensureDir = promisify(fse.ensureDir);
 
 describe("Merge", function() {
-  var NodeGit = require(local("../../"));
+  var NodeGit = require("../../");
 
   var reposPath = local("../repos/merge");
   var ourBranchName = "ours";
