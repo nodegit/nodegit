@@ -24,7 +24,7 @@ git_strarray *StrArrayConverter::Convert(Handle<v8::Value> val) {
   }
 }
 
-static git_strarray * AllocGitStrArray(const size_t count) {
+static git_strarray * StrArrayConverter::AllocStrArray(const size_t count) {
   const size_t size = sizeof(git_strarray) + (sizeof(char*) * count);
   uint8_t* memory = reinterpret_cast<uint8_t*>(malloc(size));
   git_strarray *result = reinterpret_cast<git_strarray *>(memory);
@@ -34,7 +34,7 @@ static git_strarray * AllocGitStrArray(const size_t count) {
 }
 
 git_strarray *StrArrayConverter::ConvertArray(Array *val) {
-  git_strarray *result = AllocGitStrArray(val->Length());
+  git_strarray *result = AllocStrArray(val->Length());
 
   for(size_t i = 0; i < result->count; i++) {
     NanUtf8String entry(val->Get(i));
@@ -54,7 +54,7 @@ git_strarray* StrArrayConverter::ConvertString(Handle<String> val) {
 }
 
 git_strarray *StrArrayConverter::ConstructStrArray(int argc, char** argv) {
-  git_strarray *result = AllocGitStrArray(argc);
+  git_strarray *result = AllocStrArray(argc);
 
   for(size_t i = 0; i < result->count; i++) {
     result->strings[i] = strdup(argv[i]);

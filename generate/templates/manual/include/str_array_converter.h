@@ -16,6 +16,7 @@ class StrArrayConverter {
   private:
     static git_strarray *ConvertArray(Array *val);
     static git_strarray *ConvertString(Handle<String> val);
+    static git_strarray *AllocStrArray(const size_t count);
     static git_strarray *ConstructStrArray(int argc, char** argv);
 };
 
