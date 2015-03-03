@@ -50,29 +50,18 @@ catch (e) {
 // Set the exports prototype to the raw API.
 exports.__proto__ = rawApi;
 
+var importExtension = function(name) {
+  try {
+    require("./" + name);
+  } catch (unhandledException) {}
+};
+
 // Import extensions
-require("./attr");
-require("./blob");
-require("./clone");
-require("./checkout");
-require("./commit");
-require("./diff");
-require("./index");
-require("./merge");
-require("./object");
-require("./odb");
-require("./odb_object");
-require("./oid");
-require("./patch");
-require("./reference");
-require("./remote");
-require("./revwalk");
-require("./repository");
-require("./revwalk");
-require("./signature");
-require("./status");
-require("./tree");
-require("./tree_entry");
+{% each %}
+  {% if type != "enum" %}
+    importExtension("{{ filename }}");
+  {% endif %}
+{% endeach %}
 
 //must go last!
 require("./enums");
