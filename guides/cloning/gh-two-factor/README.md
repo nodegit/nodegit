@@ -5,7 +5,7 @@ title: GitHub Two Factor Auth Guide
 description: How to clone with GitHub Two Factor Authorization
 ---
 
-**In order to run examples, you will need to [Install NodeGit](../../install)
+**In order to run examples, you will need to [Install NodeGit](../../install/basics)
 first.**
 
 [Return to cloning guides](../)
@@ -59,8 +59,7 @@ GitHub repository they will immediately revoke it.
 The first argument to the `clone` method is a URL.
 
 In this example we're going to clone one of our private test repositories from
-GitHub.  You could easily substitute this with any valid http or https Git
-repository URL.
+GitHub.  This must be an `https` protocol URL for the clone to work.
 
 ``` javascript
 var cloneURL = "https://github.com/nodegit/private";

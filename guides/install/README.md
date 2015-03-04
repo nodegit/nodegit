@@ -1,7 +1,7 @@
 ---
 layout: full
 menu_item: guides
-title: Install Guide
+title: Install Guides
 description: How to install NodeGit
 ---
 
@@ -9,35 +9,18 @@ description: How to install NodeGit
 
 * * *
 
-From NPM
---------
+### [Basics](basics/)
 
-To install from NPM you can issue the following command:
+  Learn how to install NodeGit
 
-``` bash
-npm install nodegit
-```
+### [From source](from-source/)
 
-From GitHub
------------
+  Learn how to build NodeGit from source
 
-This is required to contribute or run the examples.
+### [Atom Shell](atom-shell/)
 
-Start by cloning the repository, chances are you will only need the latest
-commit, so you can pass the `--depth` flag to make a shallow clone:
+  Learn how to use NodeGit with Atom Shell
 
-``` bash
-git clone --depth=1 https://github.com/nodegit/nodegit
-```
+### [Nw.js](nw.js/)
 
-Change your directory into the newly created nodegit folder.
-
-``` bash
-cd nodegit
-```
-
-Now you can issue the local installation command:
-
-``` bash
-npm install
-```
+  Learn how to use NodeGit with NW.js

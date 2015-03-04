@@ -5,7 +5,7 @@ title: SSH w/ Agent Guide
 description: How to clone with SSH using an agent
 ---
 
-**In order to run examples, you will need to [Install NodeGit](../../install)
+**In order to run examples, you will need to [Install NodeGit](../../install/basics)
 first.**
 
 [Return to cloning guides](../)
