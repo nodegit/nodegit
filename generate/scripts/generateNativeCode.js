@@ -143,7 +143,7 @@ module.exports = function generateNativeCode() {
           );
         });
       }
-    })
+    }, function() {})
   }).catch(console.log);
 
 };
