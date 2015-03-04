@@ -47,37 +47,22 @@ fse.remove(path.resolve(__dirname, repoDir))
 .then(function() {
   return nodegit.Remote.create(repository, "origin",
     "git@github.com:nodegit/push-example.git")
-    .then(function(remote) {
-      remote.connect(nodegit.Enums.DIRECTION.PUSH);
+  .then(function(remote) {
+    remote.connect(nodegit.Enums.DIRECTION.PUSH);
 
-      var push;
-
-      // We need to set the auth on the remote, not the push object
-      remote.setCallbacks({
-        credentials: function(url, userName) {
-          return nodegit.Cred.sshKeyFromAgent(userName);
-        }
-      });
-
-      // Create the push object for this remote
-      return remote.push(
-        ["refs/heads/master:refs/heads/master"],
-        null,
-        repository.defaultSignature(),
-        "Push to master")
-      .then(function(pushResult) {
-        push = pushResult;
-
-        // This just says what branch we're pushing onto what remote branch
-        return push.addRefspec("refs/heads/master:refs/heads/master");
-      }).then(function() {
-        // This is the call that performs the actual push
-        return push.finish();
-      }).then(function() {
-        // Check to see if the remote accepted our push request.
-        return push.unpackOk();
-      });
+    remote.setCallbacks({
+      credentials: function(url, userName) {
+        return nodegit.Cred.sshKeyFromAgent(userName);
+      }
     });
+
+    // Create the push object for this remote
+    return remote.push(
+      ["refs/heads/master:refs/heads/master"],
+      null,
+      repository.defaultSignature(),
+      "Push to master");
+  });
 }).done(function() {
   console.log("Done!");
 });
