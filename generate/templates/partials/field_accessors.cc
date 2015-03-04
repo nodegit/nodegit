@@ -43,7 +43,7 @@
 
         NanAssignPersistent(wrapper->{{ field.name }}, {{ field.name }});
 
-        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }}->ToObject())->GetValue();
+        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert({{ field.name }}->ToObject()){% else %}ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }}->ToObject())->GetValue(){% endif %};
 
       {% elsif field.isCallbackFunction %}
         if (wrapper->{{ field.name }} != NULL) {
