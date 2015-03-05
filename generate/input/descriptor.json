@@ -1605,6 +1605,11 @@
         }
       }
     },
+    "strarray": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ]
+    },
     "stream": {
       "ignore": true,
       "cDependencies": [
