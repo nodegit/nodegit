@@ -10,10 +10,10 @@ describe("Checkout", function() {
 
   var readMeName = "README.md";
   var packageJsonName = "package.json";
-  var packageJsonOid = "0fa56e90e096a4c24c785206b826ab914ea3de1e";
   var reposPath = local("../repos/workdir");
   var readMePath = local("../repos/workdir/" + readMeName);
   var packageJsonPath = local("../repos/workdir/" + packageJsonName);
+  var checkoutBranchName = "checkout-test";
 
   beforeEach(function() {
     var test = this;
@@ -28,13 +28,10 @@ describe("Checkout", function() {
     var test = this;
 
     return Checkout.head(test.repository)
-    .then(function() {
-      return test.repository.getBlob(packageJsonOid);
-    })
     .then(function(blob) {
-      var packageJson = blob.toString();
+      var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
 
-      assert.ok(~packageJson.indexOf("\"ejs\": \"~1.0.0\","));
+      assert.ok(~packageContent.indexOf("\"ejs\": \"~1.0.0\","));
     });
   });
 
@@ -83,6 +80,29 @@ describe("Checkout", function() {
       return test.repository.getHeadCommit();
     }).then(function(commit) {
       assert.equal(commit, "32789a79e71fbc9e04d3eff7425e1771eb595150");
+    });
+  });
+
+  it("can checkout a branch", function() {
+    var test = this;
+
+    return test.repository.checkoutBranch(checkoutBranchName, {
+      checkoutStrategy: Checkout.STRATEGY.FORCE
+    })
+    .then(function() {
+      var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
+
+      assert.ok(!~packageContent.indexOf("\"ejs\": \"~1.0.0\","));
+    })
+    .then(function() {
+      return test.repository.checkoutBranch("master", {
+        checkoutStrategy: Checkout.STRATEGY.FORCE
+      });
+    })
+    .then(function() {
+      var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
+
+      assert.ok(~packageContent.indexOf("\"ejs\": \"~1.0.0\","));
     });
   });
 });

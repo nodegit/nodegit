@@ -28,6 +28,9 @@ before(function() {
       return exec("git checkout rev-walk", {cwd: workdirPath});
     })
     .then(function() {
+      return exec("git checkout checkout-test", {cwd: workdirPath});
+    })
+    .then(function() {
       return exec("git checkout master", {cwd: workdirPath});
     })
     .then(function() {
@@ -41,9 +44,12 @@ before(function() {
 
 beforeEach(function() {
   return exec("git clean -xdf", {cwd: workdirPath})
-    .then(function() {
-      return exec("git reset --hard", {cwd: workdirPath});
-    });
+  .then(function() {
+    return exec("git checkout master", {cwd: workdirPath});
+  })
+  .then(function() {
+    return exec("git reset --hard", {cwd: workdirPath});
+  });
 });
 
 afterEach(function(done) {
