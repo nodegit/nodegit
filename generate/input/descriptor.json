@@ -1463,6 +1463,12 @@
         },
         "git_repository_message": {
           "ignore": true
+        },
+        "git_repository_set_head": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
