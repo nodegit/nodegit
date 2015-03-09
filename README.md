@@ -47,7 +47,7 @@ Nick Kallen [@nk](http://twitter.com/nk)
 
 ## API Documentation. ##
 
-http://www.nodegit.org/
+[http://www.nodegit.org/](http://www.nodegit.org/)
 
 ## Getting started. ##
 
