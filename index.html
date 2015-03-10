@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Index</title>
+</head>
+<body>
+  <!--<script src="dist/nodegit.js"></script>-->
+
+  <script>
+    var Module = {
+      onRuntimeInitialized: function() {
+        var loc = allocate(intArrayFromString('some_path'), 'i8', ALLOC_STACK);
+        // Arbitrary amount of memory.
+        var repo = Module._malloc(1024)
+
+        // Initialize a repository in memory.
+        var err = _git_repository_init(repo, loc)
+        console.log(err); // 0
+
+        // Open that repository.
+        var err = _git_repository_open(repo, loc)
+        console.log(err); // 0
+
+        // Change the path.
+        var newloc = allocate(intArrayFromString('some_path2'), 'i8', ALLOC_STACK);
+        var err = _git_repository_open(repo, newloc)
+        console.log(err); // -3
+      }
+    };
+
+  </script>
+  <script src="libgit2.js"></script>
+</body>
+</html>

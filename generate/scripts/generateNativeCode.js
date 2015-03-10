@@ -46,6 +46,8 @@ module.exports = function generateNativeCode() {
     binding: utils.readFile("templates/templates/binding.gyp"),
     nodegitCC: utils.readFile("templates/templates/nodegit.cc"),
     nodegitJS: utils.readFile("templates/templates/nodegit.js"),
+    nodegitBrowserJS: utils.readFile("templates/templates/nodegit_browser.js"),
+    emscripten: utils.readFile("templates/templates/emscripten.js"),
     enums: utils.readFile("templates/templates/enums.js")
   };
 
@@ -108,6 +110,9 @@ module.exports = function generateNativeCode() {
     utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)));
     utils.writeFile("../src/nodegit.cc", templates.nodegitCC.render(enabled));
     utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)));
+    utils.writeFile("../build/emscripten/nodegit.js", beautify(templates.emscripten.render(enabled)));
+    utils.writeFile("../lib/nodegit-browser.js", beautify(templates.nodegitBrowserJS.render(enabled)));
+
     // Write out all the classes.
     enabled.forEach(function(idef) {
       try {
