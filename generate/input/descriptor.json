@@ -1182,9 +1182,6 @@
       "functions": {
         "git_pathspec_match_list_free": {
           "ignore": true
-        },
-        "git_pathspec_new": {
-          "ignore": true
         }
       }
     },
