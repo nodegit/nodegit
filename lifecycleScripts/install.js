@@ -95,7 +95,7 @@ function build() {
 
   if (asVersion) {
     prefix = (process.platform == "win32" ?
-      "SET HOME=%HOME%\\.atom-shell-gyp && " :
+      "SET HOME=%HOME%\\.atom-shell-gyp&& " :
       "HOME=~/.atom-shell-gyp");
 
     target = "--target=" + asVersion;
