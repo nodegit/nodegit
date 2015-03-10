@@ -90,7 +90,7 @@ function build() {
   var prefix = "";
   var target = "";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
-  var builder = "node-gyp";
+  var builder = "pangyp";
   var distUrl = "";
 
   if (asVersion) {
