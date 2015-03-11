@@ -10,7 +10,7 @@ description: How to build NodeGit from source
 * * *
 
 Building from source
-----------------------
+--------------------
 
 If you wish to help contribute to NodeGit it is useful to build locally.
 
@@ -29,11 +29,11 @@ If you encounter errors, you most likely have not configured the dependencies co
 
 ### Installing dependencies: ###
 
-#### Mac OS X ####
+#### <a name="osx"></a> Mac OS X ####
 
 - [Install XCode Command Line Tools](http://railsapps.github.io/xcode-command-line-tools.html)
 
-#### Linux ####
+#### <a name="linux"></a>Linux ####
 
 Using APT in Ubuntu:
 
@@ -49,7 +49,7 @@ sudo pacman -S base-devel
 
 Note that GCC/G++ 4.7+ are required, as the library makes use of some c++11 std calls.
 
-#### Windows ####
+#### <a name="windows"></a>Windows ####
 
 - [Download and install Python 2](https://www.python.org/download/windows).
 - [Download and install VS Community](https://www.visualstudio.com/products/visual-studio-community-vs).
@@ -74,7 +74,7 @@ So for the above example, you would run `cmd /C "set BUILD_ONLY=true && npm inst
 See here for more details:
 [SuperUser](http://superuser.com/questions/223104/setting-environment-variable-for-just-one-command-in-windows-cmd-exe).
 
-### Debug build: ###
+### <a name="debug-build"></a>Debug build: ###
 
 In order to track down possible bugs, you will need a debug buid so you
 can get a backtrace with [gdb](http://www.gnu.org/software/gdb/) or
