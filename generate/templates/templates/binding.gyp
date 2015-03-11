@@ -52,6 +52,15 @@
               ]
             }
           }
+        ], [
+          "OS=='win'", {
+            "cflags": [
+              "/EHsc"
+            ],
+            "defines": [
+            "_HAS_EXCEPTIONS=1"
+            ]
+          }
         ]
       ]
     }

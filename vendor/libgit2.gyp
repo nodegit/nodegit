@@ -106,7 +106,7 @@
         "libgit2/src/hash.c",
         "libgit2/src/hash.h",
         "libgit2/src/hashsig.c",
-        "libgit2/src/hashsig.h",
+        "libgit2/include/git2/sys/hashsig.h",
         "libgit2/src/ident.c",
         "libgit2/src/ignore.c",
         "libgit2/src/ignore.h",
