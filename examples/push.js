@@ -57,9 +57,6 @@ fse.remove(path.resolve(__dirname, repoDir))
       }
     });
 
-    return remote.connect(nodegit.Enums.DIRECTION.PUSH);
-  })
-  .then(function() {
     // Create the push object for this remote
     return remote.push(
       ["refs/heads/master:refs/heads/master"],
