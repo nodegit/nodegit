@@ -2,7 +2,7 @@
 // relative path.  In your project, you will use:
 //
 // var NodeGit = require("nodegit");
-var Git = require("../../../");
+var NodeGit = require("../../../");
 
 // Using the `clone` method from the `Git.Clone` module, bring down the NodeGit
 // test repository from GitHub.
@@ -21,12 +21,12 @@ cloneOptions.remoteCallbacks = {
 };
 
 // Invoke the clone operation and store the returned Promise.
-var cloneRepository = Git.Clone(cloneURL, localPath, cloneOptions);
+var cloneRepository = NodeGit.Clone(cloneURL, localPath, cloneOptions);
 
 // If the repository already exists, the clone above will fail.  You can simply
 // open the repository in this case to continue execution.
 var errorAndAttemptOpen = function() {
-  return Git.Repository.open(localPath);
+  return NodeGit.Repository.open(localPath);
 };
 
 // Once the repository has been cloned or opened, you can work with a returned

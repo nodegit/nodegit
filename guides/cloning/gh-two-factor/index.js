@@ -2,7 +2,7 @@
 // relative path.  In your project, you will use:
 //
 // var NodeGit = require("nodegit");
-var Git = require("../../../");
+var NodeGit = require("../../../");
 
 // To clone with two factor auth enabled, you have to use a GitHub OAuth token
 // over HTTPS.
@@ -23,17 +23,17 @@ var cloneOptions = {};
 cloneOptions.remoteCallbacks = {
   certificateCheck: function() { return 1; },
   credentials: function() {
-    return Git.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
+    return NodeGit.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
   }
 };
 
 // Invoke the clone operation and store the returned Promise.
-var cloneRepository = Git.Clone(cloneURL, localPath, cloneOptions);
+var cloneRepository = NodeGit.Clone(cloneURL, localPath, cloneOptions);
 
 // If the repository already exists, the clone above will fail.  You can simply
 // open the repository in this case to continue execution.
 var errorAndAttemptOpen = function() {
-  return Git.Repository.open(localPath);
+  return NodeGit.Repository.open(localPath);
 };
 
 // Once the repository has been cloned or opened, you can work with a returned

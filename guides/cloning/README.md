@@ -26,13 +26,13 @@ In the guides directory, we like to keep our NodeGit relative to the project
 root.
 
 ``` javascript
-var Git = require("../../../");
+var NodeGit = require("../../../");
 ```
 
 However, in your project you will most likely be using the following command:
 
 ``` javascript
-var Git = require("nodegit");
+var NodeGit = require("nodegit");
 ```
 
 ### Clone URL
@@ -94,7 +94,7 @@ You can easily invoke our top-level Clone as a function passing along the three
 aforementioned arguments.
 
 ``` javascript
-var cloneRepository = Git.Clone(cloneURL, localPath, cloneOptions);
+var cloneRepository = NodeGit.Clone(cloneURL, localPath, cloneOptions);
 ```
 
 Notice how we store the return value from `Git.Clone`.  This is a
@@ -110,7 +110,7 @@ a function to attempt opening in this case.
 
 ``` javascript
 var errorAndAttemptOpen = function() {
-  return Git.Repository.open(local);
+  return NodeGit.Repository.open(local);
 };
 ```
 
