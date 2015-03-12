@@ -10,6 +10,7 @@ var fileContent = "hello world";
 var repoDir = "../../newRepo";
 
 var repository;
+var remote;
 
 var signature = nodegit.Signature.create("Foo bar",
   "foo@bar.com", 123456789, 60);
@@ -47,8 +48,8 @@ fse.remove(path.resolve(__dirname, repoDir))
 .then(function() {
   return nodegit.Remote.create(repository, "origin",
     "git@github.com:nodegit/push-example.git")
-  .then(function(remote) {
-    remote.connect(nodegit.Enums.DIRECTION.PUSH);
+  .then(function(remoteResult) {
+    remote = remoteResult;
 
     remote.setCallbacks({
       credentials: function(url, userName) {
@@ -56,6 +57,9 @@ fse.remove(path.resolve(__dirname, repoDir))
       }
     });
 
+    return remote.connect(nodegit.Enums.DIRECTION.PUSH);
+  })
+  .then(function() {
     // Create the push object for this remote
     return remote.push(
       ["refs/heads/master:refs/heads/master"],
