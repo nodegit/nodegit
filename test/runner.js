@@ -43,6 +43,7 @@ before(function() {
 });
 
 beforeEach(function() {
+  this.timeout(4000);
   return exec("git clean -xdf", {cwd: workdirPath})
   .then(function() {
     return exec("git checkout master", {cwd: workdirPath});
