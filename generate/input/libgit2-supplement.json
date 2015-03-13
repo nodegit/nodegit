@@ -145,6 +145,16 @@
     },
     "groups": [
       [
+        "annotated",
+        [
+          "git_annotated_commit_free",
+          "git_annotated_commit_from_fetchhead",
+          "git_annotated_commit_from_ref",
+          "git_annotated_commit_id",
+          "git_annotated_commit_lookup"
+        ]
+      ],
+      [
         "odb_object",
         [
           "git_odb_object_data",
@@ -420,6 +430,15 @@
     ]
   },
   "remove": {
+    "annotated": {
+      "functions": [
+        "git_annotated_commit_free",
+        "git_annotated_commit_from_fetchhead",
+        "git_annotated_commit_from_ref",
+        "git_annotated_commit_id",
+        "git_annotated_commit_lookup"
+      ]
+    },
     "odb": {
       "functions": [
         "git_odb_object_data",
