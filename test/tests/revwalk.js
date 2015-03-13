@@ -11,7 +11,7 @@ describe("Revwalk", function() {
   var reposPath = local("../repos/workdir");
 
   // Set a reasonable timeout here now that our repository has grown.
-  this.timeout(60000);
+  this.timeout(120000);
 
   beforeEach(function() {
     var test = this;
