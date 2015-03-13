@@ -46,7 +46,11 @@ module.exports = function generateJson() {
         !~supplement.remove[groupName].functions.indexOf(fnName);
     });
 
-    memo[groupName] = functionNames;
+    // if we have an empty group then just ignore it
+    if (functionNames.length) {
+      memo[groupName] = functionNames;
+    }
+
     return memo;
   }, {});
 
