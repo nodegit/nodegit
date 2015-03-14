@@ -39,7 +39,7 @@ return whichNativeNodish("..")
       return checkAndBuild();
     }
     console.info("[nodegit] Fetching binary from S3.");
-    return exec("node-pre-gyp build")
+    return exec("node-pre-gyp install")
       .then(
         function() {
           console.info("[nodegit] Completed installation successfully.");
