@@ -13,6 +13,8 @@ var exec = promisify(function(command, opts, callback) {
 var nwVersion = null;
 var asVersion = null;
 
+var local = path.join.bind(path, __dirname);
+
 return whichNativeNodish("..")
   .then(function(results) {
     nwVersion = results.nwVersion;
@@ -27,7 +29,7 @@ return whichNativeNodish("..")
       console.info("[nodegit] Must build for atom-shell");
       return checkAndBuild();
     }
-    if (fs.existsSync("../.didntcomefromthenpmregistry")) {
+    if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
       return checkAndBuild();
     }
     if (process.env.BUILD_DEBUG) {

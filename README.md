@@ -29,7 +29,7 @@ NodeGit
 
 ***NOTE: NodeGit currently does not work with [iojs on windows](https://github.com/rvagg/pangyp/issues/4)***
 
-**Stable: 0.3.0**
+**Stable: 0.3.1**
 
 ## Have a problem? Come chat with us! ##
 
