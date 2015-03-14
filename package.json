@@ -93,9 +93,9 @@
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
     "postinstall": "node lifecycleScripts/clean",
-    "recompile": "node-gyp configure build",
-    "rebuild": "node generate && node-gyp configure build",
-    "recompileDebug": "node-gyp configure --debug build",
-    "rebuildDebug": "node generate && node-gyp configure --debug build"
+    "recompile": "pangyp configure build",
+    "rebuild": "node generate && pangyp configure build",
+    "recompileDebug": "pangyp configure --debug build",
+    "rebuildDebug": "node generate && pangyp configure --debug build"
   }
 }
