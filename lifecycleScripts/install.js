@@ -108,12 +108,15 @@ function build() {
     target = "--target=" + nwVersion;
   }
 
-  builder = path.resolve(".", "node_modules", ".bin", builder);
-  builder = builder.replace(/\s/g, "\\$&");
-  var cmd = [prefix, builder, "rebuild", target, debug, distUrl]
-    .join(" ").trim();
+  return exec("npm install " + builder)
+    .then(function() {
+      builder = path.resolve(".", "node_modules", ".bin", builder);
+      builder = builder.replace(/\s/g, "\\$&");
+      var cmd = [prefix, builder, "rebuild", target, debug, distUrl]
+        .join(" ").trim();
 
-  return exec(cmd, opts)
+      return exec(cmd, opts);
+    })
     .then(function() {
       console.info("[nodegit] Compilation complete.");
       console.info("[nodegit] Completed installation successfully.");
