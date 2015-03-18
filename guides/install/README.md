@@ -5,7 +5,7 @@ title: Install Basics
 description: How to install NodeGit
 ---
 
-[Return to install guides](../)
+[Return to all guides](../)
 
 * * *
 

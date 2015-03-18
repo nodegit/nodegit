@@ -5,7 +5,7 @@ title: From source
 description: How to build NodeGit from source
 ---
 
-[Return to install guides](../)
+[Return to all guides](../../)
 
 * * *
 
