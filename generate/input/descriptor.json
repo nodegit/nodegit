@@ -1564,7 +1564,10 @@
     "stash": {
       "functions": {
         "git_stash_foreach": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
