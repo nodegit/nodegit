@@ -1,20 +1,18 @@
 var fork = require("child_process").fork;
 var path = require("path");
 
-var args = [
-  "cover",
-  process.platform != "win32" ?
-    "_mocha" :
-    "../node_modules/mocha/bin/_mocha",
-  "--",
-  "runner",
-  "tests",
-  "--report=lcov",
-  "--expose-gc"
-];
+var bin = "./node_modules/.bin/istanbul";
+var cov = "cover --report=lcov _mocha --".split(" ");
 
-fork("../node_modules/istanbul/lib/cli.js", args, {
-  cwd: __dirname
-}).on("close", function(code) {
-  process.exit(code);
-});
+if (process.platform === 'win32') {
+  bin = "./node_modules/mocha/bin/mocha";
+  cov = [];
+}
+
+var args = cov.concat([
+  "test/runner",
+  "test/tests",
+  "--expose-gc"
+]);
+
+fork(bin, args, { cwd: path.join(__dirname, "../") }).on("close", process.exit);
