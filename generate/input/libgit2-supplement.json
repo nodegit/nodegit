@@ -141,6 +141,36 @@
           "type": "int"
         },
         "group": "reset"
+      },
+      "git_stash_save": {
+        "type": "function",
+        "file": "stash.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_oid *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "stasher",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "message",
+            "type": "const char *"
+          },
+          {
+            "name": "flags",
+            "type": "unsigned int"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "stash"
       }
     },
     "groups": [
@@ -470,6 +500,9 @@
   "groups": {
     "reset": [
       "git_reset"
+    ],
+    "stash": [
+      "git_stash_save"
     ]
   }
 }
