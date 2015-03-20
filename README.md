@@ -31,8 +31,6 @@ NodeGit
   </tbody>
 </table>
 
-***NOTE: NodeGit currently does not work with [iojs on windows](https://github.com/rvagg/pangyp/issues/4)***
-
 **Stable: 0.3.3**
 
 ## Have a problem? Come chat with us! ##
@@ -62,6 +60,8 @@ dependencies.
 ``` bash
 npm install nodegit
 ```
+
+**Note: NodeGit will only work on io.js Windows with [the iojs binary instead of node](https://github.com/rvagg/pangyp/issues/4).**
 
 If you encounter problems while installing, you should try the Building from
 source instructions below.
