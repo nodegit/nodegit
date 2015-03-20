@@ -16,11 +16,16 @@ before_install:
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
       sudo apt-get -qq update;
-      sudo apt-get -qq install g++-4.8 lcov;
-      export CXX='g++-4.8';
-      export GYP_DEFINES='coverage=1';
+      sudo apt-get -qq install gcc-4.8 g++-4.8 lcov;
+      sudo rm /usr/bin/gcov /usr/bin/g++;
+      sudo ln -s /usr/bin/gcov-4.8 /usr/bin/gcov;
+      sudo ln -s /usr/bin/g++-4.8 /usr/bin/g++;
+      export CC="gcc-4.8";
+      export CXX="g++-4.8";
+      export GYP_DEFINES="coverage=1";
+      export JOBS=4;
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90;
     fi
-  - "export JOBS=4"
   - BUILD_ONLY=true npm install
 # This is a random private key used purely for testing.
 before_script:
@@ -41,7 +46,12 @@ branches:
 os:
   - linux
   - osx
-script: npm test
+script:
+  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
+      npm test && npm run cov && npm run coveralls;
+    else
+      npm test;
+    fi
 notifications:
   slack:
     secure: KglNSqZiid9YudCwkPFDh+sZfW5BwFlM70y67E4peHwwlbbV1sSBPHcs74ZHP/lqgEZ4hMv4N2NI58oYFD5/1a+tKIQP1TkdIMuq4j2LXheuirA2HDcydOVrsC8kRx5XFGKdVRg/uyX2dlRHcOWFhxrS6yc6IxtxYWlRTD2SmEc=

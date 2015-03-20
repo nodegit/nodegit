@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "combyne": "^0.6.5",
+    "coveralls": "^2.11.2",
     "istanbul": "^0.3.5",
     "js-beautify": "^1.5.4",
     "jshint": "^2.6.0",
@@ -82,6 +83,7 @@
   },
   "scripts": {
     "lint": "jshint lib test/tests examples lifecycleScripts",
+    "coveralls": "cat ./test/coverage/merged.lcov | coveralls",
     "cppcov": "mkdir -p test/coverage/cpp && lcov --capture --directory build/Release/obj.target/nodegit/src --output-file test/coverage/cpp/lcov.info",
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "cov": "npm run cppcov && npm run mergecov",
