@@ -83,7 +83,7 @@ describe("Checkout", function() {
     });
   });
 
-  it.only("can checkout a branch", function() {
+  it("can checkout a branch", function() {
     var test = this;
 
     return test.repository.checkoutBranch(checkoutBranchName)
