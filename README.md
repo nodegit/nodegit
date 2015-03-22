@@ -9,6 +9,7 @@ NodeGit
       <th>Linux</th>
       <th>OS X</th>
       <th>Windows</th>
+      <th>Coverage</th>
       <th>Dependencies</th>
     </tr>
   </thead>
@@ -21,13 +22,14 @@ NodeGit
         <a href="https://ci.appveyor.com/project/timbranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true"></a>
       </td>
       <td align="center">
+        <a href="https://coveralls.io/r/nodegit/nodegit"><img src="https://coveralls.io/repos/nodegit/nodegit/badge.svg" alt="Coverage Status"></a>
+      </td>
+      <td align="center">
         <a href="https://david-dm.org/nodegit/nodegit"><img src="https://david-dm.org/nodegit/nodegit.svg"></a>
       </td>
     </tr>
   </tbody>
 </table>
-
-***NOTE: NodeGit currently does not work with [iojs on windows](https://github.com/rvagg/pangyp/issues/4)***
 
 **Stable: 0.3.3**
 
@@ -58,6 +60,8 @@ dependencies.
 ``` bash
 npm install nodegit
 ```
+
+**Note: NodeGit will only work on io.js Windows with [the iojs binary instead of node](https://github.com/rvagg/pangyp/issues/4).**
 
 If you encounter problems while installing, you should try the Building from
 source instructions below.

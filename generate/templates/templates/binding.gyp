@@ -9,6 +9,10 @@
         "<(module_root_dir)/vendor/libgit2.gyp:libgit2"
       ],
 
+      "variables": {
+        "coverage%": 0
+      },
+
       "sources": [
         "src/nodegit.cc",
         "src/wrapper.cc",
@@ -32,6 +36,19 @@
       ],
 
       "conditions": [
+        [
+          "coverage==1", {
+            "cflags": [
+              "-ftest-coverage",
+              "-fprofile-arcs"
+            ],
+            "link_settings": {
+              "libraries": [
+                "-lgcov"
+              ]
+            },
+          }
+        ],
         [
           "OS=='mac'", {
             "xcode_settings": {

@@ -86,7 +86,8 @@ function build() {
 
   var opts = {
     cwd: ".",
-    maxBuffer: Number.MAX_VALUE
+    maxBuffer: Number.MAX_VALUE,
+    env: process.env
   };
 
   var prefix = "";
