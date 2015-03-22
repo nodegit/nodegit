@@ -5,7 +5,7 @@ title: HTTP/HTTPS Guide
 description: How to clone with HTTP/HTTPS
 ---
 
-**In order to run examples, you will need to [Install NodeGit](../../install/basics)
+**In order to run examples, you will need to [Install NodeGit](../install)
 first.**
 
 [Return to all guides](../)
