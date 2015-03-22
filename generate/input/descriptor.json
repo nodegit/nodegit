@@ -960,8 +960,17 @@
             }
           }
         },
+        "git_note_remove": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_note_foreach": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
