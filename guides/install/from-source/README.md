@@ -5,7 +5,7 @@ title: From source
 description: How to build NodeGit from source
 ---
 
-[Return to install guides](../)
+[Return to all guides](../../)
 
 * * *
 
@@ -54,7 +54,7 @@ Note that GCC/G++ 4.7+ are required, as the library makes use of some c++11 std 
 - [Download and install Python 2](https://www.python.org/download/windows).
 - [Download and install VS Community](https://www.visualstudio.com/products/visual-studio-community-vs).
 
-You may have to add a build flag to the installation process to successfully install.  
+You may have to add a build flag to the installation process to successfully install.
 Try first without, if the build fails, try again with the flag.
 
 *Allegedly the order in which you install Visual Studio could trigger this error.*

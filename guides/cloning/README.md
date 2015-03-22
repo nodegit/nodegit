@@ -8,7 +8,7 @@ description: How to clone with HTTP/HTTPS
 **In order to run examples, you will need to [Install NodeGit](../../install/basics)
 first.**
 
-[Return to cloning guides](../)
+[Return to all guides](../)
 
 * * *
 
