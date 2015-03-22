@@ -86,18 +86,20 @@ describe("Checkout", function() {
   it("can checkout a branch", function() {
     var test = this;
 
-    return test.repository.checkoutBranch(checkoutBranchName, {
-      checkoutStrategy: Checkout.STRATEGY.FORCE
-    })
+    return test.repository.checkoutBranch(checkoutBranchName)
     .then(function() {
       var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
 
       assert.ok(!~packageContent.indexOf("\"ejs\": \"~1.0.0\","));
     })
     .then(function() {
-      return test.repository.checkoutBranch("master", {
-        checkoutStrategy: Checkout.STRATEGY.FORCE
-      });
+      return test.repository.getStatus();
+    })
+    .then(function(statuses) {
+      assert.equal(statuses.length, 0);
+    })
+    .then(function() {
+      return test.repository.checkoutBranch("master");
     })
     .then(function() {
       var packageContent = fse.readFileSync(packageJsonPath, "utf-8");

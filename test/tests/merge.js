@@ -215,6 +215,10 @@ describe("Merge", function() {
       });
     })
     .then(function() {
+      var opts = {checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE};
+      return repository.checkoutBranch(ourBranchName, opts);
+    })
+    .then(function() {
       return repository.mergeBranches(
         ourBranchName,
         theirBranchName,
@@ -228,6 +232,13 @@ describe("Merge", function() {
         .then(function(branchCommit) {
           assert.equal(oid.toString(), branchCommit.toString());
         });
+    })
+    .then(function() {
+      return repository.getStatus();
+    })
+    .then(function(statuses) {
+      // make sure we didn't change the index
+      assert.equal(statuses.length, 0);
     });
   });
 
