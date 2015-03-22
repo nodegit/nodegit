@@ -5,10 +5,10 @@ title: Initializing
 description: How to initialize a repository
 ---
 
-**In order to run examples, you will need to [Install NodeGit](../../install/basics)
+**In order to run examples, you will need to [Install NodeGit](../../install)
 first.**
 
-[Return to repository guides](../)
+[Return to all guides](../../)
 
 * * *
 

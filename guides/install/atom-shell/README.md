@@ -5,7 +5,7 @@ title: Atom Shell
 description: How to install NodeGit with Atom Shell
 ---
 
-[Return to install guides](../)
+[Return to all guides](../../)
 
 * * *
 
