@@ -7,9 +7,14 @@ var rawApi;
 try {
   rawApi = require("../build/Release/nodegit");
 }
-catch (e) {
+catch (unhandledException) {
   /* istanbul ignore next */
-  rawApi = require("../build/Debug/nodegit");
+  try {
+    rawApi = require("../build/Debug/nodegit");
+  }
+  catch (unhandledException) {
+    rawApi = require("../build/emscripten/nodegit");
+  }
 }
 
 // Native methods do not return an identifiable function, so we

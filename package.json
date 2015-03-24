@@ -39,6 +39,7 @@
     }
   ],
   "main": "lib/nodegit.js",
+  "browser": "lib/nodegit-browser.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/nodegit/nodegit.git"

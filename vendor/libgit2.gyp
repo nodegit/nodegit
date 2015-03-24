@@ -24,7 +24,6 @@
         "zlib",
         "<(module_root_dir)/vendor/http_parser/http_parser.gyp:http_parser",
         "libssh2",
-        "openssl"
       ],
       "sources": [
         "libgit2/src/annotated_commit.h",
