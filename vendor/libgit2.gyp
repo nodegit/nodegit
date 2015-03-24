@@ -463,6 +463,9 @@
             "libssh2/win32",
             "libssh2/include"
           ],
+          "defines!": [
+            "HAVE_POLL"
+          ],
           "direct_dependent_settings": {
             "include_dirs": [
               "libssh2/src",
