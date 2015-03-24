@@ -74,7 +74,7 @@ describe("Remote", function() {
 
   it("can delete a remote", function() {
     var repository = this.repository;
-    var remote = Remote.create(repository, "origin3", url);
+    Remote.create(repository, "origin3", url);
 
     Remote.delete(repository, "origin3");
 
@@ -109,7 +109,7 @@ describe("Remote", function() {
     var repo = this.repository;
     var wasCalled = false;
 
-    var remote = Remote.create(repo, "test2", url2);
+    Remote.create(repo, "test2", url2);
 
     return repo.getRemote("test2")
       .then(function(remote) {

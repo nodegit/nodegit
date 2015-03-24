@@ -26,7 +26,7 @@ describe("Pathspec", function() {
   });
 
   it("can take files in an array", function() {
-    var pathspec = Pathspec.create(["gwendoline.txt", "sausolito.ogg"])
+    var pathspec = Pathspec.create(["gwendoline.txt", "sausolito.ogg"]);
 
     assert.equal(pathspec.matchesPath(0, "gwendoline.txt"), 1);
     assert.equal(pathspec.matchesPath(0, "sausolito.ogg"), 1);
@@ -34,7 +34,7 @@ describe("Pathspec", function() {
   });
 
   it("can handle dirs", function() {
-    var pathspec = Pathspec.create(["myDir/", "bob.js"])
+    var pathspec = Pathspec.create(["myDir/", "bob.js"]);
 
     assert.equal(pathspec.matchesPath(0, "bob.js"), 1);
     assert.equal(pathspec.matchesPath(0, "myDir/bob2.js"), 1);
