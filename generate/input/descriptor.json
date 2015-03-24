@@ -1132,7 +1132,7 @@
           "ignore": true
         },
         "git_packbuilder_new": {
-          "ignore": true
+          "isAsync": false
         },
         "git_packbuilder_set_callbacks": {
           "ignore": true
@@ -1182,6 +1182,9 @@
       "functions": {
         "git_pathspec_match_list_free": {
           "ignore": true
+        },
+        "git_pathspec_new": {
+          "isAsync": false
         }
       }
     },
@@ -1306,6 +1309,9 @@
     "remote": {
       "cType": "git_remote",
       "functions": {
+        "git_remote_create": {
+          "isAsync": false
+        },
         "git_remote_connect": {
           "isAsync": true,
           "return": {
@@ -1596,7 +1602,7 @@
     "status_list": {
       "functions": {
         "git_status_list_new": {
-          "isAsync": true,
+          "isAsync": false,
           "args": {
             "opts": {
               "isOptional": true

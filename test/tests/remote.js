@@ -53,16 +53,10 @@ describe("Remote", function() {
 
   it("can set a remote", function() {
     var repository = this.repository;
-    var newRemote;
+    var remote = Remote.create(repository, "origin1", url);
 
-    return Remote.create(repository, "origin1", url)
-      .then(function(remote) {
-        newRemote = remote;
-        return remote.setPushurl("https://google.com/");
-      })
-      .then(function() {
-        assert(newRemote.pushurl(), "https://google.com/");
-      });
+    remote.setPushurl("https://google.com/");
+    assert(remote.pushurl(), "https://google.com/");
   });
 
   it("can read the remote name", function() {
@@ -71,24 +65,20 @@ describe("Remote", function() {
 
   it("can create and load a new remote", function() {
     var repository = this.repository;
+    var remote = Remote.create(repository, "origin2", url);
 
-    return Remote.create(repository, "origin2", url)
-      .then(function() {
-        return Remote.lookup(repository, "origin2");
-      })
-      .then(function(remote) {
-        assert(remote.url(), url);
-      });
+    return Remote.lookup(repository, "origin2").then(function() {
+      assert(remote.url(), url);
+    });
   });
 
   it("can delete a remote", function() {
     var repository = this.repository;
+    var remote = Remote.create(repository, "origin3", url);
 
-    return Remote.create(repository, "origin3", url)
-      .then(function(remote) {
-        Remote.delete(repository, "origin3");
-        return Remote.lookup(repository, "origin3");
-      })
+    Remote.delete(repository, "origin3");
+
+    return Remote.lookup(repository, "origin3")
       .then(Promise.reject, Promise.resolve);
   });
 
@@ -119,31 +109,30 @@ describe("Remote", function() {
     var repo = this.repository;
     var wasCalled = false;
 
-    return Remote.create(repo, "test2", url2)
-    .then(function() {
-      return repo.getRemote("test2");
-    })
-    .then(function(remote) {
-      remote.setCallbacks({
-        credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyFromAgent(userName);
-        },
-        certificateCheck: function() {
-          return 1;
-        },
+    var remote = Remote.create(repo, "test2", url2);
 
-        transferProgress: function() {
-          wasCalled = true;
-        }
+    return repo.getRemote("test2")
+      .then(function(remote) {
+        remote.setCallbacks({
+          credentials: function(url, userName) {
+            return NodeGit.Cred.sshKeyFromAgent(userName);
+          },
+          certificateCheck: function() {
+            return 1;
+          },
+
+          transferProgress: function() {
+            wasCalled = true;
+          }
+        });
+
+        return remote.fetch(null, repo.defaultSignature(), null);
+      })
+      .then(function() {
+        assert.ok(wasCalled);
+
+        Remote.delete(repo, "test2");
       });
-
-      return remote.fetch(null, repo.defaultSignature(), null);
-    })
-    .then(function() {
-      assert.ok(wasCalled);
-
-      Remote.delete(repo, "test2");
-    });
   });
 
   it("can fetch from a remote", function() {
