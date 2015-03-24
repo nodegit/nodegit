@@ -120,12 +120,12 @@ describe("Repository", function() {
 
     return fse.writeFile(filePath, fileContent)
       .then(function() {
-        return repo.getStatusExt().then(function(statuses) {
-          assert.equal(statuses.length, 1);
-          assert.equal(statuses[0].path(), fileName);
-          assert.equal(statuses[0].indexToWorkdir().newFile().path(), fileName);
-          assert.ok(statuses[0].isNew());
-        });
+        var statuses = repo.getStatusExt();
+
+        assert.equal(statuses.length, 1);
+        assert.equal(statuses[0].path(), fileName);
+        assert.equal(statuses[0].indexToWorkdir().newFile().path(), fileName);
+        assert.ok(statuses[0].isNew());
       })
       .then(function() {
         return fse.remove(filePath);
