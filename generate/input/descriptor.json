@@ -1456,7 +1456,10 @@
           "ignore": true
         },
         "git_repository_fetchhead_foreach": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_repository_hashfile": {
           "ignore": true

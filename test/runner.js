@@ -55,7 +55,9 @@ beforeEach(function() {
 
 afterEach(function(done) {
   process.nextTick(function() {
-    global.gc();
+    if (global.gc) {
+      global.gc();
+    }
     done();
   });
 });

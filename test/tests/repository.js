@@ -137,4 +137,36 @@ describe("Repository", function() {
           });
       });
   });
+
+  it("gets fetch-heads", function() {
+    var repo = this.repository;
+    var foundMaster;
+
+    return repo.fetch("origin", {
+      credentials: function(url, userName) {
+        return NodeGit.Cred.sshKeyFromAgent(userName);
+      },
+      certificateCheck: function() {
+        return 1;
+      }
+    })
+    .then(function() {
+      return repo.fetchheadForeach(function(refname, remoteUrl, oid, isMerge) {
+        if (refname == "refs/heads/master") {
+          foundMaster = true;
+          assert.equal(refname, "refs/heads/master");
+          assert.equal(remoteUrl, "https://github.com/nodegit/test");
+          assert.equal(
+            oid.toString(),
+            "32789a79e71fbc9e04d3eff7425e1771eb595150");
+          assert.equal(isMerge, 1);
+        }
+      });
+    })
+    .then(function() {
+      if (!foundMaster) {
+        throw new Error("Couldn't find master in iteration of fetch heads");
+      }
+    });
+  });
 });

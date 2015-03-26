@@ -371,9 +371,9 @@
     ],
     "return": {
       "type": "int",
-      "noResults": 1,
+      "noResults": 0,
       "success": 0,
-      "error": -1
+      "error": 1
     }
   },
   "git_repository_mergehead_foreach_cb": {
@@ -389,9 +389,9 @@
     ],
     "return": {
       "type": "int",
-      "noResults": 1,
+      "noResults": 0,
       "success": 0,
-      "error": -1
+      "error": 1
     }
   },
   "git_revwalk_hide_cb": {
