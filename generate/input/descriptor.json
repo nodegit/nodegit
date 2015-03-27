@@ -745,9 +745,11 @@
         "git_graph_ahead_behind": {
           "args": {
             "ahead": {
+              "shouldAlloc": true,
               "isReturn": true
             },
             "behind": {
+              "shouldAlloc": true,
               "isReturn": true
             }
           },
