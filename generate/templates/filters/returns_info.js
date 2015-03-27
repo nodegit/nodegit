@@ -1,3 +1,5 @@
+var isPointer = require("./is_pointer");
+
 module.exports = function(fn, argReturnsOnly, isAsync) {
   var result = [];
   var args = fn.args || [];
@@ -11,6 +13,10 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
 
     return_info.parsedName = isAsync ? "baton->" + return_info.name : return_info.name;
     return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
+    return_info.needsDereference
+      = isAsync &&
+        return_info.cppClassName == "Number" &&
+        isPointer(return_info.cType);
     return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
     return_info.returnNameOrName = return_info.returnName || return_info.name;
     return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;

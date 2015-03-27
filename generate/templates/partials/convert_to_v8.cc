@@ -22,7 +22,7 @@
   {% if isCppClassIntType %}
     to = NanNew<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}});
   {% else %}
-    to = NanNew<{{ cppClassName }}>({{= parsedName =}});
+    to = NanNew<{{ cppClassName }}>({% if needsDereference %}*{% endif %}{{= parsedName =}});
   {% endif %}
 
 {% elsif cppClassName == 'External' %}
