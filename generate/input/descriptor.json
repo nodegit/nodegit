@@ -743,7 +743,20 @@
     "graph": {
       "functions": {
         "git_graph_ahead_behind": {
-          "ignore": true
+          "args": {
+            "ahead": {
+              "shouldAlloc": true,
+              "isReturn": true
+            },
+            "behind": {
+              "shouldAlloc": true,
+              "isReturn": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
