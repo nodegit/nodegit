@@ -18,7 +18,7 @@ describe("Graph", function() {
       });
   });
 
-  it.only("can get commits ahead/behind for 2 different commits", function() {
+  it("can get commits ahead/behind for 2 different commits", function() {
     return Graph.aheadBehind(
       this.repository,
       "32789a79e71fbc9e04d3eff7425e1771eb595150",
