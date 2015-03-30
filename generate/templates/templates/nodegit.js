@@ -7,8 +7,12 @@ var rawApi;
 try {
   rawApi = require("../build/Release/nodegit");
 }
-catch (e) {
+catch (ex) {
   /* istanbul ignore next */
+  if (ex.code !== "MODULE_NOT_FOUND") {
+    throw ex;
+  }
+
   rawApi = require("../build/Debug/nodegit");
 }
 
