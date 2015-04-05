@@ -424,7 +424,7 @@
       },
       {
         "name": "stash_id",
-        "cType": "const int *"
+        "cType": "const git_oid *"
       },
       {
         "name": "payload",
@@ -433,7 +433,7 @@
     ],
     "return": {
       "type": "int",
-      "noResults": 1,
+      "noResults":0,
       "success": 0,
       "error": -1
     }
