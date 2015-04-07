@@ -82,7 +82,7 @@ from_{{ arg.name }}
 {%each args|argsInfo as arg %}
   {%if arg | isOid %}
   if (args[{{ arg.jsArg }}]->IsString()) {
-    free(&from_{{ arg.name }});
+    free((void *)from_{{ arg.name }});
   }
   {%endif%}
 {%endeach%}

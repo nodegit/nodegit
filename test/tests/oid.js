@@ -1,4 +1,6 @@
 var assert = require("assert");
+var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Oid", function() {
   var NodeGit = require("../../");
@@ -25,5 +27,20 @@ describe("Oid", function() {
     var inspect = this.oid.inspect();
 
     assert.equal(inspect, "[Oid " + oid + "]");
+  });
+
+  it("can convert strings to oids in parameters", function() {
+    return NodeGit.Repository.open(local("../repos/workdir"))
+      .then(function(repo) {
+        var revwalk = repo.createRevWalk();
+        revwalk.sorting(NodeGit.Revwalk.SORT.TIME);
+
+        revwalk.push(oid);
+
+        return revwalk.getCommits(1);
+      })
+      .then(function(commits) {
+        assert.equal(commits[0].toString(), oid);
+      });
   });
 });
