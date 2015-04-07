@@ -94,7 +94,7 @@ clone("https://github.com/nodegit/nodegit", "tmp", null)
   })
   // Display information about the blob.
   .then(function(blob) {
-    // Show the name, sha, and filesize in byes.
+    // Show the name, sha, and filesize in bytes.
     console.log(blob.entry.name() + blob.entry.sha() + blob.size() + "b");
 
     // Show a spacer.
