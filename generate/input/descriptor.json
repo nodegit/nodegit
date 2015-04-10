@@ -173,7 +173,10 @@
           }
         },
         "git_branch_upstream": {
-          "isAsync": false
+          "isAsync": false,
+          "return" : {
+            "isErrorCode": true
+          }
         }
       }
     },
