@@ -1604,6 +1604,16 @@
         "git_status_byindex": {
           "isAsync": false
         },
+        "git_status_file": {
+          "args": {
+            "status_flags": {
+              "isReturn": true
+            },
+            "return": {
+              "isErrorCode": true
+            }
+          }
+        },
         "git_status_foreach": {
           "isAsync": true,
           "return": {
