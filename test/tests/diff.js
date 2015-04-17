@@ -108,14 +108,14 @@ describe("Diff", function() {
 
     var oldContent = "__Before submitting a pull request, please ensure " +
       "both unit tests and lint checks pass.__\n";
-    assert.equal(lines[3].content(), oldContent);
+    assert.equal(lines[3].rawContent(), oldContent);
     assert.equal(lines[3].origin(), Diff.LINE.DELETION);
     assert.equal(lines[3].contentLen(), 90);
 
     var newContent = "__Before submitting a pull request, please ensure " +
       "both that you've added unit tests to cover your shiny new code, " +
       "and that all unit tests and lint checks pass.__\n";
-    assert.equal(lines[4].content(), newContent);
+    assert.equal(lines[4].rawContent(), newContent);
     assert.equal(lines[4].origin(), Diff.LINE.ADDITION);
     assert.equal(lines[4].contentLen(), 162);
   });
@@ -132,6 +132,17 @@ describe("Diff", function() {
     var newFile = patches[2].delta.newFile();
     assert.equal(newFile.path(), "wddiff.txt");
     assert.equal(newFile.size(), 23);
+  });
+
+  it("can resolve individual line chages from the patch hunks", function() {
+    this.workdirDiff.patches().forEach(function(convenientPatch) {
+      convenientPatch.hunks().forEach(function(convenientHunk) {
+        convenientHunk.lines().forEach(function(line) {
+          assert(!/\n/.exec(line.content()));
+          assert(/\n/.exec(line.rawContent()));
+        });
+      });
+    });
   });
 
   it("can diff with a null tree", function() {
