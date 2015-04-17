@@ -173,7 +173,10 @@
           }
         },
         "git_branch_upstream": {
-          "isAsync": false
+          "isAsync": false,
+          "return" : {
+            "isErrorCode": true
+          }
         }
       }
     },
@@ -1092,7 +1095,11 @@
       "shouldAlloc": true,
       "functions": {
         "git_oid_cpy": {
-          "ignore": true
+          "args": {
+            "out": {
+              "isReturn": true
+            }
+          }
         },
         "git_oid_fmt": {
           "ignore": true
@@ -1600,6 +1607,16 @@
       "functions": {
         "git_status_byindex": {
           "isAsync": false
+        },
+        "git_status_file": {
+          "args": {
+            "status_flags": {
+              "isReturn": true
+            },
+            "return": {
+              "isErrorCode": true
+            }
+          }
         },
         "git_status_foreach": {
           "isAsync": true,

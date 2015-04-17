@@ -36,7 +36,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 if (ObjectWrap::Unwrap<{{ cppClassName }}>(args.This())->GetValue() != NULL) {
 {% endif %}
 
-{%if .|hasReturns %}
+{%if .|hasReturnValue %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
   {%each args|argsInfo as arg %}
     {%if arg.isReturn %}
@@ -53,7 +53,7 @@ from_{{ arg.name }}
   {%endeach%}
   );
 
-{%if return.isErrorCode %}
+{%if .|hasReturnValue |and return.isErrorCode %}
   if (result != GIT_OK) {
   {%each args|argsInfo as arg %}
     {%if arg.shouldAlloc %}

@@ -56,7 +56,7 @@ module.exports = function generateNativeCode() {
     defaultValue: require("../templates/filters/default_value"),
     fieldsInfo: require("../templates/filters/fields_info"),
     hasReturnType: require("../templates/filters/has_return_type"),
-    hasReturns: require("../templates/filters/has_returns"),
+    hasReturnValue: require("../templates/filters/has_return_value"),
     isDoublePointer: require("../templates/filters/is_double_pointer"),
     isFixedLengthString: require("../templates/filters/is_fixed_length_string"),
     isOid: require("../templates/filters/is_oid"),
