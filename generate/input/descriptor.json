@@ -1095,7 +1095,11 @@
       "shouldAlloc": true,
       "functions": {
         "git_oid_cpy": {
-          "ignore": true
+          "args": {
+            "out": {
+              "isReturn": true
+            }
+          }
         },
         "git_oid_fmt": {
           "ignore": true
