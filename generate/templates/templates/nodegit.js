@@ -71,6 +71,7 @@ require("./utils/lookup_wrapper");
 require("./utils/normalize_options");
 
 // Load up extra types;
+require("./convenient_line");
 require("./convenient_hunk");
 require("./convenient_patch");
 require("./status_file");
