@@ -20,4 +20,9 @@ describe("StatusFile", function() {
     assert.ok(this.status.isNew());
     assert.ok(!this.status.isModified());
   });
+
+  it("detects working tree and index statuses", function() {
+    assert.ok(this.status.inWorkingTree());
+    assert.ok(!this.status.inIndex());
+  });
 });
