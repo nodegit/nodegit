@@ -273,7 +273,11 @@
   "git_note_foreach_cb": {
     "args": [
       {
-        "name": "id",
+        "name": "blob_id",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "annotated_object_id",
         "cType": "const git_oid *"
       },
       {
@@ -283,7 +287,7 @@
     ],
     "return": {
       "type": "int",
-      "noResults": 1,
+      "noResults": 0,
       "success": 0,
       "error": -1
     }
