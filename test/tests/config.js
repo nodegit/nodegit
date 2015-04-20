@@ -16,6 +16,10 @@ describe("Config", function() {
   it("can get and set a global value", function() {
     var savedUserName;
 
+    function finallyFn() {
+      return exec("git config --global user.name \"" + savedUserName + "\"");
+    }
+
     return exec("git config --global user.name")
       .then(function(userName) {
         savedUserName = userName.trim();
@@ -32,13 +36,17 @@ describe("Config", function() {
       .then(function(userNameFromNodeGit) {
         assert.equal(savedUserName + "-test", userNameFromNodeGit);
       })
-      .finally(function() {
-        return exec("git config --global user.name \"" + savedUserName + "\"");
-      });
+      .then(finallyFn, finallyFn);
   });
 
   it("can get and set a repo config value", function() {
     var savedUserName;
+
+    function finallyFn() {
+      return exec("git config user.name \"" + savedUserName + "\"", {
+        cwd: reposPath
+      });
+    }
 
     return exec("git config user.name", {
       cwd: reposPath
@@ -62,10 +70,6 @@ describe("Config", function() {
     .then(function(userNameFromNodeGit) {
       assert.equal(savedUserName + "-test", userNameFromNodeGit);
     })
-    .finally(function() {
-      return exec("git config user.name \"" + savedUserName + "\"", {
-        cwd: reposPath
-      });
-    });
+    .then(finallyFn, finallyFn);
   });
 });

@@ -18,7 +18,9 @@ describe("Remote", function() {
         var promises = [];
 
         remotes.forEach(function(remote) {
-          promises.push(Remote.delete(repo, remote.name()));
+          if (remote !== "origin") {
+            promises.push(Remote.delete(repo, remote));
+          }
         });
 
         return Promise.all(promises);
