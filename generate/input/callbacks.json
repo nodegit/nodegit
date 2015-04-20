@@ -181,10 +181,6 @@
         "cType": "const git_diff_hunk *"
       },
       {
-        "name": "line",
-        "cType": "const git_diff_line *"
-      },
-      {
         "name": "payload",
         "cType": "void *"
       }
