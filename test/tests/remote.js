@@ -13,10 +13,16 @@ describe("Remote", function() {
   var url2 = "https://github.com/nodegit/test2";
 
   function removeOrigins(repository) {
-    Remote.delete(repository, "origin1");
-    Remote.delete(repository, "origin2");
-    Remote.delete(repository, "origin3");
-    Remote.delete(repository, "test2");
+    return Promise.all([
+      Remote.delete(repository, "origin1"),
+      Remote.delete(repository, "origin2"),
+      Remote.delete(repository, "origin3"),
+      Remote.delete(repository, "test2")
+    ])
+    .catch(function() {
+      // We don't care if a remote was unable to be deleted. Just try to wipe
+      // everything and we'll start from a clean slate each time.
+    });
   }
 
   beforeEach(function() {
@@ -76,9 +82,10 @@ describe("Remote", function() {
     var repository = this.repository;
     Remote.create(repository, "origin3", url);
 
-    Remote.delete(repository, "origin3");
-
-    return Remote.lookup(repository, "origin3")
+    return Remote.delete(repository, "origin3")
+      .then(function() {
+        return Remote.lookup(repository, "origin3");
+      })
       .then(Promise.reject, Promise.resolve);
   });
 
@@ -131,7 +138,7 @@ describe("Remote", function() {
       .then(function() {
         assert.ok(wasCalled);
 
-        Remote.delete(repo, "test2");
+        return Remote.delete(repo, "test2");
       });
   });
 

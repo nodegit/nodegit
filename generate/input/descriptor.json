@@ -1364,6 +1364,12 @@
         "git_remote_default_branch": {
           "ignore": true
         },
+        "git_remote_delete": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_remote_fetch": {
           "args": {
             "reflog_message": {
