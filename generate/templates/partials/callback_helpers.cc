@@ -80,6 +80,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
 
       NanAssignPersistent(baton->promise, promise);
 
+      uv_close((uv_handle_t*) &baton->req, NULL);
       uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
       uv_async_send(&baton->req);
       return;
@@ -110,7 +111,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
       baton->result = {{ cbFunction.return.noResults }};
     }
   {% endeach %}
+
   baton->done = true;
+  uv_close((uv_handle_t*) &baton->req, NULL);
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling(uv_async_t* req, int status) {
@@ -120,7 +123,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   Local<Object> promise = NanNew<Object>(baton->promise);
   NanCallback* isPendingFn = new NanCallback(promise->Get(NanNew("isPending")).As<Function>());
   Local<Value> argv[1]; // MSBUILD won't assign an array of length 0
-  Local<Boolean> isPending = isPendingFn->Call(0, argv)->ToBoolean();
+  Local<Boolean> isPending = isPendingFn->Call(promise, 0, argv)->ToBoolean();
 
   if (isPending->Value()) {
     uv_async_send(&baton->req);
@@ -128,11 +131,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   }
 
   NanCallback* isFulfilledFn = new NanCallback(promise->Get(NanNew("isFulfilled")).As<Function>());
-  Local<Boolean> isFulfilled = isFulfilledFn->Call(0, argv)->ToBoolean();
+  Local<Boolean> isFulfilled = isFulfilledFn->Call(promise, 0, argv)->ToBoolean();
 
   if (isFulfilled->Value()) {
     NanCallback* resultFn = new NanCallback(promise->Get(NanNew("value")).As<Function>());
-    Handle<v8::Value> result = resultFn->Call(0, argv);
+    Handle<v8::Value> result = resultFn->Call(promise, 0, argv);
 
     {% each cbFunction|returnsInfo false true as _return %}
       if (result.IsEmpty() || result->IsNativeError()) {
@@ -165,6 +168,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
     baton->result = {{ cbFunction.return.error }};
     baton->done = false;
   }
+
+  uv_close((uv_handle_t*) &baton->req, NULL);
 }
   {%endif%}
 {%endeach%}
