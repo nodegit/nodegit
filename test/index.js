@@ -15,4 +15,4 @@ var args = cov.concat([
   "--expose-gc"
 ]);
 
-fork(bin, args, { cwd: path.join(__dirname, "../") }).on("close", process.exit);
+fork(bin, args, { cwd: path.join(__dirname, "../") });
