@@ -524,7 +524,10 @@
       ],
       "functions": {
         "git_diff_blob_to_buffer": {
-          "ignore": true
+          "return": {
+            "isErrorCode": true
+          },
+         "isAsync": true
         },
         "git_diff_blobs": {
           "ignore": true
