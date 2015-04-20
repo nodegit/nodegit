@@ -388,7 +388,10 @@
           "ignore": true
         },
         "git_config_get_string": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_iterator_free": {
           "ignore": true
@@ -415,7 +418,10 @@
           "ignore": true
         },
         "git_config_open_default": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_open_global": {
           "ignore": true
@@ -443,6 +449,12 @@
         },
         "git_config_set_int32": {
           "ignore": true
+        },
+        "git_config_set_string": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },

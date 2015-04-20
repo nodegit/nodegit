@@ -12,17 +12,19 @@ describe("Remote", function() {
   var url = "https://github.com/nodegit/test";
   var url2 = "https://github.com/nodegit/test2";
 
-  function removeOrigins(repository) {
-    return Promise.all([
-      Remote.delete(repository, "origin1"),
-      Remote.delete(repository, "origin2"),
-      Remote.delete(repository, "origin3"),
-      Remote.delete(repository, "test2")
-    ])
-    .catch(function() {
-      // We don't care if a remote was unable to be deleted. Just try to wipe
-      // everything and we'll start from a clean slate each time.
-    });
+  function removeOrigins(repo) {
+    return repo.getRemotes()
+      .then(function(remotes) {
+        var promises = [];
+
+        remotes.forEach(function(remote) {
+          if (remote !== "origin") {
+            promises.push(Remote.delete(repo, remote));
+          }
+        });
+
+        return Promise.all(promises);
+      });
   }
 
   beforeEach(function() {
