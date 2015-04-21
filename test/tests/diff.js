@@ -163,8 +163,16 @@ describe("Diff", function() {
           null,
           null,
           null,
-          function() {
-            console.log("delta");
+          function(delta, hunk, payload) {
+            assert.equal(hunk.oldStart(), 1);
+            assert.equal(hunk.oldLines(), 19);
+            assert.equal(hunk.newStart(), 1);
+            assert.equal(hunk.newLines(), 1);
+            assert.equal(
+              hunk.header().substring(0, hunk.headerLen() - 1),
+              "@@ -1,19 +1 @@"
+            );
+            done();
           });
       });
   });
