@@ -29,8 +29,8 @@ module.exports = function retrieveExternalDependencies() {
 function getVendorLib(name) {
   var vendorPath = "vendor/" + name + "/";
   var vendorPackage = pkg[name];
-  if (NODE_VERSION === 0.1 && vendorPackage["0.10"]) {
-    vendorPackage = vendorPackage["0.10"];
+  if (vendorPackage[NODE_VERSION]) {
+    vendorPackage = vendorPackage[NODE_VERSION];
   }
 
   var version = vendorPackage.sha || vendorPackage.version;

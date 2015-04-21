@@ -36,8 +36,8 @@ function checkVendor(name, skipVersion) {
   var version = "";
   if (!skipVersion) {
     var vendorPackage = pkg[name];
-    if (NODE_VERSION === 0.1 && vendorPackage["0.10"]) {
-      vendorPackage = vendorPackage["0.10"];
+    if (vendorPackage[NODE_VERSION]) {
+      vendorPackage = vendorPackage[NODE_VERSION];
     }
     version = vendorPackage.sha || vendorPackage.version;
   }

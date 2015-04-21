@@ -14,7 +14,7 @@
   "http_parser": {
     "url": "https://github.com/joyent/http-parser/archive/v2.4.2.tar.gz",
     "version": "2.4.2",
-    "0.10": {
+    "0.1": {
       "url": "https://github.com/joyent/http-parser/archive/v2.0.tar.gz",
       "version": "2.0.0"
     }
@@ -62,7 +62,7 @@
     "which-native-nodish": "^1.1.1"
   },
   "devDependencies": {
-    "combyne": "^0.7.0",
+    "combyne": "^0.6.5",
     "coveralls": "^2.11.2",
     "istanbul": "^0.3.13",
     "js-beautify": "^1.5.5",
