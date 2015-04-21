@@ -145,11 +145,10 @@ describe("Diff", function() {
     });
   });
 
-  it("can diff the contents of a file to the index", function(done) {
+  it("can diff the contents of a file to a string", function(done) {
     this.repository.getBranchCommit("master")
       .then(function(commit) {
-        var difffile = "LICENSE";
-        return commit.getEntry(difffile);
+        return commit.getEntry("LICENSE");
       })
       .then(function(entry) {
         var _entry = entry;
@@ -157,16 +156,17 @@ describe("Diff", function() {
       })
       .then(function(blob) {
         var buffer = "New Text";
-        console.log(buffer, buffer.length);
-        Diff.blobToBuffer(blob, null, buffer, buffer.length, null, null, null, function() {
-          console.log('delta');
-          done();
-        }, null, null);
-      }, function(error) {
-        console.log('Error', error);
-        throw new Error(error);
-      })
-
+        return Diff.blobToBuffer(
+          blob,
+          null,
+          buffer,
+          null,
+          null,
+          null,
+          function() {
+            console.log("delta");
+          });
+      });
   });
 
   it("can diff with a null tree", function() {

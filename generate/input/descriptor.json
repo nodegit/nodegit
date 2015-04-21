@@ -524,6 +524,35 @@
       ],
       "functions": {
         "git_diff_blob_to_buffer": {
+          "args": {
+            "old_blob" : {
+              "isOptional": true
+            },
+            "old_as_path" : {
+              "isOptional": true
+            },
+            "buffer" : {
+              "isOptional": true
+            },
+            "buffer_len" : {
+              "isOptional": true
+            },
+            "buffer_as_path" : {
+              "isOptional": true
+            },
+            "options" : {
+              "isOptional": true
+            },
+            "file_cb" : {
+              "isOptional": true
+            },
+            "hunk_cb" : {
+              "isOptional": true
+            },
+            "line_cb" : {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           },
