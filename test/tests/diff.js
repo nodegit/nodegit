@@ -145,6 +145,38 @@ describe("Diff", function() {
     });
   });
 
+  it("can diff the contents of a file to a string", function(done) {
+    this.repository.getBranchCommit("master")
+      .then(function(commit) {
+        return commit.getEntry("LICENSE");
+      })
+      .then(function(entry) {
+        var _entry = entry;
+        return _entry.getBlob();
+      })
+      .then(function(blob) {
+        var buffer = "New Text";
+        return Diff.blobToBuffer(
+          blob,
+          null,
+          buffer,
+          null,
+          null,
+          null,
+          function(delta, hunk, payload) {
+            assert.equal(hunk.oldStart(), 1);
+            assert.equal(hunk.oldLines(), 19);
+            assert.equal(hunk.newStart(), 1);
+            assert.equal(hunk.newLines(), 1);
+            assert.equal(
+              hunk.header().substring(0, hunk.headerLen() - 1),
+              "@@ -1,19 +1 @@"
+            );
+            done();
+          });
+      });
+  });
+
   it("can diff with a null tree", function() {
     var repo = this.repository;
     var tree = this.masterCommitTree;
