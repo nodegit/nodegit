@@ -19,8 +19,6 @@ var repoUrl = "https://" + token +
   repoOwner + "/" +
   repoName + ".git";
 
-var opts = { ignoreCertErrors: 1};
-
 // If the repo is public, you can use a callback instead
 var repoUrl = "https://github.com/" + repoOwner + "/" + repoName + ".git";
 
