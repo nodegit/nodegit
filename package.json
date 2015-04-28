@@ -70,7 +70,7 @@
     "lcov-result-merger": "^1.0.2",
     "lodash": "^3.1.0",
     "mocha": "~2.1.0",
-    "nan": "^1.7.0",
+    "nan": "~1.7.0",
     "nw-gyp": "^0.12.4",
     "pangyp": "^2.1.0",
     "request": "^2.53.0",
