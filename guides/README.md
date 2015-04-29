@@ -11,7 +11,7 @@ description: Learning NodeGit
 
 - [Basics](install/)
 - [From source](install/from-source)
-- [Atom Shell](install/atom-shell/)
+- [Electron](install/electron/)
 - [NW.js](install/nw.js/)
 
 ***
