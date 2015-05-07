@@ -1,8 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/nodegit/nodegit/tree/HEAD)
+## [v0.4.0](https://github.com/nodegit/nodegit/tree/v0.4.0) (2015-05-07)
 
-[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.3...HEAD)
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.3...v0.4.0)
 
 **Closed issues:**
 
