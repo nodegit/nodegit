@@ -110,20 +110,13 @@ module.exports = function generateNativeCode() {
     utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)));
     // Write out all the classes.
     enabled.forEach(function(idef) {
-      try {
-        if (idef.type && idef.type != "enum") {
-          utils.writeFile(
-            "../src/" + idef.filename + ".cc", templates[idef.type + "_content"].render(idef)
-          );
-          utils.writeFile(
-            "../include/" + idef.filename + ".h", templates[idef.type + "_header"].render(idef)
-          );
-        }
-      }
-      catch (e) {
-        if (process.env.BUILD_ONLY) {
-          console.error(e);
-        }
+      if (idef.type && idef.type != "enum") {
+        utils.writeFile(
+          "../src/" + idef.filename + ".cc", templates[idef.type + "_content"].render(idef)
+        );
+        utils.writeFile(
+          "../include/" + idef.filename + ".h", templates[idef.type + "_header"].render(idef)
+        );
       }
     });
 

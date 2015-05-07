@@ -2,9 +2,167 @@
 
 ## [Unreleased](https://github.com/nodegit/nodegit/tree/HEAD)
 
-[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.7...HEAD)
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.3...HEAD)
 
 **Closed issues:**
+
+- Error installing nodegit as dependency of an atom-shell app [\#556](https://github.com/nodegit/nodegit/issues/556)
+
+- New version of nan is breaking compile [\#554](https://github.com/nodegit/nodegit/issues/554)
+
+- Install error from openssl [\#551](https://github.com/nodegit/nodegit/issues/551)
+
+- How to get Tag instance by tag\_name? [\#543](https://github.com/nodegit/nodegit/issues/543)
+
+- ELIFECYCLE Error on install [\#540](https://github.com/nodegit/nodegit/issues/540)
+
+- Remote.delete returns -3 [\#539](https://github.com/nodegit/nodegit/issues/539)
+
+- Repository.init should accept boolean value for is\_bare [\#538](https://github.com/nodegit/nodegit/issues/538)
+
+- getStatus hangs [\#537](https://github.com/nodegit/nodegit/issues/537)
+
+- Unable to compile or install with npm install nodegit [\#536](https://github.com/nodegit/nodegit/issues/536)
+
+- `options` not reusable, nodegit destroys it [\#533](https://github.com/nodegit/nodegit/issues/533)
+
+- 'Error: 'directory' exists and is not an empty directory' \(but it doesn't exist\) [\#530](https://github.com/nodegit/nodegit/issues/530)
+
+- hey !:-\) problem with Branch.iteratorNew  \(support\) [\#528](https://github.com/nodegit/nodegit/issues/528)
+
+- hey !:-\) problem with Branch.iteratorNew [\#527](https://github.com/nodegit/nodegit/issues/527)
+
+- hey !:-\) problem with Branch.iteratorNew [\#526](https://github.com/nodegit/nodegit/issues/526)
+
+- hey !:-\) problem with Branch.iteratorNew [\#525](https://github.com/nodegit/nodegit/issues/525)
+
+- Error: Reference 'refs/remotes/user/foo/HEAD' not found [\#523](https://github.com/nodegit/nodegit/issues/523)
+
+- Path issues windows [\#522](https://github.com/nodegit/nodegit/issues/522)
+
+- Issues on scientific linux 6.6 [\#521](https://github.com/nodegit/nodegit/issues/521)
+
+- It's looking for node-typ under `/Users/johnh/.node-gyp` [\#518](https://github.com/nodegit/nodegit/issues/518)
+
+- Not working with iojs [\#516](https://github.com/nodegit/nodegit/issues/516)
+
+- Cred.sshKeyNew not working: Too many redirects or authentication replays [\#511](https://github.com/nodegit/nodegit/issues/511)
+
+- Open a Repo from a subfolder [\#509](https://github.com/nodegit/nodegit/issues/509)
+
+- Create git-like CLI [\#508](https://github.com/nodegit/nodegit/issues/508)
+
+- Cannot create an instance of Packbuilder [\#507](https://github.com/nodegit/nodegit/issues/507)
+
+- Cannot find module '../build/Debug/nodegit' [\#506](https://github.com/nodegit/nodegit/issues/506)
+
+- Bug with oid implicit cast inside C++ [\#501](https://github.com/nodegit/nodegit/issues/501)
+
+- Failed to `require` on Ubuntu 12.04LTS [\#493](https://github.com/nodegit/nodegit/issues/493)
+
+- Enable `git\_config`  [\#449](https://github.com/nodegit/nodegit/issues/449)
+
+- Pull example doesn't fully update the index [\#389](https://github.com/nodegit/nodegit/issues/389)
+
+**Merged pull requests:**
+
+- There is an incompatibility with NaN 1.8.x, keeping 1.7.x for now. [\#552](https://github.com/nodegit/nodegit/pull/552) ([wiggzz](https://github.com/wiggzz))
+
+- A wrapper for git\_diff\_blob\_to\_buffer [\#550](https://github.com/nodegit/nodegit/pull/550) ([bleathem](https://github.com/bleathem))
+
+- A wrapper for git\_diff\_blob\_to\_buffer [\#549](https://github.com/nodegit/nodegit/pull/549) ([bleathem](https://github.com/bleathem))
+
+- Removed the superflous "line" argument [\#547](https://github.com/nodegit/nodegit/pull/547) ([bleathem](https://github.com/bleathem))
+
+- This fixes polling sync promises in callbacks. [\#546](https://github.com/nodegit/nodegit/pull/546) ([johnhaley81](https://github.com/johnhaley81))
+
+- Add get/set config string methods and tests [\#545](https://github.com/nodegit/nodegit/pull/545) ([johnhaley81](https://github.com/johnhaley81))
+
+- Make `Remote.delete` async and return error messages correctly [\#544](https://github.com/nodegit/nodegit/pull/544) ([johnhaley81](https://github.com/johnhaley81))
+
+- Bump "nodegit-promise" version [\#542](https://github.com/nodegit/nodegit/pull/542) ([johnhaley81](https://github.com/johnhaley81))
+
+- Introduced a new ConvenientLine class to wrap the lines returned from ConvenientHunk. [\#541](https://github.com/nodegit/nodegit/pull/541) ([bleathem](https://github.com/bleathem))
+
+- Fix some things missed by the generating scripts [\#535](https://github.com/nodegit/nodegit/pull/535) ([johnhaley81](https://github.com/johnhaley81))
+
+- Attempt remove the delete keyword [\#534](https://github.com/nodegit/nodegit/pull/534) ([tbranyen](https://github.com/tbranyen))
+
+- Fix freeing a `GitOid` that was passed as a string [\#531](https://github.com/nodegit/nodegit/pull/531) ([johnhaley81](https://github.com/johnhaley81))
+
+- fix typo: "byes" [\#529](https://github.com/nodegit/nodegit/pull/529) ([rutsky](https://github.com/rutsky))
+
+- Add convenience methods to status file [\#524](https://github.com/nodegit/nodegit/pull/524) ([maxkorp](https://github.com/maxkorp))
+
+- Lots of complaints of missing build/Debug/nodegit [\#520](https://github.com/nodegit/nodegit/pull/520) ([tbranyen](https://github.com/tbranyen))
+
+- Add `Graph.aheadBehind` and tests [\#517](https://github.com/nodegit/nodegit/pull/517) ([johnhaley81](https://github.com/johnhaley81))
+
+- Update to use libgit2 v0.22.2 [\#515](https://github.com/nodegit/nodegit/pull/515) ([johnhaley81](https://github.com/johnhaley81))
+
+- Add `Repository.prototype.fetchheadForeach` and tests [\#514](https://github.com/nodegit/nodegit/pull/514) ([johnhaley81](https://github.com/johnhaley81))
+
+- Converted create methods to be synchronous [\#513](https://github.com/nodegit/nodegit/pull/513) ([tbranyen](https://github.com/tbranyen))
+
+- Fix atom-shell build on windows [\#512](https://github.com/nodegit/nodegit/pull/512) ([johnhaley81](https://github.com/johnhaley81))
+
+- Update Checkout and Merge [\#505](https://github.com/nodegit/nodegit/pull/505) ([orderedlist](https://github.com/orderedlist))
+
+- Add note tests [\#504](https://github.com/nodegit/nodegit/pull/504) ([tbranyen](https://github.com/tbranyen))
+
+- Revert "Guide navigation is currently confusing" [\#503](https://github.com/nodegit/nodegit/pull/503) ([thgaskell](https://github.com/thgaskell))
+
+- Improve coverage [\#502](https://github.com/nodegit/nodegit/pull/502) ([tbranyen](https://github.com/tbranyen))
+
+- Adds in CPP code coverage and joined JS [\#499](https://github.com/nodegit/nodegit/pull/499) ([tbranyen](https://github.com/tbranyen))
+
+- Add twitter username to README.md [\#498](https://github.com/nodegit/nodegit/pull/498) ([johnhaley81](https://github.com/johnhaley81))
+
+- Fix symbolic reference handling in getReferences [\#496](https://github.com/nodegit/nodegit/pull/496) ([billt2006](https://github.com/billt2006))
+
+- Enable `git\_stash\_foreach` [\#495](https://github.com/nodegit/nodegit/pull/495) ([johnhaley81](https://github.com/johnhaley81))
+
+- Guide navigation is currently confusing [\#494](https://github.com/nodegit/nodegit/pull/494) ([tbranyen](https://github.com/tbranyen))
+
+- Fix gitter badge for npm [\#492](https://github.com/nodegit/nodegit/pull/492) ([billt2006](https://github.com/billt2006))
+
+- Add automatically generated change log file. [\#465](https://github.com/nodegit/nodegit/pull/465) ([skywinder](https://github.com/skywinder))
+
+## [v0.3.3](https://github.com/nodegit/nodegit/tree/v0.3.3) (2015-03-16)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.2...v0.3.3)
+
+**Merged pull requests:**
+
+- Download all dev dependencies before build [\#491](https://github.com/nodegit/nodegit/pull/491) ([johnhaley81](https://github.com/johnhaley81))
+
+## [v0.3.2](https://github.com/nodegit/nodegit/tree/v0.3.2) (2015-03-16)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.1...v0.3.2)
+
+**Closed issues:**
+
+- Amazon S3 CDN link is broken [\#482](https://github.com/nodegit/nodegit/issues/482)
+
+**Merged pull requests:**
+
+- Confirm builder exists before building [\#490](https://github.com/nodegit/nodegit/pull/490) ([johnhaley81](https://github.com/johnhaley81))
+
+## [v0.3.1](https://github.com/nodegit/nodegit/tree/v0.3.1) (2015-03-14)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.0...v0.3.1)
+
+**Merged pull requests:**
+
+- Revert node-pre-gyp to install not build [\#486](https://github.com/nodegit/nodegit/pull/486) ([tbranyen](https://github.com/tbranyen))
+
+## [v0.3.0](https://github.com/nodegit/nodegit/tree/v0.3.0) (2015-03-13)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.7...v0.3.0)
+
+**Closed issues:**
+
+- Push [\#463](https://github.com/nodegit/nodegit/issues/463)
 
 - Suppress astyle errors [\#459](https://github.com/nodegit/nodegit/issues/459)
 
@@ -12,13 +170,9 @@
 
 - Meteor: icon fonts not working \(Resource interpreted as Font but transferred with MIME type text/html\) [\#443](https://github.com/nodegit/nodegit/issues/443)
 
-- Don't let users set the payloads through JS [\#436](https://github.com/nodegit/nodegit/issues/436)
-
-- Transfer callback stats are being converted wrong [\#432](https://github.com/nodegit/nodegit/issues/432)
+- AnnotatedCommit.x listing as Annotated.commitX [\#437](https://github.com/nodegit/nodegit/issues/437)
 
 - fetchAll\(\) fails unless a default signature is available [\#431](https://github.com/nodegit/nodegit/issues/431)
-
-- Push example needs to be updated [\#429](https://github.com/nodegit/nodegit/issues/429)
 
 - Question: Is there a certificateCheck option available for pushing to a remote repository? [\#420](https://github.com/nodegit/nodegit/issues/420)
 
@@ -38,8 +192,6 @@
 
 - Subtrees + custom error handling [\#400](https://github.com/nodegit/nodegit/issues/400)
 
-- Callbacks need to handle more use-cases [\#395](https://github.com/nodegit/nodegit/issues/395)
-
 - How to use nodegit in atom shell ..... [\#393](https://github.com/nodegit/nodegit/issues/393)
 
 - Cannot create a new branch [\#391](https://github.com/nodegit/nodegit/issues/391)
@@ -50,39 +202,57 @@
 
 - Rename combyne folder to templates [\#378](https://github.com/nodegit/nodegit/issues/378)
 
-- Building for atom-shell v0.21.0 fails [\#376](https://github.com/nodegit/nodegit/issues/376)
-
 - Cloning SSH repos seem to fail  [\#372](https://github.com/nodegit/nodegit/issues/372)
 
 - Commit.getDiff is backwards? [\#368](https://github.com/nodegit/nodegit/issues/368)
 
 - List all files in repo \(git ls-tree\) [\#365](https://github.com/nodegit/nodegit/issues/365)
 
-- Cloning locks up when more than 3 at the same time.  [\#364](https://github.com/nodegit/nodegit/issues/364)
-
 - Checking out a branch [\#361](https://github.com/nodegit/nodegit/issues/361)
 
 - nodegit no longer builds in nwjs [\#360](https://github.com/nodegit/nodegit/issues/360)
-
-- Update to v0.22 of libgit2 [\#355](https://github.com/nodegit/nodegit/issues/355)
 
 - Module install/build fails on Heroku  [\#332](https://github.com/nodegit/nodegit/issues/332)
 
 - 2 Step Authentication [\#323](https://github.com/nodegit/nodegit/issues/323)
 
-- Needed Examples for 0.3.0 [\#321](https://github.com/nodegit/nodegit/issues/321)
-
-- Tests randomly failing in AppVeyor [\#316](https://github.com/nodegit/nodegit/issues/316)
-
-- Start using prepublishing to fix dependencies [\#301](https://github.com/nodegit/nodegit/issues/301)
-
-- Get commits history only for a file [\#220](https://github.com/nodegit/nodegit/issues/220)
-
-- enable Index.addAll and related [\#131](https://github.com/nodegit/nodegit/issues/131)
-
 **Merged pull requests:**
 
+- Rename `Annotated` to `AnnotatedCommit` [\#485](https://github.com/nodegit/nodegit/pull/485) ([johnhaley81](https://github.com/johnhaley81))
+
+- Bump version to 0.3.0 [\#484](https://github.com/nodegit/nodegit/pull/484) ([johnhaley81](https://github.com/johnhaley81))
+
+- Remove unneeded connect call from push example [\#483](https://github.com/nodegit/nodegit/pull/483) ([johnhaley81](https://github.com/johnhaley81))
+
+- Update push example [\#481](https://github.com/nodegit/nodegit/pull/481) ([billt2006](https://github.com/billt2006))
+
+- Fix trailing space in atom-shell windows install [\#480](https://github.com/nodegit/nodegit/pull/480) ([johnhaley81](https://github.com/johnhaley81))
+
+- Fix atom-shell install on windows [\#479](https://github.com/nodegit/nodegit/pull/479) ([johnhaley81](https://github.com/johnhaley81))
+
+- Updated API documentation link to work with NPM's markdown renderer.  [\#477](https://github.com/nodegit/nodegit/pull/477) ([hughfdjackson](https://github.com/hughfdjackson))
+
+- Add option to `fetch` to prune the remote afterwards [\#476](https://github.com/nodegit/nodegit/pull/476) ([johnhaley81](https://github.com/johnhaley81))
+
+- Make index.addAll use status to increase performance [\#475](https://github.com/nodegit/nodegit/pull/475) ([maxkorp](https://github.com/maxkorp))
+
+- Add defaults to `Remote.prototype.push` [\#474](https://github.com/nodegit/nodegit/pull/474) ([johnhaley81](https://github.com/johnhaley81))
+
+- Fix `createCommitOnHead` [\#473](https://github.com/nodegit/nodegit/pull/473) ([johnhaley81](https://github.com/johnhaley81))
+
+- Move guides around to remove subindexes [\#472](https://github.com/nodegit/nodegit/pull/472) ([orderedlist](https://github.com/orderedlist))
+
+- Put `Remote.Push` on the remote prototype [\#470](https://github.com/nodegit/nodegit/pull/470) ([johnhaley81](https://github.com/johnhaley81))
+
+- Change Repository.prototype.setHead to be asynchronous [\#469](https://github.com/nodegit/nodegit/pull/469) ([jrbalsano](https://github.com/jrbalsano))
+
+- Test in Node 0.12 and io.js [\#468](https://github.com/nodegit/nodegit/pull/468) ([tbranyen](https://github.com/tbranyen))
+
+- Add checkoutBranch convenience method [\#466](https://github.com/nodegit/nodegit/pull/466) ([johnhaley81](https://github.com/johnhaley81))
+
 - Don't assign enums to \_\_proto\_\_ [\#464](https://github.com/nodegit/nodegit/pull/464) ([orderedlist](https://github.com/orderedlist))
+
+- Fix push example [\#462](https://github.com/nodegit/nodegit/pull/462) ([johnhaley81](https://github.com/johnhaley81))
 
 - Adds support for strarray in structs [\#461](https://github.com/nodegit/nodegit/pull/461) ([orderedlist](https://github.com/orderedlist))
 
@@ -118,13 +288,9 @@
 
 - Put `uv\_async\_init` on main thread [\#438](https://github.com/nodegit/nodegit/pull/438) ([johnhaley81](https://github.com/johnhaley81))
 
-- Fix libuv threading issue [\#435](https://github.com/nodegit/nodegit/pull/435) ([johnhaley81](https://github.com/johnhaley81))
-
 - Automatically free repositories post clone [\#434](https://github.com/nodegit/nodegit/pull/434) ([tbranyen](https://github.com/tbranyen))
 
 - Skip transfer progress test until it's fixed [\#433](https://github.com/nodegit/nodegit/pull/433) ([johnhaley81](https://github.com/johnhaley81))
-
-- git\_create\_tag doesn't have the correct descriptor [\#430](https://github.com/nodegit/nodegit/pull/430) ([mattyclarkson](https://github.com/mattyclarkson))
 
 - Change environment to default for upgraded service [\#428](https://github.com/nodegit/nodegit/pull/428) ([maxkorp](https://github.com/maxkorp))
 
@@ -145,6 +311,8 @@
 - Fixes segfault issue recorded in \#406 [\#419](https://github.com/nodegit/nodegit/pull/419) ([tbranyen](https://github.com/tbranyen))
 
 - Update jsdoc and ignore some methods [\#418](https://github.com/nodegit/nodegit/pull/418) ([orderedlist](https://github.com/orderedlist))
+
+- Converting Examples to Guides [\#417](https://github.com/nodegit/nodegit/pull/417) ([tbranyen](https://github.com/tbranyen))
 
 - Fix callbacks with just return value and single payload [\#416](https://github.com/nodegit/nodegit/pull/416) ([johnhaley81](https://github.com/johnhaley81))
 
@@ -234,10 +402,6 @@
 
 - Can't require nodegit without building it explicitly [\#340](https://github.com/nodegit/nodegit/issues/340)
 
-- Can't build for node-webkit [\#335](https://github.com/nodegit/nodegit/issues/335)
-
-- Error when creating a new ssh key during credential handshake. [\#333](https://github.com/nodegit/nodegit/issues/333)
-
 - Tracking down bugs [\#331](https://github.com/nodegit/nodegit/issues/331)
 
 - Document possible values of CloneOptions [\#330](https://github.com/nodegit/nodegit/issues/330)
@@ -249,10 +413,6 @@
 - Documentation broken [\#327](https://github.com/nodegit/nodegit/issues/327)
 
 - Fetch doesn't seem to work with https urls. [\#322](https://github.com/nodegit/nodegit/issues/322)
-
-- `git diff --cached --name-only` [\#183](https://github.com/nodegit/nodegit/issues/183)
-
-- git status [\#170](https://github.com/nodegit/nodegit/issues/170)
 
 **Merged pull requests:**
 
@@ -314,8 +474,6 @@
 
 - current branch [\#305](https://github.com/nodegit/nodegit/issues/305)
 
-- Don't require json output for production [\#302](https://github.com/nodegit/nodegit/issues/302)
-
 - Module fails to load [\#299](https://github.com/nodegit/nodegit/issues/299)
 
 - How to list all tags? [\#298](https://github.com/nodegit/nodegit/issues/298)
@@ -323,10 +481,6 @@
 - Building for ARM [\#292](https://github.com/nodegit/nodegit/issues/292)
 
 - Next release checklist [\#256](https://github.com/nodegit/nodegit/issues/256)
-
-- CI issues [\#202](https://github.com/nodegit/nodegit/issues/202)
-
-- Variable names in the Docs?  [\#157](https://github.com/nodegit/nodegit/issues/157)
 
 **Merged pull requests:**
 
@@ -400,8 +554,6 @@
 
 - require\('path'\).Repo.open\(...\) returns {} [\#241](https://github.com/nodegit/nodegit/issues/241)
 
-- Refactoring how internal C objects are stored in V8 and passed to JS [\#240](https://github.com/nodegit/nodegit/issues/240)
-
 - RevWalk malloc error [\#239](https://github.com/nodegit/nodegit/issues/239)
 
 - OS X tests in Travis-CI [\#237](https://github.com/nodegit/nodegit/issues/237)
@@ -420,23 +572,11 @@
 
 - Did getReferences dissapear? [\#223](https://github.com/nodegit/nodegit/issues/223)
 
-- How to get UNIX file attributes? [\#222](https://github.com/nodegit/nodegit/issues/222)
-
-- How to get mtime for TreeEntry/file? [\#221](https://github.com/nodegit/nodegit/issues/221)
-
-- Commit only if there is changes [\#219](https://github.com/nodegit/nodegit/issues/219)
-
 - Again for \#147 [\#218](https://github.com/nodegit/nodegit/issues/218)
 
 - Update documentation on nodegit.org [\#217](https://github.com/nodegit/nodegit/issues/217)
 
-- Can you provide the prebuilt binaries on S3? [\#216](https://github.com/nodegit/nodegit/issues/216)
-
 - Stable = bump to 1.0 [\#215](https://github.com/nodegit/nodegit/issues/215)
-
-- How can I push a commit? [\#214](https://github.com/nodegit/nodegit/issues/214)
-
-- "Error: Reference 'refs/heads/master' not found " when create commit in a empty repo [\#213](https://github.com/nodegit/nodegit/issues/213)
 
 - Example on nodegit.com homepage is invalid [\#211](https://github.com/nodegit/nodegit/issues/211)
 
@@ -454,15 +594,9 @@
 
 - CloneOptions documentation lacking [\#192](https://github.com/nodegit/nodegit/issues/192)
 
-- Getting the HEAD commit SHA [\#191](https://github.com/nodegit/nodegit/issues/191)
-
 - Webpage examples are not up to date [\#190](https://github.com/nodegit/nodegit/issues/190)
 
 - Automatically generate structs from types array [\#187](https://github.com/nodegit/nodegit/issues/187)
-
-- Adding a new file always returns the same SHA. [\#185](https://github.com/nodegit/nodegit/issues/185)
-
-- Current Travis passes with fallback binary. [\#182](https://github.com/nodegit/nodegit/issues/182)
 
 - Error: connect ETIMEDOUT during install [\#179](https://github.com/nodegit/nodegit/issues/179)
 
@@ -470,59 +604,7 @@
 
 - Notes [\#176](https://github.com/nodegit/nodegit/issues/176)
 
-- How to create a branch [\#174](https://github.com/nodegit/nodegit/issues/174)
-
-- `p-\>index\_map.data' failed [\#172](https://github.com/nodegit/nodegit/issues/172)
-
 - Integration improvements. [\#171](https://github.com/nodegit/nodegit/issues/171)
-
-- invalid ELF header from build/Release/nodegit.node [\#167](https://github.com/nodegit/nodegit/issues/167)
-
-- Removing generated source. [\#165](https://github.com/nodegit/nodegit/issues/165)
-
-- using newer libgit2 version [\#164](https://github.com/nodegit/nodegit/issues/164)
-
-- Generating tests for bindings. [\#163](https://github.com/nodegit/nodegit/issues/163)
-
-- Streams? [\#161](https://github.com/nodegit/nodegit/issues/161)
-
-- Unfortunately GitHub decided to go their own way :-/ [\#160](https://github.com/nodegit/nodegit/issues/160)
-
-- Separate additional meta data from JSON. [\#152](https://github.com/nodegit/nodegit/issues/152)
-
-- Git Pull [\#151](https://github.com/nodegit/nodegit/issues/151)
-
-- branch.cc missing from binding.gyp [\#149](https://github.com/nodegit/nodegit/issues/149)
-
-- numDeltasOfType is a static method not on the prototype [\#148](https://github.com/nodegit/nodegit/issues/148)
-
-- Not sure how this happen [\#147](https://github.com/nodegit/nodegit/issues/147)
-
-- Emscripten binding templates. [\#142](https://github.com/nodegit/nodegit/issues/142)
-
-- git+ssh transport support [\#136](https://github.com/nodegit/nodegit/issues/136)
-
-- Support for git\_merge [\#133](https://github.com/nodegit/nodegit/issues/133)
-
-- Random segfault in kh\_get\_off [\#132](https://github.com/nodegit/nodegit/issues/132)
-
-- Unexpected HTTP status code: 401 [\#130](https://github.com/nodegit/nodegit/issues/130)
-
-- Commit\#messageEncoding triggers a segmentation fault [\#129](https://github.com/nodegit/nodegit/issues/129)
-
-- Passing CloneOptions [\#127](https://github.com/nodegit/nodegit/issues/127)
-
-- Commit.getDiff\(\) fails for first commit [\#125](https://github.com/nodegit/nodegit/issues/125)
-
-- Adding directories [\#121](https://github.com/nodegit/nodegit/issues/121)
-
-- checkout head and update working tree [\#114](https://github.com/nodegit/nodegit/issues/114)
-
-- Index add cacheinfo [\#111](https://github.com/nodegit/nodegit/issues/111)
-
-- Remote.prototype.pushUrl\(\) Segmentation fault: 11 and Remote.prototype.setPushUrl\(url\) not working ? [\#109](https://github.com/nodegit/nodegit/issues/109)
-
-- Set working tree [\#93](https://github.com/nodegit/nodegit/issues/93)
 
 **Merged pull requests:**
 
@@ -660,10 +742,6 @@
 
 - \[Experimental\] Emscripten fun. [\#168](https://github.com/nodegit/nodegit/pull/168) ([tbranyen](https://github.com/tbranyen))
 
-- \[WIP\] Descriptor refactor. [\#162](https://github.com/nodegit/nodegit/pull/162) ([tbranyen](https://github.com/tbranyen))
-
-- Enable promises. [\#153](https://github.com/nodegit/nodegit/pull/153) ([tbranyen](https://github.com/tbranyen))
-
 ## [v0.1.4](https://github.com/nodegit/nodegit/tree/v0.1.4) (2014-06-13)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.1.3...v0.1.4)
@@ -674,13 +752,9 @@
 
 - using "Branch" object results in "undefined" error =\> branch.cc missing from binding.gyp? [\#166](https://github.com/nodegit/nodegit/issues/166)
 
-- Feature: Compatibility with node \>=v0.11.13 [\#159](https://github.com/nodegit/nodegit/issues/159)
-
 - Windows: Failure on install [\#158](https://github.com/nodegit/nodegit/issues/158)
 
 - Can't install v0.1.2 under OSX [\#155](https://github.com/nodegit/nodegit/issues/155)
-
-- Logo for project [\#69](https://github.com/nodegit/nodegit/issues/69)
 
 **Merged pull requests:**
 
@@ -693,10 +767,6 @@
 ## [v0.1.3](https://github.com/nodegit/nodegit/tree/v0.1.3) (2014-05-02)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.1.2...v0.1.3)
-
-**Closed issues:**
-
-- Fix AppVeyor. [\#154](https://github.com/nodegit/nodegit/issues/154)
 
 **Merged pull requests:**
 
@@ -782,8 +852,6 @@
 
 - missing cstring [\#88](https://github.com/nodegit/nodegit/issues/88)
 
-- Memory management for the codegen `wip` branch [\#84](https://github.com/nodegit/nodegit/issues/84)
-
 - Installing fails - can't find vendor/libgit2/build [\#80](https://github.com/nodegit/nodegit/issues/80)
 
 - Improving JavaScript API [\#73](https://github.com/nodegit/nodegit/issues/73)
@@ -842,23 +910,13 @@
 
 - Nested walks scatter memory and cause SEGFAULTS [\#72](https://github.com/nodegit/nodegit/issues/72)
 
-- Why is new git.Oid\(\).fromString\(\) etc. async? [\#68](https://github.com/nodegit/nodegit/issues/68)
-
 - feature request: Provide fileMode / getType method on tree entries [\#67](https://github.com/nodegit/nodegit/issues/67)
 
 - Document DiffList [\#66](https://github.com/nodegit/nodegit/issues/66)
 
-- Implement query-like access to repo content [\#61](https://github.com/nodegit/nodegit/issues/61)
-
-- Tags [\#58](https://github.com/nodegit/nodegit/issues/58)
-
 - Procedure for moving development to nodegit/nodegit [\#55](https://github.com/nodegit/nodegit/issues/55)
 
-- cloning or updating repositories? [\#50](https://github.com/nodegit/nodegit/issues/50)
-
 - Cannot install on OSX [\#49](https://github.com/nodegit/nodegit/issues/49)
-
-- Add file to repo [\#45](https://github.com/nodegit/nodegit/issues/45)
 
 **Merged pull requests:**
 
@@ -878,11 +936,7 @@
 
 **Closed issues:**
 
-- Un-chain async example on github pages [\#65](https://github.com/nodegit/nodegit/issues/65)
-
 - Clarify commit.history documentation [\#63](https://github.com/nodegit/nodegit/issues/63)
-
-- Make commit.time pass Date object [\#62](https://github.com/nodegit/nodegit/issues/62)
 
 - Python error on installing nodegit 0.0.77 [\#59](https://github.com/nodegit/nodegit/issues/59)
 
@@ -968,8 +1022,6 @@
 
 - update for node 0.5.9 [\#29](https://github.com/nodegit/nodegit/issues/29)
 
-- Issue with errors [\#23](https://github.com/nodegit/nodegit/issues/23)
-
 **Merged pull requests:**
 
 - Converted from eio\_custom to uv\_queue\_work [\#48](https://github.com/nodegit/nodegit/pull/48) ([faceleg](https://github.com/faceleg))
@@ -1018,10 +1070,6 @@
 
 - example/convenience-repo.js errors [\#21](https://github.com/nodegit/nodegit/issues/21)
 
-- Use new Error when throwing exceptions [\#20](https://github.com/nodegit/nodegit/issues/20)
-
-- Scope.close when handlescope is used [\#19](https://github.com/nodegit/nodegit/issues/19)
-
 - Branch history each method is asynchronous [\#11](https://github.com/nodegit/nodegit/issues/11)
 
 ## [v0.0.3](https://github.com/nodegit/nodegit/tree/v0.0.3) (2011-04-13)
@@ -1031,10 +1079,6 @@
 **Closed issues:**
 
 - error handling [\#18](https://github.com/nodegit/nodegit/issues/18)
-
-- nodegit namespace [\#14](https://github.com/nodegit/nodegit/issues/14)
-
-- Rename all classes to have Git prefix [\#13](https://github.com/nodegit/nodegit/issues/13)
 
 - Windows link issue [\#12](https://github.com/nodegit/nodegit/issues/12)
 

@@ -5,7 +5,7 @@ var rawApi;
 // Attempt to load the production release first, if it fails fall back to the
 // debug release.
 try {
-  rawApi = require("../build/Release/nodegit");
+  rawApi = require("../build/Release/nodegit.node");
 }
 catch (ex) {
   /* istanbul ignore next */
@@ -13,7 +13,7 @@ catch (ex) {
     throw ex;
   }
 
-  rawApi = require("../build/Debug/nodegit");
+  rawApi = require("../build/Debug/nodegit.node");
 }
 
 // Native methods do not return an identifiable function, so we
