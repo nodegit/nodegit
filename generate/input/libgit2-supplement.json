@@ -108,6 +108,28 @@
   },
   "new" : {
     "functions": {
+      "git_rebase_next": {
+        "type": "function",
+        "file": "rebase.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_rebase_operation **"
+          },
+          {
+            "name": "rebase",
+            "type": "git_rebase *"
+          },
+          {
+            "name": "checkout_opts",
+            "type": "git_checkout_options *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "rebase"
+      },
       "git_reset": {
         "type": "function",
         "file": "reset.h",
@@ -498,6 +520,9 @@
     }
   },
   "groups": {
+    "rebase": [
+      "git_rebase_next"
+    ],
     "reset": [
       "git_reset"
     ],
