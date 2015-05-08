@@ -175,7 +175,7 @@
     },
     "groups": [
       [
-        "annotated",
+        "annotated_commit",
         [
           "git_annotated_commit_free",
           "git_annotated_commit_from_fetchhead",
