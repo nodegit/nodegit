@@ -98,7 +98,6 @@
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "postinstall": "node lifecycleScripts/clean",
     "recompile": "pangyp configure build",
     "rebuild": "node generate && pangyp configure build",
     "recompileDebug": "pangyp configure --debug build",
