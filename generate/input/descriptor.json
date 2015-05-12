@@ -1278,6 +1278,43 @@
         }
       }
     },
+    "rebase": {
+      "functions": {
+        "git_rebase_commit": {
+          "args": {
+            "id": {
+              "isReturn": true,
+              "shouldAlloc": true
+            },
+            "author": {
+              "isOptional": true
+            },
+            "message_encoding": {
+              "isOptional": true
+            },
+            "message": {
+              "isOptional": true
+            }
+          }
+        },
+        "git_rebase_init": {
+          "args": {
+            "upstream": {
+              "isOptional": true
+            },
+            "onto": {
+              "isOptional": true
+            },
+            "signature": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          }
+        }
+      }
+    },
     "refdb": {
       "functions": {
         "git_refdb_backend_fs": {
