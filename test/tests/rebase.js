@@ -12,6 +12,28 @@ describe("Rebase", function() {
   var ourBranchName = "ours";
   var theirBranchName = "theirs";
 
+  var addFileToIndex = function(repository, fileName) {
+    return repository.openIndex()
+      .then(function(index) {
+        index.read(1);
+        index.addByPath(fileName);
+        index.write();
+
+        return index.writeTree();
+      });
+  };
+
+  var removeFileFromIndex = function(repository, fileName) {
+    return repository.openIndex()
+      .then(function(index) {
+        index.read(1);
+        index.removeByPath(fileName);
+        index.write();
+
+        return index.writeTree();
+      });
+  };
+
   beforeEach(function() {
     var test = this;
     return fse.remove(repoPath)
@@ -50,14 +72,7 @@ describe("Rebase", function() {
         ourFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.addByPath(ourFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -85,14 +100,7 @@ describe("Rebase", function() {
           theirFileContent);
       })
       .then(function() {
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.addByPath(theirFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -107,14 +115,7 @@ describe("Rebase", function() {
       })
       .then(function() {
         // unstage changes so that we can begin a rebase
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.removeByPath(theirFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return removeFileFromIndex(repository, theirFileName);
       })
       .then(function() {
         return Promise.all([
@@ -183,16 +184,9 @@ describe("Rebase", function() {
 
     return fse.writeFile(path.join(repository.workdir(), baseFileName),
       baseFileContent)
+      // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        // Load up the repository index and make our initial commit to HEAD
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.addByPath(baseFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return addFileToIndex(repository, baseFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -221,14 +215,7 @@ describe("Rebase", function() {
           theirFileContent);
       })
       .then(function() {
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.addByPath(theirFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -243,14 +230,7 @@ describe("Rebase", function() {
           "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
       })
       .then(function() {
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.removeByPath(theirFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return removeFileFromIndex(repository, theirFileName);
       })
       .then(function() {
         return fse.remove(path.join(repository.workdir(), theirFileName));
@@ -260,14 +240,7 @@ describe("Rebase", function() {
           ourFileContent);
       })
       .then(function() {
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.addByPath(ourFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -281,14 +254,7 @@ describe("Rebase", function() {
           "e7f37ee070837052937e24ad8ba66f6d83ae7941");
       })
       .then(function() {
-        return repository.openIndex()
-          .then(function(index) {
-            index.read(1);
-            index.removeByPath(ourFileName);
-            index.write();
-
-            return index.writeTree();
-          });
+        return removeFileFromIndex(repository, ourFileName);
       })
       .then(function() {
         return fse.remove(path.join(repository.workdir(), ourFileName));
