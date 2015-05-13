@@ -528,4 +528,188 @@ describe("Rebase", function() {
           "b3c355bb606ec7da87174dfa1a0b0c0e3dc97bc0");
       });
   });
+
+  it("can abort an in-progress rebase", function() {
+    var baseFileName = "baseNewFile.txt";
+    var ourFileName = "ourNewFile.txt";
+    var theirFileName = "theirNewFile.txt";
+
+    var baseFileContent = "How do you feel about Toll Roads?";
+    var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
+    var theirFileContent = "I'm skeptical about Toll Roads";
+
+    var ourSignature = NodeGit.Signature.create
+          ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+    var theirSignature = NodeGit.Signature.create
+          ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
+
+    var repository = this.repository;
+    var ourCommit;
+    var ourBranch;
+    var theirBranch;
+    var rebase;
+
+    return fse.writeFile(path.join(repository.workdir(), baseFileName),
+      baseFileContent)
+      // Load up the repository index and make our initial commit to HEAD
+      .then(function() {
+        return addFileToIndex(repository, baseFileName);
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "b5cdc109d437c4541a13fb7509116b5f03d5039a");
+
+        return repository.createCommit("HEAD", ourSignature,
+          ourSignature, "initial commit", oid, []);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "be03abdf0353d05924c53bebeb0e5bb129cda44a");
+
+        return repository.getCommit(commitOid).then(function(commit) {
+          ourCommit = commit;
+        }).then(function() {
+          return repository.createBranch(ourBranchName, commitOid)
+            .then(function(branch) {
+              ourBranch = branch;
+              return repository.createBranch(theirBranchName, commitOid);
+            });
+        });
+      })
+      .then(function(branch) {
+        theirBranch = branch;
+        return fse.writeFile(path.join(repository.workdir(), theirFileName),
+          theirFileContent);
+      })
+      .then(function() {
+        return addFileToIndex(repository, theirFileName);
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "be5f0fd38a39a67135ad68921c93cd5c17fefb3d");
+
+        return repository.createCommit(theirBranch.name(), theirSignature,
+          theirSignature, "they made a commit", oid, [ourCommit]);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
+
+        return removeFileFromIndex(repository, theirFileName);
+      })
+      .then(function() {
+        return fse.remove(path.join(repository.workdir(), theirFileName));
+      })
+      .then(function() {
+        return fse.writeFile(path.join(repository.workdir(), ourFileName),
+          ourFileContent);
+      })
+      .then(function() {
+        return addFileToIndex(repository, ourFileName);
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "77867fc0bfeb3f80ab18a78c8d53aa3a06207047");
+
+          return repository.createCommit(ourBranch.name(), ourSignature,
+            ourSignature, "we made a commit", oid, [ourCommit]);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+
+        return removeFileFromIndex(repository, ourFileName);
+      })
+      .then(function() {
+        return fse.remove(path.join(repository.workdir(), ourFileName));
+      })
+      .then(function() {
+        return repository.checkoutBranch(ourBranchName);
+      })
+      .then(function() {
+        return Promise.all([
+          repository.getReference(ourBranchName),
+          repository.getReference(theirBranchName)
+        ]);
+      })
+      .then(function(refs) {
+        assert.equal(refs.length, 2);
+
+        return Promise.all([
+          NodeGit.AnnotatedCommit.fromRef(repository, refs[0]),
+          NodeGit.AnnotatedCommit.fromRef(repository, refs[1])
+        ]);
+      })
+      .then(function(annotatedCommits) {
+        assert.equal(annotatedCommits.length, 2);
+
+        var ourAnnotatedCommit = annotatedCommits[0];
+        var theirAnnotatedCommit = annotatedCommits[1];
+
+        assert.equal(ourAnnotatedCommit.id().toString(),
+          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+        assert.equal(theirAnnotatedCommit.id().toString(),
+          "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
+
+        return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
+          theirAnnotatedCommit, null, ourSignature, null);
+      })
+      .then(function(newRebase) {
+        rebase = newRebase;
+
+        // there should only be 1 rebase operation to perform
+        assert.equal(rebase.operationEntrycount(), 1);
+
+        var opts = new NodeGit.CheckoutOptions();
+        opts.checkoutStrategy = NodeGit.Checkout.STRATEGY.SAFE_CREATE;
+
+        return rebase.next(opts);
+      })
+      .then(function(rebaseOperation) {
+        assert.equal(rebaseOperation.type(),
+          NodeGit.RebaseOperation.REBASE_OPERATION.PICK);
+        assert.equal(rebaseOperation.id().toString(),
+          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+
+        return rebase.commit(null, ourSignature);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "b937100ee0ea17ef20525306763505a7fe2be29e");
+
+        return repository.getBranchCommit("HEAD")
+          .then(function(commit) {
+            // verify that HEAD is on the rebased commit
+            assert.equal(commit.id().toString(), commitOid.toString());
+          });
+      })
+      .then(function() {
+        return rebase.abort(ourSignature);
+      })
+      .then(function() {
+        return NodeGit.Rebase.open(repository)
+          .then(function(existingRebase) {
+            assert.fail(existingRebase, undefined,
+              "There should not be a rebase in progress");
+          })
+          .catch(function(e) {
+            assert.equal(e.message, "There is no rebase in progress");
+          });
+      })
+      .then(function() {
+        return Promise.all([
+          repository.getBranchCommit("HEAD"),
+          repository.getBranchCommit(ourBranchName)
+        ]);
+      })
+      .then(function(commits) {
+        assert.equal(commits.length, 2);
+
+        // verify that 'HEAD' and 'ours' are back to their pre-rebase state
+        assert.equal(commits[0].id().toString(),
+          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+        assert.equal(commits[1].id().toString(),
+          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+      });
+  });
 });
