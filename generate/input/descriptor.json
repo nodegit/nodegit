@@ -1297,6 +1297,9 @@
             }
           }
         },
+        "git_rebase_free": {
+          "ignore": true
+        },
         "git_rebase_init": {
           "args": {
             "upstream": {
