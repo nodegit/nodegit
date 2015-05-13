@@ -9,7 +9,7 @@
         NanReturnValue(NanNew((int)wrapper->GetValue()->{{ field.name }}));
 
       {% elsif field.isLibgitType | or field.payloadFor %}
-        NanReturnValue(wrapper->{{ field.name }});
+        NanReturnValue(NanNew(wrapper->{{ field.name }}));
 
       {% elsif field.isCallbackFunction %}
         NanReturnValue(wrapper->{{ field.name }}->GetFunction());
