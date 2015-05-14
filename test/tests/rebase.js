@@ -314,7 +314,7 @@ describe("Rebase", function() {
         // should be 0.
         assert.equal(rebase.operationCurrent(), 0);
 
-        return rebase.finish(ourSignature, new NodeGit.RebaseOptions());
+        return rebase.finish(ourSignature, {});
       })
       .then(function(result) {
         assert.equal(result, 0);
@@ -468,10 +468,7 @@ describe("Rebase", function() {
         // there should only be 1 rebase operation to perform
         assert.equal(rebase.operationEntrycount(), 1);
 
-        var opts = new NodeGit.CheckoutOptions();
-        opts.checkoutStrategy = NodeGit.Checkout.STRATEGY.SAFE_CREATE;
-
-        return rebase.next(opts);
+        return rebase.next();
       })
       .then(function(rebaseOperation) {
         assert.equal(rebaseOperation.type(),
@@ -508,7 +505,7 @@ describe("Rebase", function() {
         assert.equal(commitOid.toString(),
           "ef6d0e95167435b3d58f51ab165948c72f6f94b6");
 
-        return rebase.finish(ourSignature, new NodeGit.RebaseOptions());
+        return rebase.finish(ourSignature);
       })
       .then(function(result) {
         assert.equal(result, 0);
@@ -660,10 +657,7 @@ describe("Rebase", function() {
         // there should only be 1 rebase operation to perform
         assert.equal(rebase.operationEntrycount(), 1);
 
-        var opts = new NodeGit.CheckoutOptions();
-        opts.checkoutStrategy = NodeGit.Checkout.STRATEGY.SAFE_CREATE;
-
-        return rebase.next(opts);
+        return rebase.next();
       })
       .then(function(rebaseOperation) {
         assert.equal(rebaseOperation.type(),
