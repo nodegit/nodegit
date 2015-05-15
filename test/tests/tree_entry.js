@@ -45,6 +45,13 @@ describe("TreeEntry", function() {
     });
   });
 
+  it("provides the full path", function() {
+    return this.commit.getEntry("test/raw-commit.js")
+      .then(function(entry) {
+        assert.equal(entry.path(), "test/raw-commit.js");
+      });
+  });
+
   it("provides the blob representation of the entry", function() {
     return this.commit.getEntry("test/raw-commit.js")
       .then(function(entry) {
