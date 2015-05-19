@@ -19,6 +19,10 @@ describe("Attr", function() {
       });
   });
 
+  it("breaks right now", function() {
+    assert.equal(1, 0);
+  });
+
   it("can add a macro definition", function() {
     var error = Attr.addMacro(this.repository, "binary", "-diff -crlf");
 
