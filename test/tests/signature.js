@@ -78,8 +78,8 @@ describe("Signature", function() {
       assert.equal(sig.name(), "unknown");
       assert.equal(sig.email(), "unknown@unknown.com");
     })
-      .then(cleanUp)
-      .then(done)
+    .then(cleanUp)
+    .then(done)
     .catch(function(e) {
       cleanUp()
       .then(function() {
