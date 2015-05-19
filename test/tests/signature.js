@@ -45,17 +45,14 @@ describe("Signature", function() {
     assert.equal(when.offset(), -now.getTimezoneOffset());
   });
 
-  it("can get a default signature when no user name is set", function() {
+  it("can get a default signature when no user name is set", function(done) {
     var savedUserName;
     var savedUserEmail;
 
     var cleanUp = function() {
       return exec("git config --global user.name \"" + savedUserName + "\"")
       .then(function() {
-        return exec(
-          "git config --global user.email \"" +
-          savedUserEmail +
-          "\"");
+        exec("git config --global user.email \"" + savedUserEmail + "\"");
       });
     };
 
@@ -78,17 +75,15 @@ describe("Signature", function() {
     })
     .then(function(repo) {
       var sig = repo.defaultSignature();
-
       assert.equal(sig.name(), "unknown");
       assert.equal(sig.email(), "unknown@unknown.com");
-
     })
-    .then(function() {
-      cleanUp();
-    })
+      .then(cleanUp)
+      .then(done)
     .catch(function(e) {
       cleanUp()
       .then(function() {
+        done(e);
         return Promise.reject(e);
       });
     });
