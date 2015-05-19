@@ -48,7 +48,7 @@ describe("TreeEntry", function() {
   it("provides the full path", function() {
     return this.commit.getEntry("test/raw-commit.js")
       .then(function(entry) {
-        assert.equal(entry.path(), "test/raw-commit.js");
+        assert.equal(entry.path(), path.normalize("test/raw-commit.js"));
       });
   });
 
