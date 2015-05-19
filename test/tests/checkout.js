@@ -142,7 +142,8 @@ describe("Checkout", function() {
 
       var signature = test.repository.defaultSignature();
 
-      return test.repository.createCommit("refs/heads/" + testBranchName, signature, signature, "we made breaking changes", oid, [ourCommit]);
+      return test.repository.createCommit("refs/heads/" + testBranchName,
+        signature, signature, "we made breaking changes", oid, [ourCommit]);
     })
     .then(function(commit) {
       return Promise.all([
@@ -151,7 +152,8 @@ describe("Checkout", function() {
       ]);
     })
     .then(function(commits) {
-      return NodeGit.Merge.commits(test.repository, commits[0], commits[1], null);
+      return NodeGit.Merge.commits(test.repository, commits[0], commits[1],
+        null);
     })
     .then(function(index) {
       assert.ok(index);
@@ -178,6 +180,6 @@ describe("Checkout", function() {
     .then(function() {
       var finalContent = fse.readFileSync(packageJsonPath, "utf-8");
       assert.equal(finalContent, "\n");
-    })
+    });
   });
 });
