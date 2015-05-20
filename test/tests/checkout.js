@@ -1,5 +1,6 @@
 var assert = require("assert");
 var path = require("path");
+var Promise = require("nodegit-promise");
 var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 
@@ -105,6 +106,80 @@ describe("Checkout", function() {
       var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
 
       assert.ok(~packageContent.indexOf("\"ejs\": \"~1.0.0\","));
+    });
+  });
+
+  it("can checkout an index with conflicts", function() {
+    var test = this;
+
+    var testBranchName = "test";
+    var ourCommit;
+
+    return test.repository.getBranchCommit(checkoutBranchName)
+    .then(function(commit) {
+      ourCommit = commit;
+
+      return test.repository.createBranch(testBranchName, commit.id());
+    })
+    .then(function() {
+      return test.repository.checkoutBranch(testBranchName);
+    })
+    .then(function(branch) {
+      fse.writeFileSync(packageJsonPath, "\n");
+
+      return test.repository.openIndex()
+        .then(function(index) {
+          index.read(1);
+          index.addByPath(packageJsonName);
+          index.write();
+
+          return index.writeTree();
+        });
+    })
+    .then(function(oid) {
+      assert.equal(oid.toString(),
+        "85135ab398976a4d5be6a8704297a45f2b1e7ab2");
+
+      var signature = test.repository.defaultSignature();
+
+      return test.repository.createCommit("refs/heads/" + testBranchName,
+        signature, signature, "we made breaking changes", oid, [ourCommit]);
+    })
+    .then(function(commit) {
+      return Promise.all([
+        test.repository.getBranchCommit(testBranchName),
+        test.repository.getBranchCommit("master")
+      ]);
+    })
+    .then(function(commits) {
+      return NodeGit.Merge.commits(test.repository, commits[0], commits[1],
+        null);
+    })
+    .then(function(index) {
+      assert.ok(index);
+      assert.ok(index.hasConflicts && index.hasConflicts());
+
+      return NodeGit.Checkout.index(test.repository, index);
+    })
+    .then(function() {
+      // Verify that the conflict has been written to disk
+      var conflictedContent = fse.readFileSync(packageJsonPath, "utf-8");
+
+      assert.ok(~conflictedContent.indexOf("<<<<<<< ours"));
+      assert.ok(~conflictedContent.indexOf("======="));
+      assert.ok(~conflictedContent.indexOf(">>>>>>> theirs"));
+
+      // Cleanup
+      var opts = {
+        checkoutStrategy: Checkout.STRATEGY.FORCE,
+        paths: packageJsonName
+      };
+
+      return Checkout.head(test.repository, opts);
+    })
+    .then(function() {
+      var finalContent = fse.readFileSync(packageJsonPath, "utf-8");
+      assert.equal(finalContent, "\n");
     });
   });
 });

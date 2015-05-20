@@ -260,7 +260,15 @@
           }
         },
         "git_checkout_index": {
-          "ignore": true
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_checkout_tree": {
           "args": {
