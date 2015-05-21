@@ -272,13 +272,24 @@ describe("Index", function() {
         return index.conflictGet(fileName);
       })
       .then(function(conflict) {
-        var keys = Object.keys(conflict);
+        var promises = [];
 
-        assert.equal(keys.length, 3);
+        promises.push(repository.getBlob(conflict.ancestor_out.id)
+          .then(function(blob) {
+            assert.equal(blob.toString(), baseFileContent);
+          }));
 
-        keys.forEach(function(key) {
-          assert(conflict[key] instanceof NodeGit.IndexEntry);
-        });
+        promises.push(repository.getBlob(conflict.our_out.id)
+          .then(function(blob) {
+            assert.equal(blob.toString(), baseFileContent + ourFileContent);
+          }));
+
+        promises.push(repository.getBlob(conflict.their_out.id)
+          .then(function(blob) {
+            assert.equal(blob.toString(), baseFileContent + theirFileContent);
+          }));
+
+        return Promise.all(promises);
       });
   });
 });
