@@ -847,7 +847,21 @@
           }
         },
         "git_index_conflict_get": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "ancestor_out": {
+              "isReturn": true
+            },
+            "our_out": {
+              "isReturn": true
+            },
+            "their_out": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_conflict_iterator_free": {
           "ignore": true
