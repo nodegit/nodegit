@@ -526,7 +526,8 @@ describe("Merge", function() {
       });
   });
 
-  it("standard merge puts repository in a MERGE state", function() {
+  it("leaves repo in MERGE state after a standard merge with conflicts fails",
+  function() {
     var fileName = "everyonesFile.txt";
 
     var baseFileContent = "How do you feel about Toll Roads?\n";
@@ -662,11 +663,7 @@ describe("Merge", function() {
         return NodeGit.AnnotatedCommit.fromRef(repository, theirRef);
       })
       .then(function(theirAnnotatedCommit) {
-        var mergeOpts = new NodeGit.MergeOptions();
-        var checkoutOpts = new NodeGit.CheckoutOptions();
-
-        return NodeGit.Merge(repository, [theirAnnotatedCommit], 1, mergeOpts,
-          checkoutOpts);
+        return NodeGit.Merge(repository, theirAnnotatedCommit);
       })
       .then(function(result) {
         assert.equal(result, 0);
