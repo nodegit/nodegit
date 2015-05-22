@@ -1,5 +1,6 @@
 var assert = require("assert");
 var path = require("path");
+var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
@@ -522,6 +523,216 @@ describe("Merge", function() {
       .then(function(commitId) {
         assert.equal(commitId.toString(),
           "49014ccabf5125f9b69316acde36f891dfdb8b5c");
+      });
+  });
+
+  it("standard merge puts repository in a MERGE state", function() {
+    var fileName = "everyonesFile.txt";
+
+    var baseFileContent = "How do you feel about Toll Roads?\n";
+    var ourFileContent = "I like Toll Roads. I have an EZ-Pass!\n";
+    var theirFileContent = "I'm skeptical about Toll Roads\n";
+
+    var expectedConflictedFileContent =
+      "How do you feel about Toll Roads?\n" +
+      "<<<<<<< HEAD\n" +
+      "I like Toll Roads. I have an EZ-Pass!\n" +
+      "=======\n" +
+      "I'm skeptical about Toll Roads\n" +
+      ">>>>>>> theirs\n";
+
+    var conflictSolvedFileContent =
+      "How do you feel about Toll Roads?\n" +
+      "He's skeptical about Toll Roads,\n" +
+      "but I like Toll Roads. I have an EZ-Pass!\n";
+
+    var ourSignature = NodeGit.Signature.create
+          ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+    var theirSignature = NodeGit.Signature.create
+          ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
+
+    var repository = this.repository;
+    var initialCommit;
+    var ourBranch;
+    var theirBranch;
+
+    var repoGitPath = repository.path();
+    if (!~repoGitPath.indexOf("/.git")) {
+      repoGitPath = path.join(repoGitPath, ".git");
+    }
+
+    return fse.writeFile(path.join(repository.workdir(), fileName),
+      baseFileContent)
+      .then(function() {
+        return repository.openIndex().then(function(index) {
+          index.read(1);
+          index.addByPath(fileName);
+          index.write();
+
+          return index.writeTree();
+        });
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "044704f62399fecbe22da6d7d47b14e52625630e");
+
+        return repository.createCommit("HEAD", ourSignature,
+          ourSignature, "initial commit", oid, []);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "80111c46ac73b857a3493b24c81df08639b5de99");
+
+        return repository.getCommit(commitOid).then(function(commit) {
+          initialCommit = commit;
+        }).then(function() {
+          return repository.createBranch(ourBranchName, commitOid)
+            .then(function(branch) {
+              ourBranch = branch;
+              return repository.createBranch(theirBranchName, commitOid);
+            });
+        });
+      })
+      .then(function(branch) {
+        theirBranch = branch;
+        return fse.writeFile(path.join(repository.workdir(), fileName),
+          baseFileContent + theirFileContent);
+      })
+      .then(function() {
+        return repository.openIndex().then(function(index) {
+          index.read(1);
+          index.addByPath(fileName);
+          index.write();
+
+          return index.writeTree();
+        });
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "b826e989aca7647bea64810f0a2a38acbbdd4c1a");
+
+        return repository.createCommit(theirBranch.name(), theirSignature,
+          theirSignature, "they made a commit", oid, [initialCommit]);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "b3c355bb606ec7da87174dfa1a0b0c0e3dc97bc0");
+
+        return fse.writeFile(path.join(repository.workdir(), fileName),
+          baseFileContent + ourFileContent);
+      })
+      .then(function() {
+        return repository.openIndex().then(function(index) {
+          index.read(1);
+          index.addByPath(fileName);
+          index.write();
+
+          return index.writeTree();
+        });
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "e7fe41bf7c0c28766887a63ffe2f03f624276fbe");
+
+          return repository.createCommit(ourBranch.name(), ourSignature,
+            ourSignature, "we made a commit", oid, [initialCommit]);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "28cfeb17f66132edb3c4dacb7ff38e8dd48a1844");
+
+        //return repository.getCommit(commitOid)
+
+        var opts = {
+          checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE
+        };
+
+        return repository.checkoutBranch(ourBranchName, opts);
+      })
+      .then(function() {
+        return repository.getHeadCommit();
+      })
+      .then(function(commit) {
+        assert.equal(commit.id().toString(),
+          "28cfeb17f66132edb3c4dacb7ff38e8dd48a1844");
+
+        return repository.getReference(theirBranchName);
+      })
+      .then(function(theirRef) {
+        return NodeGit.AnnotatedCommit.fromRef(repository, theirRef);
+      })
+      .then(function(theirAnnotatedCommit) {
+        var mergeOpts = new NodeGit.MergeOptions();
+        var checkoutOpts = new NodeGit.CheckoutOptions();
+
+        return NodeGit.Merge(repository, [theirAnnotatedCommit], 1, mergeOpts,
+          checkoutOpts);
+      })
+      .then(function(result) {
+        assert.equal(result, 0);
+
+        assert.equal(repository.state(),
+          NodeGit.Repository.STATE.MERGE);
+
+        assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_HEAD")));
+        assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_MSG")));
+        assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_MODE")));
+
+        return fse.readFile(path.join(repoGitPath, "MERGE_HEAD"), "utf-8");
+      })
+      .then(function(mergeHeadContents) {
+        assert.equal(mergeHeadContents,
+          "b3c355bb606ec7da87174dfa1a0b0c0e3dc97bc0\n");
+
+        return fse.readFile(path.join(repository.workdir(), fileName), "utf-8");
+      })
+      .then(function(fileContent) {
+        assert.equal(fileContent, expectedConflictedFileContent);
+
+        return fse.writeFile(path.join(repository.workdir(), fileName),
+          conflictSolvedFileContent);
+      })
+      .then(function() {
+        return repository.openIndex()
+          .then(function(index) {
+            index.read(1);
+            index.addByPath(fileName);
+            index.write();
+
+            return index.writeTree();
+          });
+      })
+      .then(function(oid) {
+        return Promise.all([
+          repository.getBranchCommit(ourBranchName),
+          repository.getBranchCommit("MERGE_HEAD")
+        ])
+          .then(function(commits) {
+            var msg = fse.readFileSync(path.join(repoGitPath, "MERGE_MSG"),
+              "utf-8");
+            assert.ok(msg);
+
+            return repository.createCommit(ourBranch.name(), ourSignature,
+              ourSignature, msg, oid, [commits[0], commits[1]]);
+          });
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "03ba156a7a1660f179b6b2dbc6a542fcf88d022d");
+
+        // merge isn't cleaned up automatically
+        assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_HEAD")));
+        assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_MSG")));
+        assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_MODE")));
+
+        assert.equal(repository.stateCleanup(), 0);
+
+        assert.ok(!fse.existsSync(path.join(repoGitPath, "MERGE_HEAD")));
+        assert.ok(!fse.existsSync(path.join(repoGitPath, "MERGE_MSG")));
+        assert.ok(!fse.existsSync(path.join(repoGitPath, "MERGE_MODE")));
+
+        assert.equal(repository.state(),
+          NodeGit.Repository.STATE.NONE);
       });
   });
 });

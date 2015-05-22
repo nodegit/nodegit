@@ -972,7 +972,14 @@
     "merge": {
       "functions": {
         "git_merge": {
-          "ignore": true
+          "args": {
+            "their_heads": {
+              "cType": "const git_annotated_commit **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitAnnotatedCommit"
+            }
+          }
         },
         "git_merge_analysis": {
           "ignore": true
