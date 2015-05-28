@@ -6,23 +6,38 @@ describe("StatusFile", function() {
   var StatusFile = NodeGit.StatusFile;
 
   var pathName = "README.md";
-  var statusCode = Status.STATUS.WT_NEW;
 
-  before(function() {
-    this.status = new StatusFile({path: pathName, status: statusCode});
-  });
+  var checkStatusFile = function(status) {
+    it("identifies the proper statuses for " + status, function() {
+      var statusFile = new StatusFile({
+        path: pathName,
+        status: Status.STATUS[status]
+      });
+      var specialFunction = status.replace(/^(WT|INDEX)_/, "");
+      specialFunction = "is" +
+        specialFunction[0] +
+        specialFunction.substring(1).toLowerCase();
+      if (/^WT_/.test(status)) {
+        assert.ok(statusFile.inWorkingTree());
+        assert.ok(!statusFile.inIndex());
+      }
+      if (/^INDEX_/.test(status)) {
+        assert.ok(!statusFile.inWorkingTree());
+        assert.ok(statusFile.inIndex());
+      }
+      assert.equal(statusFile.path(), pathName);
+      assert.equal(statusFile.statusBit(), Status.STATUS[status]);
+      assert.equal(statusFile.status(), status);
+      assert.ok(statusFile[specialFunction]());
+    });
+  };
 
-  it("passes the path to the working function", function() {
-    assert.equal(this.status.path(), pathName);
-  });
+  for (var status in Status.STATUS) {
+    if (status === "CURRENT" || status === "WT_UNREADABLE") {
+      continue;
+    }
+    checkStatusFile(status);
+  }
 
-  it("identifies the proper statuses", function() {
-    assert.ok(this.status.isNew());
-    assert.ok(!this.status.isModified());
-  });
 
-  it("detects working tree and index statuses", function() {
-    assert.ok(this.status.inWorkingTree());
-    assert.ok(!this.status.inIndex());
-  });
 });
