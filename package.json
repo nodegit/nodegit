@@ -74,7 +74,8 @@
     "nw-gyp": "^0.12.4",
     "pangyp": "^2.1.0",
     "request": "^2.55.0",
-    "tar": "^2.1.0"
+    "tar": "^2.1.0",
+    "bluebird": "^2.9.26"
   },
   "binary": {
     "module_name": "nodegit",
