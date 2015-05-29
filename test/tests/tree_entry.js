@@ -1,4 +1,5 @@
 var assert = require("assert");
+var Promise = require("nodegit-promise");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
@@ -49,6 +50,33 @@ describe("TreeEntry", function() {
     return this.commit.getEntry("test/raw-commit.js")
       .then(function(entry) {
         assert.equal(entry.path(), path.normalize("test/raw-commit.js"));
+      });
+  });
+
+  it("provides the full path when the entry came from a tree", function(done) {
+    var testTree = function(tree, _dir) {
+      var dir = _dir || "",
+        testPromises = [];
+      tree.entries().forEach(function(entry) {
+        var currentPath = path.join(dir, entry.filename());
+        if (entry.isTree()) {
+          testPromises.push(
+            entry.getTree().then(function (subtree) {
+              return testTree(subtree, currentPath);
+            })
+          );
+        } else {
+          assert.equal(entry.path(), currentPath);
+        }
+      });
+
+      return Promise.all(testPromises);
+    };
+
+    return this.commit.getTree()
+      .then(testTree)
+      .done(function() {
+        done();
       });
   });
 
