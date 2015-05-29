@@ -1,5 +1,5 @@
 var assert = require("assert");
-var promise = require("bluebird");
+var Promise = require("nodegit-promise");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
@@ -70,7 +70,7 @@ describe("TreeEntry", function() {
         }
       });
 
-      return promise.all(testPromises);
+      return Promise.all(testPromises);
     };
 
     return this.commit.getTree()
