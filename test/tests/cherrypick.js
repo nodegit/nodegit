@@ -72,7 +72,10 @@ describe("Cherrypick", function() {
       theirSignature: theirSignature,
 
       ourFileName: ourFileName,
-      theirFileName: theirFileName
+      theirFileName: theirFileName,
+
+      ourFileContent: ourFileContent,
+      theirFileContent: theirFileContent
     };
 
     return Promise.all([
@@ -226,6 +229,69 @@ describe("Cherrypick", function() {
           repoInfo.ourFileName + " should exist");
         assert(fse.existsSync(path.join(workDirPath, repoInfo.theirFileName)),
           repoInfo.theirFileName + " should exist");
+      });
+  });
+
+  it("can cherrypick a stash to apply it", function() {
+    var repo = this.repository;
+    var workDirPath = repo.workdir();
+    var repoInfo;
+    var cherrypickOid;
+
+    var addedContent = "\nIt makes things E-Z!";
+
+    return setupBranches(repo, true)
+      .then(function(info) {
+        repoInfo = info;
+
+        return repo.getStatus();
+      })
+      .then(function(statuses) {
+        assert.equal(statuses.length, 0);
+
+        return fse.writeFile(path.join(workDirPath, repoInfo.ourFileName),
+          repoInfo.ourFileContent + addedContent);
+      })
+      .then(function() {
+        return repo.getStatus();
+      })
+      .then(function(statuses) {
+        assert.equal(statuses.length, 1);
+
+        return NodeGit.Stash.save(repo, repoInfo.ourSignature, "our stash", 0);
+      })
+      .then(function(oid) {
+        cherrypickOid = oid;
+
+        return fse.readFile(path.join(workDirPath, repoInfo.ourFileName));
+      })
+      .then(function(fileContent) {
+        assert.equal(fileContent, repoInfo.ourFileContent);
+
+        return repo.getStatus();
+      })
+      .then(function(statuses) {
+        assert.equal(statuses.length, 0);
+
+        return repo.getCommit(cherrypickOid);
+      })
+      .then(function(commit) {
+        var opts = {
+          mainline: 1
+        };
+
+        return Cherrypick.cherrypick(repo, commit, opts);
+      })
+      .then(function() {
+        return repo.getStatus();
+      })
+      .then(function(statuses) {
+        assert.equal(statuses.length, 1);
+
+        return fse.readFile(path.join(workDirPath, repoInfo.ourFileName));
+      })
+      .then(function(fileContent) {
+        assert.equal(fileContent, repoInfo.ourFileContent + addedContent);
       });
   });
 });
