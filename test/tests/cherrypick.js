@@ -200,7 +200,8 @@ describe("Cherrypick", function() {
         assert(!fse.existsSync(path.join(workDirPath, repoInfo.theirFileName)),
           repoInfo.theirFileName + " shouldn't exist");
 
-        var promise = Cherrypick.commit(repo, repoInfo.theirCommit, repoInfo.ourCommit, 0, {});
+        var promise = Cherrypick.commit(repo, repoInfo.theirCommit,
+          repoInfo.ourCommit, 0, {});
         assert(promise.then);
         return promise;
       })
