@@ -286,6 +286,16 @@
         }
       }
     },
+    "cherrypick": {
+      "functions": {
+        "git_cherrypick": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
+    },
     "clone": {
       "functions": {
         "git_clone": {
