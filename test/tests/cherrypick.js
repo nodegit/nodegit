@@ -183,4 +183,44 @@ describe("Cherrypick", function() {
           repoInfo.theirFileName + " should exist");
       });
   });
+
+  it("can cherrypick a commit onto another specified commit", function() {
+    var repo = this.repository;
+    var workDirPath = repo.workdir();
+    var repoInfo;
+
+    return setupBranches(repo)
+      .then(function(info) {
+        repoInfo = info;
+
+        assert(!fse.existsSync(path.join(workDirPath, repoInfo.ourFileName)),
+          repoInfo.ourFileName + " shouldn't exist");
+        assert(!fse.existsSync(path.join(workDirPath, repoInfo.theirFileName)),
+          repoInfo.theirFileName + " shouldn't exist");
+
+        return Cherrypick.commit(repo, repoInfo.theirCommit, repoInfo.ourCommit, 0, {});
+      })
+      .then(function(index) {
+        assert(index);
+        index.write();
+
+        return index.writeTreeTo(repo);
+      })
+      .then(function(oid) {
+        return repo.getTree(oid);
+      })
+      .then(function(tree) {
+        var opts = {
+          checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE
+        };
+
+        return NodeGit.Checkout.tree(repo, tree, opts);
+      })
+      .then(function() {
+        assert(fse.existsSync(path.join(workDirPath, repoInfo.ourFileName)),
+          repoInfo.ourFileName + " should exist");
+        assert(fse.existsSync(path.join(workDirPath, repoInfo.theirFileName)),
+          repoInfo.theirFileName + " should exist");
+      });
+  });
 });
