@@ -1,5 +1,69 @@
 # Change Log
 
+## [0.4.1](https://github.com/nodegit/nodegit/tree/0.4.1) (2015-06-02)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.4.0...0.4.1)
+
+**Closed issues:**
+
+- Error: Module did not self-register [\#593](https://github.com/nodegit/nodegit/issues/593)
+
+- A guide on how to create a new branch, switch to it and delete it. [\#588](https://github.com/nodegit/nodegit/issues/588)
+
+- A way to get "gone" branches [\#583](https://github.com/nodegit/nodegit/issues/583)
+
+- Missing documentation pages for BranchIterator and NodeIterator [\#581](https://github.com/nodegit/nodegit/issues/581)
+
+- ELIFECYCLE error on `npm rebuild` [\#578](https://github.com/nodegit/nodegit/issues/578)
+
+- npm rebuild fails \(lifecycleScripts/clean should not delete lifecycleScripts!\) [\#576](https://github.com/nodegit/nodegit/issues/576)
+
+- Unable to compile and install v0.4.0 on Windows [\#575](https://github.com/nodegit/nodegit/issues/575)
+
+- Doesn't work with Electron [\#574](https://github.com/nodegit/nodegit/issues/574)
+
+- Doesn't work with io.js 2.x [\#573](https://github.com/nodegit/nodegit/issues/573)
+
+- Getting an exception during a fetchAll in defaultSignature in repository.js [\#572](https://github.com/nodegit/nodegit/issues/572)
+
+- tree\_entry path function not working when calling getEntry with a path including subdir [\#570](https://github.com/nodegit/nodegit/issues/570)
+
+- Build is broken on windows [\#565](https://github.com/nodegit/nodegit/issues/565)
+
+- Cloning git sub modules using "nodegit" npm module [\#560](https://github.com/nodegit/nodegit/issues/560)
+
+- How to get remote latest commit? [\#559](https://github.com/nodegit/nodegit/issues/559)
+
+- npm install fails for nw.js [\#558](https://github.com/nodegit/nodegit/issues/558)
+
+- nodegit and nw.js [\#557](https://github.com/nodegit/nodegit/issues/557)
+
+**Merged pull requests:**
+
+- Cherrypick tests [\#595](https://github.com/nodegit/nodegit/pull/595) ([jdgarcia](https://github.com/jdgarcia))
+
+- Fix for issue \#591.  TreeEntry.path\(\) throws when TreeEntry came from Tree.entries\(\) [\#592](https://github.com/nodegit/nodegit/pull/592) ([tomruggs](https://github.com/tomruggs))
+
+- Standard merge [\#589](https://github.com/nodegit/nodegit/pull/589) ([jdgarcia](https://github.com/jdgarcia))
+
+- Add `git\_index\_conflict\_get` and test [\#586](https://github.com/nodegit/nodegit/pull/586) ([johnhaley81](https://github.com/johnhaley81))
+
+- Bump nan [\#584](https://github.com/nodegit/nodegit/pull/584) ([johnhaley81](https://github.com/johnhaley81))
+
+- Fix CI false positives [\#582](https://github.com/nodegit/nodegit/pull/582) ([johnhaley81](https://github.com/johnhaley81))
+
+- Added NodeGit.Checkout.index [\#579](https://github.com/nodegit/nodegit/pull/579) ([jdgarcia](https://github.com/jdgarcia))
+
+- Check for existence to avoid throwing an error when there is no default signature [\#577](https://github.com/nodegit/nodegit/pull/577) ([tomruggs](https://github.com/tomruggs))
+
+- Fix path function in tree\_entry \(fix for issue \#570\) [\#571](https://github.com/nodegit/nodegit/pull/571) ([jfremy](https://github.com/jfremy))
+
+- Fix Rebase issues [\#568](https://github.com/nodegit/nodegit/pull/568) ([jdgarcia](https://github.com/jdgarcia))
+
+- Fix build issues with 0.4.0 [\#566](https://github.com/nodegit/nodegit/pull/566) ([maxkorp](https://github.com/maxkorp))
+
+- stop cleaning on post-install [\#562](https://github.com/nodegit/nodegit/pull/562) ([maxkorp](https://github.com/maxkorp))
+
 ## [v0.4.0](https://github.com/nodegit/nodegit/tree/v0.4.0) (2015-05-07)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.3...v0.4.0)
@@ -70,7 +134,7 @@
 
 - A wrapper for git\_diff\_blob\_to\_buffer [\#550](https://github.com/nodegit/nodegit/pull/550) ([bleathem](https://github.com/bleathem))
 
-- A wrapper for git\_diff\_blob\_to\_buffer [\#549](https://github.com/nodegit/nodegit/pull/549) ([bleathem](https://github.com/bleathem))
+- Update to 0.4.0 [\#548](https://github.com/nodegit/nodegit/pull/548) ([tbranyen](https://github.com/tbranyen))
 
 - Removed the superflous "line" argument [\#547](https://github.com/nodegit/nodegit/pull/547) ([bleathem](https://github.com/bleathem))
 
@@ -286,8 +350,6 @@
 
 - Fix transfer callback stats [\#440](https://github.com/nodegit/nodegit/pull/440) ([johnhaley81](https://github.com/johnhaley81))
 
-- Put `uv\_async\_init` on main thread [\#438](https://github.com/nodegit/nodegit/pull/438) ([johnhaley81](https://github.com/johnhaley81))
-
 - Automatically free repositories post clone [\#434](https://github.com/nodegit/nodegit/pull/434) ([tbranyen](https://github.com/tbranyen))
 
 - Skip transfer progress test until it's fixed [\#433](https://github.com/nodegit/nodegit/pull/433) ([johnhaley81](https://github.com/johnhaley81))
@@ -295,8 +357,6 @@
 - Change environment to default for upgraded service [\#428](https://github.com/nodegit/nodegit/pull/428) ([maxkorp](https://github.com/maxkorp))
 
 - Make the `git\_remote\_push` function async [\#427](https://github.com/nodegit/nodegit/pull/427) ([johnhaley81](https://github.com/johnhaley81))
-
-- Fix file lock 2 [\#426](https://github.com/nodegit/nodegit/pull/426) ([tbranyen](https://github.com/tbranyen))
 
 - Attempt to fix Windows file locking bug [\#425](https://github.com/nodegit/nodegit/pull/425) ([tbranyen](https://github.com/tbranyen))
 
@@ -324,8 +384,6 @@
 
 - Tree Entry getBlob\(\) should also support the callback pattern. [\#405](https://github.com/nodegit/nodegit/pull/405) ([jeffwilcox](https://github.com/jeffwilcox))
 
-- Tree Entry getBlob\(\) should also support the callback pattern. [\#404](https://github.com/nodegit/nodegit/pull/404) ([jeffwilcox](https://github.com/jeffwilcox))
-
 - Adds in git\_checkout\_tree [\#402](https://github.com/nodegit/nodegit/pull/402) ([tbranyen](https://github.com/tbranyen))
 
 - Made changes to the README [\#399](https://github.com/nodegit/nodegit/pull/399) ([tbranyen](https://github.com/tbranyen))
@@ -352,8 +410,6 @@
 
 - Make all cred generators sync. [\#377](https://github.com/nodegit/nodegit/pull/377) ([maxkorp](https://github.com/maxkorp))
 
-- Plaintext credential not async [\#375](https://github.com/nodegit/nodegit/pull/375) ([mbleigh](https://github.com/mbleigh))
-
 - Status and StatusList [\#374](https://github.com/nodegit/nodegit/pull/374) ([orderedlist](https://github.com/orderedlist))
 
 - Fix the package scripts [\#373](https://github.com/nodegit/nodegit/pull/373) ([maxkorp](https://github.com/maxkorp))
@@ -369,8 +425,6 @@
 - INCLUDE\_UNTRACKED option not working for diffs [\#366](https://github.com/nodegit/nodegit/pull/366) ([kmctown](https://github.com/kmctown))
 
 - Updated fs-extra to 0.15.0 [\#363](https://github.com/nodegit/nodegit/pull/363) ([johnhaley81](https://github.com/johnhaley81))
-
-- update to libgit2 v0.21.5 [\#362](https://github.com/nodegit/nodegit/pull/362) ([maxkorp](https://github.com/maxkorp))
 
 - Make remote\#download async [\#326](https://github.com/nodegit/nodegit/pull/326) ([tbranyen](https://github.com/tbranyen))
 
@@ -424,13 +478,9 @@
 
 - Fixed a typo in the debug build instruction. [\#356](https://github.com/nodegit/nodegit/pull/356) ([mcollina](https://github.com/mcollina))
 
-- Added a null check on freeing the raw object [\#354](https://github.com/nodegit/nodegit/pull/354) ([johnhaley81](https://github.com/johnhaley81))
-
 - \[WIP\] Attempt at fixing appveyor [\#352](https://github.com/nodegit/nodegit/pull/352) ([johnhaley81](https://github.com/johnhaley81))
 
 - Updated to nan 1.5.0 and fixed build errors [\#351](https://github.com/nodegit/nodegit/pull/351) ([johnhaley81](https://github.com/johnhaley81))
-
-- WIP: Refactor publishing [\#350](https://github.com/nodegit/nodegit/pull/350) ([maxkorp](https://github.com/maxkorp))
 
 - Added debug build instructions. [\#349](https://github.com/nodegit/nodegit/pull/349) ([mcollina](https://github.com/mcollina))
 
@@ -499,8 +549,6 @@
 - detect node-webkit and build with nw-gyp [\#309](https://github.com/nodegit/nodegit/pull/309) ([maxkorp](https://github.com/maxkorp))
 
 - fix signature.now and add signature tests [\#308](https://github.com/nodegit/nodegit/pull/308) ([maxkorp](https://github.com/maxkorp))
-
-- Add a Gitter chat badge to README.md [\#304](https://github.com/nodegit/nodegit/pull/304) ([gitter-badger](https://github.com/gitter-badger))
 
 - move nodegit.js to a template to remove idefs dependency [\#303](https://github.com/nodegit/nodegit/pull/303) ([maxkorp](https://github.com/maxkorp))
 
@@ -636,8 +684,6 @@
 
 - Exposes the NodeGit Promise implementation [\#278](https://github.com/nodegit/nodegit/pull/278) ([tbranyen](https://github.com/tbranyen))
 
-- Fixes incorrect method used in path lookup [\#277](https://github.com/nodegit/nodegit/pull/277) ([tbranyen](https://github.com/tbranyen))
-
 - \[WIP\] Update examples [\#276](https://github.com/nodegit/nodegit/pull/276) ([johnhaley81](https://github.com/johnhaley81))
 
 - Added script to generate missing tests [\#274](https://github.com/nodegit/nodegit/pull/274) ([johnhaley81](https://github.com/johnhaley81))
@@ -654,8 +700,6 @@
 
 - require --documentation flag to include text in idefs [\#265](https://github.com/nodegit/nodegit/pull/265) ([maxkorp](https://github.com/maxkorp))
 
-- This is a test [\#263](https://github.com/nodegit/nodegit/pull/263) ([johnhaley81](https://github.com/johnhaley81))
-
 - Added ability for callbacks to poll promises for fulfillment value [\#260](https://github.com/nodegit/nodegit/pull/260) ([johnhaley81](https://github.com/johnhaley81))
 
 - Generate nodegit from libgit2 docs and refactor descriptor [\#259](https://github.com/nodegit/nodegit/pull/259) ([johnhaley81](https://github.com/johnhaley81))
@@ -664,19 +708,13 @@
 
 - Bump to latest libgit2 [\#257](https://github.com/nodegit/nodegit/pull/257) ([tbranyen](https://github.com/tbranyen))
 
-- Added status methods [\#255](https://github.com/nodegit/nodegit/pull/255) ([tbranyen](https://github.com/tbranyen))
-
 - Use Start-Process to start pageant.exe [\#254](https://github.com/nodegit/nodegit/pull/254) ([FeodorFitsner](https://github.com/FeodorFitsner))
-
-- Adds in git\_index\_add and GitIndexInfo struct [\#253](https://github.com/nodegit/nodegit/pull/253) ([tbranyen](https://github.com/tbranyen))
 
 - Adds in a broken unit test for \#109 [\#252](https://github.com/nodegit/nodegit/pull/252) ([tbranyen](https://github.com/tbranyen))
 
 - Added more git\_cred methods [\#251](https://github.com/nodegit/nodegit/pull/251) ([johnhaley81](https://github.com/johnhaley81))
 
 - Refactor classes [\#250](https://github.com/nodegit/nodegit/pull/250) ([maxkorp](https://github.com/maxkorp))
-
-- Remove openssl [\#249](https://github.com/nodegit/nodegit/pull/249) ([tbranyen](https://github.com/tbranyen))
 
 - Update Readme, to improve example code [\#248](https://github.com/nodegit/nodegit/pull/248) ([nmn](https://github.com/nmn))
 
@@ -689,8 +727,6 @@
 - Branch methods [\#243](https://github.com/nodegit/nodegit/pull/243) ([tbranyen](https://github.com/tbranyen))
 
 - Blame methods [\#242](https://github.com/nodegit/nodegit/pull/242) ([tbranyen](https://github.com/tbranyen))
-
-- Enable multios [\#238](https://github.com/nodegit/nodegit/pull/238) ([maxkorp](https://github.com/maxkorp))
 
 - Add revwalk.hide and revwalk.simplifyFirstParent [\#235](https://github.com/nodegit/nodegit/pull/235) ([tbranyen](https://github.com/tbranyen))
 
@@ -705,10 +741,6 @@
 - WIP: Refactor source generation templates from EJS to Combyne [\#227](https://github.com/nodegit/nodegit/pull/227) ([tbranyen](https://github.com/tbranyen))
 
 - Test fixes [\#226](https://github.com/nodegit/nodegit/pull/226) ([johnhaley81](https://github.com/johnhaley81))
-
-- Get HEAD SHA [\#210](https://github.com/nodegit/nodegit/pull/210) ([tbranyen](https://github.com/tbranyen))
-
-- Started working on initializing a repo with init options [\#208](https://github.com/nodegit/nodegit/pull/208) ([tbranyen](https://github.com/tbranyen))
 
 - Added new methods in checkout and repository [\#207](https://github.com/nodegit/nodegit/pull/207) ([tbranyen](https://github.com/tbranyen))
 
@@ -739,8 +771,6 @@
 - Remove all generated source code. [\#181](https://github.com/nodegit/nodegit/pull/181) ([tbranyen](https://github.com/tbranyen))
 
 - Better installation flow for developing. [\#180](https://github.com/nodegit/nodegit/pull/180) ([tbranyen](https://github.com/tbranyen))
-
-- \[Experimental\] Emscripten fun. [\#168](https://github.com/nodegit/nodegit/pull/168) ([tbranyen](https://github.com/tbranyen))
 
 ## [v0.1.4](https://github.com/nodegit/nodegit/tree/v0.1.4) (2014-06-13)
 
@@ -864,8 +894,6 @@
 
 - Support for Node 0.11+ [\#135](https://github.com/nodegit/nodegit/pull/135) ([pierreinglebert](https://github.com/pierreinglebert))
 
-- Fixed the error message to pass test. [\#119](https://github.com/nodegit/nodegit/pull/119) ([tbranyen](https://github.com/tbranyen))
-
 - Added git\_diff\_delta\_dup to git\_diff\_get\_patch to fix a memory issue whe... [\#113](https://github.com/nodegit/nodegit/pull/113) ([kmctown](https://github.com/kmctown))
 
 - Try requiring build/Debug/nodegit if build/Release/nodegit wasn't found. [\#108](https://github.com/nodegit/nodegit/pull/108) ([papandreou](https://github.com/papandreou))
@@ -920,13 +948,7 @@
 
 **Merged pull requests:**
 
-- Fixed TreeBuilder.write's missing repo argument to match its documentation [\#85](https://github.com/nodegit/nodegit/pull/85) ([FrozenCow](https://github.com/FrozenCow))
-
 - Codegen [\#79](https://github.com/nodegit/nodegit/pull/79) ([nkallen](https://github.com/nkallen))
-
-- Codegen [\#78](https://github.com/nodegit/nodegit/pull/78) ([nkallen](https://github.com/nkallen))
-
-- Codegen [\#77](https://github.com/nodegit/nodegit/pull/77) ([nkallen](https://github.com/nkallen))
 
 - Updated LICENSE to MIT [\#75](https://github.com/nodegit/nodegit/pull/75) ([tbranyen](https://github.com/tbranyen))
 
@@ -1036,14 +1058,6 @@
 
 - Refactor [\#37](https://github.com/nodegit/nodegit/pull/37) ([mmalecki](https://github.com/mmalecki))
 
-- Refactor [\#36](https://github.com/nodegit/nodegit/pull/36) ([mmalecki](https://github.com/mmalecki))
-
-- Removed references to node\_events.h [\#31](https://github.com/nodegit/nodegit/pull/31) ([alexkwolfe](https://github.com/alexkwolfe))
-
-- Updates for node 0.5.9 \(fixed Issue \#29\) [\#30](https://github.com/nodegit/nodegit/pull/30) ([tojocky](https://github.com/tojocky))
-
-- Error constants added [\#25](https://github.com/nodegit/nodegit/pull/25) ([milani](https://github.com/milani))
-
 ## [v0.0.6](https://github.com/nodegit/nodegit/tree/v0.0.6) (2011-12-19)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.4...v0.0.6)
@@ -1057,8 +1071,6 @@
 **Merged pull requests:**
 
 - Node 0.6x fixes [\#34](https://github.com/nodegit/nodegit/pull/34) ([moneal](https://github.com/moneal))
-
-- Updates for node 0.6x [\#33](https://github.com/nodegit/nodegit/pull/33) ([moneal](https://github.com/moneal))
 
 ## [v0.0.4](https://github.com/nodegit/nodegit/tree/v0.0.4) (2011-05-14)
 
