@@ -14,6 +14,7 @@ describe("Reference", function() {
   var Reference = NodeGit.Reference;
 
   var reposPath = local("../repos/workdir");
+  var refName = "refs/heads/master";
 
   before(function() {
     var test = this;
@@ -25,7 +26,7 @@ describe("Reference", function() {
       .then(function(repository) {
         test.repository = repository;
 
-        return repository.getReference("refs/heads/master");
+        return repository.getReference(refName);
       })
       .then(function(reference) {
         test.reference = reference;
@@ -40,6 +41,18 @@ describe("Reference", function() {
     assert.equal(this.reference.isSymbolic(), false);
   });
 
+  it("can determine if the reference is not symbolic", function() {
+    assert.ok(this.reference.isConcrete());
+  });
+
+  it("can check that reference is valid", function() {
+    assert.ok(this.reference.isValid());
+  });
+
+  it("can return refName when casting toString", function() {
+    assert.equal(this.reference.toString(), refName);
+  });
+
   it("will return undefined looking up the symbolic target if not symbolic",
     function() {
       assert(this.reference.symbolicTarget() === undefined);
@@ -52,4 +65,5 @@ describe("Reference", function() {
         assert.equal(sha, "32789a79e71fbc9e04d3eff7425e1771eb595150");
       });
   });
+
 });
