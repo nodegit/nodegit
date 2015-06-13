@@ -1263,7 +1263,10 @@
           "ignore": true
         },
         "git_patch_from_diff": {
-          "isAsync": false
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_patch_get_hunk": {
           "args": {
@@ -1271,13 +1274,21 @@
               "returnName": "hunk"
             },
             "lines_in_hunk": {
+              "shouldAlloc": true,
+              "returnName": "linesInHunk",
               "isReturn": true
             }
           },
-          "isAsync": false
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_patch_get_line_in_hunk": {
-          "isAsync": false
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_patch_line_stats": {
           "ignore": true
