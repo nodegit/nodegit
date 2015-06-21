@@ -103,8 +103,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
-  TryCatch try_catch;
-
   if (baton->error_code == GIT_OK) {
     {%if not .|returnsCount %}
     Handle<v8::Value> result = NanUndefined();
@@ -160,10 +158,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {%endif%}
       {%endif%}
     {%endeach%}
-  }
-
-  if (try_catch.HasCaught()) {
-    node::FatalException(try_catch);
   }
 
   {%each args|argsInfo as arg %}
