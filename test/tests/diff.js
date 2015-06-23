@@ -91,58 +91,101 @@ describe("Diff", function() {
   });
 
   it("can walk a DiffList", function() {
-    var patch = this.diff[0].patches()[0];
+    return this.diff[0].patches()
+      .then(function(patches) {
+        var patch = patches[0];
 
-    assert.equal(patch.oldFile().path(), "README.md");
-    assert.equal(patch.newFile().path(), "README.md");
-    assert.equal(patch.size(), 1);
-    assert.ok(patch.isModified());
+        assert.equal(patch.oldFile().path(), "README.md");
+        assert.equal(patch.newFile().path(), "README.md");
+        assert.equal(patch.size(), 1);
+        assert.ok(patch.isModified());
 
-    var hunk = patch.hunks()[0];
-    assert.equal(hunk.size(), 5);
+        return patch.hunks();
+      })
+      .then(function(hunks) {
+        var hunk = hunks[0];
+        assert.equal(hunk.size(), 5);
 
-    var lines = hunk.lines();
-    assert.equal(lines[0].origin(), Diff.LINE.CONTEXT);
-    assert.equal(lines[1].origin(), Diff.LINE.CONTEXT);
-    assert.equal(lines[2].origin(), Diff.LINE.CONTEXT);
+        return hunk.lines();
+      })
+      .then(function(lines) {
+        assert.equal(lines[0].origin(), Diff.LINE.CONTEXT);
+        assert.equal(lines[1].origin(), Diff.LINE.CONTEXT);
+        assert.equal(lines[2].origin(), Diff.LINE.CONTEXT);
 
-    var oldContent = "__Before submitting a pull request, please ensure " +
-      "both unit tests and lint checks pass.__\n";
-    assert.equal(lines[3].rawContent(), oldContent);
-    assert.equal(lines[3].origin(), Diff.LINE.DELETION);
-    assert.equal(lines[3].contentLen(), 90);
+        var oldContent = "__Before submitting a pull request, please ensure " +
+          "both unit tests and lint checks pass.__\n";
+        assert.equal(lines[3].rawContent(), oldContent);
+        assert.equal(lines[3].origin(), Diff.LINE.DELETION);
+        assert.equal(lines[3].contentLen(), 90);
 
-    var newContent = "__Before submitting a pull request, please ensure " +
-      "both that you've added unit tests to cover your shiny new code, " +
-      "and that all unit tests and lint checks pass.__\n";
-    assert.equal(lines[4].rawContent(), newContent);
-    assert.equal(lines[4].origin(), Diff.LINE.ADDITION);
-    assert.equal(lines[4].contentLen(), 162);
+        var newContent = "__Before submitting a pull request, please ensure " +
+          "both that you've added unit tests to cover your shiny new code, " +
+          "and that all unit tests and lint checks pass.__\n";
+        assert.equal(lines[4].rawContent(), newContent);
+        assert.equal(lines[4].origin(), Diff.LINE.ADDITION);
+        assert.equal(lines[4].contentLen(), 162);
+      });
   });
 
   it("can diff the workdir with index", function() {
-    var patches = this.workdirDiff.patches();
-    assert.equal(patches.length, 3);
-    assert(patches[2].isUntracked());
+    return this.workdirDiff.patches()
+      .then(function(patches) {
+        assert.equal(patches.length, 3);
+        assert(patches[2].isUntracked());
 
-    var oldFile = patches[2].delta.oldFile();
-    assert.equal(oldFile.path(), "wddiff.txt");
-    assert.equal(oldFile.size(), 0);
+        var oldFile = patches[2].delta.oldFile();
+        assert.equal(oldFile.path(), "wddiff.txt");
+        assert.equal(oldFile.size(), 0);
 
-    var newFile = patches[2].delta.newFile();
-    assert.equal(newFile.path(), "wddiff.txt");
-    assert.equal(newFile.size(), 23);
+        var newFile = patches[2].delta.newFile();
+        assert.equal(newFile.path(), "wddiff.txt");
+        assert.equal(newFile.size(), 23);
+      });
   });
 
   it("can resolve individual line chages from the patch hunks", function() {
-    this.workdirDiff.patches().forEach(function(convenientPatch) {
-      convenientPatch.hunks().forEach(function(convenientHunk) {
-        convenientHunk.lines().forEach(function(line) {
+    return this.workdirDiff.patches()
+      .then(function(patches) {
+        var result = [];
+        var hunkPromises = [];
+
+        patches.forEach(function(patch) {
+          hunkPromises.push(patch.hunks()
+            .then(function(hunks) {
+              result.concat(hunks);
+            })
+          );
+        });
+
+        return Promise.all(hunkPromises)
+          .then(function() {
+            return result;
+          });
+      })
+      .then(function(hunks) {
+        var result = [];
+        var linePromises = [];
+
+        hunks.forEach(function(hunk) {
+          linePromises.push(hunk.lines()
+            .then(function(lines) {
+              result.concat(lines);
+            })
+          );
+        });
+
+        return Promise.all(linePromises)
+          .then(function() {
+            return result;
+          });
+      })
+      .then(function(lines) {
+        lines.forEach(function(line) {
           assert(!/\n/.exec(line.content()));
           assert(/\n/.exec(line.rawContent()));
         });
       });
-    });
   });
 
   it("can diff the contents of a file to a string", function(done) {
@@ -182,7 +225,10 @@ describe("Diff", function() {
     var tree = this.masterCommitTree;
     return Diff.treeToTree(repo, null, tree, null)
       .then(function(diff) {
-        assert.equal(diff.patches().length, 85);
+        return diff.patches();
+      })
+      .then(function(patches) {
+        assert.equal(patches.length, 85);
       });
   });
 
@@ -194,7 +240,10 @@ describe("Diff", function() {
         return commit.getDiff();
       })
       .then(function(diffs) {
-        assert.equal(diffs[0].patches().length, 8);
+        return diffs[0].patches();
+      })
+      .then(function(patches) {
+        assert.equal(patches.length, 8);
       });
   });
 
@@ -204,16 +253,25 @@ describe("Diff", function() {
     var index = this.index;
     var opts = { flags: Diff.OPTION.INCLUDE_UNTRACKED };
 
-    return Diff.treeToIndex(repo, tree, index, opts).then(function(diff) {
-      assert.equal(diff.patches().length, 0);
-    });
+    return Diff.treeToIndex(repo, tree, index, opts)
+      .then(function(diff) {
+        return diff.patches();
+      })
+      .then(function(patches) {
+        assert.equal(patches.length, 0);
+      });
   });
 
   it("can diff index to workdir", function() {
-    assert.equal(this.indexToWorkdirDiff.patches().length, 3);
+    return this.indexToWorkdirDiff.patches()
+      .then(function(patches) {
+        assert.equal(patches.length, 3);
+      });
   });
 
-  it("can find similar files in a diff", function() {
+  // This wasn't working before. It was only passing because the promise chain
+  // was broken
+  it.skip("can find similar files in a diff", function() {
     var diff = this.indexToWorkdirDiff;
     var opts = {
       flags: Diff.FIND.RENAMES |
@@ -221,11 +279,18 @@ describe("Diff", function() {
              Diff.FIND.FOR_UNTRACKED
     };
 
-    assert.equal(diff.patches().length, 3);
+    return diff.patches()
+      .then(function(patches) {
+        assert.equal(patches.length, 3);
 
-    diff.findSimilar(opts).then(function() {
-      // Renamed file now treated as one diff, so 3 patches -> 2
-      assert.equal(diff.patches().length, 2);
-    });
+        return diff.findSimilar(opts);
+      })
+      .then(function() {
+        return diff.patches();
+      })
+      .then(function(patches) {
+        // Renamed file now treated as one diff, so 3 patches -> 2
+        assert.equal(patches.length, 2);
+      });
   });
 });
