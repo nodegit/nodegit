@@ -22,8 +22,10 @@ catch (ex) {
 {% each . as idef %}
   {% if idef.type != "enum" %}
 
-    var _{{ idef.jsClassName }}
-      = rawApi.{{idef.jsClassName}};
+    {% if idef.functions.length > 0 %}
+      var _{{ idef.jsClassName }}
+        = rawApi.{{ idef.jsClassName }};
+    {% endif %}
 
     {% each idef.functions as fn %}
       {% if fn.isAsync %}
@@ -98,7 +100,7 @@ require("./enums.js");
           _{{ idef.jsClassName }}.prototype;
 
         // Assign the function as the root
-        rawApi.{{idef.jsClassName}} =
+        rawApi.{{ idef.jsClassName }} =
           _{{ idef.jsClassName }}.{{ fn.jsFunctionName }};
 
       {% endif %}
