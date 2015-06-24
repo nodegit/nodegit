@@ -20,13 +20,19 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
 })
 .done(function(diffList) {
   diffList.forEach(function(diff) {
-    diff.patches().forEach(function(patch) {
-      console.log("diff", patch.oldFile().path(), patch.newFile().path());
-      patch.hunks().forEach(function(hunk) {
-        console.log(hunk.header().trim());
-        hunk.lines().forEach(function(line) {
-          console.log(String.fromCharCode(line.origin()) +
-            line.content().trim());
+    diff.patches().then(function(patches) {
+      patches.forEach(function(patch) {
+        console.log("diff", patch.oldFile().path(), patch.newFile().path());
+        patch.hunks().then(function(hunks) {
+          hunks.forEach(function(hunk) {
+            console.log(hunk.header().trim());
+            hunk.lines().then(function(lines) {
+              lines.forEach(function(line) {
+                console.log(String.fromCharCode(line.origin()) +
+                  line.content().trim());
+              });
+            });
+          });
         });
       });
     });
