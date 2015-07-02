@@ -336,7 +336,7 @@ describe("Merge", function() {
         ourBranchName,
         theirBranchName,
         ourSignature,
-        true);
+        NodeGit.Merge.PREFERENCE.NO_FASTFORWARD);
     })
     .then(function(oid) {
       assert.equal(oid.toString(),
@@ -357,7 +357,7 @@ describe("Merge", function() {
   });
 
   it("can merge --no-ff a non-fast-forward using the convenience method",
-  function() {
+    function() {
     var initialFileName = "initialFile.txt";
     var ourFileName = "ourNewFile.txt";
     var theirFileName = "theirNewFile.txt";
@@ -483,7 +483,7 @@ describe("Merge", function() {
         ourBranchName,
         theirBranchName,
         ourSignature,
-        true);
+        NodeGit.Merge.PREFERENCE.NO_FASTFORWARD);
     })
     .then(function(commitId) {
       assert.equal(commitId.toString(),
@@ -591,8 +591,7 @@ describe("Merge", function() {
         ourBranchName,
         theirBranchName,
         ourSignature,
-        false,
-        true);
+        NodeGit.Merge.PREFERENCE.FASTFORWARD_ONLY);
     })
     .then(function(oid) {
       assert.equal(oid.toString(),
@@ -613,7 +612,7 @@ describe("Merge", function() {
   });
 
   it("doesn't merge --ff-only a non-fast-forward using the convenience method",
-  function() {
+    function() {
     var initialFileName = "initialFile.txt";
     var ourFileName = "ourNewFile.txt";
     var theirFileName = "theirNewFile.txt";
@@ -739,8 +738,7 @@ describe("Merge", function() {
         ourBranchName,
         theirBranchName,
         ourSignature,
-        false,
-        true);
+        NodeGit.Merge.PREFERENCE.FASTFORWARD_ONLY);
     })
     .then(function(commitId) {
       assert.equal(commitId.toString(),
