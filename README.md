@@ -140,7 +140,7 @@ open("tmp")
       var author = commit.author();
 
       // Display author information.
-      console.log("Author:\t" + author.name() + " <", author.email() + ">");
+      console.log("Author:\t" + author.name() + " <" + author.email() + ">");
 
       // Show the commit date.
       console.log("Date:\t" + commit.date());
