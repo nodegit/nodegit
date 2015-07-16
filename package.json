@@ -3,9 +3,9 @@
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.4.1",
   "libgit2": {
-    "url": "https://github.com/libgit2/libgit2/tarball/8ae8ba8d23c080a439f20af29c9cdb62f2b0f169",
-    "sha": "8ae8ba8d23c080a439f20af29c9cdb62f2b0f169",
-    "version": "0.22.3"
+    "url": "https://github.com/libgit2/libgit2/tarball/159061a8ce206b694448313a84387600408f6029",
+    "sha": "159061a8ce206b694448313a84387600408f6029",
+    "version": "0.23.0"
   },
   "libssh2": {
     "url": "http://www.libssh2.org/download/libssh2-1.4.3.tar.gz",
@@ -70,9 +70,9 @@
     "lcov-result-merger": "^1.0.2",
     "lodash": "^3.8.0",
     "mocha": "^2.2.4",
+    "mostly-pangyp": "^1.0.0",
     "nan": "^1.8.4",
     "nw-gyp": "^0.12.4",
-    "pangyp": "^2.1.0",
     "request": "^2.55.0",
     "tar": "^2.1.0"
   },
@@ -98,9 +98,9 @@
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "recompile": "pangyp configure build",
-    "rebuild": "node generate && pangyp configure build",
-    "recompileDebug": "pangyp configure --debug build",
-    "rebuildDebug": "node generate && pangyp configure --debug build"
+    "recompile": "mostly-pangyp configure build",
+    "rebuild": "node generate && mostly-pangyp configure build",
+    "recompileDebug": "mostly-pangyp configure --debug build",
+    "rebuildDebug": "node generate && mostly-pangyp configure --debug build"
   }
 }

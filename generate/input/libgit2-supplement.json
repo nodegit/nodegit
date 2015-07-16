@@ -119,10 +119,6 @@
           {
             "name": "rebase",
             "type": "git_rebase *"
-          },
-          {
-            "name": "checkout_opts",
-            "type": "git_checkout_options *"
           }
         ],
         "return": {
@@ -149,14 +145,6 @@
           {
             "name": "checkout_opts",
             "type": "git_checkout_options *"
-          },
-          {
-            "name": "signature",
-            "type": "const git_signature *"
-          },
-          {
-            "name": "log_message",
-            "type": "const char *"
           }
         ],
         "return": {
@@ -229,6 +217,30 @@
     ],
     "types": [
       [
+        "git_config_entry",
+        {
+          "fields": [
+            {
+              "type": "const char *",
+              "name": "name"
+            },
+            {
+              "type": "const char *",
+              "name": "value"
+            },
+            {
+              "type": "git_config_level_t",
+              "name": "level"
+            },
+            {
+              "type": "void (*)(struct git_config_entry *)",
+              "name": "free",
+              "ignore": true
+            }
+          ]
+        }
+      ],
+      [
         "git_direction",
         {
           "type": "enum",
@@ -245,6 +257,52 @@
               "name": "GIT_DIRECTION_PUSH",
               "comments": "Pushing to a remote repository",
               "value": 1
+            }
+          ]
+        }
+      ],
+      [
+        "git_filter",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "const char *",
+              "name": "attributes"
+            },
+            {
+              "type": "git_filter_init_fn",
+              "name": "initialize",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_shutdown_fn",
+              "name": "shutdown",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_check_fn",
+              "name": "check",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_apply_fn",
+              "name": "apply",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_stream_fn",
+              "name": "stream",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_cleanup_fn",
+              "name": "cleanup",
+              "ignore": true
             }
           ]
         }
@@ -289,6 +347,62 @@
         }
       ],
       [
+        "git_fetch_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "version",
+              "type": "int"
+            },
+            {
+              "name": "callbacks",
+              "type": "git_remote_callbacks"
+            },
+            {
+              "name": "prune",
+              "type": "git_fetch_prune_t"
+            },
+            {
+              "name": "update_fetchhead",
+              "type": "int"
+            },
+            {
+              "name": "download_tags",
+              "type": "git_remote_autotag_option_t"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_fetch_init_options"
+            ]
+          }
+        }
+      ],
+      [
+        "git_fetch_prune_t",
+        {
+          "type": "enum",
+          "fields": [
+            {
+              "type": "int",
+              "name": "git_fetch_prune_unspecified",
+              "value": 0
+            },
+            {
+              "type": "int",
+              "name": "git_fetch_prune",
+              "value": 1
+            },
+            {
+              "type": "int",
+              "name": "git_fetch_no_prune",
+              "value": 2
+            }
+          ]
+        }
+      ],
+      [
         "git_merge_options",
         {
           "type": "struct",
@@ -299,7 +413,7 @@
             },
             {
               "type": "git_merge_tree_flag_t",
-              "name": "flags"
+              "name": "tree_flags"
             },
             {
               "type": "unsigned int",
@@ -317,6 +431,10 @@
             {
               "type": "git_merge_file_favor_t",
               "name": "file_favor"
+            },
+            {
+              "type": "unsigned int",
+              "name": "file_flags"
             }
           ],
           "used": {
@@ -330,6 +448,35 @@
         "git_off_t",
         {
           "type": "enum"
+        }
+      ],
+      [
+        "git_rebase_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "int",
+              "name": "quiet"
+            },
+            {
+              "type": "const char *",
+              "name": "rewrite_notes_ref"
+            },
+            {
+              "type": "git_checkout_options",
+              "name": "checkout_options"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_rebase_init_options"
+            ]
+          }
         }
       ],
       [
@@ -520,12 +667,6 @@
     }
   },
   "groups": {
-    "rebase": [
-      "git_rebase_next"
-    ],
-    "reset": [
-      "git_reset"
-    ],
     "stash": [
       "git_stash_save"
     ]

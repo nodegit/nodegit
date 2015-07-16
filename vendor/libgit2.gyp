@@ -279,7 +279,7 @@
           "msvs_settings": {
             "VCLinkerTool": {
               "AdditionalDependencies": [
-                "ws2_32.lib",
+                "ws2_32.lib"
               ],
             },
             # Workaround of a strange bug:
@@ -313,6 +313,8 @@
             4013,
           ],
           "sources": [
+            "libgit2/src/win32/wbuffer.c",
+            "libgit2/src/win32/wbuffer.h",
             "libgit2/src/win32/dir.c",
             "libgit2/src/win32/dir.h",
             "libgit2/src/win32/error.c",
@@ -1373,6 +1375,9 @@
               "-lgdi32.lib",
               "-luser32.lib",
               "-lwsock32.lib",
+              "-lwinhttp.lib",
+              "-lcrypt32.lib",
+              "-lrpcrt4.lib"
             ],
               "conditions": [
                 ["_type=='shared_library'", {

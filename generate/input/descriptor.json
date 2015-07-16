@@ -787,6 +787,9 @@
         "git_filter_source_filemode": {
           "ignore": true
         },
+        "git_filter_source_flags": {
+          "ignore": true
+        },
         "git_filter_source_id": {
           "ignore": true
         },
@@ -877,6 +880,9 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_index_add_frombuffer": {
+          "ignore": true
         },
         "git_index_conflict_get": {
           "isAsync": true,
@@ -1628,6 +1634,9 @@
         "pack_progress": {
           "ignore": true
         },
+        "push_negotiation": {
+          "ignore": true
+        },
         "push_transfer_progress": {
           "ignore": true
         },
@@ -1635,6 +1644,9 @@
           "ignore": true
         },
         "sideband_progress": {
+          "ignore": true
+        },
+        "transport": {
           "ignore": true
         },
         "update_tips": {
@@ -1647,6 +1659,9 @@
     },
     "repository": {
       "functions": {
+        "git_repository__cleanup": {
+          "ignore": true
+        },
         "git_repository_init_init_options": {
           "ignore": true
         },
@@ -1668,11 +1683,32 @@
         "git_repository_message": {
           "ignore": true
         },
+        "git_repository_new": {
+          "ignore": true
+        },
+        "git_repository_reinit_filesystem": {
+          "ignore": true
+        },
+        "git_repository_set_bare": {
+          "ignore": true
+        },
+        "git_repository_set_config": {
+          "ignore": true
+        },
         "git_repository_set_head": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_repository_set_index": {
+          "ignore": true
+        },
+        "git_repository_set_odb": {
+          "ignore": true
+        },
+        "git_repository_set_refdb": {
+          "ignore": true
         }
       }
     },
@@ -1770,11 +1806,20 @@
     },
     "stash": {
       "functions": {
+        "git_stash_apply": {
+          "ignore": true
+        },
+        "git_stash_apply_init_options": {
+          "ignore": true
+        },
         "git_stash_foreach": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_stash_pop": {
+          "ignore": true
         }
       }
     },
@@ -1930,6 +1975,7 @@
     },
     "transport": {
       "cType": "git_transport",
+      "needsForwardDeclaration": false,
       "functions": {
         "git_transport_dummy": {
           "ignore": true
@@ -1973,6 +2019,10 @@
           "ignore": true
         }
       }
+    },
+    "writestream": {
+      "cType": "git_writestream",
+      "needsForwardDeclaration": false
     }
   }
 }

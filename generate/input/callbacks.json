@@ -99,6 +99,24 @@
       "error": -1
     }
   },
+  "git_checkout_perfdata_cb": {
+    "args": [
+      {
+        "name": "perfdata",
+        "cType": "const git_checkout_perfdata *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
   "git_config_foreach_cb": {
     "args": [
       {
@@ -144,6 +162,28 @@
     "return": {
       "type": "int",
       "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_diff_binary_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "binary",
+        "cType": "const git_diff_binary *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
       "success": 0,
       "error": -1
     }
