@@ -176,7 +176,6 @@ describe("Commit", function() {
       return index.writeTree();
     })
     .then(function(oidResult) {
-      console.log("Commit to amend tree id: " + oidResult);
       treeOid = oidResult;
       return NodeGit.Reference.nameToId(repo, "HEAD");
     })
@@ -226,7 +225,6 @@ describe("Commit", function() {
     })
     .then(function(resultOid){
       treeOid = resultOid;
-      console.log("New Tree oid before amend: " + treeOid);
        return Promise.all([
          repo.getCommit(commitToAmendId),
          NodeGit.Signature.create(
@@ -248,7 +246,6 @@ describe("Commit", function() {
       var commit = amendInfo[0];
       author = amendInfo[1];
       committer = amendInfo[2];
-      //var tree = amendInfo[3];
 
       return commit.amend(
         "HEAD",
