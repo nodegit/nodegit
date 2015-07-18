@@ -325,6 +325,26 @@
     },
     "commit": {
       "functions": {
+        "git_commit_ammend": {
+          "args": {
+            "id": {
+              "isReturn": true
+            },
+            "message_encoding": {
+              "isOptional": true
+            },
+            "parents": {
+              "cType": "const git_commit **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitCommit"
+            },
+            "update_ref": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true
+        },
         "git_commit_create": {
           "args": {
             "id": {
