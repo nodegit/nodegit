@@ -137,6 +137,132 @@ describe("Commit", function() {
   });
 
 
+  it.only("can amend commit", function(){
+    var commitToAmendId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
+    var amendedCommitId = "98835fb6903436c298a603f263ed698b03106c05";
+    var fileName = "newfile.txt";
+    var fileContent = "hello world";
+    var newFileName = "newerfile.txt";
+    var newFileContent = "goodbye world";
+    var messageEncoding = "US-ASCII";
+    var message = "KYLE + KEN = BFF INDEFINITELY";
+
+    var repo;
+    var index;
+    var treeOid;
+    var parent;
+    var author;
+    var committer;
+
+    return NodeGit.Repository.open(reposPath)
+    .then(function(repoResult) {
+      repo = repoResult;
+      return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
+    })
+    .then(function() {
+      return repo.openIndex();
+    })
+    .then(function(indexResult) {
+      index = indexResult;
+      return index.read(1);
+    })
+    .then(function() {
+      return index.addByPath(fileName);
+    })
+    .then(function() {
+      return index.write();
+    })
+    .then(function() {
+      return index.writeTree();
+    })
+    .then(function(oidResult) {
+      console.log("Commit to amend tree id: " + oidResult);
+      treeOid = oidResult;
+      return NodeGit.Reference.nameToId(repo, "HEAD");
+    })
+    .then(function(head) {
+      return repo.getCommit(head);
+    })
+    .then(function(parentResult) {
+      parent = parentResult;
+      return Promise.all([
+        NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
+        NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
+      ]);
+    })
+    .then(function(signatures) {
+      var author = signatures[0];
+      var committer = signatures[1];
+
+      return repo.createCommit(
+        "HEAD",
+        author,
+        committer,
+        "message",
+        treeOid,
+        [parent]);
+    })
+    .then(function() {
+      return fse.writeFile(
+        path.join(repo.workdir(), newFileName),
+        newFileContent
+      );
+    })
+    .then(function() {
+      return repo.openIndex();
+    })
+    .then(function(indexResult) {
+      index = indexResult;
+      return index.read(1);
+    })
+    .then(function() {
+      return index.addByPath(newFileName);
+    })
+    .then(function() {
+      return index.write();
+    })
+    .then(function() {
+      return index.writeTree();
+    })
+    .then(function(resultOid){
+      treeOid = resultOid;
+      console.log("New Tree oid before amend: " + treeOid);
+       return Promise.all([
+         repo.getCommit(commitToAmendId),
+         NodeGit.Signature.create(
+           "New Foo Bar",
+           "fizz@buzz.com",
+           246802468,
+           12
+         ),
+         NodeGit.Signature.create(
+           "New Foo A Bar",
+           "fizz@buzz.com",
+           4807891730,
+           32
+         ),
+         repo.getTree(resultOid)
+       ]);
+    })
+    .then(function(amendInfo){
+      var commit = amendInfo[0];
+      author = amendInfo[1];
+      committer = amendInfo[2];
+      //var tree = amendInfo[3];
+
+      return commit.amend(
+        "HEAD",
+        author,
+        committer,
+        messageEncoding,
+        message,
+        treeOid
+      );
+    })
+    .then(function(newCommitId){
+      assert.equal(newCommitId, amendedCommitId);
+    });
+  });
 
   it("has an owner", function() {
     var owner = this.commit.owner();

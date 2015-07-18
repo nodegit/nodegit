@@ -325,25 +325,27 @@
     },
     "commit": {
       "functions": {
-        "git_commit_ammend": {
+        "git_commit_amend": {
           "args": {
+            "author": {
+              "isOptional": true
+            },
+            "committer": {
+              "isOptional": true
+            },
             "id": {
               "isReturn": true
             },
             "message_encoding": {
               "isOptional": true
             },
-            "parents": {
-              "cType": "const git_commit **",
-              "cppClassName": "Array",
-              "jsClassName": "Array",
-              "arrayElementCppClassName": "GitCommit"
+            "message": {
+              "isOptional": true
             },
-            "update_ref": {
+            "tree": {
               "isOptional": true
             }
-          },
-          "isAsync": true
+          }
         },
         "git_commit_create": {
           "args": {
