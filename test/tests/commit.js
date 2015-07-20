@@ -5,6 +5,11 @@ var promisify = require("thenify-all");
 var fse = promisify(require("fs-extra"), ["writeFile"]);
 var local = path.join.bind(path, __dirname);
 
+// Have to wrap exec, since it has a weird callback signature.
+var exec = promisify(function(command, opts, callback) {
+  return require("child_process").exec(command, opts, callback);
+});
+
 describe("Commit", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
@@ -22,6 +27,10 @@ describe("Commit", function() {
       .then(function(commit) {
         test.commit = commit;
       });
+  }
+
+  function undoCommit() {
+    return exec("git reset --hard HEAD~1", {cwd: reposPath});
   }
 
   beforeEach(function() {
@@ -127,7 +136,10 @@ describe("Commit", function() {
     })
     .then(function(commitId) {
       assert.equal(expectedCommitId, commitId);
-      return reinitialize(test);
+      return undoCommit()
+      .then(function(){
+        return reinitialize(test);
+      });
     }, function(reason) {
       return reinitialize(test)
         .then(function() {
