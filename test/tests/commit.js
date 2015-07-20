@@ -151,7 +151,7 @@ describe("Commit", function() {
 
   it("can amend commit", function(){
     var commitToAmendId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
-    var expectedAmendedCommitId = "7afb945e108e10d98732963c15682072db99bc28";
+    var expectedAmendedCommitId = "57836e96555243666ea74ea888310cc7c41d4613";
     var fileName = "newfile.txt";
     var fileContent = "hello world";
     var newFileName = "newerfile.txt";
@@ -242,24 +242,23 @@ describe("Commit", function() {
          repo.getCommit(commitToAmendId),
          NodeGit.Signature.create(
            "New Foo Bar",
-           "fizz@buzz.com",
+           "newfoo@bar.com",
            246802468,
            12
          ),
          NodeGit.Signature.create(
            "New Foo A Bar",
-           "fizz@buzz.com",
+           "newfoo@bar.com",
            4807891730,
            32
-         ),
-         repo.getTree(resultOid)
+         )
        ]);
+
     })
     .then(function(amendInfo){
       var commit = amendInfo[0];
       author = amendInfo[1];
       committer = amendInfo[2];
-
       return commit.amend(
         "HEAD",
         author,
