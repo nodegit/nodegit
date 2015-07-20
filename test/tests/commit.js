@@ -137,9 +137,9 @@ describe("Commit", function() {
   });
 
 
-  it("can amend commit", function(){
+  it.only("can amend commit", function(){
     var commitToAmendId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
-    var amendedCommitId = "98835fb6903436c298a603f263ed698b03106c05";
+    var amendedCommitId = "7afb945e108e10d98732963c15682072db99bc28";
     var fileName = "newfile.txt";
     var fileContent = "hello world";
     var newFileName = "newerfile.txt";
