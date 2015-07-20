@@ -151,7 +151,7 @@ describe("Commit", function() {
 
   it("can amend commit", function(){
     var commitToAmendId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
-    var amendedCommitId = "7afb945e108e10d98732963c15682072db99bc28";
+    var expectedAmendedCommitId = "7afb945e108e10d98732963c15682072db99bc28";
     var fileName = "newfile.txt";
     var fileContent = "hello world";
     var newFileName = "newerfile.txt";
@@ -165,6 +165,7 @@ describe("Commit", function() {
     var parent;
     var author;
     var committer;
+    var amendedCommitId;
 
     return NodeGit.Repository.open(reposPath)
     .then(function(repoResult) {
@@ -268,8 +269,12 @@ describe("Commit", function() {
         treeOid
       );
     })
-    .then(function(newCommitId){
-      assert.equal(newCommitId, amendedCommitId);
+    .then(function(commitId){
+      amendedCommitId = commitId;
+      return undoCommit();
+    })
+    .then(function(){
+      assert.equal(amendedCommitId, expectedAmendedCommitId);
     });
   });
 

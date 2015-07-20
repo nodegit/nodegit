@@ -229,7 +229,7 @@ describe("Diff", function() {
         return diff.patches();
       })
       .then(function(patches) {
-        assert.equal(patches.length, 85);
+        assert.equal(patches.length, 84);
       });
   });
 
