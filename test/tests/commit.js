@@ -137,7 +137,7 @@ describe("Commit", function() {
   });
 
 
-  it.only("can amend commit", function(){
+  it("can amend commit", function(){
     var commitToAmendId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
     var amendedCommitId = "98835fb6903436c298a603f263ed698b03106c05";
     var fileName = "newfile.txt";
@@ -145,7 +145,7 @@ describe("Commit", function() {
     var newFileName = "newerfile.txt";
     var newFileContent = "goodbye world";
     var messageEncoding = "US-ASCII";
-    var message = "KYLE + KEN = BFF INDEFINITELY";
+    var message = "First commit";
 
     var repo;
     var index;
