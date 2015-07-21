@@ -325,6 +325,28 @@
     },
     "commit": {
       "functions": {
+        "git_commit_amend": {
+          "args": {
+            "author": {
+              "isOptional": true
+            },
+            "committer": {
+              "isOptional": true
+            },
+            "id": {
+              "isReturn": true
+            },
+            "message_encoding": {
+              "isOptional": true
+            },
+            "message": {
+              "isOptional": true
+            },
+            "tree": {
+              "isOptional": true
+            }
+          }
+        },
         "git_commit_create": {
           "args": {
             "id": {
