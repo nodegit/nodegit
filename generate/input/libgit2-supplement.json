@@ -374,7 +374,8 @@
           ],
           "used": {
             "needs": [
-              "git_fetch_init_options"
+              "git_fetch_init_options",
+              "git_remote_init_callbacks"
             ]
           }
         }
@@ -483,6 +484,48 @@
         "git_remote_autotag_option_t",
         {
           "type": "enum"
+        }
+      ],
+      [
+        "git_remote_callbacks",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "git_transport_message_cb",
+              "name": "sideband_progress"
+            },
+            {
+              "type": "git_cred_acquire_cb",
+              "name": "credentials"
+            },
+            {
+              "type": "git_transport_certificate_check_cb",
+              "name": "certificate_check"
+            },
+            {
+              "type": "git_transfer_progress_cb",
+              "name": "transfer_progress"
+            },
+            {
+              "type": "git_transport_cb",
+              "name": "transport",
+              "ignore": true
+            },
+            {
+              "type": "void *",
+              "name": "payload"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_remote_init_callbacks"
+            ]
+          }
         }
       ],
       [

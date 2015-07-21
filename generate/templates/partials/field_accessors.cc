@@ -116,7 +116,9 @@
         NanScope();
 
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
-        {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->payload);
+        {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each field.args|argsInfo as arg %}
+          {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
+        {% endeach %});
 
         if (instance->{{ field.name }}->IsEmpty()) {
           {% if field.return.type == "int" %}

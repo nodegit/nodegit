@@ -282,6 +282,9 @@
                 "ws2_32.lib"
               ],
             },
+            "VCCLCompilerTool": {
+                "ObjectFile": "$(IntDir)/%(RelativeDir)/"
+            },
             # Workaround of a strange bug:
             # TargetMachine + static_library + x64 = nothing.
             "conditions": [
@@ -313,8 +316,8 @@
             4013,
           ],
           "sources": [
-            "libgit2/src/win32/wbuffer.c",
-            "libgit2/src/win32/wbuffer.h",
+            "libgit2/src/win32/buffer.c",
+            "libgit2/src/win32/buffer.h",
             "libgit2/src/win32/dir.c",
             "libgit2/src/win32/dir.h",
             "libgit2/src/win32/error.c",

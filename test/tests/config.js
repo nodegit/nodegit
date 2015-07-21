@@ -13,7 +13,7 @@ describe("Config", function() {
 
   var reposPath = local("../repos/workdir");
 
-  it("can get and set a global value", function() {
+  it.only("can get and set a global value", function() {
     var savedUserName;
 
     function finallyFn() {

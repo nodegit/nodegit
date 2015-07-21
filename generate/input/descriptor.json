@@ -391,6 +391,9 @@
         "git_config_delete_multivar": {
           "ignore": true
         },
+        "git_config_entry_free": {
+          "ignore": true
+        },
         "git_config_find_global": {
           "ignore": true
         },
@@ -432,6 +435,12 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_config_get_string_buf": {
+          "ignore": true
+        },
+        "git_config_get_path": {
+          "ignore": true
         },
         "git_config_iterator_free": {
           "ignore": true
@@ -479,6 +488,9 @@
           "ignore": true
         },
         "git_config_parse_int64": {
+          "ignore": true
+        },
+        "git_config_parse_path": {
           "ignore": true
         },
         "git_config_refresh": {
@@ -1644,9 +1656,6 @@
           "ignore": true
         },
         "sideband_progress": {
-          "ignore": true
-        },
-        "transport": {
           "ignore": true
         },
         "update_tips": {

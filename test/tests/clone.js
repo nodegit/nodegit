@@ -39,9 +39,11 @@ describe("Clone", function() {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var opts = {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
+        fetchOpts: {
+          callbacks: {
+            certificateCheck: function() {
+              return 1;
+          }
         }
       }
     };
@@ -56,9 +58,11 @@ describe("Clone", function() {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var opts = {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          }
         }
       }
     };
@@ -73,12 +77,14 @@ describe("Clone", function() {
     var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
-        },
-        credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyFromAgent(userName);
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          },
+          credentials: function(url, userName) {
+            return NodeGit.Cred.sshKeyFromAgent(userName);
+          }
         }
       }
     };
@@ -93,16 +99,18 @@ describe("Clone", function() {
     var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
-        },
-        credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyNew(
-            userName,
-            sshPublicKey,
-            sshPrivateKey,
-            "");
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          },
+          credentials: function(url, userName) {
+            return NodeGit.Cred.sshKeyNew(
+              userName,
+              sshPublicKey,
+              sshPrivateKey,
+              "");
+          }
         }
       }
     };
@@ -117,9 +125,11 @@ describe("Clone", function() {
     var test = this;
     var url = "git://github.com/nodegit/test.git";
     var opts = {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          }
         }
       }
     };
@@ -145,13 +155,15 @@ describe("Clone", function() {
     var url = "https://github.com/nodegit/private";
 
     return Clone(url, clonePath, {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
-        },
-        credentials: function() {
-          return NodeGit.Cred.userpassPlaintextNew("fake-token",
-            "x-oauth-basic");
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          },
+          credentials: function() {
+            return NodeGit.Cred.userpassPlaintextNew("fake-token",
+              "x-oauth-basic");
+          }
         }
       }
     }).catch(function unhandledError() { });
