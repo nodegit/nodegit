@@ -1,7 +1,8 @@
 var nodegit = require("../");
 var path = require("path");
-var promisify = require("thenify-all");
-var fse = promisify(require("fs-extra"), ["remove", "ensureDir", "writeFile"]);
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
+fse.ensureDir = promisify(fse.ensureDir);
 
 var fileName = "newFile.txt";
 var fileContent = "hello world";
@@ -63,6 +64,6 @@ fse.remove(path.resolve(__dirname, repoDir))
       repository.defaultSignature(),
       "Push to master");
   });
-}).then(function() {
+}).done(function() {
   console.log("Done!");
 });

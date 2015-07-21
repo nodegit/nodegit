@@ -1,6 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("thenify-all");
+var promisify = require("promisify-node");
 var local = path.join.bind(path, __dirname);
 
 // Have to wrap exec, since it has a weird callback signature.

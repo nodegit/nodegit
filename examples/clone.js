@@ -1,6 +1,6 @@
 var nodegit = require("../");
-var promisify = require("thenify-all");
-var fse = promisify(require("fs-extra"), ["remove"]);
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 var path = "/tmp/nodegit-clone-demo";
 
 fse.remove(path).then(function() {
@@ -28,7 +28,7 @@ fse.remove(path).then(function() {
     entry = entryResult;
     return entry.getBlob();
   })
-  .then(function(blob) {
+  .done(function(blob) {
     console.log(entry.filename(), entry.sha(), blob.rawsize() + "b");
     console.log("========================================================\n\n");
     var firstTenLines = blob.toString().split("\n").slice(0, 10).join("\n");

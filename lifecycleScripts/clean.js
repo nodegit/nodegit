@@ -1,7 +1,7 @@
 var fse = require("fs-extra");
 var path = require("path");
 var npm = require("npm");
-var Promise = require("bluebird");
+var Promise = require("nodegit-promise");
 
 var rooted = path.join.bind(path, __dirname, "..");
 if (fse.existsSync(rooted(".didntcomefromthenpmregistry"))) {

@@ -24,6 +24,6 @@ nodegit.Repository.open(path.resolve(__dirname, repoDir))
   .then(function() {
     return repository.mergeBranches("master", "origin/master");
   })
-  .then(function() {
+  .done(function() {
     console.log("Done!");
   });

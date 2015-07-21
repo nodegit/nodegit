@@ -22,4 +22,4 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     console.log(firstTenLines);
     console.log("...");
   })
-  .then();
+  .done();

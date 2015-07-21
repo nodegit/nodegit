@@ -1,7 +1,7 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("bluebird");
-var fse = require("fs-extra", []);
+var Promise = require("nodegit-promise");
+var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 
 describe("Checkout", function() {
