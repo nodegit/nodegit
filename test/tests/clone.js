@@ -1,7 +1,7 @@
 var path = require("path");
 var assert = require("assert");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var promisify = require("thenify-all");
+var fse = promisify(require("fs-extra"), ["remove"]);
 var local = path.join.bind(path, __dirname);
 
 describe("Clone", function() {

@@ -52,4 +52,4 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     // Don't forget to call `start()`!
     history.start();
   })
-  .done();
+  .then();

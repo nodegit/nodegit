@@ -1,6 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("nodegit-promise");
+var Promise = require("bluebird");
 var local = path.join.bind(path, __dirname);
 
 describe("Branch", function() {
@@ -45,7 +45,11 @@ describe("Branch", function() {
 
     return repo.getBranch(branchName)
       // Reverse the results, since if we found it it wasn't deleted
-      .then(Promise.reject, Promise.resolve);
+      .then(function() {
+        return Promise.reject();
+      }, function() {
+        return Promise.resolve();
+      });
   });
 
   it("can see if the branch is pointed to by head", function() {

@@ -1,4 +1,4 @@
-var Promise = require("nodegit-promise");
+var Promise = require("bluebird");
 var path = require("path");
 var fs = require("fs");
 var rooted = path.join.bind(path, __dirname, "..");

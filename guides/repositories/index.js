@@ -32,7 +32,7 @@ NodeGit.Repository.open(pathToRepo).then(function (repo) {
   // You can also provide a catch function which will contain the reason why
   // any above promises that weren't handled have failed
 })
-.done(function() {
+.then(function() {
   // If we have a .done then the error will be thrown if there was an error that
   // wasn't caught by either providing a 2nd function to the `.then` or a
   // `.catch` function

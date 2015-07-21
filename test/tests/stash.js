@@ -1,8 +1,8 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
-var Promise = require("nodegit-promise");
-var fse = promisify(require("fs-extra"));
+var promisify = require("thenify-all");
+var Promise = require("bluebird");
+var fse = promisify(require("fs-extra"), ["writeFile", "readFile"]);
 var local = path.join.bind(path, __dirname);
 
 describe("Stash", function() {

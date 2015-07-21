@@ -1,4 +1,4 @@
-var Promise = require("nodegit-promise");
+var Promise = require("bluebird");
 var cp = require("child_process");
 var path = require("path");
 

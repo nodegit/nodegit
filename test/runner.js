@@ -1,12 +1,8 @@
-var promisify = require("promisify-node");
-var fse = promisify("fs-extra");
+var promisify = require("thenify-all");
+var fse = promisify(require("fs-extra"), ['mkdir', "remove", "writeFile"]);
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-
-// Have to wrap exec, since it has a weird callback signature.
-var exec = promisify(function(command, opts, callback) {
-  return require("child_process").exec(command, opts, callback);
-});
+var exec = promisify(require("child_process").exec);
 
 var workdirPath = local("repos/workdir");
 

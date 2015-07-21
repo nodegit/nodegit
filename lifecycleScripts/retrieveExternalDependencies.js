@@ -1,6 +1,6 @@
-var Promise = require("nodegit-promise");
-var promisify = require("promisify-node");
-var fse = promisify("fs-extra");
+var Promise = require("bluebird");
+var promisify = require("thenify-all");
+var fse = promisify(require("fs-extra"), ["remove", "writeFile"]);
 var zlib = require("zlib");
 var cp = require("child_process");
 var path = require("path");

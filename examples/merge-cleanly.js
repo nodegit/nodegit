@@ -1,8 +1,7 @@
 var nodegit = require("../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
-fse.ensureDir = promisify(fse.ensureDir);
+var promisify = require("thenify-all");
+var fse = promisify(require("fs-extra"), ["remove", "ensureDir", "writeFile"]);
 
 var ourFileName = "ourNewFile.txt";
 var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
@@ -123,7 +122,7 @@ fse.remove(path.resolve(__dirname, repoDir))
   return repository.createCommit(ourBranch.name(), ourSignature,
     ourSignature, "we merged their commit", oid, [ourCommit, theirCommit]);
 })
-.done(function(commitId) {
+.then(function(commitId) {
   // We never changed the HEAD after the initial commit;
   // it should still be the same as master.
   console.log("New Commit: ", commitId);

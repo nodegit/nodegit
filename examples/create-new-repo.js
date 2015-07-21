@@ -1,12 +1,10 @@
 var nodegit = require("../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var promisify = require("thenify-all");
+var fse = promisify(require("fs-extra"), ["ensureDir", "writeFile"]);
 var fileName = "newfile.txt";
 var fileContent = "hello world";
 var repoDir = "../../newRepo";
-
-fse.ensureDir = promisify(fse.ensureDir);
 
 var repository;
 var index;
@@ -45,6 +43,6 @@ fse.ensureDir(path.resolve(__dirname, repoDir))
   // normal we don't get the head either, because there isn't one yet.
   return repository.createCommit("HEAD", author, committer, "message", oid, []);
 })
-.done(function(commitId) {
+.then(function(commitId) {
   console.log("New Commit: ", commitId);
 });

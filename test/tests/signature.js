@@ -1,8 +1,8 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var promisify = require("promisify-node");
-var Promise = require("nodegit-promise");
+var promisify = require("thenify-all");
+var Promise = require("bluebird");
 
 // Have to wrap exec, since it has a weird callback signature.
 var exec = promisify(function(command, opts, callback) {
@@ -57,13 +57,13 @@ describe("Signature", function() {
     };
 
     return exec("git config --global user.name")
-    .then(function(userName) {
-      savedUserName = userName.trim();
+    .then(function(std) {
+      savedUserName = std[0].trim();
 
       return exec("git config --global user.email");
     })
-    .then(function(userEmail) {
-      savedUserEmail = userEmail.trim();
+    .then(function(std) {
+      savedUserEmail = std[0].trim();
 
       return exec("git config --global --unset user.name");
     })
