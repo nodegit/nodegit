@@ -52,4 +52,4 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     // from the filesystem.
     console.log("New Commit:", commitId.allocfmt());
   })
-  .then();
+  .done();

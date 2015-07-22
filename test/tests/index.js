@@ -1,9 +1,9 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var Promise = require("bluebird");
-var promisify = require("thenify-all");
-var fse = promisify(require("fs-extra"), ["remove", "writeFile"]);
+var Promise = require("nodegit-promise");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 
 var writeFile = promisify(function(filename, data, callback) {
   return require("fs").writeFile(filename, data, {}, callback);

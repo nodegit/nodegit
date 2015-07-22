@@ -8,6 +8,6 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
         return nodegit.Cred.sshKeyFromAgent(userName);
       }
     });
-  }).then(function() {
+  }).done(function() {
     console.log("It worked!");
   });

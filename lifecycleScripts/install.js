@@ -1,5 +1,5 @@
-var Promise = require("bluebird");
-var promisify = require("thenify-all");
+var Promise = require("nodegit-promise");
+var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
 

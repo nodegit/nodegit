@@ -24,6 +24,6 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       });
     });
   })
-  .then(function() {
+  .done(function() {
     console.log("Done!");
   });

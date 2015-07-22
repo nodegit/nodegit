@@ -1,8 +1,8 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("bluebird");
-var promisify = require("thenify-all");
-var fse = promisify(require("fs-extra"), ["writeFile"]);
+var Promise = require("nodegit-promise");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 // Have to wrap exec, since it has a weird callback signature.

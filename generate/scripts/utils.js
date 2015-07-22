@@ -1,5 +1,5 @@
-const promisify = require("thenify-all");
-const fse = require("fs-extra", []);
+const promisify = require("promisify-node");
+const fse = require("fs-extra");
 
 const fs = require("fs");
 const path = require("path");

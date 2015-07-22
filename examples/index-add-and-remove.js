@@ -1,8 +1,8 @@
 var nodegit = require("../");
 var path = require("path");
-var Promise = require("bluebird");
-var promisify = require("thenify-all");
-var fse = promisify(require("fs-extra"), ["writeFile"]);
+var Promise = require("nodegit-promise");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 
 nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   .then(function(repo) {
@@ -129,6 +129,6 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
         console.log("New files in index: " + newFiles.length);
       });
     });
-  }).then(function() {
+  }).done(function() {
     console.log("All done!");
   });

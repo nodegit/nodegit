@@ -119,7 +119,7 @@ NodeGit.Repository.open(pathToRepo).then(function (sucessfulResult) {
   // This is the first function of the then which contains the successfully
   // calculated result of the promise
 })
-.then(function () {
+.done(function () {
   // If we have a .done then the error will be thrown if there was an error that
   // wasn't caught by either providing a 2nd function to the `.then` or a
   // `.catch` function

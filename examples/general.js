@@ -1,6 +1,6 @@
 var nodegit = require("../");
 var path = require("path");
-var Promise = require("bluebird");
+var Promise = require("nodegit-promise");
 var oid;
 var odb;
 var repo;
@@ -362,6 +362,6 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     return Promise.all(promises);
   })
 
-  .then(function() {
+  .done(function() {
     console.log("Done!");
   });
