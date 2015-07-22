@@ -16,6 +16,11 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%if arg.globalPayload %}
   {{ cppFunctionName }}_globalPayload* globalPayload = new {{ cppFunctionName }}_globalPayload;
     {%endif%}
+    {%if arg.cppClassName == "GitBuf" %}
+      baton->{{arg.name}} = new git_buf;
+      baton->{{arg.name}}->ptr = NULL;
+      baton->{{arg.name}}->size = baton->{{arg.name}}->asize = 0;
+    {%endif%}
   {%endeach%}
 
   {%each args|argsInfo as arg %}

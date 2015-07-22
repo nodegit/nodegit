@@ -220,7 +220,10 @@
           },
           "isAsync": true
         }
-      }
+      },
+      "dependencies": [
+        "../include/git_buf_converter.h"
+      ]
     },
     "cert_hostkey": {
       "fields": {
@@ -431,13 +434,13 @@
           "ignore": true
         },
         "git_config_get_string": {
+          "ignore": true
+        },
+        "git_config_get_string_buf": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
           }
-        },
-        "git_config_get_string_buf": {
-          "ignore": true
         },
         "git_config_get_path": {
           "ignore": true
@@ -508,7 +511,10 @@
             "isErrorCode": true
           }
         }
-      }
+      },
+      "dependencies": [
+        "../include/git_buf_converter.h"
+      ]
     },
     "config_backend": {
       "ignore": true

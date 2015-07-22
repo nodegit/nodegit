@@ -13,7 +13,7 @@ describe("Config", function() {
 
   var reposPath = local("../repos/workdir");
 
-  it.only("can get and set a global value", function() {
+  it("can get and set a global value", function() {
     var savedUserName;
 
     function finallyFn() {
@@ -31,7 +31,7 @@ describe("Config", function() {
         return NodeGit.Config.openDefault();
       })
       .then(function(config) {
-        return config.getString("user.name");
+        return config.getStringBuf("user.name");
       })
       .then(function(userNameFromNodeGit) {
         assert.equal(savedUserName + "-test", userNameFromNodeGit);
@@ -65,7 +65,7 @@ describe("Config", function() {
       return repo.config();
     })
     .then(function(config) {
-      return config.getString("user.name");
+      return config.getStringBuf("user.name");
     })
     .then(function(userNameFromNodeGit) {
       assert.equal(savedUserName + "-test", userNameFromNodeGit);
