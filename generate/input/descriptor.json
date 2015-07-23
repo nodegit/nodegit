@@ -604,6 +604,9 @@
             "file_cb" : {
               "isOptional": true
             },
+            "binary_cb": {
+              "isOptional": true
+            },
             "hunk_cb" : {
               "isOptional": true
             },
@@ -1491,9 +1494,6 @@
         },
         "git_reference_symbolic_set_target": {
           "args": {
-            "signature": {
-              "isOptional": true
-            },
             "log_message": {
               "isOptional": true
             }

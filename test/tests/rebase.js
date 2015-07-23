@@ -293,7 +293,8 @@ describe("Rebase", function() {
         assert.equal(rebase.operationEntrycount(), 1);
 
         var opts = new NodeGit.CheckoutOptions();
-        opts.checkoutStrategy = NodeGit.Checkout.STRATEGY.SAFE_CREATE;
+        opts.checkoutStrategy = NodeGit.Checkout.STRATEGY.SAFE |
+          NodeGit.Checkout.STRATEGY.RECREATE_MISSING;
 
         return rebase.next(opts);
       })

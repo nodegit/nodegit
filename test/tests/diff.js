@@ -206,6 +206,7 @@ describe("Diff", function() {
           null,
           null,
           null,
+          null,
           function(delta, hunk, payload) {
             assert.equal(hunk.oldStart(), 1);
             assert.equal(hunk.oldLines(), 19);

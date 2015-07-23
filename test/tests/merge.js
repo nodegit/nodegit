@@ -328,7 +328,10 @@ describe("Merge", function() {
       });
     })
     .then(function() {
-      var opts = {checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE};
+      var opts = {
+        checkoutStrategy: NodeGit.Checkout.STRATEGY.SAFE |
+          NodeGit.Checkout.STRATEGY.RECREATE_MISSING
+      };
       return repository.checkoutBranch(ourBranchName, opts);
     })
     .then(function() {
@@ -1002,7 +1005,7 @@ describe("Merge", function() {
       .then(function() {
         return NodeGit.Reference.lookup(repository, "HEAD")
           .then(function(head) {
-            return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
+            return head.symbolicSetTarget(ourBranch.name(), "");
           });
       })
       .then(function() {
