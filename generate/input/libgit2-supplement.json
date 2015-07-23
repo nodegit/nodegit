@@ -475,7 +475,8 @@
           ],
           "used": {
             "needs": [
-              "git_rebase_init_options"
+              "git_rebase_init_options",
+              "git_checkout_init_options"
             ]
           }
         }
