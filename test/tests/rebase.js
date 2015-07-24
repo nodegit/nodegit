@@ -5,9 +5,6 @@ var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
-// Libgit2 GIT_REBASE_NO_OPERATION assigns maximum uint64 value for no op.
-var REBASE_NO_OPERATION = 18446744073709552000;
-
 describe("Rebase", function() {
   var NodeGit = require("../../");
 
@@ -150,7 +147,6 @@ describe("Rebase", function() {
       })
       .then(function(rebase) {
         assert.equal(rebase.operationEntrycount(), 0);
-        assert.equal(rebase.operationCurrent(), REBASE_NO_OPERATION);
 
         return rebase.finish(ourSignature);
       })
