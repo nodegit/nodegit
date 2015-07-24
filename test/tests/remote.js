@@ -59,12 +59,15 @@ describe("Remote", function() {
     assert.equal(this.remote.pushurl(), undefined);
   });
 
-  it.skip("can set a remote", function() {
+  it("can set a remote", function() {
     var repository = this.repository;
-    var remote = Remote.create(repository, "origin1", url);
+    Remote.create(repository, "origin1", url);
 
     Remote.setPushurl(repository, "origin1", "https://google.com/");
-    assert.equal(remote.pushurl(), "https://google.com/");
+
+    return Remote.lookup(repository, "origin1").then(function(remote) {
+      assert.equal(remote.pushurl(), "https://google.com/");
+    });
   });
 
   it("can read the remote name", function() {
@@ -73,9 +76,9 @@ describe("Remote", function() {
 
   it("can create and load a new remote", function() {
     var repository = this.repository;
-    var remote = Remote.create(repository, "origin2", url);
+    Remote.create(repository, "origin2", url);
 
-    return Remote.lookup(repository, "origin2").then(function() {
+    return Remote.lookup(repository, "origin2").then(function(remote) {
       assert(remote.url(), url);
     });
   });
