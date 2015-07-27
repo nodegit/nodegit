@@ -15,15 +15,15 @@ describe("Remote", function() {
   function removeOrigins(repo) {
     return repo.getRemotes()
       .then(function(remotes) {
-        var promises = [];
-
-        remotes.forEach(function(remote) {
+        return remotes.reduce(function(promise, remote) {
           if (remote !== "origin") {
-            promises.push(Remote.delete(repo, remote));
+            promise = promise.then(function() {
+              Remote.delete(repo, remote);
+            });
           }
-        });
 
-        return Promise.all(promises);
+          return promise;
+        }, Promise.resolve());
       });
   }
 
@@ -52,7 +52,7 @@ describe("Remote", function() {
   });
 
   it("can read the remote url", function() {
-    assert.equal( this.remote.url().replace(".git", ""), url);
+    assert.equal(this.remote.url().replace(".git", ""), url);
   });
 
   it("has an empty pushurl by default", function() {
@@ -159,7 +159,11 @@ describe("Remote", function() {
     // Set a reasonable timeout here for the fetchAll test
     this.timeout(15000);
 
-    return this.repository.fetchAll({
+    var repository = this.repository;
+    Remote.create(repository, "test1", url);
+    Remote.create(repository, "test2", url2);
+
+    return repository.fetchAll({
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
       },
