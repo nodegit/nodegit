@@ -71,6 +71,7 @@ var importExtension = function(name) {
 rawApi.Utils = {};
 require("./utils/lookup_wrapper");
 require("./utils/normalize_options");
+require("./utils/shallow_clone");
 
 // Load up extra types;
 require("./convenient_line");
