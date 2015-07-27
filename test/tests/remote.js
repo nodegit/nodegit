@@ -12,13 +12,13 @@ describe("Remote", function() {
   var url = "https://github.com/nodegit/test";
   var url2 = "https://github.com/nodegit/test2";
 
-  function removeOrigins(repo) {
+  function removeNonOrigins(repo) {
     return repo.getRemotes()
       .then(function(remotes) {
         return remotes.reduce(function(promise, remote) {
           if (remote !== "origin") {
             promise = promise.then(function() {
-              Remote.delete(repo, remote);
+              return Remote.delete(repo, remote);
             });
           }
 
@@ -39,12 +39,12 @@ describe("Remote", function() {
       .then(function(remote) {
         test.remote = remote;
 
-        return removeOrigins(test.repository);
+        return removeNonOrigins(test.repository);
       });
   });
 
   after(function() {
-    return removeOrigins(this.repository);
+    return removeNonOrigins(this.repository);
   });
 
   it("can load a remote", function() {
