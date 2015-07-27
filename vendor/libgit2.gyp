@@ -253,10 +253,16 @@
         "libgit2/src/xdiff/xutils.h",
       ],
       "conditions": [
-        ["OS!='win'", {
+        ["OS=='mac'", {
             "defines": [
-                "GIT_SSL"
+                "GIT_SECURE_TRANSPORT"
             ],
+            "sources": [
+                "libgit2/src/stransport_stream.c",
+                "libgit2/src/stransport_stream.h",
+                "libgit2/src/tls_stream.c",
+                "libgit2/src/tls_stream.h"
+            ]
         }],
         ["OS=='win'", {}, {
           "sources": [
@@ -271,6 +277,13 @@
             "-DGIT_SSL",
             "-w",
           ],
+          "defines": [
+              "GIT_OPENSSL"
+          ],
+          "sources": [
+              "libgit2/src/tls_stream.c",
+              "libgit2/src/tls_stream.h"
+          ]
         }],
         ["OS=='win'", {
           "defines": [
