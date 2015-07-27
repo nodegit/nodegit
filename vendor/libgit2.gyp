@@ -253,6 +253,11 @@
         "libgit2/src/xdiff/xutils.h",
       ],
       "conditions": [
+        ["OS!='win'", {
+            "defines": [
+                "GIT_SSL"
+            ]
+        }],
         ["OS=='mac'", {
             "defines": [
                 "GIT_SECURE_TRANSPORT"
