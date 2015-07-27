@@ -93,6 +93,7 @@ describe("Remote", function() {
 
   it("can download from a remote", function() {
     var repo = this.repository;
+    this.timeout(60000);
 
     return repo.getRemote("origin")
       .then(function(remote) {
