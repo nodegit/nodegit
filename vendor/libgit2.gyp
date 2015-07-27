@@ -267,7 +267,14 @@
                 "libgit2/src/stransport_stream.h",
                 "libgit2/src/tls_stream.c",
                 "libgit2/src/tls_stream.h"
-            ]
+            ],
+            "link_settings": {
+                "xcode_settings": {
+                    "OTHER_LDFLAGS": [
+                        "-framework Security"
+                    ],
+                },
+            }
         }],
         ["OS=='win'", {}, {
           "sources": [
