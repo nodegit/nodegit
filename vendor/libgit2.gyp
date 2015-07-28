@@ -266,15 +266,12 @@
                 "libgit2/src/stransport_stream.c",
                 "libgit2/src/stransport_stream.h",
                 "libgit2/src/tls_stream.c",
-                "libgit2/src/tls_stream.h",
-                "libgit2/src/curl_stream.c",
-                "libgit2/src/curl_stream.h"
+                "libgit2/src/tls_stream.h"
             ],
             "link_settings": {
                 "xcode_settings": {
                     "OTHER_LDFLAGS": [
-                        "-framework Security",
-                        "-framework CoreFoundation"
+                        "-framework Security"
                     ],
                 },
             }
@@ -290,18 +287,14 @@
           "cflags": [
             "-DGIT_SSH",
             "-DGIT_SSL",
-            "-lcurl",
             "-w",
           ],
           "defines": [
-              "GIT_OPENSSL",
-              "GIT_CURL"
+              "GIT_OPENSSL"
           ],
           "sources": [
               "libgit2/src/tls_stream.c",
-              "libgit2/src/tls_stream.h",
-              "libgit2/src/curl_stream.c",
-              "libgit2/src/curl_stream.h"
+              "libgit2/src/tls_stream.h"
           ]
         }],
         ["OS=='win'", {
