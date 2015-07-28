@@ -172,6 +172,7 @@ describe("Remote", function() {
     Remote.create(repository, "test2", url2);
 
     return repository.fetchAll({
+      callbacks: {
         credentials: function(url, userName) {
           return NodeGit.Cred.sshKeyFromAgent(userName);
         },
