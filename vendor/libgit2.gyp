@@ -260,20 +260,27 @@
         }],
         ["OS=='mac'", {
             "defines": [
-                "GIT_SECURE_TRANSPORT"
+                "GIT_SECURE_TRANSPORT",
+                "GIT_CURL"
             ],
             "sources": [
                 "libgit2/src/stransport_stream.c",
                 "libgit2/src/stransport_stream.h",
                 "libgit2/src/tls_stream.c",
-                "libgit2/src/tls_stream.h"
+                "libgit2/src/tls_stream.h",
+                "libgit2/src/curl_stream.c",
+                "libgit2/src/curl_stream.h"
             ],
             "link_settings": {
                 "xcode_settings": {
                     "OTHER_LDFLAGS": [
-                        "-framework Security"
+                        "-framework Security",
+                        "-framework CoreFoundation"
                     ],
                 },
+                "libraries": [
+                    '/usr/lib/libcurl.dylib'
+                ],
             }
         }],
         ["OS=='win'", {}, {
