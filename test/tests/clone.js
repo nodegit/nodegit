@@ -151,7 +151,7 @@ describe("Clone", function() {
     });
   });
 
-  it.only("will not segfault when accessing a url without username", function(){
+  it("will not segfault when accessing a url without username", function(){
     var url = "https://github.com/nodegit/private";
 
     var firstPass = true;
