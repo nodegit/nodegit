@@ -191,25 +191,44 @@ describe("Remote", function() {
       .then(function(remote) {
         var ref = "refs/heads/" + branch;
         var refs = [ref + ":" + ref];
+        var firstPass = true;
         var options = {
           callbacks: {
-            credentials: function(url, userName) {
-              if (url.indexOf("https") === -1) {
-                return NodeGit.Cred.sshKeyFromAgent(userName);
-              } else {
-                return NodeGit.Cred.userpassPlaintextNew(userName, "");
+            credentials:function(url, userName) {
+              if (firstPass) {
+                if (url.indexOf("https") === -1) {
+                  return NodeGit.Cred.sshKeyFromAgent(userName);
+                } else {
+                    return NodeGit.Cred.defaultNew();
+                }
               }
+            },
+            certificateCheck: function() {
+              return 1;
             }
           }
         };
         return remote.push(refs, options);
       })
+      // takes care of windows bug, see the .catch for the proper pathway
+      // that this flow should take (cred cb doesn't run twice -> throws error)
       .then(function() {
         return Promise.reject(
           new Error("should not be able to push to the repository"));
       }, function(err) {
         if (err.message.indexOf(401) === -1) {
           throw err;
+        } else {
+          return Promise.resolve();
+        }
+      })
+      // catches linux / osx failure to use anonymous credentials
+      // stops callback infinite loop
+      .catch(function (reason) {
+        if (reason.message !==
+          "credentials callback returned an invalid cred type")
+        {
+          throw reason;
         } else {
           return Promise.resolve();
         }

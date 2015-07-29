@@ -253,23 +253,15 @@
         "libgit2/src/xdiff/xutils.h",
       ],
       "conditions": [
-        ["OS!='win'", {
-            "defines": [
-                "GIT_SSL"
-            ]
-        }],
         ["OS=='mac'", {
             "defines": [
-                "GIT_SECURE_TRANSPORT",
-                "GIT_CURL"
+                "GIT_SECURE_TRANSPORT"
             ],
             "sources": [
                 "libgit2/src/stransport_stream.c",
                 "libgit2/src/stransport_stream.h",
                 "libgit2/src/tls_stream.c",
-                "libgit2/src/tls_stream.h",
-                "libgit2/src/curl_stream.c",
-                "libgit2/src/curl_stream.h"
+                "libgit2/src/tls_stream.h"
             ],
             "link_settings": {
                 "xcode_settings": {
@@ -277,10 +269,7 @@
                         "-framework Security",
                         "-framework CoreFoundation"
                     ],
-                },
-                "libraries": [
-                    '/usr/lib/libcurl.dylib'
-                ],
+                }
             }
         }],
         ["OS=='win'", {}, {
