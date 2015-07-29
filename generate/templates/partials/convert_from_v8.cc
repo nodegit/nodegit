@@ -4,7 +4,9 @@
   {%if isOptional | or isBoolean %}
 
     {%if cppClassName == 'GitStrarray'%}
+    {%-- Print nothing --%}
     {% elsif cppClassName == 'GitBuf' %}
+    {%-- Print nothing --%}
     {%else%}
     if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
       {%endif%}
