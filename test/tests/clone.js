@@ -151,8 +151,10 @@ describe("Clone", function() {
     });
   });
 
-  it("will not segfault when accessing a url without username", function() {
+  it.only("will not segfault when accessing a url without username", function(){
     var url = "https://github.com/nodegit/private";
+
+    var firstPass = true;
 
     return Clone(url, clonePath, {
       fetchOpts: {
@@ -161,11 +163,16 @@ describe("Clone", function() {
             return 1;
           },
           credentials: function() {
-            return NodeGit.Cred.userpassPlaintextNew("fake-token",
-              "x-oauth-basic");
+            if (firstPass) {
+              firstPass = false;
+              return NodeGit.Cred.userpassPlaintextNew("fake-token",
+                "x-oauth-basic");
+            } else {
+              return NodeGit.Cred.defaultNew();
+            }
           }
         }
       }
-    }).catch(function unhandledError() { });
+    }).catch(function(reason) { });
   });
 });

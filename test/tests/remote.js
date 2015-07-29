@@ -194,13 +194,16 @@ describe("Remote", function() {
         var firstPass = true;
         var options = {
           callbacks: {
-            credentials:function(url, userName) {
+            credentials: function(url, userName) {
               if (firstPass) {
+                firstPass = false;
                 if (url.indexOf("https") === -1) {
                   return NodeGit.Cred.sshKeyFromAgent(userName);
                 } else {
-                    return NodeGit.Cred.defaultNew();
+                    return NodeGit.Cred.userpassPlaintextNew(userName, "");
                 }
+              } else {
+                return NodeGit.Cred.defaultNew();
               }
             },
             certificateCheck: function() {
