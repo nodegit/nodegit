@@ -545,6 +545,24 @@
       "error": -1
     }
   },
+  "git_stash_apply_progress_cb": {
+    "args": [
+      {
+        "name": "progress",
+        "cType": "git_stash_apply_progress_t"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults":0,
+      "success": 0,
+      "error": -1
+    }
+  },
   "git_stash_cb": {
     "args": [
       {

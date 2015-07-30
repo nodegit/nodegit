@@ -190,6 +190,7 @@
           "git_annotated_commit_free",
           "git_annotated_commit_from_fetchhead",
           "git_annotated_commit_from_ref",
+          "git_annotated_commit_from_revspec",
           "git_annotated_commit_id",
           "git_annotated_commit_lookup"
         ]
@@ -217,6 +218,54 @@
     ],
     "types": [
       [
+        "git_stash_apply_progress_t",
+        {
+          "type": "enum",
+          "fields": [
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_NONE",
+              "value": 0
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_LOADING_STASH",
+              "value": 1
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_INDEX",
+              "value": 2
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_MODIFIED",
+              "value": 3
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_UNTRACKED",
+              "value": 4
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_UNTRACKED",
+              "value": 5
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_MODIFIED",
+              "value": 6
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_DONE",
+              "value": 7
+            }
+          ]
+        }
+      ],
+      [
         "git_config_entry",
         {
           "fields": [
@@ -236,27 +285,6 @@
               "type": "void (*)(struct git_config_entry *)",
               "name": "free",
               "ignore": true
-            }
-          ]
-        }
-      ],
-      [
-        "git_direction",
-        {
-          "type": "enum",
-          "description": "Enum to indicate the direction that a remote connection is going to go",
-          "fields": [
-            {
-              "type": "int",
-              "name": "GIT_DIRECTION_FETCH",
-              "comments": "Fetching from the remote repository",
-              "value": 0
-            },
-            {
-              "type": "int",
-              "name": "GIT_DIRECTION_PUSH",
-              "comments": "Pushing to a remote repository",
-              "value": 1
             }
           ]
         }
@@ -530,40 +558,6 @@
         }
       ],
       [
-        "git_sort_t",
-        {
-          "type": "enum",
-          "description": "Flags to specify the sorting which a revwalk should perform.",
-          "fields": [
-            {
-              "type": "int",
-              "name": "GIT_SORT_NONE",
-              "comments": "Sort the repository contents in no particular ordering; this sorting is arbitrary, implementation-specific and subject to change at any time. This is the default sorting for new walkers.",
-              "value": 0
-            },
-            {
-              "type": "int",
-              "name": "GIT_SORT_TOPOLOGICAL",
-              "comments": "Sort the repository contents in topological order (parents before children); this sorting mode can be combined with time sorting.",
-              "value": 1
-            },
-            {
-              "type": "int",
-              "name": "GIT_SORT_TIME",
-              "comments": "Sort the repository contents by commit time; this sorting mode can be combined with topological sorting.",
-              "value": 2
-            },
-            {
-              "type": "int",
-              "name": "GIT_SORT_REVERSE",
-              "comments": "Iterate through the repository contents in reverse order; this sorting mode can be combined with any of the above.",
-              "value": 4
-            }
-          ],
-          "comments": ""
-        }
-      ],
-      [
         "git_time_t",
         {
           "type": "enum"
@@ -669,6 +663,40 @@
             ]
           }
         }
+      ],
+      [
+        "git_stash_apply_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "git_stash_apply_flags",
+              "name": "flags"
+            },
+            {
+              "type": "git_checkout_options",
+              "name": "checkout_options"
+            },
+            {
+              "type": "git_stash_apply_progress_cb",
+              "name": "progress_cb"
+            },
+            {
+              "type": "void *",
+              "name": "progress_payload"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_stash_apply_init_options",
+              "git_checkout_init_options"
+            ]
+          }
+        }
       ]
     ]
   },
@@ -678,6 +706,7 @@
         "git_annotated_commit_free",
         "git_annotated_commit_from_fetchhead",
         "git_annotated_commit_from_ref",
+        "git_annotated_commit_from_revspec",
         "git_annotated_commit_id",
         "git_annotated_commit_lookup"
       ]

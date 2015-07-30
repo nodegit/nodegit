@@ -161,6 +161,19 @@
             }
           }
         },
+        "git_branch_create_from_annotated": {
+          "args": {
+            "ref_out": {
+              "isReturn": true
+            },
+            "repository": {},
+            "branch_name": {},
+            "commit": {},
+            "force": {
+              "isOptional": true
+            }
+          }
+        },
         "git_branch_next": {
           "ignore": true
         },
@@ -1685,6 +1698,9 @@
         "git_repository_hashfile": {
           "ignore": true
         },
+        "git_repository_ident": {
+          "ignore": true
+        },
         "git_repository_mergehead_foreach": {
           "ignore": true
         },
@@ -1815,10 +1831,16 @@
     "stash": {
       "functions": {
         "git_stash_apply": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
-        "git_stash_apply_init_options": {
-          "ignore": true
+        "git_stash_drop": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_stash_foreach": {
           "isAsync": true,
@@ -1827,7 +1849,16 @@
           }
         },
         "git_stash_pop": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_stash_save": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
