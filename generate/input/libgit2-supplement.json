@@ -119,10 +119,6 @@
           {
             "name": "rebase",
             "type": "git_rebase *"
-          },
-          {
-            "name": "checkout_opts",
-            "type": "git_checkout_options *"
           }
         ],
         "return": {
@@ -149,14 +145,6 @@
           {
             "name": "checkout_opts",
             "type": "git_checkout_options *"
-          },
-          {
-            "name": "signature",
-            "type": "const git_signature *"
-          },
-          {
-            "name": "log_message",
-            "type": "const char *"
           }
         ],
         "return": {
@@ -202,6 +190,7 @@
           "git_annotated_commit_free",
           "git_annotated_commit_from_fetchhead",
           "git_annotated_commit_from_ref",
+          "git_annotated_commit_from_revspec",
           "git_annotated_commit_id",
           "git_annotated_commit_lookup"
         ]
@@ -229,22 +218,119 @@
     ],
     "types": [
       [
-        "git_direction",
+        "git_stash_apply_progress_t",
         {
           "type": "enum",
-          "description": "Enum to indicate the direction that a remote connection is going to go",
           "fields": [
             {
               "type": "int",
-              "name": "GIT_DIRECTION_FETCH",
-              "comments": "Fetching from the remote repository",
+              "name": "GIT_STASH_APPLY_PROGRESS_NONE",
               "value": 0
             },
             {
               "type": "int",
-              "name": "GIT_DIRECTION_PUSH",
-              "comments": "Pushing to a remote repository",
+              "name": "GIT_STASH_APPLY_PROGRESS_LOADING_STASH",
               "value": 1
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_INDEX",
+              "value": 2
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_MODIFIED",
+              "value": 3
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_UNTRACKED",
+              "value": 4
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_UNTRACKED",
+              "value": 5
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_MODIFIED",
+              "value": 6
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_DONE",
+              "value": 7
+            }
+          ]
+        }
+      ],
+      [
+        "git_config_entry",
+        {
+          "fields": [
+            {
+              "type": "const char *",
+              "name": "name"
+            },
+            {
+              "type": "const char *",
+              "name": "value"
+            },
+            {
+              "type": "git_config_level_t",
+              "name": "level"
+            },
+            {
+              "type": "void (*)(struct git_config_entry *)",
+              "name": "free",
+              "ignore": true
+            }
+          ]
+        }
+      ],
+      [
+        "git_filter",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "const char *",
+              "name": "attributes"
+            },
+            {
+              "type": "git_filter_init_fn",
+              "name": "initialize",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_shutdown_fn",
+              "name": "shutdown",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_check_fn",
+              "name": "check",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_apply_fn",
+              "name": "apply",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_stream_fn",
+              "name": "stream",
+              "ignore": true
+            },
+            {
+              "type": "git_filter_cleanup_fn",
+              "name": "cleanup",
+              "ignore": true
             }
           ]
         }
@@ -289,6 +375,63 @@
         }
       ],
       [
+        "git_fetch_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "version",
+              "type": "int"
+            },
+            {
+              "name": "callbacks",
+              "type": "git_remote_callbacks"
+            },
+            {
+              "name": "prune",
+              "type": "git_fetch_prune_t"
+            },
+            {
+              "name": "update_fetchhead",
+              "type": "int"
+            },
+            {
+              "name": "download_tags",
+              "type": "git_remote_autotag_option_t"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_fetch_init_options",
+              "git_remote_init_callbacks"
+            ]
+          }
+        }
+      ],
+      [
+        "git_fetch_prune_t",
+        {
+          "type": "enum",
+          "fields": [
+            {
+              "type": "int",
+              "name": "git_fetch_prune_unspecified",
+              "value": 0
+            },
+            {
+              "type": "int",
+              "name": "git_fetch_prune",
+              "value": 1
+            },
+            {
+              "type": "int",
+              "name": "git_fetch_no_prune",
+              "value": 2
+            }
+          ]
+        }
+      ],
+      [
         "git_merge_options",
         {
           "type": "struct",
@@ -299,7 +442,7 @@
             },
             {
               "type": "git_merge_tree_flag_t",
-              "name": "flags"
+              "name": "tree_flags"
             },
             {
               "type": "unsigned int",
@@ -317,6 +460,10 @@
             {
               "type": "git_merge_file_favor_t",
               "name": "file_favor"
+            },
+            {
+              "type": "unsigned int",
+              "name": "file_flags"
             }
           ],
           "used": {
@@ -333,43 +480,81 @@
         }
       ],
       [
+        "git_rebase_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "int",
+              "name": "quiet"
+            },
+            {
+              "type": "const char *",
+              "name": "rewrite_notes_ref"
+            },
+            {
+              "type": "git_checkout_options",
+              "name": "checkout_options"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_rebase_init_options",
+              "git_checkout_init_options"
+            ]
+          }
+        }
+      ],
+      [
         "git_remote_autotag_option_t",
         {
           "type": "enum"
         }
       ],
       [
-        "git_sort_t",
+        "git_remote_callbacks",
         {
-          "type": "enum",
-          "description": "Flags to specify the sorting which a revwalk should perform.",
+          "type": "struct",
           "fields": [
             {
-              "type": "int",
-              "name": "GIT_SORT_NONE",
-              "comments": "Sort the repository contents in no particular ordering; this sorting is arbitrary, implementation-specific and subject to change at any time. This is the default sorting for new walkers.",
-              "value": 0
+              "type": "unsigned int",
+              "name": "version"
             },
             {
-              "type": "int",
-              "name": "GIT_SORT_TOPOLOGICAL",
-              "comments": "Sort the repository contents in topological order (parents before children); this sorting mode can be combined with time sorting.",
-              "value": 1
+              "type": "git_transport_message_cb",
+              "name": "sideband_progress"
             },
             {
-              "type": "int",
-              "name": "GIT_SORT_TIME",
-              "comments": "Sort the repository contents by commit time; this sorting mode can be combined with topological sorting.",
-              "value": 2
+              "type": "git_cred_acquire_cb",
+              "name": "credentials"
             },
             {
-              "type": "int",
-              "name": "GIT_SORT_REVERSE",
-              "comments": "Iterate through the repository contents in reverse order; this sorting mode can be combined with any of the above.",
-              "value": 4
+              "type": "git_transport_certificate_check_cb",
+              "name": "certificate_check"
+            },
+            {
+              "type": "git_transfer_progress_cb",
+              "name": "transfer_progress"
+            },
+            {
+              "type": "git_transport_cb",
+              "name": "transport",
+              "ignore": true
+            },
+            {
+              "type": "void *",
+              "name": "payload"
             }
           ],
-          "comments": ""
+          "used": {
+            "needs": [
+              "git_remote_init_callbacks"
+            ]
+          }
         }
       ],
       [
@@ -478,6 +663,40 @@
             ]
           }
         }
+      ],
+      [
+        "git_stash_apply_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "git_stash_apply_flags",
+              "name": "flags"
+            },
+            {
+              "type": "git_checkout_options",
+              "name": "checkout_options"
+            },
+            {
+              "type": "git_stash_apply_progress_cb",
+              "name": "progress_cb"
+            },
+            {
+              "type": "void *",
+              "name": "progress_payload"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_stash_apply_init_options",
+              "git_checkout_init_options"
+            ]
+          }
+        }
       ]
     ]
   },
@@ -487,6 +706,7 @@
         "git_annotated_commit_free",
         "git_annotated_commit_from_fetchhead",
         "git_annotated_commit_from_ref",
+        "git_annotated_commit_from_revspec",
         "git_annotated_commit_id",
         "git_annotated_commit_lookup"
       ]
@@ -520,12 +740,6 @@
     }
   },
   "groups": {
-    "rebase": [
-      "git_rebase_next"
-    ],
-    "reset": [
-      "git_reset"
-    ],
     "stash": [
       "git_stash_save"
     ]

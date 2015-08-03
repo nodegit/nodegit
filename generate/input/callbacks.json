@@ -99,6 +99,24 @@
       "error": -1
     }
   },
+  "git_checkout_perfdata_cb": {
+    "args": [
+      {
+        "name": "perfdata",
+        "cType": "const git_checkout_perfdata *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
   "git_config_foreach_cb": {
     "args": [
       {
@@ -144,6 +162,28 @@
     "return": {
       "type": "int",
       "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_diff_binary_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "binary",
+        "cType": "const git_diff_binary *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
       "success": 0,
       "error": -1
     }
@@ -288,6 +328,18 @@
       "error": -1
     }
   },
+  "git_odb_foreach_cb": {
+    "args": [
+      {
+        "name": "id",
+        "cType": "const git_oid *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ]
+  },
   "git_packbuilder_foreach_cb": {
     "args": [
       {
@@ -308,6 +360,64 @@
       "noResults": 1,
       "success": 0,
       "error": -1
+    }
+  },
+  "git_remote_create_cb": {
+    "args": [
+      {
+        "name": "out",
+        "cType": "git_repository **",
+        "isReturn": true
+      },
+      {
+        "name": "repo",
+        "cType": "git_repository *"
+      },
+      {
+        "name": "name",
+        "cType": "const char *"
+      },
+      {
+        "name": "url",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": 1
+    }
+  },
+  "git_repository_create_cb": {
+    "args": [
+      {
+        "name": "out",
+        "cType": "git_repository **",
+        "isReturn": true
+      },
+      {
+        "name": "path",
+        "cType": "const char *"
+      },
+      {
+        "name": "bare",
+        "cType": "int"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": 1
     }
   },
   "git_reference_foreach_cb": {
@@ -408,6 +518,47 @@
     "return": {
       "type": "int",
       "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_smart_subtransport_cb": {
+    "args": [
+      {
+        "name": "out",
+        "cType": "git_smart_subtransport **",
+        "isReturn": true
+      },
+      {
+        "name": "owner",
+        "cType": "git_transport*"
+      },
+      {
+        "name": "param",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_stash_apply_progress_cb": {
+    "args": [
+      {
+        "name": "progress",
+        "cType": "git_stash_apply_progress_t"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults":0,
       "success": 0,
       "error": -1
     }

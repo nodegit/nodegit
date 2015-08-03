@@ -146,7 +146,6 @@ module.exports = function generateJson() {
     if (def.ignore) {
       return;
     }
-
     var dependencies = {};
     var addDependencies = function (prop) {
       if (prop.ignore) {
@@ -156,7 +155,7 @@ module.exports = function generateJson() {
       var type = helpers.normalizeCtype(prop.type || prop.cType).replace("git_", "");
       var dependencyFilename = dependencyLookup[type];
 
-      if (dependencyFilename) {
+      if (dependencyFilename && dependencyFilename !== def.filename) {
         dependencies[dependencyFilename] = dependencyFilename;
       }
 

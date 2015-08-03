@@ -143,14 +143,12 @@ describe("Rebase", function() {
           "0e9231d489b3f4303635fc4b0397830da095e7e7");
 
         return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
-          theirAnnotatedCommit, theirAnnotatedCommit, ourSignature,
-          new NodeGit.RebaseOptions());
+          theirAnnotatedCommit, theirAnnotatedCommit);
       })
       .then(function(rebase) {
         assert.equal(rebase.operationEntrycount(), 0);
-        assert.equal(rebase.operationCurrent(), 0);
 
-        return rebase.finish(ourSignature, new NodeGit.RebaseOptions());
+        return rebase.finish(ourSignature);
       })
       .then(function() {
         return repository.getBranchCommit(ourBranchName);
@@ -284,7 +282,7 @@ describe("Rebase", function() {
           "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
         return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
-          theirAnnotatedCommit, null, ourSignature, null);
+          theirAnnotatedCommit, null);
       })
       .then(function(newRebase) {
         rebase = newRebase;
@@ -292,10 +290,7 @@ describe("Rebase", function() {
         // there should only be 1 rebase operation to perform
         assert.equal(rebase.operationEntrycount(), 1);
 
-        var opts = new NodeGit.CheckoutOptions();
-        opts.checkoutStrategy = NodeGit.Checkout.STRATEGY.SAFE_CREATE;
-
-        return rebase.next(opts);
+        return rebase.next();
       })
       .then(function(rebaseOperation) {
         assert.equal(rebaseOperation.type(),
@@ -460,7 +455,7 @@ describe("Rebase", function() {
           "b3c355bb606ec7da87174dfa1a0b0c0e3dc97bc0");
 
         return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
-          theirAnnotatedCommit, null, ourSignature, null);
+          theirAnnotatedCommit, null);
       })
       .then(function(newRebase) {
         rebase = newRebase;
@@ -649,7 +644,7 @@ describe("Rebase", function() {
           "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
         return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
-          theirAnnotatedCommit, null, ourSignature, null);
+          theirAnnotatedCommit, null);
       })
       .then(function(newRebase) {
         rebase = newRebase;

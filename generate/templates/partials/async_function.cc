@@ -16,6 +16,11 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%if arg.globalPayload %}
   {{ cppFunctionName }}_globalPayload* globalPayload = new {{ cppFunctionName }}_globalPayload;
     {%endif%}
+    {%if arg.cppClassName == "GitBuf" %}
+      baton->{{arg.name}} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));;
+      baton->{{arg.name}}->ptr = NULL;
+      baton->{{arg.name}}->size = baton->{{arg.name}}->asize = 0;
+    {%endif%}
   {%endeach%}
 
   {%each args|argsInfo as arg %}
@@ -178,6 +183,10 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%endif%}
     {%elsif arg.globalPayload %}
   delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
+    {%endif%}
+    {%if arg.cppClassName == "GitBuf" %}
+  if (baton->{{ arg.name }}->ptr) free((void *)baton->{{ arg.name }}->ptr);
+  free((void *)baton->{{ arg.name }});
     {%endif%}
   {%endeach%}
 

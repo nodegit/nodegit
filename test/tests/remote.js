@@ -61,10 +61,13 @@ describe("Remote", function() {
 
   it("can set a remote", function() {
     var repository = this.repository;
-    var remote = Remote.create(repository, "origin1", url);
+    Remote.create(repository, "origin1", url);
 
-    remote.setPushurl("https://google.com/");
-    assert(remote.pushurl(), "https://google.com/");
+    Remote.setPushurl(repository, "origin1", "https://google.com/");
+
+    return Remote.lookup(repository, "origin1").then(function(remote) {
+      assert.equal(remote.pushurl(), "https://google.com/");
+    });
   });
 
   it("can read the remote name", function() {
@@ -73,9 +76,9 @@ describe("Remote", function() {
 
   it("can create and load a new remote", function() {
     var repository = this.repository;
-    var remote = Remote.create(repository, "origin2", url);
+    Remote.create(repository, "origin2", url);
 
-    return Remote.lookup(repository, "origin2").then(function() {
+    return Remote.lookup(repository, "origin2").then(function(remote) {
       assert(remote.url(), url);
     });
   });
@@ -93,16 +96,17 @@ describe("Remote", function() {
 
   it("can download from a remote", function() {
     var repo = this.repository;
+    var remoteCallbacks;
 
     return repo.getRemote("origin")
       .then(function(remote) {
-        remote.setCallbacks({
+        remoteCallbacks = {
           certificateCheck: function() {
             return 1;
           }
-        });
+        };
 
-        return remote.connect(NodeGit.Enums.DIRECTION.FETCH)
+        return remote.connect(NodeGit.Enums.DIRECTION.FETCH, remoteCallbacks)
         .then(function() {
           return remote.download(null);
         }).then(function() {
@@ -122,20 +126,22 @@ describe("Remote", function() {
 
     return repo.getRemote("test2")
       .then(function(remote) {
-        remote.setCallbacks({
-          credentials: function(url, userName) {
-            return NodeGit.Cred.sshKeyFromAgent(userName);
-          },
-          certificateCheck: function() {
-            return 1;
-          },
+        var fetchOpts = {
+          callbacks: {
+            credentials: function(url, userName) {
+              return NodeGit.Cred.sshKeyFromAgent(userName);
+            },
+            certificateCheck: function() {
+              return 1;
+            },
 
-          transferProgress: function() {
-            wasCalled = true;
+            transferProgress: function() {
+              wasCalled = true;
+            }
           }
-        });
+        };
 
-        return remote.fetch(null, repo.defaultSignature(), null);
+        return remote.fetch(null, fetchOpts, null);
       })
       .then(function() {
         assert.ok(wasCalled);
@@ -146,11 +152,13 @@ describe("Remote", function() {
 
   it("can fetch from a remote", function() {
     return this.repository.fetch("origin", {
-      credentials: function(url, userName) {
-        return NodeGit.Cred.sshKeyFromAgent(userName);
-      },
-      certificateCheck: function() {
-        return 1;
+      callbacks: {
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyFromAgent(userName);
+        },
+        certificateCheck: function() {
+          return 1;
+        }
       }
     });
   });
@@ -164,11 +172,13 @@ describe("Remote", function() {
     Remote.create(repository, "test2", url2);
 
     return repository.fetchAll({
-      credentials: function(url, userName) {
-        return NodeGit.Cred.sshKeyFromAgent(userName);
-      },
-      certificateCheck: function() {
-        return 1;
+      callbacks: {
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyFromAgent(userName);
+        },
+        certificateCheck: function() {
+          return 1;
+        }
       }
     });
   });
@@ -179,33 +189,49 @@ describe("Remote", function() {
     var branch = "should-not-exist";
     return Remote.lookup(repo, "origin")
       .then(function(remote) {
-        remote.setCallbacks({
-          credentials: function(url, userName) {
-            if (url.indexOf("https") === -1) {
-              return NodeGit.Cred.sshKeyFromAgent(userName);
-            } else {
-              return NodeGit.Cred.userpassPlaintextNew(userName, "");
-            }
-          },
-          certificateCheck: function() {
-            return 1;
-          }
-        });
-        return remote;
-      })
-      .then(function(remote) {
         var ref = "refs/heads/" + branch;
         var refs = [ref + ":" + ref];
-        var signature = repo.defaultSignature();
-        return remote.push(refs, null, signature,
-          "Pushed '" + branch + "' for test");
+        var firstPass = true;
+        var options = {
+          callbacks: {
+            credentials: function(url, userName) {
+              if (firstPass) {
+                firstPass = false;
+                if (url.indexOf("https") === -1) {
+                  return NodeGit.Cred.sshKeyFromAgent(userName);
+                } else {
+                    return NodeGit.Cred.userpassPlaintextNew(userName, "");
+                }
+              } else {
+                return NodeGit.Cred.defaultNew();
+              }
+            },
+            certificateCheck: function() {
+              return 1;
+            }
+          }
+        };
+        return remote.push(refs, options);
       })
+      // takes care of windows bug, see the .catch for the proper pathway
+      // that this flow should take (cred cb doesn't run twice -> throws error)
       .then(function() {
         return Promise.reject(
           new Error("should not be able to push to the repository"));
       }, function(err) {
         if (err.message.indexOf(401) === -1) {
           throw err;
+        } else {
+          return Promise.resolve();
+        }
+      })
+      // catches linux / osx failure to use anonymous credentials
+      // stops callback infinite loop
+      .catch(function (reason) {
+        if (reason.message !==
+          "credentials callback returned an invalid cred type")
+        {
+          throw reason;
         } else {
           return Promise.resolve();
         }

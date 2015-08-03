@@ -3,10 +3,14 @@
   {{ cType }} from_{{ name }};
   {%if isOptional | or isBoolean %}
 
-    {%if cppClassName != 'GitStrarray'%}
-  if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
+    {%if cppClassName == 'GitStrarray'%}
+    {%-- Print nothing --%}
+    {% elsif cppClassName == 'GitBuf' %}
+    {%-- Print nothing --%}
+    {%else%}
+    if (args[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
+      {%endif%}
     {%endif%}
-  {%endif%}
   {%if cppClassName == 'String'%}
 
   String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());
@@ -14,6 +18,9 @@
   {%elsif cppClassName == 'GitStrarray' %}
 
   from_{{ name }} = StrArrayConverter::Convert(args[{{ jsArg }}]);
+  {%elsif  cppClassName == 'GitBuf' %}
+
+  from_{{ name }} = GitBufConverter::Convert(args[{{ jsArg }}]);
   {%elsif cppClassName == 'Wrapper'%}
 
   String::Utf8Value {{ name }}(args[{{ jsArg }}]->ToString());

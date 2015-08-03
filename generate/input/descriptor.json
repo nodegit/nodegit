@@ -161,6 +161,19 @@
             }
           }
         },
+        "git_branch_create_from_annotated": {
+          "args": {
+            "ref_out": {
+              "isReturn": true
+            },
+            "repository": {},
+            "branch_name": {},
+            "commit": {},
+            "force": {
+              "isOptional": true
+            }
+          }
+        },
         "git_branch_next": {
           "ignore": true
         },
@@ -220,7 +233,10 @@
           },
           "isAsync": true
         }
-      }
+      },
+      "dependencies": [
+        "../include/git_buf_converter.h"
+      ]
     },
     "cert_hostkey": {
       "fields": {
@@ -391,6 +407,9 @@
         "git_config_delete_multivar": {
           "ignore": true
         },
+        "git_config_entry_free": {
+          "ignore": true
+        },
         "git_config_find_global": {
           "ignore": true
         },
@@ -428,10 +447,16 @@
           "ignore": true
         },
         "git_config_get_string": {
+          "ignore": true
+        },
+        "git_config_get_string_buf": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_config_get_path": {
+          "ignore": true
         },
         "git_config_iterator_free": {
           "ignore": true
@@ -481,6 +506,9 @@
         "git_config_parse_int64": {
           "ignore": true
         },
+        "git_config_parse_path": {
+          "ignore": true
+        },
         "git_config_refresh": {
           "ignore": true
         },
@@ -496,7 +524,10 @@
             "isErrorCode": true
           }
         }
-      }
+      },
+      "dependencies": [
+        "../include/git_buf_converter.h"
+      ]
     },
     "config_backend": {
       "ignore": true
@@ -584,6 +615,9 @@
               "isOptional": true
             },
             "file_cb" : {
+              "isOptional": true
+            },
+            "binary_cb": {
               "isOptional": true
             },
             "hunk_cb" : {
@@ -787,6 +821,9 @@
         "git_filter_source_filemode": {
           "ignore": true
         },
+        "git_filter_source_flags": {
+          "ignore": true
+        },
         "git_filter_source_id": {
           "ignore": true
         },
@@ -877,6 +914,9 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_index_add_frombuffer": {
+          "ignore": true
         },
         "git_index_conflict_get": {
           "isAsync": true,
@@ -1467,9 +1507,6 @@
         },
         "git_reference_symbolic_set_target": {
           "args": {
-            "signature": {
-              "isOptional": true
-            },
             "log_message": {
               "isOptional": true
             }
@@ -1602,13 +1639,6 @@
             }
           }
         },
-        "git_remote_set_callbacks": {
-          "args": {
-            "callbacks": {
-              "saveArg": true
-            }
-          }
-        },
         "git_remote_set_fetch_refspecs": {
           "ignore": true
         },
@@ -1626,6 +1656,9 @@
           "ignore": true
         },
         "pack_progress": {
+          "ignore": true
+        },
+        "push_negotiation": {
           "ignore": true
         },
         "push_transfer_progress": {
@@ -1647,10 +1680,16 @@
     },
     "repository": {
       "functions": {
-        "git_repository_init_init_options": {
+        "git_repository__cleanup": {
           "ignore": true
         },
         "git_repository_discover": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_repository_init_init_options": {
           "ignore": true
         },
         "git_repository_fetchhead_foreach": {
@@ -1662,10 +1701,25 @@
         "git_repository_hashfile": {
           "ignore": true
         },
+        "git_repository_ident": {
+          "ignore": true
+        },
         "git_repository_mergehead_foreach": {
           "ignore": true
         },
         "git_repository_message": {
+          "ignore": true
+        },
+        "git_repository_new": {
+          "ignore": true
+        },
+        "git_repository_reinit_filesystem": {
+          "ignore": true
+        },
+        "git_repository_set_bare": {
+          "ignore": true
+        },
+        "git_repository_set_config": {
           "ignore": true
         },
         "git_repository_set_head": {
@@ -1673,6 +1727,15 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_repository_set_index": {
+          "ignore": true
+        },
+        "git_repository_set_odb": {
+          "ignore": true
+        },
+        "git_repository_set_refdb": {
+          "ignore": true
         }
       }
     },
@@ -1770,7 +1833,31 @@
     },
     "stash": {
       "functions": {
+        "git_stash_apply": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_stash_drop": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_stash_foreach": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_stash_pop": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_stash_save": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -1930,6 +2017,7 @@
     },
     "transport": {
       "cType": "git_transport",
+      "needsForwardDeclaration": false,
       "functions": {
         "git_transport_dummy": {
           "ignore": true
@@ -1973,6 +2061,10 @@
           "ignore": true
         }
       }
+    },
+    "writestream": {
+      "cType": "git_writestream",
+      "needsForwardDeclaration": false
     }
   }
 }

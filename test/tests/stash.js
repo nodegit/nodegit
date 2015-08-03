@@ -84,4 +84,164 @@ describe("Stash", function() {
           });
       });
   });
+
+  it("can save and pop a stash", function() {
+    var fileNameA = "README.md";
+    var fileNameB = "install.js";
+    var oldContentA;
+    var oldContentB;
+    var fileContent = "Cha-cha-cha-chaaaaaangessssss";
+    var repo = this.repository;
+    var filePathA = path.join(repo.workdir(), fileNameA);
+    var filePathB = path.join(repo.workdir(), fileNameB);
+    var stashMessage = "stash test";
+
+    return fse.readFile(filePathA, "utf-8")
+      .then(function(content) {
+        oldContentA = content;
+        return fse.writeFile(filePathA, fileContent);
+      })
+      .then(function() {
+        return fse.readFile(filePathB, "utf-8");
+      })
+      .then(function(content) {
+        oldContentB = content;
+        return fse.writeFile(filePathB, fileContent);
+      })
+      .then(function() {
+        return Stash.save(repo, repo.defaultSignature(), stashMessage, 0);
+      })
+      .then(function() {
+        return fse.readFile(filePathA, "utf-8");
+      })
+      .then(function(content) {
+        assert.equal(oldContentA, content);
+        return fse.readFile(filePathB, "utf-8");
+      })
+      .then(function(content) {
+        assert.equal(oldContentB, content);
+        return Stash.pop(repo, 0);
+      })
+      .then(function() {
+        return fse.readFile(filePathA, "utf-8");
+      })
+      .then(function(content) {
+        assert.equal(fileContent, content);
+        return fse.readFile(filePathB, "utf-8");
+      })
+      .then(function(content) {
+        assert.equal(fileContent, content);
+      });
+  });
+
+  it("can save a stash, change files, and fail to pop stash", function() {
+      var fileName = "README.md";
+      var fileContent = "Cha-cha-cha-chaaaaaangessssss";
+      var fileContent2 = "Somewhere over the repo, changes were made.";
+      var repo = this.repository;
+      var filePath = path.join(repo.workdir(), fileName);
+      var oldContent;
+      var stashMessage = "stash test";
+
+      return fse.readFile(filePath)
+        .then(function(content) {
+          oldContent = content;
+          return fse.writeFile(filePath, fileContent);
+        })
+        .then(function() {
+          return Stash.save(repo, repo.defaultSignature(), stashMessage, 0);
+        })
+        .then(function() {
+          return fse.writeFile(filePath, fileContent2);
+        })
+        .then(function() {
+          return Stash.pop(repo, 0);
+        })
+        .catch(function(reason) {
+          if (reason.message !== "1 conflict prevents checkout") {
+            throw reason;
+          } else {
+            return Promise.resolve();
+          }
+        });
+  });
+
+  it("can save, apply, then drop the stash", function() {
+      var fileName = "README.md";
+      var fileContent = "Cha-cha-cha-chaaaaaangessssss";
+      var repo = this.repository;
+      var filePath = path.join(repo.workdir(), fileName);
+      var oldContent;
+      var stashMessage = "stash test";
+
+      return fse.readFile(filePath)
+        .then(function(content) {
+          oldContent = content;
+          return fse.writeFile(filePath, fileContent);
+        })
+        .then(function() {
+          return Stash.save(repo, repo.defaultSignature(), stashMessage, 0);
+        })
+        .then(function() {
+          return Stash.apply(repo, 0);
+        })
+        .then(function() {
+          return Stash.drop(repo, 0);
+        }, function() {
+          throw new Error("Unable to drop stash after apply.");
+        })
+        .then(function() {
+          return Stash.drop(repo, 0);
+        })
+        .catch(function(reason) {
+          if (reason.message !== "Reference 'refs/stash' not found") {
+            Promise.reject();
+          }
+        });
+  });
+
+  it("can save multiple stashes and pop an arbitrary stash", function() {
+    var fileName = "README.md";
+    var fileContentA = "Hi. It's me. I'm the dog. My name is the dog.";
+    var fileContentB = "Everyone likes me. I'm cute.";
+    var fileContentC = "I think I will bark at nothing now. Ba. Ba. Baba Baba.";
+    var repo = this.repository;
+    var filePath = path.join(repo.workdir(), fileName);
+    var oldContent;
+    var stashMessageA = "stash test A";
+    var stashMessageB = "stash test B";
+    var stashMessageC = "stash test C";
+
+    function writeAndStash(path, content, message) {
+      return fse.writeFile(path, content)
+        .then(function() {
+          return Stash.save(repo, repo.defaultSignature(), message, 0);
+        });
+    }
+
+    return fse.readFile(filePath, "utf-8")
+      .then(function (content) {
+        oldContent = content;
+        return writeAndStash(filePath, fileContentA, stashMessageA);
+      })
+      .then(function() {
+        return writeAndStash(filePath, fileContentB, stashMessageB);
+      })
+      .then(function() {
+        return writeAndStash(filePath, fileContentC, stashMessageC);
+      })
+      .then(function() {
+        return fse.readFile(filePath, "utf-8");
+      })
+      .then(function(content) {
+        assert.equal(oldContent, content);
+        return Stash.pop(repo, 1);
+      })
+      .then(function() {
+        return fse.readFile(filePath, "utf-8");
+      })
+      .then(function(content) {
+        assert.equal(fileContentB, content);
+      });
+  });
 });

@@ -253,10 +253,24 @@
         "libgit2/src/xdiff/xutils.h",
       ],
       "conditions": [
-        ["OS!='win'", {
+        ["OS=='mac'", {
             "defines": [
-                "GIT_SSL"
+                "GIT_SECURE_TRANSPORT"
             ],
+            "sources": [
+                "libgit2/src/stransport_stream.c",
+                "libgit2/src/stransport_stream.h",
+                "libgit2/src/tls_stream.c",
+                "libgit2/src/tls_stream.h"
+            ],
+            "link_settings": {
+                "xcode_settings": {
+                    "OTHER_LDFLAGS": [
+                        "-framework Security",
+                        "-framework CoreFoundation"
+                    ],
+                }
+            }
         }],
         ["OS=='win'", {}, {
           "sources": [
@@ -271,6 +285,13 @@
             "-DGIT_SSL",
             "-w",
           ],
+          "defines": [
+              "GIT_OPENSSL"
+          ],
+          "sources": [
+              "libgit2/src/tls_stream.c",
+              "libgit2/src/tls_stream.h"
+          ]
         }],
         ["OS=='win'", {
           "defines": [
@@ -279,8 +300,11 @@
           "msvs_settings": {
             "VCLinkerTool": {
               "AdditionalDependencies": [
-                "ws2_32.lib",
+                "ws2_32.lib"
               ],
+            },
+            "VCCLCompilerTool": {
+                "ObjectFile": "$(IntDir)/%(RelativeDir)/"
             },
             # Workaround of a strange bug:
             # TargetMachine + static_library + x64 = nothing.
@@ -313,6 +337,8 @@
             4013,
           ],
           "sources": [
+            "libgit2/src/win32/buffer.c",
+            "libgit2/src/win32/buffer.h",
             "libgit2/src/win32/dir.c",
             "libgit2/src/win32/dir.h",
             "libgit2/src/win32/error.c",
@@ -1373,6 +1399,9 @@
               "-lgdi32.lib",
               "-luser32.lib",
               "-lwsock32.lib",
+              "-lwinhttp.lib",
+              "-lcrypt32.lib",
+              "-lrpcrt4.lib"
             ],
               "conditions": [
                 ["_type=='shared_library'", {

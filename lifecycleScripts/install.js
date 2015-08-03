@@ -93,7 +93,7 @@ function build() {
   var prefix = "";
   var target = "";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
-  var builder = "pangyp";
+  var builder = "mostly-pangyp";
   var distUrl = "";
 
   if (asVersion) {

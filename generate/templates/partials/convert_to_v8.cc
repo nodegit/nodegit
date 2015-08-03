@@ -42,6 +42,13 @@
   {% endif %}
 
   to = tmpArray;
+{% elsif cppClassName == 'GitBuf' %}
+  if ({{= parsedName =}}) {
+    to = NanNew<String>({{= parsedName =}}->ptr, {{= parsedName = }}->size);
+  }
+  else {
+    to = NanNull();
+  }
 {% else %}
   {% if copy %}
     if ({{= parsedName =}} != NULL) {

@@ -14,6 +14,7 @@
 
 
 /vendor/Release
+/vendor/Debug
 /vendor/*.vcxproj
 /vendor/*.filters
 /vendor/*.sln

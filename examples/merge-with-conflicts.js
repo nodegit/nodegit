@@ -146,7 +146,7 @@ fse.remove(path.resolve(__dirname, repoDir))
   return nodegit.Reference.lookup(repository, "HEAD");
 })
 .then(function(head) {
-  return head.symbolicSetTarget(ourBranch.name(), ourSignature, "");
+  return head.symbolicSetTarget(ourBranch.name(), "");
 })
 
 
