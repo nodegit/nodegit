@@ -183,7 +183,10 @@ describe("Repository", function() {
     var initFlags = NodeGit.Repository.INIT_FLAG.NO_REINIT |
       NodeGit.Repository.INIT_FLAG.MKPATH |
       NodeGit.Repository.INIT_FLAG.MKDIR;
-    return NodeGit.Repository.initExt(newRepo, { flags: initFlags })
+    return fse.remove(newRepo)
+      .then(function() {
+        return NodeGit.Repository.initExt(newRepo, { flags: initFlags });
+      })
       .then(function() {
         return NodeGit.Repository.open(newRepo);
       });
