@@ -1683,10 +1683,13 @@
         "git_repository__cleanup": {
           "ignore": true
         },
-        "git_repository_init_init_options": {
-          "ignore": true
-        },
         "git_repository_discover": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_repository_init_init_options": {
           "ignore": true
         },
         "git_repository_fetchhead_foreach": {
