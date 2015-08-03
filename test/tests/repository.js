@@ -178,4 +178,14 @@ describe("Repository", function() {
         assert.equal(expectedPath, foundPath);
       });
   });
+
+  it("can create a repo using initExt", function() {
+    var initFlags = NodeGit.Repository.INIT_FLAG.NO_REINIT |
+      NodeGit.Repository.INIT_FLAG.MKPATH |
+      NodeGit.Repository.INIT_FLAG.MKDIR;
+    return NodeGit.Repository.initExt(newRepo, { flags: initFlags })
+      .then(function() {
+        return NodeGit.Repository.open(newRepo);
+      });
+  });
 });
