@@ -31,7 +31,7 @@ describe("Config", function() {
         return NodeGit.Config.openDefault();
       })
       .then(function(config) {
-        return config.getStringBuf("user.name");
+        return config.getString("user.name");
       })
       .then(function(userNameFromNodeGit) {
         assert.equal(savedUserName + "-test", userNameFromNodeGit);
@@ -65,7 +65,7 @@ describe("Config", function() {
       return repo.config();
     })
     .then(function(config) {
-      return config.getStringBuf("user.name");
+      return config.getString("user.name");
     })
     .then(function(userNameFromNodeGit) {
       assert.equal(savedUserName + "-test", userNameFromNodeGit);
