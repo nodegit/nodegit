@@ -59,7 +59,7 @@
     "nodegit-promise": "^2.0.1",
     "npm": "^2.9.0",
     "promisify-node": "^0.1.5",
-    "which-native-nodish": "^1.1.1"
+    "which-native-nodish": "^1.1.2"
   },
   "devDependencies": {
     "combyne": "^0.8.0",
@@ -70,8 +70,8 @@
     "lcov-result-merger": "^1.0.2",
     "lodash": "^3.8.0",
     "mocha": "^2.2.4",
-    "mostly-pangyp": "^1.0.3",
     "nan": "^1.8.4",
+    "node-gyp": "nodegit/node-gyp#master",
     "nw-gyp": "^0.12.4",
     "request": "^2.55.0",
     "tar": "^2.1.0"
@@ -98,9 +98,9 @@
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "recompile": "mostly-pangyp configure build",
-    "rebuild": "node generate && mostly-pangyp configure build",
-    "recompileDebug": "mostly-pangyp configure --debug build",
-    "rebuildDebug": "node generate && mostly-pangyp configure --debug build"
+    "recompile": "./node_modules/.bin/node-gyp configure build --no-duplicate-basename-check",
+    "rebuild": "node generate && ./node_modules/.bin/node-gyp configure build --no-duplicate-basename-check",
+    "recompileDebug": "./node_modules/.bin/node-gyp configure --debug build --no-duplicate-basename-check",
+    "rebuildDebug": "node generate && ./node_modules/.bin/node-gyp configure --debug build --no-duplicate-basename-check"
   }
 }
