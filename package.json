@@ -98,9 +98,9 @@
     "publish": "node-pre-gyp package && node-pre-gyp publish",
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "recompile": "./node_modules/.bin/node-gyp configure build",
-    "rebuild": "node generate && ./node_modules/.bin/node-gyp configure build",
-    "recompileDebug": "./node_modules/.bin/node-gyp configure --debug build",
-    "rebuildDebug": "node generate && ./node_modules/.bin/node-gyp configure --debug build"
+    "recompile": "./node_modules/.bin/node-gyp configure build --no-duplicate-basename-check",
+    "rebuild": "node generate && ./node_modules/.bin/node-gyp configure build --no-duplicate-basename-check",
+    "recompileDebug": "./node_modules/.bin/node-gyp configure --debug build --no-duplicate-basename-check",
+    "rebuildDebug": "node generate && ./node_modules/.bin/node-gyp configure --debug build --no-duplicate-basename-check"
   }
 }
