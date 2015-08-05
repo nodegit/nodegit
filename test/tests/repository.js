@@ -12,7 +12,8 @@ describe("Repository", function() {
   var Signature = NodeGit.Signature;
 
   var reposPath = local("../repos/workdir");
-  var newRepo = local("../repos/newrepo");
+  var newRepoPath = local("../repos/newrepo");
+  var emptyRepoPath = local("../repos/empty");
 
   beforeEach(function() {
     var test = this;
@@ -20,6 +21,12 @@ describe("Repository", function() {
     return Repository.open(reposPath)
       .then(function(repository) {
         test.repository = repository;
+      })
+      .then(function() {
+        return Repository.open(emptyRepoPath);
+      })
+      .then(function(emptyRepo) {
+        test.emptyRepo = emptyRepo;
       });
   });
 
@@ -44,16 +51,16 @@ describe("Repository", function() {
   });
 
   it("can initialize a repository into a folder", function() {
-    return Repository.init(newRepo, 1)
+    return Repository.init(newRepoPath, 1)
       .then(function(path, isBare) {
-        return Repository.open(newRepo);
+        return Repository.open(newRepoPath);
       });
   });
 
   it("can utilize repository init options", function() {
-    return fse.remove(newRepo)
+    return fse.remove(newRepoPath)
       .then(function() {
-        return Repository.initExt(newRepo, {
+        return Repository.initExt(newRepoPath, {
           flags: Repository.INIT_FLAG.MKPATH
         });
       });
@@ -183,12 +190,29 @@ describe("Repository", function() {
     var initFlags = NodeGit.Repository.INIT_FLAG.NO_REINIT |
       NodeGit.Repository.INIT_FLAG.MKPATH |
       NodeGit.Repository.INIT_FLAG.MKDIR;
-    return fse.remove(newRepo)
+    return fse.remove(newRepoPath)
       .then(function() {
-        return NodeGit.Repository.initExt(newRepo, { flags: initFlags });
+        return NodeGit.Repository.initExt(newRepoPath, { flags: initFlags });
       })
       .then(function() {
-        return NodeGit.Repository.open(newRepo);
+        return NodeGit.Repository.open(newRepoPath);
+      });
+  });
+
+  it("can get the head commit", function() {
+    return this.repository.getHeadCommit()
+      .then(function(commit) {
+        assert.equal(
+          commit.toString(),
+          "32789a79e71fbc9e04d3eff7425e1771eb595150"
+        );
+      });
+  });
+
+  it("returns null if there is no head commit", function() {
+    return this.emptyRepo.getHeadCommit()
+      .then(function(commit) {
+        assert(!commit);
       });
   });
 });
