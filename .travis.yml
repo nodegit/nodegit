@@ -45,7 +45,7 @@ git:
 branches:
   only:
     - master
-    - v0.3
+    - /^v\d+\.\d+\.\d+$/
 os:
   - linux
   - osx
@@ -54,6 +54,13 @@ script:
       npm test && npm run cov && npm run coveralls;
     else
       npm test;
+    fi
+after_success:
+  - if [ -n "$TRAVIS_TAG" ]; then
+      npm install -g node-pre-gyp
+      npm install -g aws-sdk
+      node-pre-gyp package
+      node-pre-gyp publish
     fi
 notifications:
   slack:
