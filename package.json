@@ -48,7 +48,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">= 0.8"
+    "node": ">= 0.8 < 3.0.0"
   },
   "bundledDependencies": [
     "node-pre-gyp"
@@ -70,7 +70,7 @@
     "lcov-result-merger": "^1.0.2",
     "lodash": "^3.8.0",
     "mocha": "^2.2.4",
-    "nan": "^2.0.5",
+    "nan": "^1.8.4",
     "nw-gyp": "^0.12.4",
     "pangyp": "^2.2.1",
     "request": "^2.55.0",

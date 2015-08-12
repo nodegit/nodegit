@@ -174,6 +174,14 @@ maintained. For the purpose of migration, perhaps the biggest point to make
 is that async methods can now use promises, rather than just taking callbacks.
 Additionally, lots of method and property names have changed.
 
+## Node JS ##
+
+### Version Compatibility ##
+NodeGit supports [LTS node js releases](https://github.com/nodejs/LTS).
+Versions that do not have long term support may not work.
+Feel free to open a PR adding support, but be aware that support for these
+versions is not a priority.
+
 ## nw.js (Node-Webkit) ##
 
 ### Native compilation for nw.js ###
@@ -191,7 +199,7 @@ Prior to version 0.2.6, NodeGit used [nan](http://github.com/rvagg/nan) v1.4.3.
 As of 0.2.6, NodeGit uses nan v1.5.1 to provide support for io.js. Unfortunately,
 this breaks some nw.js compatibility. With nw.js 0.12+, the name was changed to
 nw.js from node-webkit. The alpha currently still breaks with NodeGit due to the
-nan update, but should be fixed in the final v0.12.0 release. Åpplications using
+nan update, but should be fixed in the final v0.12.0 release. Applications using
 previous versions of node webkit have 2 options:
 1) Use an older version (v0.2.4 or earlier) of NodeGit
 2) Use [npm shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap) to force NodeGit to
