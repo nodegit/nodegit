@@ -6,6 +6,7 @@ var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
 
 describe("Diff", function() {
+  var TestUtils = require("../utils");
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Diff = NodeGit.Diff;
@@ -142,6 +143,97 @@ describe("Diff", function() {
         assert.equal(newFile.path(), "wddiff.txt");
         assert.equal(newFile.size(), 23);
       });
+  });
+
+  it("can stage selected lines", function() {
+    var fileContent = "One line of text\n" +
+                      "Two lines of text\n"+
+                      "Three lines of text\n"+
+                      "Four lines of text\n"+
+                      "Five lines of text\n"+
+                      "Six lines of text\n"+
+                      "Seven lines of text\n"+
+                      "Eight lines of text\n"+
+                      "Nine lines of text\n"+
+                      "Ten lines of text\n"+
+                      "Eleven lines of text\n"+
+                      "Twelve lines of text\n"+
+                      "Thirteen lines of text\n"+
+                      "Fourteen lines of text\n"+
+                      "Fifteen lines of text\n"+
+                      "Sixteen lines of text\n"+
+                      "Seventeen lines of text\n"+
+                      "Eighteen lines of text\n"+
+                      "Nineteen lines of text\n"+
+                      "Twenty lines of text\n";
+
+    var stagedFile = fileContent.replace("Fifteen", "Changed fifteen");
+    var workingDirFile = stagedFile.replace("Three", "Changed three")
+                          .replace("Seventeen", "Changed seventeen");
+    var repoDir = "../repos/stagingRepo/";
+    var repoPath = path.resolve(__dirname, repoDir);
+    var fileName = "stagedLinesTest.txt";
+    var repository;
+    var index;
+
+    return TestUtils.createRepository(repoPath)
+    .then(function(repo) {
+      repository = repo;
+      return TestUtils.commitFileToRepo(repository, fileName, fileContent);
+    })
+    .then(function() {
+      return fse.writeFile(path.join(repository.workdir(), fileName),
+                            workingDirFile);
+    })
+    .then(function() {
+      return repository.openIndex();
+    })
+    .then(function(repoIndex) {
+      index = repoIndex;
+      return NodeGit.Diff.indexToWorkdir(repository, index, {
+          flags:
+            NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
+            NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
+        });
+    })
+    .then(function(workDiff) {
+      return workDiff.patches();
+    })
+    .then(function(patches) {
+      var pathPatch = patches.filter(function(patch) {
+        return patch.newFile().path() === fileName;
+      });
+      return pathPatch[0].hunks();
+    })
+    .then(function(pathHunks) {
+      var linePromises = [];
+
+      pathHunks.forEach(function(pathHunk) {
+        linePromises.push(pathHunk.lines());
+      });
+
+      return Promise.all(linePromises);
+    })
+    .then(function(lines) {
+      var linesToStage = [];
+      lines.forEach(function(hunkLines) {
+        hunkLines.forEach(function(line) {
+          if (line.content().toLowerCase().indexOf("fifteen") >= 0){
+            linesToStage.push(line);
+          }
+        });
+      });
+      return repository.stageLines(fileName, linesToStage, false);
+    })
+    .then(function(stageResult) {
+      assert.equal(stageResult, 0);
+      var pathOid = index.getByPath(fileName).id;
+      return repository.getBlob(pathOid);
+    })
+    .then(function(resultFileContents) {
+      assert.equal(resultFileContents, stagedFile);
+      return fse.remove(repository.workdir());
+    });
   });
 
   it("can resolve individual line chages from the patch hunks", function() {
