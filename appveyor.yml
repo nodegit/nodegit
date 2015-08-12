@@ -30,7 +30,6 @@ matrix:
   allow_failures:
     - nodejs_version: "0.10"
     - nodejs_version: "2"
-    - nodejs_version: "3"
 
 # Get the latest stable version of Node 0.STABLE.latest
 install:
