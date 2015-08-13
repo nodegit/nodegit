@@ -5,16 +5,16 @@ os:
   - linux
   - osx
 
-node_js:
-  - '0.10'
-  - '0.12'
-  - iojs-2
-  - iojs-3
+env:
+  - NODE_VERSION="0.10"
+  - NODE_VERSION="0.12"
+  - NODE_VERSION="iojs-2"
+  - NODE_VERSION="iojs-3"
 
 matrix:
   fast_finish: true
   allow_failures:
-    - node_js: iojs-3
+    - env: NODE_VERSION="iojs-3"
 
 git:
   depth: 1
@@ -25,6 +25,12 @@ branches:
     - /^v\d+\.\d+\.\d+$/
 
 before_install:
+  - if [ $TRAVIS_OS_NAME != "linux" ]; then
+      git clone https://github.com/creationix/nvm.git ./.nvm
+      source ./.nvm/nvm.sh
+    fi
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
       sudo apt-get update;
