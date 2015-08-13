@@ -26,8 +26,8 @@ branches:
 
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      git clone https://github.com/creationix/nvm.git ./.nvm
-      source ./.nvm/nvm.sh
+      git clone https://github.com/creationix/nvm.git ./.nvm;
+      source ./.nvm/nvm.sh;
     fi
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
