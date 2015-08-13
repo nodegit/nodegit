@@ -1178,6 +1178,8 @@ describe("Merge", function() {
 
         assert.equal(repository.state(),
           NodeGit.Repository.STATE.MERGE);
+        // verify the convenience method
+        assert.ok(repository.isMerging());
 
         assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_HEAD")));
         assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_MSG")));
@@ -1238,6 +1240,8 @@ describe("Merge", function() {
 
         assert.equal(repository.state(),
           NodeGit.Repository.STATE.NONE);
+        // verify the convenience method
+        assert.ok(repository.isDefaultState());
       });
   });
 });

@@ -1010,6 +1010,8 @@ describe("Rebase", function() {
           .catch(function(index) {
             assert.ok(index);
             assert.ok(index.hasConflicts());
+
+            assert.ok(repository.isRebasing());
           });
       })
       .then(function() {
@@ -1036,6 +1038,9 @@ describe("Rebase", function() {
         // verify that the "ours" branch has moved to the correct place
         assert.equal(commit.id().toString(),
           "ef6d0e95167435b3d58f51ab165948c72f6f94b6");
+
+        assert.ok(!repository.isRebasing());
+        assert.ok(repository.isDefaultState());
 
         return commit.parent(0);
       })
