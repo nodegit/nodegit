@@ -1,4 +1,3 @@
-language: node_js
 sudo: true
 
 os:
@@ -25,10 +24,8 @@ branches:
     - /^v\d+\.\d+\.\d+$/
 
 before_install:
-  - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      git clone https://github.com/creationix/nvm.git ./.nvm;
-      source ./.nvm/nvm.sh;
-    fi
+  - git clone https://github.com/creationix/nvm.git ./.nvm;
+  - source ./.nvm/nvm.sh;
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
