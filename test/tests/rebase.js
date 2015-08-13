@@ -7,7 +7,7 @@ var fse = promisify(require("fs-extra"));
 
 describe("Rebase", function() {
   var NodeGit = require("../../");
-  var TestUtils = require("../utils");
+  var RepoUtils = require("../utils/repository_setup");
 
   var repoPath = local("../repos/rebase");
   var ourBranchName = "ours";
@@ -26,7 +26,7 @@ describe("Rebase", function() {
 
   beforeEach(function() {
     var test = this;
-    return TestUtils.createRepository(repoPath)
+    return RepoUtils.createRepository(repoPath)
       .then(function(repo) {
         test.repository = repo;
       });
@@ -56,7 +56,7 @@ describe("Rebase", function() {
         ourFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        return TestUtils.addFileToIndex(repository, ourFileName);
+        return RepoUtils.addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -84,7 +84,7 @@ describe("Rebase", function() {
           theirFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, theirFileName);
+        return RepoUtils.addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -167,7 +167,7 @@ describe("Rebase", function() {
       baseFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        return TestUtils.addFileToIndex(repository, baseFileName);
+        return RepoUtils.addFileToIndex(repository, baseFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -196,7 +196,7 @@ describe("Rebase", function() {
           theirFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, theirFileName);
+        return RepoUtils.addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -219,7 +219,7 @@ describe("Rebase", function() {
           ourFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, ourFileName);
+        return RepoUtils.addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -348,7 +348,7 @@ describe("Rebase", function() {
     return fse.writeFile(path.join(repository.workdir(), fileName),
       baseFileContent)
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -377,7 +377,7 @@ describe("Rebase", function() {
           baseFileContent + theirFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -394,7 +394,7 @@ describe("Rebase", function() {
           baseFileContent + ourFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -470,7 +470,7 @@ describe("Rebase", function() {
           });
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         return repository.openIndex()
@@ -529,7 +529,7 @@ describe("Rebase", function() {
       baseFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        return TestUtils.addFileToIndex(repository, baseFileName);
+        return RepoUtils.addFileToIndex(repository, baseFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -558,7 +558,7 @@ describe("Rebase", function() {
           theirFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, theirFileName);
+        return RepoUtils.addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -581,7 +581,7 @@ describe("Rebase", function() {
           ourFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, ourFileName);
+        return RepoUtils.addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -706,7 +706,7 @@ describe("Rebase", function() {
         ourFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        return TestUtils.addFileToIndex(repository, ourFileName);
+        return RepoUtils.addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -734,7 +734,7 @@ describe("Rebase", function() {
           theirFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, theirFileName);
+        return RepoUtils.addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -811,7 +811,7 @@ describe("Rebase", function() {
       baseFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        return TestUtils.addFileToIndex(repository, baseFileName);
+        return RepoUtils.addFileToIndex(repository, baseFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -840,7 +840,7 @@ describe("Rebase", function() {
           theirFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, theirFileName);
+        return RepoUtils.addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -863,7 +863,7 @@ describe("Rebase", function() {
           ourFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, ourFileName);
+        return RepoUtils.addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -935,7 +935,7 @@ describe("Rebase", function() {
     return fse.writeFile(path.join(repository.workdir(), fileName),
       baseFileContent)
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -964,7 +964,7 @@ describe("Rebase", function() {
           baseFileContent + theirFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -981,7 +981,7 @@ describe("Rebase", function() {
           baseFileContent + ourFileContent);
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -1022,7 +1022,7 @@ describe("Rebase", function() {
           });
       })
       .then(function() {
-        return TestUtils.addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         return repository.openIndex()

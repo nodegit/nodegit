@@ -5,7 +5,7 @@ var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
 describe("Cherrypick", function() {
-  var TestUtils = require("../utils");
+  var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
   var Cherrypick = NodeGit.Cherrypick;
 
@@ -13,7 +13,7 @@ describe("Cherrypick", function() {
 
   beforeEach(function() {
     var test = this;
-    return TestUtils.createRepository(repoPath)
+    return RepoUtils.createRepository(repoPath)
       .then(function(repo) {
         test.repository = repo;
       });
@@ -28,7 +28,7 @@ describe("Cherrypick", function() {
     var workDirPath = repo.workdir();
     var repoInfo;
 
-    return TestUtils.setupBranches(repo, true)
+    return RepoUtils.setupBranches(repo, true)
       .then(function(info) {
         repoInfo = info;
 
@@ -50,7 +50,7 @@ describe("Cherrypick", function() {
     var workDirPath = repo.workdir();
     var repoInfo;
 
-    return TestUtils.setupBranches(repo)
+    return RepoUtils.setupBranches(repo)
       .then(function(info) {
         repoInfo = info;
 
@@ -96,7 +96,7 @@ describe("Cherrypick", function() {
 
     var addedContent = "\nIt makes things E-Z!";
 
-    return TestUtils.setupBranches(repo, true)
+    return RepoUtils.setupBranches(repo, true)
       .then(function(info) {
         repoInfo = info;
 

@@ -12,7 +12,6 @@ if (process.platform === 'win32') {
 var args = cov.concat([
   "test/runner",
   "test/tests",
-  "test/utils",
   "--expose-gc"
 ]);
 

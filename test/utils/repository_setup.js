@@ -1,12 +1,13 @@
 var assert = require("assert");
-var NodeGit = require("../");
+var NodeGit = require("../../");
 var path = require("path");
 var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
-var TestUtils = {
-	addFileToIndex: function addFileToIndex(repository, fileName) {
+var RepositorySetup = {
+	addFileToIndex:
+	function addFileToIndex(repository, fileName) {
 		return repository.openIndex()
 			.then(function(index) {
 				index.read(1);
@@ -17,14 +18,15 @@ var TestUtils = {
 			});
 	},
 
-	commitFileToRepo: function commitFileToRepo(repository, fileName, fileContent) {
+	commitFileToRepo:
+	function commitFileToRepo(repository, fileName, fileContent) {
 		var repoWorkDir = repository.workdir();
 		var signature = NodeGit.Signature.create("Foo bar",
 	    "foo@bar.com", 123456789, 60);
 
 		return fse.writeFile(path.join(repoWorkDir, fileName), fileContent)
 			.then(function() {
-				return TestUtils.addFileToIndex(repository, fileName);
+				return RepositorySetup.addFileToIndex(repository, fileName);
 			})
 			.then(function(oid) {
 				return repository.createCommit("HEAD", signature, signature,
@@ -32,10 +34,11 @@ var TestUtils = {
 			})
 			.then(function(commitOid) {
 				return repository.getCommit(commitOid);
-			})
+			});
 	},
 
-	createRepository: function createRepository(repoPath){
+	createRepository:
+	function createRepository(repoPath){
 		// Create a new repository in a clean directory
 		return fse.remove(repoPath)
 		.then(function() {
@@ -43,11 +46,12 @@ var TestUtils = {
 		})
 		.then(function() {
 			return NodeGit.Repository.init(repoPath, 0);
-		})
+		});
 	},
 
 	// Expects empty repo
-	setupBranches: function setupBranches(repository, checkoutOurs) {
+	setupBranches:
+	function setupBranches(repository, checkoutOurs) {
 		var repoWorkDir = repository.workdir();
 
 		var ourBranchName = "ours";
@@ -62,9 +66,9 @@ var TestUtils = {
 		var theirFileContent = "I'm skeptical about Toll Roads";
 
 		var ourSignature = NodeGit.Signature.create
-					("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+				("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
 		var theirSignature = NodeGit.Signature.create
-					("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
+				("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
 		var initialCommit;
 		var ourBranch;
@@ -85,18 +89,22 @@ var TestUtils = {
 		};
 
 		return Promise.all([
-			fse.writeFile(path.join(repoWorkDir, baseFileName), baseFileContent),
-			fse.writeFile(path.join(repoWorkDir, ourFileName), ourFileContent),
-			fse.writeFile(path.join(repoWorkDir, theirFileName), theirFileContent)
+			fse.writeFile(path.join(repoWorkDir, baseFileName),
+										baseFileContent),
+			fse.writeFile(path.join(repoWorkDir, ourFileName),
+										ourFileContent),
+			fse.writeFile(path.join(repoWorkDir, theirFileName),
+										theirFileContent)
 		])
 			.then(function() {
-				return TestUtils.addFileToIndex(repository, baseFileName);
+				return RepositorySetup.addFileToIndex(repository, baseFileName);
 			})
 			.then(function(oid) {
 				assert.equal(oid.toString(),
 					"b5cdc109d437c4541a13fb7509116b5f03d5039a");
 
-				return repository.createCommit("HEAD", ourSignature, ourSignature,
+				return repository.createCommit(
+					"HEAD", ourSignature, ourSignature,
 					"initial commit", oid, []);
 			})
 			.then(function(commitOid) {
@@ -120,7 +128,7 @@ var TestUtils = {
 				ret.ourBranch = ourBranch = branches[0];
 				ret.theirBranch = theirBranch = branches[1];
 
-				return TestUtils.addFileToIndex(repository, ourFileName);
+				return RepositorySetup.addFileToIndex(repository, ourFileName);
 			})
 			.then(function(oid) {
 				assert.equal(oid.toString(),
@@ -134,16 +142,19 @@ var TestUtils = {
 			})
 			.then(function(commit) {
 				ret.ourCommit = commit;
-				return NodeGit.Reset.default(repository, initialCommit, ourFileName);
+				return NodeGit.Reset.default(
+						repository, initialCommit, ourFileName);
 			})
 			.then(function() {
-				return TestUtils.addFileToIndex(repository, theirFileName);
+				return RepositorySetup.addFileToIndex(
+						repository, theirFileName);
 			})
 			.then(function(oid) {
 				assert.equal(oid.toString(),
 					"be5f0fd38a39a67135ad68921c93cd5c17fefb3d");
 
-				return repository.createCommit(theirBranch.name(), theirSignature,
+				return repository.createCommit(
+					theirBranch.name(), theirSignature,
 					theirSignature, "they made a commit", oid, [initialCommit]);
 			})
 			.then(function(commitOid) {
@@ -151,7 +162,8 @@ var TestUtils = {
 			})
 			.then(function(commit) {
 				ret.theirCommit = commit;
-				return NodeGit.Reset.default(repository, initialCommit, theirFileName);
+				return NodeGit.Reset.default(
+					repository, initialCommit, theirFileName);
 			})
 			.then(function() {
 				return Promise.all([
@@ -174,4 +186,4 @@ var TestUtils = {
 	}
 };
 
-module.exports = TestUtils;
+module.exports = RepositorySetup;
