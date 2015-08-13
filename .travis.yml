@@ -24,8 +24,8 @@ branches:
     - /^v\d+\.\d+\.\d+$/
 
 before_install:
-  - git clone https://github.com/creationix/nvm.git ./.nvm;
-  - source ./.nvm/nvm.sh;
+  - git clone https://github.com/creationix/nvm.git ./.nvm
+  - source ./.nvm/nvm.sh
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
