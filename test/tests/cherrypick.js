@@ -42,6 +42,15 @@ describe("Cherrypick", function() {
       .then(function() {
         assert(fse.existsSync(path.join(workDirPath, repoInfo.theirFileName)),
           repoInfo.theirFileName + " should exist");
+
+        // Cherrypick.cherrypick leaves the repo in a cherrypick state
+        assert.equal(repo.state(), NodeGit.Repository.STATE.CHERRYPICK);
+        assert.ok(repo.isCherrypicking());
+
+        // cleanup
+        assert.equal(repo.stateCleanup(), 0);
+        assert.equal(repo.state(), NodeGit.Repository.STATE.NONE);
+        assert.ok(repo.isDefaultState());
       });
   });
 
