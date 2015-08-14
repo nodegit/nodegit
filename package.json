@@ -56,7 +56,7 @@
   "dependencies": {
     "fs-extra": "^0.18.2",
     "node-pre-gyp": "^0.6.5",
-    "nodegit-promise": "^2.0.1",
+    "nodegit-promise": "^3.0.1",
     "npm": "^2.9.0",
     "promisify-node": "^0.1.5",
     "which-native-nodish": "^1.1.1"
