@@ -19,16 +19,7 @@ init:
 # what combinations to test
 environment:
   matrix:
-    # Node.js
-    - nodejs_version: "0.10"
-    - nodejs_version: "0.12"
     # io.js
-    - nodejs_version: "2"
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - nodejs_version: "0.10"
     - nodejs_version: "2"
 
 # Get the latest stable version of Node 0.STABLE.latest
@@ -40,12 +31,19 @@ install:
   - cmd: SET BUILD_ONLY=true
   - cmd: SET GIT_SSH=c:\projects\nodegit\vendor\plink.exe
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
-  - cmd: npm install -g node-gyp
-  - npm install --msvs_version=2013
+  - cmd: npm install -g npm node-gyp
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - cmd: IF EXIST "%ProgramFiles(x86)%\nodejs\npm" del /F "%ProgramFiles(x86)%\nodejs\npm"
+  - cmd: IF EXIST "%ProgramFiles(x86)%\nodejs\npm.cmd" del /F "%ProgramFiles(x86)%\nodejs\npm.cmd"
+  - cmd: IF EXIST "%ProgramFiles(x86)%\iojs\npm" del /F "%ProgramFiles(x86)%\iojs\npm"
+  - cmd: IF EXIST "%ProgramFiles(x86)%\iojs\npm.cmd" del /F "%ProgramFiles(x86)%\iojs\npm.cmd"
+  - cmd: IF EXIST "%ProgramFiles(x86)%\nodejs\node_modules\npm\npmrc%" copy "%ProgramFiles(x86)%\nodejs\node_modules\npmrc%" "%appdata%\npm\node_modules\npm\npmrc"
+  - cmd: npm config set prefix "${APPDATA}/npm" -g
+  - cmd: npm install --msvs_version=2013
 
 test_script:
-  - node --version
-  - npm --version
+  - cmd: node --version
+  - cmd: npm --version
   - cmd: npm test
 
 on_success:
