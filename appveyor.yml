@@ -45,6 +45,7 @@ install:
   - cmd: IF EXIST "%ProgramFiles%\nodejs\npm.cmd" del /F %ProgramFiles%\nodejs\npm.cmd
   - cmd: IF EXIST "%ProgramFiles%\iojs\npm" del /F %ProgramFiles%\nodejs\npm
   - cmd: IF EXIST "%ProgramFiles%\iojs\npm.cmd" del /F %ProgramFiles%\nodejs\npm.cmd
+  - cmd: npm config set prefix "${APPDATA}/npm" -g
   - cmd: npm install --msvs_version=2013
 
 test_script:
