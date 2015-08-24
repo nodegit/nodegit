@@ -1,10 +1,28 @@
+sudo: true
+
+os:
+  - linux
+  - osx
+
 env:
-  matrix:
-    - export NODE_VERSION="0.10"
-    - export NODE_VERSION="0.12"
-    - export NODE_VERSION="iojs-v2.5.0"
+  - NODE_VERSION="0.10"
+  - NODE_VERSION="0.12"
+  - NODE_VERSION="iojs-2"
+  - NODE_VERSION="iojs-3"
+
 matrix:
   fast_finish: true
+  allow_failures:
+    - env: NODE_VERSION="iojs-3"
+
+git:
+  depth: 1
+
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+\.\d+$/
+
 before_install:
   - git clone https://github.com/creationix/nvm.git ./.nvm
   - source ./.nvm/nvm.sh
@@ -30,6 +48,7 @@ before_install:
       export JOBS=4;
     fi
   - BUILD_ONLY=true npm install
+
 # This is a random private key used purely for testing.
 before_script:
  - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
@@ -40,21 +59,14 @@ before_script:
  - ssh-add ~/.ssh/id_rsa
  - git config --global user.name "John Doe"
  - git config --global user.email johndoe@example.com
-git:
-  depth: 1
-branches:
-  only:
-    - master
-    - /^v\d+\.\d+\.\d+$/
-os:
-  - linux
-  - osx
+
 script:
   - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
       npm test && npm run cov && npm run coveralls;
     else
       npm test;
     fi
+
 after_success:
   - if [ -n "$TRAVIS_TAG" ]; then
       npm install -g node-pre-gyp
@@ -62,6 +74,7 @@ after_success:
       node-pre-gyp package
       node-pre-gyp publish
     fi
+
 notifications:
   slack:
     secure: KglNSqZiid9YudCwkPFDh+sZfW5BwFlM70y67E4peHwwlbbV1sSBPHcs74ZHP/lqgEZ4hMv4N2NI58oYFD5/1a+tKIQP1TkdIMuq4j2LXheuirA2HDcydOVrsC8kRx5XFGKdVRg/uyX2dlRHcOWFhxrS6yc6IxtxYWlRTD2SmEc=
