@@ -1,4 +1,4 @@
-NodeGitREMOVEME
+NodeGit
 -------
 
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
