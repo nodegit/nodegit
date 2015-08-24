@@ -36,7 +36,13 @@ describe("Config", function() {
       .then(function(userNameFromNodeGit) {
         assert.equal(savedUserName + "-test", userNameFromNodeGit);
       })
-      .then(finallyFn, finallyFn);
+      .then(finallyFn)
+      .catch(function(e) {
+        return finallyFn()
+          .then(function() {
+            throw e;
+          });
+      });
   });
 
   it("can get and set a repo config value", function() {
@@ -70,6 +76,12 @@ describe("Config", function() {
     .then(function(userNameFromNodeGit) {
       assert.equal(savedUserName + "-test", userNameFromNodeGit);
     })
-    .then(finallyFn, finallyFn);
+    .then(finallyFn)
+    .catch(function(e) {
+      return finallyFn()
+        .then(function() {
+          throw e;
+        });
+    });
   });
 });

@@ -10,21 +10,11 @@ var writeFile = promisify(function(filename, data, callback) {
 });
 
 describe("Index", function() {
+  var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
 
   var reposPath = local("../repos/workdir");
-
-  var addFileToIndex = function(repository, fileName) {
-    return repository.openIndex()
-      .then(function(index) {
-        index.read(1);
-        index.addByPath(fileName);
-        index.write();
-
-        return index.writeTree();
-      });
-  };
 
   beforeEach(function() {
     var test = this;
@@ -193,7 +183,7 @@ describe("Index", function() {
         baseFileContent);
       })
       .then(function() {
-        return addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -222,7 +212,7 @@ describe("Index", function() {
           baseFileContent + theirFileContent);
       })
       .then(function() {
-        return addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
@@ -239,7 +229,7 @@ describe("Index", function() {
           baseFileContent + ourFileContent);
       })
       .then(function() {
-        return addFileToIndex(repository, fileName);
+        return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),

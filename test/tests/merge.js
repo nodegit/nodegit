@@ -9,6 +9,7 @@ fse.ensureDir = promisify(fse.ensureDir);
 
 describe("Merge", function() {
   var NodeGit = require("../../");
+  var RepoUtils = require("../utils/repository_setup");
 
   var reposPath = local("../repos/merge");
   var ourBranchName = "ours";
@@ -16,13 +17,7 @@ describe("Merge", function() {
 
   beforeEach(function() {
     var test = this;
-    return fse.remove(reposPath)
-      .then(function() {
-        return fse.ensureDir(reposPath);
-      })
-      .then(function() {
-        return NodeGit.Repository.init(reposPath, 0);
-      })
+    return RepoUtils.createRepository(reposPath)
       .then(function(repo) {
         test.repository = repo;
       });
@@ -1183,6 +1178,8 @@ describe("Merge", function() {
 
         assert.equal(repository.state(),
           NodeGit.Repository.STATE.MERGE);
+        // verify the convenience method
+        assert.ok(repository.isMerging());
 
         assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_HEAD")));
         assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_MSG")));
@@ -1243,6 +1240,8 @@ describe("Merge", function() {
 
         assert.equal(repository.state(),
           NodeGit.Repository.STATE.NONE);
+        // verify the convenience method
+        assert.ok(repository.isDefaultState());
       });
   });
 });
