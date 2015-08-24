@@ -35,8 +35,8 @@ install:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   - cmd: IF EXIST "%ProgramFiles(x86)%\nodejs\npm" del /F "%ProgramFiles(x86)%\nodejs\npm"
   - cmd: IF EXIST "%ProgramFiles(x86)%\nodejs\npm.cmd" del /F "%ProgramFiles(x86)%\nodejs\npm.cmd"
-  - cmd: IF EXIST "%ProgramFiles(x86)%\iojs\npm" del /F "%ProgramFiles(x86)%\nodejs\npm"
-  - cmd: IF EXIST "%ProgramFiles(x86)%\iojs\npm.cmd" del /F "%ProgramFiles(x86)%\nodejs\npm.cmd"
+  - cmd: IF EXIST "%ProgramFiles(x86)%\iojs\npm" del /F "%ProgramFiles(x86)%\iojs\npm"
+  - cmd: IF EXIST "%ProgramFiles(x86)%\iojs\npm.cmd" del /F "%ProgramFiles(x86)%\iojs\npm.cmd"
   - cmd: IF EXIST "%ProgramFiles(x86)%\nodejs\node_modules\npm\npmrc%" copy "%ProgramFiles(x86)%\nodejs\node_modules\npmrc%" "%appdata%\npm\node_modules\npm\npmrc"
   - cmd: npm config set prefix "${APPDATA}/npm" -g
   - cmd: npm install --msvs_version=2013
