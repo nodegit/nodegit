@@ -1,6 +1,5 @@
 env:
   matrix:
-    - export NODE_VERSION="0.10"
     - export NODE_VERSION="0.12"
     - export NODE_VERSION="iojs-v2.5.0"
 matrix:

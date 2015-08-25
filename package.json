@@ -13,11 +13,7 @@
   },
   "http_parser": {
     "url": "https://github.com/joyent/http-parser/archive/v2.5.0.tar.gz",
-    "version": "2.5.0",
-    "0.1": {
-      "url": "https://github.com/joyent/http-parser/archive/v2.0.tar.gz",
-      "version": "2.0.0"
-    }
+    "version": "2.5.0"
   },
   "homepage": "http://nodegit.org",
   "keywords": [
@@ -48,7 +44,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">= 0.8"
+    "node": ">= 0.12"
   },
   "bundledDependencies": [
     "node-pre-gyp"
