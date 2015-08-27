@@ -3,7 +3,7 @@ const path = require("path");
 const utils = require("./utils");
 var _;
 
-var version = require("../../package.json").libgit2.version;
+var version = require("../../package.json").vendorDependencies.libgit2.version;
 var libgit2 = require("../input/v" + version + ".json");
 var descriptor = require("../input/descriptor.json");
 var supplement = require("../input/libgit2-supplement.json");
