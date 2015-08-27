@@ -5,7 +5,7 @@ var utils = require("./utils");
 var _ = require("lodash");
 
 // TODO: When libgit2's docs include callbacks we should be able to remove this
-var version = require("../../package.json").libgit2.version;
+var version = require("../../package.json").vendorDependencies.libgit2.version;
 var callbackDefs = require("../input/callbacks.json");
 var descriptor = require("../input/descriptor.json");
 var libgit2 = require("../input/v" + version + ".json");

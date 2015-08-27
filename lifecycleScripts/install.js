@@ -1,9 +1,7 @@
-var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
 
-var checkPrepared = require("./checkPrepared");
 var whichNativeNodish = require("which-native-nodish");
 var prepareForBuild = require("./prepareForBuild");
 
@@ -23,22 +21,22 @@ return whichNativeNodish("..")
   .then(function() {
     if (nwVersion) {
       console.info("[nodegit] Must build for node-webkit/nw.js");
-      return checkAndBuild();
+      return prepareAndBuild();
     }
     else if (asVersion) {
       console.info("[nodegit] Must build for atom-shell");
-      return checkAndBuild();
+      return prepareAndBuild();
     }
     if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
-      return checkAndBuild();
+      return prepareAndBuild();
     }
     if (process.env.BUILD_DEBUG) {
       console.info("[nodegit] Doing a debug build, no fetching allowed.");
-      return checkAndBuild();
+      return prepareAndBuild();
     }
     if (process.env.BUILD_ONLY) {
       console.info("[nodegit] BUILD_ONLY is set to true, no fetching allowed.");
-      return checkAndBuild();
+      return prepareAndBuild();
     }
     console.info("[nodegit] Fetching binary from S3.");
     return exec("node-pre-gyp install")
@@ -49,27 +47,15 @@ return whichNativeNodish("..")
         function() {
           console.info("[nodegit] Failed to install prebuilt binary, " +
             "building manually.");
-          return checkAndBuild();
+          return prepareAndBuild();
         }
       );
   });
 
 
-function checkAndBuild() {
-  console.info("[nodegit] Making sure dependencies are available and native " +
-    "code is generated");
-
-  return checkPrepared.checkAll()
-    .then(function(allGood) {
-      if (allGood) {
-        return Promise.resolve();
-      }
-      else {
-        console.info("[nodegit] Something is missing, retrieving " +
-        "dependencies and regenerating code");
-        return prepareForBuild();
-      }
-    })
+function prepareAndBuild() {
+  console.info("[nodegit] Regenerating and configuring code");
+  return prepareForBuild()
     .then(function() {
       return build();
     });
