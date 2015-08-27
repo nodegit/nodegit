@@ -2,19 +2,6 @@
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.4.1",
-  "libgit2": {
-    "url": "https://github.com/nodegit/libgit2/tarball/2cb4b6534fbcbe600ecf3db95ba19e4525c8d4b8",
-    "sha": "2cb4b6534fbcbe600ecf3db95ba19e4525c8d4b8",
-    "version": "0.23.1"
-  },
-  "libssh2": {
-    "url": "http://www.libssh2.org/download/libssh2-1.4.3.tar.gz",
-    "version": "1.4.3"
-  },
-  "http_parser": {
-    "url": "https://github.com/joyent/http-parser/archive/v2.5.0.tar.gz",
-    "version": "2.5.0"
-  },
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -71,6 +58,14 @@
     "pangyp": "^2.2.1",
     "request": "^2.55.0",
     "tar": "^2.1.0"
+  },
+  "vendorDependencies": {
+    "libgit2": {
+      "sha": "2cb4b6534fbcbe600ecf3db95ba19e4525c8d4b8",
+      "version": "0.23.1"
+    },
+    "libssh2": "1.4.3",
+    "http_parser": "2.5.0"
   },
   "binary": {
     "module_name": "nodegit",

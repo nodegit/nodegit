@@ -1,7 +1,4 @@
 /node_modules/
-/vendor/libgit2/
-/vendor/libssh2/
-/vendor/http_parser/
 /build/
 /test/coverage/
 /test/repos/
