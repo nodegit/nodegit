@@ -2059,6 +2059,13 @@
       "functions": {
         "git_treebuilder_filter": {
           "ignore": true
+        },
+        "git_treebuilder_write": {
+          "args": {
+            "id": {
+              "isReturn": true
+            }
+          }
         }
       }
     },
