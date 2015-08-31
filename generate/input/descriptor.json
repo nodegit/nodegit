@@ -360,6 +360,9 @@
             },
             "tree": {
               "isOptional": true
+            },
+            "update_ref": {
+              "isOptional": true
             }
           }
         },
