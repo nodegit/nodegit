@@ -277,6 +277,59 @@ describe("Commit", function() {
     });
   });
 
+  it("can amend commit and update reference separately", function() {
+    var customReflogMessage = "updating reference manually";
+
+    var head, repo, oid, originalReflogCount;
+
+    return NodeGit.Repository.open(reposPath)
+    .then(function(repoResult) {
+      repo = repoResult;
+      // grab the original reflog entry count (to make sure .amend
+      // doesn't add a reflog entry when not given a reference)
+      return NodeGit.Reflog.read(repo, "HEAD");
+    })
+    .then(function(reflog) {
+      originalReflogCount = reflog.entrycount();
+      // get the head reference and commit
+      return repo.head();
+    })
+    .then(function(headResult) {
+      head = headResult;
+      return repo.getHeadCommit();
+    })
+    .then(function(headCommit) {
+      // amend the commit but don't update any reference
+      // (passing null as update_ref)
+      return headCommit.amend(
+        null,
+        null,
+        null,
+        "message",
+        null,
+        null);
+    }).then(function(oidResult) {
+      oid = oidResult;
+      // update the reference manually
+      return head.setTarget(oid, customReflogMessage);
+    }).then(function() {
+      // load reflog and make sure the last message is what we expected
+      return NodeGit.Reflog.read(repo, "HEAD");
+    }).then(function(reflog) {
+      var reflogEntry = reflog.entryByIndex(0);
+      assert.equal(
+        NodeGit.Reflog.entryMessage(reflogEntry),
+        customReflogMessage
+      );
+      assert.equal(
+        NodeGit.Reflog.entryIdNew(reflogEntry).toString(),
+        oid
+      );
+      // only setTarget should have added to the entrycount
+      assert.equal(reflog.entrycount(), originalReflogCount + 1);
+    });
+  });
+
   it("has an owner", function() {
     var owner = this.commit.owner();
     assert.ok(owner instanceof Repository);
