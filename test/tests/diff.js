@@ -153,7 +153,7 @@ describe("Diff", function() {
         patches.forEach(function(patch) {
           hunkPromises.push(patch.hunks()
             .then(function(hunks) {
-              result.concat(hunks);
+              result = result.concat(hunks);
             })
           );
         });
@@ -170,7 +170,7 @@ describe("Diff", function() {
         hunks.forEach(function(hunk) {
           linePromises.push(hunk.lines()
             .then(function(lines) {
-              result.concat(lines);
+              result = result.concat(lines);
             })
           );
         });
