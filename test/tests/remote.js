@@ -191,34 +191,34 @@ describe("Remote", function() {
       });
   });
 
-  it("can reject fetching from private repository without valid " +
-    "credentials", function() {
-      this.timeout(15000);
+  it("can reject fetching from private repository without valid credentials",
+  function() {
+    this.timeout(15000);
 
-      var repo = this.repository;
-      var remote = Remote.create(repo, "private", privateUrl);
-      var fetchOptions = {
-        callbacks: {
-          credentials: function(url, userName) {
-            return NodeGit.Cred.sshKeyFromAgent(userName);
-          },
-          certificateCheck: function() {
-            return 1;
-          }
+    var repo = this.repository;
+    var remote = Remote.create(repo, "private", privateUrl);
+    var fetchOptions = {
+      callbacks: {
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyFromAgent(userName);
+        },
+        certificateCheck: function() {
+          return 1;
         }
-      };
+      }
+    };
 
-      return remote.fetch(null, fetchOptions, "Fetch from private")
-        .then(function () {
-          assert.fail("Should not be able to fetch from repository");
-        })
-        .catch(function(error) {
-          assert.equal(
-            error.message.trim(),
-             "ERROR: Repository not found.",
-             "Should not be able to find repository."
-          );
-        });
+    return remote.fetch(null, fetchOptions, "Fetch from private")
+      .then(function () {
+        assert.fail("Should not be able to fetch from repository");
+      })
+      .catch(function(error) {
+        assert.equal(
+          error.message.trim(),
+           "ERROR: Repository not found.",
+           "Should not be able to find repository."
+        );
+      });
   });
 
   it("can fetch from all remotes", function() {
