@@ -199,6 +199,22 @@ describe("Repository", function() {
       });
   });
 
+  it("will throw when a repo cannot be initialized using initExt", function() {
+    var initFlags = NodeGit.Repository.INIT_FLAG.NO_REINIT |
+      NodeGit.Repository.INIT_FLAG.MKPATH |
+      NodeGit.Repository.INIT_FLAG.MKDIR;
+
+    var nonsensePath = "gibberish";
+
+    return NodeGit.Repository.initExt(nonsensePath, { flags: initFlags })
+      .then(function() {
+        assert.fail("Should have thrown an error.");
+      })
+      .catch(function(error) {
+        assert(error, "Should have thrown an error.");
+      });
+  });
+
   it("can get the head commit", function() {
     return this.repository.getHeadCommit()
       .then(function(commit) {
