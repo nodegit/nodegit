@@ -11,6 +11,7 @@ describe("Remote", function() {
   var reposPath = local("../repos/workdir");
   var url = "https://github.com/nodegit/test";
   var url2 = "https://github.com/nodegit/test2";
+  var privateUrl = "git@github.com:nodegit/private";
 
   function removeNonOrigins(repo) {
     return repo.getRemotes()
@@ -163,6 +164,63 @@ describe("Remote", function() {
     });
   });
 
+  it("can fetch from a private repository", function() {
+    this.timeout(15000);
+
+    var repo = this.repository;
+    var remote = Remote.create(repo, "private", privateUrl);
+    var fetchOptions = {
+      callbacks: {
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyNew(
+            userName,
+            path.resolve("./test/nodegit-test-rsa.pub"),
+            path.resolve("./test/nodegit-test-rsa"),
+            ""
+          );
+        },
+        certificateCheck: function() {
+          return 1;
+        }
+      }
+    };
+
+    return remote.fetch(null, fetchOptions, "Fetch from private")
+      .catch(function() {
+        assert.fail("Unable to fetch from private repository");
+      });
+  });
+
+  it("can reject fetching from private repository without valid credentials",
+  function() {
+    this.timeout(15000);
+
+    var repo = this.repository;
+    var remote = Remote.create(repo, "private", privateUrl);
+    var fetchOptions = {
+      callbacks: {
+        credentials: function(url, userName) {
+          return NodeGit.Cred.sshKeyFromAgent(userName);
+        },
+        certificateCheck: function() {
+          return 1;
+        }
+      }
+    };
+
+    return remote.fetch(null, fetchOptions, "Fetch from private")
+      .then(function () {
+        assert.fail("Should not be able to fetch from repository");
+      })
+      .catch(function(error) {
+        assert.equal(
+          error.message.trim(),
+           "ERROR: Repository not found.",
+           "Should not be able to find repository."
+        );
+      });
+  });
+
   it("can fetch from all remotes", function() {
     // Set a reasonable timeout here for the fetchAll test
     this.timeout(15000);
@@ -183,7 +241,7 @@ describe("Remote", function() {
     });
   });
 
-  it("cannot push to a repository", function() {
+  it("cannot push to a repository with invalid credentials", function() {
     this.timeout(5000);
     var repo = this.repository;
     var branch = "should-not-exist";
