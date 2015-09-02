@@ -25,7 +25,8 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
         patch.hunks().then(function(hunks) {
           hunks.forEach(function(hunk) {
             hunk.lines().then(function(lines) {
-              console.log("diff", patch.oldFile().path(), patch.newFile().path());
+              console.log("diff", patch.oldFile().path(),
+                patch.newFile().path());
               console.log(hunk.header().trim());
               lines.forEach(function(line) {
                 console.log(String.fromCharCode(line.origin()) +
