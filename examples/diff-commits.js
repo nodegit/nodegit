@@ -22,11 +22,12 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   diffList.forEach(function(diff) {
     diff.patches().then(function(patches) {
       patches.forEach(function(patch) {
-        console.log("diff", patch.oldFile().path(), patch.newFile().path());
         patch.hunks().then(function(hunks) {
           hunks.forEach(function(hunk) {
-            console.log(hunk.header().trim());
             hunk.lines().then(function(lines) {
+              console.log("diff", patch.oldFile().path(),
+                patch.newFile().path());
+              console.log(hunk.header().trim());
               lines.forEach(function(line) {
                 console.log(String.fromCharCode(line.origin()) +
                   line.content().trim());
