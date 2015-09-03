@@ -127,8 +127,9 @@ describe("Repository", function() {
 
     return fse.writeFile(filePath, fileContent)
       .then(function() {
-        var statuses = repo.getStatusExt();
-
+        return repo.getStatusExt();
+      })
+      .then(function(statuses) {
         assert.equal(statuses.length, 1);
         assert.equal(statuses[0].path(), fileName);
         assert.equal(statuses[0].indexToWorkdir().newFile().path(), fileName);

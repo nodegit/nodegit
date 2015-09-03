@@ -1906,7 +1906,7 @@
     "status_list": {
       "functions": {
         "git_status_list_new": {
-          "isAsync": false,
+          "isAsync": true,
           "args": {
             "opts": {
               "isOptional": true
