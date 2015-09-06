@@ -18,10 +18,10 @@ extern "C" {
 using namespace node;
 using namespace v8;
 
-class {{ cppClassName }} : public ObjectWrap {
+class {{ cppClassName }} : public Nan::ObjectWrap {
   public:
     {{ cppClassName }}({{ cType }}* raw, bool selfFreeing);
-    static Persistent<Function> constructor_template;
+    static Nan::Persistent<Function> constructor_template;
     static void InitializeComponent (Handle<v8::Object> target);
 
     {{ cType }} *GetValue();
@@ -53,7 +53,7 @@ class {{ cppClassName }} : public ObjectWrap {
 
             uv_async_t req;
             {{ field.return.type }} result;
-            Persistent<Object> promise;
+            Nan::Persistent<Object> promise;
             bool done;
           };
         {% endif %}
@@ -72,11 +72,11 @@ class {{ cppClassName }} : public ObjectWrap {
       {% if not field.ignore %}
         {% if not field.isEnum %}
           {% if field.isLibgitType %}
-            Persistent<Object> {{ field.name }};
+            Nan::Persistent<Object> {{ field.name }};
           {% elsif field.isCallbackFunction %}
-            NanCallback* {{ field.name }};
+            Nan::Callback* {{ field.name }};
           {% elsif field.payloadFor %}
-            Persistent<Value> {{ field.name }};
+            Nan::Persistent<Value> {{ field.name }};
           {% endif %}
         {% endif %}
 

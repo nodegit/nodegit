@@ -12,7 +12,6 @@ extern "C" {
 }
 
 #include "../include/functions/copy.h"
-#include "../include/macros.h"
 #include "../include/{{ filename }}.h"
 
 {% each dependencies as dependency %}
@@ -47,7 +46,7 @@ using namespace node;
         {% each function.args as arg %}
           {% if arg.saveArg %}
 
-      NanDisposePersistent({{ function.cppFunctionName }}_{{ arg.name }});
+      {{ function.cppFunctionName }}_{{ arg.name }}).Reset();
 
           {% endif %}
         {% endeach %}
@@ -57,55 +56,54 @@ using namespace node;
   }
 
   void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
-    NanScope();
+    Nan::HandleScope scope;
 
-    Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(JSNewFunction);
+    Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
 
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
-    tpl->SetClassName(NanNew<String>("{{ jsClassName }}"));
+    tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
 
     {% each functions as function %}
       {% if not function.ignore %}
         {% if function.isPrototypeMethod %}
-          NODE_SET_PROTOTYPE_METHOD(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
+          Nan::SetPrototypeMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
         {% else %}
-          NODE_SET_METHOD(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
+          Nan::SetMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
         {% endif %}
       {% endif %}
     {% endeach %}
 
     {% each fields as field %}
       {% if not field.ignore %}
-        NODE_SET_PROTOTYPE_METHOD(tpl, "{{ field.jsFunctionName }}", {{ field.cppFunctionName }});
+        Nan::SetPrototypeMethod(tpl, "{{ field.jsFunctionName }}", {{ field.cppFunctionName }});
       {% endif %}
     {% endeach %}
 
-    Local<Function> _constructor_template = tpl->GetFunction();
-    NanAssignPersistent(constructor_template, _constructor_template);
-    target->Set(NanNew<String>("{{ jsClassName }}"), _constructor_template);
+    Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+    constructor_template.Reset(_constructor_template);
+    Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
   }
 
   NAN_METHOD({{ cppClassName }}::JSNewFunction) {
-    NanScope();
 
-    if (args.Length() == 0 || !args[0]->IsExternal()) {
+    if (info.Length() == 0 || !info[0]->IsExternal()) {
       {% if createFunctionName %}
-        return NanThrowError("A new {{ cppClassName }} cannot be instantiated. Use {{ jsCreateFunctionName }} instead.");
+        return Nan::ThrowError("A new {{ cppClassName }} cannot be instantiated. Use {{ jsCreateFunctionName }} instead.");
       {% else %}
-        return NanThrowError("A new {{ cppClassName }} cannot be instantiated.");
+        return Nan::ThrowError("A new {{ cppClassName }} cannot be instantiated.");
       {% endif %}
     }
 
-    {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(args[0])->Value()), args[1]->BooleanValue());
-    object->Wrap(args.This());
+    {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
+    object->Wrap(info.This());
 
-    NanReturnValue(args.This());
+    info.GetReturnValue().Set(info.This());
   }
 
   Handle<v8::Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
-    NanEscapableScope();
-    Handle<v8::Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
-    return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(2, argv));
+    Nan::EscapableHandleScope scope;
+    Handle<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing) };
+    return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());
   }
 
   {{ cType }} *{{ cppClassName }}::GetValue() {
@@ -123,17 +121,17 @@ using namespace node;
 {% else %}
 
   void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
-    NanScope();
+    Nan::HandleScope scope;
 
-    Local<Object> object = NanNew<Object>();
+    Local<Object> object = Nan::New<Object>();
 
     {% each functions as function %}
       {% if not function.ignore %}
-        NODE_SET_METHOD(object, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
+        Nan::SetMethod(object, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
       {% endif %}
     {% endeach %}
 
-    target->Set(NanNew<String>("{{ jsClassName }}"), object);
+    Nan::Set(target, Nan::New<String>("{{ jsClassName }}").ToLocalChecked(), object);
   }
 
 {% endif %}
@@ -151,5 +149,5 @@ using namespace node;
 {% partial fields . %}
 
 {% if not cTypeIsUndefined %}
-  Persistent<Function> {{ cppClassName }}::constructor_template;
+  Nan::Persistent<Function> {{ cppClassName }}::constructor_template;
 {% endif %}

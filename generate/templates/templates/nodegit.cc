@@ -12,7 +12,7 @@
 {% endeach %}
 
 extern "C" void init(Handle<v8::Object> target) {
-  NanScope();
+  Nan::HandleScope scope;
 
   Wrapper::InitializeComponent(target);
   {% each %}

@@ -10,7 +10,7 @@ using namespace v8;
 using namespace node;
 
 struct CallbackWrapper {
-  NanCallback* jsCallback;
+  Nan::Callback* jsCallback;
   void * payload;
 };
 

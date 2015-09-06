@@ -72,7 +72,7 @@ void {{ cppClassName }}::ConstructFields() {
             &this->raw->{{ field.name }},
             false
           )->ToObject();
-          NanAssignPersistent(this->{{ field.name }}, {{ field.name }}Temp);
+          this->{{ field.name }}.Reset({{ field.name }}Temp);
 
         {% elsif field.isCallbackFunction %}
 
@@ -83,8 +83,8 @@ void {{ cppClassName }}::ConstructFields() {
           this->{{ field.name }} = NULL;
         {% elsif field.payloadFor %}
 
-          Local<Value> {{ field.name }} = NanUndefined();
-          NanAssignPersistent(this->{{ field.name }}, {{ field.name }});
+          Local<Value> {{ field.name }} = Nan::Undefined();
+          this->{{ field.name }}.Reset({{ field.name }});
         {% endif %}
       {% endif %}
     {% endif %}
@@ -92,47 +92,46 @@ void {{ cppClassName }}::ConstructFields() {
 }
 
 void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
-  NanScope();
+  Nan::HandleScope scope;
 
-  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(JSNewFunction);
+  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
-  tpl->SetClassName(NanNew<String>("{{ jsClassName }}"));
+  tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
 
   {% each fields as field %}
     {% if not field.ignore %}
     {% if not field | isPayload %}
-      tpl->InstanceTemplate()->SetAccessor(NanNew<String>("{{ field.jsFunctionName }}"), Get{{ field.cppFunctionName}}, Set{{ field.cppFunctionName}});
+      Nan::SetAccessor(tpl->InstanceTemplate(), Nan::New("{{ field.jsFunctionName }}").ToLocalChecked(), Get{{ field.cppFunctionName}}, Set{{ field.cppFunctionName}});
     {% endif %}
     {% endif %}
   {% endeach %}
 
-  Local<Function> _constructor_template = tpl->GetFunction();
-  NanAssignPersistent(constructor_template, _constructor_template);
-  target->Set(NanNew<String>("{{ jsClassName }}"), _constructor_template);
+  Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+  constructor_template.Reset(_constructor_template);
+  Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
 }
 
 NAN_METHOD({{ cppClassName }}::JSNewFunction) {
-  NanScope();
   {{ cppClassName }}* instance;
 
-  if (args.Length() == 0 || !args[0]->IsExternal()) {
+  if (info.Length() == 0 || !info[0]->IsExternal()) {
     instance = new {{ cppClassName }}();
   }
   else {
-    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(args[0])->Value()), args[1]->BooleanValue());
+    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
   }
 
-  instance->Wrap(args.This());
+  instance->Wrap(info.This());
 
-  NanReturnValue(args.This());
+  info.GetReturnValue().Set(info.This());
 }
 
 Handle<v8::Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
-  NanEscapableScope();
+  Nan::EscapableHandleScope scope;
 
-  Handle<v8::Value> argv[2] = { NanNew<External>((void *)raw), NanNew<Boolean>(selfFreeing) };
-  return NanEscapeScope(NanNew<Function>({{ cppClassName }}::constructor_template)->NewInstance(2, argv));
+  Handle<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New<Boolean>(selfFreeing) };
+  return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());
 }
 
 {{ cType }} *{{ cppClassName }}::GetValue() {
@@ -149,4 +148,4 @@ void {{ cppClassName }}::ClearValue() {
 
 {% partial fieldAccessors . %}
 
-Persistent<Function> {{ cppClassName }}::constructor_template;
+Nan::Persistent<Function> {{ cppClassName }}::constructor_template;

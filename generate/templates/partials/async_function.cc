@@ -1,10 +1,9 @@
 
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
-  NanScope();
   {%partial guardArguments .%}
-  if (args.Length() == {{args|jsArgsCount}} || !args[{{args|jsArgsCount}}]->IsFunction()) {
-    return NanThrowError("Callback is required and must be a Function.");
+  if (info.Length() == {{args|jsArgsCount}} || !info[{{args|jsArgsCount}}]->IsFunction()) {
+    return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
   {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
@@ -26,9 +25,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-  baton->{{ arg.name }} = ObjectWrap::Unwrap<{{ arg.cppClassName }}>(args.This())->GetValue();
+  baton->{{ arg.name }} = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This())->GetValue();
       {%elsif arg.isCallbackFunction %}
-  if (!args[{{ arg.jsArg }}]->IsFunction()) {
+  if (!info[{{ arg.jsArg }}]->IsFunction()) {
     baton->{{ arg.name }} = NULL;
         {%if arg.payload.globalPayload %}
     globalPayload->{{ arg.name }} = NULL;
@@ -39,9 +38,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   else {
     baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
         {%if arg.payload.globalPayload %}
-    globalPayload->{{ arg.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+    globalPayload->{{ arg.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
         {%else%}
-    baton->{{ arg.payload.name }} = new NanCallback(args[{{ arg.jsArg }}].As<Function>());
+    baton->{{ arg.payload.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
         {%endif%}
   }
       {%elsif arg.payloadFor %}
@@ -53,7 +52,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%if not arg.payloadFor %}
   baton->{{ arg.name }} = from_{{ arg.name }};
           {%if arg | isOid %}
-  baton->{{ arg.name }}NeedsFree = args[{{ arg.jsArg }}]->IsString();
+  baton->{{ arg.name }}NeedsFree = info[{{ arg.jsArg }}]->IsString();
           {%endif%}
         {%endif%}
       {%endif%}
@@ -62,21 +61,21 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  NanCallback *callback = new NanCallback(Local<Function>::Cast(args[{{args|jsArgsCount}}]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[{{args|jsArgsCount}}]));
   {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback);
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-  worker->SaveToPersistent("{{ arg.name }}", args.This());
+  worker->SaveToPersistent("{{ arg.name }}", info.This());
       {%elsif not arg.isCallbackFunction %}
-  if (!args[{{ arg.jsArg }}]->IsUndefined() && !args[{{ arg.jsArg }}]->IsNull())
-    worker->SaveToPersistent("{{ arg.name }}", args[{{ arg.jsArg }}]->ToObject());
+  if (!info[{{ arg.jsArg }}]->IsUndefined() && !info[{{ arg.jsArg }}]->IsNull())
+    worker->SaveToPersistent("{{ arg.name }}", info[{{ arg.jsArg }}]->ToObject());
       {%endif%}
     {%endif%}
   {%endeach%}
 
-  NanAsyncQueueWorker(worker);
-  NanReturnUndefined();
+  Nan::AsyncQueueWorker(worker);
+  return;
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
@@ -110,16 +109,16 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
     {%if not .|returnsCount %}
-    Handle<v8::Value> result = NanUndefined();
+    Handle<v8::Value> result = Nan::Undefined();
     {%else%}
     Handle<v8::Value> to;
       {%if .|returnsCount > 1 %}
-    Handle<Object> result = NanNew<Object>();
+    Handle<Object> result = Nan::New<Object>();
       {%endif%}
       {%each .|returnsInfo 0 1 as _return %}
         {%partial convertToV8 _return %}
         {%if .|returnsCount > 1 %}
-    result->Set(NanNew<String>("{{ _return.returnNameOrName }}"), to);
+    Nan::Set(result, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), to);
         {%endif%}
       {%endeach%}
       {%if .|returnsCount == 1 %}
@@ -127,14 +126,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%endif%}
     {%endif%}
     Handle<v8::Value> argv[2] = {
-      NanNull(),
+      Nan::Null(),
       result
     };
     callback->Call(2, argv);
   } else {
     if (baton->error) {
       Handle<v8::Value> argv[1] = {
-        NanError(baton->error->message)
+        Nan::Error(baton->error->message)
       };
       callback->Call(1, argv);
       if (baton->error->message)
