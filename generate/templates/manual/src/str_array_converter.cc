@@ -37,7 +37,7 @@ git_strarray *StrArrayConverter::ConvertArray(Array *val) {
   git_strarray *result = AllocStrArray(val->Length());
 
   for(size_t i = 0; i < result->count; i++) {
-    NanUtf8String entry(val->Get(i));
+    Nan::Utf8String entry(val->Get(i));
     result->strings[i] = strdup(*entry);
   }
 
@@ -46,7 +46,7 @@ git_strarray *StrArrayConverter::ConvertArray(Array *val) {
 
 git_strarray* StrArrayConverter::ConvertString(Handle<String> val) {
   char *strings[1];
-  NanUtf8String utf8String(val);
+  Nan::Utf8String utf8String(val);
 
   strings[0] = *utf8String;
 
