@@ -13,10 +13,10 @@
 using namespace node;
 using namespace v8;
 
-class Wrapper : public ObjectWrap {
+class Wrapper : public Nan::ObjectWrap {
   public:
 
-    static Persistent<FunctionTemplate> constructor_template;
+    static Nan::Persistent<FunctionTemplate> constructor_template;
     static void InitializeComponent (Handle<v8::Object> target);
 
     void *GetValue();
