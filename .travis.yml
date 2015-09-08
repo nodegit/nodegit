@@ -1,7 +1,7 @@
 env:
   matrix:
     - export NODE_VERSION="0.12"
-    - export NODE_VERSION="iojs-v2.5.0"
+    - export NODE_VERSION="iojs"
 matrix:
   fast_finish: true
 before_install:

@@ -26,13 +26,10 @@ environment:
     # Node.js
     - nodejs_version: "0.12"
     # io.js
-    - nodejs_version: "2"
+    - nodejs_version: "3"
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - nodejs_version: "0.10"
-    - nodejs_version: "2"
 
 # Get the latest stable version of Node 0.STABLE.latest
 install:
