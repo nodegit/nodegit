@@ -53,9 +53,9 @@
     "lcov-result-merger": "^1.0.2",
     "lodash": "^3.8.0",
     "mocha": "^2.2.4",
-    "nan": "^2.0.8",
+    "nan": "^2.0.9",
+    "node-gyp": "^3.0.1",
     "nw-gyp": "^0.12.4",
-    "pangyp": "^2.2.1",
     "request": "^2.55.0",
     "tar": "^2.1.0"
   },
@@ -88,9 +88,9 @@
     "prepublish": "node lifecycleScripts/prepareForBuild.js",
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "recompile": "pangyp configure build",
-    "rebuild": "node generate && pangyp configure build",
-    "recompileDebug": "pangyp configure --debug build",
-    "rebuildDebug": "node generate && pangyp configure --debug build"
+    "recompile": "node-gyp configure build",
+    "rebuild": "node generate && node-gyp configure build",
+    "recompileDebug": "node-gyp configure --debug build",
+    "rebuildDebug": "node generate && node-gyp configure --debug build"
   }
 }
