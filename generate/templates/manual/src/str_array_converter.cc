@@ -9,7 +9,7 @@
 using namespace v8;
 using namespace node;
 
-git_strarray *StrArrayConverter::Convert(Handle<v8::Value> val) {
+git_strarray *StrArrayConverter::Convert(Local<v8::Value> val) {
   if (!val->BooleanValue()) {
     return NULL;
   }
@@ -44,7 +44,7 @@ git_strarray *StrArrayConverter::ConvertArray(Array *val) {
   return result;
 }
 
-git_strarray* StrArrayConverter::ConvertString(Handle<String> val) {
+git_strarray* StrArrayConverter::ConvertString(Local<String> val) {
   char *strings[1];
   Nan::Utf8String utf8String(val);
 

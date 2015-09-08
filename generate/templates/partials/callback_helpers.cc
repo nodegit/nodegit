@@ -71,10 +71,10 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
   };
 
   Nan::TryCatch tryCatch;
-  Handle<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
+  Local<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
 
   if (result->IsObject() && Nan::Has(result->ToObject(), Nan::New("then").ToLocalChecked()).FromJust()) {
-    Handle<v8::Value> thenProp = Nan::Get(result->ToObject(), Nan::New("then").ToLocalChecked()).ToLocalChecked();
+    Local<v8::Value> thenProp = Nan::Get(result->ToObject(), Nan::New("then").ToLocalChecked()).ToLocalChecked();
 
     if (thenProp->IsFunction()) {
       // we can be reasonbly certain that the result is a promise
@@ -137,7 +137,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
 
   if (isFulfilled->Value()) {
     Nan::Callback* resultFn = new Nan::Callback(Nan::Get(promise, Nan::New("value").ToLocalChecked()).ToLocalChecked().As<Function>());
-    Handle<v8::Value> result = resultFn->Call(promise, 0, argv);
+    Local<v8::Value> result = resultFn->Call(promise, 0, argv);
 
     {% each cbFunction|returnsInfo false true as _return %}
       if (result.IsEmpty() || result->IsNativeError()) {

@@ -36,7 +36,7 @@
         }
 
       {% elsif field.isLibgitType %}
-        Handle<Object> {{ field.name }}(value->ToObject());
+        Local<Object> {{ field.name }}(value->ToObject());
 
         wrapper->{{ field.name }}.Reset({{ field.name }});
 
@@ -161,10 +161,10 @@
         };
 
         Nan::TryCatch tryCatch;
-        Handle<v8::Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
+        Local<v8::Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
 
         if (result->IsObject() && Nan::Has(result->ToObject(), Nan::New("then").ToLocalChecked()).FromJust()) {
-          Handle<v8::Value> thenProp = Nan::Get(result->ToObject(), Nan::New("then").ToLocalChecked()).ToLocalChecked();
+          Local<v8::Value> thenProp = Nan::Get(result->ToObject(), Nan::New("then").ToLocalChecked()).ToLocalChecked();
 
           if (thenProp->IsFunction()) {
             // we can be reasonbly certain that the result is a promise
@@ -227,7 +227,7 @@
 
         if (isFulfilled->Value()) {
           Nan::Callback* resultFn = new Nan::Callback(Nan::Get(promise, Nan::New("value").ToLocalChecked()).ToLocalChecked().As<Function>());
-          Handle<v8::Value> result = resultFn->Call(promise, 0, argv);
+          Local<v8::Value> result = resultFn->Call(promise, 0, argv);
 
           {% each field|returnsInfo false true as _return %}
             if (result.IsEmpty() || result->IsNativeError()) {

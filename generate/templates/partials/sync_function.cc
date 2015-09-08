@@ -17,7 +17,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%if not arg.isReturn %}
         {%partial convertFromV8 arg %}
         {%if arg.saveArg %}
-  Handle<Object> {{ arg.name }}(info[{{ arg.jsArg }}]->ToObject());
+  Local<Object> {{ arg.name }}(info[{{ arg.jsArg }}]->ToObject());
   {{ cppClassName }} *thisObj = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
 
   thisObj->{{ cppFunctionName }}_{{ arg.name }}.Reset({{ arg.name }});
@@ -95,9 +95,9 @@ from_{{ arg.name }}
   }
   {%endif%}
 
-  Handle<v8::Value> to;
+  Local<v8::Value> to;
   {%if .|returnsCount > 1 %}
-  Handle<Object> toReturn = Nan::New<Object>();
+  Local<Object> toReturn = Nan::New<Object>();
   {%endif%}
   {%each .|returnsInfo as _return %}
     {%partial convertToV8 _return %}

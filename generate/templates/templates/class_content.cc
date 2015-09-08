@@ -55,7 +55,7 @@ using namespace node;
 
   }
 
-  void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
+  void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
     Nan::HandleScope scope;
 
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
@@ -94,15 +94,15 @@ using namespace node;
       {% endif %}
     }
 
-    {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Handle<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
+    {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Local<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
     object->Wrap(info.This());
 
     info.GetReturnValue().Set(info.This());
   }
 
-  Handle<v8::Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
+  Local<v8::Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
     Nan::EscapableHandleScope scope;
-    Handle<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing) };
+    Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing) };
     return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());
   }
 
@@ -120,7 +120,7 @@ using namespace node;
 
 {% else %}
 
-  void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
+  void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
     Nan::HandleScope scope;
 
     Local<Object> object = Nan::New<Object>();

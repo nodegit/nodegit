@@ -109,11 +109,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
     {%if not .|returnsCount %}
-    Handle<v8::Value> result = Nan::Undefined();
+    Local<v8::Value> result = Nan::Undefined();
     {%else%}
-    Handle<v8::Value> to;
+    Local<v8::Value> to;
       {%if .|returnsCount > 1 %}
-    Handle<Object> result = Nan::New<Object>();
+    Local<Object> result = Nan::New<Object>();
       {%endif%}
       {%each .|returnsInfo 0 1 as _return %}
         {%partial convertToV8 _return %}
@@ -122,17 +122,17 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {%endif%}
       {%endeach%}
       {%if .|returnsCount == 1 %}
-    Handle<v8::Value> result = to;
+    Local<v8::Value> result = to;
       {%endif%}
     {%endif%}
-    Handle<v8::Value> argv[2] = {
+    Local<v8::Value> argv[2] = {
       Nan::Null(),
       result
     };
     callback->Call(2, argv);
   } else {
     if (baton->error) {
-      Handle<v8::Value> argv[1] = {
+      Local<v8::Value> argv[1] = {
         Nan::Error(baton->error->message)
       };
       callback->Call(1, argv);

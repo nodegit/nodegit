@@ -91,7 +91,7 @@ void {{ cppClassName }}::ConstructFields() {
   {% endeach %}
 }
 
-void {{ cppClassName }}::InitializeComponent(Handle<v8::Object> target) {
+void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
   Nan::HandleScope scope;
 
   Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
@@ -119,7 +119,7 @@ NAN_METHOD({{ cppClassName }}::JSNewFunction) {
     instance = new {{ cppClassName }}();
   }
   else {
-    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Handle<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
+    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Local<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
   }
 
   instance->Wrap(info.This());
@@ -127,10 +127,10 @@ NAN_METHOD({{ cppClassName }}::JSNewFunction) {
   info.GetReturnValue().Set(info.This());
 }
 
-Handle<v8::Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
+Local<v8::Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
   Nan::EscapableHandleScope scope;
 
-  Handle<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New<Boolean>(selfFreeing) };
+  Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New<Boolean>(selfFreeing) };
   return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());
 }
 

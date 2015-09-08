@@ -22,13 +22,13 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
   public:
     {{ cppClassName }}({{ cType }}* raw, bool selfFreeing);
     static Nan::Persistent<Function> constructor_template;
-    static void InitializeComponent (Handle<v8::Object> target);
+    static void InitializeComponent (Local<v8::Object> target);
 
     {{ cType }} *GetValue();
     {{ cType }} **GetRefValue();
     void ClearValue();
 
-    static Handle<v8::Value> New(void *raw, bool selfFreeing);
+    static Local<v8::Value> New(void *raw, bool selfFreeing);
 
     bool selfFreeing;
 

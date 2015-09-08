@@ -16,7 +16,7 @@ Wrapper::Wrapper(void *raw) {
   this->raw = raw;
 }
 
-void Wrapper::InitializeComponent(Handle<v8::Object> target) {
+void Wrapper::InitializeComponent(Local<v8::Object> target) {
   Nan::HandleScope scope;
 
   Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
@@ -42,10 +42,10 @@ NAN_METHOD(Wrapper::JSNewFunction) {
   info.GetReturnValue().Set(info.This());
 }
 
-Handle<v8::Value> Wrapper::New(void *raw) {
+Local<v8::Value> Wrapper::New(void *raw) {
   Nan::EscapableHandleScope scope;
 
-  Handle<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
+  Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
   Local<Object> instance;
   Local<FunctionTemplate> constructorHandle = Nan::New(constructor_template);
   instance = Nan::NewInstance(Nan::GetFunction(constructorHandle).ToLocalChecked(), 1, argv).ToLocalChecked();
@@ -68,7 +68,7 @@ NAN_METHOD(Wrapper::ToBuffer) {
   Local<Function> bufferConstructor = Local<Function>::Cast(
     Nan::Get(Nan::GetCurrentContext()->Global(), Nan::New("Buffer").ToLocalChecked()).ToLocalChecked());
 
-  Handle<v8::Value> constructorArgs[1] = { Nan::New(len) };
+  Local<v8::Value> constructorArgs[1] = { Nan::New(len) };
   Local<Object> nodeBuffer = Nan::NewInstance(bufferConstructor, 1, constructorArgs).ToLocalChecked();
 
   std::memcpy(node::Buffer::Data(nodeBuffer), Nan::ObjectWrap::Unwrap<Wrapper>(info.This())->GetValue(), len);
