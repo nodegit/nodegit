@@ -28,8 +28,9 @@ describe("Stage", function() {
 		return fse.remove(test.repository.workdir());
   });
 
-function stagingTest(staging) {
-    var fileContent = "One line of text\n" +
+function stagingTest(staging, newFileContent) {
+    var fileContent = newFileContent ||
+                      "One line of text\n" +
                       "Two lines of text\n"+
                       "Three lines of text\n"+
                       "Four lines of text\n"+
@@ -137,7 +138,7 @@ function stagingTest(staging) {
       return test.repository.getBlob(pathOid);
     })
     .then(function(resultFileContents) {
-      assert.equal(resultFileContents, stagedFile);
+      assert.equal(resultFileContents.toString(), stagedFile);
     });
   }
 
@@ -146,5 +147,39 @@ function stagingTest(staging) {
   });
   it("can unstage selected lines", function() {
     return stagingTest(false);
+  });
+
+  //This is used to test cases where there are no newline at EOF
+  var newlineEofTestFileContent =
+                  "One line of text\n" +
+                  "Two lines of text\n"+
+                  "Three lines of text\n"+
+                  "Four lines of text\n"+
+                  "Five lines of text\n"+
+                  "Six lines of text\n"+
+                  "Seven lines of text\n"+
+                  "Eight lines of text\n"+
+                  "Nine lines of text\n"+
+                  "Ten lines of text\n"+
+                  "Eleven lines of text\n"+
+                  "Twelve lines of text\n"+
+                  "Thirteen lines of text\n"+
+                  "Fourteen lines of text\n"+
+                  "Fifteen lines of text";
+  it("can stage last line with no newline at EOF", function() {
+    return stagingTest(true, newlineEofTestFileContent);
+  });
+  it("can unstage last line with no newline at EOF", function() {
+    return stagingTest(false, newlineEofTestFileContent);
+  });
+  it("can stage second to last line with no newline at EOF", function() {
+    var newlineEofTestFileContent2 = newlineEofTestFileContent +
+     "\nSixteen lines of text\nSeventeen lines of text\nEighteen lines of text";
+    return stagingTest(true, newlineEofTestFileContent2);
+  });
+  it("can unstage second to last line with no newline at EOF", function() {
+    var newlineEofTestFileContent2 = newlineEofTestFileContent +
+     "\nSixteen lines of text\nSeventeen lines of text\nEighteen lines of text";
+    return stagingTest(false, newlineEofTestFileContent2);
   });
 });
