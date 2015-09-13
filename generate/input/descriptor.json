@@ -895,7 +895,11 @@
     "ignore": {
       "functions": {
         "git_ignore_path_is_ignored": {
-          "ignore": true
+          "args": {
+            "ignored": {
+              "isReturn": true
+            }
+          }
         }
       }
     },
