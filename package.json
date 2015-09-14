@@ -81,7 +81,7 @@
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
     "mocha": "mocha test/runner test/tests",
     "mochaDebug": "mocha --debug-brk test/runner test/tests",
-    "test": "npm run lint && (iojs --expose-gc test || node --expose-gc test)",
+    "test": "npm run lint && node --expose-gc test",
     "generateJson": "node generate/scripts/generateJson",
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "generateMissingTests": "node generate/scripts/generateMissingTests",
