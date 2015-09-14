@@ -512,7 +512,7 @@
         "_REENTRANT",
         "NO_WINDOWS_BRAINDEATH",
       ],
-      "include_dirs": [
+      "include_dirs+": [
         ".",
         "openssl/openssl",
         "openssl/openssl/crypto",
