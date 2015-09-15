@@ -109,9 +109,11 @@ function build() {
     .then(function() {
       console.info("[nodegit] Compilation complete.");
       console.info("[nodegit] Completed installation successfully.");
+      process.exitCode = 0;
     },
     function(err, stderr) {
       console.error(err);
       console.error(stderr);
+      process.exitCode = 13;
     });
 }
