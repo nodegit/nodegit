@@ -97,21 +97,19 @@ function build() {
     target = "--target=" + nwVersion;
   }
 
-  return exec("npm install --ignore-scripts")
-    .then(function() {
-      builder = path.resolve(".", "node_modules", ".bin", builder);
-      builder = builder.replace(/\s/g, "\\$&");
-      var cmd = [prefix, builder, "rebuild", target, debug, distUrl]
-        .join(" ").trim();
+  builder = path.resolve(".", "node_modules", ".bin", builder);
+  builder = builder.replace(/\s/g, "\\$&");
+  var cmd = [prefix, builder, "rebuild", target, debug, distUrl]
+    .join(" ").trim();
 
-      return exec(cmd, opts);
-    })
+  return exec(cmd, opts)
     .then(function() {
-      console.info("[nodegit] Compilation complete.");
-      console.info("[nodegit] Completed installation successfully.");
-    },
-    function(err, stderr) {
-      console.error(err);
-      console.error(stderr);
-    });
+        console.info("[nodegit] Compilation complete.");
+        console.info("[nodegit] Completed installation successfully.");
+      },
+      function(err, stderr) {
+        console.error(err);
+        console.error(stderr);
+      }
+    );
 }
