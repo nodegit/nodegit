@@ -133,13 +133,11 @@
           {% if arg.name == "payload" %}
             {%-- Do nothing --%}
           {% elsif arg.isJsArg %}
-          if (baton->{{ arg.name }} == NULL) {
             {% if arg.cType == "const char *" %}
+          if (baton->{{ arg.name }} == NULL) {
               baton->{{ arg.name }} = "";
-            {% elsif arg.cType == "unsigned int" %}
-              baton->{{ arg.name }} = 0;
-            {% endif %}
           }
+            {% endif %}
           {% endif %}
         {% endeach %}
 
