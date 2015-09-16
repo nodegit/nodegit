@@ -71,7 +71,7 @@ source](http://www.nodegit.org/guides/install/from-source/) instructions.
 ### Cloning a repository and reading a file: ###
 
 ``` javascript
-var clone = require("./").Clone.clone;
+var clone = require("nodegit").Clone.clone;
 
 // Clone a given repository into a specific folder.
 clone("https://github.com/nodegit/nodegit", "tmp", null)
