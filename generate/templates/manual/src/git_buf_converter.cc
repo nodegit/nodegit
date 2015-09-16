@@ -9,7 +9,7 @@
 using namespace v8;
 using namespace node;
 
-git_buf *StrArrayConverter::Convert(Handle<v8::Value> val) {
+git_buf *StrArrayConverter::Convert(Local<v8::Value> val) {
   if (val->IsString() || val->IsStringObject()) {
     string v8String = ConvertString(val->ToString());
     const size_t size = sizeof(git_buf);

@@ -11,8 +11,8 @@
   {% endif %}
 {% endeach %}
 
-extern "C" void init(Handle<v8::Object> target) {
-  NanScope();
+extern "C" void init(Local<v8::Object> target) {
+  Nan::HandleScope scope;
 
   Wrapper::InitializeComponent(target);
   {% each %}

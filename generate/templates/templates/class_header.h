@@ -29,18 +29,18 @@ struct {{ cType }} {
 using namespace node;
 using namespace v8;
 
-class {{ cppClassName }} : public ObjectWrap {
+class {{ cppClassName }} : public Nan::ObjectWrap {
   public:
 
-    static Persistent<Function> constructor_template;
-    static void InitializeComponent (Handle<v8::Object> target);
+    static Nan::Persistent<Function> constructor_template;
+    static void InitializeComponent (Local<v8::Object> target);
 
     {%if cType%}
     {{ cType }} *GetValue();
     {{ cType }} **GetRefValue();
     void ClearValue();
 
-    static Handle<v8::Value> New(void *raw, bool selfFreeing);
+    static Local<v8::Value> New(void *raw, bool selfFreeing);
     {%endif%}
     bool selfFreeing;
 
@@ -66,7 +66,7 @@ class {{ cppClassName }} : public ObjectWrap {
 
       uv_async_t req;
       {{ arg.return.type }} result;
-      Persistent<Object> promise;
+      Nan::Persistent<Object> promise;
       bool done;
     };
           {% endif %}
@@ -87,7 +87,7 @@ class {{ cppClassName }} : public ObjectWrap {
       {% if not function.ignore %}
         {% each function.args as arg %}
           {% if arg.saveArg %}
-    Persistent<Object> {{ function.cppFunctionName }}_{{ arg.name }};
+    Nan::Persistent<Object> {{ function.cppFunctionName }}_{{ arg.name }};
           {% endif %}
         {% endeach %}
       {% endif %}
@@ -119,12 +119,12 @@ class {{ cppClassName }} : public ObjectWrap {
         {%endif%}
       {%endeach%}
     };
-    class {{ function.cppFunctionName }}Worker : public NanAsyncWorker {
+    class {{ function.cppFunctionName }}Worker : public Nan::AsyncWorker {
       public:
         {{ function.cppFunctionName }}Worker(
             {{ function.cppFunctionName }}Baton *_baton,
-            NanCallback *callback
-        ) : NanAsyncWorker(callback)
+            Nan::Callback *callback
+        ) : Nan::AsyncWorker(callback)
           , baton(_baton) {};
         ~{{ function.cppFunctionName }}Worker() {};
         void Execute();
@@ -146,7 +146,7 @@ class {{ cppClassName }} : public ObjectWrap {
     struct {{ function.cppFunctionName }}_globalPayload {
           {%each function.args as arg %}
             {%if arg.isCallbackFunction %}
-      NanCallback * {{ arg.name }};
+      Nan::Callback * {{ arg.name }};
             {%endif%}
           {%endeach%}
 

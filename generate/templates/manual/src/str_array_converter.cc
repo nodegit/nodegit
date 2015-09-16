@@ -9,7 +9,7 @@
 using namespace v8;
 using namespace node;
 
-git_strarray *StrArrayConverter::Convert(Handle<v8::Value> val) {
+git_strarray *StrArrayConverter::Convert(Local<v8::Value> val) {
   if (!val->BooleanValue()) {
     return NULL;
   }
@@ -37,16 +37,16 @@ git_strarray *StrArrayConverter::ConvertArray(Array *val) {
   git_strarray *result = AllocStrArray(val->Length());
 
   for(size_t i = 0; i < result->count; i++) {
-    NanUtf8String entry(val->Get(i));
+    Nan::Utf8String entry(val->Get(i));
     result->strings[i] = strdup(*entry);
   }
 
   return result;
 }
 
-git_strarray* StrArrayConverter::ConvertString(Handle<String> val) {
+git_strarray* StrArrayConverter::ConvertString(Local<String> val) {
   char *strings[1];
-  NanUtf8String utf8String(val);
+  Nan::Utf8String utf8String(val);
 
   strings[0] = *utf8String;
 

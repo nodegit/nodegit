@@ -4,21 +4,21 @@
     {%if not arg.isOptional%}
       {%if not arg.payloadFor %}
         {%if arg | isOid %}
-  if (args.Length() == {{arg.jsArg}}
-    || (!args[{{arg.jsArg}}]->IsObject() && !args[{{arg.jsArg}}]->IsString())) {
-    return NanThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
+  if (info.Length() == {{arg.jsArg}}
+    || (!info[{{arg.jsArg}}]->IsObject() && !info[{{arg.jsArg}}]->IsString())) {
+    return Nan::ThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
   }
         {%elsif arg.isCallbackFunction %}
-  if (args.Length() == {{arg.jsArg}} || !args[{{arg.jsArg}}]->IsFunction()) {
-    return NanThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
+  if (info.Length() == {{arg.jsArg}} || !info[{{arg.jsArg}}]->IsFunction()) {
+    return Nan::ThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
   }
         {%elsif arg.cppClassName == "GitStrarray" %}
-  if (args.Length() == {{arg.jsArg}} || !args[{{arg.jsArg}}]->BooleanValue()) {
-    return NanThrowError("Array, String Object, or string {{arg.name}} is required.");
+  if (info.Length() == {{arg.jsArg}} || !(Nan::To<bool>(info[{{arg.jsArg}}]).FromJust())) {
+    return Nan::ThrowError("Array, String Object, or string {{arg.name}} is required.");
   }
         {%else%}
-  if (args.Length() == {{arg.jsArg}} || !args[{{arg.jsArg}}]->Is{{arg.cppClassName|cppToV8}}()) {
-    return NanThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
+  if (info.Length() == {{arg.jsArg}} || !info[{{arg.jsArg}}]->Is{{arg.cppClassName|cppToV8}}()) {
+    return Nan::ThrowError("{{arg.jsClassName}} {{arg.name}} is required.");
   }
 
         {%endif%}
