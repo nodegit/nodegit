@@ -182,4 +182,35 @@ function stagingTest(staging, newFileContent) {
      "\nSixteen lines of text\nSeventeen lines of text\nEighteen lines of text";
     return stagingTest(false, newlineEofTestFileContent2);
   });
+
+  //This is used to test case where the last hunk is staged.
+  var lastHunkStagedFileContent =
+                "Thirteen lines of text\n"+
+                "Fourteen lines of text\n"+
+                "Fifteen lines of text\n"+
+                "Sixteen lines of text\n"+
+                "Shforteenteen lines of text\n";
+
+  it("staging last hunk stagse whole file if no filemode changes", function() {
+    return stagingTest(true, lastHunkStagedFileContent)
+      .then(function() {
+        return test.repository.openIndex();
+      })
+      .then(function(index) {
+        return NodeGit.Diff.indexToWorkdir(test.repository, index, {
+            flags:
+              NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
+              NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
+          });
+      })
+      .then(function(diff) {
+        assert.equal(Object.keys(diff).length, 0);  //Empty diff
+        return diff.patches();
+      })
+      .then(function(patches) {
+        //patches will have at least one item if there is something unstaged
+        assert.equal(patches.length, 0);
+      });
+
+  });
 });
