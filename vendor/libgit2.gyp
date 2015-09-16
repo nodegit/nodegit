@@ -22,7 +22,7 @@
       ],
       "dependencies": [
         "zlib",
-        "<(module_root_dir)/vendor/http_parser/http_parser.gyp:http_parser",
+        "http_parser/http_parser.gyp:http_parser",
         "libssh2",
         "openssl"
       ],
@@ -302,9 +302,6 @@
               "AdditionalDependencies": [
                 "ws2_32.lib"
               ],
-            },
-            "VCCLCompilerTool": {
-                "ObjectFile": "$(IntDir)/%(RelativeDir)/"
             },
             # Workaround of a strange bug:
             # TargetMachine + static_library + x64 = nothing.

@@ -9,13 +9,6 @@
 /lib/nodegit.js
 /coverage/
 
-
-/vendor/Release
-/vendor/Debug
-/vendor/*.vcxproj
-/vendor/*.filters
-/vendor/*.sln
-
 /generate/output
 /generate/**/*.json
 !/generate/input/*.json

@@ -6,7 +6,7 @@
       "target_name": "nodegit",
 
       "dependencies": [
-        "<(module_root_dir)/vendor/libgit2.gyp:libgit2"
+        "vendor/libgit2.gyp:libgit2"
       ],
 
       "variables": {
