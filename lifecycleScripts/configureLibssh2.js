@@ -10,9 +10,9 @@ module.exports = function retrieveExternalDependencies() {
 
   return new Promise(function(resolve, reject) {
     console.info("[nodegit] Configuring libssh2.");
-    cp.execFile(
-      rooted("vendor/libssh2/") + "configure",
-      {cwd: rooted("vendor/libssh2/")},
+    cp.spawn(
+      rooted("vendor/libssh2/") + "configure", [],
+      {cwd: rooted("vendor/libssh2/"), stdio: [0,1,2] },
       function(err, stdout, stderr) {
         if (err) {
           console.error(err);
