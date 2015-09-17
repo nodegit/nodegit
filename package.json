@@ -75,9 +75,9 @@
   "scripts": {
     "lint": "jshint lib test/tests test/utils examples lifecycleScripts",
     "coveralls": "cat ./test/coverage/merged.lcov | coveralls",
-    "filtercov": "lcov --extract test/coverage/cpp/lcov_full.info $(pwd)/src/* $(pwd)/src/**/* $(pwd)/include/* $(pwd)/include/**/* --output-file test/coverage/cpp/lcov.info && rm test/coverage/cpp/lcov_full.info",
-    "cppcov": "mkdir -p test/coverage/cpp && lcov --gcov-tool $(which gcov) --capture --directory build/Release/obj.target/nodegit/src --output-file test/coverage/cpp/lcov_full.info",
-    "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
+    "filtercov": "./lcov-1.10/bin/lcov --extract test/coverage/cpp/lcov_full.info $(pwd)/src/* $(pwd)/src/**/* $(pwd)/include/* $(pwd)/include/**/* --output-file test/coverage/cpp/lcov.info && rm test/coverage/cpp/lcov_full.info",
+    "cppcov": "mkdir -p test/coverage/cpp && ./lcov-1.10/bin/lcov --gcov-tool /usr/bin/gcov-4.9 --capture --directory build/Release/obj.target/nodegit/src --output-file test/coverage/cpp/lcov_full.info",
+    "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
     "mocha": "mocha test/runner test/tests",
     "mochaDebug": "mocha --debug-brk test/runner test/tests",

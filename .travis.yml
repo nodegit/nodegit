@@ -1,3 +1,12 @@
+sudo: false
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.9
+      - g++-4.9
+      - lcov
 env:
   matrix:
     - export NODE_VERSION="0.12"
@@ -10,23 +19,12 @@ before_install:
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
-      sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
-      sudo apt-get update;
-      sudo apt-get install gcc-4.9 g++-4.9 lcov;
-      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20;
-      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 20;
-      sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 20;
-      sudo update-alternatives --config gcc;
-      sudo update-alternatives --config g++;
-      sudo update-alternatives --config gcov;
-      wget http://downloads.sourceforge.net/ltp/lcov-1.10.tar.gz;
-      tar xvfz lcov-1.10.tar.gz;
-      sudo cp -v lcov-1.10/bin/{lcov,genpng,gendesc,genhtml,geninfo} /usr/bin/;
-      sudo chmod 777 /usr/bin/lcov /usr/bin/genhtml /usr/bin/geninfo /usr/bin/genpng /usg/bin/gendesc;
-      rm -rf lcov-1.10.tar.gz lcov-1.10;
-      sudo mv -v `which gcov-4.8` `which gcov`;
       export GYP_DEFINES="coverage=1";
       export JOBS=4;
+      export CC=/usr/bin/gcc-4.9;
+      export CXX=/usr/bin/g++-4.9;
+      wget http://downloads.sourceforge.net/ltp/lcov-1.10.tar.gz;
+      tar xvfz lcov-1.10.tar.gz;
     fi
   - BUILD_ONLY=true npm install
 # This is a random private key used purely for testing.
