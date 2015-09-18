@@ -45,6 +45,16 @@ describe("Config", function() {
       });
   });
 
+  it("will continue after attempting to get empty config value", function() {
+    return NodeGit.Config.openDefault()
+      .then(function(config) {
+        return config.getString("user.fakevalue");
+      })
+      .catch(function (e) {
+        return true;
+      });
+  });
+
   it("can get and set a repo config value", function() {
     var savedUserName;
 
