@@ -21,7 +21,7 @@ describe("Config", function() {
       return exec("git config --global user.name \"" + savedUserName + "\"");
     }
 
-    return exec("git config --global user.name" + dummyUserName)
+    return exec("git config --global user.name \"" + dummyUserName + "\"")
       .then(function(userName) {
         savedUserName = userName.trim();
 
