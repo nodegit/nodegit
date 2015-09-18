@@ -15,13 +15,12 @@ describe("Config", function() {
 
   it("can get and set a global value", function() {
     var savedUserName;
-    var dummyUserName = "Dummy O'Fakey";
 
     function finallyFn() {
       return exec("git config --global user.name \"" + savedUserName + "\"");
     }
 
-    return exec("git config --global user.name \"" + dummyUserName + "\"")
+    return exec("git config --global user.name")
       .then(function(userName) {
         savedUserName = userName.trim();
 

@@ -45,6 +45,10 @@ before(function() {
     })
     .then(function() {
       return fse.mkdir(local("home"));
+    })
+    .then(function() {
+      return fse.writeFile(local("home", ".gitconfig"),
+        "[user]\n  name = John Doe\n  email = johndoe@example.com");
     });
 });
 
