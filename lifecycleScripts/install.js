@@ -85,7 +85,7 @@ function build() {
     var home = process.platform == "win32" ?
             process.env.USERPROFILE : process.env.HOME;
 
-    opts.envHOME = path.join(home, ".atom-shell-gyp");
+    opts.env.HOME = path.join(home, ".atom-shell-gyp");
 
     target = "--target=" + asVersion;
 
