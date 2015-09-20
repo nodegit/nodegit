@@ -76,16 +76,16 @@ function build() {
     env: process.env
   };
 
-  var prefix = "";
   var target = "";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
   var builder = "node-gyp";
   var distUrl = "";
 
   if (asVersion) {
-    prefix = (process.platform == "win32" ?
-      "SET HOME=%HOME%\\.atom-shell-gyp&& " :
-      "HOME=~/.atom-shell-gyp");
+    var home = process.platform == "win32" ?
+            process.env.USERPROFILE : process.env.HOME;
+
+    opts.envHOME = path.join(home, ".atom-shell-gyp");
 
     target = "--target=" + asVersion;
 
@@ -99,7 +99,7 @@ function build() {
 
   builder = path.resolve(".", "node_modules", ".bin", builder);
   builder = builder.replace(/\s/g, "\\$&");
-  var cmd = [prefix, builder, "rebuild", target, debug, distUrl]
+  var cmd = [builder, "rebuild", target, debug, distUrl]
     .join(" ").trim();
 
   return exec(cmd, opts)
