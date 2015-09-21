@@ -16,6 +16,9 @@ before(function() {
   var url = "https://github.com/nodegit/test";
   return fse.remove(local("repos"))
     .then(function() {
+      fse.remove(local("home"))
+    })
+    .then(function() {
       fse.mkdir(local("repos"));
     })
     .then(function() {
@@ -39,6 +42,13 @@ before(function() {
     .then(function() {
       return fse.writeFile(local("repos", "nonrepo", "file.txt"),
         "This is a bogus file");
+    })
+    .then(function() {
+      return fse.mkdir(local("home"));
+    })
+    .then(function() {
+      return fse.writeFile(local("home", ".gitconfig"),
+        "[user]\n  name = John Doe\n  email = johndoe@example.com");
     });
 });
 
