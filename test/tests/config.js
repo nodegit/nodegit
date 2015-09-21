@@ -45,7 +45,9 @@ describe("Config", function() {
       });
   });
 
-  it("will continue after attempting to get empty config value", function() {
+  it("will reject when getting value of non-existent config key", function() {
+    // Test initially for finding source of a segfault. There was a problem
+    // where getting an empty config value crashes nodegit.
     return NodeGit.Config.openDefault()
       .then(function(config) {
         return config.getString("user.fakevalue");
