@@ -184,7 +184,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
     {%endif%}
     {%if arg.cppClassName == "GitBuf" %}
-  if (baton->{{ arg.name }}->ptr) free((void *)baton->{{ arg.name }}->ptr);
+  git_buf_free(baton->{{ arg.name }});
   free((void *)baton->{{ arg.name }});
     {%endif%}
   {%endeach%}
