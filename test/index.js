@@ -15,9 +15,11 @@ var args = cov.concat([
   "--expose-gc"
 ]);
 
-var local = path.join.bind(path, __dirname);
-var dummyPath = local("home");
-process.env.HOME = dummyPath;
-process.env.USERPROFILE = dummyPath;
+if (!process.env.APPVEYOR && !process.env.TRAVIS) {
+  var local = path.join.bind(path, __dirname);
+  var dummyPath = local("home");
+  process.env.HOME = dummyPath;
+  process.env.USERPROFILE = dummyPath;
+}
 
 fork(bin, args, { cwd: path.join(__dirname, "../") }).on("close", process.exit);
