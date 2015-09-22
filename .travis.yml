@@ -10,7 +10,7 @@ addons:
 env:
   matrix:
     - export NODE_VERSION="0.12"
-    - export NODE_VERSION="4.0"
+    - export NODE_VERSION="4.1"
 matrix:
   fast_finish: true
 before_install:
