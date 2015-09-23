@@ -4,7 +4,7 @@ var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
-describe("Stage", function() {
+describe.only("Stage", function() {
   var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
 	var test;
@@ -82,7 +82,7 @@ function stagingTest(staging, newFileContent) {
           })
           .then(function(masterTree) {
             return NodeGit.Diff.treeToIndex(
-							test.repository, masterTree, index, {
+              test.repository, masterTree, index, {
               flags:
                 NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
                 NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
@@ -191,7 +191,7 @@ function stagingTest(staging, newFileContent) {
                 "Sixteen lines of text\n"+
                 "Shforteenteen lines of text\n";
 
-  it("staging last hunk stagse whole file if no filemode changes", function() {
+  it("staging last hunk stages whole file if no filemode changes", function() {
     return stagingTest(true, lastHunkStagedFileContent)
       .then(function() {
         return test.repository.openIndex();
@@ -211,6 +211,48 @@ function stagingTest(staging, newFileContent) {
         //patches will have at least one item if there is something unstaged
         assert.equal(patches.length, 0);
       });
+  });
+
+  it("can stage filemode changes", function() {
+    var fileContent = "Blek";
+    var fileName = "stageFilemodeTest.txt";
+    var index;
+
+    return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
+    .then(function() {
+      return fse.chmod(path.join(test.repository.workdir(), fileName), 0777);
+    })
+    .then(function() {
+      return test.repository.openIndex();
+    })
+    .then(function(repoIndex) {
+      index = repoIndex;
+      return RepoUtils.addFileToIndex(test.repository, fileName)
+        .then(function() {
+          return test.repository.getBranchCommit("master");
+        })
+        .then(function(masterCommit) {
+          return masterCommit.getTree();
+        })
+        .then(function(masterTree) {
+          return NodeGit.Diff.treeToIndex(
+            test.repository, masterTree, index, {
+            flags:
+              NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
+              NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
+          });
+        });
+    })
+    .then(function(fileDiff) {
+      console.log(fileDiff);
+      return fileDiff.patches();
+    })
+    .then(function(patches) {
+      var pathPatch = patches.filter(function(patch) {
+        return patch.newFile().path() === fileName;
+      });
+      return pathPatch[0].hunks();
+    });
 
   });
 });
