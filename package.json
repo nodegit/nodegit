@@ -61,10 +61,10 @@
   },
   "vendorDependencies": {
     "libgit2": {
-      "sha": "2cb4b6534fbcbe600ecf3db95ba19e4525c8d4b8",
-      "version": "0.23.1"
+      "sha": "2de198b4cec26c2b54c06da4baf88b3f57b9ca86",
+      "version": "0.23.2"
     },
-    "libssh2": "1.4.3",
+    "libssh2": "1.6.0",
     "http_parser": "2.5.0"
   },
   "binary": {
