@@ -213,23 +213,78 @@ function stagingTest(staging, newFileContent) {
       });
   });
 
-  function stagingFilemodeTest(staging) {
-    var getDiffFunction;
+  it("can stage filemode changes", function() {
     var fileContent = "Blek";
     var fileName = "stageFilemodeTest.txt";
     var index;
-
-    if (staging) {
-      getDiffFunction = function() {
-        return NodeGit.Diff.indexToWorkdir(test.repository, index, {
-            flags:
-              NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
-              NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
-          });
+    var diffPromise = function() {
+      return NodeGit.Diff.indexToWorkdir(test.repository, index, {
+          flags:
+            NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
+            NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
+        });
       };
-    }
-    else {
-      getDiffFunction = function() {
+
+    return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
+    .then(function() {
+      //First, create a file, have the same file in both the repo and workdir.
+      //Then, change the permission.
+      return fse.writeFile(path.join(test.repository.workdir(), fileName),
+                            fileContent)
+        .then(function() {
+          return fse.chmod(path.join(test.repository.workdir(), fileName), 
+            0777);
+        });
+    })
+    .then(function() {
+      return test.repository.openIndex();
+    })
+    .then(function(repoIndex) {
+      index = repoIndex;
+      return diffPromise();
+    })
+    .then(function(fileDiff) {
+      return fileDiff.getDelta(0);
+    })
+    .then(function(delta) {
+      //Stage filemode change
+      assert(delta.newFile().mode() - delta.oldFile().mode() === 0111);
+      return test.repository.stageFilemode(fileName, true);
+    })
+    .then(function() {
+      //Now lets do a commit...
+      return test.repository.openIndex();
+    })
+    .then(function(repoIndex) {
+      index = repoIndex;
+      index.read(1);
+      return index.writeTree();
+    })
+    .then(function (oid) {
+      var signature = NodeGit.Signature.create("Foo bar",
+        "foo@bar.com", 123456789, 60);
+      return test.repository.createCommit("HEAD", signature, signature,
+          "initial commit", oid, []);
+      //... alright, we did a commit.
+    })
+    .then(function() {
+      //Now if we compare HEAD to 
+      return diffPromise();
+    })
+    .then(function(fileDiff) {
+      return fileDiff.getDelta(0);
+    })
+    .then(function(delta) {
+      assert(!delta);
+    });
+  });
+
+  it("can unstage filemode changes", function() {
+    var fileContent = "Blek";
+    var fileName = "stageFilemodeTest2.txt";
+    var index;
+    var oldFilemode;
+    var diffPromise = function() {
         return RepoUtils.addFileToIndex(test.repository, fileName)
           .then(function() {
             return test.repository.getBranchCommit("master");
@@ -246,7 +301,6 @@ function stagingTest(staging, newFileContent) {
             });
           });
       };
-    }
 
     return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
     .then(function() {
@@ -254,7 +308,7 @@ function stagingTest(staging, newFileContent) {
                             fileContent)
         .then(function() {
           return fse.chmod(path.join(test.repository.workdir(), fileName), 
-            0777);
+            0100755);
         });
     })
     .then(function() {
@@ -262,27 +316,36 @@ function stagingTest(staging, newFileContent) {
     })
     .then(function(repoIndex) {
       index = repoIndex;
-      return getDiffFunction();
+      return diffPromise();
     })
     .then(function(fileDiff) {
-      return fileDiff.patches();
+      return fileDiff.getDelta(0);
     })
-    .then(function(patches) {
-      assert(patches[0].newFile().mode() - patches[0].oldFile().mode() === 
+    .then(function(delta) {
+      oldFilemode = delta.oldFile().mode();
+      assert(delta.newFile().mode() - delta.oldFile().mode() === 
         0111);
-      var pathPatch = patches.filter(function(patch) {
-        return patch.newFile().path() === fileName;
-      });
-      return pathPatch[0].hunks();
+
+      return test.repository.openIndex();
+    })
+    .then(function(repoIndex) {
+      index = repoIndex;
+      return index.entries();
+    })
+    .then(function(entries) {
+      assert(entries[0].mode == 0100755);
+      return test.repository.stageFilemode(fileName, false);
+    })
+    .then(function() {
+      return test.repository.openIndex();
+    })
+    .then(function(repoIndex) {
+      index = repoIndex;
+      return index.entries();
+    })
+    .then(function(entries) {
+      assert(entries[0].mode == oldFilemode);
     });
-  }
-
-  it("can stage filemode changes", function() {
-    return stagingFilemodeTest(false);
-  });
-
-  it("can unstage filemode changes", function() {
-    return stagingFilemodeTest(true);
   });
 
 });
