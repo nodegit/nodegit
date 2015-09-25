@@ -235,7 +235,7 @@ function stagingTest(staging, newFileContent) {
       })
       .then(function(delta) {
         if (fileModeDifference === 0) {
-          if (!delta.oldFile && !delta.newFile) {
+          if (!delta) {
             return true;
           } else {
             throw ("File change when no file change expected.");
@@ -287,7 +287,7 @@ function stagingTest(staging, newFileContent) {
           "initial commit", oid, []);
       //... alright, we did a commit.
     })
-    //Now if we compare HEAD to index, there should be a filemode change
+    //Now if we compare head commit to index, there should be a filemode change
     .then(function() {
       return compareFilemodes(false, index, 0111 /* expect +x */);
     });
@@ -297,68 +297,46 @@ function stagingTest(staging, newFileContent) {
     var fileContent = "Blek";
     var fileName = "stageFilemodeTest2.txt";
     var index;
-    var oldFilemode;
-    var diffPromise = function() {
-        return RepoUtils.addFileToIndex(test.repository, fileName)
-          .then(function() {
-            return test.repository.getBranchCommit("master");
-          })
-          .then(function(masterCommit) {
-            return masterCommit.getTree();
-          })
-          .then(function(masterTree) {
-            return NodeGit.Diff.treeToIndex(
-              test.repository, masterTree, index, {
-              flags:
-                NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
-                NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
-            });
-          });
-      };
 
     return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
     .then(function() {
+      //First, create a file, have the same file in both the repo and workdir.
       return fse.writeFile(path.join(test.repository.workdir(), fileName),
                             fileContent)
         .then(function() {
+          //Then, change the permission locally.
           return fse.chmod(path.join(test.repository.workdir(), fileName), 
-            0100755);
+            0755 /* new filemode */);
         });
     })
+    //Then, diff between head commit and workdir should contain filemode change
     .then(function() {
-      return test.repository.openIndex();
-    })
-    .then(function(repoIndex) {
-      index = repoIndex;
-      return diffPromise();
-    })
-    .then(function(fileDiff) {
-      return fileDiff.getDelta(0);
-    })
-    .then(function(delta) {
-      oldFilemode = delta.oldFile().mode();
-      assert(delta.newFile().mode() - delta.oldFile().mode() === 
-        0111);
-
-      return test.repository.openIndex();
-    })
-    .then(function(repoIndex) {
-      index = repoIndex;
-      return index.entries();
-    })
-    .then(function(entries) {
-      assert(entries[0].mode == 0100755);
-      return test.repository.stageFilemode(fileName, false);
+      return compareFilemodes(true, null, 0111 /* expect +x */);
     })
     .then(function() {
       return test.repository.openIndex();
     })
     .then(function(repoIndex) {
+      //Now we stage the whole file...
       index = repoIndex;
-      return index.entries();
+      index.addByPath(fileName);
+      return index.write();
     })
-    .then(function(entries) {
-      assert(entries[0].mode == oldFilemode);
+    .then(function() {
+      //We expect the Index to have the filemode changes now.
+      return compareFilemodes(false, index, 0111 /* expect +x */)
+        .then(function() {
+          //...then we attempt to unstage filemode
+          return test.repository.stageFilemode(fileName, false /* unstage */);
+        });
+    })
+    //We expect the Index to have no filemode changes, since we unstaged.
+    .then(function() {
+      return compareFilemodes(false, index, 0 /* expect +x */);
+    })
+    //We also expect the workdir to now have the filemode change.
+    .then(function() {
+      return compareFilemodes(true, null, 0111 /* expect +x */);
     });
   });
 
