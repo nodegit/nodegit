@@ -248,96 +248,100 @@ function stagingTest(staging, newFileContent) {
       });
   }
 
-  it("can stage filemode changes", function() {
-    var fileContent = "Blek";
-    var fileName = "stageFilemodeTest.txt";
-    var index;
+  if (process.platform == "linux" || process.platform == "darwin") {
+    it("can stage filemode changes", function() {
+      var fileContent = "Blek";
+      var fileName = "stageFilemodeTest.txt";
+      var index;
 
-    return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
-    .then(function() {
-      //First, create a file, have the same file in both the repo and workdir.
-      return fse.writeFile(path.join(test.repository.workdir(), fileName),
-                            fileContent)
-        .then(function() {
-          //Then, change the permission locally.
-          return fse.chmod(path.join(test.repository.workdir(), fileName), 
-            0755 /* new filemode */);
-        });
-    })
-    //Then, diff between head commit and workdir should contain filemode change
-    .then(function() {
-      return compareFilemodes(true, null, 0111 /* expect +x */)
-        .then(function() {
-          return test.repository.stageFilemode(fileName, true);
-        });
-    })
-    //Now lets do a commit...
-    .then(function() {
-      return test.repository.openIndex();
-    })
-    .then(function(repoIndex) {
-      index = repoIndex;
-      index.read(1);
-      return index.writeTree();
-    })
-    .then(function (oid) {
-      var signature = NodeGit.Signature.create("Foo bar",
-        "foo@bar.com", 123456789, 60);
-      return test.repository.createCommit("HEAD", signature, signature,
-          "initial commit", oid, []);
-      //... alright, we did a commit.
-    })
-    //Now if we compare head commit to index, there should be a filemode change
-    .then(function() {
-      return compareFilemodes(false, index, 0111 /* expect +x */);
+      return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
+      .then(function() {
+        //First, create a file, have the same file in both the repo and workdir.
+        return fse.writeFile(path.join(test.repository.workdir(), fileName),
+                              fileContent)
+          .then(function() {
+            //Then, change the permission locally.
+            return fse.chmod(path.join(test.repository.workdir(), fileName), 
+              0755 /* new filemode */);
+          });
+      })
+      //Then, diff between head commit and workdir should have filemode change
+      .then(function() {
+        return compareFilemodes(true, null, 0111 /* expect +x */)
+          .then(function() {
+            return test.repository.stageFilemode(fileName, true);
+          });
+      })
+      //Now lets do a commit...
+      .then(function() {
+        return test.repository.openIndex();
+      })
+      .then(function(repoIndex) {
+        index = repoIndex;
+        index.read(1);
+        return index.writeTree();
+      })
+      .then(function (oid) {
+        var signature = NodeGit.Signature.create("Foo bar",
+          "foo@bar.com", 123456789, 60);
+        return test.repository.createCommit("HEAD", signature, signature,
+            "initial commit", oid, []);
+        //... alright, we did a commit.
+      })
+      //Now if we compare head commit to index, should be a filemode change
+      .then(function() {
+        return compareFilemodes(false, index, 0111 /* expect +x */);
+      });
     });
-  });
 
-  it("can unstage filemode changes", function() {
-    var fileContent = "Blek";
-    var fileName = "stageFilemodeTest2.txt";
-    var index;
+    it("can unstage filemode changes", function() {
+      var fileContent = "Blek";
+      var fileName = "stageFilemodeTest2.txt";
+      var index;
 
-    return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
-    .then(function() {
-      //First, create a file, have the same file in both the repo and workdir.
-      return fse.writeFile(path.join(test.repository.workdir(), fileName),
-                            fileContent)
-        .then(function() {
-          //Then, change the permission locally.
-          return fse.chmod(path.join(test.repository.workdir(), fileName), 
-            0755 /* new filemode */);
-        });
-    })
-    //Then, diff between head commit and workdir should contain filemode change
-    .then(function() {
-      return compareFilemodes(true, null, 0111 /* expect +x */);
-    })
-    .then(function() {
-      return test.repository.openIndex();
-    })
-    .then(function(repoIndex) {
-      //Now we stage the whole file...
-      index = repoIndex;
-      index.addByPath(fileName);
-      return index.write();
-    })
-    .then(function() {
-      //We expect the Index to have the filemode changes now.
-      return compareFilemodes(false, index, 0111 /* expect +x */)
-        .then(function() {
-          //...then we attempt to unstage filemode
-          return test.repository.stageFilemode(fileName, false /* unstage */);
-        });
-    })
-    //We expect the Index to have no filemode changes, since we unstaged.
-    .then(function() {
-      return compareFilemodes(false, index, 0 /* expect +x */);
-    })
-    //We also expect the workdir to now have the filemode change.
-    .then(function() {
-      return compareFilemodes(true, null, 0111 /* expect +x */);
+      return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
+      .then(function() {
+        //First, create a file, have the same file in both the repo and workdir.
+        return fse.writeFile(path.join(test.repository.workdir(), fileName),
+                              fileContent)
+          .then(function() {
+            //Then, change the permission locally.
+            return fse.chmod(path.join(test.repository.workdir(), fileName), 
+              0755 /* new filemode */);
+          });
+      })
+      //Then, diff between head commit and workdir should have filemode change
+      .then(function() {
+        return compareFilemodes(true, null, 0111 /* expect +x */);
+      })
+      .then(function() {
+        return test.repository.openIndex();
+      })
+      .then(function(repoIndex) {
+        //Now we stage the whole file...
+        index = repoIndex;
+        index.addByPath(fileName);
+        return index.write();
+      })
+      .then(function() {
+        //We expect the Index to have the filemode changes now.
+        return compareFilemodes(false, index, 0111 /* expect +x */)
+          .then(function() {
+            //...then we attempt to unstage filemode
+            return test.repository.stageFilemode(fileName, false /* unstage */);
+          });
+      })
+      //We expect the Index to have no filemode changes, since we unstaged.
+      .then(function() {
+        return compareFilemodes(false, index, 0 /* expect +x */);
+      })
+      //We also expect the workdir to now have the filemode change.
+      .then(function() {
+        return compareFilemodes(true, null, 0111 /* expect +x */);
+      });
     });
-  });
+  } else {
+    //TODO = Windows versions of filemode tests
+  }
 
 });
