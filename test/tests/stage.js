@@ -4,6 +4,10 @@ var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
+var exec = promisify(function(command, opts, callback) {
+  return require("child_process").exec(command, opts, callback);
+});
+
 describe("Stage", function() {
   var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
@@ -340,8 +344,50 @@ function stagingTest(staging, newFileContent) {
         return compareFilemodes(true, null, 0111 /* expect +x */);
       });
     });
-  } else {
-    //TODO = Windows versions of filemode tests
+  } else if (process.platform == "win32") {
+    it("can stage/unstage filemode changes", function() {
+      var fileContent = "Blek";
+      var fileName = "stageFilemodeTest.txt";
+      var index;
+
+      return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
+      .then(function() {
+        //First, create a file, have the same file in both the repo and workdir.
+        return fse.writeFile(path.join(test.repository.workdir(), fileName),
+                              fileContent)
+          .then(function() {
+            //Then, change the permission on index
+            return exec("git update-index --chmod=+x " + fileName,
+              {cwd: test.repository.workdir()});
+          })
+          .then(function() {
+          //Then, change the permission on index
+          return exec("git commit -m 'test'",
+            {cwd: test.repository.workdir()});
+          })
+          .then(function() {
+          //Then, change the permission on index
+          return exec("git update-index --chmod=-x " + fileName,
+            {cwd: test.repository.workdir()});
+          });
+      })
+      .then(function() {
+        return test.repository.openIndex();
+      })
+      .then(function(repoIndex) {
+        index = repoIndex;
+        //Head commit vs index
+        //We expect the Index to have +x
+        return compareFilemodes(false, index, -0111 /* expect +x */);
+      })
+      .then(function() {
+        //...then we attempt to unstage filemode
+        return test.repository.stageFilemode(fileName, false /* unstage */);
+      })
+      .then(function() {
+        return compareFilemodes(false, index, 0 /* expect nochange */);
+      });
+    });
   }
 
 });
