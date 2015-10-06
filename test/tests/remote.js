@@ -252,7 +252,10 @@ describe("Remote", function() {
         var options = {
           callbacks: {
             credentials: function(url, userName) {
-              return Promise.reject();
+              return Promise.resolve()
+                .then(Promise.resolve)
+                .then(Promise.resolve)
+                .then(Promise.reject);
             },
             certificateCheck: function() {
               return 1;
