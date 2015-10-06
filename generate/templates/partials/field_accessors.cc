@@ -258,7 +258,7 @@
         else {
           // promise was rejected
           baton->result = {{ field.return.error }};
-          baton->done = false;
+          baton->done = true;
         }
 
         uv_close((uv_handle_t*) &baton->req, NULL);

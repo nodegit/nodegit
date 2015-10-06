@@ -168,7 +168,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   else {
     // promise was rejected
     baton->result = {{ cbFunction.return.error }};
-    baton->done = false;
+    baton->done = true;
   }
 
   uv_close((uv_handle_t*) &baton->req, NULL);
