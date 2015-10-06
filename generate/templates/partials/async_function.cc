@@ -139,6 +139,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
+    } else if (baton->error_code < 0) {
+      Local<v8::Value> argv[1] = {
+        Nan::Error("A general error has occurred")
+      };
+      callback->Call(1, argv);
     } else {
       callback->Call(0, NULL);
     }

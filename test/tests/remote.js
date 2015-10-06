@@ -241,6 +241,40 @@ describe("Remote", function() {
     });
   });
 
+  it("will reject if credentials promise rejects", function() {
+    this.timeout(5000);
+    var repo = this.repository;
+    var branch = "should-not-exist";
+    return Remote.lookup(repo, "origin")
+      .then(function(remote) {
+        var ref = "refs/heads/" + branch;
+        var refs = [ref + ":" + ref];
+        var options = {
+          callbacks: {
+            credentials: function(url, userName) {
+              return Promise.reject();
+            },
+            certificateCheck: function() {
+              return 1;
+            }
+          }
+        };
+        return remote.push(refs, options);
+      })
+      // takes care of windows bug, see the .catch for the proper pathway
+      // that this flow should take (cred cb doesn't run twice -> throws error)
+      .then(function() {
+        return Promise.reject(
+          new Error("should not be able to push to the repository"));
+      }, function(err) {
+        if (err.message === "A general error has occurred") {
+          return Promise.resolve();
+        } else {
+          throw err;
+        }
+      });
+  });
+
   it("cannot push to a repository with invalid credentials", function() {
     this.timeout(5000);
     var repo = this.repository;
@@ -249,19 +283,13 @@ describe("Remote", function() {
       .then(function(remote) {
         var ref = "refs/heads/" + branch;
         var refs = [ref + ":" + ref];
-        var firstPass = true;
         var options = {
           callbacks: {
             credentials: function(url, userName) {
-              if (firstPass) {
-                firstPass = false;
-                if (url.indexOf("https") === -1) {
-                  return NodeGit.Cred.sshKeyFromAgent(userName);
-                } else {
-                    return NodeGit.Cred.userpassPlaintextNew(userName, "");
-                }
+              if (url.indexOf("https") === -1) {
+                return NodeGit.Cred.sshKeyFromAgent(userName);
               } else {
-                return NodeGit.Cred.defaultNew();
+                return NodeGit.Cred.userpassPlaintextNew(userName, "");
               }
             },
             certificateCheck: function() {
