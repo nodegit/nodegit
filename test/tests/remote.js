@@ -270,7 +270,9 @@ describe("Remote", function() {
         return Promise.reject(
           new Error("should not be able to push to the repository"));
       }, function(err) {
-        if (err.message === "A general error has occurred") {
+        if (err.errno === NodeGit.Error.CODE.ERROR &&
+          err.message === "Method push has thrown an error.")
+        {
           return Promise.resolve();
         } else {
           throw err;

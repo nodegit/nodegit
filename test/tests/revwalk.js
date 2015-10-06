@@ -1,6 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
+var Promise = require("nodegit-promise");
 
 describe("Revwalk", function() {
   var NodeGit = require("../../");
@@ -125,7 +126,7 @@ describe("Revwalk", function() {
 
       repository.getMasterCommit().then(function(firstCommitOnMaster) {
         walker.walk(firstCommitOnMaster, function(err, commit) {
-          if (!err && !commit) {
+          if (err && err.errno === NodeGit.Error.CODE.ITEROVER) {
             return done();
           }
 
@@ -152,7 +153,13 @@ describe("Revwalk", function() {
         promise = promise.then(getNext);
       }
     }
-    return promise;
+    return promise.catch(function(error) {
+      if (error && error.errno === NodeGit.Error.CODE.ITEROVER) {
+        return Promise.resolve();
+      } else {
+        throw error;
+      }
+    });
 
     function getNext() {
       return walker.next();

@@ -140,8 +140,10 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
+      Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
+      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
       Local<v8::Value> argv[1] = {
-        Nan::NanErrnoException(baton->error_code, NULL, "A general error has occurred")
+        err
       };
       callback->Call(1, argv);
     } else {
