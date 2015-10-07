@@ -13,6 +13,7 @@ var exec = promisify(function(command, opts, callback) {
 describe("Commit", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
+  var Diff = NodeGit.Diff;
 
   var reposPath = local("../repos/workdir");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
@@ -27,6 +28,56 @@ describe("Commit", function() {
       .then(function(commit) {
         test.commit = commit;
       });
+  }
+
+  function commitFile(repo, fileName, fileContent, commitMessage) {
+    var index;
+    var treeOid;
+    var parent;
+
+    return fse.writeFile(path.join(repo.workdir(), fileName), fileContent)
+    .then(function() {
+      return repo.openIndex();
+    })
+    .then(function(indexResult) {
+      index = indexResult;
+      return index.read(1);
+    })
+    .then(function() {
+      return index.addByPath(fileName);
+    })
+    .then(function() {
+      return index.write();
+    })
+    .then(function() {
+      return index.writeTree();
+    })
+    .then(function(oidResult) {
+      treeOid = oidResult;
+      return NodeGit.Reference.nameToId(repo, "HEAD");
+    })
+    .then(function(head) {
+      return repo.getCommit(head);
+    })
+    .then(function(parentResult) {
+      parent = parentResult;
+      return Promise.all([
+        NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
+        NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
+      ]);
+    })
+    .then(function(signatures) {
+      var author = signatures[0];
+      var committer = signatures[1];
+
+      return repo.createCommit(
+        "HEAD",
+        author,
+        committer,
+        "message",
+        treeOid,
+        [parent]);
+    });
   }
 
   function undoCommit() {
@@ -440,6 +491,102 @@ describe("Commit", function() {
   it("can get the commit diff", function() {
     return this.commit.getDiff().then(function(diff) {
       assert.equal(diff.length, 1);
+    });
+  });
+
+  // it("can get the commit diff in large context", function() {
+    // For displaying the full file we can set context_lines of options.
+    // Eventually this should work, but right now there is a
+    // comment in diff.c in libgit2 of "/* TODO: parse thresholds */"
+    // It will add the "--unified" but not with the "=x" part.
+    // options.context_lines = 20000;
+  // });
+
+  it("can get the commit diff without whitespace", function() {
+    var repo;
+    var options = {};
+    var GIT_DIFF_IGNORE_WHITESPACE = (1 << 22);
+    options.flags = GIT_DIFF_IGNORE_WHITESPACE;
+
+    var fileName = "whitespacetest.txt";
+    var fileContent = "line a\nline b\nline c\nline d\n	line e\nline f\n" +
+                  "line g\nline h\nline i\n		line j\nline k\nline l\n" +
+                  "line m\nline n\n			line o\nline p\nline q\n" +
+                  "line r\nline s\nline t\nline u\nline v\nline w\n" +
+                  "line x\nline y\nline z\n";
+    var changedFileContent = "line a\nline b\n        line c\nline d\n" +
+                  "line e\nline f\nline g\n  line h\nline i\nline j\n" +
+                  "line k\nline l\nline m\nline n\nline o\nlinep\n" +
+                  " line q\nline r\nline   s\nline t\n\nline u\n" +
+                  "line v1\nline w\nline x\n			\nline y\nline z\n";
+
+    function getLineText(line) {
+      return line.rawContent().substring(0, line.contentLen());
+    }
+
+    return NodeGit.Repository.open(reposPath)
+    .then(function(repoResult) {
+      repo = repoResult;
+      return commitFile(repo, fileName, fileContent, "commit this");
+    })
+    .then(function(){
+      return commitFile(repo, fileName, changedFileContent, "commit that");
+    })
+    .then (function() {
+      return repo.getHeadCommit();
+    })
+    .then (function(wsCommit) {
+      return wsCommit.getDiffWithOptions(options);
+    })
+    .then(function(diff) {
+      assert.equal(diff.length, 1);
+      return diff[0].patches();
+    })
+    .then(function(patches) {
+      assert.equal(patches.length, 1);
+      var patch = patches[0];
+
+      assert.equal(patch.oldFile().path(), fileName);
+      assert.equal(patch.newFile().path(), fileName);
+      assert.ok(patch.isModified());
+
+      return patch.hunks();
+    })
+    .then(function(hunks) {
+      return hunks[0].lines();
+    })
+    .then(function(lines) {
+      //check all hunk lines
+      assert.equal(lines.length, 12);
+      assert.equal(lines[0].origin(), Diff.LINE.CONTEXT);
+      assert.equal(lines[1].contentLen(), 9);
+
+      assert.equal(getLineText(lines[1]), "line   s\n");
+      assert.equal(lines[1].origin(), Diff.LINE.CONTEXT);
+      assert.equal(lines[2].origin(), Diff.LINE.CONTEXT);
+
+      assert.equal(lines[3].contentLen(), 1);
+      assert.equal(getLineText(lines[3]), "\n");
+      assert.equal(lines[3].origin(), Diff.LINE.ADDITION);
+
+      assert.equal(lines[4].origin(), Diff.LINE.CONTEXT);
+
+      assert.equal(lines[5].contentLen(), 7);
+      assert.equal(getLineText(lines[5]), "line v\n");
+      assert.equal(lines[5].origin(), Diff.LINE.DELETION);
+      assert.equal(lines[6].contentLen(), 8);
+      assert.equal(getLineText(lines[6]), "line v1\n");
+      assert.equal(lines[6].origin(), Diff.LINE.ADDITION);
+
+      assert.equal(lines[7].origin(), Diff.LINE.CONTEXT);
+      assert.equal(lines[8].origin(), Diff.LINE.CONTEXT);
+
+      assert.equal(lines[9].contentLen(), 4);
+      assert.equal(getLineText(lines[9]), "\t\t\t\n");
+      assert.equal(lines[9].origin(), Diff.LINE.ADDITION);
+
+      assert.equal(lines[10].origin(), Diff.LINE.CONTEXT);
+      assert.equal(lines[11].origin(), Diff.LINE.CONTEXT);
     });
   });
 
