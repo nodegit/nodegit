@@ -192,33 +192,37 @@ describe("Remote", function() {
   });
 
   it("can reject fetching from private repository without valid credentials",
-  function() {
-    this.timeout(15000);
+    function() {
+      this.timeout(15000);
 
-    var repo = this.repository;
-    var remote = Remote.create(repo, "private", privateUrl);
-    var fetchOptions = {
-      callbacks: {
-        credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyFromAgent(userName);
-        },
-        certificateCheck: function() {
-          return 1;
+      var repo = this.repository;
+      var remote = Remote.create(repo, "private", privateUrl);
+      var firstPass = true;
+      var fetchOptions = {
+        callbacks: {
+          credentials: function(url, userName) {
+            if (firstPass) {
+              firstPass = false;
+              return NodeGit.Cred.sshKeyFromAgent(userName);
+            }
+          },
+          certificateCheck: function() {
+            return 1;
+          }
         }
-      }
-    };
+      };
 
-    return remote.fetch(null, fetchOptions, "Fetch from private")
-      .then(function () {
-        assert.fail("Should not be able to fetch from repository");
-      })
-      .catch(function(error) {
-        assert.equal(
-          error.message.trim(),
-           "ERROR: Repository not found.",
-           "Should not be able to find repository."
-        );
-      });
+      return remote.fetch(null, fetchOptions, "Fetch from private")
+        .then(function () {
+          assert.fail("Should not be able to fetch from repository");
+        })
+        .catch(function(error) {
+          assert.equal(
+            error.message.trim(),
+             "ERROR: Repository not found.",
+             "Should not be able to find repository."
+          );
+        });
   });
 
   it("can fetch from all remotes", function() {
@@ -241,6 +245,45 @@ describe("Remote", function() {
     });
   });
 
+  it("will reject if credentials promise rejects", function() {
+    this.timeout(5000);
+    var repo = this.repository;
+    var branch = "should-not-exist";
+    return Remote.lookup(repo, "origin")
+      .then(function(remote) {
+        var ref = "refs/heads/" + branch;
+        var refs = [ref + ":" + ref];
+        var options = {
+          callbacks: {
+            credentials: function(url, userName) {
+              return Promise.resolve()
+                .then(Promise.resolve)
+                .then(Promise.resolve)
+                .then(Promise.reject);
+            },
+            certificateCheck: function() {
+              return 1;
+            }
+          }
+        };
+        return remote.push(refs, options);
+      })
+      // takes care of windows bug, see the .catch for the proper pathway
+      // that this flow should take (cred cb doesn't run twice -> throws error)
+      .then(function() {
+        return Promise.reject(
+          new Error("should not be able to push to the repository"));
+      }, function(err) {
+        if (err.errno === NodeGit.Error.CODE.ERROR &&
+          err.message === "Method push has thrown an error.")
+        {
+          return Promise.resolve();
+        } else {
+          throw err;
+        }
+      });
+  });
+
   it("cannot push to a repository with invalid credentials", function() {
     this.timeout(5000);
     var repo = this.repository;
@@ -258,10 +301,10 @@ describe("Remote", function() {
                 if (url.indexOf("https") === -1) {
                   return NodeGit.Cred.sshKeyFromAgent(userName);
                 } else {
-                    return NodeGit.Cred.userpassPlaintextNew(userName, "");
+                  return NodeGit.Cred.userpassPlaintextNew(userName, "");
                 }
               } else {
-                return NodeGit.Cred.defaultNew();
+                return Promise.reject();
               }
             },
             certificateCheck: function() {
@@ -287,7 +330,7 @@ describe("Remote", function() {
       // stops callback infinite loop
       .catch(function (reason) {
         if (reason.message !==
-          "credentials callback returned an invalid cred type")
+          "Method push has thrown an error.")
         {
           throw reason;
         } else {

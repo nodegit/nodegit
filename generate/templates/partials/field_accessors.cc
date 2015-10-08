@@ -172,9 +172,7 @@
 
             baton->promise.Reset(promise);
 
-            uv_close((uv_handle_t*) &baton->req, NULL);
-            uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ field.name }}_asyncPromisePolling);
-            uv_async_send(&baton->req);
+            uv_close((uv_handle_t*) &baton->req, (uv_close_cb) {{ field.name }}_setupAsyncPromisePolling);
             return;
           }
         }
@@ -205,6 +203,11 @@
         {% endeach %}
         baton->done = true;
         uv_close((uv_handle_t*) &baton->req, NULL);
+      }
+      void {{ cppClassName }}::{{ field.name }}_setupAsyncPromisePolling(uv_async_t* req) {
+        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
+        uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ field.name }}_asyncPromisePolling);
+        uv_async_send(&baton->req);
       }
 
       void {{ cppClassName }}::{{ field.name }}_asyncPromisePolling(uv_async_t* req, int status) {
@@ -258,7 +261,7 @@
         else {
           // promise was rejected
           baton->result = {{ field.return.error }};
-          baton->done = false;
+          baton->done = true;
         }
 
         uv_close((uv_handle_t*) &baton->req, NULL);

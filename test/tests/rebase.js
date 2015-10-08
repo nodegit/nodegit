@@ -686,7 +686,8 @@ describe("Rebase", function() {
       });
   });
 
-  it("can fast-forward via rebase using the convenience methods", function() {
+  it("can fast-forward via rebase using the convenience methods",
+    function() {
     var ourFileName = "ourNewFile.txt";
     var theirFileName = "theirNewFile.txt";
 

@@ -82,9 +82,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
 
       baton->promise.Reset(promise);
 
-      uv_close((uv_handle_t*) &baton->req, NULL);
-      uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
-      uv_async_send(&baton->req);
+      uv_close((uv_handle_t*) &baton->req, (uv_close_cb) {{ cppFunctionName}}_{{ cbFunction.name }}_setupAsyncPromisePolling);
       return;
     }
   }
@@ -116,6 +114,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
 
   baton->done = true;
   uv_close((uv_handle_t*) &baton->req, NULL);
+}
+
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_setupAsyncPromisePolling(uv_async_t* req) {
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
+  uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling);
+  uv_async_send(&baton->req);
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromisePolling(uv_async_t* req, int status) {
@@ -168,7 +172,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   else {
     // promise was rejected
     baton->result = {{ cbFunction.return.error }};
-    baton->done = false;
+    baton->done = true;
   }
 
   uv_close((uv_handle_t*) &baton->req, NULL);
