@@ -192,33 +192,37 @@ describe("Remote", function() {
   });
 
   it("can reject fetching from private repository without valid credentials",
-  function() {
-    this.timeout(15000);
+    function() {
+      this.timeout(15000);
 
-    var repo = this.repository;
-    var remote = Remote.create(repo, "private", privateUrl);
-    var fetchOptions = {
-      callbacks: {
-        credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyFromAgent(userName);
-        },
-        certificateCheck: function() {
-          return 1;
+      var repo = this.repository;
+      var remote = Remote.create(repo, "private", privateUrl);
+      var firstPass = true;
+      var fetchOptions = {
+        callbacks: {
+          credentials: function(url, userName) {
+            if (firstPass) {
+              firstPass = false;
+              return NodeGit.Cred.sshKeyFromAgent(userName);
+            }
+          },
+          certificateCheck: function() {
+            return 1;
+          }
         }
-      }
-    };
+      };
 
-    return remote.fetch(null, fetchOptions, "Fetch from private")
-      .then(function () {
-        assert.fail("Should not be able to fetch from repository");
-      })
-      .catch(function(error) {
-        assert.equal(
-          error.message.trim(),
-           "ERROR: Repository not found.",
-           "Should not be able to find repository."
-        );
-      });
+      return remote.fetch(null, fetchOptions, "Fetch from private")
+        .then(function () {
+          assert.fail("Should not be able to fetch from repository");
+        })
+        .catch(function(error) {
+          assert.equal(
+            error.message.trim(),
+             "ERROR: Repository not found.",
+             "Should not be able to find repository."
+          );
+        });
   });
 
   it("can fetch from all remotes", function() {
@@ -288,13 +292,19 @@ describe("Remote", function() {
       .then(function(remote) {
         var ref = "refs/heads/" + branch;
         var refs = [ref + ":" + ref];
+        var firstPass = true;
         var options = {
           callbacks: {
             credentials: function(url, userName) {
-              if (url.indexOf("https") === -1) {
-                return NodeGit.Cred.sshKeyFromAgent(userName);
+              if (firstPass) {
+                firstPass = false;
+                if (url.indexOf("https") === -1) {
+                  return NodeGit.Cred.sshKeyFromAgent(userName);
+                } else {
+                  return NodeGit.Cred.userpassPlaintextNew(userName, "");
+                }
               } else {
-                return NodeGit.Cred.userpassPlaintextNew(userName, "");
+                return Promise.reject();
               }
             },
             certificateCheck: function() {
@@ -320,7 +330,7 @@ describe("Remote", function() {
       // stops callback infinite loop
       .catch(function (reason) {
         if (reason.message !==
-          "credentials callback returned an invalid cred type")
+          "Method push has thrown an error.")
         {
           throw reason;
         } else {

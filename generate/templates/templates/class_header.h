@@ -58,6 +58,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     );
 
     static void {{ function.cppFunctionName }}_{{ arg.name }}_async(uv_async_t* req, int status);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_setupAsyncPromisePolling(uv_async_t* req);
     static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncPromisePolling(uv_async_t* req, int status);
     struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton {
       {% each arg.args|argsInfo as cbArg %}
