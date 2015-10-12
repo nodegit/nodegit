@@ -53,6 +53,8 @@ using namespace node;
       {% endif %}
     {% endeach %}
 
+    this->callbackError->Reset();
+
   }
 
   void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {

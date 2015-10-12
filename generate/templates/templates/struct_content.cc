@@ -58,6 +58,8 @@ using namespace std;
     {% endif %}
   {% endeach %}
 
+  this->callbackError->Reset();
+
   if (this->selfFreeing) {
     free(this->raw);
   }

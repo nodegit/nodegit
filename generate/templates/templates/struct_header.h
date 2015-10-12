@@ -88,6 +88,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     {% endeach %}
 
     {{ cType }} *raw;
+    Nan::Persistent<v8::Value> callbackError;
 };
 
 #endif
