@@ -51,18 +51,17 @@ fse.remove(path.resolve(__dirname, repoDir))
   .then(function(remoteResult) {
     remote = remoteResult;
 
-    remote.setCallbacks({
-      credentials: function(url, userName) {
-        return nodegit.Cred.sshKeyFromAgent(userName);
-      }
-    });
-
     // Create the push object for this remote
     return remote.push(
       ["refs/heads/master:refs/heads/master"],
-      null,
-      repository.defaultSignature(),
-      "Push to master");
+      {
+        callbacks: {
+          credentials: function(url, userName) {
+            return nodegit.Cred.sshKeyFromAgent(userName);
+          }
+        }
+      }
+    );
   });
 }).done(function() {
   console.log("Done!");
