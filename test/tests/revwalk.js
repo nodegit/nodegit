@@ -83,7 +83,7 @@ describe("Revwalk", function() {
   it("can get a specified number of commits", function() {
     var test = this;
     var storedCommits;
-    return test.walker.getCommits()
+    return test.walker.getCommits(10)
       .then(function(commits) {
         assert.equal(commits.length, 10);
         storedCommits = commits;
@@ -97,6 +97,33 @@ describe("Revwalk", function() {
         for (var i = 0; i < 8; i++) {
           assert.equal(commits[i].toString(), storedCommits[i].toString());
         }
+      });
+  });
+
+  it("can get the largest number of commits within a specified range",
+    function() {
+      var test = this;
+      var storedCommits;
+      return test.walker.getCommits(991)
+        .then(function(commits) {
+          assert.equal(commits.length, 990);
+          storedCommits = commits;
+          test.walker = test.repository.createRevWalk();
+          test.walker.push(test.commit.id());
+        });
+    });
+
+  it("will return all commits from the revwalk if nothing matches", function() {
+    var test = this;
+    var magicSha = "notintherepoatallwhatsoeverisntthatcool";
+
+    function checkCommit(commit) {
+      return commit.toString() != magicSha;
+    }
+
+    return test.walker.getCommitsUntil(checkCommit)
+      .then(function(commits) {
+        assert.equal(commits.length, 990);
       });
   });
 
