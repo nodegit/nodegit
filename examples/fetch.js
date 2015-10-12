@@ -4,8 +4,10 @@ var path = require("path");
 nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   .then(function(repo) {
     return repo.fetch("origin", {
-      credentials: function(url, userName) {
-        return nodegit.Cred.sshKeyFromAgent(userName);
+      callbacks: {
+        credentials: function(url, userName) {
+          return nodegit.Cred.sshKeyFromAgent(userName);
+        }
       }
     });
   }).done(function() {
