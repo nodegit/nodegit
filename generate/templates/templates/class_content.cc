@@ -53,7 +53,7 @@ using namespace node;
       {% endif %}
     {% endeach %}
 
-    this->callbackError->Reset();
+    this->callbackError.Reset();
 
   }
 
