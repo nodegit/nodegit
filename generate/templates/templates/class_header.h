@@ -3,6 +3,7 @@
 // generated from class_header.h
 #include <nan.h>
 #include <string>
+#include <queue>
 
 extern "C" {
 #include <git2.h>
@@ -176,7 +177,6 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     {%if cType%}
     {{ cType }} *raw;
     {%endif%}
-    Nan::Persistent<v8::Value> callbackError;
 };
 
 #endif

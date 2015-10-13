@@ -171,6 +171,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   }
   else {
     // promise was rejected
+    {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each cbFunction.args|argsInfo as arg %}
+      {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
+    {% endeach %});
+    Local<v8::Object> parent = instance->handle();
+    parent->SetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked(), Nan::New(baton->promise));
+
     baton->result = {{ cbFunction.return.error }};
     baton->done = true;
   }

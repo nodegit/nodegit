@@ -57,9 +57,7 @@ using namespace std;
       {% endif %}
     {% endif %}
   {% endeach %}
-
-  this->callbackError.Reset();
-
+  
   if (this->selfFreeing) {
     free(this->raw);
   }

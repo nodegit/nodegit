@@ -140,6 +140,65 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
+      std::queue< Local<v8::Value> > workerArguments;
+{%each args|argsInfo as arg %}
+  {%if not arg.isReturn %}
+    {%if not arg.isSelf %}
+      {%if not arg.isCallbackFunction %}
+      workerArguments.push(Nan::New(GetFromPersistent("{{ arg.name }}")));
+      {%endif%}
+    {%endif%}
+  {%endif%}
+{%endeach%}
+      while(!workerArguments.empty()) {
+        Local<v8::Value> node = workerArguments.front();
+        workerArguments.pop();
+
+        if (
+          !node->IsObject()
+          || node->IsArray()
+          || node->IsBooleanObject()
+          || node->IsDate()
+          || node->IsFunction()
+          || node->IsNumberObject()
+          || node->IsRegExp()
+          || node->IsStringObject()
+        ) {
+          continue;
+        }
+
+        Local<v8::Object> nodeObj = node->ToObject();
+        Local<v8::Value> checkValue = nodeObj->GetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked());
+
+        if (!checkValue.IsEmpty()) {
+          Local<v8::Value> argv[1] = {
+            checkValue->ToObject()
+          };
+          callback->Call(1, argv);
+          return;
+        }
+
+        Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
+          Local<v8::String> propName = properties->Get(propIndex)->ToString();
+          Local<v8::Value> nodeToQueue = Nan::New(nodeObj->Get(propName));
+          if (!nodeToQueue->IsUndefined()) {
+            workerArguments.push(nodeToQueue);
+          }
+        }
+      }
+      // Local<v8::Object> arguments = GetFromPersistent("opts")->ToObject();
+      // Local<v8::Object> moreTest = test->Get(Nan::New("callbacks").ToLocalChecked())->ToObject();
+      //
+      // Local<Value> argmoo[1]; // MSBUILD won't assign an array of length 0
+      // Local<v8::Object> promise = moreTest->GetHiddenValue(Nan::New("what_if_i_was_error").ToLocalChecked())->ToObject();
+      // Nan::Callback* isFulfilledFn = new Nan::Callback(Nan::Get(promise, Nan::New("reason").ToLocalChecked()).ToLocalChecked().As<Function>());
+      // Local<v8::String> test2 = isFulfilledFn->Call(promise, 0, argmoo)->ToString();
+      // v8::String::Utf8Value param1(test2);
+
+       // convert it to string
+      //  std::string foo = std::string(*param1);
+      // std::cout << foo << std::endl;
       Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
       err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
       Local<v8::Value> argv[1] = {

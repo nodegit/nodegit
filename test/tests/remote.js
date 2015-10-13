@@ -245,7 +245,7 @@ describe("Remote", function() {
     });
   });
 
-  it("will reject if credentials promise rejects", function() {
+  it.only("will reject if credentials promise rejects", function() {
     this.timeout(5000);
     var repo = this.repository;
     var branch = "should-not-exist";
@@ -256,10 +256,14 @@ describe("Remote", function() {
         var options = {
           callbacks: {
             credentials: function(url, userName) {
-              return Promise.resolve()
-                .then(Promise.resolve)
-                .then(Promise.resolve)
-                .then(Promise.reject);
+              var test = Promise.resolve("test")
+                .then(function() { return; })
+                .then(function() { return; })
+                .then(function() { return; })
+                .then(function() {
+                  return Promise.reject(new Error("Failure case"));
+                });
+              return test;
             },
             certificateCheck: function() {
               return 1;
@@ -274,8 +278,15 @@ describe("Remote", function() {
         return Promise.reject(
           new Error("should not be able to push to the repository"));
       }, function(err) {
-        if (err.errno === NodeGit.Error.CODE.ERROR &&
-          err.message === "Method push has thrown an error.")
+        if (err.message === "Error: Failure case")
+        {
+          return Promise.resolve();
+        } else {
+          throw err;
+        }
+      })
+      .catch(function(err) {
+        if (err.message === "Error: Failure case")
         {
           return Promise.resolve();
         } else {
