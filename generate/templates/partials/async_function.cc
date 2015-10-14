@@ -150,6 +150,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     {%endif%}
   {%endif%}
 {%endeach%}
+      bool callbackFired = false;
       while(!workerArguments.empty()) {
         Local<v8::Value> node = workerArguments.front();
         workerArguments.pop();
@@ -170,12 +171,13 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         Local<v8::Object> nodeObj = node->ToObject();
         Local<v8::Value> checkValue = nodeObj->GetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked());
 
-        if (!checkValue.IsEmpty()) {
+        if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined()) {
           Local<v8::Value> argv[1] = {
             checkValue->ToObject()
           };
           callback->Call(1, argv);
-          return;
+          callbackFired = true;
+          break;
         }
 
         Local<v8::Array> properties = nodeObj->GetPropertyNames();
@@ -187,24 +189,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
           }
         }
       }
-      // Local<v8::Object> arguments = GetFromPersistent("opts")->ToObject();
-      // Local<v8::Object> moreTest = test->Get(Nan::New("callbacks").ToLocalChecked())->ToObject();
-      //
-      // Local<Value> argmoo[1]; // MSBUILD won't assign an array of length 0
-      // Local<v8::Object> promise = moreTest->GetHiddenValue(Nan::New("what_if_i_was_error").ToLocalChecked())->ToObject();
-      // Nan::Callback* isFulfilledFn = new Nan::Callback(Nan::Get(promise, Nan::New("reason").ToLocalChecked()).ToLocalChecked().As<Function>());
-      // Local<v8::String> test2 = isFulfilledFn->Call(promise, 0, argmoo)->ToString();
-      // v8::String::Utf8Value param1(test2);
 
-       // convert it to string
-      //  std::string foo = std::string(*param1);
-      // std::cout << foo << std::endl;
-      Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
-      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Local<v8::Value> argv[1] = {
-        err
-      };
-      callback->Call(1, argv);
+      if (!callbackFired) {
+        Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
+        err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        Local<v8::Value> argv[1] = {
+          err
+        };
+        callback->Call(1, argv);
+      }
     } else {
       callback->Call(0, NULL);
     }
