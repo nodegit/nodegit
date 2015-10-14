@@ -145,7 +145,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   {%if not arg.isReturn %}
     {%if not arg.isSelf %}
       {%if not arg.isCallbackFunction %}
-      workerArguments.push(Nan::New(GetFromPersistent("{{ arg.name }}")));
+      workerArguments.push(GetFromPersistent("{{ arg.name }}"));
       {%endif%}
     {%endif%}
   {%endif%}
@@ -183,7 +183,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         Local<v8::Array> properties = nodeObj->GetPropertyNames();
         for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
           Local<v8::String> propName = properties->Get(propIndex)->ToString();
-          Local<v8::Value> nodeToQueue = Nan::New(nodeObj->Get(propName));
+          Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
           if (!nodeToQueue->IsUndefined()) {
             workerArguments.push(nodeToQueue);
           }
