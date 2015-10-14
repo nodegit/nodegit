@@ -3,6 +3,7 @@
 // generated from class_header.h
 #include <nan.h>
 #include <string>
+#include <queue>
 
 extern "C" {
 #include <git2.h>

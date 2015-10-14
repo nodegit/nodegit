@@ -171,6 +171,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_asyncPromis
   }
   else {
     // promise was rejected
+    {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each cbFunction.args|argsInfo as arg %}
+      {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
+    {% endeach %});
+    Local<v8::Object> parent = instance->handle();
+    Nan::Callback* reasonFn = new Nan::Callback(Nan::Get(promise, Nan::New("reason").ToLocalChecked()).ToLocalChecked().As<Function>());
+    Local<v8::Value> reason = reasonFn->Call(promise, 0, argv);
+    parent->SetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked(), reason);
+
     baton->result = {{ cbFunction.return.error }};
     baton->done = true;
   }

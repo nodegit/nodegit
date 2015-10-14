@@ -3,7 +3,7 @@ var path = require("path");
 var Promise = require("nodegit-promise");
 var local = path.join.bind(path, __dirname);
 
-describe("Remote", function() {
+describe.only("Remote", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Remote = NodeGit.Remote;
@@ -256,10 +256,14 @@ describe("Remote", function() {
         var options = {
           callbacks: {
             credentials: function(url, userName) {
-              return Promise.resolve()
-                .then(Promise.resolve)
-                .then(Promise.resolve)
-                .then(Promise.reject);
+              var test = Promise.resolve("test")
+                .then(function() { return; })
+                .then(function() { return; })
+                .then(function() { return; })
+                .then(function() {
+                  return Promise.reject(new Error("failure case"));
+                });
+              return test;
             },
             certificateCheck: function() {
               return 1;
@@ -268,14 +272,45 @@ describe("Remote", function() {
         };
         return remote.push(refs, options);
       })
-      // takes care of windows bug, see the .catch for the proper pathway
-      // that this flow should take (cred cb doesn't run twice -> throws error)
       .then(function() {
         return Promise.reject(
           new Error("should not be able to push to the repository"));
       }, function(err) {
-        if (err.errno === NodeGit.Error.CODE.ERROR &&
-          err.message === "Method push has thrown an error.")
+        if (err.message === "failure case")
+        {
+          return Promise.resolve();
+        } else {
+          throw err;
+        }
+      })
+      .then(function() {
+        return Remote.lookup(repo, "origin");
+      })
+      .then(function(remote) {
+        var ref = "refs/heads/" + branch;
+        var refs = [ref + ":" + ref];
+        var options = {
+          callbacks: {
+            credentials: function(url, userName) {
+              var test = Promise.resolve()
+                .then(Promise.resolve)
+                .then(Promise.resolve)
+                .then(Promise.resolve)
+                .then(Promise.reject);
+              return test;
+            },
+            certificateCheck: function() {
+              return 1;
+            }
+          }
+        };
+        return remote.push(refs, options);
+      })
+      .then(function() {
+        return Promise.reject(
+          new Error("should not be able to push to the repository"));
+      }, function(err) {
+        if (err.message === "Method push has thrown an error.")
         {
           return Promise.resolve();
         } else {

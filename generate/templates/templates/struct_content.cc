@@ -57,7 +57,7 @@ using namespace std;
       {% endif %}
     {% endif %}
   {% endeach %}
-
+  
   if (this->selfFreeing) {
     free(this->raw);
   }

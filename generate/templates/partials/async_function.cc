@@ -140,12 +140,64 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
-      Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
-      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Local<v8::Value> argv[1] = {
-        err
-      };
-      callback->Call(1, argv);
+      std::queue< Local<v8::Value> > workerArguments;
+{%each args|argsInfo as arg %}
+  {%if not arg.isReturn %}
+    {%if not arg.isSelf %}
+      {%if not arg.isCallbackFunction %}
+      workerArguments.push(GetFromPersistent("{{ arg.name }}"));
+      {%endif%}
+    {%endif%}
+  {%endif%}
+{%endeach%}
+      bool callbackFired = false;
+      while(!workerArguments.empty()) {
+        Local<v8::Value> node = workerArguments.front();
+        workerArguments.pop();
+
+        if (
+          !node->IsObject()
+          || node->IsArray()
+          || node->IsBooleanObject()
+          || node->IsDate()
+          || node->IsFunction()
+          || node->IsNumberObject()
+          || node->IsRegExp()
+          || node->IsStringObject()
+        ) {
+          continue;
+        }
+
+        Local<v8::Object> nodeObj = node->ToObject();
+        Local<v8::Value> checkValue = nodeObj->GetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked());
+
+        if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined()) {
+          Local<v8::Value> argv[1] = {
+            checkValue->ToObject()
+          };
+          callback->Call(1, argv);
+          callbackFired = true;
+          break;
+        }
+
+        Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
+          Local<v8::String> propName = properties->Get(propIndex)->ToString();
+          Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+          if (!nodeToQueue->IsUndefined()) {
+            workerArguments.push(nodeToQueue);
+          }
+        }
+      }
+
+      if (!callbackFired) {
+        Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
+        err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        Local<v8::Value> argv[1] = {
+          err
+        };
+        callback->Call(1, argv);
+      }
     } else {
       callback->Call(0, NULL);
     }

@@ -52,7 +52,6 @@ using namespace node;
         {% endeach %}
       {% endif %}
     {% endeach %}
-
   }
 
   void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
