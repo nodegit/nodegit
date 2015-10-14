@@ -268,7 +268,9 @@
             {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
           {% endeach %});
           Local<v8::Object> parent = instance->handle();
-          parent->SetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked(), Nan::New(baton->promise));
+          Nan::Callback* reasonFn = new Nan::Callback(Nan::Get(promise, Nan::New("reason").ToLocalChecked()).ToLocalChecked().As<Function>());
+          Local<v8::Value> reason = reasonFn->Call(promise, 0, argv);
+          parent->SetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked(), reason);
 
           baton->result = {{ field.return.error }};
           baton->done = true;

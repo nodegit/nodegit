@@ -245,7 +245,7 @@ describe("Remote", function() {
     });
   });
 
-  it.only("will reject if credentials promise rejects", function() {
+  it("will reject if credentials promise rejects", function() {
     this.timeout(5000);
     var repo = this.repository;
     var branch = "should-not-exist";
@@ -261,7 +261,7 @@ describe("Remote", function() {
                 .then(function() { return; })
                 .then(function() { return; })
                 .then(function() {
-                  return Promise.reject(new Error("Failure case"));
+                  return Promise.reject(new Error("failure case"));
                 });
               return test;
             },
@@ -278,15 +278,7 @@ describe("Remote", function() {
         return Promise.reject(
           new Error("should not be able to push to the repository"));
       }, function(err) {
-        if (err.message === "Error: Failure case")
-        {
-          return Promise.resolve();
-        } else {
-          throw err;
-        }
-      })
-      .catch(function(err) {
-        if (err.message === "Error: Failure case")
+        if (err.message === "failure case")
         {
           return Promise.resolve();
         } else {
