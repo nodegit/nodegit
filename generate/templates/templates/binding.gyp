@@ -17,6 +17,7 @@
         "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
+        "src/functions/sleep_for_ms.cc",
         "src/str_array_converter.cc",
         {% each %}
           {% if type != "enum" %}
@@ -31,8 +32,7 @@
       ],
 
       "cflags": [
-        "-Wall",
-        "-std=c++11"
+        "-Wall"
       ],
 
       "conditions": [

@@ -20,7 +20,7 @@
   uv_async_send(&baton->req);
 
   while(!baton->done) {
-    this_thread::sleep_for(chrono::milliseconds(1));
+    sleep_for_ms(1);
   }
 
   {% each cbFunction|returnsInfo false true as _return %}
