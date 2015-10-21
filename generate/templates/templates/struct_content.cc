@@ -1,8 +1,11 @@
 // This is a generated file, modify: generate/templates/struct_content.cc.
 #include <nan.h>
 #include <string.h>
-#include <chrono>
-#include <thread>
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif // win32
 
 extern "C" {
   #include <git2.h>
@@ -14,6 +17,7 @@ extern "C" {
 #include <iostream>
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
+#include "../include/functions/sleep_for_ms.h"
 
 {% each dependencies as dependency %}
   #include "{{ dependency }}"
