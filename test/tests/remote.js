@@ -3,7 +3,7 @@ var path = require("path");
 var Promise = require("nodegit-promise");
 var local = path.join.bind(path, __dirname);
 
-describe.only("Remote", function() {
+describe("Remote", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Remote = NodeGit.Remote;
