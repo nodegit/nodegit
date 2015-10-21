@@ -1,5 +1,6 @@
 var assert = require("assert");
 var path = require("path");
+var fs = require("fs");
 var local = path.join.bind(path, __dirname);
 
 describe("Cred", function() {
@@ -21,6 +22,23 @@ describe("Cred", function() {
       "");
 
     assert.ok(cred instanceof NodeGit.Cred);
+  });
+
+  it("can create ssh credentials using passed keys in memory", function() {
+    var publicKeyContents = fs.readFileSync(sshPublicKey, {
+      encoding: "ascii"
+    });
+    var privateKeyContents = fs.readFileSync(sshPrivateKey, {
+      encoding: "ascii"
+    });
+
+    return NodeGit.Cred.sshKeyMemoryNew(
+      "username",
+      publicKeyContents,
+      privateKeyContents,
+      "").then(function(cred) {
+        assert.ok(cred instanceof NodeGit.Cred);
+      });
   });
 
   it("can create credentials using plaintext", function() {
