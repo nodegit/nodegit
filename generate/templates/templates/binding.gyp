@@ -59,13 +59,6 @@
                 "-Wno-unused-variable",
                 "-Wint-conversions",
                 "-Wmissing-field-initializers"
-              ],
-              "OTHER_CPLUSPLUSFLAGS" : [
-                "-std=gnu++11",
-                "-stdlib=libc++"
-              ],
-              "OTHER_LDFLAGS": [
-                "-stdlib=libc++"
               ]
             }
           }
