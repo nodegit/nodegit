@@ -58,6 +58,8 @@ function prepareAndBuild() {
   return prepareForBuild()
     .then(function() {
       return build();
+    }, function() {
+      console.info("[nodegit] prepareAndBuild step failed. Abort.");
     });
 }
 
