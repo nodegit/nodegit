@@ -117,6 +117,7 @@ function build() {
       function(err, stderr) {
         console.error(err);
         console.error(stderr);
+        console.info("[nodegit] Compilation failed.");
         process.exitCode = 13;
       }
     );
