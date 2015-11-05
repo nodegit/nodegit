@@ -21,13 +21,30 @@ module.exports = function prepareForBuild() {
       }
     });
   }).then(function() {
-    return Promise.all([
-      configure(),
-      generate()
-    ]).catch(function(e) {
-      console.info("[nodegit] prepareForBuild Failed:");
-      console.log(e);
+    return new Promise(function(resolve, reject) {
+      
+      configure().catch(function() {
+        console.info("[nodegit] Configuration malfunctioned:");
+         reject();
+      }).then(function() {
+         console.info("[nodegit] Configuration complete.");
+         return generate();
+      }, function() {
+         console.info("[nodegit] Configuration failed:");
+         reject();
+      }).catch(function() {
+        console.info("[nodegit] Generation malfunctioned:");
+         reject();
+      }).then(function() {
+         console.info("[nodegit] Generation complete.");
+         resolve();
+      }, function() {
+         console.info("[nodegit] Generation failed:");
+         reject();
+      })
+      
     });
+   
   });
 };
 
