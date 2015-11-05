@@ -1,4 +1,3 @@
-const fs = require("fs");
 const path = require("path");
 const utils = require("./utils");
 var _;
@@ -46,8 +45,13 @@ module.exports = function generateJson() {
         !~supplement.remove[groupName].functions.indexOf(fnName);
     });
 
+    // If we've already found some functions for this group lets add the new
+    // ones we found instead of overwriting the old ones
+    if (memo[groupName]) {
+      memo[groupName] = memo[groupName].concat(functionNames);
+    }
     // if we have an empty group then just ignore it
-    if (functionNames.length) {
+    else if (functionNames.length) {
       memo[groupName] = functionNames;
     }
 

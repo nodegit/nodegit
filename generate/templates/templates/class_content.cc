@@ -136,7 +136,9 @@ using namespace node;
 
 {% each functions as function %}
   {% if not function.ignore %}
-    {% if function.isAsync %}
+    {% if function.isManual %}
+      {{= function.implementation =}}
+    {% elsif function.isAsync %}
       {% partial asyncFunction function %}
     {% else %}
       {% partial syncFunction function %}

@@ -104,17 +104,17 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     {%endeach%}
 
     {%each functions as function%}
-      {%if not function.ignore%}
-        {%if function.isAsync%}
+      {%if not function.ignore %}
+        {%if function.isAsync %}
 
     struct {{ function.cppFunctionName }}Baton {
       int error_code;
       const git_error* error;
       {%each function.args as arg%}
         {%if arg.isReturn%}
-      {{ arg.cType|replace "**" "*" }} {{ arg.name }};
+      {{= arg.cType|replace "**" "*" =}} {{ arg.name }};
         {%else%}
-      {{ arg.cType }} {{ arg.name }};
+      {{= arg.cType =}} {{ arg.name }};
           {%if arg | isOid %}
       bool {{ arg.name }}NeedsFree;
           {%endif%}
