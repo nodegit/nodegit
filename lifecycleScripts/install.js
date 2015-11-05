@@ -59,7 +59,11 @@ function prepareAndBuild() {
     .then(function() {
       return build();
     }, function() {
-      console.info("[nodegit] prepareAndBuild step failed. Abort.");
+      console.info("[nodegit] prepareAndBuild step failed.");
+      process.exit(13);
+    }).catch(function(e) {
+       console.info("[nodegit] prepareAndBuild step crashed.");
+       process.exit(13);
     });
 }
 
