@@ -23,23 +23,27 @@ module.exports = function prepareForBuild() {
   }).then(function() {
     return new Promise(function(resolve, reject) {
       
-      configure().catch(function() {
+      configure().catch(function(e) {
         console.info("[nodegit] Configuration malfunctioned:");
+        console.log(e || '[nodegit] Configuration malfunctioned without reason.');
          reject();
       }).then(function() {
          console.info("[nodegit] Configuration complete.");
          return generate();
-      }, function() {
+      }, function(e) {
          console.info("[nodegit] Configuration failed:");
+         console.log(e || '[nodegit] Configuration failed without reason.');
          reject();
-      }).catch(function() {
+      }).catch(function(e) {
         console.info("[nodegit] Generation malfunctioned:");
+        console.log(e || '[nodegit] Generation malfunctioned without reason.');
          reject();
       }).then(function() {
          console.info("[nodegit] Generation complete.");
          resolve();
-      }, function() {
+      }, function(e) {
          console.info("[nodegit] Generation failed:");
+         console.log(e || '[nodegit] Generation failed without reason.');
          reject();
       })
       
