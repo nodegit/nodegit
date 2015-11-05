@@ -24,7 +24,10 @@ module.exports = function prepareForBuild() {
     return Promise.all([
       configure(),
       generate()
-    ]);
+    ]).catch(function(e) {
+      console.info("[nodegit] prepareForBuild Failed:");
+      console.log(e);
+    });
   });
 };
 
