@@ -15,11 +15,13 @@ module.exports = function retrieveExternalDependencies() {
       {cwd: rooted("vendor/libssh2/")},
       function(err, stdout, stderr) {
         if (err) {
+          console.info("[nodegit] Configuring libssh2 failed.");
           console.error(err);
           console.error(stderr);
           reject(err, stderr);
         }
         else {
+          console.info("[nodegit] Configuring libssh2 succeeded.");
           resolve(stdout);
         }
       }
