@@ -86,7 +86,7 @@
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "generateMissingTests": "node generate/scripts/generateMissingTests",
     "prepublish": "node lifecycleScripts/prepareForBuild.js",
-    "postinstall": "node lifecycleScripts/install",
+    "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
     "recompile": "node-gyp configure build",
     "rebuild": "node generate && node-gyp configure build",
