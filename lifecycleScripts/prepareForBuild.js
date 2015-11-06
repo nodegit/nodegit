@@ -22,33 +22,33 @@ module.exports = function prepareForBuild() {
     });
   }).then(function() {
     return new Promise(function(resolve, reject) {
-      
+
       configure().catch(function(e) {
-        console.info("[nodegit] Configuration malfunctioned:");
-        console.log(e || '[nodegit] Configuration malfunctioned without reason.');
+         console.info("[nodegit] Configuration malfunctioned:");
+         console.log(e || "[nodegit] No Configuration exception.");
          reject();
       }).then(function() {
          console.info("[nodegit] Configuration complete.");
          return generate();
       }, function(e) {
          console.info("[nodegit] Configuration failed:");
-         console.log(e || '[nodegit] Configuration failed without reason.');
+         console.log(e || "[nodegit] No Configuration failure exception.");
          reject();
       }).catch(function(e) {
-        console.info("[nodegit] Generation malfunctioned:");
-        console.log(e || '[nodegit] Generation malfunctioned without reason.');
+         console.info("[nodegit] Generation malfunctioned:");
+         console.log(e || "[nodegit] No Generation exception.");
          reject();
       }).then(function() {
          console.info("[nodegit] Generation complete.");
          resolve();
       }, function(e) {
          console.info("[nodegit] Generation failed:");
-         console.log(e || '[nodegit] Generation failed without reason.');
+         console.log(e || "[nodegit] No Generation failure exception.");
          reject();
-      })
-      
+      });
+
     });
-   
+
   });
 };
 
