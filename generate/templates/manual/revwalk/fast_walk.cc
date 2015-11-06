@@ -32,7 +32,7 @@ void GitRevwalk::FastWalkWorker::Execute()
     git_oid *nextCommit = (git_oid *)malloc(sizeof(git_oid));
     baton->error_code = git_revwalk_next(nextCommit, baton->walk);
 
-    if (baton->error_code != GIT_OK && giterr_last() != NULL)
+    if (baton->error_code != GIT_OK)
     {
       // We couldn't get a commit out of the revwalk. It's either in
       // an error state or there aren't anymore commits in the revwalk.
@@ -43,6 +43,8 @@ void GitRevwalk::FastWalkWorker::Execute()
 
         while(!baton->out->empty())
         {
+          // part of me wants to #define shoot free so we can take the
+          // baton out back and shoot the oids
           git_oid *oidToFree = baton->out->back();
           free(oidToFree);
           baton->out->pop_back();

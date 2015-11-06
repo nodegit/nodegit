@@ -91,6 +91,7 @@
     "recompile": "node-gyp configure build",
     "rebuild": "node generate && node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
-    "rebuildDebug": "node generate && node-gyp configure --debug build"
+    "rebuildDebug": "node generate && node-gyp configure --debug build",
+    "xcodeDebug": "node-gyp configure -- -f xcode"
   }
 }
