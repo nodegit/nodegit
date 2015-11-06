@@ -1360,7 +1360,20 @@
           }
         },
         "git_patch_line_stats": {
-          "ignore": true
+          "args": {
+            "total_context": {
+              "isReturn": true
+            },
+            "total_additions": {
+              "isReturn": true
+            },
+            "total_deletions": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_patch_print": {
           "ignore": true
