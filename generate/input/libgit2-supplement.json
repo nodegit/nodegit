@@ -152,6 +152,32 @@
         },
         "group": "reset"
       },
+      "git_revwalk_fast_walk": {
+        "args": [
+          {
+            "name": "max_count",
+            "type": "int"
+          },
+          {
+            "name": "out",
+            "type": "std::vector<git_oid*> *"
+          },
+          {
+            "name": "walk",
+            "type": "git_revwalk *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/revwalk/fast_walk.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "revwalk",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_stash_save": {
         "type": "function",
         "file": "stash.h",
@@ -204,6 +230,12 @@
           "git_odb_object_id",
           "git_odb_object_size",
           "git_odb_object_type"
+        ]
+      ],
+      [
+        "revwalk",
+        [
+          "git_revwalk_fast_walk"
         ]
       ],
       [

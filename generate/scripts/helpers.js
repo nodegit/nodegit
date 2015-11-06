@@ -1,8 +1,9 @@
-
 var callbackTypePattern = /\s*_cb/;
 
 var utils = require("./utils");
 var _ = require("lodash");
+var path = require("path");
+var fs = require("fs");
 
 // TODO: When libgit2's docs include callbacks we should be able to remove this
 var version = require("../../package.json").vendorDependencies.libgit2.version;
@@ -309,6 +310,10 @@ var Helpers = {
         fnDef.isAsync = true;
       }
     });
+
+    if (fnDef.cFile) {
+      fnDef.implementation = fs.readFileSync(path.resolve(fnDef.cFile), 'utf8');
+    }
 
     if (fnDef.return) {
       Helpers.decorateArg(fnDef.return, fnDef.args, typeDef, fnDef, fnOverrides.return || {}, enums);

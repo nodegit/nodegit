@@ -142,6 +142,17 @@ describe("Revwalk", function() {
       });
   });
 
+  it("can get do a fast walk", function() {
+    var test = this;
+    var magicSha = "b8a94aefb22d0534cc0e5acf533989c13d8725dc";
+
+    return test.walker.fastWalk(10)
+      .then(function(commitOids) {
+        assert.equal(commitOids.length, 10);
+        assert.equal(commitOids[3].toString(), magicSha);
+      });
+  });
+
   // This test requires forcing garbage collection, so mocha needs to be run
   // via node rather than npm, with a la `node --expose-gc [pathtohmoca]
   // [testglob]`

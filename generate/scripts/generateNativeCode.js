@@ -102,7 +102,9 @@ module.exports = function generateNativeCode() {
   fse.remove(path.resolve(__dirname, "../../src")).then(function() {
     return fse.remove(path.resolve(__dirname, "../../include"));
   }).then(function() {
-    return fse.copy(path.resolve(__dirname, "../templates/manual/"), path.resolve(__dirname, "../../"));
+    return fse.copy(path.resolve(__dirname, "../templates/manual/include"), path.resolve(__dirname, "../../include"));
+  }).then(function() {
+    return fse.copy(path.resolve(__dirname, "../templates/manual/src"), path.resolve(__dirname, "../../src"));
   }).then(function() {
     // Write out single purpose templates.
     utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)));
