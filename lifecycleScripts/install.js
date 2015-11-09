@@ -44,9 +44,10 @@ return whichNativeNodish("..")
         function() {
           console.info("[nodegit] Completed installation successfully.");
         },
-        function() {
+        function(err) {
           console.info("[nodegit] Failed to install prebuilt binary, " +
             "building manually.");
+          console.error(err);
           return prepareAndBuild();
         }
       );
