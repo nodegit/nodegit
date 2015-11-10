@@ -57,6 +57,7 @@ after_success:
   - if [ -n "$TRAVIS_TAG" ]; then
       npm install -g node-pre-gyp
       npm install -g aws-sdk
+      node lifecycleScripts/clean
       node-pre-gyp package
       node-pre-gyp publish
     fi

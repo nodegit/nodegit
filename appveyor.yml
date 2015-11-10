@@ -47,6 +47,7 @@ test_script:
 on_success:
   - IF %APPVEYOR_REPO_TAG%==true npm install -g node-pre-gyp
   - IF %APPVEYOR_REPO_TAG%==true npm install -g aws-sdk
+  - IF %APPVEYOR_REPO_TAG%==true node lifecycleScripts\clean
   - IF %APPVEYOR_REPO_TAG%==true node-pre-gyp package
   - IF %APPVEYOR_REPO_TAG%==true node-pre-gyp publish
 
