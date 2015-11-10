@@ -4,6 +4,10 @@
 # Try out "interactive-mode"
 os: Windows Server 2012 R2
 
+platform:
+  - x86
+  - x64
+
 # build version format
 version: "{build}"
 
