@@ -26,7 +26,6 @@ return whichNativeNodish("..")
     var args = []
     if (asVersion) {
       args.push("--runtime=electron")
-      console.info("version: " + asVersion)
       args.push("--target=" + asVersion)
     }
     // if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
