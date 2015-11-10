@@ -23,10 +23,6 @@ return whichNativeNodish("..")
       console.info("[nodegit] Must build for node-webkit/nw.js");
       return prepareAndBuild();
     }
-    else if (asVersion) {
-      console.info("[nodegit] Must build for atom-shell");
-      return prepareAndBuild();
-    }
     if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
       return prepareAndBuild();
     }
