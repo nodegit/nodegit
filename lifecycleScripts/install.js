@@ -34,6 +34,9 @@ return whichNativeNodish("..")
     if (asVersion) {
       args.push("--runtime=electron");
       args.push("--target=" + asVersion);
+    } else if (nwVersion) {
+      args.push("--runtime=node-webkit");
+      args.push("--target=" + nwVersion);
     }
     return installPrebuilt(args);
   });
