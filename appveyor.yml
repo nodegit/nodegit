@@ -36,7 +36,7 @@ environment:
       ELECTRON_VERSION: "0.34.3"
 
 matrix:
-  fast_finish: true
+  fast_finish: false
 
 # Get the latest stable version of Node 0.STABLE.latest
 install:
