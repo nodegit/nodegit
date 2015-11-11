@@ -23,10 +23,9 @@ return whichNativeNodish("..")
       console.info("[nodegit] Must build for node-webkit/nw.js");
       return prepareAndBuild();
     }
+    if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
+      return prepareAndBuild();
     }
-    // if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
-    //   return prepareAndBuild();
-    // }
     if (process.env.BUILD_DEBUG) {
       console.info("[nodegit] Doing a debug build, no fetching allowed.");
       return prepareAndBuild();
