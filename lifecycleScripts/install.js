@@ -15,8 +15,8 @@ var local = path.join.bind(path, __dirname);
 
 return whichNativeNodish("..")
   .then(function(results) {
-    nwVersion = results.nwVersion;
-    asVersion = results.asVersion;
+    nwVersion = results.nwVersion || process.env.NWJS_VERSION || null;
+    asVersion = results.asVersion || process.env.ELECTRON_VERSION || null;
   })
   .then(function() {
     if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
