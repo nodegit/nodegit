@@ -84,7 +84,7 @@ function build() {
 
   var target = "";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
-  var builder = "node-gyp";
+  var builder = "node-pre-gyp";
   var distUrl = "";
 
   if (asVersion) {
