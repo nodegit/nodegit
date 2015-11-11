@@ -19,10 +19,6 @@ return whichNativeNodish("..")
     asVersion = results.asVersion;
   })
   .then(function() {
-    if (nwVersion) {
-      console.info("[nodegit] Must build for node-webkit/nw.js");
-      return prepareAndBuild();
-    }
     if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
       return prepareAndBuild();
     }
