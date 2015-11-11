@@ -23,10 +23,6 @@ return whichNativeNodish("..")
       console.info("[nodegit] Must build for node-webkit/nw.js");
       return prepareAndBuild();
     }
-    var args = []
-    if (asVersion) {
-      args.push("--runtime=electron")
-      args.push("--target=" + asVersion)
     }
     // if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
     //   return prepareAndBuild();
@@ -39,12 +35,17 @@ return whichNativeNodish("..")
       console.info("[nodegit] BUILD_ONLY is set to true, no fetching allowed.");
       return prepareAndBuild();
     }
-    return installWithPreGyp(args)
+    var args = [];
+    if (asVersion) {
+      args.push("--runtime=electron");
+      args.push("--target=" + asVersion);
+    }
+    return installPrebuilt(args)
   });
 
-function installWithPreGyp(args) {
+function installPrebuilt(args) {
   console.info("[nodegit] Fetching binary from S3.");
-  var arguments = args.join(' ')
+  var arguments = args.join(' ');
   return exec("node-pre-gyp install " + arguments)
     .then(
       function() {
