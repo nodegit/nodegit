@@ -34,8 +34,6 @@ environment:
     - nodejs_version: "5.0"
     - nodejs_version: "4.1"
       ELECTRON_VERSION: "0.34.3"
-    - nodejs_version: "0.12"
-      NWJS_VERSION: "0.12.3"
 
 matrix:
   fast_finish: true
