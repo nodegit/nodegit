@@ -87,6 +87,7 @@ function build() {
   var builder = "node-pre-gyp";
   var distUrl = "";
   var runtime = "";
+  var action = (process.env.PACKAGE ? "package" : "rebuild");
 
   if (asVersion) {
     var home = process.platform == "win32" ?
@@ -109,7 +110,7 @@ function build() {
   builder = path.resolve(".", "node_modules", ".bin", builder);
   builder = builder.replace(/\s/g, "\\$&");
   var cmd = [
-      builder, "rebuild", runtime, target,
+      builder, action, runtime, target,
       debug, distUrl, "--build-from-source"
     ]
     .join(" ").trim();
