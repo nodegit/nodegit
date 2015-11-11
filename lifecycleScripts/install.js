@@ -44,8 +44,8 @@ return whichNativeNodish("..")
 
 function installPrebuilt(args) {
   console.info("[nodegit] Fetching binary from S3.");
-  var arguments = args.join(' ');
-  return exec("node-pre-gyp install " + arguments)
+  var installArguments = args.join(" ");
+  return exec("node-pre-gyp install " + installArguments)
     .then(
       function() {
         console.info("[nodegit] Completed installation successfully.");
