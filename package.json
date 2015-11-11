@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "fs-extra": "^0.24.0",
-    "node-pre-gyp": "https://github.com/joshaber/node-pre-gyp/tarball/master",
+    "node-pre-gyp": "^0.6.15",
     "nodegit-promise": "^3.0.3",
     "npm": "^3.3.3",
     "promisify-node": "^0.2.1",
