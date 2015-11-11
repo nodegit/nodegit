@@ -86,6 +86,7 @@ function build() {
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
   var builder = "node-pre-gyp";
   var distUrl = "";
+  var runtime = "";
 
   if (asVersion) {
     var home = process.platform == "win32" ?
@@ -93,19 +94,24 @@ function build() {
 
     opts.env.HOME = path.join(home, ".atom-shell-gyp");
 
+    runtime = "--runtime=electron";
+
     target = "--target=" + asVersion;
 
     distUrl = "--dist-url=https://gh-contractor-zcbenz.s3." +
       "amazonaws.com/atom-shell/dist";
   }
   else if (nwVersion) {
-    builder = "nw-gyp";
+    runtime = "--runtime=node-webkit";
     target = "--target=" + nwVersion;
   }
 
   builder = path.resolve(".", "node_modules", ".bin", builder);
   builder = builder.replace(/\s/g, "\\$&");
-  var cmd = [builder, "rebuild", target, debug, distUrl]
+  var cmd = [
+      builder, "rebuild", runtime, target,
+      debug, distUrl, "--build-from-source"
+    ]
     .join(" ").trim();
 
   return exec(cmd, opts)
