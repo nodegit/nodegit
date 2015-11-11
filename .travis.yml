@@ -59,7 +59,7 @@ after_success:
       npm install -g node-pre-gyp
       npm install -g aws-sdk
       node lifecycleScripts/clean
-      PACKAGE=true node lifecycleScripts/install
+      node lifecycleScripts/package
       node-pre-gyp publish
     fi
 notifications:
