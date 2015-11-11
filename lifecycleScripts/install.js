@@ -39,7 +39,7 @@ return whichNativeNodish("..")
       args.push("--runtime=electron");
       args.push("--target=" + asVersion);
     }
-    return installPrebuilt(args)
+    return installPrebuilt(args);
   });
 
 function installPrebuilt(args) {
