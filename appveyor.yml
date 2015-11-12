@@ -47,6 +47,7 @@ install:
 
 test_script:
   - cmd: npm install -g electron-prebuilt@%ELECTRON_VERSION%
+  - cmd: set PATH=%APPDATA%\npm;%PATH%
   - node --version
   - npm --version
   - cmd: npm test
