@@ -1,5 +1,6 @@
 var spawn = require("child_process").spawn;
 var Promise = require("nodegit-promise");
+var path = require("path");
 
 var determineTarget = require("./determineTarget");
 
@@ -13,7 +14,12 @@ return determineTarget()
     var binaryName = "node";
     var args = ["--expose-gc", "test"];
     if (targetInfo.target === "electron") {
-      binaryName = "electron";
+      binaryName = path.resolve("node_modules", ".bin", "electron");
+
+      if (process.platform === "win32") {
+        binaryName += ".cmd";
+      }
+
       opts.env.ATOM_SHELL_INTERNAL_RUN_AS_NODE = "1";
     }
 
