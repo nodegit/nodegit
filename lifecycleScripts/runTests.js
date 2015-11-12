@@ -9,7 +9,9 @@ return determineTarget()
     var opts = {
       cwd: ".",
       maxBuffer: Number.MAX_VALUE,
-      env: process.env
+      env: process.env,
+      stdio: "inherit",
+      stderr: "inherit",
     };
     var binaryName = "node";
     var args = ["--expose-gc", "test"];
@@ -25,8 +27,6 @@ return determineTarget()
 
     return new Promise(function(resolve, reject) {
       var task = spawn(binaryName, args, opts);
-      task.stdout.pipe(process.stdout);
-      task.stderr.pipe(process.stderr);
       task.on("exit", function(code) {
         if (code === 0) {
           resolve();
