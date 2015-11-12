@@ -15,10 +15,9 @@ module.exports = function build(action, targetInfo) {
   if (targetInfo.target === "electron") {
     var home = process.platform == "win32" ?
             process.env.USERPROFILE : process.env.HOME;
-    opts.env.HOME = path.join(home, ".atom-shell-gyp");
+    opts.env.HOME = path.join(home, ".electron-gyp");
 
-    distUrl = "--dist-url=https://gh-contractor-zcbenz.s3." +
-      "amazonaws.com/atom-shell/dist";
+    distUrl = "--dist-url=https://atom.io/download/atom-shell";
   }
 
   var builder = path.resolve(".", "node_modules", ".bin", "node-pre-gyp");
