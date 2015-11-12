@@ -17,7 +17,7 @@ return determineTarget()
     var args = ["--expose-gc", "test"];
 
     if (targetInfo.target === "electron") {
-      binaryName = "electron.cmd";
+      binaryName = "electron" + process.platform == "win32" ? ".cmd" : "";
       //binaryName = path.resolve("node_modules", ".bin", "electron");
 
       // if (process.platform === "win32") {
