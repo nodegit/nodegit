@@ -13,7 +13,7 @@ return determineTarget()
     var binaryName = "node";
     var args = ["--expose-gc", "test"];
     if (targetInfo.target === "electron") {
-      binaryName = "electron";
+      binaryName = "../node_modules/.bin/electron";
       opts.env.ATOM_SHELL_INTERNAL_RUN_AS_NODE = "1";
     }
 
