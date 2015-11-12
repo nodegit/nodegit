@@ -19,11 +19,10 @@ describe("Attr", function() {
       });
   });
 
-  it.only("can add a macro definition", function() {
+  it("can add a macro definition", function() {
     var error = Attr.addMacro(this.repository, "binary", "-diff -crlf");
 
     assert.equal(error, 0);
-    assert.equal(false, true);
   });
 
   it("can flush the attr cache", function() {
