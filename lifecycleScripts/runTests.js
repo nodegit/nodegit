@@ -23,6 +23,7 @@ return determineTarget()
         binaryName += ".cmd";
       }
 
+      args.push("--enable-logging");
       opts.env.ATOM_SHELL_INTERNAL_RUN_AS_NODE = "1";
     }
 
