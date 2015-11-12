@@ -46,11 +46,9 @@ install:
   - cmd: npm install
 
 test_script:
-  - cmd: set PATH=%APPDATA%\npm;%PATH%
-  - cmd: set PATH=%APPDATA%\Roaming\npm;%PATH%
-  - cmd: npm install electron-prebuilt@%ELECTRON_VERSION%
-  - cmd: node --version
-  - cmd: npm --version
+  - npm install electron-prebuilt@%ELECTRON_VERSION%
+  - node --version
+  - npm --version
   - cmd: npm test
 
 on_success:
