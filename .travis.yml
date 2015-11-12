@@ -60,7 +60,7 @@ after_success:
       npm install -g aws-sdk
       node lifecycleScripts/clean
       node lifecycleScripts/package
-      node-pre-gyp publish
+      node lifecycleScripts/publish
     fi
 notifications:
   slack:
