@@ -27,13 +27,13 @@ environment:
   GIT_SSH: c:\projects\nodegit\vendor\plink.exe
   GYP_MSVS_VERSION: 2013
   matrix:
+    - nodejs_version: "4.1"
+      ELECTRON_VERSION: "0.34.3"
     # Node.js
     - nodejs_version: "0.12"
     # Node.js
     - nodejs_version: "4.1"
     - nodejs_version: "5.0"
-    - nodejs_version: "4.1"
-      ELECTRON_VERSION: "0.34.3"
 
 matrix:
   fast_finish: false
@@ -43,10 +43,10 @@ install:
   - ps: Install-Product node $env:nodejs_version
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - cmd: npm install -g node-gyp
-  - cmd: npm install -g electron-prebuilt@%ELECTRON_VERSION%
   - npm install
 
 test_script:
+  - cmd: npm install -g electron-prebuilt@%ELECTRON_VERSION%
   - node --version
   - npm --version
   - cmd: npm test
