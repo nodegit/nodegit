@@ -15,12 +15,14 @@ return determineTarget()
     };
     var binaryName = "node";
     var args = ["--expose-gc", "test"];
-    if (targetInfo.target === "electron") {
-      binaryName = path.resolve("node_modules", ".bin", "electron");
 
-      if (process.platform === "win32") {
-        binaryName += ".cmd";
-      }
+    if (targetInfo.target === "electron") {
+      binaryName = "electron.cmd"
+      //binaryName = path.resolve("node_modules", ".bin", "electron");
+
+      // if (process.platform === "win32") {
+      //   binaryName += ".cmd";
+      // }
 
       opts.env.ATOM_SHELL_INTERNAL_RUN_AS_NODE = "1";
     }
