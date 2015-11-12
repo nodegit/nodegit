@@ -27,6 +27,7 @@ return determineTarget()
 
     return new Promise(function(resolve, reject) {
       var task = spawn(binaryName, args, opts);
+      task.stdout.on("data", process.write);
       task.on("exit", function(code) {
         if (code === 0) {
           resolve();
