@@ -1,6 +1,6 @@
 var spawn = require("child_process").spawn;
 var Promise = require("nodegit-promise");
-var path = require("path");
+// var path = require("path");
 
 var determineTarget = require("./determineTarget");
 
@@ -17,7 +17,7 @@ return determineTarget()
     var args = ["--expose-gc", "test"];
 
     if (targetInfo.target === "electron") {
-      binaryName = "electron.cmd"
+      binaryName = "electron.cmd";
       //binaryName = path.resolve("node_modules", ".bin", "electron");
 
       // if (process.platform === "win32") {
