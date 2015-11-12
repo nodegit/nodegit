@@ -19,8 +19,6 @@ init:
   - git config --global core.autocrlf input
   - git config --global user.name "John Doe"
   - git config --global user.email johndoe@example.com
-  - cmd: rd /s /q %CHOCOLATEYINSTALL%
-  - ps: iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
 
 # what combinations to test
 environment:
@@ -48,7 +46,9 @@ install:
   - npm install
 
 test_script:
-  - choco install electron -y
+  - cmd: set PATH=%APPDATA%\npm;%PATH%
+  - cmd: set PATH=%APPDATA%\Roaming\npm;%PATH%
+  - cmd: npm install -g electron-prebuilt@%ELECTRON_VERSION%
   - node --version
   - npm --version
   - cmd: npm test
