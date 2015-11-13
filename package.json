@@ -38,6 +38,7 @@
   ],
   "dependencies": {
     "fs-extra": "^0.24.0",
+    "lodash.assign": "^3.2.0",
     "node-pre-gyp": "^0.6.15",
     "nodegit-promise": "^3.0.3",
     "npm": "^3.3.3",
@@ -53,7 +54,6 @@
     "jshint": "^2.8.0",
     "lcov-result-merger": "^1.0.2",
     "lodash": "^3.10.1",
-    "lodash.assign": "^3.2.0",
     "mocha": "^2.3.3",
     "nan": "^2.0.9",
     "node-gyp": "^3.0.3",
