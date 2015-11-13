@@ -53,11 +53,11 @@
     "jshint": "^2.8.0",
     "lcov-result-merger": "^1.0.2",
     "lodash": "^3.10.1",
+    "lodash.assign": "^3.2.0",
     "mocha": "^2.3.3",
     "nan": "^2.0.9",
     "node-gyp": "^3.0.3",
     "nw-gyp": "^0.12.4",
-    "object-assign": "^4.0.1",
     "request": "^2.63.0",
     "tar": "^2.2.1"
   },

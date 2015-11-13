@@ -1,5 +1,5 @@
 var path = require("path");
-var objectAssign = require("object-assign");
+var objectAssign = require("lodash.assign");
 
 var exec = require("./exec");
 

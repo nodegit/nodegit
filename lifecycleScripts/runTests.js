@@ -1,7 +1,7 @@
 var spawn = require("child_process").spawn;
 var Promise = require("nodegit-promise");
 var path = require("path");
-var objectAssign = require("object-assign");
+var objectAssign = require("lodash.assign");
 
 var determineTarget = require("./determineTarget");
 
