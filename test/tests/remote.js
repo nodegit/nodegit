@@ -96,6 +96,8 @@ describe("Remote", function() {
   });
 
   it("can download from a remote", function() {
+    this.timeout(600000);
+
     var repo = this.repository;
     var remoteCallbacks;
 
