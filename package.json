@@ -58,6 +58,7 @@
     "node-gyp": "^3.0.3",
     "nw-gyp": "^0.12.4",
     "request": "^2.63.0",
+    "segfault-handler": "^1.0.0",
     "tar": "^2.2.1"
   },
   "vendorDependencies": {

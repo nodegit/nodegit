@@ -8,6 +8,9 @@ var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
+// Enable segfault handling so if a test segfaults we can debug it
+require('segfault-handler').registerHandler();
+
 var workdirPath = local("repos/workdir");
 
 before(function() {
