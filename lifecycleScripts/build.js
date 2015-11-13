@@ -1,4 +1,5 @@
 var path = require("path");
+var objectAssign = require("object-assign");
 
 var exec = require("./exec");
 
@@ -6,7 +7,7 @@ module.exports = function build(action, targetInfo) {
   var opts = {
     cwd: ".",
     maxBuffer: Number.MAX_VALUE,
-    env: process.env
+    env: objectAssign({}, process.env)
   };
 
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");

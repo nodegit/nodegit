@@ -1,6 +1,7 @@
 var spawn = require("child_process").spawn;
 var Promise = require("nodegit-promise");
 var path = require("path");
+var objectAssign = require("object-assign");
 
 var determineTarget = require("./determineTarget");
 
@@ -9,7 +10,7 @@ return determineTarget()
     var opts = {
       cwd: ".",
       maxBuffer: Number.MAX_VALUE,
-      env: Object.assign({}, process.env),
+      env: objectAssign({}, process.env),
       stdio: "inherit",
       stderr: "inherit",
     };
