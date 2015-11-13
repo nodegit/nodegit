@@ -274,6 +274,31 @@ describe("Diff", function() {
       });
   });
 
+  it("can pass undefined pathspec as option to indexToWorkdir", function() {
+    var test = this;
+
+    return Repository.open(reposPath).then(function(repository) {
+      test.repository = repository;
+
+      return repository.openIndex();
+    })
+    .then(function(index) {
+      test.index = index;
+
+      return test.repository.getBranchCommit("master");
+    })
+    .then(function() {
+      var opts = {
+        flags: Diff.OPTION.INCLUDE_UNTRACKED |
+               Diff.OPTION.RECURSE_UNTRACKED_DIRS,
+        pathspec: undefined
+      };
+
+      // should not segfault
+      return Diff.indexToWorkdir(test.repository, test.index, opts);
+    });
+  });
+
   // This wasn't working before. It was only passing because the promise chain
   // was broken
   it.skip("can find similar files in a diff", function() {
