@@ -39,7 +39,6 @@ before_script:
  - ssh-add ~/.ssh/id_rsa
  - git config --global user.name "John Doe"
  - git config --global user.email johndoe@example.com
- - [ -n "$ELECTRON_VERSION" ] && npm install electron-prebuilt@$ELECTRON_VERSION
 git:
   depth: 1
 branches:
@@ -54,6 +53,9 @@ script:
       npm test && npm run cov && npm run coveralls;
     else
       npm test;
+    fi
+  - if [ -n "$ELECTRON_VERSION" ]; then
+      npm install electron-prebuilt@$ELECTRON_VERSION;
     fi
 after_success:
   - if [ -n "$TRAVIS_TAG" ]; then
