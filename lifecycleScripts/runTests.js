@@ -9,7 +9,7 @@ return determineTarget()
     var opts = {
       cwd: ".",
       maxBuffer: Number.MAX_VALUE,
-      env: process.env,
+      env: Object.assign({}, process.env),
       stdio: "inherit",
       stderr: "inherit",
     };
