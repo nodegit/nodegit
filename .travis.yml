@@ -49,13 +49,13 @@ os:
   - linux
   - osx
 script:
+  - if [ -n "$ELECTRON_VERSION" ]; then
+      npm install electron-prebuilt@$ELECTRON_VERSION;
+    fi
   - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
       npm test && npm run cov && npm run coveralls;
     else
       npm test;
-    fi
-  - if [ -n "$ELECTRON_VERSION" ]; then
-      npm install electron-prebuilt@$ELECTRON_VERSION;
     fi
 after_success:
   - if [ -n "$TRAVIS_TAG" ]; then
