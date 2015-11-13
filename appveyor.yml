@@ -46,7 +46,7 @@ install:
   - cmd: npm install
 
 test_script:
-  - npm install electron-prebuilt@%ELECTRON_VERSION%
+  - IF DEFINED %ELECTRON_VERSION% npm install electron-prebuilt@%ELECTRON_VERSION%
   - node --version
   - npm --version
   - cmd: npm test
