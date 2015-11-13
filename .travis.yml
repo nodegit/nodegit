@@ -12,7 +12,7 @@ env:
     - export NODE_VERSION="0.12"
     - export NODE_VERSION="4.1"
     - export NODE_VERSION="5.0"
-    - export ELECTRON_VERSION="0.34.3" NODE_VERSION="4.1"
+    - export ELECTRON_VERSION="0.34.3" NODE_VERSION="4.2"
 matrix:
   fast_finish: true
 before_install:
