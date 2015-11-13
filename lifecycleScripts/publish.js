@@ -1,11 +1,13 @@
 var exec = require("./exec");
 var determineTarget = require("./determineTarget");
+var findNodePreGyp = require("./findNodePreGyp");
 
 return determineTarget()
   .then(function(targetInfo) {
+    var npg = findNodePreGyp();
     console.info("[nodegit] Publishing native " +
                  targetInfo.target + " module.");
-    return exec("node-pre-gyp publish " + targetInfo.args);
+    return exec(npg + " publish " + targetInfo.args);
   })
   .then(function() {
     console.info("[nodegit] Publishing completed successfully.");

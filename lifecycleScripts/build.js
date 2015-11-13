@@ -2,6 +2,7 @@ var path = require("path");
 var objectAssign = require("lodash.assign");
 
 var exec = require("./exec");
+var findNodePreGyp = require("./findNodePreGyp");
 
 module.exports = function build(action, targetInfo) {
   var opts = {
@@ -21,9 +22,8 @@ module.exports = function build(action, targetInfo) {
     distUrl = "--dist-url=https://atom.io/download/atom-shell";
   }
 
-  var builder = path.resolve(".", "node_modules", ".bin", "node-pre-gyp");
-  builder = builder.replace(/\s/g, "\\$&");
-  var cmd = [builder, action, debug, distUrl, "--build-from-source"]
+  var npg = findNodePreGyp();
+  var cmd = [npg, action, debug, distUrl, "--build-from-source"]
     .concat(targetInfo.args)
     .join(" ")
     .trim();
