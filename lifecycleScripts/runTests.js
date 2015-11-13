@@ -16,7 +16,7 @@ return determineTarget()
     var binaryName = "node";
     var args = ["--expose-gc", "test"];
 
-    if (targetInfo.target === "electron") {
+    if (targetInfo.target === "electron" && process.platform !== "linux") {
       binaryName = path.resolve("node_modules", ".bin", "electron");
 
       if (process.platform === "win32") {
