@@ -28,4 +28,28 @@ describe("Cred", function() {
       ("username", "password");
     assert.ok(plaintextCreds instanceof NodeGit.Cred);
   });
+  
+  it("can create credentials using agent", function() {
+    var fromAgentCreds = NodeGit.Cred.sshKeyFromAgent
+      ("username");
+    assert.ok(fromAgentCreds instanceof NodeGit.Cred);
+  });
+
+  it("can create credentials using username", function() {
+    return NodeGit.Cred.usernameNew
+      ("username").then(function(cred) {
+        assert.ok(cred instanceof NodeGit.Cred);
+      });
+  });
+
+  it("can return 1 if a username exists", function() {
+    var plaintextCreds = NodeGit.Cred.userpassPlaintextNew
+      ("username", "password");
+    assert.ok(plaintextCreds.hasUsername() === 1);
+  });
+
+  it("can return 0 if a username does not exist", function() {
+    var defaultCreds = NodeGit.Cred.defaultNew();
+    assert.ok(defaultCreds.hasUsername() === 0);
+  });
 });
