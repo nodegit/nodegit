@@ -15,7 +15,7 @@ var repoName = "{The name of the repo}";
 // Otherwise, github just wont respond, so a normal credential callback
 // wont work.
 var repoUrl = "https://" + token +
-  ":-oauth-basic@github.com/" +
+  ":x-oauth-basic@github.com/" +
   repoOwner + "/" +
   repoName + ".git";
 
