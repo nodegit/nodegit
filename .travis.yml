@@ -31,15 +31,20 @@ addons:
       - lcov
 
 before_install:
-  - git clone https://github.com/creationix/nvm.git ./.nvm
-  - source ./.nvm/nvm.sh
+  - if [ $TRAVIS_OS_NAME != "linux" ]; then
+      git clone https://github.com/creationix/nvm.git ./.nvm;
+      source ./.nvm/nvm.sh;
+    fi
+
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
+
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
       export JOBS=4;
       export CC=/usr/bin/gcc-4.9;
       export CXX=/usr/bin/g++-4.9;
     fi
+
   - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
       export GYP_DEFINES="coverage=1";
       wget http://downloads.sourceforge.net/ltp/lcov-1.10.tar.gz;
