@@ -9,6 +9,7 @@ describe("Branch", function() {
   var Branch = NodeGit.Branch;
   var branchName = "test-branch";
   var fullBranchName = "refs/heads/" + branchName;
+  var upstreamName = "origin/master";
 
   var reposPath = local("../repos/workdir");
 
@@ -54,6 +55,18 @@ describe("Branch", function() {
     return repo.getBranch("master")
       .then(function(branch) {
         assert.ok(branch.isHead());
+      });
+  });
+
+  it("can set an upstream for a branch", function() {
+    var branch = this.branch;
+
+    return NodeGit.Branch.setUpstream(branch, upstreamName)
+      .then(function() {
+        return NodeGit.Branch.upstream(branch);
+      })
+      .then(function(upstream) {
+        assert.equal(upstream.shorthand(), upstreamName);
       });
   });
 });
