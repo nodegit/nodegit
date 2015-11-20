@@ -178,16 +178,21 @@
           "ignore": true
         },
         "git_branch_set_upstream": {
-          "isAsync": false,
+          "isAsync": true,
           "args": {
             "upstream_name": {
               "isOptional": true
             }
+          },
+          "return" : {
+            "isReturn": true,
+            "isErrorCode": true
           }
         },
         "git_branch_upstream": {
-          "isAsync": false,
+          "isAsync": true,
           "return" : {
+            "isReturn": true,
             "isErrorCode": true
           }
         }
