@@ -21,3 +21,6 @@
 *.log
 .DS_STORE
 .idea
+
+.vscode
+jsconfig.json
