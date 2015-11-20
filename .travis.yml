@@ -45,6 +45,8 @@ before_install:
       wget http://downloads.sourceforge.net/ltp/lcov-1.10.tar.gz;
       tar xvfz lcov-1.10.tar.gz;
     fi
+
+install:
   - BUILD_ONLY=true npm install
 
 # This is a random private key used purely for testing.
