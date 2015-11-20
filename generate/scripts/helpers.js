@@ -289,13 +289,10 @@ var Helpers = {
     // available
     if (key == typeDef.cType + "_free") {
       typeDef.freeFunctionName = key;
-      //fnDef.ignore = true;
-      //return;
     }
 
     fnDef.cppFunctionName = Helpers.cTypeToCppName(key, "git_" + typeDef.typeName);
     fnDef.jsFunctionName = Helpers.cTypeToJsName(key, "git_" + typeDef.typeName);
-    //fnDef.isAsync = false; // until proven otherwise
 
     if (fnDef.cppFunctionName == typeDef.cppClassName) {
       fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");
