@@ -28,6 +28,7 @@ git add .
 git commit -m "Deploy to GitHub Pages
 
 see https://github.com/nodegit/nodegit.github.com/commit/${TRAVIS_COMMIT}"
+git tag "${TRAVIS_COMMIT}"
 
 # push to the "nodegit.github.com" repository
-git push --quiet "https://${GH_TOKEN}@github.com/nodegit/nodegit.github.com.git" > /dev/null 2>&1
+git push --quiet "https://${GH_TOKEN}@github.com/nodegit/nodegit.github.com.git" master "${TRAVIS_COMMIT}" > /dev/null 2>&1
