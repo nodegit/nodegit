@@ -27,23 +27,26 @@ environment:
   GIT_SSH: c:\projects\nodegit\vendor\plink.exe
   GYP_MSVS_VERSION: 2013
   matrix:
+    # Electron
+    - nodejs_version: "4.2"
+      ELECTRON_VERSION: "0.34.3"
     # Node.js
     - nodejs_version: "0.12"
-    # Node.js
     - nodejs_version: "4.1"
     - nodejs_version: "5.0"
 
 matrix:
-  fast_finish: true
+  fast_finish: false
 
 # Get the latest stable version of Node 0.STABLE.latest
 install:
   - ps: Install-Product node $env:nodejs_version
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - cmd: npm install -g node-gyp
-  - npm install
+  - cmd: npm install
 
 test_script:
+  - IF DEFINED ELECTRON_VERSION npm install electron-prebuilt@%ELECTRON_VERSION%
   - node --version
   - npm --version
   - cmd: npm test
@@ -52,8 +55,8 @@ on_success:
   - IF %APPVEYOR_REPO_TAG%==true npm install -g node-pre-gyp
   - IF %APPVEYOR_REPO_TAG%==true npm install -g aws-sdk
   - IF %APPVEYOR_REPO_TAG%==true node lifecycleScripts\clean
-  - IF %APPVEYOR_REPO_TAG%==true node-pre-gyp package
-  - IF %APPVEYOR_REPO_TAG%==true node-pre-gyp publish
+  - IF %APPVEYOR_REPO_TAG%==true node lifecycleScripts\package
+  - IF %APPVEYOR_REPO_TAG%==true node lifecycleScripts\publish
 
 build: off
 

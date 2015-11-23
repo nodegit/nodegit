@@ -38,6 +38,7 @@
   ],
   "dependencies": {
     "fs-extra": "^0.24.0",
+    "lodash.assign": "^3.2.0",
     "node-pre-gyp": "^0.6.15",
     "nodegit-promise": "^3.0.3",
     "npm": "^3.3.3",
@@ -82,7 +83,7 @@
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
     "mocha": "mocha test/runner test/tests",
     "mochaDebug": "mocha --debug-brk test/runner test/tests",
-    "test": "npm run lint && node --expose-gc test",
+    "test": "npm run lint && node lifecycleScripts/runTests",
     "generateJson": "node generate/scripts/generateJson",
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "generateMissingTests": "node generate/scripts/generateMissingTests",

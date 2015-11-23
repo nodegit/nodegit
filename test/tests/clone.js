@@ -15,7 +15,7 @@ describe("Clone", function() {
   var sshPrivateKey = local("../id_rsa");
 
   // Set a reasonable timeout here now that our repository has grown.
-  this.timeout(30000);
+  this.timeout(60000);
 
   beforeEach(function() {
     return fse.remove(clonePath).catch(function(err) {

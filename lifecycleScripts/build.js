@@ -1,0 +1,32 @@
+var path = require("path");
+var objectAssign = require("lodash.assign");
+
+var exec = require("./exec");
+var findNodePreGyp = require("./findNodePreGyp");
+
+module.exports = function build(action, targetInfo) {
+  var opts = {
+    cwd: ".",
+    maxBuffer: Number.MAX_VALUE,
+    env: objectAssign({}, process.env)
+  };
+
+  var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
+  var distUrl = "";
+
+  if (targetInfo.target === "electron") {
+    var home = process.platform == "win32" ?
+            process.env.USERPROFILE : process.env.HOME;
+    opts.env.HOME = path.join(home, ".electron-gyp");
+
+    distUrl = "--dist-url=https://atom.io/download/atom-shell";
+  }
+
+  var npg = findNodePreGyp();
+  var cmd = [npg, action, debug, distUrl, "--build-from-source"]
+    .concat(targetInfo.args)
+    .join(" ")
+    .trim();
+
+  return exec(cmd, opts);
+};
