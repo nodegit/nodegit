@@ -140,7 +140,7 @@
         'cflags': ['-Wno-old-style-declaration'],
       }],
       ['OS=="linux"', {
-        'defines': ['-Wa,-q']
+        'cflags': ['-march=native']
       }],
       ['OS=="solaris"', {
         'defines': ['__EXTENSIONS__'],

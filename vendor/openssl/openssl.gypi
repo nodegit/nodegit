@@ -1273,6 +1273,10 @@
     'openssl_default_libraries_win': [
       '-lgdi32.lib',
       '-luser32.lib',
+      '-lwsock32.lib',
+      '-lwinhttp.lib',
+      '-lcrypt32.lib',
+      '-lrpcrt4.lib'
     ],
     'openssl_default_defines_not_win': [
       # ENGINESDIR must be defined if OPENSSLDIR is.
