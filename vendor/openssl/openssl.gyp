@@ -7,9 +7,7 @@
     'is_clang': 0,
     'gcc_version': 0,
     'openssl_no_asm%': 0,
-    'llvm_version%': 0,
-    'gas_version%': 0,
-    'openssl_fips%': 'false',
+    'use_obsolete_asm%': 'true'
   },
   'targets': [
     {
