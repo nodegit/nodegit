@@ -62,8 +62,8 @@
   },
   "vendorDependencies": {
     "libgit2": {
-      "sha": "dbf0c5c86ea2c0c621ba9ef5cbd5bb326d266989",
-      "version": "0.23.3"
+      "sha": "e8feafe32007ebd16a61820c70abd221655d053c",
+      "version": "0.23.4"
     },
     "libssh2": "1.6.0",
     "http_parser": "2.5.0"
