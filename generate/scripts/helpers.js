@@ -262,7 +262,9 @@ var Helpers = {
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
       arg.isReturn = arg.name === "out" || (utils.isDoublePointer(arg.type) && normalizedType == typeDef.cType);
-      arg.isSelf = utils.isPointer(arg.type) && normalizedType == typeDef.cType;
+      arg.isSelf = utils.isPointer(arg.type) &&
+        normalizedType == typeDef.cType &&
+        _.every(allArgs, function(_arg) { return !_arg.isSelf; });
 
       if (arg.isReturn && fnDef.return && fnDef.return.type === "int") {
         fnDef.return.isErrorCode = true;

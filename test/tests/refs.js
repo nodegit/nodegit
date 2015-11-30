@@ -53,6 +53,19 @@ describe("Reference", function() {
     assert.equal(this.reference.toString(), refName);
   });
 
+  it("can compare two identical references", function() {
+    assert.equal(this.reference.cmp(this.reference), 0);
+  });
+
+  it("can compare two different references", function() {
+    var ref = this.reference;
+
+    return this.repository.getReference("checkout-test")
+      .then(function(otherRef) {
+        assert.notEqual(ref.cmp(otherRef), 0);
+      });
+  });
+
   it("will return undefined looking up the symbolic target if not symbolic",
     function() {
       assert(this.reference.symbolicTarget() === undefined);
