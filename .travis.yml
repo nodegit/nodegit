@@ -52,7 +52,8 @@ before_install:
     fi
 
 install:
-  - BUILD_ONLY=true npm install
+  - npm install --ignore-scripts
+  - npm run rebuild
 
 # This is a random private key used purely for testing.
 before_script:

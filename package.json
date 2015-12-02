@@ -88,9 +88,9 @@
     "install": "node lifecycleScripts/prepareForBuild.js",
     "postinstall": "npg-npmrc-helper install --fallback-to-build",
     "recompile": "node-gyp configure build",
-    "rebuild": "node generate && node-gyp configure build",
-    "recompileDebug": "node-gyp configure --debug build",
-    "rebuildDebug": "node generate && node-gyp configure --debug build",
+    "recompileDebug": "node-gyp configure build --debug",
+    "rebuild": "node lifecycleScripts/prepareForBuild.js && node-gyp rebuild",
+    "rebuildDebug": "node lifecycleScripts/prepareForBuild.js && node-gyp rebuild --debug",
     "xcodeDebug": "node-gyp configure -- -f xcode"
   }
 }
