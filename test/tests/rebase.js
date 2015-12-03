@@ -808,6 +808,8 @@ describe("Rebase", function() {
     var ourBranch;
     var theirBranch;
 
+    var nextCalls = 0;
+
     return fse.writeFile(path.join(repository.workdir(), baseFileName),
       baseFileContent)
       // Load up the repository index and make our initial commit to HEAD
@@ -887,9 +889,18 @@ describe("Rebase", function() {
       })
       .then(function() {
         return repository.rebaseBranches(ourBranchName, theirBranchName,
-          null, ourSignature);
+          null, ourSignature, function(rebase) {
+            assert.ok(rebase instanceof NodeGit.Rebase);
+
+            nextCalls++;
+
+            return Promise.resolve();
+          });
       })
       .then(function(commit) {
+        // verify that the beforeNextFn callback was called
+        assert.equal(nextCalls, 2);
+
         // verify that the "ours" branch has moved to the correct place
         assert.equal(commit.id().toString(),
           "b937100ee0ea17ef20525306763505a7fe2be29e");
@@ -932,6 +943,7 @@ describe("Rebase", function() {
     var ourCommit;
     var ourBranch;
     var theirBranch;
+    var nextCalls=0;
 
     return fse.writeFile(path.join(repository.workdir(), fileName),
       baseFileContent)
@@ -1032,10 +1044,19 @@ describe("Rebase", function() {
           .then(function(index) {
             assert.ok(!index.hasConflicts());
 
-            return repository.continueRebase(ourSignature);
+            return repository.continueRebase(ourSignature, function(rebase) {
+              assert.ok(rebase instanceof NodeGit.Rebase);
+              
+              nextCalls++;
+
+              return Promise.resolve();
+            });
           });
       })
       .then(function(commit) {
+        // verify that the beforeNextFn callback was called
+        assert.equal(nextCalls, 1);
+
         // verify that the "ours" branch has moved to the correct place
         assert.equal(commit.id().toString(),
           "ef6d0e95167435b3d58f51ab165948c72f6f94b6");
