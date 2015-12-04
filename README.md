@@ -16,7 +16,7 @@ NodeGit
   <tbody>
     <tr>
       <td colspan="2" align="center">
-        <a href="https://travis-ci.org/nodegit/nodegit"><img src="https://travis-ci.org/nodegit/nodegit.svg"></a>
+        <a href="https://travis-ci.org/nodegit/nodegit"><img src="https://api.travis-ci.org/nodegit/nodegit.svg?branch=master"></a>
       </td>
       <td align="center">
         <a href="https://ci.appveyor.com/project/timbranyen/nodegit"><img src="https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true"></a>
