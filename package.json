@@ -86,7 +86,7 @@
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "generateMissingTests": "node generate/scripts/generateMissingTests",
     "prepublish": "node lifecycleScripts/prepareForBuild.js",
-    "install": "npg-npmrc-helper install --fallback-to-build",
+    "install": "node lifecycleScripts/install.js",
     "recompile": "node-gyp configure build",
     "recompileDebug": "node-gyp configure build --debug",
     "rebuild": "node lifecycleScripts/prepareForBuild.js && node-gyp rebuild",
