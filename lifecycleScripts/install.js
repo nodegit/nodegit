@@ -1,5 +1,6 @@
 var fs = require("fs");
 var path = require("path");
+var promisify = require("promisify-node");
 var prepareForBuild = require("./prepareForBuild");
 
 var exec = promisify(function(command, opts, callback) {
@@ -7,7 +8,8 @@ var exec = promisify(function(command, opts, callback) {
 });
 
 function install(type) {
-  var helperPath = path.resolve(".", "node_modules", ".bin", "npg-npmrc-helper");
+  var helperPath = path.resolve(".", "node_modules", ".bin",
+                                "npg-npmrc-helper");
   var cmd = "node " + helperPath + " install " + type;
   return exec(cmd);
 }
