@@ -45,6 +45,7 @@
     "node-pre-gyp-npmrc-helper": "~1.1.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.2.21",
     "clean-for-publish": "~1.0.2",
     "combyne": "~0.8.1",
     "coveralls": "~2.11.4",
