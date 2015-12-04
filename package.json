@@ -89,8 +89,8 @@
     "install": "node lifecycleScripts/install.js",
     "recompile": "node-gyp configure build",
     "recompileDebug": "node-gyp configure build --debug",
-    "rebuild": "node lifecycleScripts/prepareForBuild.js && node-gyp rebuild",
-    "rebuildDebug": "node lifecycleScripts/prepareForBuild.js && node-gyp rebuild --debug",
+    "rebuild": "node lifecycleScripts/prepareForBuild.js && npg-npmrc-helper rebuild",
+    "rebuildDebug": "node lifecycleScripts/prepareForBuild.js && npg-npmrc-helper rebuild --debug",
     "xcodeDebug": "node-gyp configure -- -f xcode"
   }
 }
