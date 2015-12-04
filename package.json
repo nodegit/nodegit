@@ -42,7 +42,7 @@
     "node-pre-gyp": "~0.6.15",
     "nodegit-promise": "~4.0.0",
     "promisify-node": "~0.3.0",
-    "node-pre-gyp-npmrc-helper": "~1.1.0"
+    "node-pre-gyp-npmrc-helper": "joshaber/node-pre-gyp-npmrc-helper#windows"
   },
   "devDependencies": {
     "aws-sdk": "^2.2.21",
