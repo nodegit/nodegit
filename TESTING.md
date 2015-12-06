@@ -11,6 +11,9 @@ Currently there are a number of fields and functions in NodeGit that have no tes
 npm run generateMissingTests
 ```
 
+>You should have run already `npm install .` or it will complain about
+> missing `nodegit-promise` or suchlike
+
 This will make the file `generate/output/missing-tests.json` which will contain info for tests or files that are currently missing.
 
 From this file you can find fields and functions that don't have any tests yet and pick one to work on.
@@ -32,13 +35,14 @@ In the `missing-tests.json` file you'll see it formatted like so:
 
 In the file each `{className}` corresponds to a file found at `test/tests/{classname}`. Each entry in either `fields` or `functions` is a missing test for the respective field/function.
 
-In the file that your test is going in you can just append it to the file inside of the `describe` function block.
+In the file that your test is going in you can just append it to the file inside the `describe` function block.
 
 It can be helpful to reference the [libgit2 API docs](https://libgit2.github.com/libgit2/#v0.21.4) to know what the field or function is doing inside of libgit2 and referencing the [NodeGit API docs](http://www.nodegit.org/) can also help. Looking at examples inside of `/examples` can show you how we wrap the libgit2 library and how you can call into it from JavaScript.
 
 The idea is to test the basic functionality of the field/function and to confirm that it's returning or setting the value(s) correctly. Bugs inside of libgit2 will have to either have a work-around or be ignored.
 
-If a specific field or function is further wrapped via a file inside of `/lib` then as long as that wrapper is called and tested.
+If a specific field or function is further wrapped via a file inside
+of `/lib` then as long as that wrapper is called and tested it is OK.
 
 You can mark something to be ignored inside of the `/generate/missing-tests-ignore.json` file.
 
