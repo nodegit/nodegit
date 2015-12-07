@@ -1,7 +1,7 @@
 {
   "name": "nodegit-atom",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
