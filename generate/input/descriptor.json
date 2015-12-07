@@ -102,7 +102,16 @@
       }
     },
     "blame": {
-      "cType": "git_blame"
+      "cType": "git_blame",
+      "functions": {
+        "git_blame_file": {
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          }
+        }
+      }
     },
     "blame_hunk": {
       "fields": {
