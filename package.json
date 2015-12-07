@@ -34,15 +34,13 @@
     "node": ">= 0.12"
   },
   "bundledDependencies": [
-    "node-pre-gyp",
-    "node-pre-gyp-npmrc-helper"
+    "node-pre-gyp"
   ],
   "dependencies": {
     "fs-extra": "~0.26.2",
     "node-pre-gyp": "~0.6.15",
     "nodegit-promise": "~4.0.0",
-    "promisify-node": "~0.3.0",
-    "node-pre-gyp-npmrc-helper": "joshaber/node-pre-gyp-npmrc-helper#windows"
+    "promisify-node": "~0.3.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.2.21",
@@ -89,8 +87,8 @@
     "install": "node lifecycleScripts/install.js",
     "recompile": "node-gyp configure build",
     "recompileDebug": "node-gyp configure build --debug",
-    "rebuild": "node lifecycleScripts/prepareForBuild.js && npg-npmrc-helper rebuild",
-    "rebuildDebug": "node lifecycleScripts/prepareForBuild.js && npg-npmrc-helper rebuild --debug",
+    "rebuild": "node lifecycleScripts/prepareForBuild.js && node-pre-gyp rebuild",
+    "rebuildDebug": "node lifecycleScripts/prepareForBuild.js && node-pre-gyp rebuild --debug",
     "xcodeDebug": "node-gyp configure -- -f xcode"
   }
 }

@@ -9,7 +9,7 @@ var exec = promisify(function(command, opts, callback) {
 
 function install(type) {
   var helperPath = path.resolve(".", "node_modules", ".bin",
-                                "npg-npmrc-helper");
+                                "node-pre-gyp");
   var cmd = "node " + helperPath + " install " + type;
   return exec(cmd);
 }
