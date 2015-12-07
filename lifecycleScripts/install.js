@@ -2,50 +2,31 @@ var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
 
-var whichNativeNodish = require("which-native-nodish");
 var prepareForBuild = require("./prepareForBuild");
 
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
-var nwVersion = null;
-var asVersion = null;
 
 var local = path.join.bind(path, __dirname);
 
-return whichNativeNodish("..")
-  .then(function(results) {
-    nwVersion = results.nwVersion;
-    asVersion = results.asVersion;
-  })
-  .then(function() {
-    if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
-      return prepareAndBuild();
-    }
-    if (process.env.BUILD_DEBUG) {
-      console.info("[nodegit] Doing a debug build, no fetching allowed.");
-      return prepareAndBuild();
-    }
-    if (process.env.BUILD_ONLY) {
-      console.info("[nodegit] BUILD_ONLY is set to true, no fetching allowed.");
-      return prepareAndBuild();
-    }
-    var args = [];
-    if (asVersion) {
-      args.push("--runtime=electron");
-      args.push("--target=" + asVersion);
-      args.push("--is_clang=1");
-    } else if (nwVersion) {
-      args.push("--runtime=node-webkit");
-      args.push("--target=" + nwVersion);
-    }
-    return installPrebuilt(args);
-  });
+if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
+  return prepareAndBuild();
+}
+if (process.env.BUILD_DEBUG) {
+  console.info("[nodegit] Doing a debug build, no fetching allowed.");
+  return prepareAndBuild();
+}
+if (process.env.BUILD_ONLY) {
+  console.info("[nodegit] BUILD_ONLY is set to true, no fetching allowed.");
+  return prepareAndBuild();
+}
 
-function installPrebuilt(args) {
+return installPrebuilt();
+
+function installPrebuilt() {
   console.info("[nodegit] Fetching binary from S3.");
-  var installArguments = args.join(" ");
-  return exec("node-pre-gyp install " + installArguments)
+  return exec("node-pre-gyp install --fallback-to-build=false")
     .then(
       function() {
         console.info("[nodegit] Completed installation successfully.");
@@ -70,12 +51,6 @@ function prepareAndBuild() {
 
 function build() {
   console.info("[nodegit] Everything is ready to go, attempting compilation");
-  if (nwVersion) {
-    console.info("[nodegit] Building native node-webkit module.");
-  }
-  else {
-    console.info("[nodegit] Building native node module.");
-  }
 
   var opts = {
     cwd: ".",
@@ -83,31 +58,17 @@ function build() {
     env: process.env
   };
 
-  var target = "";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
   var builder = "node-gyp";
-  var distUrl = "";
 
-  if (asVersion) {
-    var home = process.platform == "win32" ?
-            process.env.USERPROFILE : process.env.HOME;
+  var home = process.platform == "win32" ?
+              process.env.USERPROFILE : process.env.HOME;
 
-    opts.env.HOME = path.join(home, ".atom-shell-gyp");
-
-    target = "--target=" + asVersion;
-
-    distUrl = "--dist-url=https://gh-contractor-zcbenz.s3." +
-      "amazonaws.com/atom-shell/dist";
-  }
-  else if (nwVersion) {
-    builder = "nw-gyp";
-    target = "--target=" + nwVersion;
-  }
+  opts.env.HOME = path.join(home, ".nodegit-gyp");
 
   builder = path.resolve(".", "node_modules", ".bin", builder);
   builder = builder.replace(/\s/g, "\\$&");
-  var cmd = [builder, "rebuild", target, debug, distUrl]
-    .join(" ").trim();
+  var cmd = [builder, "rebuild", debug].join(" ").trim();
 
   return exec(cmd, opts)
     .then(function() {
