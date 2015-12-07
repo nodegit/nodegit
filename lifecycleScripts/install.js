@@ -43,9 +43,9 @@ function installPrebuilt() {
 
 
 function pathForTool(name) {
-  var path = path.resolve(".", "node_modules", ".bin", name);
-  path = path.replace(/\s/g, "\\$&");
-  return path
+  var toolPath = path.resolve(".", "node_modules", ".bin", name);
+  toolPath = toolPath.replace(/\s/g, "\\$&");
+  return toolPath
 }
 
 
