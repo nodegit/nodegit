@@ -32,9 +32,9 @@ function installPrebuilt() {
         console.info("[nodegit] Completed installation successfully.");
       },
       function(err) {
-        console.info("[nodegit] Failed to install prebuilt binary, " +
-          "building manually.");
+        console.info("[nodegit] Failed to install prebuilt binary:");
         console.error(err);
+        console.info("[nodegit] Building manually. (You'll be here a while.)");
         return prepareAndBuild();
       }
     );
