@@ -20,11 +20,22 @@ function buildFromSource() {
   });
 }
 
-if (fs.existsSync("../.didntcomefromthenpmregistry")) {
-  // If we're developing then we always want to build from source.
+var fromRegistry;
+try {
+  fs.statSync(path.join(__dirname, '..', 'include'));
+  fs.statSync(path.join(__dirname, '..', 'src'));
+  fromRegistry = true;
+}
+catch(e) {
+  fromRegistry = false;
+}
+
+
+if (fromRegistry) {
+  // If we're developing, or installing via npm-git then we always want to build from source.
   return buildFromSource();
 } else {
   // Don't use node-pre-gyp's built-in fallback. We need to prepareForBuild()
   // first.
-  return install("--fallback-to-build=false").catch(buildFromSource());
+  return install("--fallback-to-build=false").catch(buildFromSource);
 }
