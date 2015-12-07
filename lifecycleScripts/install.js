@@ -10,8 +10,8 @@ var exec = promisify(function(command, opts, callback) {
 
 var fromRegistry;
 try {
-  fs.statSync(path.join(__dirname, '..', 'include'));
-  fs.statSync(path.join(__dirname, '..', 'src'));
+  fs.statSync(path.join(__dirname, "..", "include"));
+  fs.statSync(path.join(__dirname, "..", "src"));
   fromRegistry = true;
 }
 catch(e) {
