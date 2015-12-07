@@ -39,6 +39,13 @@ describe("TreeEntry", function() {
       });
   });
 
+  it("provides the correct length for a file", function() {
+    return this.commit.getEntry("README.md")
+	  .then(function(entry) {
+              assert.equal(entry.filenameLen(), 9);
+	  });
+  });  
+
   it("provides the filename", function() {
     return this.commit.getEntry("test/raw-commit.js")
       .then(function(entry) {
