@@ -26,7 +26,7 @@ return installPrebuilt();
 
 function installPrebuilt() {
   console.info("[nodegit] Fetching binary from S3.");
-  var npg = pathForTool("node-pre-gyp")
+  var npg = pathForTool("node-pre-gyp");
   return exec(npg + " install --fallback-to-build=false")
     .then(
       function() {
@@ -45,7 +45,7 @@ function installPrebuilt() {
 function pathForTool(name) {
   var toolPath = path.resolve(".", "node_modules", ".bin", name);
   toolPath = toolPath.replace(/\s/g, "\\$&");
-  return toolPath
+  return toolPath;
 }
 
 
@@ -73,7 +73,7 @@ function build() {
 
   opts.env.HOME = path.join(home, ".nodegit-gyp");
 
-  var builder = pathForTool("node-gyp")
+  var builder = pathForTool("node-gyp");
   var cmd = [builder, "rebuild", debug].join(" ").trim();
 
   return exec(cmd, opts)
