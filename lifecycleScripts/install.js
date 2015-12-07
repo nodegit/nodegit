@@ -8,9 +8,18 @@ var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
-var local = path.join.bind(path, __dirname);
+var fromRegistry;
+try {
+  fs.statSync(path.join(__dirname, '..', 'include'));
+  fs.statSync(path.join(__dirname, '..', 'src'));
+  fromRegistry = true;
+}
+catch(e) {
+  fromRegistry = false;
+}
 
-if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
+if (fromRegistry) {
+  console.info("[nodegit] Local install, no fetching allowed.");
   return prepareAndBuild();
 }
 if (process.env.BUILD_DEBUG) {
@@ -41,13 +50,11 @@ function installPrebuilt() {
     );
 }
 
-
 function pathForTool(name) {
   var toolPath = path.resolve(".", "node_modules", ".bin", name);
   toolPath = toolPath.replace(/\s/g, "\\$&");
   return toolPath;
 }
-
 
 function prepareAndBuild() {
   console.info("[nodegit] Regenerating and configuring code");
@@ -73,8 +80,7 @@ function build() {
 
   opts.env.HOME = path.join(home, ".nodegit-gyp");
 
-  var builder = pathForTool("node-gyp");
-  var cmd = [builder, "rebuild", debug].join(" ").trim();
+  var cmd = [pathForTool("node-gyp"), "rebuild", debug].join(" ").trim();
 
   return exec(cmd, opts)
     .then(function() {
