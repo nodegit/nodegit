@@ -1,7 +1,7 @@
 {
-  "name": "nodegit",
+  "name": "nodegit-atom",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.5.0",
+  "version": "0.0.1",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -40,8 +40,7 @@
     "fs-extra": "~0.26.2",
     "node-pre-gyp": "~0.6.15",
     "nodegit-promise": "~4.0.0",
-    "promisify-node": "~0.3.0",
-    "which-native-nodish": "~1.1.3"
+    "promisify-node": "~0.3.0"
   },
   "devDependencies": {
     "clean-for-publish": "~1.0.2",
