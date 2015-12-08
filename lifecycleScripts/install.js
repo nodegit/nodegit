@@ -67,20 +67,52 @@ function prepareAndBuild() {
 function build() {
   console.info("[nodegit] Everything is ready to go, attempting compilation");
 
+  var electronVersion = process.env.ELECTRON_VERSION;
+  var nwjsVersion = process.env.NWJS_VERSION;
   var opts = {
     cwd: ".",
     maxBuffer: Number.MAX_VALUE,
     env: process.env
   };
 
+  var builder = "node-gyp";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
+  var target;
+  var distUrl;
+
+  process.argv.forEach(function(arg) {
+    if (~arg.indexOf("electronVersion")) {
+      electronVersion = arg.split("=")[1].trim();
+    }
+    else if (~arg.indexOf("nsjwVersion")) {
+      nwjsVersion = arg.split("=")[1].trim();
+    }
+  });
+
+  if (electronVersion) {
+    target = "--target=" + electronVersion;
+    distUrl = "--dist-url=https://gh-contractor-zcbenz.s3." +
+      "amazonaws.com/atom-shell/dist";
+  }
+  else if (nwjsVersion) {
+    builder = "nw-gyp";
+    target = "--target=" + nwjsVersion;
+  }
 
   var home = process.platform == "win32" ?
               process.env.USERPROFILE : process.env.HOME;
 
   opts.env.HOME = path.join(home, ".nodegit-gyp");
 
-  var cmd = [pathForTool("node-gyp"), "rebuild", debug].join(" ").trim();
+  var cmd = [
+    pathForTool(builder),
+    "rebuild",
+    debug,
+    target,
+    distUrl
+  ]
+  .join(" ")
+  .trim();
 
   return exec(cmd, opts)
     .then(function() {
