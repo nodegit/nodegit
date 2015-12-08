@@ -18,7 +18,7 @@ catch(e) {
   fromRegistry = false;
 }
 
-if (fromRegistry) {
+if (!fromRegistry) {
   console.info("[nodegit] Local install, no fetching allowed.");
   return prepareAndBuild();
 }
