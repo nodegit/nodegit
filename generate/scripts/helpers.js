@@ -109,8 +109,9 @@ var Helpers = {
   processCallback: function(field) {
     field.isCallbackFunction = true;
 
-    if (callbackDefs[field.type]) {
-      _.merge(field, callbackDefs[field.type]);
+    var callbackDef = callbackDefs[field.type] || callbackDefs[field.cType];
+    if (callbackDef) {
+      _.merge(field, callbackDef);
     }
     else {
       if (process.env.BUILD_ONLY) {
@@ -234,6 +235,10 @@ var Helpers = {
 
   decorateArg: function(arg, allArgs, typeDef, fnDef, argOverrides, enums) {
     var type = arg.cType || arg.type;
+    if (argOverrides) {
+      type = argOverrides.cType || argOverrides.type || type;
+    }
+
     var normalizedType = Helpers.normalizeCtype(type);
 
     arg.cType = type;
