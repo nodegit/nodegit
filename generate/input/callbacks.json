@@ -611,6 +611,28 @@
       "error": -1
     }
   },
+  "git_submodule_cb": {
+    "args": [
+      {
+        "name": "sm",
+        "cType": "git_submodule *"
+      },
+      {
+        "name": "name",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": -1
+    }
+  },
   "git_tag_foreach_cb": {
     "args": [
       {
