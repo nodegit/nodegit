@@ -988,7 +988,7 @@
           }
         },
         "git_index_new": {
-          "ignore": true
+          "isAsync": false
         },
         "git_index_read": {
           "args": {
