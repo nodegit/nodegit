@@ -40,7 +40,7 @@ describe("TreeBuilder", function(){
         //count how many entries we should have
         return readDir(reposPath)
         //treebuilder should have all entries in the clean working dir (minus .git folder)
-        .then(dirEntries => assert.equal(dirEntries.length-1, treeBuilder.entrycount()));
+        .then(function(dirEntries){ return assert.equal(dirEntries.length-1, treeBuilder.entrycount()) });
       });
     });
 })
