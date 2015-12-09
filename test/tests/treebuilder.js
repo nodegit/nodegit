@@ -47,4 +47,33 @@ describe("TreeBuilder", function(){
         });
       });
     });
+    //adding a tree is adding a folder
+    it("Can add a new tree to an existing tree", function(){
+
+      var test = this;
+      //get latest commit
+      return test.repo.getHeadCommit()
+      //get tree of commit
+      .then(function(commit){ return commit.getTree(); })
+      //make treebuilder from tree
+      .then(function(tree){ return Git.Treebuilder.create(test.repo, tree); })
+      //verify treebuilder can do stuff
+      .then(function(rootTreeBuilder){
+        //new dir builder
+        return Git.Treebuilder.create(test.repo, null)
+        .then(function(newTreeBuilder){
+          //insert new dir
+          return rootTreeBuilder.insert(
+            "mynewfolder",
+            newTreeBuilder.write(),
+            Git.TreeEntry.FILEMODE.TREE
+          );
+        });
+      })
+      .then(function(newTreeEntry){
+        assert(newTreeEntry.isTree(),
+          "Created a tree (new folder) that is a tree");
+        return Git.Tree.lookup(test.repo, newTreeEntry.oid());
+      });
+    });
 });
