@@ -2099,6 +2099,13 @@
               "isReturn": true
             }
           }
+        },
+        "git_treebuilder_new": {
+          "args": {
+            "source": {
+              "isOptional": true
+            }
+          }
         }
       }
     },
