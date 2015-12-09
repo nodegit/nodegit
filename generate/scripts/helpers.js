@@ -109,8 +109,9 @@ var Helpers = {
   processCallback: function(field) {
     field.isCallbackFunction = true;
 
-    if (callbackDefs[field.type]) {
-      _.merge(field, callbackDefs[field.type]);
+    var callbackDef = callbackDefs[field.type] || callbackDefs[field.cType];
+    if (callbackDef) {
+      _.merge(field, callbackDef);
     }
     else {
       if (process.env.BUILD_ONLY) {
@@ -233,7 +234,7 @@ var Helpers = {
   },
 
   decorateArg: function(arg, allArgs, typeDef, fnDef, argOverrides, enums) {
-    var type = arg.cType || arg.type;
+    var type = argOverrides.cType || argOverrides.type || arg.cType || arg.type;
     var normalizedType = Helpers.normalizeCtype(type);
 
     arg.cType = type;
@@ -265,6 +266,8 @@ var Helpers = {
       if (typeof arg.isSelf == 'undefined') {
         arg.isSelf = utils.isPointer(arg.type) &&
           normalizedType == typeDef.cType &&
+          arg.cppClassName !== "Array" &&
+          argOverrides.cppClassName !== "Array" &&
           _.every(allArgs, function(_arg) { return !_arg.isSelf; });
       }
 

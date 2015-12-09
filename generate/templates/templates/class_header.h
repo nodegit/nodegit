@@ -12,6 +12,8 @@ extern "C" {
 {%endeach%}
 }
 
+#include "../include/typedefs.h"
+
 {%each dependencies as dependency%}
 #include "{{ dependency }}"
 {%endeach%}

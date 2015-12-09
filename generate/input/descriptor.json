@@ -1962,7 +1962,18 @@
     "submodule": {
       "functions": {
         "git_submodule_foreach": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "callback": {
+              "type": "git_submodule_cb",
+              "cType": "git_submodule_cb",
+              "cppClassName": "git_submodule_cb"
+            }
+          },
+          "return": {
+            "isErrorCode": true,
+            "type": "int"
+          }
         },
         "git_submodule_location": {
           "ignore": true
