@@ -981,9 +981,6 @@
             }
           }
         },
-        "git_index_new": {
-          "ignore": true
-        },
         "git_index_read": {
           "args": {
             "force": {
