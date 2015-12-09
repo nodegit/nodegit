@@ -234,11 +234,7 @@ var Helpers = {
   },
 
   decorateArg: function(arg, allArgs, typeDef, fnDef, argOverrides, enums) {
-    var type = arg.cType || arg.type;
-    if (argOverrides) {
-      type = argOverrides.cType || argOverrides.type || type;
-    }
-
+    var type = argOverrides.cType || argOverrides.type || arg.cType || arg.type;
     var normalizedType = Helpers.normalizeCtype(type);
 
     arg.cType = type;
@@ -270,6 +266,8 @@ var Helpers = {
       if (typeof arg.isSelf == 'undefined') {
         arg.isSelf = utils.isPointer(arg.type) &&
           normalizedType == typeDef.cType &&
+          arg.cppClassName !== "Array" &&
+          argOverrides.cppClassName !== "Array" &&
           _.every(allArgs, function(_arg) { return !_arg.isSelf; });
       }
 

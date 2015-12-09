@@ -392,8 +392,7 @@
               "cType": "const git_commit **",
               "cppClassName": "Array",
               "jsClassName": "Array",
-              "arrayElementCppClassName": "GitCommit",
-              "isSelf": false
+              "arrayElementCppClassName": "GitCommit"
             },
             "update_ref": {
               "isOptional": true
