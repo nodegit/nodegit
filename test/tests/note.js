@@ -6,7 +6,7 @@ describe("Note", function() {
   var NodeGit = require("../../");
   var Note = NodeGit.Note;
   var Signature = NodeGit.Signature;
-  var reposPath = local("../../");
+  var reposPath = local("../repos/workdir");
 
   beforeEach(function() {
     var test = this;
@@ -15,7 +15,7 @@ describe("Note", function() {
       test.repository = repository;
 
       return repository.getMasterCommit().then(function(commit) {
-        test.commit = commit; 
+        test.commit = commit;
       });
     });
   });
