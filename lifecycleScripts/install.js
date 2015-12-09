@@ -2,63 +2,59 @@ var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
 
-var whichNativeNodish = require("which-native-nodish");
 var prepareForBuild = require("./prepareForBuild");
 
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
-var nwVersion = null;
-var asVersion = null;
 
-var local = path.join.bind(path, __dirname);
+var fromRegistry;
+try {
+  fs.statSync(path.join(__dirname, "..", "include"));
+  fs.statSync(path.join(__dirname, "..", "src"));
+  fromRegistry = true;
+}
+catch(e) {
+  fromRegistry = false;
+}
 
-return whichNativeNodish("..")
-  .then(function(results) {
-    nwVersion = results.nwVersion;
-    asVersion = results.asVersion;
-  })
-  .then(function() {
-    if (fs.existsSync(local("../.didntcomefromthenpmregistry"))) {
-      return prepareAndBuild();
-    }
-    if (process.env.BUILD_DEBUG) {
-      console.info("[nodegit] Doing a debug build, no fetching allowed.");
-      return prepareAndBuild();
-    }
-    if (process.env.BUILD_ONLY) {
-      console.info("[nodegit] BUILD_ONLY is set to true, no fetching allowed.");
-      return prepareAndBuild();
-    }
-    var args = [];
-    if (asVersion) {
-      args.push("--runtime=electron");
-      args.push("--target=" + asVersion);
-      args.push("--is_clang=1");
-    } else if (nwVersion) {
-      args.push("--runtime=node-webkit");
-      args.push("--target=" + nwVersion);
-    }
-    return installPrebuilt(args);
-  });
+if (!fromRegistry) {
+  console.info("[nodegit] Local install, no fetching allowed.");
+  return prepareAndBuild();
+}
+if (process.env.BUILD_DEBUG) {
+  console.info("[nodegit] Doing a debug build, no fetching allowed.");
+  return prepareAndBuild();
+}
+if (process.env.BUILD_ONLY) {
+  console.info("[nodegit] BUILD_ONLY is set to true, no fetching allowed.");
+  return prepareAndBuild();
+}
 
-function installPrebuilt(args) {
+return installPrebuilt();
+
+function installPrebuilt() {
   console.info("[nodegit] Fetching binary from S3.");
-  var installArguments = args.join(" ");
-  return exec("node-pre-gyp install " + installArguments)
+  var npg = pathForTool("node-pre-gyp");
+  return exec(npg + " install --fallback-to-build=false")
     .then(
       function() {
         console.info("[nodegit] Completed installation successfully.");
       },
       function(err) {
-        console.info("[nodegit] Failed to install prebuilt binary, " +
-          "building manually.");
+        console.info("[nodegit] Failed to install prebuilt binary:");
         console.error(err);
+        console.info("[nodegit] Building manually. (You'll be here a while.)");
         return prepareAndBuild();
       }
     );
 }
 
+function pathForTool(name) {
+  var toolPath = path.resolve(".", "node_modules", ".bin", name);
+  toolPath = toolPath.replace(/\s/g, "\\$&");
+  return toolPath;
+}
 
 function prepareAndBuild() {
   console.info("[nodegit] Regenerating and configuring code");
@@ -70,44 +66,53 @@ function prepareAndBuild() {
 
 function build() {
   console.info("[nodegit] Everything is ready to go, attempting compilation");
-  if (nwVersion) {
-    console.info("[nodegit] Building native node-webkit module.");
-  }
-  else {
-    console.info("[nodegit] Building native node module.");
-  }
 
+  var electronVersion = process.env.ELECTRON_VERSION;
+  var nwjsVersion = process.env.NWJS_VERSION;
   var opts = {
     cwd: ".",
     maxBuffer: Number.MAX_VALUE,
     env: process.env
   };
 
-  var target = "";
-  var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
   var builder = "node-gyp";
-  var distUrl = "";
+  var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
+  var target;
+  var distUrl;
 
-  if (asVersion) {
-    var home = process.platform == "win32" ?
-            process.env.USERPROFILE : process.env.HOME;
+  process.argv.forEach(function(arg) {
+    if (~arg.indexOf("electronVersion")) {
+      electronVersion = arg.split("=")[1].trim();
+    }
+    else if (~arg.indexOf("nsjwVersion")) {
+      nwjsVersion = arg.split("=")[1].trim();
+    }
+  });
 
-    opts.env.HOME = path.join(home, ".atom-shell-gyp");
-
-    target = "--target=" + asVersion;
-
+  if (electronVersion) {
+    target = "--target=" + electronVersion;
     distUrl = "--dist-url=https://gh-contractor-zcbenz.s3." +
       "amazonaws.com/atom-shell/dist";
   }
-  else if (nwVersion) {
+  else if (nwjsVersion) {
     builder = "nw-gyp";
-    target = "--target=" + nwVersion;
+    target = "--target=" + nwjsVersion;
   }
 
-  builder = path.resolve(".", "node_modules", ".bin", builder);
-  builder = builder.replace(/\s/g, "\\$&");
-  var cmd = [builder, "rebuild", target, debug, distUrl]
-    .join(" ").trim();
+  var home = process.platform == "win32" ?
+              process.env.USERPROFILE : process.env.HOME;
+
+  opts.env.HOME = path.join(home, ".nodegit-gyp");
+
+  var cmd = [
+    pathForTool(builder),
+    "rebuild",
+    debug,
+    target,
+    distUrl
+  ]
+  .join(" ")
+  .trim();
 
   return exec(cmd, opts)
     .then(function() {
