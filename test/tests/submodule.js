@@ -6,6 +6,7 @@ describe("Submodule", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Submodule = NodeGit.Submodule;
+
   var repoPath = local("../repos/workdir");
 
   beforeEach(function() {
@@ -18,10 +19,21 @@ describe("Submodule", function() {
   });
 
   it("can walk over the submodules", function() {
-    return Submodule.foreach(this.repository, function(submodule,
-                                                       name, context) {
-      assert.equal(name, "vendor/libgit2");
-      assert.notEqual(submodule, null);
-    });
+    var repo = this.repository;
+    var submoduleName = "vendor/libgit2";
+    return repo.getSubmoduleNames()
+      .then(function(submodules) {
+        assert.equal(submodules.length, 1);
+
+        var submodule = submodules[0];
+        assert.equal(submodule, submoduleName);
+        return submodule;
+      })
+      .then(function(submodule) {
+        return Submodule.lookup(repo, submodule);
+      })
+      .then(function(submodule) {
+        assert.equal(submodule.name(), submoduleName);
+      });
   });
 });
