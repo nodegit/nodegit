@@ -127,16 +127,19 @@ describe("Clone", function() {
     var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          return 1;
-        },
-        credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyNew(
-            userName,
-            sshEncryptedPublicKey,
-            sshEncryptedPrivateKey,
-            "test-password");
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          },
+          credentials: function(url, userName) {
+            return NodeGit.Cred.sshKeyNew(
+              userName,
+              sshEncryptedPublicKey,
+              sshEncryptedPrivateKey,
+              "test-password"
+            );
+          }
         }
       }
     };
