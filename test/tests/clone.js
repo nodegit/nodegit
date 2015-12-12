@@ -13,6 +13,8 @@ describe("Clone", function() {
 
   var sshPublicKey = local("../id_rsa.pub");
   var sshPrivateKey = local("../id_rsa");
+  var sshEncryptedPublicKey = local("../encrypted_rsa.pub");
+  var sshEncryptedPrivateKey = local("../encrypted_rsa");
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(30000);
@@ -110,6 +112,33 @@ describe("Clone", function() {
               sshPublicKey,
               sshPrivateKey,
               "");
+          }
+        }
+      }
+    };
+
+    return Clone(url, clonePath, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+      test.repository = repo;
+    });
+  });
+
+  it("can clone with ssh while manually loading an encrypted key", function() {
+    var test = this;
+    var url = "git@github.com:nodegit/test.git";
+    var opts = {
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          },
+          credentials: function(url, userName) {
+            return NodeGit.Cred.sshKeyNew(
+              userName,
+              sshEncryptedPublicKey,
+              sshEncryptedPrivateKey,
+              "test-password"
+            );
           }
         }
       }
