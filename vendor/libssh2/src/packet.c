@@ -1,6 +1,6 @@
 /* Copyright (c) 2004-2007, Sara Golemon <sarag@libssh2.org>
  * Copyright (c) 2005,2006 Mikhail Gusarov
- * Copyright (c) 2009-2010 by Daniel Stenberg
+ * Copyright (c) 2009-2014 by Daniel Stenberg
  * Copyright (c) 2010 Simon Josefsson
  * All rights reserved.
  *
@@ -139,7 +139,7 @@ packet_queue_listener(LIBSSH2_SESSION * session, unsigned char *data,
                         break;
                     }
 
-                    channel = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
+                    channel = LIBSSH2_CALLOC(session, sizeof(LIBSSH2_CHANNEL));
                     if (!channel) {
                         _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                                        "Unable to allocate a channel for "
@@ -149,8 +149,6 @@ packet_queue_listener(LIBSSH2_SESSION * session, unsigned char *data,
                         break;
                     }
                     listen_state->channel = channel;
-
-                    memset(channel, 0, sizeof(LIBSSH2_CHANNEL));
 
                     channel->session = session;
                     channel->channel_type_len = sizeof("forwarded-tcpip") - 1;
@@ -218,9 +216,11 @@ packet_queue_listener(LIBSSH2_SESSION * session, unsigned char *data,
                     }
 
                     /* Link the channel into the end of the queue list */
-                    _libssh2_list_add(&listn->queue,
-                                      &listen_state->channel->node);
-                    listn->queue_size++;
+                    if (listen_state->channel) {
+                        _libssh2_list_add(&listn->queue,
+                                          &listen_state->channel->node);
+                        listn->queue_size++;
+                    }
 
                     listen_state->state = libssh2_NB_state_idle;
                     return 0;
@@ -297,14 +297,13 @@ packet_x11_open(LIBSSH2_SESSION * session, unsigned char *data,
 
     if (session->x11) {
         if (x11open_state->state == libssh2_NB_state_allocated) {
-            channel = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
+            channel = LIBSSH2_CALLOC(session, sizeof(LIBSSH2_CHANNEL));
             if (!channel) {
                 _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                                "allocate a channel for new connection");
                 failure_code = SSH_OPEN_RESOURCE_SHORTAGE;
                 goto x11_exit;
             }
-            memset(channel, 0, sizeof(LIBSSH2_CHANNEL));
 
             channel->session = session;
             channel->channel_type_len = sizeof("x11") - 1;
@@ -408,6 +407,7 @@ packet_x11_open(LIBSSH2_SESSION * session, unsigned char *data,
  *
  * The input pointer 'data' is pointing to allocated data that this function
  * is asked to deal with so on failure OR success, it must be freed fine.
+ * The only exception is when the return code is LIBSSH2_ERROR_EAGAIN.
  *
  * This function will always be called with 'datalen' greater than zero.
  */
@@ -583,7 +583,8 @@ _libssh2_packet_add(LIBSSH2_SESSION * session, unsigned char *data,
 
 
                 if (want_reply) {
-                    unsigned char packet = SSH_MSG_REQUEST_FAILURE;
+                    static const unsigned char packet =
+                        SSH_MSG_REQUEST_FAILURE;
                   libssh2_packet_add_jump_point5:
                     session->packAdd_state = libssh2_NB_state_jump5;
                     rc = _libssh2_transport_send(session, &packet, 1, NULL, 0);
@@ -653,6 +654,18 @@ _libssh2_packet_add(LIBSSH2_SESSION * session, unsigned char *data,
                 _libssh2_debug(session, LIBSSH2_TRACE_CONN,
                                "Ignoring extended data and refunding %d bytes",
                                (int) (datalen - 13));
+                if (channelp->read_avail + datalen - data_head >=
+                    channelp->remote.window_size)
+                    datalen = channelp->remote.window_size -
+                        channelp->read_avail + data_head;
+
+                channelp->remote.window_size -= datalen - data_head;
+                _libssh2_debug(session, LIBSSH2_TRACE_CONN,
+                               "shrinking window size by %lu bytes to %lu, read_avail %lu",
+                               datalen - data_head,
+                               channelp->remote.window_size,
+                               channelp->read_avail);
+
                 session->packAdd_channelp = channelp;
 
                 /* Adjust the window based on the block we just freed */
@@ -684,7 +697,7 @@ _libssh2_packet_add(LIBSSH2_SESSION * session, unsigned char *data,
                                " to receive, truncating");
                 datalen = channelp->remote.packet_size + data_head;
             }
-            if (channelp->remote.window_size <= 0) {
+            if (channelp->remote.window_size <= channelp->read_avail) {
                 /*
                  * Spec says we MAY ignore bytes sent beyond
                  * window_size
@@ -700,17 +713,26 @@ _libssh2_packet_add(LIBSSH2_SESSION * session, unsigned char *data,
             /* Reset EOF status */
             channelp->remote.eof = 0;
 
-            if ((datalen - data_head) > channelp->remote.window_size) {
+            if (channelp->read_avail + datalen - data_head >
+                channelp->remote.window_size) {
                 _libssh2_error(session,
                                LIBSSH2_ERROR_CHANNEL_WINDOW_EXCEEDED,
                                "Remote sent more data than current "
                                "window allows, truncating");
-                datalen = channelp->remote.window_size + data_head;
-                channelp->remote.window_size = 0;
+                datalen = channelp->remote.window_size -
+                    channelp->read_avail + data_head;
             }
-            else
-                /* Now that we've received it, shrink our window */
-                channelp->remote.window_size -= datalen - data_head;
+
+            /* Update the read_avail counter. The window size will be
+             * updated once the data is actually read from the queue
+             * from an upper layer */
+            channelp->read_avail += datalen - data_head;
+
+            _libssh2_debug(session, LIBSSH2_TRACE_CONN,
+                           "increasing read_avail by %lu bytes to %lu/%lu",
+                           (long)(datalen - data_head),
+                           (long)channelp->read_avail,
+                           (long)channelp->remote.window_size);
 
             break;
 
@@ -945,6 +967,7 @@ _libssh2_packet_add(LIBSSH2_SESSION * session, unsigned char *data,
         if (!packetp) {
             _libssh2_debug(session, LIBSSH2_ERROR_ALLOC,
                            "memory for packet");
+            LIBSSH2_FREE(session, data);
             session->packAdd_state = libssh2_NB_state_idle;
             return LIBSSH2_ERROR_ALLOC;
         }
@@ -1134,14 +1157,14 @@ _libssh2_packet_burn(LIBSSH2_SESSION * session,
 {
     unsigned char *data;
     size_t data_len;
-    unsigned char all_packets[255];
-    int i;
+    unsigned char i, all_packets[255];
     int ret;
 
     if (*state == libssh2_NB_state_idle) {
-        for(i = 1; i < 256; i++) {
+        for(i = 1; i < 255; i++) {
             all_packets[i - 1] = i;
         }
+        all_packets[254] = 0;
 
         if (_libssh2_packet_askv(session, all_packets, &data, &data_len, 0,
                                  NULL, 0) == 0) {
@@ -1170,7 +1193,8 @@ _libssh2_packet_burn(LIBSSH2_SESSION * session,
 
         /* Be lazy, let packet_ask pull it out of the brigade */
         if (0 ==
-            _libssh2_packet_ask(session, ret, &data, &data_len, 0, NULL, 0)) {
+            _libssh2_packet_ask(session, (unsigned char)ret,
+                                         &data, &data_len, 0, NULL, 0)) {
             /* Smoke 'em if you got 'em */
             LIBSSH2_FREE(session, data);
             *state = libssh2_NB_state_idle;

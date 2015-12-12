@@ -38,20 +38,59 @@
 
 #include "libssh2_priv.h"
 
-#ifdef LIBSSH2_LIBGCRYPT /* compile only if we build with libgcrypt */
-
 static int
 readline(char *line, int line_size, FILE * fp)
 {
+    size_t len;
+
+    if (!line) {
+        return -1;
+    }
     if (!fgets(line, line_size, fp)) {
         return -1;
     }
-    if (*line && line[strlen(line) - 1] == '\n') {
-        line[strlen(line) - 1] = '\0';
+
+    if (*line) {
+        len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
+        }
     }
-    if (*line && line[strlen(line) - 1] == '\r') {
-        line[strlen(line) - 1] = '\0';
+
+    if (*line) {
+        len = strlen(line);
+        if (len > 0 && line[len - 1] == '\r') {
+            line[len - 1] = '\0';
+        }
     }
+
+    return 0;
+}
+
+static int
+readline_memory(char *line, size_t line_size,
+                const char *filedata, size_t filedata_len,
+                size_t *filedata_offset)
+{
+    size_t off, len;
+
+    off = *filedata_offset;
+
+    for (len = 0; off + len < filedata_len && len < line_size; len++) {
+        if (filedata[off + len] == '\n' ||
+            filedata[off + len] == '\r') {
+                break;
+        }
+    }
+
+    if (len) {
+        memcpy(line, filedata + off, len);
+        *filedata_offset += len;
+    }
+
+    line[len] = '\0';
+    *filedata_offset += 1;
+
     return 0;
 }
 
@@ -69,6 +108,8 @@ _libssh2_pem_parse(LIBSSH2_SESSION * session,
     int ret;
 
     do {
+        *line = '\0';
+
         if (readline(line, LINE_SIZE, fp)) {
             return -1;
         }
@@ -93,11 +134,83 @@ _libssh2_pem_parse(LIBSSH2_SESSION * session,
             b64datalen += linelen;
         }
 
+        *line = '\0';
+
         if (readline(line, LINE_SIZE, fp)) {
             ret = -1;
             goto out;
         }
     } while (strcmp(line, headerend) != 0);
+
+    if (!b64data) {
+        return -1;
+    }
+
+    if (libssh2_base64_decode(session, (char**) data, datalen,
+                              b64data, b64datalen)) {
+        ret = -1;
+        goto out;
+    }
+
+    ret = 0;
+  out:
+    if (b64data) {
+        LIBSSH2_FREE(session, b64data);
+    }
+    return ret;
+}
+
+int
+_libssh2_pem_parse_memory(LIBSSH2_SESSION * session,
+                          const char *headerbegin,
+                          const char *headerend,
+                          const char *filedata, size_t filedata_len,
+                          unsigned char **data, unsigned int *datalen)
+{
+    char line[LINE_SIZE];
+    char *b64data = NULL;
+    unsigned int b64datalen = 0;
+    size_t off = 0;
+    int ret;
+
+    do {
+        *line = '\0';
+
+        if (readline_memory(line, LINE_SIZE, filedata, filedata_len, &off)) {
+            return -1;
+        }
+    }
+    while (strcmp(line, headerbegin) != 0);
+
+    *line = '\0';
+
+    do {
+        if (*line) {
+            char *tmp;
+            size_t linelen;
+
+            linelen = strlen(line);
+            tmp = LIBSSH2_REALLOC(session, b64data, b64datalen + linelen);
+            if (!tmp) {
+                ret = -1;
+                goto out;
+            }
+            memcpy(tmp + b64datalen, line, linelen);
+            b64data = tmp;
+            b64datalen += linelen;
+        }
+
+        *line = '\0';
+
+        if (readline_memory(line, LINE_SIZE, filedata, filedata_len, &off)) {
+            ret = -1;
+            goto out;
+        }
+    } while (strcmp(line, headerend) != 0);
+
+    if (!b64data) {
+        return -1;
+    }
 
     if (libssh2_base64_decode(session, (char**) data, datalen,
                               b64data, b64datalen)) {
@@ -209,5 +322,3 @@ _libssh2_pem_decode_integer(unsigned char **data, unsigned int *datalen,
 
     return 0;
 }
-
-#endif /* LIBSSH2_LIBGCRYPT */

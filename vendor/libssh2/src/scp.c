@@ -133,7 +133,7 @@ shell_quotearg(const char *path, unsigned char *buf,
      * Processing States:
      *  UQSTRING:       unquoted string: ... -- used for quoting exclamation
      *                  marks. This is the initial state
-     *  SQSTRING:       single-qouted-string: '... -- any character may follow
+     *  SQSTRING:       single-quoted-string: '... -- any character may follow
      *  QSTRING:        quoted string: "... -- only apostrophes may follow
      */
     enum { UQSTRING, SQSTRING, QSTRING } state = UQSTRING;
@@ -295,14 +295,16 @@ scp_recv(LIBSSH2_SESSION * session, const char *path, struct stat * sb)
         }
 
         snprintf((char *)session->scpRecv_command,
-                 session->scpRecv_command_len, "scp -%sf ", sb?"p":"");
+                 session->scpRecv_command_len,
+                 "scp -%sf ", sb?"p":"");
 
         cmd_len = strlen((char *)session->scpRecv_command);
+        cmd_len += shell_quotearg(path,
+                                  &session->scpRecv_command[cmd_len],
+                                  session->scpRecv_command_len - cmd_len);
 
-        (void) shell_quotearg(path,
-                              &session->scpRecv_command[cmd_len],
-                              session->scpRecv_command_len - cmd_len);
-
+        session->scpRecv_command[cmd_len] = '\0';
+        session->scpRecv_command_len = cmd_len + 1;
 
         _libssh2_debug(session, LIBSSH2_TRACE_SCP,
                        "Opening channel for SCP receive");
@@ -727,7 +729,7 @@ scp_recv(LIBSSH2_SESSION * session, const char *path, struct stat * sb)
         sb->st_mtime = session->scpRecv_mtime;
         sb->st_atime = session->scpRecv_atime;
         sb->st_size = session->scpRecv_size;
-        sb->st_mode = session->scpRecv_mode;
+        sb->st_mode = (unsigned short)session->scpRecv_mode;
     }
 
     session->scpRecv_state = libssh2_NB_state_idle;
@@ -790,22 +792,25 @@ scp_send(LIBSSH2_SESSION * session, const char *path, int mode,
 
         session->scpSend_command =
             LIBSSH2_ALLOC(session, session->scpSend_command_len);
+
         if (!session->scpSend_command) {
             _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
-                           "Unable to allocate a command buffer for scp session");
+                           "Unable to allocate a command buffer for "
+                           "SCP session");
             return NULL;
         }
 
-        snprintf((char *)session->scpSend_command, session->scpSend_command_len,
+        snprintf((char *)session->scpSend_command,
+                 session->scpSend_command_len,
                  "scp -%st ", (mtime || atime)?"p":"");
 
         cmd_len = strlen((char *)session->scpSend_command);
+        cmd_len += shell_quotearg(path,
+                                  &session->scpSend_command[cmd_len],
+                                  session->scpSend_command_len - cmd_len);
 
-        (void)shell_quotearg(path,
-                             &session->scpSend_command[cmd_len],
-                             session->scpSend_command_len - cmd_len);
-
-        session->scpSend_command[session->scpSend_command_len - 1] = '\0';
+        session->scpSend_command[cmd_len] = '\0';
+        session->scpSend_command_len = cmd_len + 1;
 
         _libssh2_debug(session, LIBSSH2_TRACE_SCP,
                        "Opening channel for SCP send");

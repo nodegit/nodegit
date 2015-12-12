@@ -9,17 +9,12 @@
 
 # Edit the path below to point to the base of your Zlib sources.
 ifndef ZLIB_PATH
-ZLIB_PATH = ../../zlib-1.2.7
+ZLIB_PATH = ../../zlib-1.2.8
 endif
 
 # Edit the path below to point to the base of your OpenSSL package.
 ifndef OPENSSL_PATH
-OPENSSL_PATH = ../../openssl-0.9.8x
-endif
-
-# Edit the var below to set to your architecture or set environment var.
-ifndef ARCH
-ARCH = w32
+OPENSSL_PATH = ../../openssl-0.9.8zc
 endif
 
 # Edit the path below to point to your Distribution folder.
@@ -33,6 +28,9 @@ ifndef DEVLDIR
 DEVLDIR	= libssh2-$(LIBSSH2_VERSION_STR)-dev-$(ARCH)
 endif
 DEVLARC	= $(DEVLDIR).zip
+
+# Project root
+PROOT	= ..
 
 # Edit the vars below to change target settings.
 TARGET	= libssh2
@@ -95,14 +93,24 @@ else
 	CC = $(CROSSPREFIX)gcc
 endif
 
+# Set environment var ARCH to your architecture to override autodetection.
+ifndef ARCH
+ifeq ($(findstring gcc,$(CC)),gcc)
+ifeq ($(findstring x86_64,$(shell $(CC) -dumpmachine)),x86_64)
+ARCH	= w64
+else
+ARCH	= w32
+endif
+else
+ARCH	= w32
+endif
+endif
+
 # Include the version info retrieved from libssh2.h
 -include $(OBJDIR)/version.inc
 
 # Global flags for all compilers
-CFLAGS	= $(OPT) -D$(DB) -DLIBSSH2_WIN32 # -DHAVE_CONFIG_H
-ifeq ($(ARCH),w64)
-CFLAGS	+= -D_AMD64_
-endif
+CFLAGS	= $(LIBSSH2_CFLAG_EXTRAS) $(OPT) -D$(DB) -DLIBSSH2_WIN32 # -DHAVE_CONFIG_H
 
 ifeq ($(CC),mwcc)
 LD	= mwld
@@ -129,13 +137,26 @@ LIBEXT	= a
 RANLIB	= $(CROSSPREFIX)ranlib
 #LDLIBS	+= -lwsock32
 LDLIBS	+= -lws2_32
-RCFLAGS	= -I. -I ../include -O coff -i
+RCFLAGS	= -I $(PROOT)/include -O coff
+CFLAGS	+= -fno-builtin
 CFLAGS	+= -fno-strict-aliasing
 CFLAGS	+= -Wall # -pedantic
+ifeq ($(ARCH),w64)
+CFLAGS	+= -D_AMD64_
+RCFLAGS	+= -F pe-x86-64
+else
+CFLAGS	+= -m32
+RCFLAGS	+= -F pe-i386
+endif
 endif
 
-INCLUDES = -I. -I../include
+INCLUDES = -I$(PROOT)/win32 -I$(PROOT)/include
 
+ifdef WITH_WINCNG
+CFLAGS	+= -DLIBSSH2_WINCNG
+LDLIBS	+= -lbcrypt -lcrypt32
+else
+CFLAGS	+= -DLIBSSH2_OPENSSL
 ifndef OPENSSL_INCLUDE
 	ifeq "$(wildcard $(OPENSSL_PATH)/outinc)" "$(OPENSSL_PATH)/outinc"
 		OPENSSL_INCLUDE = $(OPENSSL_PATH)/outinc
@@ -164,6 +185,7 @@ ifdef LINK_OPENSSL_STATIC
 else
 	LDLIBS += $(patsubst %,$(OPENSSL_LIBPATH)/lib%.$(LIBEXT), $(OPENSSL_LIBS_DYN))
 endif
+endif
 
 ifdef WITH_ZLIB
 	CFLAGS += -DLIBSSH2_HAVE_ZLIB
@@ -177,14 +199,21 @@ endif
 
 CFLAGS	+= $(INCLUDES)
 
-vpath %.c . ../src
+vpath %.c $(PROOT)/src
+
+ifdef WITH_WINCNG
+include $(PROOT)/Makefile.WinCNG.inc
+else
+include $(PROOT)/Makefile.OpenSSL.inc
+endif
 
 # include Makefile.inc to get CSOURCES define
-include ../Makefile.inc
+include $(PROOT)/Makefile.inc
 
 OBJECTS	:= $(patsubst %.c,%.o,$(CSOURCES))
 OBJS	:= $(addprefix $(OBJDIR)/,$(OBJECTS))
 OBJL	= $(OBJS) $(OBJDIR)/$(TARGET).res
+
 
 all: lib dll
 
@@ -202,38 +231,38 @@ $(OBJDIR)/%.o: %.c
 #	@echo Compiling $<
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/version.inc: ../get_ver.awk ../include/libssh2.h $(OBJDIR)
+$(OBJDIR)/version.inc: $(PROOT)/get_ver.awk $(PROOT)/include/libssh2.h $(OBJDIR)
 	@echo Creating $@
 	@$(AWK) -f $^ > $@
 
 dist: all $(DISTDIR) $(DISTDIR)/readme.txt
 	@$(call MKDIR, $(DISTDIR)/bin)
-	@$(call CP, ../AUTHORS, $(DISTDIR))
-	@$(call CP, ../COPYING, $(DISTDIR))
-	@$(call CP, ../INSTALL, $(DISTDIR))
-	@$(call CP, ../README, $(DISTDIR))
-	@$(call CP, ../RELEASE-NOTES, $(DISTDIR))
-	@$(call CP, $(TARGET).dll, $(DISTDIR)/bin)
+	@$(call COPY, $(PROOT)/AUTHORS, $(DISTDIR))
+	@$(call COPY, $(PROOT)/COPYING, $(DISTDIR))
+	@$(call COPY, $(PROOT)/INSTALL, $(DISTDIR))
+	@$(call COPY, $(PROOT)/README, $(DISTDIR))
+	@$(call COPY, $(PROOT)/RELEASE-NOTES, $(DISTDIR))
+	@$(call COPY, $(TARGET).dll, $(DISTDIR)/bin)
 	@echo Creating $(DISTARC)
 	@$(ZIP) $(DISTARC) $(DISTDIR)/* < $(DISTDIR)/readme.txt
 
 dev: all $(DEVLDIR) $(DEVLDIR)/readme.txt
 	@$(call MKDIR, $(DEVLDIR)/bin)
-	@$(call MKDIR,$(DEVLDIR)/include)
+	@$(call MKDIR, $(DEVLDIR)/include)
 	@$(call MKDIR, $(DEVLDIR)/win32)
-	@$(call CP, ../AUTHORS, $(DEVLDIR))
-	@$(call CP, ../COPYING, $(DEVLDIR))
-	@$(call CP, ../INSTALL, $(DEVLDIR))
-	@$(call CP, ../README, $(DEVLDIR))
-	@$(call CP, ../RELEASE-NOTES, $(DEVLDIR))
-	@$(call CP, $(TARGET).dll, $(DEVLDIR)/bin)
-	@$(call CP, ../include/*.h, $(DEVLDIR)/include)
-	@$(call CP, libssh2_config.h, $(DEVLDIR)/include)
-	@$(call CP, *.$(LIBEXT), $(DEVLDIR)/win32)
+	@$(call COPY, $(PROOT)/AUTHORS, $(DEVLDIR))
+	@$(call COPY, $(PROOT)/COPYING, $(DEVLDIR))
+	@$(call COPY, $(PROOT)/INSTALL, $(DEVLDIR))
+	@$(call COPY, $(PROOT)/README, $(DEVLDIR))
+	@$(call COPY, $(PROOT)/RELEASE-NOTES, $(DEVLDIR))
+	@$(call COPY, $(TARGET).dll, $(DEVLDIR)/bin)
+	@$(call COPY, $(PROOT)/include/*.h, $(DEVLDIR)/include)
+	@$(call COPY, libssh2_config.h, $(DEVLDIR)/include)
+	@$(call COPY, *.$(LIBEXT), $(DEVLDIR)/win32)
 	@echo Creating $(DEVLARC)
 	@$(ZIP) $(DEVLARC) $(DEVLDIR)/* < $(DEVLDIR)/readme.txt
 
-distclean: clean
+distclean vclean: clean
 	$(call RMDIR, $(DISTDIR))
 	$(call DEL, $(DISTARC))
 
@@ -277,7 +306,7 @@ $(TARGET).dll $(TARGET)dll.a: $(OBJL)
 
 $(OBJDIR)/%.res: %.rc
 	@echo Creating $@
-	@$(RC) $(RCFLAGS) $< -o $@
+	@$(RC) $(RCFLAGS) -i $< -o $@
 
 
 $(DISTDIR)/readme.txt: GNUmakefile

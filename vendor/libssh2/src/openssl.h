@@ -80,7 +80,7 @@
 # define LIBSSH2_AES 0
 #endif
 
-#ifdef OPENSSL_NO_BLOWFISH
+#ifdef OPENSSL_NO_BF
 # define LIBSSH2_BLOWFISH 0
 #else
 # define LIBSSH2_BLOWFISH 1
@@ -107,7 +107,9 @@
 #define _libssh2_random(buf, len) RAND_bytes ((buf), (len))
 
 #define libssh2_sha1_ctx EVP_MD_CTX
-#define libssh2_sha1_init(ctx) EVP_DigestInit(ctx, EVP_get_digestbyname("sha1"))
+
+/* returns 0 in case of failure */
+int libssh2_sha1_init(libssh2_sha1_ctx *ctx);
 #define libssh2_sha1_update(ctx, data, len) EVP_DigestUpdate(&(ctx), data, len)
 #define libssh2_sha1_final(ctx, out) EVP_DigestFinal(&(ctx), out, NULL)
 void libssh2_sha1(const unsigned char *message, unsigned long len, unsigned char *out);
@@ -115,13 +117,14 @@ void libssh2_sha1(const unsigned char *message, unsigned long len, unsigned char
 #define libssh2_md5_ctx EVP_MD_CTX
 
 /* returns 0 in case of failure */
-#define libssh2_md5_init(ctx) EVP_DigestInit(ctx, EVP_get_digestbyname("md5"))
-
+int libssh2_md5_init(libssh2_md5_ctx *); 
 #define libssh2_md5_update(ctx, data, len) EVP_DigestUpdate(&(ctx), data, len)
 #define libssh2_md5_final(ctx, out) EVP_DigestFinal(&(ctx), out, NULL)
 void libssh2_md5(const unsigned char *message, unsigned long len, unsigned char *out);
 
 #define libssh2_hmac_ctx HMAC_CTX
+#define libssh2_hmac_ctx_init(ctx) \
+  HMAC_CTX_init(&ctx)
 #define libssh2_hmac_sha1_init(ctx, key, keylen) \
   HMAC_Init(ctx, key, keylen, EVP_sha1())
 #define libssh2_hmac_md5_init(ctx, key, keylen) \
@@ -172,6 +175,7 @@ void libssh2_md5(const unsigned char *message, unsigned long len, unsigned char 
 #define _libssh2_bn_ctx_new() BN_CTX_new()
 #define _libssh2_bn_ctx_free(bnctx) BN_CTX_free(bnctx)
 #define _libssh2_bn_init() BN_new()
+#define _libssh2_bn_init_from_bin() _libssh2_bn_init()
 #define _libssh2_bn_rand(bn, bits, top, bottom) BN_rand(bn, bits, top, bottom)
 #define _libssh2_bn_mod_exp(r, a, p, m, ctx) BN_mod_exp(r, a, p, m, ctx)
 #define _libssh2_bn_set_word(bn, val) BN_set_word(bn, val)

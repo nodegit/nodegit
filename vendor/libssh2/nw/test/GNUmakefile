@@ -13,12 +13,12 @@ endif
 
 # Edit the path below to point to the base of your Zlib sources.
 ifndef ZLIB_PATH
-ZLIB_PATH = ../../../zlib-1.2.7
+ZLIB_PATH = ../../../zlib-1.2.8
 endif
 
 # Edit the path below to point to the base of your OpenSSL package.
 ifndef OPENSSL_PATH
-OPENSSL_PATH = ../../../openssl-0.9.8x
+OPENSSL_PATH = ../../../openssl-0.9.8zc
 endif
 
 # Edit the var below to enable static linking of libssh2 and libz

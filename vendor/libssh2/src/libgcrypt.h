@@ -60,8 +60,12 @@
   (gcry_randomize ((buf), (len), GCRY_STRONG_RANDOM), 1)
 
 #define libssh2_sha1_ctx gcry_md_hd_t
-#define libssh2_sha1_init(ctx) gcry_md_open (ctx,  GCRY_MD_SHA1, 0);
-#define libssh2_sha1_update(ctx, data, len) gcry_md_write (ctx, data, len)
+
+/* returns 0 in case of failure */
+#define libssh2_sha1_init(ctx) \
+  (GPG_ERR_NO_ERROR == gcry_md_open (ctx,  GCRY_MD_SHA1, 0))
+#define libssh2_sha1_update(ctx, data, len) \
+  gcry_md_write (ctx, (unsigned char *) data, len)
 #define libssh2_sha1_final(ctx, out) \
   memcpy (out, gcry_md_read (ctx, 0), SHA_DIGEST_LENGTH), gcry_md_close (ctx)
 #define libssh2_sha1(message, len, out) \
@@ -73,13 +77,15 @@
 #define libssh2_md5_init(ctx) \
   (GPG_ERR_NO_ERROR == gcry_md_open (ctx,  GCRY_MD_MD5, 0))
 
-#define libssh2_md5_update(ctx, data, len) gcry_md_write (ctx, data, len)
+#define libssh2_md5_update(ctx, data, len) \
+  gcry_md_write (ctx, (unsigned char *) data, len)
 #define libssh2_md5_final(ctx, out) \
   memcpy (out, gcry_md_read (ctx, 0), MD5_DIGEST_LENGTH), gcry_md_close (ctx)
 #define libssh2_md5(message, len, out) \
   gcry_md_hash_buffer (GCRY_MD_MD5, out, message, len)
 
 #define libssh2_hmac_ctx gcry_md_hd_t
+#define libssh2_hmac_ctx_init(ctx)
 #define libssh2_hmac_sha1_init(ctx, key, keylen) \
   gcry_md_open (ctx, GCRY_MD_SHA1, GCRY_MD_FLAG_HMAC), \
     gcry_md_setkey (*ctx, key, keylen)
@@ -90,7 +96,7 @@
   gcry_md_open (ctx, GCRY_MD_RMD160, GCRY_MD_FLAG_HMAC), \
     gcry_md_setkey (*ctx, key, keylen)
 #define libssh2_hmac_update(ctx, data, datalen) \
-  gcry_md_write (ctx, data, datalen)
+  gcry_md_write (ctx, (unsigned char *) data, datalen)
 #define libssh2_hmac_final(ctx, data) \
   memcpy (data, gcry_md_read (ctx, 0), \
       gcry_md_get_algo_dlen (gcry_md_get_algo (ctx)))
@@ -143,6 +149,7 @@
 #define _libssh2_bn_ctx_new() 0
 #define _libssh2_bn_ctx_free(bnctx) ((void)0)
 #define _libssh2_bn_init() gcry_mpi_new(0)
+#define _libssh2_bn_init_from_bin() NULL /* because gcry_mpi_scan() creates a new bignum */
 #define _libssh2_bn_rand(bn, bits, top, bottom) gcry_mpi_randomize (bn, bits, GCRY_WEAK_RANDOM)
 #define _libssh2_bn_mod_exp(r, a, p, m, ctx) gcry_mpi_powm (r, a, p, m)
 #define _libssh2_bn_set_word(bn, val) gcry_mpi_set_ui(bn, val)
