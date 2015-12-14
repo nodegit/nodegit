@@ -18,6 +18,24 @@ catch(e) {
   fromRegistry = false;
 }
 
+var electronVersion = process.env.ELECTRON_VERSION;
+var nwjsVersion = process.env.NWJS_VERSION;
+
+process.argv.forEach(function(arg) {
+  if (~arg.indexOf("electronVersion")) {
+    process.env.npm_config_runtime = "electron";
+
+    electronVersion = arg.split("=")[1].trim();
+    process.env.npm_config_target = electronVersion;
+  }
+  else if (~arg.indexOf("nwjsVersion")) {
+    process.env.npm_config_runtime = "node-webkit";
+
+    nwjsVersion = arg.split("=")[1].trim();
+    process.env.npm_config_target = nwjsVersion;
+  }
+});
+
 if (!fromRegistry) {
   console.info("[nodegit] Local install, no fetching allowed.");
   return prepareAndBuild();
@@ -67,8 +85,6 @@ function prepareAndBuild() {
 function build() {
   console.info("[nodegit] Everything is ready to go, attempting compilation");
 
-  var electronVersion = process.env.ELECTRON_VERSION;
-  var nwjsVersion = process.env.NWJS_VERSION;
   var opts = {
     cwd: ".",
     maxBuffer: Number.MAX_VALUE,
@@ -79,15 +95,6 @@ function build() {
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
   var target;
   var distUrl;
-
-  process.argv.forEach(function(arg) {
-    if (~arg.indexOf("electronVersion")) {
-      electronVersion = arg.split("=")[1].trim();
-    }
-    else if (~arg.indexOf("nsjwVersion")) {
-      nwjsVersion = arg.split("=")[1].trim();
-    }
-  });
 
   if (electronVersion) {
     target = "--target=" + electronVersion;
