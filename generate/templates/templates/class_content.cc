@@ -12,6 +12,7 @@ extern "C" {
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
 #include "../include/functions/sleep_for_ms.h"
+#include "../include/async_libgit2_queue_worker.h"
 
 {% each dependencies as dependency %}
   #include "{{ dependency }}"

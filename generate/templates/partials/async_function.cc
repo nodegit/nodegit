@@ -74,7 +74,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  Nan::AsyncQueueWorker(worker);
+  AsyncLibgit2QueueWorker(worker);
   return;
 }
 
