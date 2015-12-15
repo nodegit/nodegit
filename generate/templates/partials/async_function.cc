@@ -79,6 +79,8 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
+  uv_mutex_lock(libgit2_mutex);
+
   {%if .|hasReturnType %}
   {{ return.cType }} result = {{ cFunctionName }}(
   {%else%}
@@ -91,6 +93,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 
     {%endeach%}
     );
+
+  uv_mutex_unlock(libgit2_mutex);
 
   {%if return.isErrorCode %}
   baton->error_code = result;
