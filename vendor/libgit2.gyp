@@ -466,6 +466,7 @@
         "libssh2/src/pem.c",
         "libssh2/src/session.c",
         "libssh2/src/userauth.c",
+        "libssh2/src/wincng.c"
       ],
       "include_dirs": [
         ".",
