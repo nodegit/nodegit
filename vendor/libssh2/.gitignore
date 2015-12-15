@@ -28,4 +28,5 @@ tags
 libssh2.pc
 TAGS
 libssh2_config.h
+!win32/libssh2_config.h
 stamp-h*
