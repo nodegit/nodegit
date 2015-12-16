@@ -1,5 +1,37 @@
 # Change Log
 
+## [0.6.3](https://github.com/nodegit/nodegit/releases/tag/v0.6.3) (2015-12-16)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.2...0.6.3)
+
+ - Fixed a bug where manually building for vanilla node would fail without explicitly
+   setting the target
+
+## [0.6.2](https://github.com/nodegit/nodegit/releases/tag/v0.6.2) (2015-12-16)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.1...0.6.2)
+
+ - Fixed a bug where manually building on windows would fail (if unable to download a prebuilt binary)
+
+## [0.6.1](https://github.com/nodegit/nodegit/releases/tag/v0.6.1) (2015-12-14)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.0...0.6.1)
+
+ - Fixed Treebuilder.create to have an optional source
+ - Added Repository.getSubmoduleNames
+ - Added Submodule.Foreach
+
+## [0.6.0](https://github.com/nodegit/nodegit/releases/tag/v0.6.0) (2015-12-08)
+
+ - Added file mode staging
+ - Added a fast rev walk to do the rev walk in C++ and bubble the result up to JS
+ - Updated to latest libgit2
+ - Updated to latest openssl
+ - Updated to latest nodegit-promise
+ - Removed c++11 dependency
+ - Fixed weirdness in lifecycle scripts
+ - Added downloading prebuilt binaries for electron
+
 ## [0.4.1](https://github.com/nodegit/nodegit/tree/0.4.1) (2015-06-02)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.4.0...0.4.1)
