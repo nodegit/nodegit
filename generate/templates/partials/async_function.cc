@@ -80,6 +80,14 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   giterr_clear();
+  
+  {
+    LockMaster lockMaster(true{%each args|argsInfo as arg %}
+      {%if arg.cType|isPointer%}{%if not arg.cType|isDoublePointer%}
+        ,baton->{{ arg.name }}
+      {%endif%}{%endif%}
+    {%endeach%});
+
   {%if .|hasReturnType %}
   {{ return.cType }} result = {{ cFunctionName }}(
   {%else%}
@@ -93,24 +101,25 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
     {%endeach%}
     );
 
-  {%if return.isResultOrError %}
-  baton->error_code = result;
-  if (result < GIT_OK && giterr_last() != NULL) {
-    baton->error = git_error_dup(giterr_last());
+    {%if return.isResultOrError %}
+    baton->error_code = result;
+    if (result < GIT_OK && giterr_last() != NULL) {
+      baton->error = git_error_dup(giterr_last());
+    }
+
+    {%elsif return.isErrorCode %}
+    baton->error_code = result;
+
+    if (result != GIT_OK && giterr_last() != NULL) {
+      baton->error = git_error_dup(giterr_last());
+    }
+
+    {%elsif not return.cType == 'void' %}
+
+    baton->result = result;
+
+    {%endif%}
   }
-
-  {%elsif return.isErrorCode %}
-  baton->error_code = result;
-
-  if (result != GIT_OK && giterr_last() != NULL) {
-    baton->error = git_error_dup(giterr_last());
-  }
-
-  {%elsif not return.cType == 'void' %}
-
-  baton->result = result;
-
-  {%endif%}
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
