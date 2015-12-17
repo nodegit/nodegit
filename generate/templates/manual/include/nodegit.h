@@ -31,6 +31,9 @@ class LockMaster {
     AddParameters(args...);
   }
 
+  void GetMutexes();
+  void Register();
+  void Unregister();
   void Lock();
   void Unlock();
 
@@ -40,15 +43,25 @@ public:
   template<typename ...Types> LockMaster(bool emptyGuard, const Types*... types)
   {
     AddParameters(types...);
+    GetMutexes();
+    Register();
     Lock();
   }
 
   // and unlock on destruction
   ~LockMaster()
   {
+    Unregister();
     Unlock();
   }
 
+  class TemporaryUnlock
+  {
+    LockMaster *lockMaster;
+  public:
+    TemporaryUnlock();
+    ~TemporaryUnlock();
+  };
 };
 
 
