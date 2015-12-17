@@ -41,7 +41,7 @@ std::vector<uv_mutex_t *> get_mutexes(const std::set<const void *> libgit2_objec
 
   uv_mutex_lock(&map_mutex);
 
-  for (auto it = libgit2_objects.begin(); it != libgit2_objects.end(); it++) {
+  for (std::set<const void *>::const_iterator it = libgit2_objects.begin(); it != libgit2_objects.end(); it++) {
     const void *object = *it;
     if(object) {
       // ensure we have an initialized mutex for each object
