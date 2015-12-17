@@ -34,6 +34,8 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL) {
 {% endif %}
 
+uv_mutex_lock(libgit2_mutex);
+
 {%if .|hasReturnValue %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
   {%each args|argsInfo as arg %}
@@ -50,6 +52,9 @@ from_{{ arg.name }}
     {%if not arg.lastArg %},{%endif%}
   {%endeach%}
   );
+
+uv_mutex_unlock(libgit2_mutex);
+
 
 {%if .|hasReturnValue |and return.isErrorCode %}
   if (result != GIT_OK) {

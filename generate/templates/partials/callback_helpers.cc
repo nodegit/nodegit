@@ -17,11 +17,18 @@
   baton->done = false;
 
   uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_async);
+
+  // release the libgit2_mutex so the callback can call libgit2 functions
+  // from the sync thread
+  uv_mutex_unlock(libgit2_mutex);
+
   uv_async_send(&baton->req);
 
   while(!baton->done) {
     sleep_for_ms(1);
   }
+
+  uv_mutex_lock(libgit2_mutex);
 
   {% each cbFunction|returnsInfo false true as _return %}
     {% if _return.isOutParam %}

@@ -15,6 +15,7 @@ extern "C" {
 }
 
 #include <iostream>
+#include "../include/nodegit.h"
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
 #include "../include/functions/sleep_for_ms.h"
@@ -61,7 +62,7 @@ using namespace std;
       {% endif %}
     {% endif %}
   {% endeach %}
-  
+
   if (this->selfFreeing) {
     free(this->raw);
   }
