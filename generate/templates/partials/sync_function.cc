@@ -34,6 +34,8 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL) {
 {% endif %}
 
+giterr_clear();
+
 {%if .|hasReturnValue %}
   {{ return.cType }} result = {%endif%}{{ cFunctionName }}(
   {%each args|argsInfo as arg %}
