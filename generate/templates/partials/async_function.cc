@@ -79,6 +79,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
+  giterr_clear();
   {%if .|hasReturnType %}
   {{ return.cType }} result = {{ cFunctionName }}(
   {%else%}
