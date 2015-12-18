@@ -4,11 +4,12 @@
 #include <set>
 #include <vector>
 #include <uv.h>
+#include <memory>
 
 class LockMaster {
 
   std::set<const void *> objects_to_lock;
-  std::vector<uv_mutex_t *> object_mutexes;
+  std::vector<std::shared_ptr<uv_mutex_t> > object_mutexes;
 
   template<typename T>
   void AddLocks(const T *t) {
@@ -36,6 +37,7 @@ class LockMaster {
   void Unregister();
   void Lock();
   void Unlock();
+  void CleanupMutexes();
 
 public:
 
@@ -53,6 +55,7 @@ public:
   {
     Unregister();
     Unlock();
+    CleanupMutexes();
   }
 
   class TemporaryUnlock
