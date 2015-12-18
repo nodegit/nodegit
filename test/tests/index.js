@@ -17,6 +17,9 @@ describe("Index", function() {
   var reposPath = local("../repos/workdir");
 
   beforeEach(function() {
+    // enable thread safety for this test suite to test the deadlock scenario
+    NodeGit.enableThreadSafety();
+
     var test = this;
 
     return Repository.open(reposPath)
@@ -31,6 +34,7 @@ describe("Index", function() {
 
   after(function() {
     this.index.clear();
+    NodeGit.disableThreadSafety();
   });
 
   it("can get the index of a repo and examine entries", function() {

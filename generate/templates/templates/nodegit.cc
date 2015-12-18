@@ -42,6 +42,14 @@ void cleanup_mutexes(uv_async_t *async) {
   uv_mutex_unlock(&map_mutex);
 }
 
+void LockMasterEnable(const FunctionCallbackInfo<Value>& args) {
+  LockMaster::Enable();
+}
+
+void LockMasterDisable(const FunctionCallbackInfo<Value>& args) {
+  LockMaster::Disable();
+}
+
 extern "C" void init(Local<v8::Object> target) {
   // Initialize libgit2.
   git_libgit2_init();
@@ -54,6 +62,9 @@ extern "C" void init(Local<v8::Object> target) {
       {{ cppClassName }}::InitializeComponent(target);
     {% endif %}
   {% endeach %}
+
+  NODE_SET_METHOD(target, "enableThreadSafety", LockMasterEnable);
+  NODE_SET_METHOD(target, "disableThreadSafety", LockMasterDisable);
 
   uv_mutex_init(&map_mutex);
   uv_key_create(&current_lock_master_key);
@@ -143,12 +154,20 @@ void LockMaster::CleanupMutexes()
 }
 
 LockMaster::TemporaryUnlock::TemporaryUnlock() {
+  if(!enabled) {
+    return;
+  }
   lockMaster = (LockMaster *)uv_key_get(&current_lock_master_key);
   lockMaster->Unlock();
 }
 
 LockMaster::TemporaryUnlock::~TemporaryUnlock() {
+  if(!enabled) {
+    return;
+  }
   lockMaster->Lock();
 }
+
+bool LockMaster::enabled = false;
 
 NODE_MODULE(nodegit, init)

@@ -8,6 +8,8 @@
 
 class LockMaster {
 
+  static bool enabled;
+
   std::set<const void *> objects_to_lock;
   std::vector<std::shared_ptr<uv_mutex_t> > object_mutexes;
 
@@ -44,6 +46,10 @@ public:
   // we lock on construction
   template<typename ...Types> LockMaster(bool emptyGuard, const Types*... types)
   {
+    if(!enabled) {
+      return;
+    }
+
     AddParameters(types...);
     GetMutexes();
     Register();
@@ -53,6 +59,10 @@ public:
   // and unlock on destruction
   ~LockMaster()
   {
+    if(!enabled) {
+      return;
+    }
+
     Unregister();
     Unlock();
     CleanupMutexes();
@@ -65,6 +75,16 @@ public:
     TemporaryUnlock();
     ~TemporaryUnlock();
   };
+
+  static void Enable()
+  {
+    enabled = true;
+  }
+
+  static void Disable()
+  {
+    enabled = false;
+  }
 };
 
 
