@@ -12,6 +12,9 @@
 {% endeach %}
 
 extern "C" void init(Local<v8::Object> target) {
+  // Initialize libgit2.
+  git_libgit2_init();
+
   Nan::HandleScope scope;
 
   Wrapper::InitializeComponent(target);

@@ -118,6 +118,3 @@ exports.version = require("../package").version;
 
 // Expose Promise implementation.
 exports.Promise = Promise;
-
-// Initialize libgit2.
-exports.Libgit2.init();
