@@ -92,12 +92,40 @@ void LockMaster::Unregister()
 
 void LockMaster::Lock()
 {
-  // lock the mutex (note locking the mutexes one by one can lead to
-  // deadlocks... we might be better off locking them all at once
-  // (using trylock, then unlocking if they can't all be locked, then lock & wait, repeat...)
-  for(std::shared_ptr<uv_mutex_t> &mutex : object_mutexes) {
-    uv_mutex_lock(mutex.get());
-  }
+  std::vector<std::shared_ptr<uv_mutex_t> >::iterator already_locked = object_mutexes.end();
+
+  // we will attempt to lock all the mutexes at the same time to avoid deadlocks
+  // note in most cases we are locking 0 or 1 mutexes. more than 1 implies
+  // passing objects with different repos/owners in the same call.
+  std::vector<std::shared_ptr<uv_mutex_t> >::iterator it;
+  do
+  {
+    // go through all the mutexes and try to lock them
+    for(it = object_mutexes.begin(); it != object_mutexes.end(); it++) {
+      // if we already locked this mutex in a previous pass via uv_mutex_lock,
+      // we don't need to lock it again
+      if(it == already_locked) {
+        continue;
+      }
+      // first, try to lock (non-blocking)
+      bool success = uv_mutex_trylock(it->get());
+      if(!success) {
+        // we have failed to lock a mutex... unlock everything we have locked
+        for(std::vector<std::shared_ptr<uv_mutex_t> >::iterator unlock_it = object_mutexes.begin(); unlock_it != it; unlock_it++) {
+          uv_mutex_unlock(unlock_it->get());
+        }
+        if(already_locked > it && already_locked != object_mutexes.end()) {
+          uv_mutex_unlock(already_locked->get());
+        }
+        // now do a blocking lock on what we couldn't lock
+        uv_mutex_lock(it->get());
+        // mark that we have already locked this one
+        // if there are more mutexes than this one, we will go back to locking everything
+        already_locked = it;
+        break;
+      }
+    }
+  } while(it != object_mutexes.end());
 }
 
 void LockMaster::Unlock()
