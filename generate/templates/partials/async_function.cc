@@ -93,7 +93,13 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
     {%endeach%}
     );
 
-  {%if return.isErrorCode %}
+  {%if return.isResultOrError %}
+  baton->error_code = result;
+  if (result < GIT_OK && giterr_last() != NULL) {
+    baton->error = git_error_dup(giterr_last());
+  }
+
+  {%elsif return.isErrorCode %}
   baton->error_code = result;
 
   if (result != GIT_OK && giterr_last() != NULL) {
@@ -108,8 +114,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
+  {%if return.isResultOrError %}
+  if (baton->error_code >= GIT_OK) {
+  {%else%}
   if (baton->error_code == GIT_OK) {
-    {%if not .|returnsCount %}
+  {%endif%}
+    {%if return.isResultOrError %}
+    Local<v8::Value> result = Nan::New<v8::Number>(baton->error_code);
+
+    {%elsif not .|returnsCount %}
     Local<v8::Value> result = Nan::Undefined();
     {%else%}
     Local<v8::Value> to;
