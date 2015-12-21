@@ -898,6 +898,12 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_graph_descendant_of": {
+          "isAsync": true,
+          "return": {
+            "isResultOrError": true
+          }
         }
       }
     },
