@@ -119,8 +119,8 @@ void LockMaster::Lock()
         continue;
       }
       // first, try to lock (non-blocking)
-      bool success = uv_mutex_trylock(it->get());
-      if(!success) {
+      bool failure = uv_mutex_trylock(it->get());
+      if(failure) {
         // we have failed to lock a mutex... unlock everything we have locked
         for(std::vector<std::shared_ptr<uv_mutex_t> >::iterator unlock_it = object_mutexes.begin(); unlock_it != it; unlock_it++) {
           uv_mutex_unlock(unlock_it->get());
