@@ -559,30 +559,30 @@ describe("Commit", function() {
       //check all hunk lines
       assert.equal(lines.length, 12);
       assert.equal(lines[0].origin(), Diff.LINE.CONTEXT);
-      assert.equal(lines[1].contentLen(), 9);
+      assert.equal(lines[1].contentLen(), 8);
 
-      assert.equal(getLineText(lines[1]), "line   s\n");
+      assert.equal(getLineText(lines[1]), "line   s");
       assert.equal(lines[1].origin(), Diff.LINE.CONTEXT);
       assert.equal(lines[2].origin(), Diff.LINE.CONTEXT);
 
-      assert.equal(lines[3].contentLen(), 1);
-      assert.equal(getLineText(lines[3]), "\n");
+      assert.equal(lines[3].contentLen(), 0);
+      assert.equal(getLineText(lines[3]), "");
       assert.equal(lines[3].origin(), Diff.LINE.ADDITION);
 
       assert.equal(lines[4].origin(), Diff.LINE.CONTEXT);
 
-      assert.equal(lines[5].contentLen(), 7);
-      assert.equal(getLineText(lines[5]), "line v\n");
+      assert.equal(lines[5].contentLen(), 6);
+      assert.equal(getLineText(lines[5]), "line v");
       assert.equal(lines[5].origin(), Diff.LINE.DELETION);
-      assert.equal(lines[6].contentLen(), 8);
-      assert.equal(getLineText(lines[6]), "line v1\n");
+      assert.equal(lines[6].contentLen(), 7);
+      assert.equal(getLineText(lines[6]), "line v1");
       assert.equal(lines[6].origin(), Diff.LINE.ADDITION);
 
       assert.equal(lines[7].origin(), Diff.LINE.CONTEXT);
       assert.equal(lines[8].origin(), Diff.LINE.CONTEXT);
 
-      assert.equal(lines[9].contentLen(), 4);
-      assert.equal(getLineText(lines[9]), "\t\t\t\n");
+      assert.equal(lines[9].contentLen(), 3);
+      assert.equal(getLineText(lines[9]), "\t\t\t");
       assert.equal(lines[9].origin(), Diff.LINE.ADDITION);
 
       assert.equal(lines[10].origin(), Diff.LINE.CONTEXT);
