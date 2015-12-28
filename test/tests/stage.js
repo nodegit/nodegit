@@ -245,7 +245,7 @@ function stagingTest(staging, newFileContent) {
             throw ("File change when no file change expected.");
           }
         } else {
-          assert(delta.newFile().mode() - delta.oldFile().mode() === 
+          assert(delta.newFile().mode() - delta.oldFile().mode() ===
             fileModeDifference);
         }
         return true;
@@ -265,7 +265,7 @@ function stagingTest(staging, newFileContent) {
                               fileContent)
           .then(function() {
             //Then, change the permission locally.
-            return fse.chmod(path.join(test.repository.workdir(), fileName), 
+            return fse.chmod(path.join(test.repository.workdir(), fileName),
               0755 /* new filemode */);
           });
       })
@@ -310,7 +310,7 @@ function stagingTest(staging, newFileContent) {
                               fileContent)
           .then(function() {
             //Then, change the permission locally.
-            return fse.chmod(path.join(test.repository.workdir(), fileName), 
+            return fse.chmod(path.join(test.repository.workdir(), fileName),
               0755 /* new filemode */);
           });
       })

@@ -7,8 +7,8 @@ var local = path.join.bind(path, __dirname);
 
 describe("ConvenientLine", function() {
   var repoPath = local("../repos/convenientLineTest");
-  var unicodeLine = "Ťḥ𝖎ṧ ℓỈ𝓃ệ çǒ𝚗ẗảḭṋṦ Û𝐧ǐ𝗰ṓḍ𝔢";
-  var asciiLine = "but this line doesn't";
+  var unicodeLine = "Ťḥ𝖎ṧ ℓỈ𝓃ệ çǒ𝚗ẗảḭṋṦ Û𝐧ǐ𝗰ṓḍ𝔢\n";
+  var asciiLine = "but this line doesn't\n";
 
   beforeEach(function() {
     var test = this;
@@ -18,7 +18,7 @@ describe("ConvenientLine", function() {
         return repoSetup.commitFileToRepo(
           repo,
           "fileWithUnicodeChars",
-          unicodeLine + "\n" + asciiLine + "\n"
+          unicodeLine + asciiLine
         );
       })
       .then(function(commit) {
@@ -46,7 +46,7 @@ describe("ConvenientLine", function() {
   it("can parse the byte length of a unicode string", function() {
     var line = this.unicodeLine;
 
-    assert.equal(line.contentLen(), 32);
+    assert.equal(line.contentLen(), Buffer.byteLength(unicodeLine, "utf8"));
   });
 
   it("can get a line that contains unicode", function() {
@@ -58,7 +58,7 @@ describe("ConvenientLine", function() {
   it("can parse the byte length of a ascii string", function() {
     var line = this.asciiLine;
 
-    assert.equal(line.contentLen(), 21);
+    assert.equal(line.contentLen(), Buffer.byteLength(asciiLine, "utf8"));
   });
 
   it("can get a line that contains ascii", function() {

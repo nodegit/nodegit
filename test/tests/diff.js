@@ -114,17 +114,17 @@ describe("Diff", function() {
         assert.equal(lines[2].origin(), Diff.LINE.CONTEXT);
 
         var oldContent = "__Before submitting a pull request, please ensure " +
-          "both unit tests and lint checks pass.__";
+          "both unit tests and lint checks pass.__\n";
         assert.equal(lines[3].content(), oldContent);
         assert.equal(lines[3].origin(), Diff.LINE.DELETION);
-        assert.equal(lines[3].contentLen(), oldContent.length);
+        assert.equal(lines[3].content().length, oldContent.length);
 
         var newContent = "__Before submitting a pull request, please ensure " +
           "both that you've added unit tests to cover your shiny new code, " +
-          "and that all unit tests and lint checks pass.__";
+          "and that all unit tests and lint checks pass.__\n";
         assert.equal(lines[4].content(), newContent);
         assert.equal(lines[4].origin(), Diff.LINE.ADDITION);
-        assert.equal(lines[4].contentLen(), newContent.length);
+        assert.equal(lines[4].content().length, newContent.length);
       });
   });
 
@@ -182,7 +182,7 @@ describe("Diff", function() {
       })
       .then(function(lines) {
         lines.forEach(function(line) {
-          assert(!/\n/.exec(line.content()));
+          assert(/\n/.exec(line.content()));
           assert(/\n/.exec(line.rawContent()));
         });
       });
