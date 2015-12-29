@@ -520,10 +520,6 @@ describe("Commit", function() {
                   " line q\nline r\nline   s\nline t\n\nline u\n" +
                   "line v1\nline w\nline x\n			\nline y\nline z\n";
 
-    function getLineText(line) {
-      return line.rawContent().substring(0, line.contentLen());
-    }
-
     return NodeGit.Repository.open(reposPath)
     .then(function(repoResult) {
       repo = repoResult;
@@ -559,33 +555,37 @@ describe("Commit", function() {
       //check all hunk lines
       assert.equal(lines.length, 12);
       assert.equal(lines[0].origin(), Diff.LINE.CONTEXT);
-      assert.equal(lines[1].contentLen(), 9);
 
-      assert.equal(getLineText(lines[1]), "line   s\n");
+      assert.equal(lines[1].content().length, 9);
+      assert.equal(lines[1].content(), "line   s\n");
       assert.equal(lines[1].origin(), Diff.LINE.CONTEXT);
+
       assert.equal(lines[2].origin(), Diff.LINE.CONTEXT);
 
-      assert.equal(lines[3].contentLen(), 1);
-      assert.equal(getLineText(lines[3]), "\n");
+      assert.equal(lines[3].content().length, 1);
+      assert.equal(lines[3].content(), "\n");
       assert.equal(lines[3].origin(), Diff.LINE.ADDITION);
 
       assert.equal(lines[4].origin(), Diff.LINE.CONTEXT);
 
-      assert.equal(lines[5].contentLen(), 7);
-      assert.equal(getLineText(lines[5]), "line v\n");
+      assert.equal(lines[5].content().length, 7);
+      assert.equal(lines[5].content(), "line v\n");
       assert.equal(lines[5].origin(), Diff.LINE.DELETION);
-      assert.equal(lines[6].contentLen(), 8);
-      assert.equal(getLineText(lines[6]), "line v1\n");
+
+      assert.equal(lines[6].content().length, 8);
+      assert.equal(lines[6].content(), "line v1\n");
       assert.equal(lines[6].origin(), Diff.LINE.ADDITION);
 
       assert.equal(lines[7].origin(), Diff.LINE.CONTEXT);
+
       assert.equal(lines[8].origin(), Diff.LINE.CONTEXT);
 
-      assert.equal(lines[9].contentLen(), 4);
-      assert.equal(getLineText(lines[9]), "\t\t\t\n");
+      assert.equal(lines[9].content().length, 4);
+      assert.equal(lines[9].content(), "\t\t\t\n");
       assert.equal(lines[9].origin(), Diff.LINE.ADDITION);
 
       assert.equal(lines[10].origin(), Diff.LINE.CONTEXT);
+
       assert.equal(lines[11].origin(), Diff.LINE.CONTEXT);
     });
   });
