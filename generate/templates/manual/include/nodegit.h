@@ -4,14 +4,12 @@
 #include <set>
 #include <vector>
 #include <uv.h>
-#include <memory>
 
 class LockMaster {
 
   static bool enabled;
 
   std::set<const void *> objects_to_lock;
-  std::vector<std::shared_ptr<uv_mutex_t> > object_mutexes;
 
   template<typename T>
   void AddLocks(const T *t) {
@@ -34,11 +32,11 @@ class LockMaster {
     AddParameters(args...);
   }
 
-  void GetMutexes();
+  std::vector<uv_mutex_t *> GetMutexes(int use_count_delta);
   void Register();
   void Unregister();
-  void Lock();
-  void Unlock();
+  void Lock(bool acquire_mutexes);
+  void Unlock(bool release_mutexes);
   void CleanupMutexes();
 
 public:
@@ -51,9 +49,8 @@ public:
     }
 
     AddParameters(types...);
-    GetMutexes();
     Register();
-    Lock();
+    Lock(true);
   }
 
   // and unlock on destruction
@@ -64,7 +61,7 @@ public:
     }
 
     Unregister();
-    Unlock();
+    Unlock(true);
     CleanupMutexes();
   }
 
