@@ -14,6 +14,7 @@
       },
 
       "sources": [
+        "src/lock_master.cc",
         "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",

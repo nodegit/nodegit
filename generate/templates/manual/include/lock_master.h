@@ -1,5 +1,5 @@
-#ifndef NODEGIT_H
-#define NODEGIT_H
+#ifndef LOCK_MASTER_H
+#define LOCK_MASTER_H
 
 #include <set>
 #include <vector>
@@ -72,6 +72,8 @@ public:
     TemporaryUnlock();
     ~TemporaryUnlock();
   };
+
+  static void Initialize();
 
   static void Enable()
   {
