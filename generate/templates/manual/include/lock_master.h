@@ -1,15 +1,13 @@
 #ifndef LOCK_MASTER_H
 #define LOCK_MASTER_H
 
-#include <set>
-#include <vector>
-#include <uv.h>
+class LockMasterImpl;
 
 class LockMaster {
 
   static bool enabled;
 
-  std::set<const void *> objects_to_lock;
+  LockMasterImpl *impl;
 
   template<typename T>
   void AddLocks(const T *t) {
@@ -17,14 +15,12 @@ class LockMaster {
   }
 
   // base case for variadic template unwinding
-  void AddParameters()
-  {
+  void AddParameters() {
   }
 
   // processes a single parameter, then calls recursively on the rest
   template<typename T, typename... Types>
-  void AddParameters(const T *t, const Types*... args)
-  {
+  void AddParameters(const T *t, const Types*... args) {
     if(t) {
       AddLocks(t);
     } else {
@@ -32,56 +28,56 @@ class LockMaster {
     AddParameters(args...);
   }
 
-  std::vector<uv_mutex_t *> GetMutexes(int use_count_delta);
-  void Register();
-  void Unregister();
-  void Lock(bool acquire_mutexes);
-  void Unlock(bool release_mutexes);
-  void CleanupMutexes();
-
+  void ConstructorImpl();
+  void DestructorImpl();
+  void ObjectToLock(const void *);
 public:
 
   // we lock on construction
-  template<typename ...Types> LockMaster(bool emptyGuard, const Types*... types)
-  {
+  template<typename ...Types> LockMaster(bool emptyGuard, const Types*... types) {
     if(!enabled) {
       return;
     }
 
     AddParameters(types...);
-    Register();
-    Lock(true);
+    ConstructorImpl();
   }
 
   // and unlock on destruction
-  ~LockMaster()
-  {
+  ~LockMaster() {
     if(!enabled) {
       return;
     }
-
-    Unregister();
-    Unlock(true);
-    CleanupMutexes();
+    DestructorImpl();
   }
 
-  class TemporaryUnlock
-  {
-    LockMaster *lockMaster;
+  class TemporaryUnlock {
+    LockMasterImpl *impl;
+
+    void ConstructorImpl();
+    void DestructorImpl();
   public:
-    TemporaryUnlock();
-    ~TemporaryUnlock();
+    TemporaryUnlock() {
+      if(!enabled) {
+        return;
+      }
+      ConstructorImpl();
+    }
+    ~TemporaryUnlock() {
+      if(!enabled) {
+        return;
+      }
+      DestructorImpl();
+    }
   };
 
   static void Initialize();
 
-  static void Enable()
-  {
+  static void Enable() {
     enabled = true;
   }
 
-  static void Disable()
-  {
+  static void Disable() {
     enabled = false;
   }
 };
@@ -89,7 +85,7 @@ public:
 
 template<> inline void LockMaster::AddLocks(const git_repository *repo) {
   // when using a repo, lock the repo
-  objects_to_lock.insert(repo);
+  ObjectToLock(repo);
 }
 
 template<> inline void LockMaster::AddLocks(const git_index *index) {
@@ -98,13 +94,13 @@ template<> inline void LockMaster::AddLocks(const git_index *index) {
   if(!owner) {
     owner = index;
   }
-  objects_to_lock.insert(owner);
+  ObjectToLock(owner);
 }
 
 template<> inline void LockMaster::AddLocks(const git_commit *commit) {
   // when using a commit, lock the repo
   const void *owner = git_commit_owner(commit);
-  objects_to_lock.insert(owner);
+  ObjectToLock(owner);
 }
 
 // ... more locking rules would go here.  According to an analysis of idefs.json,

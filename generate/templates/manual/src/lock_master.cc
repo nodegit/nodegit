@@ -1,15 +1,82 @@
 #include <git2.h>
 #include <uv.h>
+#include <set>
+#include <vector>
 #include <map>
+
 #include "../include/lock_master.h"
 
-std::map<const void *, std::pair<uv_mutex_t *, unsigned> > mutexes;
-uv_mutex_t map_mutex;
-uv_key_t current_lock_master_key;
-uv_async_t cleanup_mutexes_handle;
+// LockMaster implementation details
+// implemented in a separate class to keep LockMaster opaque
+class LockMasterImpl {
+  // STATIC variables / methods
 
-void cleanup_mutexes(uv_async_t *async) {
-  uv_mutex_lock(&map_mutex);
+  // A map from objects that are locked (or were locked), to information on their mutex
+  static std::map<const void *, std::pair<uv_mutex_t *, unsigned> > mutexes;
+  // A mutex used for the mutexes map
+  static uv_mutex_t mapMutex;
+
+  // A libuv key used to store the current thread-specific LockMasterImpl instance
+  static uv_key_t currentLockMasterKey;
+
+  // A libuv async handle used to trigger / debounce mutex cleanup
+  static uv_async_t cleanupMutexesHandle;
+  // Cleans up any mutexes that are not currently used
+  static void CleanupMutexes(uv_async_t *async);
+
+public:
+  static void Initialize();
+
+  // INSTANCE variables / methods
+
+private:
+  // The set of objects this LockMaster is responsible for locking
+  std::set<const void *> objectsToLock;
+
+  // Mutexes locked by this LockMaster on construction and unlocked on destruction
+  std::vector<uv_mutex_t *> GetMutexes(int useCountDelta);
+  void Register();
+  void Unregister();
+  void CleanupMutexes();
+
+public:
+  static LockMasterImpl *CurrentLockMasterImpl() {
+    return (LockMasterImpl *)uv_key_get(&currentLockMasterKey);
+  }
+
+  LockMasterImpl() {
+    Register();
+    Lock(true);
+  }
+
+  ~LockMasterImpl() {
+    Unregister();
+    Unlock(true);
+    CleanupMutexes();
+  }
+
+  void ObjectToLock(const void *objectToLock) {
+    objectsToLock.insert(objectToLock);
+  }
+
+  void Lock(bool acquireMutexes);
+  void Unlock(bool releaseMutexes);
+};
+
+std::map<const void *, std::pair<uv_mutex_t *, unsigned> > LockMasterImpl::mutexes;
+uv_mutex_t LockMasterImpl::mapMutex;
+uv_key_t LockMasterImpl::currentLockMasterKey;
+uv_async_t LockMasterImpl::cleanupMutexesHandle;
+
+
+void LockMasterImpl::Initialize() {
+  uv_mutex_init(&mapMutex);
+  uv_key_create(&currentLockMasterKey);
+  uv_async_init(uv_default_loop(), &cleanupMutexesHandle, CleanupMutexes);
+}
+
+void LockMasterImpl::CleanupMutexes(uv_async_t *async) {
+  uv_mutex_lock(&mapMutex);
 
   for(std::map<const void *, std::pair<uv_mutex_t *, unsigned> >::iterator it=mutexes.begin(); it != mutexes.end(); )
   {
@@ -17,7 +84,7 @@ void cleanup_mutexes(uv_async_t *async) {
     unsigned use_count = it->second.second;
     // if the mutex is only referenced by the mutexes map,
     // we can destroy it (because any LockMaster that is using the mutex would
-    // hold it in its object_mutexes)
+    // hold it in its objectMutexes)
     if (!use_count) {
       uv_mutex_destroy(mutex);
       free(mutex);
@@ -29,70 +96,63 @@ void cleanup_mutexes(uv_async_t *async) {
     }
   }
 
-  uv_mutex_unlock(&map_mutex);
+  uv_mutex_unlock(&mapMutex);
 }
 
 void LockMaster::Initialize() {
-  uv_mutex_init(&map_mutex);
-  uv_key_create(&current_lock_master_key);
-  uv_async_init(uv_default_loop(), &cleanup_mutexes_handle, cleanup_mutexes);
+  LockMasterImpl::Initialize();
 }
 
-std::vector<uv_mutex_t *> LockMaster::GetMutexes(int use_count_delta)
-{
-  std::vector<uv_mutex_t *> object_mutexes;
+std::vector<uv_mutex_t *> LockMasterImpl::GetMutexes(int useCountDelta) {
+  std::vector<uv_mutex_t *> objectMutexes;
 
-  uv_mutex_lock(&map_mutex);
+  uv_mutex_lock(&mapMutex);
 
-  for (std::set<const void *>::const_iterator it = objects_to_lock.begin(); it != objects_to_lock.end(); it++) {
+  for (std::set<const void *>::const_iterator it = objectsToLock.begin(); it != objectsToLock.end(); it++) {
     const void *object = *it;
     if(object) {
       // ensure we have an initialized mutex for each object
-      std::map<const void *, std::pair<uv_mutex_t *, unsigned> >::iterator mutex_it = mutexes.find(object);
-      if(mutex_it == mutexes.end()) {
-        mutex_it = mutexes.insert(
+      std::map<const void *, std::pair<uv_mutex_t *, unsigned> >::iterator mutexIt = mutexes.find(object);
+      if(mutexIt == mutexes.end()) {
+        mutexIt = mutexes.insert(
           std::make_pair(
             object,
             std::make_pair((uv_mutex_t *)malloc(sizeof(uv_mutex_t)), 0U)
           )
         ).first;
-        uv_mutex_init(mutex_it->second.first);
+        uv_mutex_init(mutexIt->second.first);
       }
 
-      object_mutexes.push_back(mutex_it->second.first);
-      mutex_it->second.second += use_count_delta;
+      objectMutexes.push_back(mutexIt->second.first);
+      mutexIt->second.second += useCountDelta;
     }
   }
 
-  uv_mutex_unlock(&map_mutex);
+  uv_mutex_unlock(&mapMutex);
 
-  return object_mutexes;
+  return objectMutexes;
 }
 
-void LockMaster::Register()
-{
-  uv_key_set(&current_lock_master_key, this);
+void LockMasterImpl::Register() {
+  uv_key_set(&currentLockMasterKey, this);
 }
 
-void LockMaster::Unregister()
-{
-  uv_key_set(&current_lock_master_key, NULL);
+void LockMasterImpl::Unregister() {
+  uv_key_set(&currentLockMasterKey, NULL);
 }
 
-void LockMaster::Lock(bool acquire_mutexes)
-{
-  std::vector<uv_mutex_t *> object_mutexes = GetMutexes(acquire_mutexes * 1);
+void LockMasterImpl::Lock(bool acquireMutexes) {
+  std::vector<uv_mutex_t *> objectMutexes = GetMutexes(acquireMutexes * 1);
 
-  std::vector<uv_mutex_t *>::iterator already_locked = object_mutexes.end();
+  std::vector<uv_mutex_t *>::iterator already_locked = objectMutexes.end();
 
   // we will attempt to lock all the mutexes at the same time to avoid deadlocks
   // note in most cases we are locking 0 or 1 mutexes. more than 1 implies
   // passing objects with different repos/owners in the same call.
   std::vector<uv_mutex_t *>::iterator it;
-  do
-  {
+  do {
     // go through all the mutexes and try to lock them
-    for(it = object_mutexes.begin(); it != object_mutexes.end(); it++) {
+    for(it = objectMutexes.begin(); it != objectMutexes.end(); it++) {
       // if we already locked this mutex in a previous pass via uv_mutex_lock,
       // we don't need to lock it again
       if(it == already_locked) {
@@ -102,10 +162,10 @@ void LockMaster::Lock(bool acquire_mutexes)
       bool failure = uv_mutex_trylock(*it);
       if(failure) {
         // we have failed to lock a mutex... unlock everything we have locked
-        for(std::vector<uv_mutex_t *>::iterator unlock_it = object_mutexes.begin(); unlock_it != it; unlock_it++) {
-          uv_mutex_unlock(*unlock_it);
+        for(std::vector<uv_mutex_t *>::iterator unlockIt = objectMutexes.begin(); unlockIt != it; unlockIt++) {
+          uv_mutex_unlock(*unlockIt);
         }
-        if(already_locked > it && already_locked != object_mutexes.end()) {
+        if(already_locked > it && already_locked != objectMutexes.end()) {
           uv_mutex_unlock(*already_locked);
         }
         // now do a blocking lock on what we couldn't lock
@@ -116,38 +176,48 @@ void LockMaster::Lock(bool acquire_mutexes)
         break;
       }
     }
-  } while(it != object_mutexes.end());
+  } while(it != objectMutexes.end());
 }
 
-void LockMaster::Unlock(bool release_mutexes)
-{
-  std::vector<uv_mutex_t *> object_mutexes = GetMutexes(release_mutexes * -1);
+void LockMasterImpl::Unlock(bool releaseMutexes) {
+  std::vector<uv_mutex_t *> objectMutexes = GetMutexes(releaseMutexes * -1);
 
-  for(std::vector<uv_mutex_t *>::iterator it=object_mutexes.begin(); it != object_mutexes.end(); it++) {
+  for(std::vector<uv_mutex_t *>::iterator it=objectMutexes.begin(); it != objectMutexes.end(); it++) {
     uv_mutex_unlock(*it);
   }
 }
 
-void LockMaster::CleanupMutexes()
-{
+void LockMasterImpl::CleanupMutexes() {
   // schedule mutex cleanup on the main event loop
   // this somewhat delays and debounces cleanup (uv_async_send coalesces calls)
-  uv_async_send(&cleanup_mutexes_handle);
+  uv_async_send(&cleanupMutexesHandle);
 }
 
-LockMaster::TemporaryUnlock::TemporaryUnlock() {
-  if(!enabled) {
-    return;
-  }
-  lockMaster = (LockMaster *)uv_key_get(&current_lock_master_key);
-  lockMaster->Unlock(false);
+
+// LockMaster
+
+void LockMaster::ConstructorImpl() {
+  impl = new LockMasterImpl();
 }
 
-LockMaster::TemporaryUnlock::~TemporaryUnlock() {
-  if(!enabled) {
-    return;
-  }
-  lockMaster->Lock(false);
+void LockMaster::DestructorImpl() {
+  delete impl;
+}
+
+void LockMaster::ObjectToLock(const void *objectToLock) {
+  impl->ObjectToLock(objectToLock);
+}
+
+
+// LockMaster::TemporaryUnlock
+
+void LockMaster::TemporaryUnlock::ConstructorImpl() {
+  impl = LockMasterImpl::CurrentLockMasterImpl();
+  impl->Unlock(false);
+}
+
+void LockMaster::TemporaryUnlock::DestructorImpl() {
+  impl->Lock(false);
 }
 
 bool LockMaster::enabled = false;
