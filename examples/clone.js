@@ -10,11 +10,13 @@ fse.remove(path).then(function() {
     "https://github.com/nodegit/nodegit.git",
     path,
     {
-      remoteCallbacks: {
-        certificateCheck: function() {
-          // github will fail cert check on some OSX machines
-          // this overrides that check
-          return 1;
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            // github will fail cert check on some OSX machines
+            // this overrides that check
+            return 1;
+          }
         }
       }
     })
