@@ -11,11 +11,13 @@ nodegit.Repository.open(path.resolve(__dirname, repoDir))
     repository = repo;
 
     return repository.fetchAll({
-      credentials: function(url, userName) {
-        return nodegit.Cred.sshKeyFromAgent(userName);
-      },
-      certificateCheck: function() {
-        return 1;
+      callbacks: {
+        credentials: function(url, userName) {
+          return nodegit.Cred.sshKeyFromAgent(userName);
+        },
+        certificateCheck: function() {
+          return 1;
+        }
       }
     });
   })
