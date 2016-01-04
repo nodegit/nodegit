@@ -7,13 +7,24 @@
 
 #include "../include/lock_master.h"
 
+// information about a lockable object
+// - the mutex used to lock it and the number of outstanding locks
+struct ObjectInfo {
+  uv_mutex_t *mutex;
+  unsigned useCount;
+
+  ObjectInfo(uv_mutex_t *mutex, unsigned useCount)
+    : mutex(mutex), useCount(useCount)
+  {}
+};
+
 // LockMaster implementation details
 // implemented in a separate class to keep LockMaster opaque
 class LockMasterImpl {
   // STATIC variables / methods
 
   // A map from objects that are locked (or were locked), to information on their mutex
-  static std::map<const void *, std::pair<uv_mutex_t *, unsigned> > mutexes;
+  static std::map<const void *, ObjectInfo> mutexes;
   // A mutex used for the mutexes map
   static uv_mutex_t mapMutex;
 
@@ -64,7 +75,7 @@ public:
   void Unlock(bool releaseMutexes);
 };
 
-std::map<const void *, std::pair<uv_mutex_t *, unsigned> > LockMasterImpl::mutexes;
+std::map<const void *, ObjectInfo> LockMasterImpl::mutexes;
 uv_mutex_t LockMasterImpl::mapMutex;
 uv_key_t LockMasterImpl::currentLockMasterKey;
 uv_async_t LockMasterImpl::cleanupMutexesHandle;
@@ -81,12 +92,11 @@ void LockMasterImpl::CleanupMutexes(uv_async_t *async) {
 
   for (auto it = mutexes.begin(); it != mutexes.end(); )
   {
-    uv_mutex_t *mutex = it->second.first;
-    unsigned use_count = it->second.second;
-    // if the mutex is only referenced by the mutexes map,
-    // we can destroy it (because any LockMaster that is using the mutex would
-    // hold it in its objectMutexes)
-    if (!use_count) {
+    uv_mutex_t *mutex = it->second.mutex;
+    unsigned useCount = it->second.useCount;
+    // if the mutex is not used by any LockMasters,
+    // we can destroy it
+    if (!useCount) {
       uv_mutex_destroy(mutex);
       free(mutex);
       auto to_erase = it;
@@ -117,14 +127,14 @@ std::vector<uv_mutex_t *> LockMasterImpl::GetMutexes(int useCountDelta) {
         mutexIt = mutexes.insert(
           std::make_pair(
             object,
-            std::make_pair((uv_mutex_t *)malloc(sizeof(uv_mutex_t)), 0U)
+            ObjectInfo((uv_mutex_t *)malloc(sizeof(uv_mutex_t)), 0U)
           )
         ).first;
-        uv_mutex_init(mutexIt->second.first);
+        uv_mutex_init(mutexIt->second.mutex);
       }
 
-      objectMutexes.push_back(mutexIt->second.first);
-      mutexIt->second.second += useCountDelta;
+      objectMutexes.push_back(mutexIt->second.mutex);
+      mutexIt->second.useCount += useCountDelta;
     }
   }
 
