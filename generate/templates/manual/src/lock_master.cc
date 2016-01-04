@@ -3,6 +3,7 @@
 #include <set>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 #include "../include/lock_master.h"
 
@@ -78,7 +79,7 @@ void LockMasterImpl::Initialize() {
 void LockMasterImpl::CleanupMutexes(uv_async_t *async) {
   uv_mutex_lock(&mapMutex);
 
-  for(std::map<const void *, std::pair<uv_mutex_t *, unsigned> >::iterator it=mutexes.begin(); it != mutexes.end(); )
+  for (auto it = mutexes.begin(); it != mutexes.end(); )
   {
     uv_mutex_t *mutex = it->second.first;
     unsigned use_count = it->second.second;
@@ -88,7 +89,7 @@ void LockMasterImpl::CleanupMutexes(uv_async_t *async) {
     if (!use_count) {
       uv_mutex_destroy(mutex);
       free(mutex);
-      std::map<const void *, std::pair<uv_mutex_t *, unsigned> >::iterator to_erase = it;
+      auto to_erase = it;
       it++;
       mutexes.erase(to_erase);
     } else {
@@ -108,11 +109,10 @@ std::vector<uv_mutex_t *> LockMasterImpl::GetMutexes(int useCountDelta) {
 
   uv_mutex_lock(&mapMutex);
 
-  for (std::set<const void *>::const_iterator it = objectsToLock.begin(); it != objectsToLock.end(); it++) {
-    const void *object = *it;
+  for (auto object : objectsToLock) {
     if(object) {
       // ensure we have an initialized mutex for each object
-      std::map<const void *, std::pair<uv_mutex_t *, unsigned> >::iterator mutexIt = mutexes.find(object);
+      auto mutexIt = mutexes.find(object);
       if(mutexIt == mutexes.end()) {
         mutexIt = mutexes.insert(
           std::make_pair(
@@ -144,7 +144,7 @@ void LockMasterImpl::Unregister() {
 void LockMasterImpl::Lock(bool acquireMutexes) {
   std::vector<uv_mutex_t *> objectMutexes = GetMutexes(acquireMutexes * 1);
 
-  std::vector<uv_mutex_t *>::iterator already_locked = objectMutexes.end();
+  auto alreadyLocked = objectMutexes.end();
 
   // we will attempt to lock all the mutexes at the same time to avoid deadlocks
   // note in most cases we are locking 0 or 1 mutexes. more than 1 implies
@@ -155,24 +155,22 @@ void LockMasterImpl::Lock(bool acquireMutexes) {
     for(it = objectMutexes.begin(); it != objectMutexes.end(); it++) {
       // if we already locked this mutex in a previous pass via uv_mutex_lock,
       // we don't need to lock it again
-      if(it == already_locked) {
+      if (it == alreadyLocked) {
         continue;
       }
       // first, try to lock (non-blocking)
       bool failure = uv_mutex_trylock(*it);
       if(failure) {
         // we have failed to lock a mutex... unlock everything we have locked
-        for(std::vector<uv_mutex_t *>::iterator unlockIt = objectMutexes.begin(); unlockIt != it; unlockIt++) {
-          uv_mutex_unlock(*unlockIt);
-        }
-        if(already_locked > it && already_locked != objectMutexes.end()) {
-          uv_mutex_unlock(*already_locked);
+        std::for_each(objectMutexes.begin(), it, uv_mutex_unlock);
+        if (alreadyLocked > it && alreadyLocked != objectMutexes.end()) {
+          uv_mutex_unlock(*alreadyLocked);
         }
         // now do a blocking lock on what we couldn't lock
         uv_mutex_lock(*it);
         // mark that we have already locked this one
         // if there are more mutexes than this one, we will go back to locking everything
-        already_locked = it;
+        alreadyLocked = it;
         break;
       }
     }
@@ -182,9 +180,7 @@ void LockMasterImpl::Lock(bool acquireMutexes) {
 void LockMasterImpl::Unlock(bool releaseMutexes) {
   std::vector<uv_mutex_t *> objectMutexes = GetMutexes(releaseMutexes * -1);
 
-  for(std::vector<uv_mutex_t *>::iterator it=objectMutexes.begin(); it != objectMutexes.end(); it++) {
-    uv_mutex_unlock(*it);
-  }
+  std::for_each(objectMutexes.begin(), objectMutexes.end(), uv_mutex_unlock);
 }
 
 void LockMasterImpl::CleanupMutexes() {
