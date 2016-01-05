@@ -39,8 +39,8 @@ public:
       return;
     }
 
-    AddParameters(types...);
     ConstructorImpl();
+    AddParameters(types...);
   }
 
   // and unlock on destruction
