@@ -171,18 +171,10 @@
         Nan::TryCatch tryCatch;
         Local<v8::Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
 
-        if (result->IsObject() && Nan::Has(result->ToObject(), Nan::New("then").ToLocalChecked()).FromJust()) {
-          Local<v8::Value> thenProp = Nan::Get(result->ToObject(), Nan::New("then").ToLocalChecked()).ToLocalChecked();
+        uv_close((uv_handle_t*) &baton->req, NULL);
 
-          if (thenProp->IsFunction()) {
-            // we can be reasonbly certain that the result is a promise
-            Local<Object> promise = result->ToObject();
-
-            baton->promise.Reset(promise);
-
-            uv_close((uv_handle_t*) &baton->req, (uv_close_cb) {{ field.name }}_setupAsyncPromisePolling);
-            return;
-          }
+        if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppClassName }}::{{ field.name }}_promiseCompleted)) {
+          return;
         }
 
         {% each field|returnsInfo false true as _return %}
@@ -210,36 +202,14 @@
           }
         {% endeach %}
         baton->done = true;
-        uv_close((uv_handle_t*) &baton->req, NULL);
-      }
-      void {{ cppClassName }}::{{ field.name }}_setupAsyncPromisePolling(uv_async_t* req) {
-        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
-        uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ field.name }}_asyncPromisePolling);
-        uv_async_send(&baton->req);
       }
 
-      void {{ cppClassName }}::{{ field.name }}_asyncPromisePolling(uv_async_t* req, int status) {
+      void {{ cppClassName }}::{{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result) {
         Nan::HandleScope scope;
 
-        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
-        Local<Object> promise = Nan::New<Object>(baton->promise);
+        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(_baton);
 
-        Nan::Callback* isPendingFn = new Nan::Callback(Nan::Get(promise, Nan::New("isPending").ToLocalChecked()).ToLocalChecked().As<Function>());
-        Local<Value> argv[1]; // MSBUILD won't assign an array of length 0
-        Local<Boolean> isPending = isPendingFn->Call(promise, 0, argv)->ToBoolean();
-
-        if (isPending->Value()) {
-          uv_async_send(&baton->req);
-          return;
-        }
-
-        Nan::Callback* isFulfilledFn = new Nan::Callback(Nan::Get(promise, Nan::New("isFulfilled").ToLocalChecked()).ToLocalChecked().As<Function>());
-        Local<Boolean> isFulfilled = isFulfilledFn->Call(promise, 0, argv)->ToBoolean();
-
-        if (isFulfilled->Value()) {
-          Nan::Callback* resultFn = new Nan::Callback(Nan::Get(promise, Nan::New("value").ToLocalChecked()).ToLocalChecked().As<Function>());
-          Local<v8::Value> result = resultFn->Call(promise, 0, argv);
-
+        if (isFulfilled) {
           {% each field|returnsInfo false true as _return %}
             if (result.IsEmpty() || result->IsNativeError()) {
               baton->result = {{ field.return.error }};
@@ -264,7 +234,6 @@
               baton->result = {{ field.return.noResults }};
             }
           {% endeach %}
-          baton->done = true;
         }
         else {
           // promise was rejected
@@ -272,15 +241,11 @@
             {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
           {% endeach %});
           Local<v8::Object> parent = instance->handle();
-          Nan::Callback* reasonFn = new Nan::Callback(Nan::Get(promise, Nan::New("reason").ToLocalChecked()).ToLocalChecked().As<Function>());
-          Local<v8::Value> reason = reasonFn->Call(promise, 0, argv);
-          parent->SetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked(), reason);
+          parent->SetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked(), result);
 
           baton->result = {{ field.return.error }};
-          baton->done = true;
         }
-
-        uv_close((uv_handle_t*) &baton->req, NULL);
+        baton->done = true;
       }
     {% endif %}
   {% endif %}

@@ -8,6 +8,7 @@
 
 #include "../include/lock_master.h"
 #include "../include/wrapper.h"
+#include "../include/promise_completion.h"
 #include "../include/functions/copy.h"
 {% each %}
   {% if type != "enum" %}
@@ -30,6 +31,7 @@ extern "C" void init(Local<v8::Object> target) {
   Nan::HandleScope scope;
 
   Wrapper::InitializeComponent(target);
+  PromiseCompletion::InitializeComponent();
   {% each %}
     {% if type != "enum" %}
       {{ cppClassName }}::InitializeComponent(target);

@@ -6,6 +6,7 @@
 #include <queue>
 
 #include "async_baton.h"
+#include "promise_completion.h"
 
 extern "C" {
 #include <git2.h>
@@ -63,8 +64,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     );
 
     static void {{ function.cppFunctionName }}_{{ arg.name }}_async(uv_async_t* req, int status);
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_setupAsyncPromisePolling(uv_async_t* req);
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_asyncPromisePolling(uv_async_t* req, int status);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
     struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : AsyncBaton {
       {% each arg.args|argsInfo as cbArg %}
       {{ cbArg.cType }} {{ cbArg.name }};

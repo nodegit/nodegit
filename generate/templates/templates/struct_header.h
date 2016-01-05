@@ -48,8 +48,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
           );
 
           static void {{ field.name }}_async(uv_async_t* req, int status);
-          static void {{ field.name }}_setupAsyncPromisePolling(uv_async_t* req);
-          static void {{ field.name }}_asyncPromisePolling(uv_async_t* req, int status);
+          static void {{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
           struct {{ field.name|titleCase }}Baton : public AsyncBaton {
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name}};

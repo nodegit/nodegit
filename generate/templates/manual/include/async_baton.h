@@ -10,7 +10,6 @@
 struct AsyncBaton {
   uv_async_t req;
 
-  Nan::Persistent<v8::Object> promise;
   bool done;
 };
 
