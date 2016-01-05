@@ -17,25 +17,19 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     history.on("commit", function(commit) {
       return commit.getDiff()
       .then(function(diffList) {
-        var addCommit = diffList.reduce(function(prevVal, diff) {
-          var result =
-            prevVal ||
-            diff.patches().reduce(function(prevValDiff, patch) {
+        diffList.map(function(diff) {
+          diff.patches().then(function(patches) {
+            patches.map(function(patch) {
+              var result =
+                !!~patch.oldFile().path().indexOf("descriptor.json") ||
+                !!~patch.newFile().path().indexOf("descriptor.json");
 
-            var result =
-              prevValDiff ||
-              !!~patch.oldFile().path().indexOf("descriptor.json") ||
-              !!~patch.newFile().path().indexOf("descriptor.json");
-
-            return result;
-          }, false);
-
-          return result;
-        }, false);
-
-        if (addCommit) {
-          commits.push(commit);
-        }
+              if(result && !~commits.indexOf(commit)) {
+                commits.push(commit);
+              }
+            });
+          });
+        });
       });
     });
 
