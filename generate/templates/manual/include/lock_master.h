@@ -23,7 +23,6 @@ class LockMaster {
   void AddParameters(const T *t, const Types*... args) {
     if(t) {
       AddLocks(t);
-    } else {
     }
     AddParameters(args...);
   }
