@@ -219,7 +219,9 @@ void LockMaster::ObjectToLock(const void *objectToLock) {
 
 void LockMaster::TemporaryUnlock::ConstructorImpl() {
   impl = LockMasterImpl::CurrentLockMasterImpl();
-  impl->Unlock(false);
+  if(impl) {
+    impl->Unlock(false);
+  }
 }
 
 void LockMaster::TemporaryUnlock::DestructorImpl() {

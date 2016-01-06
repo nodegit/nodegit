@@ -35,6 +35,7 @@ public:
   // we lock on construction
   template<typename ...Types> LockMaster(bool emptyGuard, const Types*... types) {
     if(!enabled) {
+      impl = NULL;
       return;
     }
 
@@ -44,12 +45,14 @@ public:
 
   // and unlock on destruction
   ~LockMaster() {
-    if(!enabled) {
+    if(!impl) {
       return;
     }
     DestructorImpl();
   }
 
+  // TemporaryUnlock unlocks the LockMaster currently registered on the thread,
+  // and re-locks it on destruction.
   class TemporaryUnlock {
     LockMasterImpl *impl;
 
@@ -57,13 +60,14 @@ public:
     void DestructorImpl();
   public:
     TemporaryUnlock() {
-      if(!enabled) {
-        return;
-      }
+      // We can't return here if enabled is false
+      // It's possible that a LockMaster was fully constructed and registered
+      // before the thread safety was disabled.
+      // So we rely on ConstructorImpl to abort if there is no registered LockMaster
       ConstructorImpl();
     }
     ~TemporaryUnlock() {
-      if(!enabled) {
+      if(!impl) {
         return;
       }
       DestructorImpl();
@@ -72,6 +76,7 @@ public:
 
   static void Initialize();
 
+  // Enables the thread safety system
   static void Enable() {
     enabled = true;
   }
