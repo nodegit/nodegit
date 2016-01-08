@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.7.0](https://github.com/nodegit/nodegit/releases/tag/v0.7.0) (2016-01-08)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.3...0.7.0)
+
+- Bumped openssl to 1.0.2e to fix issues with prebuilts on linux platforms
+- Fixed a bug with GIT_ITER_OVER breaking rebase and other iterative methods
+- Make GraphDescendentOf asynchronous
+- Fixed line length of utf8 strings
+
 ## [0.6.3](https://github.com/nodegit/nodegit/releases/tag/v0.6.3) (2015-12-16)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.2...0.6.3)
