@@ -4,10 +4,12 @@
 
 {
   'variables': {
-    'is_clang': 0,
+    'is_clang': 1,
     'gcc_version': 0,
     'openssl_no_asm%': 0,
-    'use_obsolete_asm%': 'true'
+    'llvm_version%': 0,
+    'gas_version%': 0,
+    'use_obsolete_asm%': 'true',
   },
   'targets': [
     {
@@ -136,9 +138,6 @@
       }],
       ['is_clang==1 or gcc_version>=43', {
         'cflags': ['-Wno-old-style-declaration'],
-      }],
-      ['OS=="linux"', {
-        'cflags': ['-march=native']
       }],
       ['OS=="solaris"', {
         'defines': ['__EXTENSIONS__'],
