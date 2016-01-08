@@ -252,23 +252,36 @@ function stagingTest(staging, newFileContent) {
       });
   }
 
+  function createAndCommitFiles(repo, filePaths, fileContent, afterWriteFn) {
+    filePaths = filePaths instanceof Array ? filePaths : [filePaths];
+    var filePromises = filePaths.map(function(fileName) {
+      return RepoUtils.commitFileToRepo(repo, fileName, fileContent)
+      .then(function() {
+        //First, create a file, have the same file in both the repo and workdir.
+        return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
+      })
+      .then(function() {
+        return afterWriteFn(repo, fileName);
+      });
+    });
+
+    return Promise.all(filePromises);
+  }
+
   if (process.platform == "linux" || process.platform == "darwin") {
-    it("can stage filemode changes", function() {
+    it("can stage filemode changes for one file", function() {
       var fileContent = "Blek";
       var fileName = "stageFilemodeTest.txt";
       var index;
 
-      return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
-      .then(function() {
-        //First, create a file, have the same file in both the repo and workdir.
-        return fse.writeFile(path.join(test.repository.workdir(), fileName),
-                              fileContent)
-          .then(function() {
-            //Then, change the permission locally.
-            return fse.chmod(path.join(test.repository.workdir(), fileName),
-              0755 /* new filemode */);
-          });
-      })
+      function afterWriteFn(repo, fileName) {
+        return fse.chmod(path.join(repo.workdir(), fileName),
+          0755 /* new filemode */);
+      }
+
+      return createAndCommitFiles(
+        test.repository, fileName, fileContent, afterWriteFn
+      )
       //Then, diff between head commit and workdir should have filemode change
       .then(function() {
         return compareFilemodes(true, null, 0111 /* expect +x */)
@@ -303,17 +316,14 @@ function stagingTest(staging, newFileContent) {
       var fileName = "stageFilemodeTest2.txt";
       var index;
 
-      return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
-      .then(function() {
-        //First, create a file, have the same file in both the repo and workdir.
-        return fse.writeFile(path.join(test.repository.workdir(), fileName),
-                              fileContent)
-          .then(function() {
-            //Then, change the permission locally.
-            return fse.chmod(path.join(test.repository.workdir(), fileName),
-              0755 /* new filemode */);
-          });
-      })
+      function afterWriteFn(repo, fileName) {
+        return fse.chmod(path.join(repo.workdir(), fileName),
+          0755 /* new filemode */);
+      }
+
+      return createAndCommitFiles(
+        test.repository, fileName, fileContent, afterWriteFn
+      )
       //Then, diff between head commit and workdir should have filemode change
       .then(function() {
         return compareFilemodes(true, null, 0111 /* expect +x */);
@@ -345,32 +355,30 @@ function stagingTest(staging, newFileContent) {
       });
     });
   } else if (process.platform == "win32") {
-    it("can stage/unstage filemode changes", function() {
+    it("can stage/unstage filemode changes for one file", function() {
       var fileContent = "Blek";
       var fileName = "stageFilemodeTest.txt";
       var index;
 
-      return RepoUtils.commitFileToRepo(test.repository, fileName, fileContent)
-      .then(function() {
-        //First, create a file, have the same file in both the repo and workdir.
-        return fse.writeFile(path.join(test.repository.workdir(), fileName),
-                              fileContent)
-          .then(function() {
-            //Then, change the permission on index
-            return exec("git update-index --chmod=+x " + fileName,
-              {cwd: test.repository.workdir()});
-          })
-          .then(function() {
-          //Then, change the permission on index
+      function afterWriteFn(repo, fileName) {
+        //change the permission on index
+        return exec("git update-index --chmod=+x " + fileName,
+          {cwd: repo.workdir()})
+        .then(function() {
+          //Commit the change with execute bit set
           return exec("git commit -m 'test'",
-            {cwd: test.repository.workdir()});
-          })
-          .then(function() {
+            {cwd: repo.workdir()});
+        })
+        .then(function() {
           //Then, change the permission on index
           return exec("git update-index --chmod=-x " + fileName,
-            {cwd: test.repository.workdir()});
-          });
-      })
+            {cwd: repo.workdir()});
+        });
+      }
+
+      return createAndCommitFiles(
+        test.repository, fileName, fileContent, afterWriteFn
+      )
       .then(function() {
         return test.repository.openIndex();
       })
@@ -389,5 +397,80 @@ function stagingTest(staging, newFileContent) {
       });
     });
   }
+
+  it("can stage/unstage filemode changes for multiple files", function() {
+    var fileContent = "Blek";
+    var fileName = ["stageFilemodeTest.txt", "stageFilemodeTest2.txt"];
+    var index;
+
+    var repoWorkDir = test.repository.workdir();
+    var signature = NodeGit.Signature.create("Foo bar",
+      "foo@bar.com", 123456789, 60);
+
+    return Promise.all(fileName.map(function(file) {
+      return fse.writeFile(path.join(repoWorkDir, file), fileContent);
+    }))
+    .then(function() {
+      // Initial commit
+      return test.repository.openIndex()
+        .then(function(index) {
+          index.read(1);
+          fileName.forEach(function(file) {
+            index.addByPath(file);
+          });
+          index.write();
+
+          return index.writeTree();
+        });
+    })
+    .then(function(oid) {
+      return test.repository.createCommit("HEAD", signature, signature,
+        "initial commit", oid, []);
+    })
+    .then(function(commitOid) {
+      return test.repository.getCommit(commitOid);
+    })
+    .then(function() {
+      //change the permission on index
+      return exec("git update-index --chmod=+x " + fileName[0],
+        {cwd: test.repository.workdir()});
+    })
+    .then(function() {
+      //change the permission on index
+      return exec("git update-index --chmod=+x " + fileName[1],
+        {cwd: test.repository.workdir()});
+    })
+    .then(function() {
+        //Commit the change with execute bit set
+        return exec("git commit -m 'test'",
+          {cwd: test.repository.workdir()});
+    })
+    .then(function() {
+      //Then, change the permission on index back to -x
+      return exec("git update-index --chmod=-x " + fileName[0],
+        {cwd: test.repository.workdir()});
+    })
+    .then(function() {
+      //Then, change the permission on index back to -x
+      return exec("git update-index --chmod=-x " + fileName[1],
+        {cwd: test.repository.workdir()});
+    })
+    .then(function() {
+      return test.repository.openIndex();
+    })
+    .then(function(repoIndex) {
+      index = repoIndex;
+      //Head commit vs index
+      //We expect the Index to have +x
+      return compareFilemodes(false, index, -0111 /* expect +x */);
+    })
+    .then(function() {
+      //...then we attempt to unstage filemode
+      return test.repository.stageFilemode(fileName, false /* unstage */);
+    })
+    .then(function() {
+      return compareFilemodes(false, index, 0 /* expect nochange */);
+    });
+  });
 
 });
