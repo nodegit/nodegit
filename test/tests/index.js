@@ -61,10 +61,9 @@ describe("Index", function() {
     }))
     .then(function() {
       return index.addAll(undefined, undefined, function() {
-        // ensure that the add callback is called,
-        // and that there is no deadlock if we call
-        // a sync libgit2 function from the callback
         addCallbacksCount++;
+        // ensure that there is no deadlock if we call
+        // a sync libgit2 function from the callback
         test.repository.path();
 
         return 0; // confirm add
@@ -98,6 +97,7 @@ describe("Index", function() {
       differentFileName: "this has a different name and shouldn't be deleted"
     };
     var fileNames = Object.keys(fileContent);
+    var removeCallbacksCount = 0;
 
     return Promise.all(fileNames.map(function(fileName) {
       return writeFile(
@@ -114,9 +114,15 @@ describe("Index", function() {
 
       assert.equal(newFiles.length, 3);
 
-      return index.removeAll("newFile*");
+      return index.removeAll("newFile*", function() {
+        removeCallbacksCount++;
+
+        return 0; // confirm remove
+      });
     })
     .then(function() {
+      assert.equal(removeCallbacksCount, 2);
+
       var newFiles = index.entries().filter(function(entry) {
         return ~fileNames.indexOf(entry.path);
       });
@@ -141,6 +147,7 @@ describe("Index", function() {
       newFile2: "and this will have more content"
     };
     var fileNames = Object.keys(fileContent);
+    var updateCallbacksCount = 0;
 
     return Promise.all(fileNames.map(function(fileName) {
       return writeFile(
@@ -160,9 +167,15 @@ describe("Index", function() {
       return fse.remove(path.join(repo.workdir(), fileNames[0]));
     })
     .then(function() {
-      return index.updateAll("newFile*");
+      return index.updateAll("newFile*", function() {
+        updateCallbacksCount++;
+
+        return 0; // confirm update
+      });
     })
     .then(function() {
+      assert.equal(updateCallbacksCount, 1);
+
       var newFiles = index.entries().filter(function(entry) {
         return ~fileNames.indexOf(entry.path);
       });
