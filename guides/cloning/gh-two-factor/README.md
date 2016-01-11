@@ -99,8 +99,10 @@ to passthrough the certificate check.
 *Note: this is not a problem with Windows or Linux*
 
 ``` javascript
-cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; }
+cloneOptions.fetchOpts = {
+  callbacks: {
+    certificateCheck: function() { return 1; }
+  }
 };
 ```
 
@@ -112,13 +114,15 @@ callback that expects credentials to be passed.
 This function will be attached below the above `certificateCheck`, and will
 respond back with the OAuth token.
 
-The `remoteCallbacks` object now looks like this:
+The `fetchOpts` object now looks like this:
 
 ``` javascript
-cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; },
-  credentials: function() {
-    return NodeGit.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
+cloneOptions.fetchOpts = {
+  callbacks: {
+    certificateCheck: function() { return 1; },
+    credentials: function() {
+      return NodeGit.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
+    }
   }
 };
 ```
