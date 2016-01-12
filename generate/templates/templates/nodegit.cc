@@ -2,7 +2,11 @@
 #include <v8.h>
 #include <node.h>
 #include <git2.h>
+#include <map>
+#include <algorithm>
+#include <set>
 
+#include "../include/lock_master.h"
 #include "../include/wrapper.h"
 #include "../include/functions/copy.h"
 {% each %}
@@ -10,6 +14,14 @@
     #include "../include/{{ filename }}.h"
   {% endif %}
 {% endeach %}
+
+void LockMasterEnable(const FunctionCallbackInfo<Value>& args) {
+  LockMaster::Enable();
+}
+
+void LockMasterDisable(const FunctionCallbackInfo<Value>& args) {
+  LockMaster::Disable();
+}
 
 extern "C" void init(Local<v8::Object> target) {
   // Initialize libgit2.
@@ -23,6 +35,11 @@ extern "C" void init(Local<v8::Object> target) {
       {{ cppClassName }}::InitializeComponent(target);
     {% endif %}
   {% endeach %}
+
+  NODE_SET_METHOD(target, "enableThreadSafety", LockMasterEnable);
+  NODE_SET_METHOD(target, "disableThreadSafety", LockMasterDisable);
+
+  LockMaster::Initialize();
 }
 
 NODE_MODULE(nodegit, init)

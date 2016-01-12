@@ -14,6 +14,7 @@
       },
 
       "sources": [
+        "src/lock_master.cc",
         "src/nodegit.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
@@ -58,7 +59,8 @@
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
                 "-Wint-conversions",
-                "-Wmissing-field-initializers"
+                "-Wmissing-field-initializers",
+                "-Wno-c++11-extensions"
               ]
             }
           }
@@ -70,6 +72,18 @@
             ],
             "defines": [
               "_HAS_EXCEPTIONS=1"
+            ]
+          }
+        ], [
+          "OS=='linux' and '<!(echo \"$CXX\")'=='clang++'", {
+            "cflags": [
+              "-Wno-c++11-extensions"
+            ]
+          }
+        ], [
+          "OS=='linux' and '<!(echo \"$CXX\")'!='clang++'", {
+            "cflags": [
+              "-std=c++0x"
             ]
           }
         ]

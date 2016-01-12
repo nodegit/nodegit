@@ -9,6 +9,7 @@ extern "C" {
   {% endeach %}
 }
 
+#include "../include/lock_master.h"
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
 #include "../include/functions/sleep_for_ms.h"

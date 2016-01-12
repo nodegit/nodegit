@@ -17,6 +17,9 @@ describe("Index", function() {
   var reposPath = local("../repos/workdir");
 
   beforeEach(function() {
+    // enable thread safety for this test suite to test the deadlock scenario
+    NodeGit.enableThreadSafety();
+
     var test = this;
 
     return Repository.open(reposPath)
@@ -31,6 +34,7 @@ describe("Index", function() {
 
   after(function() {
     this.index.clear();
+    NodeGit.disableThreadSafety();
   });
 
   it("can get the index of a repo and examine entries", function() {
@@ -47,6 +51,8 @@ describe("Index", function() {
       newFile2: "and this will have more content"
     };
     var fileNames = Object.keys(fileContent);
+    var test = this;
+    var addCallbacksCount = 0;
 
     return Promise.all(fileNames.map(function(fileName) {
       return writeFile(
@@ -54,9 +60,19 @@ describe("Index", function() {
         fileContent[fileName]);
     }))
     .then(function() {
-      return index.addAll();
+      return index.addAll(undefined, undefined, function() {
+        // ensure that the add callback is called,
+        // and that there is no deadlock if we call
+        // a sync libgit2 function from the callback
+        addCallbacksCount++;
+        test.repository.path();
+
+        return 0; // confirm add
+      });
     })
     .then(function() {
+      assert.equal(addCallbacksCount, 2);
+
       var newFiles = index.entries().filter(function(entry) {
         return ~fileNames.indexOf(entry.path);
       });
