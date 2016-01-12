@@ -83,8 +83,10 @@ to passthrough the certificate check.
 *Note: this is not a problem with Windows or Linux*
 
 ``` javascript
-cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; }
+cloneOptions.fetchOpts = {
+  callbacks: {
+    certificateCheck: function() { return 1; }
+  }
 };
 ```
 

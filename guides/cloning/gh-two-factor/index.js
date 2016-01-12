@@ -20,10 +20,12 @@ var cloneOptions = {};
 
 // This is a required callback for OS X machines.  There is a known issue
 // with libgit2 being able to verify certificates from GitHub.
-cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; },
-  credentials: function() {
-    return NodeGit.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
+cloneOptions.fetchOpts = {
+  callbacks: {
+    certificateCheck: function() { return 1; },
+    credentials: function() {
+      return NodeGit.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
+    }
   }
 };
 

@@ -15,14 +15,16 @@ var cloneOptions = {};
 
 // This is a required callback for OS X machines.  There is a known issue
 // with libgit2 being able to verify certificates from GitHub.
-cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; },
+cloneOptions.fetchOpts = {
+  callbacks: {
+    certificateCheck: function() { return 1; },
 
-  // Credentials are passed two arguments, url and username. We forward the
-  // `userName` argument to the `sshKeyFromAgent` function to validate
-  // authentication.
-  credentials: function(url, userName) {
-    return NodeGit.Cred.sshKeyFromAgent(userName);
+    // Credentials are passed two arguments, url and username. We forward the
+    // `userName` argument to the `sshKeyFromAgent` function to validate
+    // authentication.
+    credentials: function(url, userName) {
+      return NodeGit.Cred.sshKeyFromAgent(userName);
+    }
   }
 };
 

@@ -81,8 +81,10 @@ to passthrough the certificate check.
 *Note: this is not a problem with Windows or Linux*
 
 ``` javascript
-cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; }
+cloneOptions.fetchOpts = {
+  callbacks: {
+    certificateCheck: function() { return 1; }
+  }
 };
 ```
 
@@ -95,13 +97,15 @@ This function will be attached below the above `certificateCheck`, and will
 respond back with the credentials from the agent.  You'll notice we handle
 the second argument passed to credentials, `userName`.
 
-The `remoteCallbacks` object now looks like this:
+The `fetchOpts` object now looks like this:
 
 ``` javascript
-cloneOptions.remoteCallbacks = {
-  certificateCheck: function() { return 1; },
-  credentials: function(url, userName) {
-    return NodeGit.Cred.sshKeyFromAgent(userName);
+cloneOptions.fetchOpts = {
+  callbacks: {
+    certificateCheck: function() { return 1; },
+    credentials: function(url, userName) {
+      return NodeGit.Cred.sshKeyFromAgent(userName);
+    }
   }
 };
 ```
