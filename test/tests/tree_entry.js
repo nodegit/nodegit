@@ -1,5 +1,4 @@
 var assert = require("assert");
-var Promise = require("nodegit-promise");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
@@ -44,7 +43,7 @@ describe("TreeEntry", function() {
 	  .then(function(entry) {
               assert.equal(entry.filenameLen(), 9);
 	  });
-  });  
+  });
 
   it("provides the filename", function() {
     return this.commit.getEntry("test/raw-commit.js")

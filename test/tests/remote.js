@@ -1,6 +1,5 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("nodegit-promise");
 var local = path.join.bind(path, __dirname);
 
 describe("Remote", function() {
@@ -92,7 +91,7 @@ describe("Remote", function() {
       .then(function() {
         return Remote.lookup(repository, "origin3");
       })
-      .then(Promise.reject, Promise.resolve);
+      .then(Promise.reject.bind(Promise), Promise.resolve.bind(Promise));
   });
 
   it("can download from a remote", function() {
@@ -293,10 +292,10 @@ describe("Remote", function() {
           callbacks: {
             credentials: function(url, userName) {
               var test = Promise.resolve()
-                .then(Promise.resolve)
-                .then(Promise.resolve)
-                .then(Promise.resolve)
-                .then(Promise.reject);
+                .then(Promise.resolve.bind(Promise))
+                .then(Promise.resolve.bind(Promise))
+                .then(Promise.resolve.bind(Promise))
+                .then(Promise.reject.bind(Promise));
               return test;
             },
             certificateCheck: function() {

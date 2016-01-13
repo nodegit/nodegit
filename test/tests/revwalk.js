@@ -1,7 +1,6 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var Promise = require("nodegit-promise");
 
 describe("Revwalk", function() {
   var NodeGit = require("../../");

@@ -1,7 +1,6 @@
 var assert = require("assert");
 var NodeGit = require("../../");
 var path = require("path");
-var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
