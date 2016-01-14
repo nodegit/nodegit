@@ -58,7 +58,6 @@ public:
 
   LockMasterImpl() {
     Register();
-    Lock(true);
   }
 
   ~LockMasterImpl() {
@@ -214,6 +213,9 @@ void LockMaster::ObjectToLock(const void *objectToLock) {
   impl->ObjectToLock(objectToLock);
 }
 
+void LockMaster::ObjectsToLockAdded() {
+  impl->Lock(true);
+}
 
 // LockMaster::TemporaryUnlock
 
