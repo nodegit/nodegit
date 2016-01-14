@@ -1967,6 +1967,24 @@
     },
     "submodule": {
       "functions": {
+        "git_submodule_add_to_index": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_submodule_add_finalize": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_submodule_init": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_submodule_foreach": {
           "isAsync": true,
           "args": {
@@ -1984,8 +2002,39 @@
         "git_submodule_location": {
           "ignore": true
         },
+        "git_submodule_open": {
+          "isAsync": true,
+          "args": {
+            "repo": {
+              "isReturn": true
+            },
+            "submodule": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_submodule_update": {
+          "isAsync": true,
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_submodule_status": {
           "ignore": true
+        },
+        "git_submodule_sync": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
