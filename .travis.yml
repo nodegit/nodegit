@@ -38,14 +38,18 @@ before_install:
 
   - nvm install $NODE_VERSION
 
-  - if [ $TRAVIS_OS_NAME == "linux" ]; then
+  - if [ $TRAVIS_OS_NAME == "linux" ] && [ ! "$TRAVIS_TAG" ]; then
       export GYP_DEFINES="use_obsolete_asm=true";
       export JOBS=4;
       export CC=/usr/bin/gcc-4.9;
       export CXX=/usr/bin/g++-4.9;
+    else
+      export GYP_DEFINES="use_obsolete_asm=true";
+      export JOBS=4;
     fi
 
-  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
+  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ] && [ ! "$TRAVIS_TAG" ]; then
+      echo "Installing and configuring native source code coverage";
       export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
       wget http://downloads.sourceforge.net/ltp/lcov-1.10.tar.gz;
       tar xvfz lcov-1.10.tar.gz;
