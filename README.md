@@ -201,3 +201,24 @@ the change to nan v1.4.3 doesn't cause any problems.
 
 Currently, support for nw.js is limited, although we intend to support it better
 in the future.
+
+## Travis CI support
+
+If you are using nodegit within a project that is built with Travis CI and you are getting failures when compiling about a GLIBC version mismatch, add the following to your `.travis.yml` file:
+
+```yml
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
+      - gcc-4.9
+      - libc6-dev
+
+before_install:
+  - export CC=/usr/bin/gcc-4.9;
+  - export CXX=/usr/bin/g++-4.9;
+```
+
+It will install the required dependencies and make sure the right versions are used when compiling.
