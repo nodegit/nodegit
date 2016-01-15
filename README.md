@@ -39,12 +39,12 @@ NodeGit
 
 ## Maintained by ##
 Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
-John Haley [@johnhaley81](http://twitter.com/johnhaley81),
-Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp), and
-Steve Smith [@orderedlist](https://twitter.com/orderedlist) with help from tons of
+John Haley [@johnhaley81](http://twitter.com/johnhaley81), and
+Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from tons of
 [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
 
 ### Alumni Maintainers ###
+Steve Smith [@orderedlist](https://twitter.com/orderedlist),
 Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), and
 Nick Kallen [@nk](http://twitter.com/nk)
 
@@ -61,20 +61,42 @@ dependencies.
 npm install nodegit
 ```
 
-**Note: NodeGit will only work on io.js Windows with [the iojs binary instead of node](https://github.com/rvagg/pangyp/issues/4).**
+If you receive errors about libstdc++, which are commonly experienced when
+building on Travis-CI, you can fix this by upgrading to the latest
+libstdc++-4.9.
 
-If you encounter problems while installing, you should try the [Building from
-source](http://www.nodegit.org/guides/install/from-source/) instructions.
+In Ubuntu:
+
+``` sh
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install libstdc++-4.9-dev
+```
+
+In Travis:
+
+``` yaml
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libstdc++-4.9-dev
+```
+
+If you are still encountering problems while installing, you should try the
+[Building from source](http://www.nodegit.org/guides/install/from-source/)
+instructions.
 
 ## API examples. ##
 
 ### Cloning a repository and reading a file: ###
 
 ``` javascript
-var clone = require("nodegit").Clone.clone;
+var Git = require("nodegit");
 
-// Clone a given repository into a specific folder.
-clone("https://github.com/nodegit/nodegit", "tmp", null)
+// Clone a given repository into the `./tmp` folder.
+Git.Clone("https://github.com/nodegit/nodegit", "./tmp")
   // Look up this known commit.
   .then(function(repo) {
     // Use a known commit sha from this repository.
@@ -110,10 +132,10 @@ clone("https://github.com/nodegit/nodegit", "tmp", null)
 ### Emulating git log: ###
 
 ``` javascript
-var open = require("nodegit").Repository.open;
+var Git = require("nodegit");
 
 // Open the repository directory.
-open("tmp")
+Git.Repository.open("tmp")
   // Open the master branch.
   .then(function(repo) {
     return repo.getMasterCommit();
@@ -163,41 +185,3 @@ You will need to build locally before running the tests.  See above.
 ``` bash
 npm test
 ```
-
-## Migrating from old versions. ##
-
-The bump from 0.1.4 to 0.2.0 was a big one. Many things changed, see here:
-https://github.com/nodegit/nodegit/compare/v0.1.4...v0.2.0
-
-This update is wholly and entirely a breaking one, and older versions won't be
-maintained. For the purpose of migration, perhaps the biggest point to make
-is that async methods can now use promises, rather than just taking callbacks.
-Additionally, lots of method and property names have changed.
-
-## nw.js (Node-Webkit) ##
-
-### Native compilation for nw.js ###
-A common issue is with NodeGit not functioning properly inside of
-[nw.js](http://github.com/nwjs/nw.js) applications. Because NodeGit
-is a native module, it has to be rebuilt for node-webkit using
-[nw-gyp](http://github.com/rogerwang/nw-gyp). By default, NodeGit will look
-in the root package's package.json for an `engines` property, and within look
-for a `nw.js` property (or a `node-webkit` if the prior isn't found) that holds
-a specific version of nw.js. The value of this property is what will get passed
-as the `--target` argument to `nw-gyp configure`.
-
-### Version incompatibility ###
-Prior to version 0.2.6, NodeGit used [nan](http://github.com/rvagg/nan) v1.4.3.
-As of 0.2.6, NodeGit uses nan v1.5.1 to provide support for io.js. Unfortunately,
-this breaks some nw.js compatibility. With nw.js 0.12+, the name was changed to
-nw.js from node-webkit. The alpha currently still breaks with NodeGit due to the
-nan update, but should be fixed in the final v0.12.0 release. Åpplications using
-previous versions of node webkit have 2 options:
-1) Use an older version (v0.2.4 or earlier) of NodeGit
-2) Use [npm shrinkwrap](https://docs.npmjs.com/cli/shrinkwrap) to force NodeGit to
-use nan v1.4.3. Since the binary always recompiles when being used with nw.js, you
-shouldn't have to do anything else to make sure it works. As of NodeGit v0.2.6,
-the change to nan v1.4.3 doesn't cause any problems.  
-
-Currently, support for nw.js is limited, although we intend to support it better
-in the future.
