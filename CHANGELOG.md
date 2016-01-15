@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.8.0](https://github.com/nodegit/nodegit/releases/tag/v0.8.0) (2016-01-15)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.7.0...0.8.0)
+
+- Thread safe locking has been added and currently is defaulted to off. Use `NodeGit.enableThreadSafety()` to turn on
+- NodeGit no longer requires a specific Promise object from the `nodegit-promise` library to be passed in. You can now use whatever you want!
+- `Repository#stageFilemode` now can accept an array of strings for files to update
+- `Submodule#addToIndex`, `Submodule#addFinalize`, `Submodule#init`, `Submodule#open`, `Submodule#sync`, and `Submodule#update` are now all async methods
+
 ## [0.7.0](https://github.com/nodegit/nodegit/releases/tag/v0.7.0) (2016-01-08)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.3...0.7.0)
@@ -7,7 +16,7 @@
 - Bumped openssl to 1.0.2e to fix issues with prebuilts on linux platforms
 - Fixed a bug with GIT_ITER_OVER breaking rebase and other iterative methods
 - Make GraphDescendentOf asynchronous
-- Fixed line length of utf8 strings
+- Fixed line length of utf8 stringss
 
 ## [0.6.3](https://github.com/nodegit/nodegit/releases/tag/v0.6.3) (2015-12-16)
 
