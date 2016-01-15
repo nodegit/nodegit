@@ -2027,6 +2027,12 @@
             "isErrorCode": true
           }
         },
+        "git_submodule_set_url": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_submodule_status": {
           "isAsync": true,
           "args": {
