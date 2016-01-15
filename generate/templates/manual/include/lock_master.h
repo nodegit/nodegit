@@ -86,6 +86,19 @@ public:
   static void Disable() {
     enabled = false;
   }
+
+  static bool IsEnabled() {
+    return enabled;
+  }
+
+  // Diagnostic information that can be provided to the JavaScript layer
+  // for a minimal level of testing
+  struct Diagnostics {
+    // this counts all stored mutexes - even if they are unlocked:
+    int storedMutexesCount;
+  };
+
+  static Diagnostics GetDiagnostics();
 };
 
 

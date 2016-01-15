@@ -17,9 +17,6 @@ describe("Index", function() {
   var reposPath = local("../repos/workdir");
 
   beforeEach(function() {
-    // enable thread safety for this test suite to test the deadlock scenario
-    NodeGit.enableThreadSafety();
-
     var test = this;
 
     return Repository.open(reposPath)
