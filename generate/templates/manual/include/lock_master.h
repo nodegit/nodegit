@@ -30,6 +30,7 @@ class LockMaster {
   void ConstructorImpl();
   void DestructorImpl();
   void ObjectToLock(const void *);
+  void ObjectsToLockAdded();
 public:
 
   // we lock on construction
@@ -41,6 +42,7 @@ public:
 
     ConstructorImpl();
     AddParameters(types...);
+    ObjectsToLockAdded();
   }
 
   // and unlock on destruction
