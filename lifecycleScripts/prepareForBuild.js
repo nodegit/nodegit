@@ -1,4 +1,3 @@
-var Promise = require("nodegit-promise");
 var cp = require("child_process");
 var path = require("path");
 

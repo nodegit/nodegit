@@ -1,7 +1,6 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
@@ -1046,7 +1045,7 @@ describe("Rebase", function() {
 
             return repository.continueRebase(ourSignature, function(rebase) {
               assert.ok(rebase instanceof NodeGit.Rebase);
-              
+
               nextCalls++;
 
               return Promise.resolve();

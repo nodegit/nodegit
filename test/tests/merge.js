@@ -1,6 +1,5 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);

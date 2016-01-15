@@ -5,6 +5,8 @@
 #include <string>
 #include <queue>
 
+#include "async_baton.h"
+
 extern "C" {
   #include <git2.h>
   {% each cDependencies as dependency %}
@@ -46,17 +48,13 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
           );
 
           static void {{ field.name }}_async(uv_async_t* req, int status);
-          static void {{ field.name }}_setupAsyncPromisePolling(uv_async_t* req);
-          static void {{ field.name }}_asyncPromisePolling(uv_async_t* req, int status);
-          struct {{ field.name|titleCase }}Baton {
+          static void {{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
+          struct {{ field.name|titleCase }}Baton : public AsyncBaton {
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name}};
             {% endeach %}
 
-            uv_async_t req;
             {{ field.return.type }} result;
-            Nan::Persistent<Object> promise;
-            bool done;
           };
         {% endif %}
       {% endif %}

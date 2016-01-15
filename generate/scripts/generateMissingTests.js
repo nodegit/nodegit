@@ -1,5 +1,4 @@
 const path = require("path");
-const Promise = require("nodegit-promise");
 const promisify = require("promisify-node");
 const fse = promisify(require("fs-extra"));
 const utils = require("./utils");

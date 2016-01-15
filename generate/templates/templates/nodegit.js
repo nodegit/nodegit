@@ -1,4 +1,3 @@
-var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var rawApi;
 

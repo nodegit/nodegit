@@ -2,7 +2,6 @@ var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 var promisify = require("promisify-node");
-var Promise = require("nodegit-promise");
 
 // Have to wrap exec, since it has a weird callback signature.
 var exec = promisify(function(command, opts, callback) {

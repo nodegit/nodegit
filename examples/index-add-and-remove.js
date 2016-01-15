@@ -1,6 +1,5 @@
 var nodegit = require("../");
 var path = require("path");
-var Promise = require("nodegit-promise");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 

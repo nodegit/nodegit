@@ -1,6 +1,5 @@
 var assert = require("assert");
 var path = require("path");
-var Promise = require("nodegit-promise");
 var local = path.join.bind(path, __dirname);
 
 describe("Patch", function() {
