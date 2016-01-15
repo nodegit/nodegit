@@ -55,6 +55,7 @@ public:
   static LockMasterImpl *CurrentLockMasterImpl() {
     return (LockMasterImpl *)uv_key_get(&currentLockMasterKey);
   }
+  static LockMaster::Diagnostics GetDiagnostics();
 
   LockMasterImpl() {
     Register();
@@ -198,6 +199,13 @@ void LockMasterImpl::CleanupMutexes() {
   uv_async_send(&cleanupMutexesHandle);
 }
 
+LockMaster::Diagnostics LockMasterImpl::GetDiagnostics() {
+  LockMaster::Diagnostics diagnostics;
+  uv_mutex_lock(&LockMasterImpl::mapMutex);
+  diagnostics.storedMutexesCount = mutexes.size();
+  uv_mutex_unlock(&LockMasterImpl::mapMutex);
+  return diagnostics;
+}
 
 // LockMaster
 
@@ -215,6 +223,10 @@ void LockMaster::ObjectToLock(const void *objectToLock) {
 
 void LockMaster::ObjectsToLockAdded() {
   impl->Lock(true);
+}
+
+LockMaster::Diagnostics LockMaster::GetDiagnostics() {
+  return LockMasterImpl::GetDiagnostics();
 }
 
 // LockMaster::TemporaryUnlock

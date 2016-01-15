@@ -3,6 +3,12 @@ var fse = promisify("fs-extra");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
+var NodeGit = require('..');
+
+if(process.env.NODEGIT_TEST_THREADSAFETY) {
+  NodeGit.enableThreadSafety();
+}
+
 // Have to wrap exec, since it has a weird callback signature.
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
