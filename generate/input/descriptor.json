@@ -2028,7 +2028,16 @@
           }
         },
         "git_submodule_status": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "status": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_submodule_sync": {
           "isAsync": true,

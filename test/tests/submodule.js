@@ -16,18 +16,18 @@ describe("Submodule", function() {
     return RepoUtils.createRepository(repoPath)
       .then(function(repo) {
         test.repository = repo;
+        return Repository.open(local("../repos/workdir"));
+      })
+      .then(function(repo) {
+        test.workdirRepository = repo;
       });
   });
 
   it("can walk over the submodules", function() {
-    var repo;
+    var repo = this.workdirRepository;
     var submoduleName = "vendor/libgit2";
 
-    return Repository.open(local("../repos/workdir"))
-      .then(function(_repo) {
-        repo = _repo;
-        return repo.getSubmoduleNames();
-      })
+    return repo.getSubmoduleNames()
       .then(function(submodules) {
         assert.equal(submodules.length, 1);
 
@@ -40,6 +40,16 @@ describe("Submodule", function() {
       })
       .then(function(submodule) {
         assert.equal(submodule.name(), submoduleName);
+      });
+  });
+
+  it("can get submodule status", function() {
+    var repo = this.workdirRepository;
+    var submoduleName = "vendor/libgit2";
+
+    return Submodule.status(repo, submoduleName, Submodule.IGNORE.NONE)
+      .then(function(status) {
+        assert.equal(Submodule.STATUS.IN_CONFIG, status);
       });
   });
 
