@@ -67,6 +67,19 @@ describe("Submodule", function() {
       });
   });
 
+  it("can set submodule update", function() {
+    var repo = this.workdirRepository;
+    var submoduleName = "vendor/libgit2";
+
+    return Submodule.setUpdate(repo, submoduleName, Submodule.UPDATE.NONE)
+      .then(function() {
+        return Submodule.lookup(repo, submoduleName);
+      })
+      .then(function(submodule) {
+        assert.equal(Submodule.UPDATE.NONE, submodule.updateStrategy());
+      });
+  });
+
   it("can setup and finalize submodule add", function() {
     var repo = this.repository;
     var submodulePath = "hellogitworld";
