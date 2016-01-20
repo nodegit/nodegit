@@ -2003,6 +2003,7 @@
           "isAsync": true,
           "args": {
             "location_status": {
+              "shouldAlloc": true,
               "isReturn": true
             },
             "submodule": {
