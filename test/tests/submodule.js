@@ -53,6 +53,19 @@ describe("Submodule", function() {
       });
   });
 
+  it("can get submodule location", function() {
+    var repo = this.workdirRepository;
+    var submoduleName = "vendor/libgit2";
+
+    return Submodule.lookup(repo, submoduleName)
+      .then(function(submodule) {
+        return submodule.location();
+      })
+      .then(function(status) {
+        assert.equal(Submodule.STATUS.IN_CONFIG, status);
+      });
+  });
+
   it("can set submodule ignore", function() {
     var repo = this.workdirRepository;
     var submoduleName = "vendor/libgit2";

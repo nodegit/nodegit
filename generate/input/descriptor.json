@@ -2000,7 +2000,19 @@
           }
         },
         "git_submodule_location": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "location_status": {
+              "shouldAlloc": true,
+              "isReturn": true
+            },
+            "submodule": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_submodule_open": {
           "isAsync": true,
