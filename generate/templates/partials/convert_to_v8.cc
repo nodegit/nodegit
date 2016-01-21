@@ -61,7 +61,10 @@
     {% if cppClassName == 'Wrapper' %}
       to = {{ cppClassName }}::New((void *){{= parsedName =}});
     {% else %}
-      to = {{ cppClassName }}::New((void *){{= parsedName =}}, false);
+      to = {{ cppClassName }}::New(
+        (void *){{= parsedName =}},
+        {% if needsFreeing == true %}true{% else %}false{% endif %}
+      );
     {% endif %}
   }
   else {

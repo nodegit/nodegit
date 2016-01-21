@@ -240,6 +240,7 @@ var Helpers = {
     arg.cType = type;
     arg.cppClassName = Helpers.cTypeToCppName(arg.cType);
     arg.jsClassName = utils.titleCase(Helpers.cTypeToJsName(arg.cType));
+    arg.needsFreeing = !!argOverrides.needsFreeing;
 
     Helpers.decorateLibgitType(arg, libgit2.types, enums);
 

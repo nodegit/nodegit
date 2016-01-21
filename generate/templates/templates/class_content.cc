@@ -32,7 +32,7 @@ using namespace node;
 
   {{ cppClassName }}::~{{ cppClassName }}() {
     {% if freeFunctionName %}
-      if (this->selfFreeing) {
+      if (this->selfFreeing && this->raw) {
         {{ freeFunctionName }}(this->raw);
         this->raw = NULL;
       }
