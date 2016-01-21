@@ -1602,7 +1602,18 @@
           }
         },
         "git_remote_default_branch": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true
+            },
+            "remote": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_delete": {
           "isAsync": true,

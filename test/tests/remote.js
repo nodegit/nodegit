@@ -150,6 +150,22 @@ describe("Remote", function() {
       });
   });
 
+  it("can get the default branch of a remote", function() {
+    var remoteCallbacks = {
+      certificateCheck: function() {
+        return 1;
+      }
+    };
+
+    var remote = this.remote;
+
+    return remote.connect(NodeGit.Enums.DIRECTION.FETCH, remoteCallbacks)
+      .then(function() { return remote.defaultBranch(); })
+      .then(function(branchName) {
+        assert.equal("refs/heads/master", branchName);
+      });
+  });
+
   it("can fetch from a remote", function() {
     return this.repository.fetch("origin", {
       callbacks: {
