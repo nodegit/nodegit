@@ -188,9 +188,13 @@ void LockMasterImpl::Lock(bool acquireMutexes) {
 }
 
 void LockMasterImpl::Unlock(bool releaseMutexes) {
-  std::vector<uv_mutex_t *> objectMutexes = GetMutexes(releaseMutexes * -1);
+  // Get the mutexes but don't decrement their use count until after we've
+  // unlocked them all.
+  std::vector<uv_mutex_t *> objectMutexes = GetMutexes(0);
 
   std::for_each(objectMutexes.begin(), objectMutexes.end(), uv_mutex_unlock);
+
+  GetMutexes(releaseMutexes * -1);
 }
 
 void LockMasterImpl::CleanupMutexes() {
