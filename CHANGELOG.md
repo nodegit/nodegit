@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.9.0](https://github.com/nodegit/nodegit/releases/tag/v0.9.0) (2016-01-21)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.8.0...0.9.0)
+
+- Thread safe fix to stop crashing on releasing mutexes [PR #876](https://github.com/nodegit/nodegit/pull/876)
+- `Submodule#setIgnore`, `Submodule#setUpdate`, and `Submodule#setUrl` are now all async. `Submodule#status` and `Submodule#location` are now available [PR #867](https://github.com/nodegit/nodegit/pull/867) and [PR #870](https://github.com/nodegit/nodegit/pull/870)
+- `Remote#defaultBranch` is now available [PR #872](https://github.com/nodegit/nodegit/pull/872)
+- `Repository#mergeBranches` now takes in a `MergeOptions` parameter [PR #873](https://github.com/nodegit/nodegit/pull/873)
+- Remove a NodeGit specific hack to make `Index#addAll` faster since that is fixed in libgit2 [PR #875](https://github.com/nodegit/nodegit/pull/875)
+
 ## [0.8.0](https://github.com/nodegit/nodegit/releases/tag/v0.8.0) (2016-01-15)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.7.0...0.8.0)
@@ -7,7 +17,7 @@
 - Thread safe locking has been added and currently is defaulted to off. Use `NodeGit.enableThreadSafety()` to turn on
 - NodeGit no longer requires a specific Promise object from the `nodegit-promise` library to be passed in. You can now use whatever you want!
 - `Repository#stageFilemode` now can accept an array of strings for files to update
-- `Submodule#addToIndex`, `Submodule#addFinalize`, `Submodule#init`, `Submodule#open`, `Submodule#sync`, and `Submodule#update` are now all async methods
+- `Submodule#addToIndex`, `Submodule#addFinalize`, `Submodule#init`, `Submodule#open`, `Submodule#sync`, and `Submodule#update` are now all async methodss
 
 ## [0.7.0](https://github.com/nodegit/nodegit/releases/tag/v0.7.0) (2016-01-08)
 
