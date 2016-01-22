@@ -39,6 +39,7 @@
   "dependencies": {
     "fs-extra": "~0.26.2",
     "node-pre-gyp": "~0.6.15",
+    "promise": "^7.1.1",
     "promisify-node": "~0.3.0"
   },
   "devDependencies": {
