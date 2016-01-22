@@ -1,5 +1,6 @@
 var cp = require("child_process");
 var path = require("path");
+var Promise = require("promise");
 
 var local = path.join.bind(path, __dirname);
 
