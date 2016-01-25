@@ -1,6 +1,7 @@
 {% each fields|fieldsInfo as field %}
   {% if not field.ignore %}
     NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
+      {%partial guardRaw .%}
 
       {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
 
@@ -31,6 +32,7 @@
     }
 
     NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
+      {%partial guardRaw .%}
 
       {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
 
@@ -100,7 +102,7 @@
         uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ field.name }}_async);
         {
           LockMaster::TemporaryUnlock temporaryUnlock;
-          
+
           uv_async_send(&baton->req);
 
           while(!baton->done) {

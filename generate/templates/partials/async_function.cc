@@ -1,6 +1,7 @@
 
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
+  {%partial guardRaw .%}
   {%partial guardArguments .%}
   if (info.Length() == {{args|jsArgsCount}} || !info[{{args|jsArgsCount}}]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
@@ -80,7 +81,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   giterr_clear();
-  
+
   {
     LockMaster lockMaster(true{%each args|argsInfo as arg %}
       {%if arg.cType|isPointer%}{%if not arg.cType|isDoublePointer%}

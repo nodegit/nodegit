@@ -34,6 +34,7 @@ module.exports = function generateNativeCode() {
     doc: utils.readFile("templates/partials/doc.cc"),
     fields: utils.readFile("templates/partials/fields.cc"),
     guardArguments: utils.readFile("templates/partials/guard_arguments.cc"),
+    guardRaw: utils.readFile("templates/partials/guard_raw.cc"),
     syncFunction: utils.readFile("templates/partials/sync_function.cc"),
     fieldAccessors: utils.readFile("templates/partials/field_accessors.cc")
   };

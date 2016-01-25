@@ -2,6 +2,7 @@
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   Nan::EscapableHandleScope scope;
+  {%partial guardRaw .%}
   {%partial guardArguments .%}
 
   {%each .|returnsInfo 'true' as _return %}
@@ -35,7 +36,7 @@ if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL
 {% endif %}
 
   giterr_clear();
-  
+
   {
     LockMaster lockMaster(true{%each args|argsInfo as arg %}
       {%if arg.cType|isPointer%}{%if not arg.isReturn%}
