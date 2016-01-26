@@ -1344,6 +1344,9 @@
       }
     },
     "patch": {
+      "dependencies": [
+        "../include/convenient_patch.h"
+      ],
       "functions": {
         "git_patch_free": {
           "ignore": true

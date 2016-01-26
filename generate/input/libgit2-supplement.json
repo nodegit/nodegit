@@ -108,6 +108,28 @@
   },
   "new" : {
     "functions": {
+      "git_patch_convenient_from_diff": {
+        "args": [
+          {
+            "name": "diff",
+            "type": "git_diff *"
+          },
+          {
+            "name": "out",
+            "type": "std::vector<PatchData*> *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/patches/convenient_patches.cc",
+        "isAsync": true,
+        "isPrototypeMethod": false,
+        "group": "patch",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_rebase_next": {
         "type": "function",
         "file": "rebase.h",
@@ -230,6 +252,12 @@
           "git_odb_object_id",
           "git_odb_object_size",
           "git_odb_object_type"
+        ]
+      ],
+      [
+        "patch",
+        [
+          "git_patch_convenient_from_diff"
         ]
       ],
       [
