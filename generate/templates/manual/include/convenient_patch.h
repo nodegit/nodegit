@@ -25,7 +25,7 @@ struct PatchData {
   git_delta_t status;
   git_diff_file new_file;
   git_diff_file old_file;
-  HunkData *hunks;
+  std::vector<HunkData *> hunks;
   size_t numHunks;
 };
 
@@ -65,7 +65,7 @@ class ConvenientPatch : public Nan::ObjectWrap {
 
     struct HunksBaton {
       PatchData *patch;
-      HunkData **hunks;
+      std::vector<HunkData *> *hunks;
     };
     class HunksWorker : public Nan::AsyncWorker {
       public:

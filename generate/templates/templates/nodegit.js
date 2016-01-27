@@ -50,6 +50,14 @@ catch (ex) {
 
   {% endif %}
 {% endeach %}
+
+var _ConvenientPatch = rawApi.ConvenientPatch;
+var _ConvenientPatch_hunks = _ConvenientPatch.prototype.hunks;
+_ConvenientPatch.prototype.hunks = promisify(_ConvenientPatch_hunks);
+
+var _ConvenientHunk = rawApi.ConvenientHunk;
+var _ConvenientHunk_lines = _ConvenientHunk.prototype.lines;
+_ConvenientHunk.prototype.lines = promisify(_ConvenientHunk_lines);
 /* jshint ignore:end */
 
 // Set the exports prototype to the raw API.
@@ -73,9 +81,9 @@ require("./utils/normalize_options");
 require("./utils/shallow_clone");
 
 // Load up extra types;
-require("./convenient_line");
-require("./convenient_hunk");
-require("./convenient_patch");
+// require("./convenient_line");
+// require("./convenient_hunk");
+// require("./convenient_patch");
 require("./status_file");
 require("./enums.js");
 

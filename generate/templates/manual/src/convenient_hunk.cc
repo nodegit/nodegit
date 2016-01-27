@@ -14,10 +14,12 @@ using namespace v8;
 using namespace node;
 
 void HunkDataFree(HunkData *hunk) {
-  for (unsigned int i = 0; i < hunk->numLines; ++i) {
-    free((void *)hunk->lines[i].content);
+  while (!hunk->lines.empty()) {
+    git_diff_line *line = hunk->lines.back();
+    hunk->lines.pop_back();
+    free((void *)line->content);
+    free((void *)line);
   }
-  free((void *)hunk->lines);
   delete hunk;
 }
 
@@ -114,23 +116,30 @@ NAN_METHOD(ConvenientHunk::Lines) {
 }
 
 void ConvenientHunk::LinesWorker::Execute() {
-  baton->lines = (git_diff_line **)malloc(baton->hunk->numLines * sizeof(git_diff_line *));
+  baton->lines = new std::vector<git_diff_line *>;
+  baton->lines->reserve(baton->hunk->numLines);
   for (unsigned int i = 0; i < baton->hunk->numLines; ++i) {
-    baton->lines[i] = (git_diff_line *)malloc(sizeof(git_diff_line));
-    memcpy(baton->lines[i], &baton->hunk->lines[i], sizeof(git_diff_line));
-    baton->lines[i]->content = strdup(baton->hunk->lines[i].content);
+    git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
+    storeLine->origin = baton->hunk->lines[i]->origin;
+    storeLine->old_lineno = baton->hunk->lines[i]->old_lineno;
+    storeLine->new_lineno = baton->hunk->lines[i]->new_lineno;
+    storeLine->num_lines = baton->hunk->lines[i]->num_lines;
+    storeLine->content_len = baton->hunk->lines[i]->content_len;
+    storeLine->content_offset = baton->hunk->lines[i]->content_offset;
+    storeLine->content = strdup(baton->hunk->lines[i]->content);
+    baton->lines->push_back(storeLine);
   }
 }
 
 void ConvenientHunk::LinesWorker::HandleOKCallback() {
-  unsigned int size = baton->hunk->numLines;
+  unsigned int size = baton->lines->size();
   Local<Array> result = Nan::New<Array>(size);
 
   for(unsigned int i = 0; i < size; ++i) {
-    Nan::Set(result, Nan::New<Number>(i), GitDiffLine::New(baton->lines[i], true));
+    Nan::Set(result, Nan::New<Number>(i), GitDiffLine::New(baton->lines->at(i), true));
   }
 
-  free(baton->lines);
+  delete baton->lines;
 
   Local<v8::Value> argv[2] = {
     Nan::Null(),

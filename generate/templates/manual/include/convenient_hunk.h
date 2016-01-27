@@ -15,7 +15,7 @@ extern "C" {
 
 struct HunkData {
   git_diff_hunk hunk;
-  git_diff_line *lines;
+  std::vector<git_diff_line *> lines;
   size_t numLines;
 };
 
@@ -39,7 +39,7 @@ class ConvenientHunk : public Nan::ObjectWrap {
     ConvenientHunk(HunkData *hunk);
     ~ConvenientHunk();
 
-    HunkData* hunk;
+    HunkData *hunk;
 
     static NAN_METHOD(JSNewFunction);
 
@@ -48,7 +48,7 @@ class ConvenientHunk : public Nan::ObjectWrap {
 
     struct LinesBaton {
       HunkData *hunk;
-      git_diff_line **lines;
+      std::vector<git_diff_line *> *lines;
     };
     class LinesWorker : public Nan::AsyncWorker {
       public:

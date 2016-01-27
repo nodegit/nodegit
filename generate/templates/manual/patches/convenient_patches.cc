@@ -12,7 +12,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
   baton->error_code = GIT_OK;
   baton->error = NULL;
 
-  baton->diff = Nan::ObjectWrap::Unwrap<GitDiff>(info.This())->GetValue();
+  baton->diff = Nan::ObjectWrap::Unwrap<GitDiff>(info[0]->ToObject())->GetValue();
   baton->out = new std::vector<PatchData *>;
   baton->out->reserve(git_diff_num_deltas(baton->diff));
 
@@ -80,7 +80,7 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
     Local<Array> result = Nan::New<Array>(size);
 
     for (unsigned int i = 0; i < size; ++i) {
-      Nan::Set(result, Nan::New<Number>(i), ConvenientPatch::New(baton->out->at(i)));
+      Nan::Set(result, Nan::New<Number>(i), ConvenientPatch::New((void *)baton->out->at(i)));
     }
 
     delete baton->out;
