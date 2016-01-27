@@ -25,7 +25,7 @@ struct PatchData {
   git_delta_t status;
   git_diff_file new_file;
   git_diff_file old_file;
-  std::vector<HunkData *> hunks;
+  std::vector<HunkData *> *hunks;
   size_t numHunks;
 };
 

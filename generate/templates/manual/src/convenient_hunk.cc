@@ -14,12 +14,13 @@ using namespace v8;
 using namespace node;
 
 void HunkDataFree(HunkData *hunk) {
-  while (!hunk->lines.empty()) {
-    git_diff_line *line = hunk->lines.back();
-    hunk->lines.pop_back();
+  while (!hunk->lines->empty()) {
+    git_diff_line *line = hunk->lines->back();
+    hunk->lines->pop_back();
     free((void *)line->content);
     free((void *)line);
   }
+  delete hunk->lines;
   delete hunk;
 }
 
@@ -120,13 +121,13 @@ void ConvenientHunk::LinesWorker::Execute() {
   baton->lines->reserve(baton->hunk->numLines);
   for (unsigned int i = 0; i < baton->hunk->numLines; ++i) {
     git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
-    storeLine->origin = baton->hunk->lines[i]->origin;
-    storeLine->old_lineno = baton->hunk->lines[i]->old_lineno;
-    storeLine->new_lineno = baton->hunk->lines[i]->new_lineno;
-    storeLine->num_lines = baton->hunk->lines[i]->num_lines;
-    storeLine->content_len = baton->hunk->lines[i]->content_len;
-    storeLine->content_offset = baton->hunk->lines[i]->content_offset;
-    storeLine->content = strdup(baton->hunk->lines[i]->content);
+    storeLine->origin = baton->hunk->lines->at(i)->origin;
+    storeLine->old_lineno = baton->hunk->lines->at(i)->old_lineno;
+    storeLine->new_lineno = baton->hunk->lines->at(i)->new_lineno;
+    storeLine->num_lines = baton->hunk->lines->at(i)->num_lines;
+    storeLine->content_len = baton->hunk->lines->at(i)->content_len;
+    storeLine->content_offset = baton->hunk->lines->at(i)->content_offset;
+    storeLine->content = strdup(baton->hunk->lines->at(i)->content);
     baton->lines->push_back(storeLine);
   }
 }

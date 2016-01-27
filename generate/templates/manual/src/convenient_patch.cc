@@ -17,12 +17,12 @@ using namespace node;
 void PatchDataFree(PatchData *patch) {
   free((void *)patch->old_file.path);
   free((void *)patch->new_file.path);
-  while(!patch->hunks.empty()) {
-    HunkData *hunk = patch->hunks.back();
-    patch->hunks.pop_back();
-    while (!hunk->lines.empty()) {
-      git_diff_line *line = hunk->lines.back();
-      hunk->lines.pop_back();
+  while(!patch->hunks->empty()) {
+    HunkData *hunk = patch->hunks->back();
+    patch->hunks->pop_back();
+    while (!hunk->lines->empty()) {
+      git_diff_line *line = hunk->lines->back();
+      hunk->lines->pop_back();
       free((void *)line->content);
       free((void *)line);
     }
@@ -51,7 +51,8 @@ PatchData *createFromRaw(git_patch *raw) {
   );
 
   patch->numHunks = git_patch_num_hunks(raw);
-  patch->hunks.reserve(patch->numHunks);
+  patch->hunks = new std::vector<HunkData *>;
+  patch->hunks->reserve(patch->numHunks);
 
   for (unsigned int i = 0; i < patch->numHunks; ++i) {
     HunkData *hunkData = new HunkData;
@@ -63,7 +64,9 @@ PatchData *createFromRaw(git_patch *raw) {
     hunkData->hunk.new_lines = hunk->new_lines;
     hunkData->hunk.header_len = hunk->header_len;
     memcpy(&hunkData->hunk.header, &hunk->header, 128);
-    hunkData->lines.reserve(hunkData->numLines);
+
+    hunkData->lines = new std::vector<git_diff_line *>;
+    hunkData->lines->reserve(hunkData->numLines);
 
     for (unsigned int j = 0; j < hunkData->numLines; ++j) {
       git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
@@ -76,9 +79,9 @@ PatchData *createFromRaw(git_patch *raw) {
       storeLine->content_len = line->content_len;
       storeLine->content_offset = line->content_offset;
       storeLine->content = strdup(line->content);
-      hunkData->lines.push_back(storeLine);
+      hunkData->lines->push_back(storeLine);
     }
-    patch->hunks.push_back(hunkData);
+    patch->hunks->push_back(hunkData);
   }
 
   return patch;
@@ -188,27 +191,30 @@ void ConvenientPatch::HunksWorker::Execute() {
   // copy hunks
   baton->hunks = new std::vector<HunkData *>;
   baton->hunks->reserve(baton->patch->numHunks);
+
   for (unsigned int i = 0; i < baton->patch->numHunks; ++i) {
     HunkData *hunkData = new HunkData;
-    hunkData->numLines = baton->patch->hunks[i]->numLines;
-    hunkData->hunk.old_start = baton->patch->hunks[i]->hunk.old_start;
-    hunkData->hunk.old_lines = baton->patch->hunks[i]->hunk.old_lines;
-    hunkData->hunk.new_start = baton->patch->hunks[i]->hunk.new_start;
-    hunkData->hunk.new_lines = baton->patch->hunks[i]->hunk.new_lines;
-    hunkData->hunk.header_len = baton->patch->hunks[i]->hunk.header_len;
-    memcpy(&hunkData->hunk.header, &baton->patch->hunks[i]->hunk.header, 128);
+    hunkData->numLines = baton->patch->hunks->at(i)->numLines;
+    hunkData->hunk.old_start = baton->patch->hunks->at(i)->hunk.old_start;
+    hunkData->hunk.old_lines = baton->patch->hunks->at(i)->hunk.old_lines;
+    hunkData->hunk.new_start = baton->patch->hunks->at(i)->hunk.new_start;
+    hunkData->hunk.new_lines = baton->patch->hunks->at(i)->hunk.new_lines;
+    hunkData->hunk.header_len = baton->patch->hunks->at(i)->hunk.header_len;
+    memcpy(&hunkData->hunk.header, &baton->patch->hunks->at(i)->hunk.header, 128);
 
-    hunkData->lines.reserve(hunkData->numLines);
+    hunkData->lines = new std::vector<git_diff_line *>;
+    hunkData->lines->reserve(hunkData->numLines);
+
     for (unsigned int j = 0; j < hunkData->numLines; ++j) {
       git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
-      storeLine->origin = baton->patch->hunks[i]->lines[j]->origin;
-      storeLine->old_lineno = baton->patch->hunks[i]->lines[j]->old_lineno;
-      storeLine->new_lineno = baton->patch->hunks[i]->lines[j]->new_lineno;
-      storeLine->num_lines = baton->patch->hunks[i]->lines[j]->num_lines;
-      storeLine->content_len = baton->patch->hunks[i]->lines[j]->content_len;
-      storeLine->content_offset = baton->patch->hunks[i]->lines[j]->content_offset;
-      storeLine->content = strdup(baton->patch->hunks[i]->lines[j]->content);
-      hunkData->lines.push_back(storeLine);
+      storeLine->origin = baton->patch->hunks->at(i)->lines->at(j)->origin;
+      storeLine->old_lineno = baton->patch->hunks->at(i)->lines->at(j)->old_lineno;
+      storeLine->new_lineno = baton->patch->hunks->at(i)->lines->at(j)->new_lineno;
+      storeLine->num_lines = baton->patch->hunks->at(i)->lines->at(j)->num_lines;
+      storeLine->content_len = baton->patch->hunks->at(i)->lines->at(j)->content_len;
+      storeLine->content_offset = baton->patch->hunks->at(i)->lines->at(j)->content_offset;
+      storeLine->content = strdup(baton->patch->hunks->at(i)->lines->at(j)->content);
+      hunkData->lines->push_back(storeLine);
     }
     baton->hunks->push_back(hunkData);
   }

@@ -15,7 +15,7 @@ extern "C" {
 
 struct HunkData {
   git_diff_hunk hunk;
-  std::vector<git_diff_line *> lines;
+  std::vector<git_diff_line *> *lines;
   size_t numLines;
 };
 
