@@ -31,10 +31,9 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
   {
     LockMaster lockMaster(true, baton->diff);
     std::vector<git_patch *> patchesToBeFreed;
-    patchesToBeFreed.reserve(git_diff_num_deltas(baton->diff));
 
     for (int i = 0; i < git_diff_num_deltas(baton->diff); ++i) {
-      git_patch * nextPatch;
+      git_patch *nextPatch;
       int result = git_patch_from_diff(&nextPatch, baton->diff, i);
 
       if (result) {
@@ -66,10 +65,10 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
       }
     }
 
-    unsigned int size = patchesToBeFreed.size();
-    for (unsigned int i = 0; i < size; ++i) {
-      git_patch *patch = patchesToBeFreed.at(i);
-      git_patch_free(patch);
+    while (!patchesToBeFreed.empty())
+    {
+      git_patch_free(patchesToBeFreed.back());
+      patchesToBeFreed.pop_back();
     }
   }
 }
