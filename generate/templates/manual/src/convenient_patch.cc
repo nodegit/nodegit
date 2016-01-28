@@ -78,7 +78,11 @@ PatchData *createFromRaw(git_patch *raw) {
       storeLine->num_lines = line->num_lines;
       storeLine->content_len = line->content_len;
       storeLine->content_offset = line->content_offset;
-      storeLine->content = strdup(line->content);
+      char * transferContent = (char *)malloc(storeLine->content_len + 1);
+      memcpy(transferContent, line->content, storeLine->content_len);
+      transferContent[storeLine->content_len] = '\0';
+      storeLine->content = strdup(transferContent);
+      free((void *)transferContent);
       hunkData->lines->push_back(storeLine);
     }
     patch->hunks->push_back(hunkData);

@@ -133,11 +133,11 @@ describe("Diff", function() {
         assert.equal(patches.length, 3);
         assert(patches[2].isUntracked());
 
-        var oldFile = patches[2].delta.oldFile();
+        var oldFile = patches[2].oldFile();
         assert.equal(oldFile.path(), "wddiff.txt");
         assert.equal(oldFile.size(), 0);
 
-        var newFile = patches[2].delta.newFile();
+        var newFile = patches[2].newFile();
         assert.equal(newFile.path(), "wddiff.txt");
         assert.equal(newFile.size(), 23);
       });
