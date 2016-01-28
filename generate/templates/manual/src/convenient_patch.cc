@@ -68,10 +68,22 @@ PatchData *createFromRaw(git_patch *raw) {
     hunkData->lines = new std::vector<git_diff_line *>;
     hunkData->lines->reserve(hunkData->numLines);
 
+
+    bool EOFFlag = false;
     for (unsigned int j = 0; j < hunkData->numLines; ++j) {
       git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
       const git_diff_line *line;
       git_patch_get_line_in_hunk(&line, raw, i, j);
+
+      if (
+        j == 0 &&
+        !strcmp(
+          &line->content[strlen(line->content) - 29],
+          "\n\\ No newline at end of file\n"
+      )) {
+        EOFFlag = true;
+      }
+
       storeLine->origin = line->origin;
       storeLine->old_lineno = line->old_lineno;
       storeLine->new_lineno = line->new_lineno;
@@ -79,13 +91,10 @@ PatchData *createFromRaw(git_patch *raw) {
       storeLine->content_len = line->content_len;
       storeLine->content_offset = line->content_offset;
       char * transferContent;
-      if (!strcmp(
-        &line->content[strlen(line->content) - 29],
-        "\n\\ No newline at end of file\n"
-      )) {
+      if (EOFFlag) {
         transferContent = (char *)malloc(storeLine->content_len + 30);
         memcpy(transferContent, line->content, storeLine->content_len);
-        memcpy(transferContent + storeLine->content_len, &line->content[strlen(line->content) - 29], 29);
+        memcpy(transferContent + storeLine->content_len, "\n\\ No newline at end of file\n", 29);
         transferContent[storeLine->content_len + 29] = '\0';
       } else {
         transferContent = (char *)malloc(storeLine->content_len + 1);

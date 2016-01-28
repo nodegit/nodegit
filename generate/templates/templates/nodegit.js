@@ -81,9 +81,6 @@ require("./utils/normalize_options");
 require("./utils/shallow_clone");
 
 // Load up extra types;
-// require("./convenient_line");
-// require("./convenient_hunk");
-// require("./convenient_patch");
 require("./status_file");
 require("./enums.js");
 
