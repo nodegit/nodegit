@@ -40,9 +40,15 @@ void ConvenientHunk::InitializeComponent(Local<v8::Object> target) {
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(Nan::New("ConvenientHunk").ToLocalChecked());
 
-  Nan::SetPrototypeMethod(tpl, "header", Header);
   Nan::SetPrototypeMethod(tpl, "size", Size);
   Nan::SetPrototypeMethod(tpl, "lines", Lines);
+
+  Nan::SetPrototypeMethod(tpl, "oldStart", OldStart);
+  Nan::SetPrototypeMethod(tpl, "oldLines", OldLines);
+  Nan::SetPrototypeMethod(tpl, "newStart", NewStart);
+  Nan::SetPrototypeMethod(tpl, "newLines", NewLines);
+  Nan::SetPrototypeMethod(tpl, "headerLen", HeaderLen);
+  Nan::SetPrototypeMethod(tpl, "header", Header);
 
   Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
   constructor_template.Reset(_constructor_template);
@@ -71,25 +77,8 @@ HunkData *ConvenientHunk::GetValue() {
   return this->hunk;
 }
 
-char *ConvenientHunk::GetHeader() {
-  return this->hunk->hunk.header;
-}
-
 size_t ConvenientHunk::GetSize() {
   return this->hunk->numLines;
-}
-
-NAN_METHOD(ConvenientHunk::Header) {
-  Local<v8::Value> to;
-
-  char *header = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetHeader();
-  if (header) {
-    to = Nan::New<String>(header).ToLocalChecked();
-  } else {
-    to = Nan::Null();
-  }
-
-  info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientHunk::Size) {
@@ -147,6 +136,50 @@ void ConvenientHunk::LinesWorker::HandleOKCallback() {
     result
   };
   callback->Call(2, argv);
+}
+
+NAN_METHOD(ConvenientHunk::OldStart) {
+  Local<v8::Value> to;
+  int old_start = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.old_start;
+  info.GetReturnValue().Set(Nan::New<Number>(old_start));
+}
+
+
+NAN_METHOD(ConvenientHunk::OldLines) {
+  Local<v8::Value> to;
+  int old_lines = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.old_lines;
+  info.GetReturnValue().Set(Nan::New<Number>(old_lines));
+}
+
+NAN_METHOD(ConvenientHunk::NewStart) {
+  Local<v8::Value> to;
+  int new_start = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.new_start;
+  info.GetReturnValue().Set(Nan::New<Number>(new_start));
+}
+
+NAN_METHOD(ConvenientHunk::NewLines) {
+  Local<v8::Value> to;
+  int new_lines = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.new_lines;
+  info.GetReturnValue().Set(Nan::New<Number>(new_lines));
+}
+
+NAN_METHOD(ConvenientHunk::HeaderLen) {
+  Local<v8::Value> to;
+  size_t header_len = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.header_len;
+  info.GetReturnValue().Set(Nan::New<Number>(header_len));
+}
+
+NAN_METHOD(ConvenientHunk::Header) {
+  Local<v8::Value> to;
+
+  char *header = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.header;
+  if (header) {
+    to = Nan::New<String>(header).ToLocalChecked();
+  } else {
+    to = Nan::Null();
+  }
+
+  info.GetReturnValue().Set(to);
 }
 
 Nan::Persistent<Function> ConvenientHunk::constructor_template;

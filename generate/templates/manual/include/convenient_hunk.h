@@ -42,9 +42,14 @@ class ConvenientHunk : public Nan::ObjectWrap {
     HunkData *hunk;
 
     static NAN_METHOD(JSNewFunction);
-
-    static NAN_METHOD(Header);
     static NAN_METHOD(Size);
+
+    static NAN_METHOD(OldStart);
+    static NAN_METHOD(OldLines);
+    static NAN_METHOD(NewStart);
+    static NAN_METHOD(NewLines);
+    static NAN_METHOD(HeaderLen);
+    static NAN_METHOD(Header);
 
     struct LinesBaton {
       HunkData *hunk;
