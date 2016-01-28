@@ -1,3 +1,4 @@
+#include <nan.h>
 #include <git2.h>
 #include <uv.h>
 #include <set>
@@ -31,10 +32,8 @@ class LockMasterImpl {
   // A libuv key used to store the current thread-specific LockMasterImpl instance
   static uv_key_t currentLockMasterKey;
 
-  // A libuv async handle used to trigger / debounce mutex cleanup
-  static uv_async_t cleanupMutexesHandle;
   // Cleans up any mutexes that are not currently used
-  static void CleanupMutexes(uv_async_t *async);
+  static NAN_GC_CALLBACK(CleanupMutexes);
 
 public:
   static void Initialize();
@@ -49,7 +48,6 @@ private:
   std::vector<uv_mutex_t *> GetMutexes(int useCountDelta);
   void Register();
   void Unregister();
-  void CleanupMutexes();
 
 public:
   static LockMasterImpl *CurrentLockMasterImpl() {
@@ -64,7 +62,6 @@ public:
   ~LockMasterImpl() {
     Unregister();
     Unlock(true);
-    CleanupMutexes();
   }
 
   void ObjectToLock(const void *objectToLock) {
@@ -78,16 +75,22 @@ public:
 std::map<const void *, ObjectInfo> LockMasterImpl::mutexes;
 uv_mutex_t LockMasterImpl::mapMutex;
 uv_key_t LockMasterImpl::currentLockMasterKey;
-uv_async_t LockMasterImpl::cleanupMutexesHandle;
-
 
 void LockMasterImpl::Initialize() {
   uv_mutex_init(&mapMutex);
   uv_key_create(&currentLockMasterKey);
-  uv_async_init(uv_default_loop(), &cleanupMutexesHandle, CleanupMutexes);
+  Nan::AddGCEpilogueCallback(CleanupMutexes);
 }
 
-void LockMasterImpl::CleanupMutexes(uv_async_t *async) {
+NAN_GC_CALLBACK(LockMasterImpl::CleanupMutexes) {
+  // skip cleanup if thread safety is disabled
+  // this means that turning thread safety on and then off
+  // could result in remaining mutexes - but they would get cleaned up
+  // if thread safety is turned on again
+  if (!LockMaster::IsEnabled()) {
+    return;
+  }
+
   uv_mutex_lock(&mapMutex);
 
   for (auto it = mutexes.begin(); it != mutexes.end(); )
@@ -195,12 +198,6 @@ void LockMasterImpl::Unlock(bool releaseMutexes) {
   std::for_each(objectMutexes.begin(), objectMutexes.end(), uv_mutex_unlock);
 
   GetMutexes(releaseMutexes * -1);
-}
-
-void LockMasterImpl::CleanupMutexes() {
-  // schedule mutex cleanup on the main event loop
-  // this somewhat delays and debounces cleanup (uv_async_send coalesces calls)
-  uv_async_send(&cleanupMutexesHandle);
 }
 
 LockMaster::Diagnostics LockMasterImpl::GetDiagnostics() {

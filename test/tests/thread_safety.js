@@ -42,18 +42,21 @@ describe("ThreadSafety", function() {
     }
   });
 
-  it("can lock something", function() {
+  it("can lock something and cleanup mutex", function() {
     // call a sync method to guarantee that it stores a mutex,
-    // and that it will not clean up the mutex (since the cleanup is
-    // scheduled on the main node thread)
+    // and that it will clean up the mutex in a garbage collection cycle
     this.repository.headDetached();
 
     var diagnostics = NodeGit.getThreadSafetyDiagnostics();
-    if (diagnostics.isEnabled) {
+    if (NodeGit.isThreadSafetyEnabled()) {
       // this is a fairly vague test - it just tests that something
       // had a mutex created for it at some point (i.e., the thread safety
       // code is not completely dead)
       assert.ok(diagnostics.storedMutexesCount > 0);
+      // now test that GC cleans up mutexes
+      global.gc();
+      diagnostics = NodeGit.getThreadSafetyDiagnostics();
+      assert.equal(0, diagnostics.storedMutexesCount);
     } else {
       assert.equal(0, diagnostics.storedMutexesCount);
     }
