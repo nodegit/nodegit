@@ -20,6 +20,8 @@
         "src/wrapper.cc",
         "src/functions/copy.cc",
         "src/functions/sleep_for_ms.cc",
+        "src/convenient_patch.cc",
+        "src/convenient_hunk.cc",
         "src/str_array_converter.cc",
         {% each %}
           {% if type != "enum" %}

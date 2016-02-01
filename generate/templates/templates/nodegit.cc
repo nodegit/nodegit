@@ -15,6 +15,8 @@
     #include "../include/{{ filename }}.h"
   {% endif %}
 {% endeach %}
+#include "../include/convenient_patch.h"
+#include "../include/convenient_hunk.h"
 
 void LockMasterEnable(const FunctionCallbackInfo<Value>& info) {
   LockMaster::Enable();
@@ -50,6 +52,9 @@ extern "C" void init(Local<v8::Object> target) {
       {{ cppClassName }}::InitializeComponent(target);
     {% endif %}
   {% endeach %}
+
+  ConvenientHunk::InitializeComponent(target);
+  ConvenientPatch::InitializeComponent(target);
 
   NODE_SET_METHOD(target, "enableThreadSafety", LockMasterEnable);
   NODE_SET_METHOD(target, "disableThreadSafety", LockMasterDisable);
