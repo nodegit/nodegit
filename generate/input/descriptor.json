@@ -1795,6 +1795,20 @@
     },
     "revert": {
       "functions": {
+        "git_revert": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_revert_commit": {
+          "isAsync": true,
+          "args": {
+            "merge_options": {
+              "isOptional": true
+            }
+          }
+        },
         "git_revert_init_options": {
           "ignore": true
         }
