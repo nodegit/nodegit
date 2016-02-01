@@ -85,7 +85,7 @@ You can pass a second function parameter to the `.then` method that will have
 the reason why a promise failed in it's first argument.
 
 ``` javascript
-NodeGit.Repository.open(pathToRepo).then(function (sucessfulResult) {
+NodeGit.Repository.open(pathToRepo).then(function (successfulResult) {
   // This is the first function of the then which contains the successfully
   // calculated result of the promise
 }, function (reasonForFailure) {
@@ -100,7 +100,7 @@ You can also append a `.catch` to the end of a promise chain which will
 receive any promise failure that isn't previously caught
 
 ``` javascript
-NodeGit.Repository.open(pathToRepo).then(function (sucessfulResult) {
+NodeGit.Repository.open(pathToRepo).then(function (successfulResult) {
   // This is the first function of the then which contains the successfully
   // calculated result of the promise
 })
@@ -115,7 +115,7 @@ If you append a `.done` at the end of your chain, you will have any error that
 wasn't previously handled by the above 2 methods thrown.
 
 ``` javascript
-NodeGit.Repository.open(pathToRepo).then(function (sucessfulResult) {
+NodeGit.Repository.open(pathToRepo).then(function (successfulResult) {
   // This is the first function of the then which contains the successfully
   // calculated result of the promise
 })
