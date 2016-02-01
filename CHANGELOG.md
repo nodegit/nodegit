@@ -1,14 +1,40 @@
 # Change Log
 
+## [0.10.0](https://github.com/nodegit/nodegit/releases/tag/v0.10.0) (2016-02-01)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.9.0...v0.10.0)
+
+- Clean mutexes are part of GC. No longer leaves processes running after the script ends [PR #880](https://github.com/nodegit/nodegit/pull/880
+- Increased the performance of `ConvenientPatch` by an order of magnitude [PR #883](https://github.com/nodegit/nodegit/pull/883
+
+# API changes
+- `ConvenientPatch`
+  - `ConvenientPatch` does not have a `patch` or a `delta` property associated with it, if you were using the `delta`, please just use prototype methods `oldFIle`, `newFile`, and `Status`, which are stripped directly from the `delta`.
+  - `ConvenientPatch#hunks` returns a promise with an array of `ConvenientHunks`.
+- `ConvenientHunk`
+  - `ConvenientHunk` does not have an exposed diffHunk associated with it, but does have the same members as diffHunk:
+     - `size()` : number of lines in the hunk
+     - `oldStart()` : old starting position
+     - `oldLines()` : number of lines in old file
+     - `newStart()` : new starting position
+     - `newLines()` : number of lines in new file
+     - `headerLen()` : length of header
+     - `header()` : returns the header of the hunk
+     - `lines()` : returns a promise containing `DiffLines`, not `ConvenientLines`.
+- `DiffLine`
+- `DiffLine` now contains the members `rawContent()` and `content()`.
+   - `rawContent()` contains the unformatted content of the line. This is no longer a string from the line to the end of the file.
+   - `content()` contains the utf8 formatted content of the line.
+
 ## [0.9.0](https://github.com/nodegit/nodegit/releases/tag/v0.9.0) (2016-01-21)
 
-[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.8.0...0.9.0)
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.8.0...v0.9.0)
 
 - Thread safe fix to stop crashing on releasing mutexes [PR #876](https://github.com/nodegit/nodegit/pull/876)
 - `Submodule#setIgnore`, `Submodule#setUpdate`, and `Submodule#setUrl` are now all async. `Submodule#status` and `Submodule#location` are now available [PR #867](https://github.com/nodegit/nodegit/pull/867) and [PR #870](https://github.com/nodegit/nodegit/pull/870)
 - `Remote#defaultBranch` is now available [PR #872](https://github.com/nodegit/nodegit/pull/872)
 - `Repository#mergeBranches` now takes in a `MergeOptions` parameter [PR #873](https://github.com/nodegit/nodegit/pull/873)
-- Remove a NodeGit specific hack to make `Index#addAll` faster since that is fixed in libgit2 [PR #875](https://github.com/nodegit/nodegit/pull/875)
+- Remove a NodeGit specific hack to make `Index#addAll` faster since that is fixed in libgit2 [PR #875](https://github.com/nodegit/nodegit/pull/875))
 
 ## [0.8.0](https://github.com/nodegit/nodegit/releases/tag/v0.8.0) (2016-01-15)
 
