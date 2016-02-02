@@ -200,6 +200,36 @@
           "isErrorCode": true
         }
       },
+      "git_revwalk_file_history_walk": {
+        "args": [
+          {
+            "name": "file_path",
+            "type": "const char *"
+          },
+          {
+            "name": "max_count",
+            "type": "int"
+          },
+          {
+            "name": "out",
+            "type": "std::vector< std::pair<git_commit *, char *> *> *"
+          },
+          {
+            "name": "walk",
+            "type": "git_revwalk *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/revwalk/file_history_walk.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "revwalk",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_stash_save": {
         "type": "function",
         "file": "stash.h",
@@ -263,7 +293,8 @@
       [
         "revwalk",
         [
-          "git_revwalk_fast_walk"
+          "git_revwalk_fast_walk",
+          "git_revwalk_file_history_walk"
         ]
       ],
       [
