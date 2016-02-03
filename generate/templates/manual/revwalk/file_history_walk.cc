@@ -80,7 +80,14 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
     }
 
+    if ((baton->error_code = git_diff_find_similar(diffs, NULL)) != GIT_OK) {
+      git_commit_free(nextCommit);
+      git_commit_free(parent);
+      break;
+    }
+
     bool flag = false;
+    bool doRenamedPass = false;
     unsigned int numDeltas = git_diff_num_deltas(diffs);
     for (unsigned int j = 0; j < numDeltas; ++j) {
       git_patch *nextPatch;
@@ -99,16 +106,20 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
 
       if (isEqualNewFile) {
+        if (delta->status == GIT_DELTA_ADDED) {
+          doRenamedPass = true;
+          break;
+        }
         std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
         if (!isEqualOldFile) {
           historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
             nextCommit,
-            std::make_pair<char *, git_delta_t>(strdup(delta->old_file.path), delta->status)
+            std::pair<char *, git_delta_t>(strdup(delta->old_file.path), delta->status)
           );
         } else {
           historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
             nextCommit,
-            std::make_pair<char *, git_delta_t>(strdup(delta->new_file.path), delta->status)
+            std::pair<char *, git_delta_t>(strdup(delta->new_file.path), delta->status)
           );
         }
         baton->out->push_back(historyEntry);
@@ -119,6 +130,53 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
 
       if (flag) {
         break;
+      }
+    }
+
+    if (
+      doRenamedPass &&
+      (baton->error_code = git_diff_find_similar(diffs, NULL)) == GIT_OK
+    ) {
+      flag = false;
+      numDeltas = git_diff_num_deltas(diffs);
+      for (unsigned int j = 0; j < numDeltas; ++j) {
+        git_patch *nextPatch;
+        baton->error_code = git_patch_from_diff(&nextPatch, diffs, j);
+
+        if (baton->error_code < GIT_OK) {
+          break;
+        }
+
+        if (nextPatch == NULL) {
+          continue;
+        }
+
+        const git_diff_delta *delta = git_patch_get_delta(nextPatch);
+        bool isEqualOldFile = !strcmp(delta->old_file.path, baton->file_path);
+        bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
+
+        if (isEqualNewFile) {
+          std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
+          if (!isEqualOldFile) {
+            historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
+              nextCommit,
+              std::pair<char *, git_delta_t>(strdup(delta->old_file.path), delta->status)
+            );
+          } else {
+            historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
+              nextCommit,
+              std::pair<char *, git_delta_t>(strdup(delta->new_file.path), delta->status)
+            );
+          }
+          baton->out->push_back(historyEntry);
+          flag = true;
+        }
+
+        git_patch_free(nextPatch);
+
+        if (flag) {
+          break;
+        }
       }
     }
 
