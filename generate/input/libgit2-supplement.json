@@ -212,7 +212,7 @@
           },
           {
             "name": "out",
-            "type": "std::vector< std::pair<git_commit *, char *> *> *"
+            "type": "std::vector< std::pair<git_commit *, std::pair<char *, git_delta_t> > *> *"
           },
           {
             "name": "walk",

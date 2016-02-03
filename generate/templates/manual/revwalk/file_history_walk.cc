@@ -19,7 +19,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   String::Utf8Value from_js_file_path(info[0]->ToString());
   baton->file_path = strdup(*from_js_file_path);
   baton->max_count = (unsigned int)info[1]->ToNumber()->Value();
-  baton->out = new std::vector< std::pair<git_commit*, char *> *>;
+  baton->out = new std::vector< std::pair<git_commit *, std::pair<char *, git_delta_t> > *>;
   baton->out->reserve(baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
@@ -36,8 +36,6 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
   git_repository *repo = git_revwalk_repository(baton->walk);
   git_oid *nextOid = (git_oid *)malloc(sizeof(git_oid));
   giterr_clear();
-  char * trackPath = strdup(baton->file_path);
-  bool addedFlag = false;
   for (
     unsigned int i = 0;
     i < baton->max_count && (baton->error_code = git_revwalk_next(nextOid, baton->walk)) == GIT_OK;
@@ -59,8 +57,10 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
     git_diff *diffs;
     git_commit *parent;
     unsigned int parents = git_commit_parentcount(nextCommit);
-    if (
-      parents >= 1) {
+    if (parents > 1) {
+      git_commit_free(nextCommit);
+      continue;
+    } else if (parents == 1) {
       if ((baton->error_code = git_commit_parent(&parent, nextCommit, 0)) != GIT_OK) {
         git_commit_free(nextCommit);
         break;
@@ -95,21 +95,23 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
 
       const git_diff_delta *delta = git_patch_get_delta(nextPatch);
-      bool isEqualOldFile = !strcmp(delta->old_file.path, trackPath);
-      bool isEqualNewFile = !strcmp(delta->new_file.path, trackPath);
+      bool isEqualOldFile = !strcmp(delta->old_file.path, baton->file_path);
+      bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
 
       if (isEqualNewFile) {
-        baton->out->push_back(
-          new std::pair<git_commit *, char *>(
+        std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
+        if (!isEqualOldFile) {
+          historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
             nextCommit,
-            strdup(delta->new_file.path)
-          ));
-        if (delta->status == GIT_DELTA_ADDED) {
-          addedFlag = true;
-        } else if (!isEqualOldFile) {
-          free(trackPath);
-          trackPath = strdup(delta->old_file.path);
+            std::make_pair<char *, git_delta_t>(strdup(delta->old_file.path), delta->status)
+          );
+        } else {
+          historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
+            nextCommit,
+            std::make_pair<char *, git_delta_t>(strdup(delta->new_file.path), delta->status)
+          );
         }
+        baton->out->push_back(historyEntry);
         flag = true;
       }
 
@@ -127,13 +129,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
     if (baton->error_code != GIT_OK) {
       break;
     }
-
-    if (addedFlag) {
-      break;
-    }
   }
 
-  free(trackPath);
   free(nextOid);
 
   if (baton->error_code != GIT_OK) {
@@ -142,10 +139,10 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
 
       while(!baton->out->empty())
       {
-        std::pair<git_commit *, char *> *pairToFree = baton->out->back();
+        std::pair<git_commit *, std::pair<char *, git_delta_t> > *pairToFree = baton->out->back();
         baton->out->pop_back();
         git_commit_free(pairToFree->first);
-        free(pairToFree->second);
+        free(pairToFree->second.first);
         free(pairToFree);
       }
 
@@ -165,12 +162,15 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     Local<Array> result = Nan::New<Array>(size);
     for (unsigned int i = 0; i < size; i++) {
       Local<v8::Object> historyEntry = Nan::New<Object>();
-      std::pair<git_commit *, char *> *batonResult = baton->out->at(i);
+      std::pair<git_commit *, std::pair<char *, git_delta_t> > *batonResult = baton->out->at(i);
       Nan::Set(historyEntry, Nan::New("commit").ToLocalChecked(), GitCommit::New(batonResult->first, true));
-      Nan::Set(historyEntry, Nan::New("name").ToLocalChecked(), Nan::New(batonResult->second).ToLocalChecked());
+      Nan::Set(historyEntry, Nan::New("status").ToLocalChecked(), Nan::New<Number>(batonResult->second.second));
+      if (batonResult->second.second == GIT_DELTA_RENAMED) {
+        Nan::Set(historyEntry, Nan::New("oldName").ToLocalChecked(), Nan::New(batonResult->second.first).ToLocalChecked());
+      }
       Nan::Set(result, Nan::New<Number>(i), historyEntry);
 
-      free(batonResult->second);
+      free(batonResult->second.first);
       free(batonResult);
     }
 
