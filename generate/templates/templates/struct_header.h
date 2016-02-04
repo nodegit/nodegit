@@ -4,6 +4,7 @@
 #include <nan.h>
 #include <string>
 #include <queue>
+#include <utility>
 
 #include "async_baton.h"
 

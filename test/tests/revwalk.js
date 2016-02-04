@@ -1,4 +1,7 @@
 var assert = require("assert");
+var RepoUtils = require("../utils/repository_setup");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
@@ -27,6 +30,7 @@ describe("Revwalk", function() {
 
   beforeEach(function() {
     this.walker = this.repository.createRevWalk();
+    this.walker.sorting(NodeGit.Revwalk.SORT.TIME);
     this.walker.push(this.commit.id());
   });
 
@@ -141,7 +145,7 @@ describe("Revwalk", function() {
       });
   });
 
-  it("can get do a fast walk", function() {
+  it("can do a fast walk", function() {
     var test = this;
     var magicSha = "b8a94aefb22d0534cc0e5acf533989c13d8725dc";
 
@@ -149,6 +153,140 @@ describe("Revwalk", function() {
       .then(function(commitOids) {
         assert.equal(commitOids.length, 10);
         assert.equal(commitOids[3].toString(), magicSha);
+      });
+  });
+
+  it("can get the history of a file", function() {
+    var test = this;
+    var magicShas = [
+      "6ed3027eda383d417457b99b38c73f88f601c368",
+      "95cefff6aabd3c1f6138ec289f42fec0921ff610",
+      "7ad92a7e4d26a1af93f3450aea8b9d9b8069ea8c",
+      "96f077977eb1ffcb63f9ce766cdf110e9392fdf5",
+      "694adc5369687c47e02642941906cfc5cb21e6c2",
+      "eebd0ead15d62eaf0ba276da53af43bbc3ce43ab",
+      "1273fff13b3c28cfdb13ba7f575d696d2a8902e1"
+    ];
+
+    return test.walker.fileHistoryWalk("include/functions/copy.h", 1000)
+      .then(function(results) {
+        var shas = results.map(function(result) {
+          return result.commit.sha();
+        });
+        assert.equal(magicShas.length, shas.length);
+        magicShas.forEach(function(sha, i) {
+          assert.equal(sha, shas[i]);
+        });
+      });
+  });
+
+  it("can get the history of a file while ignoring parallel branches",
+  function() {
+    var test = this;
+    var magicShas = [
+      "f80e085e3118bbd6aad49dad7c53bdc37088bf9b",
+      "907b29d8a3b765570435c922a59cd849836a7b51"
+    ];
+    var shas;
+    var walker = test.repository.createRevWalk();
+    walker.sorting(NodeGit.Revwalk.SORT.TIME);
+    walker.push("115d114e2c4d5028c7a78428f16a4528c51be7dd");
+
+    return walker.fileHistoryWalk("README.md", 15)
+      .then(function(results) {
+        shas = results.map(function(result) {
+          return result.commit.sha();
+        });
+        assert.equal(magicShas.length, shas.length);
+        magicShas.forEach(function(sha, i) {
+          assert.equal(sha, shas[i]);
+        });
+
+        magicShas = [
+          "4a34168b80fe706f52417106821c9cbfec630e47",
+          "f80e085e3118bbd6aad49dad7c53bdc37088bf9b",
+          "694b2d703a02501f288269bea7d1a5d643a83cc8",
+          "907b29d8a3b765570435c922a59cd849836a7b51"
+        ];
+
+        walker = test.repository.createRevWalk();
+        walker.sorting(NodeGit.Revwalk.SORT.TIME);
+        walker.push("d46f7da82969ca6620864d79a55b951be0540bda");
+
+        return walker.fileHistoryWalk("README.md", 50);
+      })
+      .then(function(results) {
+        shas = results.map(function(result) {
+          return result.commit.sha();
+        });
+        assert.equal(magicShas.length, shas.length);
+        magicShas.forEach(function(sha, i) {
+          assert.equal(sha, shas[i]);
+        });
+      });
+  });
+
+  it("can yield information about renames in a file history walk",
+  function() {
+    var treeOid;
+    var repo;
+    var fileNameA = "a.txt";
+    var fileNameB = "b.txt";
+    var repoPath = local("../repos/renamedFileRepo");
+    var signature = NodeGit.Signature.create("Foo bar",
+      "foo@bar.com", 123456789, 60);
+    return RepoUtils.createRepository(repoPath)
+      .then(function(r) {
+        repo = r;
+        return RepoUtils.commitFileToRepo(
+          repo,
+          fileNameA,
+          "line1\nline2\nline3\n"
+        );
+      })
+      .then(function() {
+        return fse.move(
+          path.join(repoPath, fileNameA),
+          path.join(repoPath, fileNameB)
+        );
+      })
+      .then(function() {
+        return repo.openIndex()
+          .then(function(index) {
+            index.read(1);
+            index.addByPath(fileNameB);
+            index.removeByPath(fileNameA);
+            index.write();
+
+            return index.writeTree();
+          });
+      })
+      .then(function(oidResult) {
+        treeOid = oidResult;
+        return NodeGit.Reference.nameToId(repo, "HEAD");
+      })
+      .then(function(head) {
+        return repo.getCommit(head);
+      })
+      .then(function(head) {
+        return repo.createCommit("HEAD", signature, signature,
+          "renamed commit", treeOid, [head]);
+      })
+      .then(function() {
+        return NodeGit.Reference.nameToId(repo, "HEAD");
+      })
+      .then(function(commitOid) {
+        var walker = repo.createRevWalk();
+        walker.sorting(NodeGit.Revwalk.SORT.TIME);
+        walker.push(commitOid.tostrS());
+        return walker.fileHistoryWalk(fileNameB, 5);
+      })
+      .then(function(results) {
+        assert.equal(results[0].status, NodeGit.Diff.DELTA.RENAMED);
+        assert.equal(results[0].oldName, fileNameA);
+      })
+      .then(function() {
+        return fse.remove(repoPath);
       });
   });
 
