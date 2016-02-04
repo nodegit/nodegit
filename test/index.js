@@ -13,7 +13,8 @@ var args = cov.concat([
   "test/runner",
   "test/tests",
   "--expose-gc",
-  "--timeout 15000"
+  "--timeout",
+  "15000"
 ]);
 
 if (!process.env.APPVEYOR && !process.env.TRAVIS) {
