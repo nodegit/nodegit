@@ -3,6 +3,8 @@ branches:
     - master
     - /^v\d+\.\d+\.\d+$/
 
+compiler: clang
+
 os:
   - linux
   - osx
@@ -26,11 +28,17 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - build-essential
+      - libssl-dev
       - gcc-4.9
       - g++-4.9
       - lcov
 
 before_install:
+  - export CC=clang
+  - export CXX=clang++
+  - export npm_config_clang=1
+
   - if [ $TRAVIS_OS_NAME != "linux" ]; then
       git clone https://github.com/creationix/nvm.git ./.nvm;
       source ./.nvm/nvm.sh;
@@ -38,17 +46,17 @@ before_install:
 
   - nvm install $NODE_VERSION
 
-  - if [ $TRAVIS_OS_NAME == "linux" ]; then
-      export GYP_DEFINES="use_obsolete_asm=true";
+  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
+      export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
       export JOBS=4;
       export CC=/usr/bin/gcc-4.9;
       export CXX=/usr/bin/g++-4.9;
-    fi
-
-  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
-      export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
+      export npm_config_clang=0;
       wget http://downloads.sourceforge.net/ltp/lcov-1.10.tar.gz;
       tar xvfz lcov-1.10.tar.gz;
+    else
+      export GYP_DEFINES="use_obsolete_asm=true";
+      export JOBS=4;
     fi
 
 install:
@@ -66,7 +74,7 @@ before_script:
   - git config --global user.email johndoe@example.com
 
 script:
-  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
+  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
       npm test && npm run cov && npm run coveralls;
     else
       npm test;
