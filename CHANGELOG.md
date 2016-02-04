@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.11.0](https://github.com/nodegit/nodegit/releases/tag/v0.11.0) (2016-02-04)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.10.0...v0.11.0)
+
+- Change `Revert.commit` and `Revert.revert` to by async. [PR #887](https://github.com/nodegit/nodegit/pull/887
+- Added `RevWalk#fileHistoryWalk` for a faster way to retrieve history for a specific file. [PR #889](https://github.com/nodegit/nodegit/pull/889
+
 ## [0.10.0](https://github.com/nodegit/nodegit/releases/tag/v0.10.0) (2016-02-01)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.9.0...v0.10.0)
@@ -13,18 +20,18 @@
   - `ConvenientPatch#hunks` returns a promise with an array of `ConvenientHunks`.
 - `ConvenientHunk`
   - `ConvenientHunk` does not have an exposed diffHunk associated with it, but does have the same members as diffHunk:
-     - `size()` : number of lines in the hunk
-     - `oldStart()` : old starting position
-     - `oldLines()` : number of lines in old file
-     - `newStart()` : new starting position
-     - `newLines()` : number of lines in new file
-     - `headerLen()` : length of header
-     - `header()` : returns the header of the hunk
-     - `lines()` : returns a promise containing `DiffLines`, not `ConvenientLines`.
+    - `size()` : number of lines in the hunk
+    - `oldStart()` : old starting position
+    - `oldLines()` : number of lines in old file
+    - `newStart()` : new starting position
+    - `newLines()` : number of lines in new file
+    - `headerLen()` : length of header
+    - `header()` : returns the header of the hunk
+    - `lines()` : returns a promise containing `DiffLines`, not `ConvenientLines`.
 - `DiffLine`
 - `DiffLine` now contains the members `rawContent()` and `content()`.
-   - `rawContent()` contains the unformatted content of the line. This is no longer a string from the line to the end of the file.
-   - `content()` contains the utf8 formatted content of the line.
+  - `rawContent()` contains the unformatted content of the line. This is no longer a string from the line to the end of the file.
+  - `content()` contains the utf8 formatted content of the line.
 
 ## [0.9.0](https://github.com/nodegit/nodegit/releases/tag/v0.9.0) (2016-01-21)
 
