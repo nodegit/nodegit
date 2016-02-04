@@ -180,8 +180,6 @@ describe("Remote", function() {
   });
 
   it("can fetch from a private repository", function() {
-    this.timeout(15000);
-
     var repo = this.repository;
     var remote = Remote.create(repo, "private", privateUrl);
     var fetchOptions = {
@@ -208,8 +206,6 @@ describe("Remote", function() {
 
   it("can reject fetching from private repository without valid credentials",
     function() {
-      this.timeout(15000);
-
       var repo = this.repository;
       var remote = Remote.create(repo, "private", privateUrl);
       var firstPass = true;
@@ -241,9 +237,6 @@ describe("Remote", function() {
   });
 
   it("can fetch from all remotes", function() {
-    // Set a reasonable timeout here for the fetchAll test
-    this.timeout(15000);
-
     var repository = this.repository;
     Remote.create(repository, "test1", url);
     Remote.create(repository, "test2", url2);
@@ -261,7 +254,6 @@ describe("Remote", function() {
   });
 
   it("will reject if credentials promise rejects", function() {
-    this.timeout(5000);
     var repo = this.repository;
     var branch = "should-not-exist";
     return Remote.lookup(repo, "origin")
@@ -335,7 +327,6 @@ describe("Remote", function() {
   });
 
   it("cannot push to a repository with invalid credentials", function() {
-    this.timeout(5000);
     var repo = this.repository;
     var branch = "should-not-exist";
     return Remote.lookup(repo, "origin")
