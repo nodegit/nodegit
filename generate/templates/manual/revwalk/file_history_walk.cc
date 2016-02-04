@@ -80,12 +80,6 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
     }
 
-    if ((baton->error_code = git_diff_find_similar(diffs, NULL)) != GIT_OK) {
-      git_commit_free(nextCommit);
-      git_commit_free(parent);
-      break;
-    }
-
     bool flag = false;
     bool doRenamedPass = false;
     unsigned int numDeltas = git_diff_num_deltas(diffs);
@@ -106,7 +100,7 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
 
       if (isEqualNewFile) {
-        if (delta->status == GIT_DELTA_ADDED) {
+        if (delta->status == GIT_DELTA_ADDED || delta->status == GIT_DELTA_DELETED) {
           doRenamedPass = true;
           break;
         }
@@ -179,6 +173,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
         }
       }
     }
+
+    git_diff_free(diffs);
 
     if (!flag && nextCommit != NULL) {
       git_commit_free(nextCommit);
