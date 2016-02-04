@@ -12,7 +12,8 @@ if (process.platform === 'win32') {
 var args = cov.concat([
   "test/runner",
   "test/tests",
-  "--expose-gc"
+  "--expose-gc",
+  "--timeout 15000"
 ]);
 
 if (!process.env.APPVEYOR && !process.env.TRAVIS) {
