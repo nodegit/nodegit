@@ -55,6 +55,10 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
     }
 
     git_diff *diffs;
+    git_diff_options opts = GIT_DIFF_OPTIONS_INIT;
+    char *file_path = strdup(baton->file_path);
+    opts.pathspec.strings = &file_path;
+    opts.pathspec.count = 1;
     git_commit *parent;
     unsigned int parents = git_commit_parentcount(nextCommit);
     if (parents > 1) {
@@ -67,18 +71,22 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
       if (
         (baton->error_code = git_commit_tree(&parentTree, parent)) != GIT_OK ||
-        (baton->error_code = git_diff_tree_to_tree(&diffs, repo, parentTree, thisTree, NULL)) != GIT_OK
+        (baton->error_code = git_diff_tree_to_tree(&diffs, repo, parentTree, thisTree, &opts)) != GIT_OK
       ) {
         git_commit_free(nextCommit);
         git_commit_free(parent);
         break;
       }
     } else {
-      if ((baton->error_code = git_diff_tree_to_tree(&diffs, repo, NULL, thisTree, NULL)) != GIT_OK) {
+      if ((baton->error_code = git_diff_tree_to_tree(&diffs, repo, NULL, thisTree, &opts)) != GIT_OK) {
         git_commit_free(nextCommit);
         break;
       }
     }
+
+    free(file_path);
+    opts.pathspec.strings = NULL;
+    opts.pathspec.count = 0;
 
     bool flag = false;
     bool doRenamedPass = false;
@@ -127,10 +135,29 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
     }
 
-    if (
-      doRenamedPass &&
-      (baton->error_code = git_diff_find_similar(diffs, NULL)) == GIT_OK
-    ) {
+    if (doRenamedPass) {
+      git_diff_free(diffs);
+
+      if (parents == 1) {
+        if ((baton->error_code = git_diff_tree_to_tree(&diffs, repo, parentTree, thisTree, NULL)) != GIT_OK) {
+          git_commit_free(nextCommit);
+          break;
+        }
+        if ((baton->error_code = git_diff_find_similar(diffs, NULL)) != GIT_OK) {
+          git_commit_free(nextCommit);
+          break;
+        }
+      } else {
+        if ((baton->error_code = git_diff_tree_to_tree(&diffs, repo, NULL, thisTree, NULL)) != GIT_OK) {
+          git_commit_free(nextCommit);
+          break;
+        }
+        if((baton->error_code = git_diff_find_similar(diffs, NULL)) != GIT_OK) {
+          git_commit_free(nextCommit);
+          break;
+        }
+      }
+
       flag = false;
       numDeltas = git_diff_num_deltas(diffs);
       for (unsigned int j = 0; j < numDeltas; ++j) {
