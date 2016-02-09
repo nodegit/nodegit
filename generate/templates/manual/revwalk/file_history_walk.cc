@@ -164,6 +164,14 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
           }
           baton->out->push_back(historyEntry);
           flag = true;
+        } else if (isEqualOldFile) {
+          std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
+          historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
+            nextCommit,
+            std::pair<char *, git_delta_t>(strdup(delta->new_file.path), delta->status)
+          );
+          baton->out->push_back(historyEntry);
+          flag = true;
         }
 
         git_patch_free(nextPatch);
@@ -220,7 +228,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
       Nan::Set(historyEntry, Nan::New("commit").ToLocalChecked(), GitCommit::New(batonResult->first, true));
       Nan::Set(historyEntry, Nan::New("status").ToLocalChecked(), Nan::New<Number>(batonResult->second.second));
       if (batonResult->second.second == GIT_DELTA_RENAMED) {
-        Nan::Set(historyEntry, Nan::New("oldName").ToLocalChecked(), Nan::New(batonResult->second.first).ToLocalChecked());
+        Nan::Set(historyEntry, Nan::New("altname").ToLocalChecked(), Nan::New(batonResult->second.first).ToLocalChecked());
       }
       Nan::Set(result, Nan::New<Number>(i), historyEntry);
 

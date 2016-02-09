@@ -235,6 +235,8 @@ describe("Revwalk", function() {
     var repoPath = local("../repos/renamedFileRepo");
     var signature = NodeGit.Signature.create("Foo bar",
       "foo@bar.com", 123456789, 60);
+    var headCommit;
+
     return RepoUtils.createRepository(repoPath)
       .then(function(r) {
         repo = r;
@@ -276,6 +278,7 @@ describe("Revwalk", function() {
         return NodeGit.Reference.nameToId(repo, "HEAD");
       })
       .then(function(commitOid) {
+        headCommit = commitOid.tostrS();
         var walker = repo.createRevWalk();
         walker.sorting(NodeGit.Revwalk.SORT.TIME);
         walker.push(commitOid.tostrS());
@@ -283,7 +286,17 @@ describe("Revwalk", function() {
       })
       .then(function(results) {
         assert.equal(results[0].status, NodeGit.Diff.DELTA.RENAMED);
-        assert.equal(results[0].oldName, fileNameA);
+        assert.equal(results[0].altname, fileNameA);
+      })
+      .then(function() {
+        var walker = repo.createRevWalk();
+        walker.sorting(NodeGit.Revwalk.SORT.TIME);
+        walker.push(headCommit);
+        return walker.fileHistoryWalk(fileNameA, 5);
+      })
+      .then(function(results) {
+        assert.equal(results[0].status, NodeGit.Diff.DELTA.RENAMED);
+        assert.equal(results[0].altname, fileNameB);
       })
       .then(function() {
         return fse.remove(repoPath);
