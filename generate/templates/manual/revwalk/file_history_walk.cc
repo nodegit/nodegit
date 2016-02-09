@@ -175,13 +175,20 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
         const git_diff_delta *delta = git_patch_get_delta(nextPatch);
         bool isEqualOldFile = !strcmp(delta->old_file.path, baton->file_path);
         bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
+        int oldLen = strlen(delta->old_file.path);
+        int newLen = strlen(delta->new_file.path);
+        char *outPair = new char[oldLen + newLen + 2];
+        strcpy(outPair, delta->new_file.path);
+        outPair[newLen] = '\n';
+        outPair[newLen + 1] = '\0';
+        strcat(outPair, delta->old_file.path);
 
         if (isEqualNewFile) {
           std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
           if (!isEqualOldFile) {
             historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
               nextCommit,
-              std::pair<char *, git_delta_t>(strdup(delta->old_file.path), delta->status)
+              std::pair<char *, git_delta_t>(strdup(outPair), delta->status)
             );
           } else {
             historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
@@ -195,11 +202,13 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
           std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
           historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
             nextCommit,
-            std::pair<char *, git_delta_t>(strdup(delta->new_file.path), delta->status)
+            std::pair<char *, git_delta_t>(strdup(outPair), delta->status)
           );
           baton->out->push_back(historyEntry);
           flag = true;
         }
+
+        delete[] outPair;
 
         git_patch_free(nextPatch);
 
@@ -255,7 +264,13 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
       Nan::Set(historyEntry, Nan::New("commit").ToLocalChecked(), GitCommit::New(batonResult->first, true));
       Nan::Set(historyEntry, Nan::New("status").ToLocalChecked(), Nan::New<Number>(batonResult->second.second));
       if (batonResult->second.second == GIT_DELTA_RENAMED) {
-        Nan::Set(historyEntry, Nan::New("altname").ToLocalChecked(), Nan::New(batonResult->second.first).ToLocalChecked());
+        char *namePair = batonResult->second.first;
+        char *split = strchr(namePair, '\n');
+        *split = '\0';
+        char *oldName = split + 1;
+
+        Nan::Set(historyEntry, Nan::New("oldName").ToLocalChecked(), Nan::New(oldName).ToLocalChecked());
+        Nan::Set(historyEntry, Nan::New("newName").ToLocalChecked(), Nan::New(namePair).ToLocalChecked());
       }
       Nan::Set(result, Nan::New<Number>(i), historyEntry);
 

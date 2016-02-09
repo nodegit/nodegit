@@ -286,7 +286,8 @@ describe("Revwalk", function() {
       })
       .then(function(results) {
         assert.equal(results[0].status, NodeGit.Diff.DELTA.RENAMED);
-        assert.equal(results[0].altname, fileNameA);
+        assert.equal(results[0].newName, fileNameB);
+        assert.equal(results[0].oldName, fileNameA);
       })
       .then(function() {
         var walker = repo.createRevWalk();
@@ -296,7 +297,8 @@ describe("Revwalk", function() {
       })
       .then(function(results) {
         assert.equal(results[0].status, NodeGit.Diff.DELTA.RENAMED);
-        assert.equal(results[0].altname, fileNameB);
+        assert.equal(results[0].newName, fileNameB);
+        assert.equal(results[0].oldName, fileNameA);
       })
       .then(function() {
         return fse.remove(repoPath);
