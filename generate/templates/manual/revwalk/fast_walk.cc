@@ -56,7 +56,7 @@ void GitRevwalk::FastWalkWorker::Execute()
         baton->out = NULL;
       }
       else {
-        baton->error_code == GIT_OK;
+        baton->error_code = GIT_OK;
       }
 
       break;
