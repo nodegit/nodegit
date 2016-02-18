@@ -75,13 +75,17 @@ PatchData *createFromRaw(git_patch *raw) {
       const git_diff_line *line;
       git_patch_get_line_in_hunk(&line, raw, i, j);
 
-      if (
-        j == 0 &&
-        !strcmp(
-          &line->content[strlen(line->content) - 29],
-          "\n\\ No newline at end of file\n"
-      )) {
-        EOFFlag = true;
+      if (j == 0) {
+        // calculate strlen only once for the first line of the first hunk.
+        int calculatedContentLength = strlen(line->content);
+        if (
+          calculatedContentLength > 29 &&
+          !strcmp(
+              &line->content[calculatedContentLength - 29],
+              "\n\\ No newline at end of file\n"
+        )) {
+          EOFFlag = true;
+        }
       }
 
       storeLine->origin = line->origin;
