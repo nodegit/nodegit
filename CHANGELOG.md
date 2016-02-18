@@ -1,29 +1,38 @@
 # Change Log
 
-## [0.11.0](https://github.com/nodegit/nodegit/releases/tag/v0.11.1) (2016-02-09)
+## [0.11.2](https://github.com/nodegit/nodegit/releases/tag/v0.11.2) (2016-02-18)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.1...v0.11.2)
+
+- Fixed an issue where when staging lines if the index is locked NodeGit just nuked it [PR #906](https://github.com/nodegit/nodegit/pull/906)
+- Fixed diff calculation when staging lines/hunks [PR #906](https://github.com/nodegit/nodegit/pull/906)
+- Fixed seg-fault in linux that happens when getting the diff of very small files [PR #908](https://github.com/nodegit/nodegit/pull/908)
+- Fixed `RevWalk#fastWalk` dying when an error happens in libgit2 [PR #909](https://github.com/nodegit/nodegit/pull/909)
+
+## [0.11.1](https://github.com/nodegit/nodegit/releases/tag/v0.11.1) (2016-02-09)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.0...v0.11.1)
 
-- Numerous fixes and perf boosts to file history
-- Several doc fixes
+- Numerous fixes and perf boosts to file history [PR #900](https://github.com/nodegit/nodegit/pull/900)[PR #896](https://github.com/nodegit/nodegit/pull/896)
+- Several doc fixes [PR #899](https://github.com/nodegit/nodegit/pull/899)[PR #897](https://github.com/nodegit/nodegit/pull/897)
 
 ## [0.11.0](https://github.com/nodegit/nodegit/releases/tag/v0.11.0) (2016-02-04)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.10.0...v0.11.0)
 
-- Change `Revert.commit` and `Revert.revert` to by async. [PR #887](https://github.com/nodegit/nodegit/pull/887
-- Added `RevWalk#fileHistoryWalk` for a faster way to retrieve history for a specific file. [PR #889](https://github.com/nodegit/nodegit/pull/889
+- Change `Revert.commit` and `Revert.revert` to by async. [PR #887](https://github.com/nodegit/nodegit/pull/887)
+- Added `RevWalk#fileHistoryWalk` for a faster way to retrieve history for a specific file. [PR #889](https://github.com/nodegit/nodegit/pull/889)
 
 ## [0.10.0](https://github.com/nodegit/nodegit/releases/tag/v0.10.0) (2016-02-01)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.9.0...v0.10.0)
 
-- Clean mutexes are part of GC. No longer leaves processes running after the script ends [PR #880](https://github.com/nodegit/nodegit/pull/880
-- Increased the performance of `ConvenientPatch` by an order of magnitude [PR #883](https://github.com/nodegit/nodegit/pull/883
+- Clean mutexes are part of GC. No longer leaves processes running after the script ends [PR #880](https://github.com/nodegit/nodegit/pull/880)
+- Increased the performance of `ConvenientPatch` by an order of magnitude [PR #883](https://github.com/nodegit/nodegit/pull/883)
 
 # API changes
 - `ConvenientPatch`
-  - `ConvenientPatch` does not have a `patch` or a `delta` property associated with it, if you were using the `delta`, please just use prototype methods `oldFIle`, `newFile`, and `Status`, which are stripped directly from the `delta`.
+  - `ConvenientPatch` does not have a `patch` or a `delta` property associated with it, if you were using the `delta`, please just use prototype methods `oldFile`, `newFile`, and `Status`, which are stripped directly from the `delta`.
   - `ConvenientPatch#hunks` returns a promise with an array of `ConvenientHunks`.
 - `ConvenientHunk`
   - `ConvenientHunk` does not have an exposed diffHunk associated with it, but does have the same members as diffHunk:
