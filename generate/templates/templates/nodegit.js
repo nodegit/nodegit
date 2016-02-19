@@ -19,7 +19,7 @@ function promisify(fn) {
           });
       }
       asyncPromise = asyncPromise
-        .then(runPromisified);
+        .then(runPromisified, runPromisified);
     });
   }
 
