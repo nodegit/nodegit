@@ -3,8 +3,9 @@ var promisifyNode = require("promisify-node");
 var asyncPromise = Promise.resolve();
 
 function promisify(fn) {
+  var promisified = promisifyNode(fn);
+
   function chainedPromisified() {
-    var promisified = promisifyNode(fn);
     var _this = this;
     var _args = arguments;
 
