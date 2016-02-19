@@ -79,11 +79,13 @@ describe("TreeEntry", function() {
       return Promise.all(testPromises);
     };
 
+    function promiseDone() {
+      done();
+    }
+
     return this.commit.getTree()
       .then(testTree)
-      .done(function() {
-        done();
-      });
+      .then(promiseDone, promiseDone);
   });
 
   it("provides the blob representation of the entry", function() {
