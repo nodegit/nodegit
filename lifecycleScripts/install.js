@@ -1,11 +1,11 @@
 var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
-
+var cp = require("child_process");
 var prepareForBuild = require("./prepareForBuild");
 
 var exec = promisify(function(command, opts, callback) {
-  return require("child_process").exec(command, opts, callback);
+  return cp.exec(command, opts, callback);
 });
 
 var fromRegistry;
@@ -52,7 +52,9 @@ function installPrebuilt() {
 
 function pathForTool(name) {
   var toolPath = path.resolve(".", "node_modules", ".bin", name);
-  toolPath = "\"" + toolPath + "\"";
+  if (process.platform == "win32") {
+    toolPath += ".cmd";
+  }
   return toolPath;
 }
 
@@ -72,7 +74,8 @@ function build() {
   var opts = {
     cwd: ".",
     maxBuffer: Number.MAX_VALUE,
-    env: process.env
+    env: process.env,
+    stdio: "inherit"
   };
 
   var builder = "node-gyp";
@@ -104,26 +107,27 @@ function build() {
 
   opts.env.HOME = path.join(home, ".nodegit-gyp");
 
-  var cmd = [
-    pathForTool(builder),
+  var cmd = pathForTool(builder);
+  var args = [
     "rebuild",
     debug,
     target,
     distUrl
   ]
   .join(" ")
-  .trim();
-
-  return exec(cmd, opts)
-    .then(function() {
-        console.info("[nodegit] Compilation complete.");
-        console.info("[nodegit] Completed installation successfully.");
-        process.exitCode = 0;
-      },
-      function(err, stderr) {
-        console.error(err);
-        console.error(stderr);
+  .trim()
+  .split(" ");
+  return new Promise(function(resolve, reject) {
+    var child = cp.spawn(cmd, args, opts);
+    child.on("close", function(code) {
+      console.log(code);
+      if (code) {
+        reject(code);
         process.exitCode = 13;
       }
-    );
+      else {
+        resolve();
+      }
+    })
+  });
 }
