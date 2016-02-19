@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <set>
 
+#include <libssh2.h>
+
 #include "../include/lock_master.h"
 #include "../include/wrapper.h"
 #include "../include/promise_completion.h"
@@ -40,6 +42,7 @@ void LockMasterGetDiagnostics(const FunctionCallbackInfo<Value>& info) {
 }
 
 extern "C" void init(Local<v8::Object> target) {
+  libssh2_init(0);
   // Initialize libgit2.
   git_libgit2_init();
 
