@@ -1,4 +1,30 @@
-var promisify = require("promisify-node");
+var promisifyNode = require("promisify-node");
+
+var asyncPromise = Promise.resolve();
+
+function promisify(fn) {
+  function chainedPromisified() {
+    var promisified = promisifyNode(fn);
+    var _this = this;
+    var _args = arguments;
+
+    return new Promise(function(resolve, reject) {
+      function runPromisified() {
+        return promisified.apply(_this, _args)
+          .then(function(value) {
+            resolve(value);
+          }, function(error) {
+            reject(error);
+          });
+      }
+      asyncPromise = asyncPromise
+        .then(runPromisified);
+    });
+  }
+
+  return chainedPromisified;
+}
+
 var rawApi;
 
 // Attempt to load the production release first, if it fails fall back to the
