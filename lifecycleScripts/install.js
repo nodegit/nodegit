@@ -128,6 +128,6 @@ function build() {
       else {
         resolve();
       }
-    })
+    });
   });
 }
