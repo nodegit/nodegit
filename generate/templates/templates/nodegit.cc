@@ -1,13 +1,18 @@
 // This is a generated file, modify: generate/templates/nodegit.cc.
 #include <v8.h>
+
 #include <node.h>
 #include <git2.h>
 #include <map>
 #include <algorithm>
 #include <set>
 
-#include <libssh2.h>
 #include <openssl/crypto.h>
+// we have to include <libssh2.h> first so it defines ssize_t
+// and then node.h with _SSIZE_T_ defined to prevent it from redefining
+// in a conflicting way on 32 bit windows
+#define ssize_t ssize_t
+#include <libssh2.h>
 
 #include "../include/lock_master.h"
 #include "../include/wrapper.h"
