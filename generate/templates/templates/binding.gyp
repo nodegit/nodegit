@@ -16,6 +16,7 @@
       "sources": [
         "src/lock_master.cc",
         "src/nodegit.cc",
+        "src/init_ssh2.cc",
         "src/promise_completion.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
@@ -32,6 +33,8 @@
 
       "include_dirs": [
         "vendor/libv8-convert",
+        "vendor/libssh2/include",
+        "vendor/openssl/openssl/include",
         "<!(node -e \"require('nan')\")"
       ],
 
