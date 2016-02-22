@@ -81,7 +81,8 @@ function build() {
   var builder = "node-gyp";
   var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
   var target = "";
-  var distUrl;
+  var distUrl = "";
+  var runtime = "";
 
   process.argv.forEach(function(arg) {
     if (~arg.indexOf("electronVersion")) {
@@ -94,12 +95,13 @@ function build() {
 
   if (electronVersion) {
     target = "--target=" + electronVersion;
-    distUrl = "--dist-url=https://gh-contractor-zcbenz.s3." +
-      "amazonaws.com/atom-shell/dist";
+    distUrl = "--dist-url=https://atom.io/download/atom-shell";
+    runtime = "--runtime=electron";
   }
   else if (nwjsVersion) {
     builder = "nw-gyp";
     target = "--target=" + nwjsVersion;
+    runtime = "--runtime=node-webkit"
   }
 
   var home = process.platform == "win32" ?
@@ -112,11 +114,14 @@ function build() {
     "rebuild",
     debug,
     target,
-    distUrl
+    distUrl,
+    runtime
   ]
-  .join(" ")
-  .trim()
-  .split(" ");
+  .filter(function(arg) {
+    return arg;
+  });
+
+  console.log(args);
   return new Promise(function(resolve, reject) {
     var child = cp.spawn(cmd, args, opts);
     child.on("close", function(code) {
