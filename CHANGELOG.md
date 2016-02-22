@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.11.3](https://github.com/nodegit/nodegit/releases/tag/v0.11.3) (2016-02-22)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.2...v0.11.3)
+
+- Fixed an issue where initializing NodeGit would sometimes seg fault. Also fixed an error when fetching concurrently [PR #912](https://github.com/nodegit/nodegit/pull/912)
+
 ## [0.11.2](https://github.com/nodegit/nodegit/releases/tag/v0.11.2) (2016-02-18)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.1...v0.11.2)
