@@ -8,12 +8,8 @@
 #include <set>
 
 #include <openssl/crypto.h>
-// we have to include <libssh2.h> first so it defines ssize_t
-// and then node.h with _SSIZE_T_ defined to prevent it from redefining
-// in a conflicting way on 32 bit windows
-#define ssize_t ssize_t
-#include <libssh2.h>
 
+#include "../include/init_ssh2.h"
 #include "../include/lock_master.h"
 #include "../include/wrapper.h"
 #include "../include/promise_completion.h"
@@ -75,7 +71,7 @@ void OpenSSL_ThreadSetup() {
 extern "C" void init(Local<v8::Object> target) {
   // Initialize thread safety in openssl and libssh2
   OpenSSL_ThreadSetup();
-  libssh2_init(0);
+  init_ssh2();
   // Initialize libgit2.
   git_libgit2_init();
 

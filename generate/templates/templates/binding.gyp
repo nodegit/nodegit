@@ -16,6 +16,7 @@
       "sources": [
         "src/lock_master.cc",
         "src/nodegit.cc",
+        "src/init_ssh2.cc",
         "src/promise_completion.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
