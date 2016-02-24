@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.11.4](https://github.com/nodegit/nodegit/releases/tag/v0.11.4) (2016-02-24)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.3...v0.11.4)
+
+- Fixed callback out values in callbacks from C++. This affects any NodeGit call that is passed a callback as an option [PR #921](https://github.com/nodegit/nodegit/pull/921)
+- Fixed an issue with building the debug version of NodeGit on windows [PR #918](https://github.com/nodegit/nodegit/pull/918)
+
 ## [0.11.3](https://github.com/nodegit/nodegit/releases/tag/v0.11.3) (2016-02-22)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.2...v0.11.3)
