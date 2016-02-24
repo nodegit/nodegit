@@ -101,7 +101,7 @@ function build() {
   else if (nwjsVersion) {
     builder = "nw-gyp";
     target = "--target=" + nwjsVersion;
-    runtime = "--runtime=node-webkit"
+    runtime = "--runtime=node-webkit";
   }
 
   var home = process.platform == "win32" ?
