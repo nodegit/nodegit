@@ -79,7 +79,7 @@ function build() {
   };
 
   var builder = "node-gyp";
-  var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
+  var debug = (process.env.BUILD_DEBUG ? "--debug" : "");
   var target = "";
   var distUrl = "";
   var runtime = "";
