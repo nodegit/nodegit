@@ -1,7 +1,7 @@
 // This is a generated file, modify: generate/templates/nodegit.cc.
+#include <node.h>
 #include <v8.h>
 
-#include <node.h>
 #include <git2.h>
 #include <map>
 #include <algorithm>
