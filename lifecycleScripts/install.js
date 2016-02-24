@@ -79,7 +79,7 @@ function build() {
   };
 
   var builder = "node-gyp";
-  var debug = (process.env.BUILD_DEBUG ? " --debug" : "");
+  var debug = (process.env.BUILD_DEBUG ? "--debug" : "");
   var target = "";
   var distUrl = "";
   var runtime = "";
@@ -101,7 +101,7 @@ function build() {
   else if (nwjsVersion) {
     builder = "nw-gyp";
     target = "--target=" + nwjsVersion;
-    runtime = "--runtime=node-webkit"
+    runtime = "--runtime=node-webkit";
   }
 
   var home = process.platform == "win32" ?
