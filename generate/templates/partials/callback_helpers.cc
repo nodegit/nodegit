@@ -27,12 +27,6 @@
     }
   }
 
-  {% each cbFunction|returnsInfo false true as _return %}
-    {% if _return.isOutParam %}
-    *{{ _return.name }} = *baton->{{ _return.name }};
-    {% endif %}
-  {% endeach %}
-
   return baton->result;
 }
 
@@ -92,7 +86,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
       {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
       wrapper->selfFreeing = false;
 
-      baton->{{ _return.name }} = wrapper->GetRefValue();
+      *baton->{{ _return.name }} = wrapper->GetValue();
       baton->result = {{ cbFunction.return.success }};
       {% else %}
       if (result->IsNumber()) {
@@ -126,7 +120,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseComp
         {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
         wrapper->selfFreeing = false;
 
-        baton->{{ _return.name }} = wrapper->GetRefValue();
+        *baton->{{ _return.name }} = wrapper->GetValue();
         baton->result = {{ cbFunction.return.success }};
         {% else %}
         if (result->IsNumber()) {
