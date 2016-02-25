@@ -62,7 +62,7 @@ using namespace std;
       {% endif %}
     {% endif %}
   {% endeach %}
-  
+
   if (this->selfFreeing) {
     free(this->raw);
   }
@@ -141,10 +141,6 @@ Local<v8::Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
 
 {{ cType }} *{{ cppClassName }}::GetValue() {
   return this->raw;
-}
-
-{{ cType }} **{{ cppClassName }}::GetRefValue() {
-  return this->raw == NULL ? NULL : &this->raw;
 }
 
 void {{ cppClassName }}::ClearValue() {

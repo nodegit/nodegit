@@ -69,18 +69,10 @@
     {%endif%}
   }
   else {
-    {%if cType|isDoublePointer %}
-    from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetRefValue();
-    {%else%}
-    from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetValue();
-    {%endif%}
+    {%if cType|isDoublePointer %}*{%endif%}from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetValue();
   }
   {%else%}
-    {%if cType|isDoublePointer %}
-  from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetRefValue();
-    {%else%}
-  from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetValue();
-    {%endif%}
+    {%if cType|isDoublePointer %}*{%endif%}from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetValue();
   {%endif%}
 
   {%if isBoolean %}

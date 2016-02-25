@@ -29,7 +29,6 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     static void InitializeComponent (Local<v8::Object> target);
 
     {{ cType }} *GetValue();
-    {{ cType }} **GetRefValue();
     void ClearValue();
 
     static Local<v8::Value> New(void *raw, bool selfFreeing);
