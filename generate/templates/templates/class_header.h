@@ -44,7 +44,6 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
     {%if cType%}
     {{ cType }} *GetValue();
-    {{ cType }} **GetRefValue();
     void ClearValue();
 
     static Local<v8::Value> New(void *raw, bool selfFreeing);
