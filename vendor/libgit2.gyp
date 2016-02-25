@@ -333,6 +333,9 @@
             # 'InterlockedDecrement' undefined; assuming extern returning int.
             4013,
           ],
+          "include_dirs": [
+            "libgit2/deps/regex"
+          ],
           "sources": [
             "libgit2/src/win32/w32_buffer.c",
             "libgit2/src/win32/w32_buffer.h",
@@ -390,8 +393,7 @@
       ],
       "include_dirs": [
         "libgit2/include",
-        "libgit2/src",
-        "libgit2/deps/regex"
+        "libgit2/src"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
@@ -427,9 +429,15 @@
         "STDC",
         "NO_GZIP",
       ],
+      "conditions": [
+        ["OS=='win'", {
+          "include_dirs": [
+            "libgit2/deps/regex"
+          ]
+        }]
+      ],
       "include_dirs": [
-        "libgit2/include",
-        "libgit2/deps/regex",
+        "libgit2/include"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
