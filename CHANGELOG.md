@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.11.5](https://github.com/nodegit/nodegit/releases/tag/v0.11.5) (2016-02-25)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.4...v0.11.5)
+
+- Fixed crash when calculating a diff [PR #922](https://github.com/nodegit/nodegit/pull/922)
+- Fixed an issue with return values getting randomly corrupted [PR #923](https://github.com/nodegit/nodegit/pull/923)
+
 ## [0.11.4](https://github.com/nodegit/nodegit/releases/tag/v0.11.4) (2016-02-24)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.3...v0.11.4)
