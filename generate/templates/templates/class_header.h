@@ -1,6 +1,5 @@
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
-// generated from class_header.h
 #include <nan.h>
 #include <string>
 #include <queue>

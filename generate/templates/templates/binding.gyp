@@ -1,5 +1,3 @@
-# // This is a generated file, modify: generate/templates/binding.gyp.
-
 {
   "targets": [
     {

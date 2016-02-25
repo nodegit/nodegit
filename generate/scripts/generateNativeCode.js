@@ -107,22 +107,26 @@ module.exports = function generateNativeCode() {
     return fse.copy(path.resolve(__dirname, "../templates/manual/src"), path.resolve(__dirname, "../../src"));
   }).then(function() {
     // Write out single purpose templates.
-    utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)));
-    utils.writeFile("../src/nodegit.cc", templates.nodegitCC.render(enabled));
-    utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)));
+    utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)), "binding.gyp");
+    utils.writeFile("../src/nodegit.cc", templates.nodegitCC.render(enabled), "nodegit.cc");
+    utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)), "nodegit.js");
     // Write out all the classes.
     enabled.forEach(function(idef) {
       if (idef.type && idef.type != "enum") {
         utils.writeFile(
-          "../src/" + idef.filename + ".cc", templates[idef.type + "_content"].render(idef)
+          "../src/" + idef.filename + ".cc",
+          templates[idef.type + "_content"].render(idef),
+          idef.type + "_content.cc"
         );
         utils.writeFile(
-          "../include/" + idef.filename + ".h", templates[idef.type + "_header"].render(idef)
+          "../include/" + idef.filename + ".h",
+          templates[idef.type + "_header"].render(idef),
+          idef.type + "_header.h"
         );
       }
     });
 
-    utils.writeFile("../lib/enums.js", beautify(templates.enums.render(enabled)));
+    utils.writeFile("../lib/enums.js", beautify(templates.enums.render(enabled)), "enums.js");
   }).then(function() {
     return exec("command -v astyle").then(function(astyle) {
       if (astyle) {
