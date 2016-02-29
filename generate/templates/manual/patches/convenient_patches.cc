@@ -62,6 +62,7 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
 
       if (nextPatch != NULL) {
         baton->out->push_back(createFromRaw(nextPatch));
+        patchesToBeFreed.push_back(nextPatch);
       }
     }
 
