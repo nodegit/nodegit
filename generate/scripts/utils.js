@@ -20,11 +20,20 @@ var util = {
     }
   },
 
-  writeFile: function(file, content) {
+  writeFile: function(file, content, header) {
     try {
       var file = local(file);
       if (typeof content == "object") {
         content = JSON.stringify(content, null, 2)
+      }
+
+      if (header) {
+        var commentPrefix = ~header.indexOf('.gyp') ? '#' : '//'
+        content = commentPrefix +
+          " This is a generated file, modify: generate/templates/" +
+          header +
+          "\n\n" +
+          content;
       }
 
       fse.ensureFileSync(file);

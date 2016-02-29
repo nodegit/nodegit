@@ -1,4 +1,3 @@
-// This is a generated file, modify: generate/templates/struct_content.cc.
 #include <nan.h>
 #include <string.h>
 #ifdef WIN32
