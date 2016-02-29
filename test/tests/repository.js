@@ -231,4 +231,33 @@ describe("Repository", function() {
         assert(!commit);
       });
   });
+
+  it("can commit on head on a empty repo with createCommitOnHead", function() {
+    var fileName = "my-new-file-that-shouldnt-exist.file";
+    var fileContent = "new file from repository test";
+    var repo = this.emptyRepo;
+    var filePath = path.join(repo.workdir(), fileName);
+    var authSig = repo.defaultSignature();
+    var commitSig = repo.defaultSignature();
+    var commitMsg = "Doug this has been commited";
+
+    return fse.writeFile(filePath, fileContent)
+      .then(function() {
+        return repo.createCommitOnHead(
+          [filePath],
+          authSig,
+          commitSig,
+          commitMsg
+        );
+      })
+      .then(function(oidResult) {
+          return repo.getHeadCommit()
+            .then(function(commit) {
+              assert.equal(
+                commit.toString(),
+                oidResult.toString()
+              );
+            });
+      });
+  });
 });
