@@ -18,18 +18,28 @@ var RepositorySetup = {
 	},
 
 	commitFileToRepo:
-	function commitFileToRepo(repository, fileName, fileContent) {
+	function commitFileToRepo(repository, fileName, fileContent, parentCommit) {
 		var repoWorkDir = repository.workdir();
 		var signature = NodeGit.Signature.create("Foo bar",
 	    "foo@bar.com", 123456789, 60);
 
-		return fse.writeFile(path.join(repoWorkDir, fileName), fileContent)
+		var filePath = path.join(repoWorkDir, fileName);
+		var parents = [];
+		if (parentCommit) {
+			parents.push(parentCommit);
+		}
+
+		// fse.ensure allows us to write files inside new folders
+		return fse.ensureFile(filePath)
+			.then(function() {
+				return fse.writeFile(filePath, fileContent);
+			})
 			.then(function() {
 				return RepositorySetup.addFileToIndex(repository, fileName);
 			})
 			.then(function(oid) {
 				return repository.createCommit("HEAD", signature, signature,
-					"initial commit", oid, []);
+					"initial commit", oid, parents);
 			})
 			.then(function(commitOid) {
 				return repository.getCommit(commitOid);
