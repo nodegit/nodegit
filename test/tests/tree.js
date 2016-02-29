@@ -24,12 +24,15 @@ describe("Tree", function() {
   it("walks its entries and returns the same entries on both progress and end",
   function() {
     var repo = this.repository;
+    var file1 = "test.txt";
+    var file2 = "foo/bar.txt";
+    var expectedPaths = [file1, file2];
     var progressEntries = [];
     var endEntries;
 
-    return RepoUtils.commitFileToRepo(repo, "test.txt", "")
+    return RepoUtils.commitFileToRepo(repo, file1, "")
       .then(function(commit) {
-        return RepoUtils.commitFileToRepo(repo, "foo/bar.txt", "", commit);
+        return RepoUtils.commitFileToRepo(repo, file2, "", commit);
       })
       .then(function(commit) {
         return commit.getTree();
@@ -56,21 +59,21 @@ describe("Tree", function() {
         assert(progressEntries.length);
         assert(endEntries && endEntries.length);
 
-        assert.equal(
-          progressEntries.length, endEntries.length,
-          "Different number of progress entries and end entries"
-        );
-
         function getEntryPath(entry) {
           return entry.path();
         }
 
-        var progressFilePaths = progressEntries.map(getEntryPath).sort();
+        var progressFilePaths = progressEntries.map(getEntryPath);
         var endFilePaths = endEntries.map(getEntryPath);
 
         assert.deepEqual(
-          progressFilePaths.sort(), endFilePaths.sort(),
-          "progress entries do not match end entries"
+          expectedPaths, progressFilePaths,
+          "progress entry paths do not match expected paths"
+        );
+
+        assert.deepEqual(
+          expectedPaths, endFilePaths,
+          "end entry paths do not match expected paths"
         );
       });
   });
