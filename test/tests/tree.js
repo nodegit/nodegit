@@ -26,7 +26,8 @@ describe("Tree", function() {
     var repo = this.repository;
     var file1 = "test.txt";
     var file2 = "foo/bar.txt";
-    var expectedPaths = [file1, file2];
+    // index.addByPath doesn't like \s so normalize only for the expected paths
+    var expectedPaths = [file1, path.normalize(file2)];
     var progressEntries = [];
     var endEntries;
 
