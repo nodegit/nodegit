@@ -68,7 +68,7 @@ PatchData *createFromRaw(git_patch *raw) {
     hunkData->lines = new std::vector<git_diff_line *>;
     hunkData->lines->reserve(hunkData->numLines);
 
-
+    static const int noNewlineStringLength = 29;
     bool EOFFlag = false;
     for (unsigned int j = 0; j < hunkData->numLines; ++j) {
       git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
@@ -79,9 +79,9 @@ PatchData *createFromRaw(git_patch *raw) {
         // calculate strlen only once for the first line of the first hunk.
         int calculatedContentLength = strlen(line->content);
         if (
-          calculatedContentLength > 29 &&
+          calculatedContentLength > noNewlineStringLength &&
           !strcmp(
-              &line->content[calculatedContentLength - 29],
+              &line->content[calculatedContentLength - noNewlineStringLength],
               "\n\\ No newline at end of file\n"
         )) {
           EOFFlag = true;
@@ -96,10 +96,10 @@ PatchData *createFromRaw(git_patch *raw) {
       storeLine->content_offset = line->content_offset;
       char * transferContent;
       if (EOFFlag) {
-        transferContent = (char *)malloc(storeLine->content_len + 30);
+        transferContent = (char *)malloc(storeLine->content_len + noNewlineStringLength + 1);
         memcpy(transferContent, line->content, storeLine->content_len);
-        memcpy(transferContent + storeLine->content_len, "\n\\ No newline at end of file\n", 29);
-        transferContent[storeLine->content_len + 29] = '\0';
+        memcpy(transferContent + storeLine->content_len, "\n\\ No newline at end of file\n", noNewlineStringLength);
+        transferContent[storeLine->content_len + noNewlineStringLength] = '\0';
       } else {
         transferContent = (char *)malloc(storeLine->content_len + 1);
         memcpy(transferContent, line->content, storeLine->content_len);
