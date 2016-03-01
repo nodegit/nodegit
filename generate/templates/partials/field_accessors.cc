@@ -87,7 +87,8 @@
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
         {% endeach %}
       ) {
-        {{ field.name|titleCase }}Baton* baton = new {{ field.name|titleCase }}Baton();
+        {{ field.name|titleCase }}Baton* baton =
+          new {{ field.name|titleCase }}Baton({{ field.return.noResults }});
 
         {% each field.args|argsInfo as arg %}
           baton->{{ arg.name }} = {{ arg.name }};
@@ -106,7 +107,7 @@
 
         if (instance->{{ field.name }}->IsEmpty()) {
           {% if field.return.type == "int" %}
-            baton->result = {{ field.return.noResults }}; // no results acquired
+            baton->result = baton->defaultResult; // no results acquired
           {% endif %}
 
           baton->done = true;
@@ -172,12 +173,12 @@
               baton->result = (int)result->ToNumber()->Value();
             }
             else {
-              baton->result = {{ field.return.noResults }};
+              baton->result = baton->defaultResult;
             }
             {% endif %}
           }
           else {
-            baton->result = {{ field.return.noResults }};
+            baton->result = baton->defaultResult;
           }
         {% endeach %}
         baton->done = true;
@@ -205,12 +206,12 @@
                 baton->result = (int)result->ToNumber()->Value();
               }
               else{
-                baton->result = {{ field.return.noResults }};
+                baton->result = baton->defaultResult;
               }
               {% endif %}
             }
             else {
-              baton->result = {{ field.return.noResults }};
+              baton->result = baton->defaultResult;
             }
           {% endeach %}
         }

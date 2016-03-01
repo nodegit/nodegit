@@ -68,6 +68,10 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
       {% each arg.args|argsInfo as cbArg %}
       {{ cbArg.cType }} {{ cbArg.name }};
       {% endeach %}
+
+      {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton(const {{ arg.return.type }} &defaultResult)
+        : AsyncBatonWithResult<{{ arg.return.type }}>(defaultResult) {
+        }
     };
           {% endif %}
         {% endeach %}

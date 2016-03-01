@@ -6,7 +6,8 @@
     {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
   {% endeach %}
 ) {
-  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton();
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton =
+    new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton({{ cbFunction.return.noResults }});
 
   {% each cbFunction.args|argsInfo as arg %}
     baton->{{ arg.name }} = {{ arg.name }};
@@ -78,12 +79,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
         baton->result = (int)result->ToNumber()->Value();
       }
       else {
-        baton->result = {{ cbFunction.return.noResults }};
+        baton->result = baton->defaultResult;
       }
       {% endif %}
     }
     else {
-      baton->result = {{ cbFunction.return.noResults }};
+      baton->result = baton->defaultResult;
     }
   {% endeach %}
 
@@ -112,12 +113,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseComp
           baton->result = (int)result->ToNumber()->Value();
         }
         else {
-          baton->result = {{ cbFunction.return.noResults }};
+          baton->result = baton->defaultResult;
         }
         {% endif %}
       }
       else {
-        baton->result = {{ cbFunction.return.noResults }};
+        baton->result = baton->defaultResult;
       }
     {% endeach %}
   }

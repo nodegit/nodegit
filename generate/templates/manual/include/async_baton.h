@@ -19,6 +19,11 @@ struct AsyncBaton {
 template<typename ResultT>
 struct AsyncBatonWithResult : public AsyncBaton {
   ResultT result;
+  ResultT defaultResult; // result returned if the callback doesn't return anything valid
+
+  AsyncBatonWithResult(const ResultT &defaultResult)
+    : defaultResult(defaultResult) {
+  }
 
   ResultT ExecuteAsync(uv_async_cb asyncCallback) {
     result = 0;

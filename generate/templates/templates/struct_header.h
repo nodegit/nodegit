@@ -52,6 +52,10 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name}};
             {% endeach %}
+
+            {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
+              : AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {
+              }
           };
         {% endif %}
       {% endif %}
