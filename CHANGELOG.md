@@ -1,11 +1,22 @@
 # Change Log
 
+## [0.11.6](https://github.com/nodegit/nodegit/releases/tag/v0.11.6) (2016-03-01)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.5...v0.11.6)
+
+- Added `Repository#checkoutRef` [PR #891](https://github.com/nodegit/nodegit/pull/891)
+- `Repository#createCommitOnHead` no longer dies if the repo is empty [PR #927](https://github.com/nodegit/nodegit/pull/927)
+- Fixed memory leak in `Patch#convenientFromDiff` [PR #930](https://github.com/nodegit/nodegit/pull/930)
+- Generated files now have a header comment indicating that they are generated [PR #924](https://github.com/nodegit/nodegit/pull/924)
+- Fixed http parsing errors in Node 5.6 [PR #931](https://github.com/nodegit/nodegit/pull/931)
+- Fixed `Tree#walk` not returning the correct entries on `end` [PR #929](https://github.com/nodegit/nodegit/pull/929)
+
 ## [0.11.5](https://github.com/nodegit/nodegit/releases/tag/v0.11.5) (2016-02-25)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.4...v0.11.5)
 
 - Fixed crash when calculating a diff [PR #922](https://github.com/nodegit/nodegit/pull/922)
-- Fixed an issue with return values getting randomly corrupted [PR #923](https://github.com/nodegit/nodegit/pull/923)
+- Fixed an issue with return values getting randomly corrupted [PR #923](https://github.com/nodegit/nodegit/pull/923))
 
 ## [0.11.4](https://github.com/nodegit/nodegit/releases/tag/v0.11.4) (2016-02-24)
 
