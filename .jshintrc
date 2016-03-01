@@ -18,7 +18,8 @@
   "maxlen": 80,
   "node": true,
   "predef": [
-    "Promise"
+    "Promise",
+    "Set"
   ],
   "proto": true,
   "quotmark": "double",
