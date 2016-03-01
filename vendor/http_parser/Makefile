@@ -19,19 +19,7 @@
 # IN THE SOFTWARE.
 
 PLATFORM ?= $(shell sh -c 'uname -s | tr "[A-Z]" "[a-z]"')
-HELPER ?=
-BINEXT ?=
-ifeq (darwin,$(PLATFORM))
-SONAME ?= libhttp_parser.2.6.1.dylib
-SOEXT ?= dylib
-else ifeq (wine,$(PLATFORM))
-CC = winegcc
-BINEXT = .exe.so
-HELPER = wine
-else
-SONAME ?= libhttp_parser.so.2.6.1
-SOEXT ?= so
-endif
+SONAME ?= libhttp_parser.so.2.5.0
 
 CC?=gcc
 AR?=ar
@@ -65,8 +53,8 @@ LDFLAGS_LIB += -Wl,-soname=$(SONAME)
 endif
 
 test: test_g test_fast
-	$(HELPER) ./test_g$(BINEXT)
-	$(HELPER) ./test_fast$(BINEXT)
+	./test_g
+	./test_fast
 
 test_g: http_parser_g.o test_g.o
 	$(CC) $(CFLAGS_DEBUG) $(LDFLAGS) http_parser_g.o test_g.o -o $@
@@ -93,7 +81,7 @@ http_parser.o: http_parser.c http_parser.h Makefile
 	$(CC) $(CPPFLAGS_FAST) $(CFLAGS_FAST) -c http_parser.c
 
 test-run-timed: test_fast
-	while(true) do time $(HELPER) ./test_fast$(BINEXT) > /dev/null; done
+	while(true) do time ./test_fast > /dev/null; done
 
 test-valgrind: test_g
 	valgrind ./test_g
@@ -114,10 +102,10 @@ url_parser_g: http_parser_g.o contrib/url_parser.c
 	$(CC) $(CPPFLAGS_DEBUG) $(CFLAGS_DEBUG) $^ -o $@
 
 parsertrace: http_parser.o contrib/parsertrace.c
-	$(CC) $(CPPFLAGS_FAST) $(CFLAGS_FAST) $^ -o parsertrace$(BINEXT)
+	$(CC) $(CPPFLAGS_FAST) $(CFLAGS_FAST) $^ -o parsertrace
 
 parsertrace_g: http_parser_g.o contrib/parsertrace.c
-	$(CC) $(CPPFLAGS_DEBUG) $(CFLAGS_DEBUG) $^ -o parsertrace_g$(BINEXT)
+	$(CC) $(CPPFLAGS_DEBUG) $(CFLAGS_DEBUG) $^ -o parsertrace_g
 
 tags: http_parser.c http_parser.h test.c
 	ctags $^
@@ -125,12 +113,12 @@ tags: http_parser.c http_parser.h test.c
 install: library
 	$(INSTALL) -D  http_parser.h $(INCLUDEDIR)/http_parser.h
 	$(INSTALL) -D $(SONAME) $(LIBDIR)/$(SONAME)
-	ln -s $(LIBDIR)/$(SONAME) $(LIBDIR)/libhttp_parser.$(SOEXT)
+	ln -s $(LIBDIR)/$(SONAME) $(LIBDIR)/libhttp_parser.so
 
 install-strip: library
 	$(INSTALL) -D  http_parser.h $(INCLUDEDIR)/http_parser.h
 	$(INSTALL) -D -s $(SONAME) $(LIBDIR)/$(SONAME)
-	ln -s $(LIBDIR)/$(SONAME) $(LIBDIR)/libhttp_parser.$(SOEXT)
+	ln -s $(LIBDIR)/$(SONAME) $(LIBDIR)/libhttp_parser.so
 
 uninstall:
 	rm $(INCLUDEDIR)/http_parser.h
@@ -140,8 +128,7 @@ uninstall:
 clean:
 	rm -f *.o *.a tags test test_fast test_g \
 		http_parser.tar libhttp_parser.so.* \
-		url_parser url_parser_g parsertrace parsertrace_g \
-		*.exe *.exe.so
+		url_parser url_parser_g parsertrace parsertrace_g
 
 contrib/url_parser.c:	http_parser.h
 contrib/parsertrace.c:	http_parser.h

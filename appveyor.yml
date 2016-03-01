@@ -31,7 +31,7 @@ environment:
     - nodejs_version: "0.12"
     # Node.js
     - nodejs_version: "4.1"
-    - nodejs_version: "5.6"
+    - nodejs_version: "5.0"
 
 matrix:
   fast_finish: true
