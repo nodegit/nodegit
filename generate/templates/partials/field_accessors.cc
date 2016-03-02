@@ -11,8 +11,8 @@
         info.GetReturnValue().Set(Nan::New(wrapper->{{ field.name }}));
 
       {% elsif field.isCallbackFunction %}
-        if (wrapper->{{field.name}} != NULL) {
-          info.GetReturnValue().Set(wrapper->{{ field.name }}->GetFunction());
+        if (wrapper->{{field.name}}.HasCallback()) {
+          info.GetReturnValue().Set(wrapper->{{ field.name }}.GetCallback()->GetFunction());
         } else {
           info.GetReturnValue().SetUndefined();
         }
@@ -47,16 +47,12 @@
         wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert({{ field.name }}->ToObject()){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }}->ToObject())->GetValue(){% endif %};
 
       {% elsif field.isCallbackFunction %}
-        if (wrapper->{{ field.name }} != NULL) {
-          delete wrapper->{{ field.name }};
-        }
-
         if (value->IsFunction()) {
           if (!wrapper->raw->{{ field.name }}) {
             wrapper->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
           }
 
-          wrapper->{{ field.name }} = new Nan::Callback(value.As<Function>());
+          wrapper->{{ field.name }}.SetCallback(new Nan::Callback(value.As<Function>()));
         }
 
       {% elsif field.payloadFor %}
@@ -105,7 +101,7 @@
           {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
         {% endeach %});
 
-        if (instance->{{ field.name }}->IsEmpty()) {
+        if (instance->{{ field.name }}.GetCallback()->IsEmpty()) {
           {% if field.return.type == "int" %}
             baton->result = baton->defaultResult; // no results acquired
           {% endif %}
@@ -149,7 +145,7 @@
         };
 
         Nan::TryCatch tryCatch;
-        Local<v8::Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
+        Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
 
         uv_close((uv_handle_t*) &baton->req, NULL);
 

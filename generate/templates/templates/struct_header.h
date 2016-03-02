@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "async_baton.h"
+#include "callback_wrapper.h"
 
 extern "C" {
   #include <git2.h>
@@ -75,7 +76,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
           {% if field.isLibgitType %}
             Nan::Persistent<Object> {{ field.name }};
           {% elsif field.isCallbackFunction %}
-            Nan::Callback* {{ field.name }};
+            CallbackWrapper {{ field.name }};
           {% elsif field.payloadFor %}
             Nan::Persistent<Value> {{ field.name }};
           {% endif %}

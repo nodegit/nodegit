@@ -9,9 +9,31 @@
 using namespace v8;
 using namespace node;
 
-struct CallbackWrapper {
+class CallbackWrapper {
   Nan::Callback* jsCallback;
-  void * payload;
+
+public:
+  CallbackWrapper() {
+    jsCallback = NULL;
+  }
+  ~CallbackWrapper() {
+    SetCallback(NULL);
+  }
+
+  bool HasCallback() {
+    return jsCallback != NULL;
+  }
+
+  Nan::Callback* GetCallback() {
+    return jsCallback;
+  }
+
+  void SetCallback(Nan::Callback* callback) {
+    if(jsCallback) {
+      delete jsCallback;
+    }
+    jsCallback = callback;
+  }
 };
 
 #endif
