@@ -9,6 +9,7 @@ var writeFile = promisify(function(filename, data, callback) {
 });
 
 describe("Index", function() {
+  var IndexUtils = require("../utils/index_setup");
   var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
@@ -305,6 +306,54 @@ describe("Index", function() {
           }));
 
         return Promise.all(promises);
+      });
+  });
+
+  it("can add a conflict to the index", function() {
+    var repo;
+    var repoPath = path.join(__dirname, "..", "repos", "index");
+    var ourBranchName = "ours";
+    var theirBranchName = "theirs";
+    var fileName = "testFile.txt";
+    var ancestorIndexEntry;
+    var ourIndexEntry;
+    var theirIndexEntry;
+
+    return RepoUtils.createRepository(repoPath)
+      .then(function(_repo) {
+        repo = _repo;
+        return IndexUtils.createConflict(
+          repo,
+          ourBranchName,
+          theirBranchName,
+          fileName
+        );
+      })
+      .then(function(indexEntries) {
+        // Store all indexEntries for conflict
+        ancestorIndexEntry = indexEntries.ancestor_out;
+        ourIndexEntry = indexEntries.our_out;
+        theirIndexEntry = indexEntries.their_out;
+
+        // Stage conflicted file
+        return RepoUtils.addFileToIndex(repo, fileName);
+      })
+      .then(function() {
+        return repo.openIndex();
+      })
+      .then(function(index) {
+        assert.ok(!index.hasConflicts());
+        return index.conflictAdd(
+          ancestorIndexEntry,
+          ourIndexEntry,
+          theirIndexEntry
+        );
+      })
+      .then(function() {
+        return repo.openIndex();
+      })
+      .then(function(index) {
+        assert(index.hasConflicts());
       });
   });
 });
