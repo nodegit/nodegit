@@ -11,6 +11,7 @@ extern "C" {
 #include "../include/lock_master.h"
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
+#include "../include/functions/sleep_for_ms.h"
 
 {% each dependencies as dependency %}
   #include "{{ dependency }}"

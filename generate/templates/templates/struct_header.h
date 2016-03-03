@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "async_baton.h"
-#include "callback_wrapper.h"
 
 extern "C" {
   #include <git2.h>
@@ -49,17 +48,13 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
           static void {{ field.name }}_async(uv_async_t* req, int status);
           static void {{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
-          struct {{ field.name|titleCase }}Baton : public AsyncBatonWithResult<{{ field.return.type }}> {
+          struct {{ field.name|titleCase }}Baton : public AsyncBaton {
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name}};
             {% endeach %}
 
-            {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
-              : AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {
-              }
+            {{ field.return.type }} result;
           };
-          static {{ cppClassName }} * {{ field.name }}_getInstanceFromBaton (
-            {{ field.name|titleCase }}Baton *baton);
         {% endif %}
       {% endif %}
     {% endeach %}
@@ -78,7 +73,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
           {% if field.isLibgitType %}
             Nan::Persistent<Object> {{ field.name }};
           {% elsif field.isCallbackFunction %}
-            CallbackWrapper {{ field.name }};
+            Nan::Callback* {{ field.name }};
           {% elsif field.payloadFor %}
             Nan::Persistent<Value> {{ field.name }};
           {% endif %}

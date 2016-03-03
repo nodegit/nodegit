@@ -6,14 +6,28 @@
     {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
   {% endeach %}
 ) {
-  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton =
-    new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton({{ cbFunction.return.noResults }});
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton();
 
   {% each cbFunction.args|argsInfo as arg %}
     baton->{{ arg.name }} = {{ arg.name }};
   {% endeach %}
 
-  return baton->ExecuteAsync((uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  baton->result = 0;
+  baton->req.data = baton;
+  baton->done = false;
+
+  uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  {
+    LockMaster::TemporaryUnlock temporaryUnlock;
+
+    uv_async_send(&baton->req);
+
+    while(!baton->done) {
+      sleep_for_ms(1);
+    }
+  }
+
+  return baton->result;
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_async_t* req, int status) {
@@ -79,12 +93,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
         baton->result = (int)result->ToNumber()->Value();
       }
       else {
-        baton->result = baton->defaultResult;
+        baton->result = {{ cbFunction.return.noResults }};
       }
       {% endif %}
     }
     else {
-      baton->result = baton->defaultResult;
+      baton->result = {{ cbFunction.return.noResults }};
     }
   {% endeach %}
 
@@ -113,12 +127,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseComp
           baton->result = (int)result->ToNumber()->Value();
         }
         else {
-          baton->result = baton->defaultResult;
+          baton->result = {{ cbFunction.return.noResults }};
         }
         {% endif %}
       }
       else {
-        baton->result = baton->defaultResult;
+        baton->result = {{ cbFunction.return.noResults }};
       }
     {% endeach %}
   }
