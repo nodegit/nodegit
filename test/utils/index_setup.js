@@ -45,18 +45,14 @@ var IndexSetup = {
         return repository.getCommit(commitOid).then(function(commit) {
           ourCommit = commit;
         }).then(function() {
-          console.log("after creating base commit");
           return repository.createBranch(ourBranchName, commitOid)
             .then(function(branch) {
-              console.log("after creating our branch");
               ourBranch = branch;
               return repository.createBranch(theirBranchName, commitOid);
             });
         });
       })
       .then(function(branch) {
-        console.log("after creating their commit");
-
         theirBranch = branch;
         return fse.writeFile(path.join(repository.workdir(), fileName),
           baseFileContent + theirFileContent);
