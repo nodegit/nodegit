@@ -64,12 +64,14 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
     static void {{ function.cppFunctionName }}_{{ arg.name }}_async(uv_async_t* req, int status);
     static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
-    struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : AsyncBaton {
+    struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : public AsyncBatonWithResult<{{ arg.return.type }}> {
       {% each arg.args|argsInfo as cbArg %}
       {{ cbArg.cType }} {{ cbArg.name }};
       {% endeach %}
 
-      {{ arg.return.type }} result;
+      {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton(const {{ arg.return.type }} &defaultResult)
+        : AsyncBatonWithResult<{{ arg.return.type }}>(defaultResult) {
+        }
     };
           {% endif %}
         {% endeach %}
