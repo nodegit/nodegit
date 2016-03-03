@@ -31,6 +31,7 @@
     }
 
     NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
+      Nan::HandleScope scope;
 
       {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
 
@@ -47,12 +48,35 @@
         wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert({{ field.name }}->ToObject()){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }}->ToObject())->GetValue(){% endif %};
 
       {% elsif field.isCallbackFunction %}
+        Nan::Callback *callback = NULL;
+        int throttle = {%if field.return.throttle %}{{ field.return.throttle }}{%else%}0{%endif%};
+
         if (value->IsFunction()) {
+          callback = new Nan::Callback(value.As<Function>());
+        } else if (value->IsObject()) {
+          Local<Object> object = value.As<Object>();
+          Local<String> callbackKey;
+          Nan::MaybeLocal<Value> maybeObjectCallback = Nan::Get(object, Nan::New("callback").ToLocalChecked());
+          if (!maybeObjectCallback.IsEmpty()) {
+            Local<Value> objectCallback = maybeObjectCallback.ToLocalChecked();
+            if (objectCallback->IsFunction()) {
+              callback = new Nan::Callback(objectCallback.As<Function>());
+              Nan::MaybeLocal<Value> maybeObjectThrottle = Nan::Get(object, Nan::New("throttle").ToLocalChecked());
+              if(!maybeObjectThrottle.IsEmpty()) {
+                Local<Value> objectThrottle = maybeObjectThrottle.ToLocalChecked();
+                if (objectThrottle->IsNumber()) {
+                  throttle = (int)objectThrottle.As<Number>()->Value();
+                }
+              }
+            }
+          }
+        }
+        if (callback) {
           if (!wrapper->raw->{{ field.name }}) {
             wrapper->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
           }
 
-          wrapper->{{ field.name }}.SetCallback(new Nan::Callback(value.As<Function>()));
+          wrapper->{{ field.name }}.SetCallback(callback, throttle);
         }
 
       {% elsif field.payloadFor %}
@@ -78,6 +102,12 @@
     }
 
     {% if field.isCallbackFunction %}
+      {{ cppClassName }}* {{ cppClassName }}::{{ field.name }}_getInstanceFromBaton({{ field.name|titleCase }}Baton* baton) {
+        return static_cast<{{ cppClassName }}*>(baton->{% each field.args|argsInfo as arg %}
+          {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
+        {% endeach %});
+      }
+
       {{ field.return.type }} {{ cppClassName }}::{{ field.name }}_cppCallback (
         {% each field.args|argsInfo as arg %}
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
@@ -90,6 +120,12 @@
           baton->{{ arg.name }} = {{ arg.name }};
         {% endeach %}
 
+        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
+
+        if (instance->{{ field.name }}.WillBeThrottled()) {
+          return baton->defaultResult;
+        }
+
         return baton->ExecuteAsync((uv_async_cb) {{ field.name }}_async);
       }
 
@@ -97,9 +133,7 @@
         Nan::HandleScope scope;
 
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
-        {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each field.args|argsInfo as arg %}
-          {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
-        {% endeach %});
+        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
 
         if (instance->{{ field.name }}.GetCallback()->IsEmpty()) {
           {% if field.return.type == "int" %}

@@ -58,6 +58,8 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
               : AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {
               }
           };
+          static {{ cppClassName }} * {{ field.name }}_getInstanceFromBaton (
+            {{ field.name|titleCase }}Baton *baton);
         {% endif %}
       {% endif %}
     {% endeach %}
