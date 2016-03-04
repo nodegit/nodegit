@@ -8,6 +8,7 @@ describe("Diff", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Diff = NodeGit.Diff;
+  var Blob = NodeGit.Blob;
 
   var reposPath = local("../repos/workdir");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
@@ -217,6 +218,33 @@ describe("Diff", function() {
             );
             done();
           });
+      });
+  });
+
+  it("can diff the contents of a file to a string with unicode characters",
+    function(done) {
+    var evilString = "Unicode’s fun!\nAnd it’s good for you!\n";
+    var buffer = new Buffer(evilString);
+    var oid = Blob.createFromBuffer(this.repository, buffer, buffer.length);
+    Blob.lookup(this.repository, oid)
+      .then(function(blob) {
+        blob.repo = this.repository;
+        return Diff.blobToBuffer(
+          blob,
+          null,
+          evilString,
+          null,
+          null,
+          null,
+          null,
+          function(delta, hunk, payload) {
+            assert.fail(
+              "There aren't any changes so this shouldn't be called.");
+            done();
+          });
+      })
+      .then(function() {
+        done();
       });
   });
 
