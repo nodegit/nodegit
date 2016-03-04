@@ -311,7 +311,7 @@ describe("Index", function() {
 
   it("can add a conflict to the index", function() {
     var repo;
-    var repoPath = path.join(__dirname, "..", "repos", "index");
+    var repoPath = local("../repos/index");
     var ourBranchName = "ours";
     var theirBranchName = "theirs";
     var fileName = "testFile.txt";
@@ -328,6 +328,10 @@ describe("Index", function() {
           theirBranchName,
           fileName
         );
+      })
+      .then(function(index) {
+        assert.ok(index.hasConflicts());
+        return index.conflictGet(fileName);
       })
       .then(function(indexEntries) {
         // Store all indexEntries for conflict
