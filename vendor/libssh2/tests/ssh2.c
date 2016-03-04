@@ -39,16 +39,22 @@ int main(int argc, char *argv[])
     char *userauthlist;
     LIBSSH2_SESSION *session;
     LIBSSH2_CHANNEL *channel;
-#ifdef WIN32
-    WSADATA wsadata;
-
-    WSAStartup(MAKEWORD(2,0), &wsadata);
-#endif
     const char *pubkeyfile="etc/user.pub";
     const char *privkeyfile="etc/user";
     const char *username="username";
     const char *password="password";
     int ec = 1;
+
+#ifdef WIN32
+    WSADATA wsadata;
+    int err;
+
+    err = WSAStartup(MAKEWORD(2,0), &wsadata);
+    if (err != 0) {
+        fprintf(stderr, "WSAStartup failed with error: %d\n", err);
+        return -1;
+    }
+#endif
 
     (void)argc;
     (void)argv;
@@ -74,7 +80,7 @@ int main(int argc, char *argv[])
     if (connect(sock, (struct sockaddr*)(&sin),
                 sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
-        return -1;
+        return 1;
     }
 
     /* Create a session instance and start it up
@@ -83,7 +89,7 @@ int main(int argc, char *argv[])
     session = libssh2_session_init();
     if (libssh2_session_startup(session, sock)) {
         fprintf(stderr, "Failure establishing SSH session\n");
-        return -1;
+        return 1;
     }
 
     /* At this point we havn't authenticated,

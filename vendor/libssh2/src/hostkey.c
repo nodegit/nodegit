@@ -1,5 +1,5 @@
 /* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
- * Copyright (c) 2009 by Daniel Stenberg
+ * Copyright (c) 2009-2014 by Daniel Stenberg
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -131,6 +131,38 @@ hostkey_method_ssh_rsa_initPEM(LIBSSH2_SESSION * session,
 }
 
 /*
+ * hostkey_method_ssh_rsa_initPEMFromMemory
+ *
+ * Load a Private Key from a memory
+ */
+static int
+hostkey_method_ssh_rsa_initPEMFromMemory(LIBSSH2_SESSION * session,
+                                         const char *privkeyfiledata,
+                                         size_t privkeyfiledata_len,
+                                         unsigned const char *passphrase,
+                                         void **abstract)
+{
+    libssh2_rsa_ctx *rsactx;
+    int ret;
+
+    if (*abstract) {
+        hostkey_method_ssh_rsa_dtor(session, abstract);
+        *abstract = NULL;
+    }
+
+    ret = _libssh2_rsa_new_private_frommemory(&rsactx, session,
+                                              privkeyfiledata,
+                                              privkeyfiledata_len, passphrase);
+    if (ret) {
+        return -1;
+    }
+
+    *abstract = rsactx;
+
+    return 0;
+}
+
+/*
  * hostkey_method_ssh_rsa_sign
  *
  * Verify signature created by remote
@@ -208,6 +240,7 @@ static const LIBSSH2_HOSTKEY_METHOD hostkey_method_ssh_rsa = {
     MD5_DIGEST_LENGTH,
     hostkey_method_ssh_rsa_init,
     hostkey_method_ssh_rsa_initPEM,
+    hostkey_method_ssh_rsa_initPEMFromMemory,
     hostkey_method_ssh_rsa_sig_verify,
     hostkey_method_ssh_rsa_signv,
     NULL,                       /* encrypt */
@@ -306,6 +339,38 @@ hostkey_method_ssh_dss_initPEM(LIBSSH2_SESSION * session,
 }
 
 /*
+ * hostkey_method_ssh_dss_initPEMFromMemory
+ *
+ * Load a Private Key from memory
+ */
+static int
+hostkey_method_ssh_dss_initPEMFromMemory(LIBSSH2_SESSION * session,
+                                         const char *privkeyfiledata,
+                                         size_t privkeyfiledata_len,
+                                         unsigned const char *passphrase,
+                                         void **abstract)
+{
+    libssh2_dsa_ctx *dsactx;
+    int ret;
+
+    if (*abstract) {
+        hostkey_method_ssh_dss_dtor(session, abstract);
+        *abstract = NULL;
+    }
+
+    ret = _libssh2_dsa_new_private_frommemory(&dsactx, session,
+                                              privkeyfiledata,
+                                              privkeyfiledata_len, passphrase);
+    if (ret) {
+        return -1;
+    }
+
+    *abstract = dsactx;
+
+    return 0;
+}
+
+/*
  * libssh2_hostkey_method_ssh_dss_sign
  *
  * Verify signature created by remote
@@ -347,13 +412,12 @@ hostkey_method_ssh_dss_signv(LIBSSH2_SESSION * session,
     libssh2_sha1_ctx ctx;
     int i;
 
-    *signature = LIBSSH2_ALLOC(session, 2 * SHA_DIGEST_LENGTH);
+    *signature = LIBSSH2_CALLOC(session, 2 * SHA_DIGEST_LENGTH);
     if (!*signature) {
         return -1;
     }
 
     *signature_len = 2 * SHA_DIGEST_LENGTH;
-    memset(*signature, 0, 2 * SHA_DIGEST_LENGTH);
 
     libssh2_sha1_init(&ctx);
     for(i = 0; i < veccount; i++) {
@@ -392,6 +456,7 @@ static const LIBSSH2_HOSTKEY_METHOD hostkey_method_ssh_dss = {
     MD5_DIGEST_LENGTH,
     hostkey_method_ssh_dss_init,
     hostkey_method_ssh_dss_initPEM,
+    hostkey_method_ssh_dss_initPEMFromMemory,
     hostkey_method_ssh_dss_sig_verify,
     hostkey_method_ssh_dss_signv,
     NULL,                       /* encrypt */
@@ -435,7 +500,9 @@ libssh2_hostkey_hash(LIBSSH2_SESSION * session, int hash_type)
         break;
 #endif /* LIBSSH2_MD5 */
     case LIBSSH2_HOSTKEY_HASH_SHA1:
-        return (char *) session->server_hostkey_sha1;
+        return (session->server_hostkey_sha1_valid)
+          ? (char *) session->server_hostkey_sha1
+          : NULL;
         break;
     default:
         return NULL;

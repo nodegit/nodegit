@@ -7,6 +7,7 @@ libssh2_userauth_publickey_fromfile - authenticate a session with a public key, 
 .nf
 int libssh2_userauth_publickey_fromfile_ex(LIBSSH2_SESSION *session,
                                            const char *username,
+                                           unsigned int ousername_len,
                                            const char *publickey,
                                            const char *privatekey,
                                            const char *passphrase);

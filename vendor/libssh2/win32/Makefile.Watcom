@@ -64,22 +64,24 @@ CFLAGS += -d_WIN32_WINNT=0x0501 -dENABLE_IPV6
 !ifdef %zlib_root
 ZLIB_ROOT = $(%zlib_root)
 !else
-ZLIB_ROOT = ..\..\zlib-1.2.7
+ZLIB_ROOT = ..\..\zlib-1.2.8
 !endif
 
 !ifdef %openssl_root
 OPENSSL_ROOT = $(%openssl_root)
 !else
-OPENSSL_ROOT = ..\..\openssl-0.9.8x
+OPENSSL_ROOT = ..\..\openssl-0.9.8zc
 !endif
 
-#!ifdef %use_zlib
-CFLAGS += -dHAVE_ZLIB_H -dHAVE_LIBZ -I$(ZLIB_ROOT)
-#!endif
+!ifdef %use_zlib
+CFLAGS += -DLIBSSH2_HAVE_ZLIB -I$(ZLIB_ROOT)
+!endif
 
-#!ifdef %use_ssl
-CFLAGS += -wcd=138 -dUSE_OPENSSL -dUSE_SSLEAY -I$(OPENSSL_ROOT)\inc32
-#!endif
+!ifdef %use_wincng
+CFLAGS += -DLIBSSH2_WINCNG
+!else
+CFLAGS += -wcd=138 -dLIBSSH2_OPENSSL -I$(OPENSSL_ROOT)\inc32
+!endif
 
 !ifdef %use_watt32
 CFLAGS += -dUSE_WATT32 -I$(%watt_root)\inc
@@ -93,6 +95,11 @@ LIB_ARG  = $(OBJ_BASE)\stat\wlib.arg
 !ifndef %MAKEFLAGS
 !error You MUST call wmake with the -u switch!
 !else
+!ifdef %use_wincng
+!include ..\Makefile.WinCNG.inc
+!else
+!include ..\Makefile.OpenSSL.inc
+!endif
 !include ..\Makefile.inc
 !endif
 
@@ -165,12 +172,16 @@ $(LINK_ARG): $(__MAKEFILES__)
 !else
 	@%append $^@ library ws2_32.lib
 !endif
-#!ifdef %use_zlib
-	@%append $^@ library $(ZLIB_ROOT)\zlib.lib
-#!endif
-#!ifdef %use_ssl
-	@%append $^@ library $(OPENSSL_ROOT)\out32\libeay32.lib, $(OPENSSL_ROOT)\out32\ssleay32.lib
-#!endif
+!ifdef %use_zlib
+	@%append $^@ library '$(ZLIB_ROOT)\zlib.lib'
+!endif
+!ifdef %use_wincng
+	@%append $^@ library bcrypt.lib
+	@%append $^@ library crypt32.lib
+!else
+	@%append $^@ library '$(OPENSSL_ROOT)\out32\libeay32.lib'
+	@%append $^@ library '$(OPENSSL_ROOT)\out32\ssleay32.lib'
+!endif
 
 $(LIB_ARG): $(__MAKEFILES__)
 	%create $^@

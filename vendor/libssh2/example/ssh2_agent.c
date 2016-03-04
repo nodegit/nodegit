@@ -49,10 +49,16 @@ int main(int argc, char *argv[])
     LIBSSH2_CHANNEL *channel;
     LIBSSH2_AGENT *agent = NULL;
     struct libssh2_agent_publickey *identity, *prev_identity = NULL;
+
 #ifdef WIN32
     WSADATA wsadata;
+    int err;
 
-    WSAStartup(MAKEWORD(2,0), &wsadata);
+    err = WSAStartup(MAKEWORD(2,0), &wsadata);
+    if (err != 0) {
+        fprintf(stderr, "WSAStartup failed with error: %d\n", err);
+        return 1;
+    }
 #endif
 
     if (argc > 1) {

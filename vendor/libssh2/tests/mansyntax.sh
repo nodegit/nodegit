@@ -6,14 +6,15 @@ set -e
 # Run syntax checks for all manpages in the documentation tree.
 #
 
-srcdir=${srcdir:-$PWD}
+srcdir="`cd $(dirname $0);pwd`"
 mandir=${srcdir}/../docs
 
 #
 # Only test if suitable man is available
 #
 if ! man --help | grep -q warnings; then
-  exit 77
+  echo "man version not suitable, skipping tests"
+  exit 0
 fi
 
 ec=0

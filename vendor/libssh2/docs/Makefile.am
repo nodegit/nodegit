@@ -1,6 +1,7 @@
 # $Id: Makefile.am,v 1.37 2009/03/26 15:41:15 bagder Exp $
 
-EXTRA_DIST = template.3 BINDINGS
+EXTRA_DIST = template.3 BINDINGS INSTALL_AUTOTOOLS INSTALL_CMAKE HACKING TODO	\
+ AUTHORS
 
 dist_man_MANS = \
 	libssh2_agent_connect.3 \
@@ -102,6 +103,7 @@ dist_man_MANS = \
 	libssh2_session_free.3 \
 	libssh2_session_get_blocking.3 \
 	libssh2_session_get_timeout.3 \
+	libssh2_session_handshake.3 \
 	libssh2_session_hostkey.3 \
 	libssh2_session_init.3 \
 	libssh2_session_init_ex.3 \
@@ -120,6 +122,7 @@ dist_man_MANS = \
 	libssh2_sftp_fstat.3 \
 	libssh2_sftp_fstat_ex.3 \
 	libssh2_sftp_fstatvfs.3 \
+	libssh2_sftp_fsync.3 \
 	libssh2_sftp_get_channel.3 \
 	libssh2_sftp_init.3 \
 	libssh2_sftp_last_error.3 \
@@ -166,4 +169,5 @@ dist_man_MANS = \
 	libssh2_userauth_publickey.3 \
 	libssh2_userauth_publickey_fromfile.3 \
 	libssh2_userauth_publickey_fromfile_ex.3 \
+	libssh2_userauth_publickey_frommemory.3 \
 	libssh2_version.3

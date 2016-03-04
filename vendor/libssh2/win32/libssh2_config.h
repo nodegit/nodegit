@@ -16,8 +16,9 @@
 #define HAVE_INTTYPES_H
 #define HAVE_SYS_TIME_H
 #define HAVE_GETTIMEOFDAY
-#endif
+#endif /* __MINGW32__ */
 
+#define HAVE_LIBCRYPT32
 #define HAVE_WINSOCK2_H
 #define HAVE_IOCTLSOCKET
 #define HAVE_SELECT
@@ -31,8 +32,10 @@
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
 #else
+#ifndef __MINGW32__
 #define strncasecmp strnicmp
 #define strcasecmp stricmp
+#endif /* __MINGW32__ */
 #endif /* _MSC_VER */
 
 /* Enable newer diffie-hellman-group-exchange-sha1 syntax */

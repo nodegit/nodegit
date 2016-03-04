@@ -39,12 +39,14 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#ifdef HAVE_GETTIMEOFDAY
 /* diff in ms */
 static long tvdiff(struct timeval newer, struct timeval older)
 {
   return (newer.tv_sec-older.tv_sec)*1000+
       (newer.tv_usec-older.tv_usec)/1000;
 }
+#endif
 
 static int waitsocket(int socket_fd, LIBSSH2_SESSION *session)
 {
@@ -86,19 +88,26 @@ int main(int argc, char *argv[])
     const char *username="username";
     const char *password="password";
     const char *sftppath="/tmp/TEST";
+#ifdef HAVE_GETTIMEOFDAY
     struct timeval start;
     struct timeval end;
+    long time_ms;
+#endif
     int rc;
     int total = 0;
-    long time_ms;
     int spin = 0;
     LIBSSH2_SFTP *sftp_session;
     LIBSSH2_SFTP_HANDLE *sftp_handle;
 
 #ifdef WIN32
     WSADATA wsadata;
+    int err;
 
-    WSAStartup(MAKEWORD(2,0), &wsadata);
+    err = WSAStartup(MAKEWORD(2,0), &wsadata);
+    if (err != 0) {
+        fprintf(stderr, "WSAStartup failed with error: %d\n", err);
+        return 1;
+    }
 #endif
 
     if (argc > 1) {
@@ -146,7 +155,9 @@ int main(int argc, char *argv[])
     /* Since we have set non-blocking, tell libssh2 we are non-blocking */
     libssh2_session_set_blocking(session, 0);
 
+#ifdef HAVE_GETTIMEOFDAY
     gettimeofday(&start, NULL);
+#endif
 
     /* ... start it up. This will trade welcome banners, exchange keys,
         * and setup crypto, compression, and MAC layers
@@ -249,10 +260,14 @@ int main(int argc, char *argv[])
         }
     } while (1);
 
+#ifdef HAVE_GETTIMEOFDAY
     gettimeofday(&end, NULL);
     time_ms = tvdiff(end, start);
     fprintf(stderr, "Got %d bytes in %ld ms = %.1f bytes/sec spin: %d\n", total,
            time_ms, total/(time_ms/1000.0), spin );
+#else
+    fprintf(stderr, "Got %d bytes spin: %d\n", total, spin);
+#endif
 
     libssh2_sftp_close(sftp_handle);
     libssh2_sftp_shutdown(sftp_session);

@@ -1,5 +1,5 @@
 /* Copyright (c) 2004-2008, 2010, Sara Golemon <sarag@libssh2.org>
- * Copyright (c) 2009-2011 by Daniel Stenberg
+ * Copyright (c) 2009-2014 by Daniel Stenberg
  * Copyright (c) 2010 Simon Josefsson
  * All rights reserved.
  *
@@ -108,6 +108,11 @@
 #define TRUE 1
 #endif
 
+#ifdef _MSC_VER
+/* "inline" keyword is valid only with C++ engine! */
+#define inline __inline
+#endif
+
 /* Provide iovec / writev on WIN32 platform. */
 #ifdef WIN32
 
@@ -115,8 +120,6 @@ struct iovec {
     size_t iov_len;
     void * iov_base;
 };
-
-#define inline __inline
 
 static inline int writev(int sock, struct iovec *iov, int nvecs)
 {
@@ -134,13 +137,7 @@ static inline int writev(int sock, struct iovec *iov, int nvecs)
 #ifdef HAVE_WINSOCK2_H
 
 #include <winsock2.h>
-#include <mswsock.h>
 #include <ws2tcpip.h>
-
-#ifdef _MSC_VER
-/* "inline" keyword is valid only with C++ engine! */
-#define inline __inline
-#endif
 
 #endif
 
@@ -155,6 +152,7 @@ static inline int writev(int sock, struct iovec *iov, int nvecs)
 
 #define LIBSSH2_ALLOC(session, count) \
   session->alloc((count), &(session)->abstract)
+#define LIBSSH2_CALLOC(session, count) _libssh2_calloc(session, count)
 #define LIBSSH2_REALLOC(session, ptr, count) \
  ((ptr) ? session->realloc((ptr), (count), &(session)->abstract) : \
  session->alloc((count), &(session)->abstract))
@@ -357,6 +355,8 @@ struct _LIBSSH2_CHANNEL
     libssh2_channel_data local, remote;
     /* Amount of bytes to be refunded to receive window (but not yet sent) */
     uint32_t adjust_queue;
+    /* Data immediately available for reading */
+    uint32_t read_avail;
 
     LIBSSH2_SESSION *session;
 
@@ -575,7 +575,7 @@ struct _LIBSSH2_SESSION
 
     /* Agreed Key Exchange Method */
     const LIBSSH2_KEX_METHOD *kex;
-    int burn_optimistic_kexinit:1;
+    unsigned int burn_optimistic_kexinit:1;
 
     unsigned char *session_id;
     uint32_t session_id_len;
@@ -600,6 +600,7 @@ struct _LIBSSH2_SESSION
     int server_hostkey_md5_valid;
 #endif                          /* ! LIBSSH2_MD5 */
     unsigned char server_hostkey_sha1[SHA_DIGEST_LENGTH];
+    int server_hostkey_sha1_valid;
 
     /* (remote as source of data -- packet_read ) */
     libssh2_endpoint_data remote;
@@ -854,6 +855,9 @@ struct _LIBSSH2_HOSTKEY_METHOD
                  size_t hostkey_data_len, void **abstract);
     int (*initPEM) (LIBSSH2_SESSION * session, const char *privkeyfile,
                     unsigned const char *passphrase, void **abstract);
+    int (*initPEMFromMemory) (LIBSSH2_SESSION * session,
+                              const char *privkeyfiledata, size_t privkeyfiledata_len,
+                              unsigned const char *passphrase, void **abstract);
     int (*sig_verify) (LIBSSH2_SESSION * session, const unsigned char *sig,
                        size_t sig_len, const unsigned char *m,
                        size_t m_len, void **abstract);
@@ -923,6 +927,9 @@ void _libssh2_debug(LIBSSH2_SESSION * session, int context, const char *format,
 static inline void
 _libssh2_debug(LIBSSH2_SESSION * session, int context, const char *format, ...)
 {
+    (void)session;
+    (void)context;
+    (void)format;
 }
 #endif
 #endif
@@ -1020,6 +1027,11 @@ int _libssh2_pem_parse(LIBSSH2_SESSION * session,
                        const char *headerbegin,
                        const char *headerend,
                        FILE * fp, unsigned char **data, unsigned int *datalen);
+int _libssh2_pem_parse_memory(LIBSSH2_SESSION * session,
+                              const char *headerbegin,
+                              const char *headerend,
+                              const char *filedata, size_t filedata_len,
+                              unsigned char **data, unsigned int *datalen);
 int _libssh2_pem_decode_sequence(unsigned char **data, unsigned int *datalen);
 int _libssh2_pem_decode_integer(unsigned char **data, unsigned int *datalen,
                                 unsigned char **i, unsigned int *ilen);

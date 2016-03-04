@@ -473,7 +473,7 @@
         "libssh2/src/misc.c",
         "libssh2/src/pem.c",
         "libssh2/src/session.c",
-        "libssh2/src/userauth.c",
+        "libssh2/src/userauth.c"
       ],
       "include_dirs": [
         ".",
@@ -494,6 +494,9 @@
             "libssh2/win32",
             "libssh2/include"
           ],
+          "defines": [
+            "LIBSSH2_WINCNG"
+          ],
           "defines!": [
             "HAVE_POLL"
           ],
@@ -503,7 +506,13 @@
               "libssh2/win32",
               "libssh2/include"
             ]
-          }
+          },
+          "sources": [
+            "libssh2/src/libss2_priv.h",
+            "libssh2/src/crypto.h",
+            "libssh2/src/wincng.c",
+            "libssh2/src/wincng.h"
+          ]
         }],
       ]
     }
