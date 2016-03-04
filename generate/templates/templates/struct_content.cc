@@ -123,6 +123,17 @@ NAN_METHOD({{ cppClassName }}::JSNewFunction) {
 
   instance->Wrap(info.This());
 
+  // Set default uninitialized property values.
+  {% each fields as field %}
+    {% if not field.ignore %}
+    {% if not field | isPayload %}
+      {% if field.cppClassName == "String" %}
+        instance->raw->{{ field.name }} = NULL;
+      {% endif %}
+    {% endif %}
+    {% endif %}
+  {% endeach %}
+
   info.GetReturnValue().Set(info.This());
 }
 

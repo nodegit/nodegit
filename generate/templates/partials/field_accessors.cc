@@ -18,11 +18,11 @@
         }
 
       {% elsif field.cppClassName == 'String' %}
-        if (wrapper->GetValue()->{{ field.name }}) {
+        if (wrapper->GetValue()->{{ field.name }} != NULL) {
           info.GetReturnValue().Set(Nan::New<String>(wrapper->GetValue()->{{ field.name }}).ToLocalChecked());
         }
         else {
-          return;
+          info.GetReturnValue().Set(Nan::New<String>("").ToLocalChecked());
         }
 
       {% elsif field.cppClassName|isV8Value %}
