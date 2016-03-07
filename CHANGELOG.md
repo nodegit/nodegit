@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.11.7](https://github.com/nodegit/nodegit/releases/tag/v0.11.7) (2016-03-07)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.6...v0.11.7)
+
+- Added `Repository#mergeheadForeach` [PR #937](https://github.com/nodegit/nodegit/pull/937)
+- Fixed `Merge.merge` docs to show it takes in an `AnnotatedCommit` and not a `Commit` [PR #935](https://github.com/nodegit/nodegit/pull/935)
+- Fixed unicode in `Diff.blobToBuffer` getting corrupted [PR #935](https://github.com/nodegit/nodegit/pull/935)
+- Fixed fetching/pulling to bitbucket in versions > v5.6 of node [PR #942](https://github.com/nodegit/nodegit/pull/942)
+
 ## [0.11.6](https://github.com/nodegit/nodegit/releases/tag/v0.11.6) (2016-03-01)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.5...v0.11.6)
