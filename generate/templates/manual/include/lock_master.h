@@ -1,8 +1,6 @@
 #ifndef LOCK_MASTER_H
 #define LOCK_MASTER_H
 
-#include <git2.h>
-
 class LockMasterImpl;
 
 class LockMaster {

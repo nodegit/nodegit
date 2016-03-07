@@ -96,8 +96,7 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1,
-      "throttle": 100
+      "error": -1
     }
   },
   "git_checkout_perfdata_cb": {
@@ -208,8 +207,7 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1,
-      "throttle": 100
+      "error": -1
     }
   },
   "git_diff_hunk_cb": {
@@ -562,8 +560,7 @@
       "type": "int",
       "noResults":0,
       "success": 0,
-      "error": -1,
-      "throttle": 100
+      "error": -1
     }
   },
   "git_stash_cb": {
@@ -673,8 +670,7 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": -1,
-      "throttle": 100
+      "error": -1
     }
   },
   "git_transport_cb": {
