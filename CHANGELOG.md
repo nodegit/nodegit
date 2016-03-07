@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.11.8](https://github.com/nodegit/nodegit/releases/tag/v0.11.8) (2016-03-07)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.7...v0.11.8)
+
+- Removed callback throttling due to segmentation faults. Will be implemented later. [PR #943](https://github.com/nodegit/nodegit/pull/943)
+
 ## [0.11.7](https://github.com/nodegit/nodegit/releases/tag/v0.11.7) (2016-03-07)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.6...v0.11.7)
