@@ -1,4 +1,3 @@
-var assert = require("assert");
 var NodeGit = require("../../");
 var path = require("path");
 var promisify = require("promisify-node");
@@ -75,25 +74,18 @@ var IndexSetup = {
         return repository.createCommit(ourBranch.name(), ourSignature,
             ourSignature, "we made a commit", oid, [ourCommit]);
       })
-      .then(function(commitOid) {
-        var opts = {
-          checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE
-        };
-
-        return NodeGit.Checkout.head(repository, opts);
+      .then(function() {
+        return repository.checkoutBranch(
+          ourBranch,
+          new NodeGit.CheckoutOptions()
+        );
       })
       .then(function() {
         return repository.mergeBranches(ourBranchName, theirBranchName);
       })
-      .then(function(commit) {
-        assert.fail(commit, undefined,
-          "The index should have been thrown due to merge conflicts");
-      })
       .catch(function(index) {
-        assert.ok(index);
-        assert.ok(index.hasConflicts());
-
-        return index.conflictGet(fileName);
+        return NodeGit.Checkout.index(repository, index)
+          .then(function() { return index; });
       });
   }
 };
