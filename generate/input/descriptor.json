@@ -1759,7 +1759,10 @@
           "ignore": true
         },
         "git_repository_mergehead_foreach": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_repository_message": {
           "ignore": true

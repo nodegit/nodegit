@@ -3,6 +3,8 @@ var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
+var IndexUtils = require("../utils/index_setup");
+var RepoUtils = require("../utils/repository_setup");
 
 describe("Repository", function() {
   var NodeGit = require("../../");
@@ -258,6 +260,50 @@ describe("Repository", function() {
                 oidResult.toString()
               );
             });
+      });
+  });
+
+  it("can get all merge heads in a repo with mergeheadForeach", function() {
+    var repo;
+    var repoPath = local("../repos/merge-head");
+    var ourBranchName = "ours";
+    var theirBranchName = "theirs";
+    var theirBranch;
+    var fileName = "testFile.txt";
+    var numMergeHeads = 0;
+    var assertBranchTargetIs = function (theirBranch, mergeHead) {
+      assert.equal(theirBranch.target(), mergeHead.toString());
+      numMergeHeads++;
+    };
+
+    return RepoUtils.createRepository(repoPath)
+      .then(function(_repo) {
+        repo = _repo;
+        return IndexUtils.createConflict(
+          repo,
+          ourBranchName,
+          theirBranchName,
+          fileName
+        );
+      })
+      .then(function() {
+        return repo.getBranch(theirBranchName);
+      })
+      .then(function(_theirBranch) {
+        // Write the MERGE_HEAD file manually since createConflict does not
+        theirBranch = _theirBranch;
+        return fse.writeFile(
+          path.join(repoPath, ".git", "MERGE_HEAD"),
+          theirBranch.target().toString() + "\n"
+        );
+      })
+      .then(function() {
+        return repo.mergeheadForeach(
+          assertBranchTargetIs.bind(this, theirBranch)
+        );
+      })
+      .then(function() {
+        assert.equal(numMergeHeads, 1);
       });
   });
 });
