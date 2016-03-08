@@ -52,7 +52,9 @@ using namespace std;
     {% if not field.ignore %}
       {% if not field.isEnum %}
         {% if field.isCallbackFunction %}
+  if (this->{{ field.name }}.HasCallback()) {
     this->raw->{{ fields|payloadFor field.name }} = NULL;
+  }
         {% endif %}
       {% endif %}
     {% endif %}
