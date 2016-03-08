@@ -31,8 +31,6 @@
     }
 
     NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
-      Nan::HandleScope scope;
-
       {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
 
       {% if field.isEnum %}
