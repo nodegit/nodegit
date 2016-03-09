@@ -83,13 +83,12 @@ PatchData *createFromRaw(git_patch *raw) {
       }
 
       if (j == 0) {
-        // calculate strlen only once for the first line of the first hunk.
-        int calculatedContentLength = strlen(line->content);
+        int calculatedContentLength = line->content_len;
         if (
           calculatedContentLength > noNewlineStringLength &&
-          !strcmp(
+          !strncmp(
               &line->content[calculatedContentLength - noNewlineStringLength],
-              "\n\\ No newline at end of file\n"
+              "\n\\ No newline at end of file\n", std::min(calculatedContentLength, noNewlineStringLength)
         )) {
           EOFFlag = true;
         }
