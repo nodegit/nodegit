@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.11.9](https://github.com/nodegit/nodegit/releases/tag/v0.11.9) (2016-03-09)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.8...v0.11.9)
+
+- Fixed crash when calculating diff via `ConvenientPatch` [PR #945](https://github.com/nodegit/nodegit/pull/945)
+
 ## [0.11.8](https://github.com/nodegit/nodegit/releases/tag/v0.11.8) (2016-03-07)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.7...v0.11.8)
