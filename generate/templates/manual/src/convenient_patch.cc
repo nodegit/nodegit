@@ -56,8 +56,12 @@ PatchData *createFromRaw(git_patch *raw) {
 
   for (unsigned int i = 0; i < patch->numHunks; ++i) {
     HunkData *hunkData = new HunkData;
-    const git_diff_hunk *hunk;
-    git_patch_get_hunk(&hunk, &hunkData->numLines, raw, i);
+    const git_diff_hunk *hunk = NULL;
+    int result = git_patch_get_hunk(&hunk, &hunkData->numLines, raw, i);
+    if (result != 0) {
+      continue;
+    }
+
     hunkData->hunk.old_start = hunk->old_start;
     hunkData->hunk.old_lines = hunk->old_lines;
     hunkData->hunk.new_start = hunk->new_start;
@@ -72,17 +76,19 @@ PatchData *createFromRaw(git_patch *raw) {
     bool EOFFlag = false;
     for (unsigned int j = 0; j < hunkData->numLines; ++j) {
       git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
-      const git_diff_line *line;
-      git_patch_get_line_in_hunk(&line, raw, i, j);
+      const git_diff_line *line = NULL;
+      int result = git_patch_get_line_in_hunk(&line, raw, i, j);
+      if (result != 0) {
+        continue;
+      }
 
       if (j == 0) {
-        // calculate strlen only once for the first line of the first hunk.
-        int calculatedContentLength = strlen(line->content);
+        int calculatedContentLength = line->content_len;
         if (
           calculatedContentLength > noNewlineStringLength &&
-          !strcmp(
+          !strncmp(
               &line->content[calculatedContentLength - noNewlineStringLength],
-              "\n\\ No newline at end of file\n"
+              "\n\\ No newline at end of file\n", (std::min)(calculatedContentLength, noNewlineStringLength)
         )) {
           EOFFlag = true;
         }
