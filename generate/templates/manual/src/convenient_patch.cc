@@ -88,7 +88,7 @@ PatchData *createFromRaw(git_patch *raw) {
           calculatedContentLength > noNewlineStringLength &&
           !strncmp(
               &line->content[calculatedContentLength - noNewlineStringLength],
-              "\n\\ No newline at end of file\n", std::min(calculatedContentLength, noNewlineStringLength)
+              "\n\\ No newline at end of file\n", (std::min)(calculatedContentLength, noNewlineStringLength)
         )) {
           EOFFlag = true;
         }
