@@ -15,7 +15,7 @@ env:
   matrix:
     - export NODE_VERSION="0.12"
     - export NODE_VERSION="4.1"
-    - export NODE_VERSION="5.0"
+    - export NODE_VERSION="5.8"
 
 matrix:
   fast_finish: true
