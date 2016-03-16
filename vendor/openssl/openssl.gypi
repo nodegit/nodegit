@@ -1039,7 +1039,8 @@
     # https://github.com/openssl/openssl/blob/OpenSSL_1_0_2-stable/crypto/ec/asm/ecp_nistz256-avx2.pl#L45-L67
     #
     'conditions': [
-      ['(OS=="win" and MSVS_VERSION>="2012") or use_obsolete_asm!="true"', {
+      ['(OS=="win" and MSVS_VERSION>="2012") or '
+       'llvm_version>="3.3" or xcode_version>="5.0" or gas_version>="2.23"', {
         'openssl_sources_x64_win_masm': [
           '<@(openssl_sources_asm_latest_x64_win_masm)',
           '<@(openssl_sources_common_x64_win_masm)',
@@ -1251,10 +1252,6 @@
       'PURIFY',
       '_REENTRANT',
 
-      # SSLv2 is known broken and has been superseded by SSLv3 for almost
-      # twenty years now.
-      'OPENSSL_NO_SSL2',
-
       # SSLv3 is susceptible to downgrade attacks (POODLE.)
       'OPENSSL_NO_SSL3',
 
@@ -1272,10 +1269,6 @@
     'openssl_default_libraries_win': [
       '-lgdi32.lib',
       '-luser32.lib',
-      '-lwsock32.lib',
-      '-lwinhttp.lib',
-      '-lcrypt32.lib',
-      '-lrpcrt4.lib'
     ],
     'openssl_default_defines_not_win': [
       # ENGINESDIR must be defined if OPENSSLDIR is.
