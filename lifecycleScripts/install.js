@@ -36,7 +36,7 @@ return installPrebuilt();
 function installPrebuilt() {
   console.info("[nodegit] Fetching binary from S3.");
   var npg = pathForTool("node-pre-gyp");
-  return exec(npg + " install --fallback-to-build=false")
+  return exec("\""+ npg + "\" install --fallback-to-build=false")
     .then(
       function() {
         console.info("[nodegit] Completed installation successfully.");
