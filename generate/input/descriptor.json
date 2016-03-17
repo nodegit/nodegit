@@ -354,6 +354,7 @@
       }
     },
     "commit": {
+      "selfFreeing": true,
       "functions": {
         "git_commit_amend": {
           "args": {
