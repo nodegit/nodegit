@@ -2214,6 +2214,7 @@
       ]
     },
     "tree": {
+      "selfFreeing": true,
       "functions": {
         "git_tree_entry_free": {
           "ignore": true
