@@ -121,6 +121,7 @@
       }
     },
     "blob": {
+      "selfFreeing": true,
       "functions": {
         "git_blob_create_frombuffer": {
           "isAsync": false,
