@@ -2114,6 +2114,7 @@
       }
     },
     "tag": {
+      "selfFreeing": true,
       "functions": {
         "git_tag_foreach": {
           "ignore": true
