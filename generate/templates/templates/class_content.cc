@@ -98,7 +98,7 @@ using namespace node;
     info.GetReturnValue().Set(info.This());
   }
 
-  Local<v8::Value> {{ cppClassName }}::New(void *raw, bool selfFreeing) {
+  Local<v8::Value> {{ cppClassName }}::New(const {{ cType }} *raw, bool selfFreeing) {
     Nan::EscapableHandleScope scope;
     Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing) };
     return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());

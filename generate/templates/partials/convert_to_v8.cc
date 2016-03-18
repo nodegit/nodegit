@@ -59,9 +59,9 @@
   if ({{= parsedName =}} != NULL) {
     // {{= cppClassName }} {{= parsedName }}
     {% if cppClassName == 'Wrapper' %}
-      to = {{ cppClassName }}::New((void *){{= parsedName =}});
+      to = {{ cppClassName }}::New({{= parsedName =}});
     {% else %}
-      to = {{ cppClassName }}::New((void *){{= parsedName =}}, false);
+      to = {{ cppClassName }}::New({{= parsedName =}}, false);
     {% endif %}
   }
   else {

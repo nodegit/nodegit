@@ -42,7 +42,7 @@ NAN_METHOD(Wrapper::JSNewFunction) {
   info.GetReturnValue().Set(info.This());
 }
 
-Local<v8::Value> Wrapper::New(void *raw) {
+Local<v8::Value> Wrapper::New(const void *raw) {
   Nan::EscapableHandleScope scope;
 
   Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };

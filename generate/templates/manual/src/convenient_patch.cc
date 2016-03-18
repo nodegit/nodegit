@@ -303,7 +303,7 @@ NAN_METHOD(ConvenientPatch::OldFile) {
   git_diff_file *old_file = (git_diff_file *)malloc(sizeof(git_diff_file));
   *old_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetOldFile();
 
-  to = GitDiffFile::New((void *)old_file, true);
+  to = GitDiffFile::New(old_file, true);
 
   return info.GetReturnValue().Set(to);
 }
@@ -315,7 +315,7 @@ NAN_METHOD(ConvenientPatch::NewFile) {
   git_diff_file *new_file = (git_diff_file *)malloc(sizeof(git_diff_file));
   *new_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetNewFile();
   if (new_file != NULL) {
-    to = GitDiffFile::New((void *)new_file, true);
+    to = GitDiffFile::New(new_file, true);
   } else {
     to = Nan::Null();
   }

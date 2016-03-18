@@ -30,7 +30,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     {{ cType }} *GetValue();
     void ClearValue();
 
-    static Local<v8::Value> New(void *raw, bool selfFreeing);
+    static Local<v8::Value> New(const {{ cType }} *raw, bool selfFreeing);
 
     bool selfFreeing;
 
