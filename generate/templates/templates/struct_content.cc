@@ -73,7 +73,7 @@ void {{ cppClassName }}::ConstructFields() {
       {% if not field.isEnum %}
         {% if field.hasConstructor |or field.isLibgitType %}
           Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(
-            &this->raw->{{ field.name }},
+            {%if not field.cType|isPointer %}&{%endif%}this->raw->{{ field.name }},
             false
           )->ToObject();
           this->{{ field.name }}.Reset({{ field.name }}Temp);
@@ -131,7 +131,7 @@ NAN_METHOD({{ cppClassName }}::JSNewFunction) {
   info.GetReturnValue().Set(info.This());
 }
 
-Local<v8::Value> {{ cppClassName }}::New(void* raw, bool selfFreeing) {
+Local<v8::Value> {{ cppClassName }}::New(const {{ cType }} * raw, bool selfFreeing) {
   Nan::EscapableHandleScope scope;
 
   Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New<Boolean>(selfFreeing) };

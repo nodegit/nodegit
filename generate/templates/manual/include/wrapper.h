@@ -20,7 +20,7 @@ class Wrapper : public Nan::ObjectWrap {
     static void InitializeComponent (Local<v8::Object> target);
 
     void *GetValue();
-    static Local<v8::Value> New(void *raw);
+    static Local<v8::Value> New(const void *raw);
 
   private:
     Wrapper(void *raw);

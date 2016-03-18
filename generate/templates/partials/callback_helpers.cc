@@ -55,7 +55,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
         {% if arg.isEnum %}
           Nan::New((int)baton->{{ arg.name }}),
         {% elsif arg.isLibgitType %}
-          {{ arg.cppClassName }}::New((void *)baton->{{ arg.name }}, false),
+          {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false),
         {% elsif arg.cType == "size_t" %}
           // HACK: NAN should really have an overload for Nan::New to support size_t
           Nan::New((unsigned int)baton->{{ arg.name }}),
