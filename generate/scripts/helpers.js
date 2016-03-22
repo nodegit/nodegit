@@ -143,6 +143,7 @@ var Helpers = {
     }
   },
 
+  // returns the libgittype found in types
   decorateLibgitType: function(type, types, enums) {
     var normalizedType = Helpers.normalizeCtype(type.cType);
     var libgitType = Helpers.getLibgitType(normalizedType, types);
@@ -164,6 +165,8 @@ var Helpers = {
       // we don't want to overwrite the c type of the passed in type
       _.merge(type, descriptor.types[normalizedType.replace("git_", "")] || {}, { cType: type.cType });
     }
+
+    return libgitType;
   },
 
   decoratePrimaryType: function(typeDef, enums) {
@@ -176,6 +179,7 @@ var Helpers = {
     typeDef.filename = typeDef.typeName;
     typeDef.isLibgitType = true;
     typeDef.dependencies = [];
+    typeDef.selfFreeing = Boolean(typeDefOverrides.selfFreeing);
 
     typeDef.fields = typeDef.fields || [];
     typeDef.fields.forEach(function (field, index, allFields) {
@@ -241,7 +245,7 @@ var Helpers = {
     arg.cppClassName = Helpers.cTypeToCppName(arg.cType);
     arg.jsClassName = utils.titleCase(Helpers.cTypeToJsName(arg.cType));
 
-    Helpers.decorateLibgitType(arg, libgit2.types, enums);
+    var libgitType = Helpers.decorateLibgitType(arg, libgit2.types, enums);
 
     // Some arguments can be callbacks
     if (Helpers.isCallbackFunction(type)) {
@@ -269,6 +273,10 @@ var Helpers = {
           arg.cppClassName !== "Array" &&
           argOverrides.cppClassName !== "Array" &&
           _.every(allArgs, function(_arg) { return !_arg.isSelf; });
+      }
+
+      if (arg.isReturn && libgitType)  {
+        arg.selfFreeing = libgitType.selfFreeing;
       }
 
       if (arg.isReturn && fnDef.return && fnDef.return.type === "int") {
