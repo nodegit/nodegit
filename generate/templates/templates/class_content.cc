@@ -27,12 +27,21 @@ using namespace node;
   {{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing) {
     this->raw = raw;
     this->selfFreeing = selfFreeing;
+
+    if (selfFreeing) {
+      SelfFreeingInstanceCount++;
+    } else {
+      NonSelfFreeingConstructedCount++;
+    }
+
   }
 
   {{ cppClassName }}::~{{ cppClassName }}() {
     {% if freeFunctionName %}
       if (this->selfFreeing) {
         {{ freeFunctionName }}(this->raw);
+        SelfFreeingInstanceCount--;
+
         this->raw = NULL;
       }
     {% endif %}
@@ -77,6 +86,9 @@ using namespace node;
       {% endif %}
     {% endeach %}
 
+    Nan::SetMethod(tpl, "getSelfFreeingInstanceCount", GetSelfFreeingInstanceCount);
+    Nan::SetMethod(tpl, "getNonSelfFreeingConstructedCount", GetNonSelfFreeingConstructedCount);
+
     Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
     constructor_template.Reset(_constructor_template);
     Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
@@ -102,6 +114,14 @@ using namespace node;
     Nan::EscapableHandleScope scope;
     Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing) };
     return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());
+  }
+
+  NAN_METHOD({{ cppClassName }}::GetSelfFreeingInstanceCount) {
+    info.GetReturnValue().Set(SelfFreeingInstanceCount);
+  }
+
+  NAN_METHOD({{ cppClassName }}::GetNonSelfFreeingConstructedCount) {
+    info.GetReturnValue().Set(NonSelfFreeingConstructedCount);
   }
 
   {{ cType }} *{{ cppClassName }}::GetValue() {
@@ -147,3 +167,6 @@ using namespace node;
 {% if not cTypeIsUndefined %}
   Nan::Persistent<Function> {{ cppClassName }}::constructor_template;
 {% endif %}
+
+int {{ cppClassName }}::SelfFreeingInstanceCount;
+int {{ cppClassName }}::NonSelfFreeingConstructedCount;
