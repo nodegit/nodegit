@@ -25,8 +25,17 @@ using namespace node;
 
 {% if cType %}
   {{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing) {
+    {% if selfDuplicating %}
+      {% if shouldAlloc %}
+    this->raw = ({{ cType }} *)malloc(sizeof({{ cType }}));
+    {{ dupFunction }}(this->raw, raw);
+      {% else %}
+    {{ dupFunction }}(&this->raw, raw);
+      {% endif %}
+    {% else %}
     this->raw = raw;
     this->selfFreeing = selfFreeing;
+    {%endif%}
 
     if (selfFreeing) {
       SelfFreeingInstanceCount++;
@@ -37,7 +46,10 @@ using namespace node;
   }
 
   {{ cppClassName }}::~{{ cppClassName }}() {
-    {% if freeFunctionName %}
+    {% if selfDuplicating %}
+      {{ freeFunctionName }}(this->raw);
+      this->raw = NULL;
+    {% elsif freeFunctionName %}
       if (this->selfFreeing) {
         {{ freeFunctionName }}(this->raw);
         SelfFreeingInstanceCount--;

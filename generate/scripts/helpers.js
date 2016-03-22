@@ -181,6 +181,10 @@ var Helpers = {
     typeDef.dependencies = [];
     typeDef.selfFreeing = Boolean(typeDefOverrides.selfFreeing);
 
+    if (typeDefOverrides.freeFunctionName) {
+      typeDef.freeFunctionName = typeDefOverrides.freeFunctionName;
+    }
+
     typeDef.fields = typeDef.fields || [];
     typeDef.fields.forEach(function (field, index, allFields) {
       var fieldOverrides = typeDefOverrides.fields || {};

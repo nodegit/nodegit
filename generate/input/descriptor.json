@@ -1275,6 +1275,9 @@
       "ignore": true
     },
     "oid": {
+      "dupFunction": "git_oid_cpy",
+      "freeFunctionName": "free",
+      "selfDuplicating": true,
       "shouldAlloc": true,
       "functions": {
         "git_oid_cpy": {
@@ -1879,6 +1882,8 @@
       }
     },
 	  "signature": {
+      "dupFunction": "git_signature_dup",
+      "selfDuplicating": true,
 	    "functions": {
         "git_signature_default": {
           "isAsync": false
@@ -2218,9 +2223,6 @@
     "tree": {
       "selfFreeing": true,
       "functions": {
-        "git_tree_entry_free": {
-          "ignore": true
-        },
         "git_tree_entry_byindex": {
           "jsFunctionName": "_entryByIndex"
         },
@@ -2252,6 +2254,11 @@
           }
         }
       }
+    },
+    "tree_entry": {
+      "dupFunction": "git_tree_entry_dup",
+      "freeFunctionName": "git_tree_entry_free",
+      "selfDuplicating": true
     },
     "writestream": {
       "cType": "git_writestream",
