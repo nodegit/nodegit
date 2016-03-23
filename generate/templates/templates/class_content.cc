@@ -44,6 +44,16 @@ using namespace node;
       NonSelfFreeingConstructedCount++;
     }
 
+    
+	{%each functions as function%}
+      {%if not function.ignore %}
+        {%if not function.isAsync %}
+          {%if function.return.cacheResult %}
+            {{ function.cppFunctionName }}_cache(); // populate cached value
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
   }
 
   {{ cppClassName }}::~{{ cppClassName }}() {

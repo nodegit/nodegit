@@ -141,6 +141,14 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
       private:
         {{ function.cppFunctionName }}Baton *baton;
     };
+        {%else%}
+    {%if function.return.cacheResult %}
+    // For simple sync functions that return a wrapped object and pass `raw`
+    // as the the only parameter to libgit2, we cache the results.
+    // CopyablePersistentTraits are used to get the reset-on-destruct behavior.
+    void {{ function.cppFunctionName }}_cache();
+    Nan::Persistent<Value, Nan::CopyablePersistentTraits<Value> > {{ function.cppFunctionName }}_cachedResult;
+    {%endif%}
         {%endif%}
 
     static NAN_METHOD({{ function.cppFunctionName }});

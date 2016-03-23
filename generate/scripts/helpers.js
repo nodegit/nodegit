@@ -179,6 +179,7 @@ var Helpers = {
     typeDef.filename = typeDef.typeName;
     typeDef.isLibgitType = true;
     typeDef.dependencies = [];
+    typeDef.cacheResult = Boolean(typeDefOverrides.cacheResult);
     typeDef.selfFreeing = Boolean(typeDefOverrides.selfFreeing);
 
     if (typeDefOverrides.freeFunctionName) {

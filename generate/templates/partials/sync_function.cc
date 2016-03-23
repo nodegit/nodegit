@@ -2,6 +2,11 @@
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   Nan::EscapableHandleScope scope;
+
+{%if return.cacheResult %}
+  {{ cppClassName }} *thisObj = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
+  return info.GetReturnValue().Set(scope.Escape(Nan::New(thisObj->{{ cppFunctionName }}_cachedResult)));
+{% else %}
   {%partial guardArguments .%}
 
   {%each .|returnsInfo 'true' as _return %}
@@ -35,7 +40,7 @@ if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL
 {% endif %}
 
   giterr_clear();
-  
+
   {
     LockMaster lockMaster(true{%each args|argsInfo as arg %}
       {%if arg.cType|isPointer%}{%if not arg.isReturn%}
@@ -125,4 +130,38 @@ if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL
     {%endif%}
   {%endif%}
   }
+{%endif%}
 }
+
+{%if return.cacheResult %}
+void {{ cppClassName }}::{{ cppFunctionName }}_cache() {
+  if (!raw) {
+    {{ cppFunctionName }}_cachedResult.Reset(Nan::Null());
+    return;
+  }
+
+  LockMaster lockMaster(true{%each args|argsInfo as arg %}
+    {%if arg.cType|isPointer%}{%if not arg.isReturn%}
+      ,{%if arg.isSelf %}
+        raw
+    {%endif%}
+    {%endif%}{%endif%}
+  {%endeach%});
+
+  {{ return.cType }} result = {{ cFunctionName }}(
+  {%each args|argsInfo as arg %}
+    {%if arg.isSelf %}
+      raw
+    {%endif%}
+  {%endeach%}
+  );
+
+  Local<v8::Value> to;
+
+  {%each .|returnsInfo as _return %}
+    {%partial convertToV8 _return %}
+  {%endeach%}
+
+  {{ cppFunctionName }}_cachedResult.Reset(to);
+}
+{% endif %}
