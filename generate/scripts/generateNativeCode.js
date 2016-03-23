@@ -70,6 +70,7 @@ module.exports = function generateNativeCode() {
     returnsCount: require("../templates/filters/returns_count"),
     returnsInfo: require("../templates/filters/returns_info"),
     titleCase: require("../templates/filters/title_case"),
+    toBool: require('../templates/filters/to_bool'),
     unPointer: require("../templates/filters/un_pointer"),
     upper: require("../templates/filters/upper")
   };
