@@ -404,6 +404,12 @@ describe("Commit", function() {
     assert.ok(owner instanceof Repository);
   });
 
+  it("caches its owner", function() {
+    var owner = this.commit.owner();
+    var ownerAgain = this.commit.owner();
+    assert.ok(owner === ownerAgain);
+  });
+
   it("can walk its repository's history", function(done) {
     var historyCount = 0;
     var expectedHistoryCount = 364;
