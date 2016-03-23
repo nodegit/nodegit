@@ -181,6 +181,7 @@ var Helpers = {
     typeDef.dependencies = [];
     typeDef.cacheResult = Boolean(typeDefOverrides.cacheResult);
     typeDef.selfFreeing = Boolean(typeDefOverrides.selfFreeing);
+    typeDef.oneToOne = Boolean(typeDefOverrides.oneToOne);
 
     if (typeDefOverrides.freeFunctionName) {
       typeDef.freeFunctionName = typeDefOverrides.freeFunctionName;

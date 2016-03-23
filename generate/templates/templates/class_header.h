@@ -1,6 +1,7 @@
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
 #include <nan.h>
+#include <map>
 #include <string>
 #include <queue>
 #include <utility>
@@ -36,6 +37,10 @@ using namespace node;
 using namespace v8;
 
 class {{ cppClassName }} : public Nan::ObjectWrap {
+    {%if oneToOne %}
+    // map to ensure one wrapper per libgit2 instance
+    static std::map<{{ cType }} *, Nan::Persistent<v8::Object> *> instances;
+    {%endif%}
   public:
 
     static Nan::Persistent<Function> constructor_template;

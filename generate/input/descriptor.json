@@ -1768,6 +1768,7 @@
     },
     "repository": {
       "cacheResult": true,
+      "oneToOne": true,
       "functions": {
         "git_repository__cleanup": {
           "ignore": true

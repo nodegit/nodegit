@@ -10,6 +10,7 @@ extern "C" {
 
 #include "../include/lock_master.h"
 #include "../include/functions/copy.h"
+#include "../include/functions/noop.h"
 #include "../include/{{ filename }}.h"
 #include "../include/functions/sleep_for_ms.h"
 
@@ -25,6 +26,14 @@ using namespace node;
 
 {% if cType %}
   {{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing, bool shouldDuplicate) {
+    {% if oneToOne %}
+    if(instances.find(raw) != instances.end()) {
+      Nan::ThrowError("{{ cppClassName }} constructor called on an already wrapped {{ cType }} object");
+      return;
+    }
+    selfFreeing = true;
+    {% endif %}
+
     if (shouldDuplicate) {
       {% if shouldAlloc %}
     this->raw = ({{ cType }} *)malloc(sizeof({{ cType }}));
@@ -44,7 +53,7 @@ using namespace node;
       NonSelfFreeingConstructedCount++;
     }
 
-    
+
 	{%each functions as function%}
       {%if not function.ignore %}
         {%if not function.isAsync %}
@@ -62,7 +71,7 @@ using namespace node;
         {{ freeFunctionName }}(this->raw);
         SelfFreeingInstanceCount--;
 
-        this->raw = NULL;
+        ClearValue();
       }
     {% endif %}
 
@@ -136,8 +145,24 @@ using namespace node;
 
   Local<v8::Value> {{ cppClassName }}::New(const {{ cType }} *raw, bool selfFreeing, bool shouldDuplicate) {
     Nan::EscapableHandleScope scope;
+
+    {% if oneToOne %}
+    auto mapElement = instances.find(const_cast<{{ cType }} *>(raw));
+    if(mapElement != instances.end()) {
+      return scope.Escape(Nan::New(*mapElement->second));
+    }
+    {% endif %}
+
     Local<v8::Value> argv[3] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing), Nan::New(shouldDuplicate) };
-    return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 3, argv).ToLocalChecked());
+    Local<v8::Object> instance = Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 3, argv).ToLocalChecked();
+    {% if oneToOne %}
+    Nan::Persistent<v8::Object> *persistent = new Nan::Persistent<v8::Object>(instance);
+    persistent->SetWeak((void *)NULL, noop, Nan::WeakCallbackType::kParameter);
+    if (raw) {
+      instances[const_cast<git_repository *>(raw)] = persistent;
+    }
+    {% endif %}
+    return scope.Escape(instance);
   }
 
   NAN_METHOD({{ cppClassName }}::GetSelfFreeingInstanceCount) {
@@ -153,6 +178,14 @@ using namespace node;
   }
 
   void {{ cppClassName }}::ClearValue() {
+    {% if oneToOne %}
+    auto mapElement = instances.find(raw);
+    if(mapElement != instances.end()) {
+      delete mapElement->second;
+      instances.erase(mapElement);
+    }
+    {% endif %}
+
     this->raw = NULL;
   }
 
@@ -191,6 +224,11 @@ using namespace node;
 {% if not cTypeIsUndefined %}
   Nan::Persistent<Function> {{ cppClassName }}::constructor_template;
 {% endif %}
+
+{%if oneToOne %}
+// map to ensure one wrapper per libgit2 instance
+std::map<{{ cType }} *, Nan::Persistent<v8::Object> *> {{ cppClassName }}::instances;
+{%endif%}
 
 int {{ cppClassName }}::SelfFreeingInstanceCount;
 int {{ cppClassName }}::NonSelfFreeingConstructedCount;

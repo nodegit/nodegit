@@ -404,10 +404,36 @@ describe("Commit", function() {
     assert.ok(owner instanceof Repository);
   });
 
-  it("caches its owner", function() {
-    var owner = this.commit.owner();
-    var ownerAgain = this.commit.owner();
-    assert.ok(owner === ownerAgain);
+  it("caches its owner", function(done) {
+    var objects = {};
+
+    reinitialize(objects)
+      .then(function() {
+        var owner = objects.commit.owner();
+        var ownerAgain = objects.commit.owner();
+        assert.ok(owner === ownerAgain);
+        assert.ok(owner === objects.repository);
+
+        // make sure the owner gets freed at the correct time
+        garbageCollect();
+        var Repository = NodeGit.Repository;
+        var startCount = Repository.getSelfFreeingInstanceCount();
+        owner = ownerAgain = objects.repository = null;
+
+        setTimeout(function() {
+          garbageCollect();
+          // the commit should still hold the repository
+          assert.equal(startCount, Repository.getSelfFreeingInstanceCount());
+          objects.commit = null;
+          // without the setTimeout, not seeing a free
+          setTimeout(function() {
+            garbageCollect();
+            assert.equal(startCount - 1,
+              Repository.getSelfFreeingInstanceCount());
+            done();
+          }, 10);
+        }, 10);
+      });
   });
 
   it("can walk its repository's history", function(done) {
