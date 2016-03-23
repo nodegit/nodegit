@@ -24,18 +24,19 @@ using namespace v8;
 using namespace node;
 
 {% if cType %}
-  {{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing) {
-    {% if selfDuplicating %}
+  {{ cppClassName }}::{{ cppClassName }}({{ cType }} *raw, bool selfFreeing, bool shouldDuplicate) {
+    if (shouldDuplicate) {
       {% if shouldAlloc %}
     this->raw = ({{ cType }} *)malloc(sizeof({{ cType }}));
     {{ dupFunction }}(this->raw, raw);
       {% else %}
     {{ dupFunction }}(&this->raw, raw);
       {% endif %}
-    {% else %}
-    this->raw = raw;
+      selfFreeing = true;
+    } else {
+      this->raw = raw;
+    }
     this->selfFreeing = selfFreeing;
-    {%endif%}
 
     if (selfFreeing) {
       SelfFreeingInstanceCount++;
@@ -46,10 +47,7 @@ using namespace node;
   }
 
   {{ cppClassName }}::~{{ cppClassName }}() {
-    {% if selfDuplicating %}
-      {{ freeFunctionName }}(this->raw);
-      this->raw = NULL;
-    {% elsif freeFunctionName %}
+    {% if freeFunctionName %}
       if (this->selfFreeing) {
         {{ freeFunctionName }}(this->raw);
         SelfFreeingInstanceCount--;
@@ -116,16 +114,20 @@ using namespace node;
       {% endif %}
     }
 
-    {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(Local<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
+    {{ cppClassName }}* object = new {{ cppClassName }}(static_cast<{{ cType }} *>(
+      Local<External>::Cast(info[0])->Value()),
+      Nan::To<bool>(info[1]).FromJust(),
+      info.Length() >= 3 ? Nan::To<bool>(info[2]).FromJust() : false
+    );
     object->Wrap(info.This());
 
     info.GetReturnValue().Set(info.This());
   }
 
-  Local<v8::Value> {{ cppClassName }}::New(const {{ cType }} *raw, bool selfFreeing) {
+  Local<v8::Value> {{ cppClassName }}::New(const {{ cType }} *raw, bool selfFreeing, bool shouldDuplicate) {
     Nan::EscapableHandleScope scope;
-    Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing) };
-    return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());
+    Local<v8::Value> argv[3] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing), Nan::New(shouldDuplicate) };
+    return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 3, argv).ToLocalChecked());
   }
 
   NAN_METHOD({{ cppClassName }}::GetSelfFreeingInstanceCount) {
