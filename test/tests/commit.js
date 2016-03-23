@@ -672,4 +672,26 @@ describe("Commit", function() {
         assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
       });
   });
+
+  it("duplicates signature", function() {
+    garbageCollect();
+    var Signature = NodeGit.Signature;
+    var startSelfFreeingCount = Signature.getSelfFreeingInstanceCount();
+    var startNonSelfFreeingCount =
+      Signature.getNonSelfFreeingConstructedCount();
+    var signature = this.commit.author();
+
+    garbageCollect();
+    var endSelfFreeingCount = Signature.getSelfFreeingInstanceCount();
+    var endNonSelfFreeingCount = Signature.getNonSelfFreeingConstructedCount();
+    // we should get one duplicated, self-freeing signature
+    assert.equal(startSelfFreeingCount + 1, endSelfFreeingCount);
+    assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
+
+    signature = null;
+    garbageCollect();
+    endSelfFreeingCount = Signature.getSelfFreeingInstanceCount();
+    // the self-freeing signature should get freed
+    assert.equal(startSelfFreeingCount, endSelfFreeingCount);
+  });
 });
