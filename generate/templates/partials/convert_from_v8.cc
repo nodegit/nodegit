@@ -14,7 +14,14 @@
   {%if cppClassName == 'String'%}
 
   String::Utf8Value {{ name }}(info[{{ jsArg }}]->ToString());
-  from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
+  // malloc with one extra byte so we can add the terminating null character C-strings expect:
+  from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
+  // copy the characters from the nodejs string into our C-string (used instead of strdup or strcpy because nulls in
+  // the middle of strings are valid coming from nodejs):
+  memcpy((void *)from_{{ name }}, *{{ name }}, {{ name }}.length());
+  // ensure the final byte of our new string is null, extra casts added to ensure compatibility with various C types
+  // used in the nodejs binding generation:
+  memset((void *)(((char *)from_{{ name }}) + {{ name }}.length()), 0, 1);
   {%elsif cppClassName == 'GitStrarray' %}
 
   from_{{ name }} = StrArrayConverter::Convert(info[{{ jsArg }}]);
@@ -24,7 +31,14 @@
   {%elsif cppClassName == 'Wrapper'%}
 
   String::Utf8Value {{ name }}(info[{{ jsArg }}]->ToString());
-  from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
+  // malloc with one extra byte so we can add the terminating null character C-strings expect:
+  from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
+  // copy the characters from the nodejs string into our C-string (used instead of strdup or strcpy because nulls in
+  // the middle of strings are valid coming from nodejs):
+  memcpy((void *)from_{{ name }}, *{{ name }}, {{ name }}.length());
+  // ensure the final byte of our new string is null, extra casts added to ensure compatibility with various C types
+  // used in the nodejs binding generation:
+  memset((void *)(((char *)from_{{ name }}) + {{ name }}.length()), 0, 1);
   {%elsif cppClassName == 'Array'%}
 
   Array *tmp_{{ name }} = Array::Cast(*info[{{ jsArg }}]);
