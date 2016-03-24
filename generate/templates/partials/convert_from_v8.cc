@@ -14,7 +14,9 @@
   {%if cppClassName == 'String'%}
 
   String::Utf8Value {{ name }}(info[{{ jsArg }}]->ToString());
-  from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
+  from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
+  memcpy((void *)from_{{ name }}, *{{ name }}, {{ name }}.length());
+  memset((void *)(((char *)from_{{ name }}) + {{ name }}.length()), 0, 1);
   {%elsif cppClassName == 'GitStrarray' %}
 
   from_{{ name }} = StrArrayConverter::Convert(info[{{ jsArg }}]);
@@ -24,7 +26,9 @@
   {%elsif cppClassName == 'Wrapper'%}
 
   String::Utf8Value {{ name }}(info[{{ jsArg }}]->ToString());
-  from_{{ name }} = ({{ cType }}) strdup(*{{ name }});
+  from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
+  memcpy((void *)from_{{ name }}, *{{ name }}, {{ name }}.length());
+  memset((void *)(((char *)from_{{ name }}) + {{ name }}.length()), 0, 1);
   {%elsif cppClassName == 'Array'%}
 
   Array *tmp_{{ name }} = Array::Cast(*info[{{ jsArg }}]);
