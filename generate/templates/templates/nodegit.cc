@@ -25,12 +25,25 @@ void LockMasterEnable(const FunctionCallbackInfo<Value>& info) {
   LockMaster::Enable();
 }
 
-void LockMasterDisable(const FunctionCallbackInfo<Value>& info) {
-  LockMaster::Disable();
+void LockMasterSetStatus(const FunctionCallbackInfo<Value>& info) {
+  Nan::HandleScope scope;
+
+  // convert the first argument to Status
+  if(info.Length() >= 0 && info[0]->IsNumber()) {
+    v8::Local<v8::Int32> value = info[0]->ToInt32();
+    LockMaster::Status status = static_cast<LockMaster::Status>(value->Value());
+    if(status >= LockMaster::Disabled && status <= LockMaster::Enabled) {
+      LockMaster::SetStatus(status);
+      return;
+    }
+  }
+
+  // argument error
+  Nan::ThrowError("Argument must be one 0, 1 or 2");
 }
 
-void LockMasterIsEnabled(const FunctionCallbackInfo<Value>& info) {
-  info.GetReturnValue().Set(Nan::New(LockMaster::IsEnabled()));
+void LockMasterGetStatus(const FunctionCallbackInfo<Value>& info) {
+  info.GetReturnValue().Set(Nan::New(LockMaster::GetStatus()));
 }
 
 void LockMasterGetDiagnostics(const FunctionCallbackInfo<Value>& info) {
@@ -88,9 +101,16 @@ extern "C" void init(Local<v8::Object> target) {
   ConvenientPatch::InitializeComponent(target);
 
   NODE_SET_METHOD(target, "enableThreadSafety", LockMasterEnable);
-  NODE_SET_METHOD(target, "disableThreadSafety", LockMasterDisable);
-  NODE_SET_METHOD(target, "isThreadSafetyEnabled", LockMasterIsEnabled);
+  NODE_SET_METHOD(target, "setThreadSafetyStatus", LockMasterSetStatus);
+  NODE_SET_METHOD(target, "getThreadSafetyStatus", LockMasterGetStatus);
   NODE_SET_METHOD(target, "getThreadSafetyDiagnostics", LockMasterGetDiagnostics);
+
+  Local<v8::Object> threadSafety = Nan::New<v8::Object>();
+  threadSafety->Set(Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
+  threadSafety->Set(Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
+  threadSafety->Set(Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));
+
+  target->Set(Nan::New("THREAD_SAFETY").ToLocalChecked(), threadSafety);
 
   LockMaster::Initialize();
 }

@@ -80,9 +80,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   giterr_clear();
-  
+
   {
-    LockMaster lockMaster(true{%each args|argsInfo as arg %}
+    LockMaster lockMaster(/*asyncAction: */true{%each args|argsInfo as arg %}
       {%if arg.cType|isPointer%}{%if not arg.cType|isDoublePointer%}
         ,baton->{{ arg.name }}
       {%endif%}{%endif%}

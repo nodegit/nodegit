@@ -22,43 +22,44 @@ describe("ThreadSafety", function() {
   });
 
   it("can enable and disable thread safety", function() {
-    var originalValue = NodeGit.isThreadSafetyEnabled();
+    var originalValue = NodeGit.getThreadSafetyStatus();
 
     NodeGit.enableThreadSafety();
-    assert.equal(true, NodeGit.isThreadSafetyEnabled());
+    assert.equal(NodeGit.THREAD_SAFETY.ENABLED,
+      NodeGit.getThreadSafetyStatus());
 
-    NodeGit.disableThreadSafety();
-    assert.equal(false, NodeGit.isThreadSafetyEnabled());
+    NodeGit.setThreadSafetyStatus(NodeGit.THREAD_SAFETY.ENABLED_FOR_ASYNC_ONLY);
+    assert.equal(NodeGit.THREAD_SAFETY.ENABLED_FOR_ASYNC_ONLY,
+      NodeGit.getThreadSafetyStatus());
 
-    // flip the switch again, to make sure we test all transitions
-    // (we could have started with thread safety enabled)
-    NodeGit.enableThreadSafety();
-    assert.equal(true, NodeGit.isThreadSafetyEnabled());
+    NodeGit.setThreadSafetyStatus(NodeGit.THREAD_SAFETY.DISABLED);
+    assert.equal(NodeGit.THREAD_SAFETY.DISABLED,
+      NodeGit.getThreadSafetyStatus());
 
-    if (originalValue) {
-      NodeGit.enableThreadSafety();
-    } else {
-      NodeGit.disableThreadSafety();
-    }
+    NodeGit.setThreadSafetyStatus(originalValue);
   });
 
   it("can lock something and cleanup mutex", function() {
+    var diagnostics = NodeGit.getThreadSafetyDiagnostics();
+    var originalCount = diagnostics.storedMutexesCount;
     // call a sync method to guarantee that it stores a mutex,
     // and that it will clean up the mutex in a garbage collection cycle
     this.repository.headDetached();
 
-    var diagnostics = NodeGit.getThreadSafetyDiagnostics();
-    if (NodeGit.isThreadSafetyEnabled()) {
-      // this is a fairly vague test - it just tests that something
-      // had a mutex created for it at some point (i.e., the thread safety
-      // code is not completely dead)
-      assert.ok(diagnostics.storedMutexesCount > 0);
-      // now test that GC cleans up mutexes
-      global.gc();
-      diagnostics = NodeGit.getThreadSafetyDiagnostics();
-      assert.equal(0, diagnostics.storedMutexesCount);
-    } else {
-      assert.equal(0, diagnostics.storedMutexesCount);
+    diagnostics = NodeGit.getThreadSafetyDiagnostics();
+    switch(NodeGit.getThreadSafetyStatus()) {
+      case NodeGit.THREAD_SAFETY.ENABLED:
+        // this is a fairly vague test - it just tests that something
+        // had a mutex created for it at some point (i.e., the thread safety
+        // code is not completely dead)
+        assert.ok(diagnostics.storedMutexesCount > 0);
+        break;
+      case NodeGit.THREAD_SAFETY.ENABLED_FOR_ASYNC_ONLY:
+        assert.equal(originalCount, diagnostics.storedMutexesCount);
+        break;
+
+      case NodeGit.THREAD_SAFETY.DISABLED:
+        assert.equal(0, diagnostics.storedMutexesCount);
     }
   });
 });

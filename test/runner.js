@@ -6,7 +6,11 @@ var local = path.join.bind(path, __dirname);
 var NodeGit = require('..');
 
 if(process.env.NODEGIT_TEST_THREADSAFETY) {
+  console.log('Enabling thread safety in NodeGit');
   NodeGit.enableThreadSafety();
+} else if (process.env.NODEGIT_TEST_THREADSAFETY_ASYNC) {
+  console.log('Enabling thread safety for async actions only in NodeGit');
+  NodeGit.setThreadSafetyStatus(NodeGit.THREAD_SAFETY.ENABLED_FOR_ASYNC_ONLY);
 }
 
 // Have to wrap exec, since it has a weird callback signature.
