@@ -9,6 +9,25 @@ var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
 
+// aggressively collects garbage until we fail to improve terminatingIterations
+// times.
+function garbageCollect() {
+  var terminatingIterations = 3;
+  var usedBeforeGC = Number.MAX_VALUE;
+  var nondecreasingIterations = 0;
+  for ( ; ; ) {
+    global.gc();
+    var usedAfterGC = process.memoryUsage().heapUsed;
+    if (usedAfterGC >= usedBeforeGC) {
+      nondecreasingIterations++;
+      if (nondecreasingIterations >= terminatingIterations) {
+        break;
+      }
+    }
+    usedBeforeGC = usedAfterGC;
+  }
+}
+
 describe("Commit", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
@@ -623,5 +642,56 @@ describe("Commit", function() {
     it("has an email", function() {
       assert.equal(this.committer.email(), "mike@panmedia.co.nz");
     });
+  });
+
+  it("does not leak", function() {
+    var test = this;
+
+    garbageCollect();
+    var Commit = NodeGit.Commit;
+    var startSelfFreeingCount = Commit.getSelfFreeingInstanceCount();
+    var startNonSelfFreeingCount = Commit.getNonSelfFreeingConstructedCount();
+
+    var resolve;
+    var promise = new Promise(function(_resolve) { resolve = _resolve; });
+
+    NodeGit.Commit.lookup(test.repository, oid)
+      .then(function() {
+        // get out of this promise chain to help GC get rid of the commit
+        setTimeout(resolve, 0);
+      });
+
+    return promise
+      .then(function() {
+        garbageCollect();
+        var endSelfFreeingCount = Commit.getSelfFreeingInstanceCount();
+        var endNonSelfFreeingCount = Commit.getNonSelfFreeingConstructedCount();
+        // any new self-freeing commits should have been freed
+        assert.equal(startSelfFreeingCount, endSelfFreeingCount);
+        // no new non-self-freeing commits should have been constructed
+        assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
+      });
+  });
+
+  it("duplicates signature", function() {
+    garbageCollect();
+    var Signature = NodeGit.Signature;
+    var startSelfFreeingCount = Signature.getSelfFreeingInstanceCount();
+    var startNonSelfFreeingCount =
+      Signature.getNonSelfFreeingConstructedCount();
+    var signature = this.commit.author();
+
+    garbageCollect();
+    var endSelfFreeingCount = Signature.getSelfFreeingInstanceCount();
+    var endNonSelfFreeingCount = Signature.getNonSelfFreeingConstructedCount();
+    // we should get one duplicated, self-freeing signature
+    assert.equal(startSelfFreeingCount + 1, endSelfFreeingCount);
+    assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
+
+    signature = null;
+    garbageCollect();
+    endSelfFreeingCount = Signature.getSelfFreeingInstanceCount();
+    // the self-freeing signature should get freed
+    assert.equal(startSelfFreeingCount, endSelfFreeingCount);
   });
 });

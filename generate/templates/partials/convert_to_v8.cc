@@ -61,7 +61,7 @@
     {% if cppClassName == 'Wrapper' %}
       to = {{ cppClassName }}::New({{= parsedName =}});
     {% else %}
-      to = {{ cppClassName }}::New({{= parsedName =}}, false);
+      to = {{ cppClassName }}::New({{= parsedName =}}, {{ selfFreeing|toBool }} {% if shouldDuplicate %}, true{% endif %});
     {% endif %}
   }
   else {

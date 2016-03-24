@@ -40,12 +40,16 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
     static Nan::Persistent<Function> constructor_template;
     static void InitializeComponent (Local<v8::Object> target);
+    // diagnostic count of self-freeing object instances
+    static int SelfFreeingInstanceCount;
+    // diagnostic count of constructed non-self-freeing object instances
+    static int NonSelfFreeingConstructedCount;
 
     {%if cType%}
     {{ cType }} *GetValue();
     void ClearValue();
 
-    static Local<v8::Value> New(const {{ cType }} *raw, bool selfFreeing);
+    static Local<v8::Value> New(const {{ cType }} *raw, bool selfFreeing, bool shouldDuplicate = false);
     {%endif%}
     bool selfFreeing;
 
@@ -81,7 +85,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
 
     {%if cType%}
-    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing);
+    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, bool shouldDuplicate = false);
     ~{{ cppClassName }}();
     {%endif%}
 
@@ -96,6 +100,8 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     {% endeach %}
 
     static NAN_METHOD(JSNewFunction);
+    static NAN_METHOD(GetSelfFreeingInstanceCount);
+    static NAN_METHOD(GetNonSelfFreeingConstructedCount);
 
     {%each fields as field%}
       {%if not field.ignore%}

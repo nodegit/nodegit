@@ -121,6 +121,7 @@
       }
     },
     "blob": {
+      "selfFreeing": true,
       "functions": {
         "git_blob_create_frombuffer": {
           "isAsync": false,
@@ -139,6 +140,11 @@
         },
         "git_blob_filtered_content": {
           "ignore": true
+        },
+        "git_blob_id": {
+          "return": {
+            "shouldDuplicate": true
+          }
         },
         "git_blob_rawcontent": {
           "return": {
@@ -354,6 +360,7 @@
       }
     },
     "commit": {
+      "selfFreeing": true,
       "functions": {
         "git_commit_amend": {
           "args": {
@@ -380,6 +387,16 @@
             }
           }
         },
+        "git_commit_author": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
+        "git_commit_committer": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
         "git_commit_create": {
           "args": {
             "id": {
@@ -404,6 +421,21 @@
         },
         "git_commit_create_from_ids": {
           "ignore": true
+        },
+        "git_commit_id": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
+        "git_commit_parent_id": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
+        "git_commit_tree_id": {
+          "return": {
+            "shouldDuplicate": true
+          }
         }
       }
     },
@@ -1273,6 +1305,8 @@
       "ignore": true
     },
     "oid": {
+      "dupFunction": "git_oid_cpy",
+      "freeFunctionName": "free",
       "shouldAlloc": true,
       "functions": {
         "git_oid_cpy": {
@@ -1877,6 +1911,7 @@
       }
     },
 	  "signature": {
+      "dupFunction": "git_signature_dup",
 	    "functions": {
         "git_signature_default": {
           "isAsync": false
@@ -2113,6 +2148,7 @@
       }
     },
     "tag": {
+      "selfFreeing": true,
       "functions": {
         "git_tag_foreach": {
           "ignore": true
@@ -2130,6 +2166,11 @@
         },
         "git_tag_create_frombuffer": {
           "ignore": true
+        },
+        "git_tag_id": {
+          "return": {
+            "shouldDuplicate": true
+          }
         },
         "git_tag_create_lightweight": {
           "args": {
@@ -2166,11 +2207,21 @@
           },
           "isAsync": true
         },
+        "git_tag_tagger": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
         "git_tag_target": {
           "args": {
             "target_out": {
               "isReturn": true
             }
+          }
+        },
+        "git_tag_target_id": {
+          "return": {
+            "shouldDuplicate": true
           }
         },
         "git_tag_delete": {
@@ -2213,15 +2264,33 @@
       ]
     },
     "tree": {
+      "selfFreeing": true,
       "functions": {
-        "git_tree_entry_free": {
-          "ignore": true
+        "git_tree_entry_byid": {
+          "return": {
+            "shouldDuplicate": true
+          }
         },
         "git_tree_entry_byindex": {
           "jsFunctionName": "_entryByIndex"
         },
+        "git_tree_entry_byname": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
+        "git_tree_entry_id": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
         "git_tree_entrycount": {
           "jsFunctionName": "entryCount"
+        },
+        "git_tree_id": {
+          "return": {
+            "shouldDuplicate": true
+          }
         },
         "git_tree_walk": {
           "ignore": true
@@ -2248,6 +2317,10 @@
           }
         }
       }
+    },
+    "tree_entry": {
+      "dupFunction": "git_tree_entry_dup",
+      "freeFunctionName": "git_tree_entry_free"
     },
     "writestream": {
       "cType": "git_writestream",
