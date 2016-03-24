@@ -134,7 +134,7 @@ describe("Submodule", function() {
         return reference.peel(NodeGit.Object.TYPE.COMMIT);
       })
       .then(function(commit) {
-        return submoduleRepo.createBranch("master", commit);
+        return submoduleRepo.createBranch("master", commit.id());
       })
       .then(function() {
         return submodule.addFinalize();
