@@ -949,9 +949,11 @@
         "git_ignore_path_is_ignored": {
           "args": {
             "ignored": {
+              "shouldAlloc": true,
               "isReturn": true
             }
-          }
+          },
+          "isAsync": true
         }
       }
     },
