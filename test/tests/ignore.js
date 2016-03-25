@@ -18,7 +18,16 @@ describe("Ignore", function() {
   });
 
   it("can determine if a path is ignored", function() {
-    assert.equal(Ignore.pathIsIgnored(this.repository, ".git"), true);
-    assert.equal(Ignore.pathIsIgnored(this.repository, "LICENSE"), false);
+    function expectIgnoreState(repo, fileName, expected) {
+      return Ignore.pathIsIgnored(repo, fileName)
+        .then(function(ignored) {
+          assert.equal(ignored, expected);
+        });
+    }
+
+    return Promise.all([
+      expectIgnoreState(this.repository, ".git", true),
+      expectIgnoreState(this.repository, "LICENSE", false)
+    ]);
   });
 });
