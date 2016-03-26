@@ -24,7 +24,9 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   })
   .then(function() {
     //remove the file from the index...
-    _index.removeByPath(fileName);
+    return _index.removeByPath(fileName);
+  })
+  .then(function() {
     return _index.write();
   })
   .then(function() {

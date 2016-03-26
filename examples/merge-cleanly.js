@@ -46,10 +46,13 @@ fse.remove(path.resolve(__dirname, repoDir))
   return repository.refreshIndex();
 })
 .then(function(index) {
-  index.addByPath(ourFileName);
-  index.write();
-
-  return index.writeTree();
+  return index.addByPath(ourFileName)
+    .then(function() {
+      return index.write();
+    })
+    .then(function() {
+      return index.writeTree();
+    });
 })
 .then(function(oid) {
   return repository.createCommit("HEAD", ourSignature,
@@ -81,10 +84,13 @@ fse.remove(path.resolve(__dirname, repoDir))
   return repository.refreshIndex();
 })
 .then(function(index) {
-  index.addByPath(theirFileName);
-  index.write();
-
-  return index.writeTree();
+  return index.addByPath(theirFileName)
+    .then(function() {
+      return index.write();
+    })
+    .then(funcion() {
+      return index.writeTree();
+    });
 })
 .then(function(oid) {
   // You don"t have to change head to make a commit to a different branch.
@@ -110,8 +116,10 @@ fse.remove(path.resolve(__dirname, repoDir))
 // the repository instead of just writing it.
 .then(function(index) {
   if (!index.hasConflicts()) {
-    index.write();
-    return index.writeTreeTo(repository);
+    return index.write()
+      .then(function() {
+        return index.writeTreeTo(repository);
+      });
   }
 })
 
