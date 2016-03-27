@@ -982,6 +982,12 @@
             "isErrorCode": true
           }
         },
+        "git_index_add_bypath": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_index_add_frombuffer": {
           "ignore": true
         },

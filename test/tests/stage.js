@@ -302,8 +302,8 @@ describe("Stage", function() {
       .then(function() {
         return test.repository.refreshIndex();
       })
-      .then(function(repoIndex) {
-        index = repoIndex;
+      .then(function(_index) {
+        index = _index;
         return index.writeTree();
       })
       .then(function (oid) {
@@ -345,7 +345,9 @@ describe("Stage", function() {
       .then(function(repoIndex) {
         //Now we stage the whole file...
         index = repoIndex;
-        index.addByPath(fileName);
+        return index.addByPath(fileName);
+      })
+      .then(function() {
         return index.write();
       })
       .then(function() {
@@ -429,13 +431,20 @@ describe("Stage", function() {
     }))
     .then(function() {
       // Initial commit
-      return test.repository.refreshIndex()
-        .then(function(index) {
-          fileName.forEach(function(file) {
-            index.addByPath(file);
-          });
-          index.write();
-
+      return test.repository.refreshIndex();
+    })
+    .then(function(index) {
+      return fileName
+        .reduce(function(lastPromise, file) {
+          return lastPromise
+            .then(function() {
+              return index.addByPath(file);
+            });
+        }, Promise.resolve())
+        .then(function() {
+          return index.write();
+        })
+        .then(function() {
           return index.writeTree();
         });
     })

@@ -88,7 +88,7 @@ fse.remove(path.resolve(__dirname, repoDir))
     .then(function() {
       return index.write();
     })
-    .then(funcion() {
+    .then(function() {
       return index.writeTree();
     });
 })

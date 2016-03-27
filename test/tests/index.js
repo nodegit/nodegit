@@ -80,7 +80,7 @@ describe("Index", function() {
       }));
     })
     .then(function() {
-      index.clear();
+      return index.clear();
     });
   });
 
@@ -131,7 +131,7 @@ describe("Index", function() {
       }));
     })
     .then(function() {
-      index.clear();
+      return index.clear();
     });
   });
 
