@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.11.9",
+  "version": "0.12.0",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -88,7 +88,7 @@
     "rebuild": "node generate && node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
     "rebuildDebug": "node generate && node-gyp configure --debug build",
-    "xcodeDebug": "node-gyp configure -- -f xcode", 
+    "xcodeDebug": "node-gyp configure -- -f xcode",
     "postinstall": "bash postinstall.sh"
   }
 }

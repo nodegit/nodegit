@@ -1,5 +1,22 @@
 # Change Log
 
+## [0.12.0](https://github.com/nodegit/nodegit/releases/tag/v0.12.0) (2016-03-28)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.9...v0.12.0)
+
+# API changes
+- `Ignore`
+  - Made `Ignore.pathIsIgnored` async [PR #970](https://github.com/nodegit/nodegit/pull/970)
+
+# Bug fixes
+
+- Added an error message when trying to install NodeGit without a required version of libstdc++ [PR #972](https://github.com/nodegit/nodegit/pull/972)
+- Fix a crash when grabbing content out of a buffer that has unicode [PR #966](https://github.com/nodegit/nodegit/pull/966)
+- Added some plumbing for better memory management [PR #958](https://github.com/nodegit/nodegit/pull/958)
+- Fix `checkoutOptions` in `Stash#apply` [PR #956](https://github.com/nodegit/nodegit/pull/956)
+- Fixed install when there is a space in the username on windows [PR #951](https://github.com/nodegit/nodegit/pull/951)
+- Bump to nan@2.2.0 [PR #952](https://github.com/nodegit/nodegit/pull/952)
+
 ## [0.11.9](https://github.com/nodegit/nodegit/releases/tag/v0.11.9) (2016-03-09)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.8...v0.11.9)
