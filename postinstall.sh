@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ -n "$(node lib/nodegit.js 2>&1 | grep libstdc++)" ]; then
-	echo "[ERROR] Seems like you the latest libstdc++ is missing on your system!"
+	echo "[ERROR] Seems like the latest libstdc++ is missing on your system!"
 	echo ""
 	echo "On Ubuntu you can install it using:"
 	echo ""
