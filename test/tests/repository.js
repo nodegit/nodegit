@@ -67,6 +67,19 @@ describe("Repository", function() {
       });
   });
 
+  it("can be cleaned", function() {
+    this.repository.cleanup();
+
+    // try getting a commit after cleanup (to test that the repo is usable)
+    return this.repository.getHeadCommit()
+      .then(function(commit) {
+        assert.equal(
+          commit.toString(),
+          "32789a79e71fbc9e04d3eff7425e1771eb595150"
+        );
+      });
+  });
+
   it("can read the index", function() {
     return this.repository.index()
       .then(function(index) {

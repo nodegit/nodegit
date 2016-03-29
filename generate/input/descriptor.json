@@ -1769,10 +1769,10 @@
       "ignore": true
     },
     "repository": {
+      "dependencies": [
+        "git2/sys/repository.h"
+      ],
       "functions": {
-        "git_repository__cleanup": {
-          "ignore": true
-        },
         "git_repository_discover": {
           "isAsync": true,
           "return": {
