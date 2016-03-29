@@ -35,9 +35,9 @@ if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL
 {% endif %}
 
   giterr_clear();
-  
+
   {
-    LockMaster lockMaster(true{%each args|argsInfo as arg %}
+    LockMaster lockMaster(/*asyncAction: */false{%each args|argsInfo as arg %}
       {%if arg.cType|isPointer%}{%if not arg.isReturn%}
         ,{%if arg.isSelf %}
     Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This())->GetValue()

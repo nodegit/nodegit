@@ -31,7 +31,6 @@ describe("Index", function() {
 
   after(function() {
     this.index.clear();
-    NodeGit.disableThreadSafety();
   });
 
   it("can get the index of a repo and examine entries", function() {

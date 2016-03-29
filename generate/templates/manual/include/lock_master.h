@@ -4,8 +4,15 @@
 class LockMasterImpl;
 
 class LockMaster {
+public:
+  enum Status {
+    Disabled = 0,
+    EnabledForAsyncOnly,
+    Enabled
+  };
 
-  static bool enabled;
+private:
+  static Status status;
 
   LockMasterImpl *impl;
 
@@ -34,8 +41,8 @@ class LockMaster {
 public:
 
   // we lock on construction
-  template<typename ...Types> LockMaster(bool emptyGuard, const Types*... types) {
-    if(!enabled) {
+  template<typename ...Types> LockMaster(bool asyncAction, const Types*... types) {
+    if((status == Disabled) || ((status == EnabledForAsyncOnly) && !asyncAction)) {
       impl = NULL;
       return;
     }
@@ -62,7 +69,7 @@ public:
     void DestructorImpl();
   public:
     TemporaryUnlock() {
-      // We can't return here if enabled is false
+      // We can't return here if disabled
       // It's possible that a LockMaster was fully constructed and registered
       // before the thread safety was disabled.
       // So we rely on ConstructorImpl to abort if there is no registered LockMaster
@@ -80,15 +87,19 @@ public:
 
   // Enables the thread safety system
   static void Enable() {
-    enabled = true;
+    status = Enabled;
+  }
+
+  static void SetStatus(Status status) {
+    LockMaster::status = status;
   }
 
   static void Disable() {
-    enabled = false;
+    status = Disabled;
   }
 
-  static bool IsEnabled() {
-    return enabled;
+  static Status GetStatus() {
+    return status;
   }
 
   // Diagnostic information that can be provided to the JavaScript layer
