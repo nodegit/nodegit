@@ -1591,6 +1591,16 @@
               "isOptional": true
             }
           }
+        },
+        "git_reference_target": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
+        "git_reference_target_peel": {
+          "return": {
+            "shouldDuplicate": true
+          }
         }
       }
     },
