@@ -1537,6 +1537,7 @@
     },
     "reference": {
       "cppClassName": "GitRefs",
+      "selfFreeing": true,
       "functions": {
         "git_reference__alloc": {
           "ignore": true
