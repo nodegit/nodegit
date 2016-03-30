@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.12.1](https://github.com/nodegit/nodegit/releases/tag/v0.12.1) (2016-03-30)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.0...v0.12.1)
+
+# Bug fixes
+
+- Fixed post install script dying on windows [PR #978](https://github.com/nodegit/nodegit/pull/978)
+
 ## [0.12.0](https://github.com/nodegit/nodegit/releases/tag/v0.12.0) (2016-03-28)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.9...v0.12.0)
