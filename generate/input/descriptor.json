@@ -1537,6 +1537,7 @@
     },
     "reference": {
       "cppClassName": "GitRefs",
+      "selfFreeing": true,
       "functions": {
         "git_reference__alloc": {
           "ignore": true
@@ -1589,6 +1590,16 @@
             "log_message": {
               "isOptional": true
             }
+          }
+        },
+        "git_reference_target": {
+          "return": {
+            "shouldDuplicate": true
+          }
+        },
+        "git_reference_target_peel": {
+          "return": {
+            "shouldDuplicate": true
           }
         }
       }
