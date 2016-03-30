@@ -89,6 +89,6 @@
     "recompileDebug": "node-gyp configure --debug build",
     "rebuildDebug": "node generate && node-gyp configure --debug build",
     "xcodeDebug": "node-gyp configure -- -f xcode",
-    "postinstall": "bash postinstall.sh"
+    "postinstall": "node postinstall.js"
   }
 }
