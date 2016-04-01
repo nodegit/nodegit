@@ -2,6 +2,8 @@ var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
+var garbageCollect = require("../utils/garbage_collect.js");
+
 describe("Remote", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
@@ -377,6 +379,50 @@ describe("Remote", function() {
         } else {
           return Promise.resolve();
         }
+      });
+  });
+
+  it("is kept alive by refspec", function() {
+    var repo = this.repository;
+    var Remote = NodeGit.Remote;
+
+    garbageCollect();
+    var startSelfFreeingCount = Remote.getSelfFreeingInstanceCount();
+    var startNonSelfFreeingCount = Remote.getNonSelfFreeingConstructedCount();
+
+    var resolve;
+    var promise = new Promise(function(_resolve) { resolve = _resolve; });
+
+    var remote;
+
+    repo.getRemote("origin")
+      .then(function(_remote) {
+        remote = _remote;
+        setTimeout(resolve, 0);
+      });
+
+    return promise
+      .then(function() {
+        // make sure we have created one self-freeing remote
+        assert.equal(startSelfFreeingCount + 1,
+          Remote.getSelfFreeingInstanceCount());
+        assert.equal(startNonSelfFreeingCount,
+          Remote.getNonSelfFreeingConstructedCount());
+        var refspec = remote.getRefspec(0);
+        assert.equal("refs/heads/*", refspec.src());
+        remote = null;
+        garbageCollect();
+        // the refspec should be holding on to the remote
+        assert.equal(startSelfFreeingCount + 1,
+          Remote.getSelfFreeingInstanceCount());
+
+        assert.equal("refs/heads/*", refspec.src());
+
+        refspec = null;
+        garbageCollect();
+        // the remote should be freed now
+        assert.equal(startSelfFreeingCount,
+          Remote.getSelfFreeingInstanceCount());
       });
   });
 });
