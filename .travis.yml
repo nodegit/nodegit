@@ -13,12 +13,22 @@ sudo: false
 
 env:
   matrix:
-    - export NODE_VERSION="0.12"
-    - export NODE_VERSION="4.1"
-    - export NODE_VERSION="5.8"
+    - export NODE_VERSION="0.12" TARGET_ARCH="x64"
+    - export NODE_VERSION="4.1" TARGET_ARCH="x64"
+    - export NODE_VERSION="5.8" TARGET_ARCH="x64"
 
 matrix:
   fast_finish: true
+  include:
+    - os: linux
+      env: export NODE_VERSION="0.12" TARGET_ARCH="ia32"
+      sudo: required
+    - os: linux
+      env: export NODE_VERSION="4.1" TARGET_ARCH="ia32"
+      sudo: required
+    - os: linux
+      env: export NODE_VERSION="5.8" TARGET_ARCH="ia32"
+      sudo: required
 
 git:
   depth: 1
@@ -30,14 +40,18 @@ addons:
     packages:
       - build-essential
       - libssl-dev
-      - gcc-4.9
-      - g++-4.9
+      - gcc-4.9-multilib
+      - g++-4.9-multilib
       - lcov
 
 before_install:
   - export CC=clang
   - export CXX=clang++
   - export npm_config_clang=1
+
+  - if [ $TARGET_ARCH == "ia32" ]; then
+      sudo ln -s /usr/include/asm-generic /usr/include/asm;
+    fi
 
   - if [ $TRAVIS_OS_NAME != "linux" ]; then
       git clone https://github.com/creationix/nvm.git ./.nvm;
@@ -74,10 +88,14 @@ before_script:
   - git config --global user.email johndoe@example.com
 
 script:
-  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
-      npm test && npm run cov && npm run coveralls;
+  - if [ $TARGET_ARCH == "x64" ]; then
+      if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
+        npm test && npm run cov && npm run coveralls;
+      else
+        npm test;
+      fi
     else
-      npm test;
+      echo "Not running tests because the binary is not built for 64-bit systems";
     fi
 
 after_success:
@@ -85,11 +103,11 @@ after_success:
       npm install -g node-pre-gyp;
       npm install -g aws-sdk;
       node lifecycleScripts/clean;
-      node-pre-gyp package;
-      node-pre-gyp publish;
+      node-pre-gyp package --target_arch=$TARGET_ARCH;
+      node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "4.1" ]; then
+  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "4.1" ] && [ $TARGET_ARCH == "x64" ]; then
       .travis/deploy-docs.sh;
     fi
 

@@ -81,6 +81,8 @@ function build() {
   var builder = "node-gyp";
   var debug = (process.env.BUILD_DEBUG ? "--debug" : "");
   var target = "";
+  var arch = (process.env.TARGET_ARCH ?
+	"--arch=" + process.env.TARGET_ARCH : "");
   var distUrl = "";
   var runtime = "";
 
@@ -114,6 +116,7 @@ function build() {
     "rebuild",
     debug,
     target,
+    arch,
     distUrl,
     runtime
   ]
