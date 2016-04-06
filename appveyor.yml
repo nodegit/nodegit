@@ -1,8 +1,8 @@
 # appveyor file
 # http://www.appveyor.com/docs/appveyor-yml
 
-# Try out "interactive-mode"
 os: Windows Server 2012 R2
+image: Visual Studio 2015
 
 platform:
   - x86
