@@ -974,6 +974,7 @@
       }
     },
     "index": {
+      "selfFreeing": true,
       "functions": {
         "git_index_add": {
           "isAsync": true,
@@ -1018,6 +1019,11 @@
             "isErrorCode": true
           }
         },
+        "git_index_checksum": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_index_conflict_add": {
           "isAsync": true,
           "args": {
@@ -1047,13 +1053,16 @@
         "git_index_conflict_get": {
           "args": {
             "ancestor_out": {
-              "isReturn": true
+              "isReturn": true,
+              "ownedByThis": true
             },
             "our_out": {
-              "isReturn": true
+              "isReturn": true,
+              "ownedByThis": true
             },
             "their_out": {
-              "isReturn": true
+              "isReturn": true,
+              "ownedByThis": true
             }
           },
           "isAsync": true,
@@ -1085,7 +1094,15 @@
         "git_index_free": {
           "ignore": true
         },
+        "git_index_get_byindex": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_index_get_bypath": {
+          "return": {
+            "ownedByThis": true
+          },
           "args": {
             "stage": {
               "isOptional": true
