@@ -75,7 +75,7 @@ describe("Checkout", function() {
     var test = this;
 
     return test.repository.getTagByName("annotated-tag").then(function(tag) {
-      return Checkout.tree(test.repository, test.tag);
+      return Checkout.tree(test.repository, tag);
     }).then(function() {
       return test.repository.getHeadCommit();
     }).then(function(commit) {
