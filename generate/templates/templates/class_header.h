@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "async_baton.h"
+#include "nodegit_wrapper.h"
 #include "promise_completion.h"
 
 extern "C" {
@@ -35,23 +36,23 @@ struct {{ cType }} {
 using namespace node;
 using namespace v8;
 
-class {{ cppClassName }} : public Nan::ObjectWrap {
+{%if cType %}
+{%partial traits .%}
+{%endif%}
+
+class {{ cppClassName }} : public
+{%if cType %}
+  NodeGitWrapper<{{ cppClassName }}Traits>
+{%else%}
+  Nan::ObjectWrap
+{%endif%}
+{
+  {%if cType %}
+    // grant full access to base class
+    friend class NodeGitWrapper<{{ cppClassName }}Traits>;
+  {%endif %}
   public:
-
-    static Nan::Persistent<Function> constructor_template;
     static void InitializeComponent (Local<v8::Object> target);
-    // diagnostic count of self-freeing object instances
-    static int SelfFreeingInstanceCount;
-    // diagnostic count of constructed non-self-freeing object instances
-    static int NonSelfFreeingConstructedCount;
-
-    {%if cType%}
-    {{ cType }} *GetValue();
-    void ClearValue();
-
-    static Local<v8::Value> New(const {{ cType }} *raw, bool selfFreeing, Local<v8::Object> owner = Local<v8::Object>());
-    {%endif%}
-    bool selfFreeing;
 
     {% each functions as function %}
       {% if not function.ignore %}
@@ -84,15 +85,19 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
 
   private:
-    // owner of the object, in the memory management sense. only populated
-    // when using ownedByThis, and the type doesn't have a dupFunction
-    // CopyablePersistentTraits are used to get the reset-on-destruct behavior.
-    {%if not dupFunction %}
-    Nan::Persistent<Object, Nan::CopyablePersistentTraits<Object> > owner;
-    {%endif%}
-
     {%if cType%}
-    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, Local<v8::Object> owner = Local<v8::Object>());
+    {{ cppClassName }}()
+      : NodeGitWrapper<{{ cppClassName }}Traits>(
+        {% if createFunctionName %}
+          "A new {{ cppClassName }} cannot be instantiated. Use {{ jsCreateFunctionName }} instead."
+        {% else %}
+          "A new {{ cppClassName }} cannot be instantiated."
+        {% endif %}
+      )
+    {}
+    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, Local<v8::Object> owner = Local<v8::Object>())
+      : NodeGitWrapper<{{ cppClassName }}Traits>(raw, selfFreeing, owner)
+    {}
     ~{{ cppClassName }}();
     {%endif%}
 
@@ -105,10 +110,6 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
         {% endeach %}
       {% endif %}
     {% endeach %}
-
-    static NAN_METHOD(JSNewFunction);
-    static NAN_METHOD(GetSelfFreeingInstanceCount);
-    static NAN_METHOD(GetNonSelfFreeingConstructedCount);
 
     {%each fields as field%}
       {%if not field.ignore%}
@@ -186,10 +187,6 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
         {%endif%}
       {%endeach%}
     {%endeach%}
-
-    {%if cType%}
-    {{ cType }} *raw;
-    {%endif%}
 };
 
 #endif

@@ -7,6 +7,7 @@
 
 #include "async_baton.h"
 #include "callback_wrapper.h"
+#include "nodegit_wrapper.h"
 
 extern "C" {
   #include <git2.h>
@@ -22,18 +23,14 @@ extern "C" {
 using namespace node;
 using namespace v8;
 
-class {{ cppClassName }} : public Nan::ObjectWrap {
+{%partial traits .%}
+
+class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
+    // grant full access to base class
+    friend class NodeGitWrapper<{{ cppClassName }}Traits>;
   public:
-    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing);
-    static Nan::Persistent<Function> constructor_template;
+    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = Local<v8::Object>());
     static void InitializeComponent (Local<v8::Object> target);
-
-    {{ cType }} *GetValue();
-    void ClearValue();
-
-    static Local<v8::Value> New(const {{ cType }} *raw, bool selfFreeing);
-
-    bool selfFreeing;
 
     {% each fields as field %}
       {% if not field.ignore %}
@@ -70,8 +67,6 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
     void ConstructFields();
 
-    static NAN_METHOD(JSNewFunction);
-
     {% each fields as field %}
       {% if not field.ignore %}
         {% if not field.isEnum %}
@@ -89,8 +84,6 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
       {% endif %}
     {% endeach %}
-
-    {{ cType }} *raw;
 };
 
 #endif

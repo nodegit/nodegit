@@ -35,7 +35,8 @@ module.exports = function generateNativeCode() {
     fields: utils.readFile("templates/partials/fields.cc"),
     guardArguments: utils.readFile("templates/partials/guard_arguments.cc"),
     syncFunction: utils.readFile("templates/partials/sync_function.cc"),
-    fieldAccessors: utils.readFile("templates/partials/field_accessors.cc")
+    fieldAccessors: utils.readFile("templates/partials/field_accessors.cc"),
+    traits: utils.readFile("templates/partials/traits.h")
   };
 
   var templates = {
@@ -87,7 +88,9 @@ module.exports = function generateNativeCode() {
 
   // Attach all partials to select templates.
   Object.keys(partials).forEach(function(partial) {
+    templates.class_header.registerPartial(partial, combyne(partials[partial]));
     templates.class_content.registerPartial(partial, combyne(partials[partial]));
+    templates.struct_header.registerPartial(partial, combyne(partials[partial]));
     templates.struct_content.registerPartial(partial, combyne(partials[partial]));
   });
 

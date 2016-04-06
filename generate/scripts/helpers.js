@@ -183,6 +183,8 @@ var Helpers = {
 
     if (typeDefOverrides.freeFunctionName) {
       typeDef.freeFunctionName = typeDefOverrides.freeFunctionName;
+    } else if (typeDef.type === 'struct') {
+      typeDef.freeFunctionName = 'free';
     }
 
     typeDef.fields = typeDef.fields || [];
