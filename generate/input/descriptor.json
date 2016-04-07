@@ -1833,7 +1833,11 @@
           }
         },
         "git_repository_set_index": {
-          "ignore": true
+          "args": {
+            "index": {
+              "isOptional": true
+            }
+          }
         },
         "git_repository_set_odb": {
           "ignore": true

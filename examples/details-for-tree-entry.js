@@ -13,7 +13,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
 
       // Tree entry doesn't have any data associated with the actual entry
       // To get that we need to get the index entry that this points to
-      return repo.openIndex().then(function(index) {
+      return repo.refreshIndex().then(function(index) {
         var indexEntry = index.getByPath(treeEntry.path());
 
         // With the index entry we can now view the details for the tree entry

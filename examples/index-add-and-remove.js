@@ -5,7 +5,7 @@ var fse = promisify(require("fs-extra"));
 
 nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   .then(function(repo) {
-    return repo.openIndex()
+    return repo.refreshIndex()
     .then(function(index) {
       var fileContent = {
         newFile1: "this has some content",

@@ -7,9 +7,8 @@ var fse = promisify(require("fs-extra"));
 var RepositorySetup = {
 	addFileToIndex:
 	function addFileToIndex(repository, fileName) {
-		return repository.openIndex()
+		return repository.refreshIndex()
 			.then(function(index) {
-				index.read(1);
 				index.addByPath(fileName);
 				index.write();
 

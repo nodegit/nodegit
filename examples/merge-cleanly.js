@@ -43,10 +43,9 @@ fse.remove(path.resolve(__dirname, repoDir))
 
 // Load up the repository index and make our initial commit to HEAD
 .then(function() {
-  return repository.openIndex();
+  return repository.refreshIndex();
 })
 .then(function(index) {
-  index.read(1);
   index.addByPath(ourFileName);
   index.write();
 
@@ -79,10 +78,9 @@ fse.remove(path.resolve(__dirname, repoDir))
   );
 })
 .then(function() {
-  return repository.openIndex();
+  return repository.refreshIndex();
 })
 .then(function(index) {
-  index.read(1);
   index.addByPath(theirFileName);
   index.write();
 

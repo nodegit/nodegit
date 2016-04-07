@@ -17,11 +17,10 @@ var _oid;
 nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   .then(function(repo) {
     _repository = repo;
-    return repo.openIndex();
+    return repo.refreshIndex();
   })
   .then(function(index){
     _index = index;
-    return _index.read();
   })
   .then(function() {
     //remove the file from the index...

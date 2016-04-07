@@ -253,9 +253,8 @@ describe("Revwalk", function() {
         );
       })
       .then(function() {
-        return repo.openIndex()
+        return repo.refreshIndex()
           .then(function(index) {
-            index.read(1);
             index.addByPath(fileNameB);
             index.removeByPath(fileNameA);
             index.write();

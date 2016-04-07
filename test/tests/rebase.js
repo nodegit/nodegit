@@ -13,9 +13,8 @@ describe("Rebase", function() {
   var theirBranchName = "theirs";
 
   var removeFileFromIndex = function(repository, fileName) {
-    return repository.openIndex()
+    return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.removeByPath(fileName);
         index.write();
 
@@ -454,7 +453,7 @@ describe("Rebase", function() {
         assert.equal(rebaseOperation.id().toString(),
           "28cfeb17f66132edb3c4dacb7ff38e8dd48a1844");
 
-        return repository.openIndex()
+        return repository.refreshIndex()
           .then(function(index) {
             assert.ok(index.hasConflicts());
           });
@@ -472,7 +471,7 @@ describe("Rebase", function() {
         return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
-        return repository.openIndex()
+        return repository.refreshIndex()
           .then(function(index) {
             assert.ok(!index.hasConflicts());
 
@@ -1039,7 +1038,7 @@ describe("Rebase", function() {
         return RepoUtils.addFileToIndex(repository, fileName);
       })
       .then(function(oid) {
-        return repository.openIndex()
+        return repository.refreshIndex()
           .then(function(index) {
             assert.ok(!index.hasConflicts());
 

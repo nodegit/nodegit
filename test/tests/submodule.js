@@ -146,7 +146,7 @@ describe("Submodule", function() {
       .then(function(submodule) {
         assert.equal(submodule.name(), submodulePath);
         // check whether .gitmodules and the submodule are in the index
-        return repo.openIndex();
+        return repo.refreshIndex();
       })
       .then(function(index) {
         var entries = index.entries();

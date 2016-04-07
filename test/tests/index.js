@@ -22,7 +22,7 @@ describe("Index", function() {
     return Repository.open(reposPath)
       .then(function(repo) {
         test.repository = repo;
-        return repo.openIndex();
+        return repo.refreshIndex();
       })
       .then(function(index) {
         test.index = index;
@@ -342,7 +342,7 @@ describe("Index", function() {
         return RepoUtils.addFileToIndex(repo, fileName);
       })
       .then(function() {
-        return repo.openIndex();
+        return repo.index();
       })
       .then(function(index) {
         assert.ok(!index.hasConflicts());
@@ -353,7 +353,7 @@ describe("Index", function() {
         );
       })
       .then(function() {
-        return repo.openIndex();
+        return repo.index();
       })
       .then(function(index) {
         assert(index.hasConflicts());

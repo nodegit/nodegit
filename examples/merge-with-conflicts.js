@@ -49,10 +49,9 @@ fse.remove(path.resolve(__dirname, repoDir))
 
 // Load up the repository index and make our initial commit to HEAD
 .then(function() {
-  return repository.openIndex();
+  return repository.refreshIndex();
 })
 .then(function(index) {
-  index.read(1);
   index.addByPath(fileName);
   index.write();
 
@@ -94,9 +93,8 @@ fse.remove(path.resolve(__dirname, repoDir))
   );
 })
 .then(function() {
-  return repository.openIndex()
+  return repository.refreshIndex()
     .then(function(index) {
-      index.read(1);
       index.addByPath(fileName);
       index.write();
 
@@ -122,8 +120,7 @@ fse.remove(path.resolve(__dirname, repoDir))
   );
 })
 .then(function() {
-  return repository.openIndex().then(function(index) {
-    index.read(1);
+  return repository.refreshIndex().then(function(index) {
     index.addByPath(fileName);
     index.write();
 
@@ -173,9 +170,8 @@ fse.remove(path.resolve(__dirname, repoDir))
 // we need to get a new index as the other one isnt backed to
 // the repository in the usual fashion, and just behaves weirdly
 .then(function() {
-  return repository.openIndex().then(function(index) {
+  return repository.refreshIndex().then(function(index) {
 
-    index.read(1);
     index.addByPath(fileName);
     index.write();
 
