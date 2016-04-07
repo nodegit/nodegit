@@ -138,16 +138,23 @@ class {{ cppClassName }} : public
     class {{ function.cppFunctionName }}Worker : public Nan::AsyncWorker {
       public:
         {{ function.cppFunctionName }}Worker(
+            Local<v8::Object> _wrapper,
             {{ function.cppFunctionName }}Baton *_baton,
             Nan::Callback *callback
         ) : Nan::AsyncWorker(callback)
-          , baton(_baton) {};
+          , baton(_baton)
+        {
+          wrapper.Reset(_wrapper);
+        };
         ~{{ function.cppFunctionName }}Worker() {};
         void Execute();
         void HandleOKCallback();
 
       private:
         {{ function.cppFunctionName }}Baton *baton;
+        // a handle on the wrapper that this belongs to
+        // CopyablePersistentTraits are used to get the reset-on-destruct behavior
+        Nan::Persistent<v8::Object, Nan::CopyablePersistentTraits<v8::Object> > wrapper;
     };
         {%endif%}
 

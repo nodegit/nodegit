@@ -18,7 +18,7 @@ NAN_METHOD(GitRevwalk::FastWalk)
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
-  FastWalkWorker *worker = new FastWalkWorker(baton, callback);
+  FastWalkWorker *worker = new FastWalkWorker(info.This(), baton, callback);
   worker->SaveToPersistent("fastWalk", info.This());
 
   Nan::AsyncQueueWorker(worker);

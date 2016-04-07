@@ -17,7 +17,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
   baton->out->reserve(git_diff_num_deltas(baton->diff));
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
-  ConvenientFromDiffWorker *worker = new ConvenientFromDiffWorker(baton, callback);
+  ConvenientFromDiffWorker *worker = new ConvenientFromDiffWorker(info.This(), baton, callback);
 
   worker->SaveToPersistent("diff", info[0]);
 

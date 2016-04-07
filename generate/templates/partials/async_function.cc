@@ -62,7 +62,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%endeach%}
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[{{args|jsArgsCount}}]));
-  {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback);
+  {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(info.This(), baton, callback);
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}

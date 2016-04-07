@@ -24,7 +24,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[2]));
-  FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback);
+  FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(info.This(), baton, callback);
   worker->SaveToPersistent("fileHistoryWalk", info.This());
 
   Nan::AsyncQueueWorker(worker);
