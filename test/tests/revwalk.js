@@ -315,7 +315,7 @@ describe("Revwalk", function() {
       var walker = repository.createRevWalk();
 
       repository.getMasterCommit().then(function(firstCommitOnMaster) {
-        walker.walk(firstCommitOnMaster, function(err, commit) {
+        walker.walk(firstCommitOnMaster.id(), function(err, commit) {
           if (err && err.errno === NodeGit.Error.CODE.ITEROVER) {
             return done();
           }

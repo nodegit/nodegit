@@ -49,7 +49,7 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
     {{ cType }} *GetValue();
     void ClearValue();
 
-    static Local<v8::Value> New(const {{ cType }} *raw, bool selfFreeing, bool shouldDuplicate = false);
+    static Local<v8::Value> New(const {{ cType }} *raw, bool selfFreeing, Local<v8::Object> owner = Local<v8::Object>());
     {%endif%}
     bool selfFreeing;
 
@@ -82,10 +82,15 @@ class {{ cppClassName }} : public Nan::ObjectWrap {
 
 
   private:
-
+    // owner of the object, in the memory management sense. only populated
+    // when using ownedByThis, and the type doesn't have a dupFunction
+    // CopyablePersistentTraits are used to get the reset-on-destruct behavior.
+    {%if not dupFunction %}
+    Nan::Persistent<Object, Nan::CopyablePersistentTraits<Object> > owner;
+    {%endif%}
 
     {%if cType%}
-    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, bool shouldDuplicate = false);
+    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, Local<v8::Object> owner = Local<v8::Object>());
     ~{{ cppClassName }}();
     {%endif%}
 

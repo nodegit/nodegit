@@ -107,9 +107,11 @@ describe("Submodule", function() {
   });
 
   it("can setup and finalize submodule add", function() {
+    this.timeout(30000);
+
     var repo = this.repository;
-    var submodulePath = "hellogitworld";
-    var submoduleUrl = "https://github.com/githubtraining/hellogitworld.git";
+    var submodulePath = "nodegittest";
+    var submoduleUrl = "https://github.com/nodegit/test.git";
 
     var submodule;
     var submoduleRepo;
@@ -134,7 +136,7 @@ describe("Submodule", function() {
         return reference.peel(NodeGit.Object.TYPE.COMMIT);
       })
       .then(function(commit) {
-        return submoduleRepo.createBranch("master", commit);
+        return submoduleRepo.createBranch("master", commit.id());
       })
       .then(function() {
         return submodule.addFinalize();

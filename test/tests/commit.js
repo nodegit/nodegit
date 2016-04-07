@@ -2,31 +2,15 @@ var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
+
+var garbageCollect = require("../utils/garbage_collect.js");
+
 var local = path.join.bind(path, __dirname);
 
 // Have to wrap exec, since it has a weird callback signature.
 var exec = promisify(function(command, opts, callback) {
   return require("child_process").exec(command, opts, callback);
 });
-
-// aggressively collects garbage until we fail to improve terminatingIterations
-// times.
-function garbageCollect() {
-  var terminatingIterations = 3;
-  var usedBeforeGC = Number.MAX_VALUE;
-  var nondecreasingIterations = 0;
-  for ( ; ; ) {
-    global.gc();
-    var usedAfterGC = process.memoryUsage().heapUsed;
-    if (usedAfterGC >= usedBeforeGC) {
-      nondecreasingIterations++;
-      if (nondecreasingIterations >= terminatingIterations) {
-        break;
-      }
-    }
-    usedBeforeGC = usedAfterGC;
-  }
-}
 
 describe("Commit", function() {
   var NodeGit = require("../../");
