@@ -108,6 +108,7 @@ if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL
     }
     {%endif%}
 
+    Local<v8::Object> ownerWrapper = info.This();
     Local<v8::Value> to;
     {%if .|returnsCount > 1 %}
     Local<Object> toReturn = Nan::New<Object>();

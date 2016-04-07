@@ -1,6 +1,7 @@
 {% each fields|fieldsInfo as field %}
   {% if not field.ignore %}
     NAN_METHOD({{ cppClassName }}::{{ field.cppFunctionName }}) {
+      Local<v8::Object> ownerWrapper = info.This();
       Local<v8::Value> to;
 
       {% if field | isFixedLengthString %}

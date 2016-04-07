@@ -137,6 +137,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     Local<v8::Value> to;
       {%if .|returnsCount > 1 %}
     Local<Object> result = Nan::New<Object>();
+    Local<Object> ownerWrapper = Nan::New(wrapper);
       {%endif%}
       {%each .|returnsInfo 0 1 as _return %}
         {%partial convertToV8 _return %}
