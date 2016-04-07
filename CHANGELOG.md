@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.12.2](https://github.com/nodegit/nodegit/releases/tag/v0.12.2) (2016-04-07)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.1...v0.12.2)
+
+# Added
+
+- We now provide 32-bit binaries for linux [PR #980](https://github.com/nodegit/nodegit/pull/980)
+
+# Bug fixes
+
+- Added memory clean up for references [PR #977](https://github.com/nodegit/nodegit/pull/977) and remotes [PR #981](https://github.com/nodegit/nodegit/pull/981)
+
 ## [0.12.1](https://github.com/nodegit/nodegit/releases/tag/v0.12.1) (2016-03-30)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.0...v0.12.1)
