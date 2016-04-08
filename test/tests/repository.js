@@ -259,7 +259,7 @@ describe("Repository", function() {
     return fse.writeFile(filePath, fileContent)
       .then(function() {
         return repo.createCommitOnHead(
-          [filePath],
+          [fileName],
           authSig,
           commitSig,
           commitMsg
