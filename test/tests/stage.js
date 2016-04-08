@@ -142,8 +142,7 @@ describe("Stage", function() {
       });
       return test.repository.stageLines(fileName, linesToStage, !staging);
     })
-    .then(function(stageResult) {
-      assert.equal(stageResult, 0);
+    .then(function() {
       return test.repository.refreshIndex();
     })
     .then(function(reloadedIndex) {
