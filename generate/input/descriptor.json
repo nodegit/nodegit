@@ -1026,12 +1026,6 @@
             "isErrorCode": true
           }
         },
-        "git_index_conflict_remove": {
-          "isAsync": true,
-          "return": {
-            "isErrorCode": true
-          }
-        },
         "git_index_conflict_iterator_free": {
           "ignore": true
         },
@@ -1040,6 +1034,12 @@
         },
         "git_index_conflict_next": {
           "ignore": true
+        },
+        "git_index_conflict_remove": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_entrycount": {
           "jsFunctionName": "entryCount"
