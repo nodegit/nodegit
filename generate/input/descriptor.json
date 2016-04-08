@@ -1630,7 +1630,10 @@
       "selfFreeing": true,
       "functions": {
         "git_remote_create": {
-          "isAsync": false
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_connect": {
           "isAsync": true,

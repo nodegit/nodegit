@@ -63,13 +63,17 @@ describe("Remote", function() {
 
   it("can set a remote", function() {
     var repository = this.repository;
-    Remote.create(repository, "origin1", url);
 
-    Remote.setPushurl(repository, "origin1", "https://google.com/");
-
-    return Remote.lookup(repository, "origin1").then(function(remote) {
-      assert.equal(remote.pushurl(), "https://google.com/");
-    });
+    return Remote.create(repository, "origin1", url)
+      .then(function() {
+        return Remote.setPushurl(repository, "origin1", "https://google.com/");
+      })
+      .then(function() {
+        return Remote.lookup(repository, "origin1");
+      })
+      .then(function(remote) {
+        assert.equal(remote.pushurl(), "https://google.com/");
+      });
   });
 
   it("can read the remote name", function() {
@@ -78,22 +82,28 @@ describe("Remote", function() {
 
   it("can create and load a new remote", function() {
     var repository = this.repository;
-    Remote.create(repository, "origin2", url);
 
-    return Remote.lookup(repository, "origin2").then(function(remote) {
-      assert(remote.url(), url);
-    });
+    return Remote.create(repository, "origin2", url)
+      .then(function() {
+        return Remote.lookup(repository, "origin2");
+      })
+      .then(function(remote) {
+        assert(remote.url(), url);
+      });
   });
 
   it("can delete a remote", function() {
     var repository = this.repository;
-    Remote.create(repository, "origin3", url);
 
-    return Remote.delete(repository, "origin3")
+    return Remote.create(repository, "origin3", url)
       .then(function() {
-        return Remote.lookup(repository, "origin3");
+        return Remote.delete(repository, "origin3");
       })
-      .then(Promise.reject.bind(Promise), Promise.resolve.bind(Promise));
+      .then(function() {
+        return Remote.lookup(repository, "origin3")
+          // We only want to catch the failed lookup
+          .then(Promise.reject.bind(Promise), Promise.resolve.bind(Promise));
+      });
   });
 
   it("can download from a remote", function() {
@@ -124,9 +134,7 @@ describe("Remote", function() {
     var repo = this.repository;
     var wasCalled = false;
 
-    Remote.create(repo, "test2", url2);
-
-    return repo.getRemote("test2")
+    return Remote.create(repo, "test2", url2)
       .then(function(remote) {
         var fetchOpts = {
           callbacks: {
@@ -183,7 +191,6 @@ describe("Remote", function() {
 
   it("can fetch from a private repository", function() {
     var repo = this.repository;
-    var remote = Remote.create(repo, "private", privateUrl);
     var fetchOptions = {
       callbacks: {
         credentials: function(url, userName) {
@@ -200,7 +207,10 @@ describe("Remote", function() {
       }
     };
 
-    return remote.fetch(null, fetchOptions, "Fetch from private")
+    return Remote.create(repo, "private", privateUrl)
+      .then(function(remote) {
+        return remote.fetch(null, fetchOptions, "Fetch from private");
+      })
       .catch(function() {
         assert.fail("Unable to fetch from private repository");
       });
@@ -209,7 +219,6 @@ describe("Remote", function() {
   it("can reject fetching from private repository without valid credentials",
     function() {
       var repo = this.repository;
-      var remote = Remote.create(repo, "private", privateUrl);
       var firstPass = true;
       var fetchOptions = {
         callbacks: {
@@ -225,7 +234,10 @@ describe("Remote", function() {
         }
       };
 
-      return remote.fetch(null, fetchOptions, "Fetch from private")
+      return Remote.create(repo, "private", privateUrl)
+        .then(function(remote) {
+          return remote.fetch(null, fetchOptions, "Fetch from private");
+        })
         .then(function () {
           assert.fail("Should not be able to fetch from repository");
         })
@@ -240,19 +252,23 @@ describe("Remote", function() {
 
   it("can fetch from all remotes", function() {
     var repository = this.repository;
-    Remote.create(repository, "test1", url);
-    Remote.create(repository, "test2", url2);
 
-    return repository.fetchAll({
-      callbacks: {
-        credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyFromAgent(userName);
-        },
-        certificateCheck: function() {
-          return 1;
-        }
-      }
-    });
+    return Remote.create(repository, "test1", url)
+      .then(function() {
+        return Remote.create(repository, "test2", url2);
+      })
+      .then(function() {
+        return repository.fetchAll({
+          callbacks: {
+            credentials: function(url, userName) {
+              return NodeGit.Cred.sshKeyFromAgent(userName);
+            },
+            certificateCheck: function() {
+              return 1;
+            }
+          }
+        });
+      });
   });
 
   it("will reject if credentials promise rejects", function() {
