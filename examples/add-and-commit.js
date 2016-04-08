@@ -35,11 +35,10 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   );
 })
 .then(function() {
-  return repo.openIndex();
+  return repo.refreshIndex();
 })
 .then(function(indexResult) {
   index = indexResult;
-  return index.read(1);
 })
 .then(function() {
   // this file is in the root of the directory and doesn't need a full path

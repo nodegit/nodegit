@@ -44,9 +44,8 @@ describe("Merge", function() {
         ourFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
-        return repository.openIndex()
+        return repository.refreshIndex()
           .then(function(index) {
-            index.read(1);
             index.addByPath(ourFileName);
             index.write();
 
@@ -80,9 +79,8 @@ describe("Merge", function() {
           theirFileContent);
       })
       .then(function() {
-        return repository.openIndex()
+        return repository.refreshIndex()
           .then(function(index) {
-            index.read(1);
             index.addByPath(theirFileName);
             index.write();
 
@@ -149,9 +147,8 @@ describe("Merge", function() {
       ourFileContent)
     // Load up the repository index and make our initial commit to HEAD
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(ourFileName);
         index.write();
 
@@ -185,9 +182,8 @@ describe("Merge", function() {
       theirFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(theirFileName);
         index.write();
 
@@ -261,9 +257,8 @@ describe("Merge", function() {
       ourFileContent)
     // Load up the repository index and make our initial commit to HEAD
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(ourFileName);
         index.write();
 
@@ -297,9 +292,8 @@ describe("Merge", function() {
       theirFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(theirFileName);
         index.write();
 
@@ -380,9 +374,8 @@ describe("Merge", function() {
       initialFileContent)
     // Load up the repository index and make our initial commit to HEAD
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(initialFileName);
         index.write();
 
@@ -418,9 +411,8 @@ describe("Merge", function() {
       ourFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(ourFileName);
         index.write();
 
@@ -447,9 +439,8 @@ describe("Merge", function() {
       theirFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(theirFileName);
         index.write();
 
@@ -519,9 +510,8 @@ describe("Merge", function() {
       ourFileContent)
     // Load up the repository index and make our initial commit to HEAD
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(ourFileName);
         index.write();
 
@@ -555,9 +545,8 @@ describe("Merge", function() {
       theirFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(theirFileName);
         index.write();
 
@@ -635,9 +624,8 @@ describe("Merge", function() {
       initialFileContent)
     // Load up the repository index and make our initial commit to HEAD
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(initialFileName);
         index.write();
 
@@ -673,9 +661,8 @@ describe("Merge", function() {
       ourFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(ourFileName);
         index.write();
 
@@ -702,9 +689,8 @@ describe("Merge", function() {
       theirFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(theirFileName);
         index.write();
 
@@ -776,9 +762,8 @@ describe("Merge", function() {
       initialFileContent)
     // Load up the repository index and make our initial commit to HEAD
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(initialFileName);
         index.write();
 
@@ -814,9 +799,8 @@ describe("Merge", function() {
       ourFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(ourFileName);
         index.write();
 
@@ -843,9 +827,8 @@ describe("Merge", function() {
       theirFileContent);
     })
     .then(function() {
-      return repository.openIndex()
+      return repository.refreshIndex()
       .then(function(index) {
-        index.read(1);
         index.addByPath(theirFileName);
         index.write();
 
@@ -903,9 +886,8 @@ describe("Merge", function() {
     return fse.writeFile(path.join(repository.workdir(), fileName),
       baseFileContent)
       .then(function() {
-        return repository.openIndex()
+        return repository.refreshIndex()
           .then(function(index) {
-            index.read(1);
             index.addByPath(fileName);
             index.write();
 
@@ -945,8 +927,7 @@ describe("Merge", function() {
           ourFileContent);
       })
       .then(function() {
-        return repository.openIndex().then(function(index) {
-          index.read(1);
+        return repository.refreshIndex().then(function(index) {
           index.addByPath(fileName);
           index.write();
 
@@ -973,8 +954,7 @@ describe("Merge", function() {
           theirFileContent);
       })
       .then(function() {
-        return repository.openIndex().then(function(index) {
-          index.read(1);
+        return repository.refreshIndex().then(function(index) {
           index.addByPath(fileName);
           index.write();
 
@@ -1011,8 +991,7 @@ describe("Merge", function() {
           finalFileContent);
       })
       .then(function() {
-        return repository.openIndex().then(function(index) {
-          index.read(1);
+        return repository.refreshIndex().then(function(index) {
           index.addByPath(fileName);
           index.write();
 
@@ -1072,8 +1051,7 @@ describe("Merge", function() {
     return fse.writeFile(path.join(repository.workdir(), fileName),
       baseFileContent)
       .then(function() {
-        return repository.openIndex().then(function(index) {
-          index.read(1);
+        return repository.refreshIndex().then(function(index) {
           index.addByPath(fileName);
           index.write();
 
@@ -1107,8 +1085,7 @@ describe("Merge", function() {
           baseFileContent + theirFileContent);
       })
       .then(function() {
-        return repository.openIndex().then(function(index) {
-          index.read(1);
+        return repository.refreshIndex().then(function(index) {
           index.addByPath(fileName);
           index.write();
 
@@ -1130,8 +1107,7 @@ describe("Merge", function() {
           baseFileContent + ourFileContent);
       })
       .then(function() {
-        return repository.openIndex().then(function(index) {
-          index.read(1);
+        return repository.refreshIndex().then(function(index) {
           index.addByPath(fileName);
           index.write();
 
@@ -1199,9 +1175,8 @@ describe("Merge", function() {
           conflictSolvedFileContent);
       })
       .then(function() {
-        return repository.openIndex()
+        return repository.refreshIndex()
           .then(function(index) {
-            index.read(1);
             index.addByPath(fileName);
             index.write();
 

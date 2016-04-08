@@ -20,11 +20,10 @@ fse.ensureDir(path.resolve(__dirname, repoDir))
   return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
 })
 .then(function(){
-  return repository.openIndex();
+  return repository.refreshIndex();
 })
 .then(function(idx) {
   index = idx;
-  return index.read(1);
 })
 .then(function() {
   return index.addByPath(fileName);

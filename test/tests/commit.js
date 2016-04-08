@@ -39,11 +39,10 @@ describe("Commit", function() {
 
     return fse.writeFile(path.join(repo.workdir(), fileName), fileContent)
     .then(function() {
-      return repo.openIndex();
+      return repo.refreshIndex();
     })
     .then(function(indexResult) {
       index = indexResult;
-      return index.read(1);
     })
     .then(function() {
       return index.addByPath(fileName);
@@ -146,11 +145,10 @@ describe("Commit", function() {
       return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
     })
     .then(function() {
-      return repo.openIndex();
+      return repo.refreshIndex();
     })
     .then(function(indexResult) {
       index = indexResult;
-      return index.read(1);
     })
     .then(function() {
       return index.addByPath(fileName);
@@ -226,11 +224,10 @@ describe("Commit", function() {
       return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
     })
     .then(function() {
-      return repo.openIndex();
+      return repo.refreshIndex();
     })
     .then(function(indexResult) {
       index = indexResult;
-      return index.read(1);
     })
     .then(function() {
       return index.addByPath(fileName);
@@ -274,11 +271,10 @@ describe("Commit", function() {
       );
     })
     .then(function() {
-      return repo.openIndex();
+      return repo.refreshIndex();
     })
     .then(function(indexResult) {
       index = indexResult;
-      return index.read(1);
     })
     .then(function() {
       return index.addByPath(newFileName);

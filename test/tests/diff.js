@@ -27,7 +27,7 @@ describe("Diff", function() {
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
-      return repository.openIndex();
+      return repository.refreshIndex();
     })
     .then(function(index) {
       test.index = index;
@@ -307,7 +307,7 @@ describe("Diff", function() {
     return Repository.open(reposPath).then(function(repository) {
       test.repository = repository;
 
-      return repository.openIndex();
+      return repository.refreshIndex();
     })
     .then(function(index) {
       test.index = index;

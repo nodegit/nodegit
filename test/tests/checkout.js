@@ -126,9 +126,8 @@ describe("Checkout", function() {
     .then(function(branch) {
       fse.writeFileSync(packageJsonPath, "\n");
 
-      return test.repository.openIndex()
+      return test.repository.refreshIndex()
         .then(function(index) {
-          index.read(1);
           index.addByPath(packageJsonName);
           index.write();
 

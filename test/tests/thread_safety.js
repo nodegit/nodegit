@@ -14,7 +14,7 @@ describe("ThreadSafety", function() {
     return Repository.open(reposPath)
       .then(function(repo) {
         test.repository = repo;
-        return repo.openIndex();
+        return repo.refreshIndex();
       })
       .then(function(index) {
         test.index = index;

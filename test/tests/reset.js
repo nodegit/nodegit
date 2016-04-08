@@ -54,7 +54,7 @@ describe("Reset", function() {
 
     return Reset.default(test.repo, test.previousCommit, filePath)
     .then(function() {
-      return test.repo.openIndex();
+      return test.repo.refreshIndex();
     })
     .then(function(index) {
       return index.writeTree();
@@ -80,7 +80,7 @@ describe("Reset", function() {
       return Reset.default(test.repo, test.currentCommit, filePath);
     })
     .then(function() {
-      return test.repo.openIndex();
+      return test.repo.refreshIndex();
     })
     .then(function(index) {
       return index.writeTree();
@@ -109,7 +109,7 @@ describe("Reset", function() {
 
     return Reset.reset(test.repo, test.previousCommit, Reset.TYPE.SOFT)
     .then(function() {
-      return test.repo.openIndex();
+      return test.repo.refreshIndex();
     })
     .then(function(index) {
       return index.writeTree();
@@ -143,7 +143,7 @@ describe("Reset", function() {
 
     return Reset.reset(test.repo, test.previousCommit, Reset.TYPE.MIXED)
     .then(function() {
-      return test.repo.openIndex();
+      return test.repo.refreshIndex();
     })
     .then(function(index) {
       return index.writeTree();
@@ -183,7 +183,7 @@ describe("Reset", function() {
 
     return Reset.reset(test.repo, test.previousCommit, Reset.TYPE.HARD)
     .then(function() {
-      return test.repo.openIndex();
+      return test.repo.refreshIndex();
     })
     .then(function(index) {
       return index.writeTree();

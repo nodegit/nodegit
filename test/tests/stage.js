@@ -20,10 +20,6 @@ describe("Stage", function() {
     return RepoUtils.createRepository(repoPath)
       .then(function(repo) {
         test.repository = repo;
-        return repo.openIndex();
-      })
-      .then(function(index) {
-        test.index = index;
       });
   });
 
@@ -31,7 +27,7 @@ describe("Stage", function() {
 		return fse.remove(test.repository.workdir());
   });
 
-function stagingTest(staging, newFileContent) {
+  function stagingTest(staging, newFileContent) {
     var fileContent = newFileContent ||
                       "One line of text\n" +
                       "Two lines of text\n"+
@@ -54,7 +50,6 @@ function stagingTest(staging, newFileContent) {
                       "Nineteen lines of text\n"+
                       "Twenty lines of text\n";
     var fileName = "stagedLinesTest.txt";
-    var index;
     var stagedFile;
     var workingDirFile;
     var getDiffFunction;
@@ -63,10 +58,17 @@ function stagingTest(staging, newFileContent) {
       workingDirFile = stagedFile.replace("Three", "Changed three")
                             .replace("Seventeen", "Changed seventeen");
       getDiffFunction = function() {
-        return NodeGit.Diff.indexToWorkdir(test.repository, index, {
-            flags:
-              NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
-              NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
+        return test.repository.refreshIndex()
+          .then(function(index) {
+            return NodeGit.Diff.indexToWorkdir(
+              test.repository,
+              index,
+              {
+                flags:
+                  NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
+                  NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
+              }
+            );
           });
       };
     }
@@ -81,15 +83,24 @@ function stagingTest(staging, newFileContent) {
             return test.repository.getBranchCommit("master");
           })
           .then(function(masterCommit) {
-            return masterCommit.getTree();
+            var treePromise = masterCommit.getTree();
+            var indexPromise = test.repository.refreshIndex();
+
+            return Promise.all([treePromise, indexPromise]);
           })
-          .then(function(masterTree) {
+          .then(function(treeAndIndex) {
+            var masterTree = treeAndIndex[0];
+            var index = treeAndIndex[1];
             return NodeGit.Diff.treeToIndex(
-              test.repository, masterTree, index, {
-              flags:
-                NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
-                NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
-            });
+              test.repository,
+              masterTree,
+              index,
+              {
+                flags:
+                  NodeGit.Diff.OPTION.SHOW_UNTRACKED_CONTENT |
+                  NodeGit.Diff.OPTION.RECURSE_UNTRACKED_DIRS
+              }
+            );
           });
       };
     }
@@ -100,10 +111,6 @@ function stagingTest(staging, newFileContent) {
                             workingDirFile);
     })
     .then(function() {
-      return test.repository.openIndex();
-    })
-    .then(function(repoIndex) {
-      index = repoIndex;
       return getDiffFunction();
     })
     .then(function(fileDiff) {
@@ -137,7 +144,10 @@ function stagingTest(staging, newFileContent) {
     })
     .then(function(stageResult) {
       assert.equal(stageResult, 0);
-      var pathOid = index.getByPath(fileName).id;
+      return test.repository.refreshIndex();
+    })
+    .then(function(reloadedIndex) {
+      var pathOid = reloadedIndex.getByPath(fileName).id;
       return test.repository.getBlob(pathOid);
     })
     .then(function(resultFileContents) {
@@ -197,7 +207,7 @@ function stagingTest(staging, newFileContent) {
   it("staging last hunk stages whole file if no filemode changes", function() {
     return stagingTest(true, lastHunkStagedFileContent)
       .then(function() {
-        return test.repository.openIndex();
+        return test.repository.refreshIndex();
       })
       .then(function(index) {
         return NodeGit.Diff.indexToWorkdir(test.repository, index, {
@@ -290,11 +300,10 @@ function stagingTest(staging, newFileContent) {
       })
       //Now lets do a commit...
       .then(function() {
-        return test.repository.openIndex();
+        return test.repository.refreshIndex();
       })
       .then(function(repoIndex) {
         index = repoIndex;
-        index.read(1);
         return index.writeTree();
       })
       .then(function (oid) {
@@ -321,14 +330,17 @@ function stagingTest(staging, newFileContent) {
       }
 
       return createAndCommitFiles(
-        test.repository, fileName, fileContent, afterWriteFn
+        test.repository,
+        fileName,
+        fileContent,
+        afterWriteFn
       )
       //Then, diff between head commit and workdir should have filemode change
       .then(function() {
         return compareFilemodes(true, null, 0111 /* expect +x */);
       })
       .then(function() {
-        return test.repository.openIndex();
+        return test.repository.refreshIndex();
       })
       .then(function(repoIndex) {
         //Now we stage the whole file...
@@ -344,9 +356,12 @@ function stagingTest(staging, newFileContent) {
             return test.repository.stageFilemode(fileName, false /* unstage */);
           });
       })
-      //We expect the Index to have no filemode changes, since we unstaged.
       .then(function() {
-        return compareFilemodes(false, index, 0 /* expect +x */);
+        return test.repository.refreshIndex();
+      })
+      //We expect the Index to have no filemode changes, since we unstaged.
+      .then(function(freshIndex) {
+        return compareFilemodes(false, freshIndex, 0 /* expect +x */);
       })
       //We also expect the workdir to now have the filemode change.
       .then(function() {
@@ -379,7 +394,7 @@ function stagingTest(staging, newFileContent) {
         test.repository, fileName, fileContent, afterWriteFn
       )
       .then(function() {
-        return test.repository.openIndex();
+        return test.repository.refreshIndex();
       })
       .then(function(repoIndex) {
         index = repoIndex;
@@ -392,7 +407,10 @@ function stagingTest(staging, newFileContent) {
         return test.repository.stageFilemode(fileName, false /* unstage */);
       })
       .then(function() {
-        return compareFilemodes(false, index, 0 /* expect nochange */);
+        return test.repository.refreshIndex();
+      })
+      .then(function(freshIndex) {
+        return compareFilemodes(false, freshIndex, 0 /* expect nochange */);
       });
     });
   }
@@ -411,9 +429,8 @@ function stagingTest(staging, newFileContent) {
     }))
     .then(function() {
       // Initial commit
-      return test.repository.openIndex()
+      return test.repository.refreshIndex()
         .then(function(index) {
-          index.read(1);
           fileName.forEach(function(file) {
             index.addByPath(file);
           });
@@ -455,7 +472,7 @@ function stagingTest(staging, newFileContent) {
         {cwd: test.repository.workdir()});
     })
     .then(function() {
-      return test.repository.openIndex();
+      return test.repository.refreshIndex();
     })
     .then(function(repoIndex) {
       index = repoIndex;
@@ -468,8 +485,10 @@ function stagingTest(staging, newFileContent) {
       return test.repository.stageFilemode(fileName, false /* unstage */);
     })
     .then(function() {
-      return compareFilemodes(false, index, 0 /* expect nochange */);
+      return test.repository.refreshIndex();
+    })
+    .then(function(freshIndex) {
+      return compareFilemodes(false, freshIndex, 0 /* expect nochange */);
     });
   });
-
 });

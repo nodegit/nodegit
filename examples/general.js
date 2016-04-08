@@ -319,7 +319,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
 
     // The [index file API][gi] allows you to read, traverse, update and write
     // the Git index file (sometimes thought of as the staging area).
-    return repo.openIndex();
+    return repo.refreshIndex();
   })
 
   .then(function(index) {
