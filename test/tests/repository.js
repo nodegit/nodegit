@@ -266,13 +266,13 @@ describe("Repository", function() {
         );
       })
       .then(function(oidResult) {
-          return repo.getHeadCommit()
-            .then(function(commit) {
-              assert.equal(
-                commit.toString(),
-                oidResult.toString()
-              );
-            });
+        return repo.getHeadCommit()
+          .then(function(commit) {
+            assert.equal(
+              commit.toString(),
+              oidResult.toString()
+            );
+          });
       });
   });
 
