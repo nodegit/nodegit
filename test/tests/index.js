@@ -4,6 +4,8 @@ var local = path.join.bind(path, __dirname);
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
+var garbageCollect = require("../utils/garbage_collect.js");
+
 var writeFile = promisify(function(filename, data, callback) {
   return require("fs").writeFile(filename, data, {}, callback);
 });
@@ -357,6 +359,54 @@ describe("Index", function() {
       })
       .then(function(index) {
         assert(index.hasConflicts());
+      });
+  });
+
+  it("is kept alive by indexEntry", function() {
+    var now = new Date();
+    while(new Date() - now < 5000) {
+
+    }
+
+    var Index = NodeGit.Index;
+    garbageCollect();
+    var startSelfFreeingCount = Index.getSelfFreeingInstanceCount();
+    var startNonSelfFreeingCount = Index.getNonSelfFreeingConstructedCount();
+
+    var resolve;
+    var promise = new Promise(function(_resolve) { resolve = _resolve; });
+
+    var index;
+
+    this.repository.index()
+      .then(function(_index) {
+        index = _index;
+        setTimeout(resolve, 0);
+      });
+
+    return promise
+      .then(function() {
+        // make sure we have created one self-freeing index
+        assert.equal(startSelfFreeingCount + 1,
+          Index.getSelfFreeingInstanceCount());
+        assert.equal(startNonSelfFreeingCount,
+          Index.getNonSelfFreeingConstructedCount());
+
+        var indexEntry = index.getByIndex(0);
+        assert.equal(indexEntry.path, ".gitignore");
+        index = null;
+        garbageCollect();
+        // the indexEntry should be holding on to the remote
+        assert.equal(startSelfFreeingCount + 1,
+          Index.getSelfFreeingInstanceCount());
+
+        assert.equal(indexEntry.path, ".gitignore");
+
+        indexEntry = null;
+        garbageCollect();
+        // the index should be freed now
+        assert.equal(startSelfFreeingCount,
+          Index.getSelfFreeingInstanceCount());
       });
   });
 });
