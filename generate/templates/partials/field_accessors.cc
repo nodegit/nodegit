@@ -11,8 +11,8 @@
         info.GetReturnValue().Set(Nan::New(wrapper->{{ field.name }}));
 
       {% elsif field.isCallbackFunction %}
-        if (wrapper->{{field.name}} != NULL) {
-          info.GetReturnValue().Set(wrapper->{{ field.name }}->GetFunction());
+        if (wrapper->{{field.name}}.HasCallback()) {
+          info.GetReturnValue().Set(wrapper->{{ field.name }}.GetCallback()->GetFunction());
         } else {
           info.GetReturnValue().SetUndefined();
         }
@@ -31,7 +31,6 @@
     }
 
     NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
-
       {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
 
       {% if field.isEnum %}
@@ -47,16 +46,35 @@
         wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert({{ field.name }}->ToObject()){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }}->ToObject())->GetValue(){% endif %};
 
       {% elsif field.isCallbackFunction %}
-        if (wrapper->{{ field.name }} != NULL) {
-          delete wrapper->{{ field.name }};
-        }
+        Nan::Callback *callback = NULL;
+        int throttle = {%if field.return.throttle %}{{ field.return.throttle }}{%else%}0{%endif%};
 
         if (value->IsFunction()) {
+          callback = new Nan::Callback(value.As<Function>());
+        } else if (value->IsObject()) {
+          Local<Object> object = value.As<Object>();
+          Local<String> callbackKey;
+          Nan::MaybeLocal<Value> maybeObjectCallback = Nan::Get(object, Nan::New("callback").ToLocalChecked());
+          if (!maybeObjectCallback.IsEmpty()) {
+            Local<Value> objectCallback = maybeObjectCallback.ToLocalChecked();
+            if (objectCallback->IsFunction()) {
+              callback = new Nan::Callback(objectCallback.As<Function>());
+              Nan::MaybeLocal<Value> maybeObjectThrottle = Nan::Get(object, Nan::New("throttle").ToLocalChecked());
+              if(!maybeObjectThrottle.IsEmpty()) {
+                Local<Value> objectThrottle = maybeObjectThrottle.ToLocalChecked();
+                if (objectThrottle->IsNumber()) {
+                  throttle = (int)objectThrottle.As<Number>()->Value();
+                }
+              }
+            }
+          }
+        }
+        if (callback) {
           if (!wrapper->raw->{{ field.name }}) {
             wrapper->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
           }
 
-          wrapper->{{ field.name }} = new Nan::Callback(value.As<Function>());
+          wrapper->{{ field.name }}.SetCallback(callback, throttle);
         }
 
       {% elsif field.payloadFor %}
@@ -82,46 +100,42 @@
     }
 
     {% if field.isCallbackFunction %}
+      {{ cppClassName }}* {{ cppClassName }}::{{ field.name }}_getInstanceFromBaton({{ field.name|titleCase }}Baton* baton) {
+        return static_cast<{{ cppClassName }}*>(baton->{% each field.args|argsInfo as arg %}
+          {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
+        {% endeach %});
+      }
+
       {{ field.return.type }} {{ cppClassName }}::{{ field.name }}_cppCallback (
         {% each field.args|argsInfo as arg %}
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
         {% endeach %}
       ) {
-        {{ field.name|titleCase }}Baton* baton = new {{ field.name|titleCase }}Baton();
+        {{ field.name|titleCase }}Baton* baton =
+          new {{ field.name|titleCase }}Baton({{ field.return.noResults }});
 
         {% each field.args|argsInfo as arg %}
           baton->{{ arg.name }} = {{ arg.name }};
         {% endeach %}
 
-        baton->result = 0;
-        baton->req.data = baton;
-        baton->done = false;
+        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
 
-        uv_async_init(uv_default_loop(), &baton->req, (uv_async_cb) {{ field.name }}_async);
-        {
-          LockMaster::TemporaryUnlock temporaryUnlock;
-
-          uv_async_send(&baton->req);
-
-          while(!baton->done) {
-            sleep_for_ms(1);
-          }
+        if (instance->{{ field.name }}.WillBeThrottled()) {
+          return baton->defaultResult;
         }
 
-        return baton->result;
+        return baton->ExecuteAsync((uv_async_cb) {{ field.name }}_async);
       }
 
       void {{ cppClassName }}::{{ field.name }}_async(uv_async_t* req, int status) {
         Nan::HandleScope scope;
 
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
-        {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each field.args|argsInfo as arg %}
-          {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
-        {% endeach %});
+        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
 
-        if (instance->{{ field.name }}->IsEmpty()) {
+        if (instance->{{ field.name }}.GetCallback()->IsEmpty()) {
           {% if field.return.type == "int" %}
-            baton->result = {{ field.return.noResults }}; // no results acquired
+            baton->result = baton->defaultResult; // no results acquired
           {% endif %}
 
           baton->done = true;
@@ -163,7 +177,7 @@
         };
 
         Nan::TryCatch tryCatch;
-        Local<v8::Value> result = instance->{{ field.name }}->Call({{ field.args|jsArgsCount }}, argv);
+        Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
 
         uv_close((uv_handle_t*) &baton->req, NULL);
 
@@ -187,12 +201,12 @@
               baton->result = (int)result->ToNumber()->Value();
             }
             else {
-              baton->result = {{ field.return.noResults }};
+              baton->result = baton->defaultResult;
             }
             {% endif %}
           }
           else {
-            baton->result = {{ field.return.noResults }};
+            baton->result = baton->defaultResult;
           }
         {% endeach %}
         baton->done = true;
@@ -220,12 +234,12 @@
                 baton->result = (int)result->ToNumber()->Value();
               }
               else{
-                baton->result = {{ field.return.noResults }};
+                baton->result = baton->defaultResult;
               }
               {% endif %}
             }
             else {
-              baton->result = {{ field.return.noResults }};
+              baton->result = baton->defaultResult;
             }
           {% endeach %}
         }

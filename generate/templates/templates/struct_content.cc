@@ -17,7 +17,6 @@ extern "C" {
 #include "../include/lock_master.h"
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
-#include "../include/functions/sleep_for_ms.h"
 
 {% each dependencies as dependency %}
   #include "{{ dependency }}"
@@ -53,8 +52,7 @@ using namespace std;
     {% if not field.ignore %}
       {% if not field.isEnum %}
         {% if field.isCallbackFunction %}
-  if (this->{{ field.name }} != NULL) {
-    delete this->{{ field.name }};
+  if (this->{{ field.name }}.HasCallback()) {
     this->raw->{{ fields|payloadFor field.name }} = NULL;
   }
         {% endif %}
@@ -84,7 +82,6 @@ void {{ cppClassName }}::ConstructFields() {
           // the current instance
           this->raw->{{ field.name }} = NULL;
           this->raw->{{ fields|payloadFor field.name }} = (void *)this;
-          this->{{ field.name }} = NULL;
         {% elsif field.payloadFor %}
 
           Local<Value> {{ field.name }} = Nan::Undefined();
