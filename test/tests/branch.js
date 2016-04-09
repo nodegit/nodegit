@@ -68,4 +68,13 @@ describe("Branch", function() {
         assert.equal(upstream.shorthand(), upstreamName);
       });
   });
+
+  it("can get the name of a branch", function() {
+    var branch = this.branch;
+
+    return NodeGit.Branch.name(branch)
+      .then(function(branchNameToTest) {
+        assert.equal(branchNameToTest, branchName);
+      });
+  });
 });
