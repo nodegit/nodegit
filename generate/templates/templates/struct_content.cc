@@ -17,6 +17,7 @@ extern "C" {
 #include "../include/lock_master.h"
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
+#include "nodegit_wrapper.cc"
 
 {% each dependencies as dependency %}
   #include "{{ dependency }}"
@@ -28,8 +29,11 @@ using namespace std;
 
 
 // generated from struct_content.cc
-{{ cppClassName }}::{{ cppClassName }}() {
+{{ cppClassName }}::{{ cppClassName }}() : NodeGitWrapper<{{ cppClassName }}Traits>(NULL, true, v8::Local<v8::Object>())
+{
   {% if ignoreInit == true %}
+  // TODO: this looks like a memory leak to me - we are allocating wrappedValue
+  // then copying it below, but never freeing it
   {{ cType }}* wrappedValue = new {{ cType }};
   {% else %}
   {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
@@ -38,13 +42,12 @@ using namespace std;
   memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
 
   this->ConstructFields();
-  this->selfFreeing = true;
 }
 
-{{ cppClassName }}::{{ cppClassName }}({{ cType }}* raw, bool selfFreeing) {
-  this->raw = raw;
+{{ cppClassName }}::{{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner)
+ : NodeGitWrapper<{{ cppClassName }}Traits>(raw, selfFreeing, owner)
+{
   this->ConstructFields();
-  this->selfFreeing = selfFreeing;
 }
 
 {{ cppClassName }}::~{{ cppClassName }}() {
@@ -59,10 +62,6 @@ using namespace std;
       {% endif %}
     {% endif %}
   {% endeach %}
-
-  if (this->selfFreeing) {
-    free(this->raw);
-  }
 }
 
 void {{ cppClassName }}::ConstructFields() {
@@ -108,41 +107,15 @@ void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
     {% endif %}
   {% endeach %}
 
+  InitializeTemplate(tpl);
+
   Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
   constructor_template.Reset(_constructor_template);
   Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
 }
 
-NAN_METHOD({{ cppClassName }}::JSNewFunction) {
-  {{ cppClassName }}* instance;
-
-  if (info.Length() == 0 || !info[0]->IsExternal()) {
-    instance = new {{ cppClassName }}();
-  }
-  else {
-    instance = new {{ cppClassName }}(static_cast<{{ cType }}*>(Local<External>::Cast(info[0])->Value()), Nan::To<bool>(info[1]).FromJust());
-  }
-
-  instance->Wrap(info.This());
-
-  info.GetReturnValue().Set(info.This());
-}
-
-Local<v8::Value> {{ cppClassName }}::New(const {{ cType }} * raw, bool selfFreeing) {
-  Nan::EscapableHandleScope scope;
-
-  Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New<Boolean>(selfFreeing) };
-  return scope.Escape(Nan::NewInstance(Nan::New({{ cppClassName }}::constructor_template), 2, argv).ToLocalChecked());
-}
-
-{{ cType }} *{{ cppClassName }}::GetValue() {
-  return this->raw;
-}
-
-void {{ cppClassName }}::ClearValue() {
-  this->raw = NULL;
-}
-
 {% partial fieldAccessors . %}
 
-Nan::Persistent<Function> {{ cppClassName }}::constructor_template;
+// force base class template instantiation, to make sure we get all the
+// methods, statics, etc.
+template class NodeGitWrapper<{{ cppClassName }}Traits>;

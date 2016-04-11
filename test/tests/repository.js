@@ -31,6 +31,14 @@ describe("Repository", function() {
       });
   });
 
+  it("cannot instantiate a repository", function() {
+    assert.throws(
+      function() { new Repository(); },
+      undefined,
+      "hello"
+    );
+  });
+
   it("can open a valid repository", function() {
     assert.ok(this.repository instanceof Repository);
   });

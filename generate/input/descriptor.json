@@ -1393,7 +1393,7 @@
       "ignore": true
     },
     "oid": {
-      "dupFunction": "git_oid_cpy",
+      "cpyFunction": "git_oid_cpy",
       "freeFunctionName": "free",
       "shouldAlloc": true,
       "functions": {
