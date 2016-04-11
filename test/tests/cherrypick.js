@@ -75,8 +75,6 @@ describe("Cherrypick", function() {
       })
       .then(function(index) {
         assert(index);
-        index.write();
-
         return index.writeTreeTo(repo);
       })
       .then(function(oid) {

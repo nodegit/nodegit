@@ -959,6 +959,12 @@
     },
     "index": {
       "functions": {
+        "git_index_add": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_index_add_all": {
           "args": {
             "pathspec": {
@@ -976,11 +982,34 @@
             "isErrorCode": true
           }
         },
+        "git_index_add_bypath": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_index_add_frombuffer": {
           "ignore": true
         },
-        "git_index_conflict_get": {
+        "git_index_clear": {
           "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_conflict_add": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_conflict_cleanup": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_conflict_get": {
           "args": {
             "ancestor_out": {
               "isReturn": true
@@ -992,6 +1021,7 @@
               "isReturn": true
             }
           },
+          "isAsync": true,
           "return": {
             "isErrorCode": true
           }
@@ -1004,6 +1034,12 @@
         },
         "git_index_conflict_next": {
           "ignore": true
+        },
+        "git_index_conflict_remove": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_entrycount": {
           "jsFunctionName": "entryCount"
@@ -1024,11 +1060,33 @@
         "git_index_new": {
           "ignore": true
         },
+        "git_index_open": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_index_read": {
           "args": {
             "force": {
               "isOptional": true
             }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_read_tree": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_remove": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_index_remove_all": {
@@ -1043,6 +1101,18 @@
               "isOptional": true
             }
           },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_remove_bypath": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_remove_directory": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -1070,7 +1140,23 @@
 	          "force": {
 	            "isOptional": true
 	          }
-	        }
+	        },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_write_tree": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_write_tree_to": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       },
       "dependencies": [

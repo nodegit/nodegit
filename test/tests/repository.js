@@ -259,20 +259,20 @@ describe("Repository", function() {
     return fse.writeFile(filePath, fileContent)
       .then(function() {
         return repo.createCommitOnHead(
-          [filePath],
+          [fileName],
           authSig,
           commitSig,
           commitMsg
         );
       })
       .then(function(oidResult) {
-          return repo.getHeadCommit()
-            .then(function(commit) {
-              assert.equal(
-                commit.toString(),
-                oidResult.toString()
-              );
-            });
+        return repo.getHeadCommit()
+          .then(function(commit) {
+            assert.equal(
+              commit.toString(),
+              oidResult.toString()
+            );
+          });
       });
   });
 

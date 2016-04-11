@@ -15,10 +15,13 @@ describe("Rebase", function() {
   var removeFileFromIndex = function(repository, fileName) {
     return repository.refreshIndex()
       .then(function(index) {
-        index.removeByPath(fileName);
-        index.write();
-
-        return index.writeTree();
+        return index.removeByPath(fileName)
+          .then(function() {
+            return index.write();
+          })
+          .then(function() {
+            return index.writeTree();
+          });
       });
   };
 

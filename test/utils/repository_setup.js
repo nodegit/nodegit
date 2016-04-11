@@ -9,10 +9,13 @@ var RepositorySetup = {
 	function addFileToIndex(repository, fileName) {
 		return repository.refreshIndex()
 			.then(function(index) {
-				index.addByPath(fileName);
-				index.write();
-
-				return index.writeTree();
+				return index.addByPath(fileName)
+					.then(function() {
+						return index.write();
+					})
+					.then(function() {
+						return index.writeTree();
+					});
 			});
 	},
 
