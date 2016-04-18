@@ -999,6 +999,20 @@
         },
         "git_index_conflict_add": {
           "isAsync": true,
+          "args": {
+            "index": {
+              "isSelf": true
+            },
+            "ancestor_entry": {
+              "isOptional": true
+            },
+            "our_entry": {
+              "isOptional": true
+            },
+            "their_entry": {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
