@@ -1,8 +1,30 @@
 var assert = require("assert");
 var path = require("path");
 var promisify = require("promisify-node");
+var _ = require("lodash");
 var fse = promisify(require("fs-extra"));
 var local = path.join.bind(path, __dirname);
+
+function getLinesFromDiff(diff) {
+  return diff.patches()
+    .then(function(patches) {
+      return Promise.all(_.map(patches, function(patch) {
+        return patch.hunks();
+      }));
+    })
+    .then(function(listsOfHunks) {
+      var hunks = _.flatten(listsOfHunks);
+      return Promise.all(_.map(hunks, function(hunk) {
+        return hunk.lines();
+      }));
+    })
+    .then(function(listsOfLines) {
+      var lines = _.flatten(listsOfLines);
+      return _.map(lines, function(line) {
+        return line.content();
+      });
+    });
+}
 
 describe("Diff", function() {
   var NodeGit = require("../../");
@@ -144,7 +166,7 @@ describe("Diff", function() {
       });
   });
 
-  it("can resolve individual line chages from the patch hunks", function() {
+  it("can resolve individual line changes from the patch hunks", function() {
     return this.workdirDiff.patches()
       .then(function(patches) {
         var result = [];
@@ -324,6 +346,43 @@ describe("Diff", function() {
       // should not segfault
       return Diff.indexToWorkdir(test.repository, test.index, opts);
     });
+  });
+
+
+  it("can merge two diffs", function() {
+    var linesOfFirstDiff;
+    var linesOfSecondDiff;
+    var firstDiff = this.diff[0];
+    var secondDiff;
+    var oid = "c88d39e70585199425b111c6a2c7fa7b4bc617ad";
+    return this.repository.getCommit(oid)
+      .then(function(testCommit) {
+        return testCommit.getDiff();
+      })
+      .then(function(_secondDiff) {
+        secondDiff = _secondDiff[0];
+        return Promise.all([
+          getLinesFromDiff(firstDiff),
+          getLinesFromDiff(secondDiff)
+        ]);
+      })
+      .then(function(listOfLines) {
+        linesOfFirstDiff = listOfLines[0];
+        linesOfSecondDiff = listOfLines[1];
+        return firstDiff.merge(secondDiff);
+      })
+      .then(function() {
+        return getLinesFromDiff(firstDiff);
+      })
+      .then(function(linesOfMergedDiff) {
+        var allDiffLines = _.flatten([
+          linesOfFirstDiff,
+          linesOfSecondDiff
+        ]);
+        _.forEach(allDiffLines, function(diffLine) {
+          assert.ok(_.includes(linesOfMergedDiff, diffLine));
+        });
+      });
   });
 
   // This wasn't working before. It was only passing because the promise chain

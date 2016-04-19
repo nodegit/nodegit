@@ -741,7 +741,15 @@
           "ignore": true
         },
         "git_diff_merge": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "onto": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_diff_num_deltas_of_type": {
           "ignore": true
