@@ -6,10 +6,9 @@ var path = require("path");
 var fs = require("fs");
 
 // TODO: When libgit2's docs include callbacks we should be able to remove this
-var version = require("../../package.json").vendorDependencies.libgit2.version;
 var callbackDefs = require("../input/callbacks.json");
 var descriptor = require("../input/descriptor.json");
-var libgit2 = require("../input/v" + version + ".json");
+var libgit2 = require("../input/libgit2-docs.json");
 
 var cTypes = libgit2.groups.map(function(group) { return group[0];});
 
