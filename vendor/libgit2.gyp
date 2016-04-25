@@ -255,7 +255,8 @@
       "conditions": [
         ["OS=='mac'", {
             "defines": [
-                "GIT_SECURE_TRANSPORT"
+                "GIT_SECURE_TRANSPORT",
+                "GIT_USE_STAT_MTIMESPEC"
             ],
             "sources": [
                 "libgit2/src/stransport_stream.c",
