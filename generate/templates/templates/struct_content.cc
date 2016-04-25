@@ -32,14 +32,12 @@ using namespace std;
 {{ cppClassName }}::{{ cppClassName }}() : NodeGitWrapper<{{ cppClassName }}Traits>(NULL, true, v8::Local<v8::Object>())
 {
   {% if ignoreInit == true %}
-  // TODO: this looks like a memory leak to me - we are allocating wrappedValue
-  // then copying it below, but never freeing it
-  {{ cType }}* wrappedValue = new {{ cType }};
+  this->raw = new {{ cType }};
   {% else %}
   {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
-  {% endif %}
   this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
   memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+  {% endif %}
 
   this->ConstructFields();
 }
