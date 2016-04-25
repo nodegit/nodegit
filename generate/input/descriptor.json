@@ -1870,7 +1870,9 @@
           "ignore": true
         },
         "git_remote_stats": {
-          "ownedByThis": true
+          "return": {
+            "ownedByThis": true
+          }
         }
       }
     },
