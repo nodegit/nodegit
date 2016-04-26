@@ -128,6 +128,19 @@ GIT_EXTERN(const char *) git_commit_message_raw(const git_commit *commit);
 GIT_EXTERN(const char *) git_commit_summary(git_commit *commit);
 
 /**
+ * Get the long "body" of the git commit message.
+ *
+ * The returned message is the body of the commit, comprising
+ * everything but the first paragraph of the message. Leading and
+ * trailing whitespaces are trimmed.
+ *
+ * @param commit a previously loaded commit.
+ * @return the body of a commit or NULL when no the message only
+ *   consists of a summary
+ */
+GIT_EXTERN(const char *) git_commit_body(git_commit *commit);
+
+/**
  * Get the commit time (i.e. committer time) of a commit.
  *
  * @param commit a previously loaded commit.
@@ -249,6 +262,24 @@ GIT_EXTERN(int) git_commit_nth_gen_ancestor(
  * or an error code
  */
 GIT_EXTERN(int) git_commit_header_field(git_buf *out, const git_commit *commit, const char *field);
+
+/**
+ * Extract the signature from a commit
+ *
+ * If the id is not for a commit, the error class will be
+ * `GITERR_INVALID`. If the commit does not have a signature, the
+ * error class will be `GITERR_OBJECT`.
+ *
+ * @param signature the signature block
+ * @param signed_data signed data; this is the commit contents minus the signature block
+ * @param repo the repository in which the commit exists
+ * @param commit_id the commit from which to extract the data
+ * @param field the name of the header field containing the signature
+ * block; pass `NULL` to extract the default 'gpgsig'
+ * @return 0 on success, GIT_ENOTFOUND if the id is not for a commit
+ * or the commit does not have a signature.
+ */
+GIT_EXTERN(int) git_commit_extract_signature(git_buf *signature, git_buf *signed_data, git_repository *repo, git_oid *commit_id, const char *field);
 
 /**
  * Create new commit in the repository from a list of `git_object` pointers

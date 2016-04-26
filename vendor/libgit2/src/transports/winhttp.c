@@ -15,6 +15,7 @@
 #include "smart.h"
 #include "remote.h"
 #include "repository.h"
+#include "global.h"
 
 #include <wincrypt.h>
 #include <winhttp.h>
@@ -52,10 +53,15 @@ static const int no_check_cert_flags = SECURITY_FLAG_IGNORE_CERT_CN_INVALID |
 	SECURITY_FLAG_IGNORE_UNKNOWN_CA;
 
 #if defined(__MINGW32__)
-const CLSID CLSID_InternetSecurityManager = { 0x7B8A2D94, 0x0AC9, 0x11D1,
+static const CLSID CLSID_InternetSecurityManager_mingw =
+	{ 0x7B8A2D94, 0x0AC9, 0x11D1,
 	{ 0x89, 0x6C, 0x00, 0xC0, 0x4F, 0xB6, 0xBF, 0xC4 } };
-const IID IID_IInternetSecurityManager = { 0x79EAC9EE, 0xBAF9, 0x11CE,
+static const IID IID_IInternetSecurityManager_mingw =
+	{ 0x79EAC9EE, 0xBAF9, 0x11CE,
 	{ 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
+
+# define CLSID_InternetSecurityManager CLSID_InternetSecurityManager_mingw
+# define IID_IInternetSecurityManager IID_IInternetSecurityManager_mingw
 #endif
 
 #define OWNING_SUBTRANSPORT(s) ((winhttp_subtransport *)(s)->parent.subtransport)
@@ -228,7 +234,7 @@ static int certificate_check(winhttp_stream *s, int valid)
 	}
 
 	giterr_clear();
-	cert.cert_type = GIT_CERT_X509;
+	cert.parent.cert_type = GIT_CERT_X509;
 	cert.data = cert_ctx->pbCertEncoded;
 	cert.len = cert_ctx->cbCertEncoded;
 	error = t->owner->certificate_check_cb((git_cert *) &cert, valid, t->connection_data.host, t->owner->cred_acquire_payload);
@@ -277,6 +283,7 @@ static int winhttp_stream_connect(winhttp_stream *s)
 	unsigned long disable_redirects = WINHTTP_DISABLE_REDIRECTS;
 	int default_timeout = TIMEOUT_INFINITE;
 	int default_connect_timeout = DEFAULT_CONNECT_TIMEOUT;
+	size_t i;
 
 	/* Prepare URL */
 	git_buf_printf(&buf, "%s%s", t->connection_data.path, s->service_url);
@@ -406,6 +413,23 @@ static int winhttp_stream_connect(winhttp_stream *s)
 			WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {
 			giterr_set(GITERR_OS, "Failed to add a header to the request");
 			goto on_error;
+		}
+	}
+
+	for (i = 0; i < t->owner->custom_headers.count; i++) {
+		if (t->owner->custom_headers.strings[i]) {
+			git_buf_clear(&buf);
+			git_buf_puts(&buf, t->owner->custom_headers.strings[i]);
+			if (git__utf8_to_16(ct, MAX_CONTENT_TYPE_LEN, git_buf_cstr(&buf)) < 0) {
+				giterr_set(GITERR_OS, "Failed to convert custom header to wide characters");
+				goto on_error;
+			}
+
+			if (!WinHttpAddRequestHeaders(s->request, ct, (ULONG)-1L,
+				WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {
+				giterr_set(GITERR_OS, "Failed to add a header to the request");
+				goto on_error;
+			}
 		}
 	}
 
@@ -549,12 +573,28 @@ static int winhttp_close_connection(winhttp_subtransport *t)
 	return ret;
 }
 
+static int user_agent(git_buf *ua)
+{
+	const char *custom = git_libgit2__user_agent();
+
+	git_buf_clear(ua);
+	git_buf_PUTS(ua, "git/1.0 (");
+
+	if (custom)
+		git_buf_puts(ua, custom);
+	else
+		git_buf_PUTS(ua, "libgit2 " LIBGIT2_VERSION);
+
+	return git_buf_putc(ua, ')');
+}
+
 static int winhttp_connect(
 	winhttp_subtransport *t)
 {
-	wchar_t *ua = L"git/1.0 (libgit2 " WIDEN(LIBGIT2_VERSION) L")";
 	wchar_t *wide_host;
 	int32_t port;
+	wchar_t *wide_ua;
+	git_buf ua = GIT_BUF_INIT;
 	int error = -1;
 	int default_timeout = TIMEOUT_INFINITE;
 	int default_connect_timeout = DEFAULT_CONNECT_TIMEOUT;
@@ -572,9 +612,23 @@ static int winhttp_connect(
 		return -1;
 	}
 
+	if ((error = user_agent(&ua)) < 0) {
+		git__free(wide_host);
+		return error;
+	}
+
+	if (git__utf8_to_16_alloc(&wide_ua, git_buf_cstr(&ua)) < 0) {
+		giterr_set(GITERR_OS, "Unable to convert host to wide characters");
+		git__free(wide_host);
+		git_buf_free(&ua);
+		return -1;
+	}
+
+	git_buf_free(&ua);
+
 	/* Establish session */
 	t->session = WinHttpOpen(
-		ua,
+		wide_ua,
 		WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
 		WINHTTP_NO_PROXY_NAME,
 		WINHTTP_NO_PROXY_BYPASS,
@@ -610,6 +664,7 @@ on_error:
 		winhttp_close_connection(t);
 
 	git__free(wide_host);
+	git__free(wide_ua);
 
 	return error;
 }
@@ -871,16 +926,20 @@ replay:
 			if (parse_unauthorized_response(s->request, &allowed_types, &t->auth_mechanism) < 0)
 				return -1;
 
-			if (allowed_types &&
-				(!t->cred || 0 == (t->cred->credtype & allowed_types))) {
+			if (allowed_types) {
 				int cred_error = 1;
 
+				git_cred_free(t->cred);
+				t->cred = NULL;
 				/* Start with the user-supplied credential callback, if present */
 				if (t->owner->cred_acquire_cb) {
 					cred_error = t->owner->cred_acquire_cb(&t->cred, t->owner->url,
 						t->connection_data.user, allowed_types,	t->owner->cred_acquire_payload);
 
-					if (cred_error < 0)
+					/* Treat GIT_PASSTHROUGH as though git_cred_acquire_cb isn't set */
+					if (cred_error == GIT_PASSTHROUGH)
+						cred_error = 1;
+					else if (cred_error < 0)
 						return cred_error;
 				}
 

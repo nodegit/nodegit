@@ -67,9 +67,9 @@ static int curls_certificate(git_cert **out, git_stream *stream)
 
 	/* No information is available, can happen with SecureTransport */
 	if (certinfo->num_of_certs == 0) {
-		s->cert_info.cert_type = GIT_CERT_NONE;
-		s->cert_info.data      = NULL;
-		s->cert_info.len       = 0;
+		s->cert_info.parent.cert_type = GIT_CERT_NONE;
+		s->cert_info.data             = NULL;
+		s->cert_info.len              = 0;
 		return 0;
 	}
 
@@ -79,17 +79,18 @@ static int curls_certificate(git_cert **out, git_stream *stream)
 	for (slist = certinfo->certinfo[0]; slist; slist = slist->next) {
 		char *str = git__strdup(slist->data);
 		GITERR_CHECK_ALLOC(str);
+		git_vector_insert(&strings, str);
 	}
 
 	/* Copy the contents of the vector into a strarray so we can expose them */
 	s->cert_info_strings.strings = (char **) strings.contents;
 	s->cert_info_strings.count   = strings.length;
 
-	s->cert_info.cert_type = GIT_CERT_STRARRAY;
-	s->cert_info.data      = &s->cert_info_strings;
-	s->cert_info.len       = strings.length;
+	s->cert_info.parent.cert_type = GIT_CERT_STRARRAY;
+	s->cert_info.data             = &s->cert_info_strings;
+	s->cert_info.len              = strings.length;
 
-	*out = (git_cert *) &s->cert_info;
+	*out = &s->cert_info.parent;
 
 	return 0;
 }
@@ -207,11 +208,14 @@ int git_curl_stream_new(git_stream **out, const char *host, const char *port)
 	handle = curl_easy_init();
 	if (handle == NULL) {
 		giterr_set(GITERR_NET, "failed to create curl handle");
+		git__free(st);
 		return -1;
 	}
 
-	if ((error = git__strtol32(&iport, port, NULL, 10)) < 0)
+	if ((error = git__strtol32(&iport, port, NULL, 10)) < 0) {
+		git__free(st);
 		return error;
+	}
 
 	curl_easy_setopt(handle, CURLOPT_URL, host);
 	curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, st->curl_error);

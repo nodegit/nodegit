@@ -103,8 +103,9 @@ struct git_refdb_backend {
 		const git_signature *who, const char *message);
 
 	/**
-	 * Deletes the given reference from the refdb.  A refdb implementation
-	 * must provide this function.
+	 * Deletes the given reference (and if necessary its reflog)
+	 * from the refdb.  A refdb implementation must provide this
+	 * function.
 	 */
 	int (*del)(git_refdb_backend *backend, const char *ref_name, const git_oid *old_id, const char *old_target);
 
@@ -129,8 +130,8 @@ struct git_refdb_backend {
 	int (*ensure_log)(git_refdb_backend *backend, const char *refname);
 
 	/**
-	 * Frees any resources held by the refdb.  A refdb implementation may
-	 * provide this function; if it is not provided, nothing will be done.
+	 * Frees any resources held by the refdb (including the `git_refdb_backend`
+	 * itself). A refdb backend implementation must provide this function.
 	 */
 	void (*free)(git_refdb_backend *backend);
 
