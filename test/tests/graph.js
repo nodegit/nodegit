@@ -9,9 +9,6 @@ describe("Graph", function() {
 
   var reposPath = local("../repos/workdir");
 
-  var expectedError = "Object not found - no match for id " +
-    "(81b06facd90fe7a6e9bbd9cee59736a79105b7be)";
-
   beforeEach(function() {
     var test = this;
 
@@ -54,14 +51,14 @@ describe("Graph", function() {
       });
   });
 
-  it("will error if provided bad commits", function() {
+  it("descendantOf will error if provided bad commits", function() {
     return Graph.descendantOf(
       this.repository,
       "81b06facd90fe7a6e9bbd9cee59736a79105b7be",
       "26744fc697849d370246749b67ac43b792a4af0c"
     )
       .catch(function(result) {
-        assert.equal(result.message, expectedError);
+        assert(~result.message.indexOf("81b06fac"));
       });
   });
 });
