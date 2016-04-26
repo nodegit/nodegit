@@ -41,14 +41,14 @@ describe("TreeEntry", function() {
   it("provides the correct length for a file", function() {
     return this.commit.getEntry("README.md")
 	  .then(function(entry) {
-              assert.equal(entry.filenameLen(), 9);
+              assert.equal(entry.name().length, 9);
 	  });
   });
 
   it("provides the filename", function() {
     return this.commit.getEntry("test/raw-commit.js")
       .then(function(entry) {
-        assert.equal(entry.filename(), "raw-commit.js");
+        assert.equal(entry.name(), "raw-commit.js");
     });
   });
 
@@ -64,7 +64,7 @@ describe("TreeEntry", function() {
       var dir = _dir || "",
         testPromises = [];
       tree.entries().forEach(function(entry) {
-        var currentPath = path.join(dir, entry.filename());
+        var currentPath = path.join(dir, entry.name());
         if (entry.isTree()) {
           testPromises.push(
             entry.getTree().then(function (subtree) {

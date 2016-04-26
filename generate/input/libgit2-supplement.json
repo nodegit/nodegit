@@ -82,28 +82,6 @@
     },
     "git_note_iterator": {
       "decl": "git_iterator"
-    },
-    "git_tree_entry": {
-      "fields": [
-        {
-          "name": "attr",
-          "type": "uint16_t"
-        },
-        {
-          "name": "oid",
-          "type": "git_oid"
-        },
-        {
-          "name": "filename_len",
-          "type": "size_t"
-        },
-        {
-          "name": "filename",
-          "structType": "char",
-          "structName": "filename[1]",
-          "type": "char *"
-        }
-      ]
     }
   },
   "new" : {
@@ -304,6 +282,18 @@
           "git_status_list_free",
           "git_status_list_get_perfdata",
           "git_status_list_new"
+        ]
+      ],
+      [
+        "tree_entry",
+        [
+          "git_tree_entry_filemode",
+          "git_tree_entry_filemode_raw",
+          "git_tree_entry_free",
+          "git_tree_entry_id",
+          "git_tree_entry_name",
+          "git_tree_entry_to_object",
+          "git_tree_entry_type"
         ]
       ]
     ],
@@ -721,6 +711,17 @@
         "git_status_list_free",
         "git_status_list_get_perfdata",
         "git_status_list_new"
+      ]
+    },
+    "tree": {
+      "functions": [
+        "git_tree_entry_filemode",
+        "git_tree_entry_filemode_raw",
+        "git_tree_entry_free",
+        "git_tree_entry_id",
+        "git_tree_entry_name",
+        "git_tree_entry_to_object",
+        "git_tree_entry_type"
       ]
     }
   },
