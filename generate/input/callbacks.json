@@ -285,6 +285,31 @@
       "success": 0,
       "error": -1
     }
+  },"git_diff_progress_cb": {
+    "args": [
+      {
+        "name": "diff_so_far",
+        "cType": "const git_diff *"
+      },
+      {
+        "name": "old_path",
+        "cType": "const char *"
+      },
+      {
+        "name": "new_path",
+        "cType": "const char *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   },
   "git_index_matched_path_cb": {
     "args": [

@@ -416,10 +416,16 @@
             }
           }
         },
+        "git_commit_create_buffer": {
+          "ignore": true
+        },
         "git_commit_create_from_callback": {
           "ignore": true
         },
         "git_commit_create_from_ids": {
+          "ignore": true
+        },
+        "git_commit_extract_signature": {
           "ignore": true
         },
         "git_commit_id": {
