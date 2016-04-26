@@ -367,11 +367,11 @@ describe("Commit", function() {
     }).then(function(reflog) {
       var reflogEntry = reflog.entryByIndex(0);
       assert.equal(
-        NodeGit.Reflog.entryMessage(reflogEntry),
+        reflogEntry.message(),
         customReflogMessage
       );
       assert.equal(
-        NodeGit.Reflog.entryIdNew(reflogEntry).toString(),
+        reflogEntry.idNew().toString(),
         oid
       );
       // only setTarget should have added to the entrycount
