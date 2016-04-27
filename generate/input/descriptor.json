@@ -73,6 +73,11 @@
   {
     "annotated_commit": {
       "functions": {
+        "git_annotated_commit_id": {
+          "return": {
+            "ownedByThis": true
+          }
+        }
       }
     },
     "attr": {
@@ -1002,6 +1007,11 @@
         "git_index_add_frombuffer": {
           "ignore": true
         },
+        "git_index_checksum": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_index_clear": {
           "isAsync": true,
           "return": {
@@ -1198,6 +1208,11 @@
         "git_indexer_append": {
           "ignore": true
         },
+        "git_indexer_hash": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_indexer_new": {
           "ignore": true
         }
@@ -1277,6 +1292,11 @@
             }
           }
         },
+        "git_note_id": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_note_remove": {
           "isAsync": true,
           "return": {
@@ -1293,6 +1313,11 @@
     },
     "object": {
       "functions": {
+        "git_object_id": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_object_short_id": {
           "args": {
             "out": {
@@ -1404,6 +1429,11 @@
             "cppClassName": "Wrapper",
             "jsClassName": "Buffer"
           }
+        },
+        "git_odb_object_id": {
+          "return": {
+            "ownedByThis": true
+          }
         }
       },
       "dependencies": [
@@ -1418,6 +1448,7 @@
       "ignore": true
     },
     "oid": {
+      "selfFreeing": "true",
       "cpyFunction": "git_oid_cpy",
       "freeFunctionName": "free",
       "shouldAlloc": true,
@@ -1478,6 +1509,11 @@
       "functions": {
         "git_packbuilder_foreach": {
           "ignore": true
+        },
+        "git_packbuilder_hash": {
+          "return": {
+            "ownedByThis": true
+          }
         },
         "git_packbuilder_new": {
           "isAsync": false
@@ -1721,6 +1757,20 @@
       ],
       "needsForwardDeclaration": false,
       "ignore": true
+    },
+    "reflog_entry": {
+      "functions": {
+        "git_reflog_entry_id_new": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_reflog_entry_id_old": {
+          "return": {
+            "ownedByThis": true
+          }
+        }
+      }
     },
     "refspec": {
       "cType": "git_refspec",
@@ -2191,6 +2241,11 @@
             "isErrorCode": true
           }
         },
+        "git_submodule_head_id": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_submodule_init": {
           "isAsync": true,
           "return": {
@@ -2209,6 +2264,16 @@
           "return": {
             "isErrorCode": true,
             "type": "int"
+          }
+        },
+        "git_submodule_index_id": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_submodule_wd_id": {
+          "return": {
+            "ownedByThis": true
           }
         },
         "git_submodule_location": {
