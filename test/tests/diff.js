@@ -349,7 +349,7 @@ describe("Diff", function() {
   });
 
 
-  it("can merge two diffs", function() {
+  it("can merge two commit diffs", function() {
     var linesOfFirstDiff;
     var linesOfSecondDiff;
     var firstDiff = this.diff[0];
@@ -383,6 +383,102 @@ describe("Diff", function() {
           assert.ok(_.includes(linesOfMergedDiff, diffLine));
         });
       });
+  });
+
+  describe(
+    "merge between commit diff and workdir and index diff", function() {
+    beforeEach(function() {
+      var test = this;
+      var diffOptions = new NodeGit.DiffOptions();
+      var IGNORE_CASE_FLAG = 1 << 10;
+      diffOptions.flags = diffOptions.flags |= IGNORE_CASE_FLAG;
+      return fse.writeFile(
+        path.join(test.repository.workdir(), "newFile.txt"), "some line\n"
+      )
+        .then(function() {
+          return test.index.addAll(undefined, undefined, function() {
+            // ensure that there is no deadlock if we call
+            // a sync libgit2 function from the callback
+            test.repository.path();
+
+            return 0; // confirm add
+          });
+        })
+        .then(function() {
+          return test.repository.getHeadCommit();
+        })
+        .then(function(headCommit) {
+          return headCommit.getTree();
+        })
+        .then(function(headTree) {
+          return Promise.all([
+            Diff.treeToWorkdirWithIndex(test.repository, headTree, diffOptions),
+            test.commit.getDiffWithOptions(diffOptions)
+          ]);
+        })
+        .then(function(diffs) {
+          test.workDirWithIndexDiff = diffs[0];
+          // The second item in `diffs` is the commit diff which contains and
+          // array of diffs, one for each parent
+          test.commitDiff = diffs[1][0];
+        });
+    });
+
+    it("can merge a diff from a commit into a diff from a work dir and index",
+      function() {
+        var test = this;
+        var linesOfWorkDirWithIndexDiff;
+        var linesOfCommitDiff;
+        return Promise.all([
+          getLinesFromDiff(test.workDirWithIndexDiff),
+          getLinesFromDiff(test.commitDiff)
+        ])
+          .then(function(linesOfDiffs) {
+            linesOfWorkDirWithIndexDiff = linesOfDiffs[0];
+            linesOfCommitDiff = linesOfDiffs[1];
+            return test.workDirWithIndexDiff.merge(test.commitDiff);
+          })
+          .then(function() {
+            return getLinesFromDiff(test.workDirWithIndexDiff);
+          })
+          .then(function(linesOfMergedDiff) {
+            var allDiffLines = _.flatten([
+              linesOfWorkDirWithIndexDiff,
+              linesOfCommitDiff
+            ]);
+            _.forEach(allDiffLines, function(diffLine) {
+              assert.ok(_.includes(linesOfMergedDiff, diffLine));
+            });
+          });
+      });
+
+      it("can merge a diff from a workdir and index into a diff from a commit",
+        function() {
+          var test = this;
+          var linesOfWorkDirWithIndexDiff;
+          var linesOfCommitDiff;
+          return Promise.all([
+            getLinesFromDiff(test.workDirWithIndexDiff),
+            getLinesFromDiff(test.commitDiff)
+          ])
+            .then(function(linesOfDiffs) {
+              linesOfWorkDirWithIndexDiff = linesOfDiffs[0];
+              linesOfCommitDiff = linesOfDiffs[1];
+              return test.commitDiff.merge(test.workDirWithIndexDiff);
+            })
+            .then(function() {
+              return getLinesFromDiff(test.commitDiff);
+            })
+            .then(function(linesOfMergedDiff) {
+              var allDiffLines = _.flatten([
+                linesOfWorkDirWithIndexDiff,
+                linesOfCommitDiff
+              ]);
+              _.forEach(allDiffLines, function(diffLine) {
+                assert.ok(_.includes(linesOfMergedDiff, diffLine));
+              });
+            });
+        });
   });
 
   // This wasn't working before. It was only passing because the promise chain
