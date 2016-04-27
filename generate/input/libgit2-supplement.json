@@ -269,15 +269,6 @@
         ]
       ],
       [
-        "reflog_entry",
-        [
-          "git_reflog_entry_committer",
-          "git_reflog_entry_id_new",
-          "git_reflog_entry_id_old",
-          "git_reflog_entry_message"
-        ]
-      ],
-      [
         "revwalk",
         [
           "git_revwalk_fast_walk",
@@ -712,14 +703,6 @@
         "git_merge_head_from_id",
         "git_merge_head_from_ref",
         "git_merge_head_id"
-      ]
-    },
-    "reflog": {
-      "functions": [
-        "git_reflog_entry_committer",
-        "git_reflog_entry_id_new",
-        "git_reflog_entry_id_old",
-        "git_reflog_entry_message"
       ]
     },
     "status": {

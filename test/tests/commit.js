@@ -4,7 +4,6 @@ var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
 var garbageCollect = require("../utils/garbage_collect.js");
-var leakTest = require("../utils/leak_test");
 
 var local = path.join.bind(path, __dirname);
 
@@ -368,11 +367,11 @@ describe("Commit", function() {
     }).then(function(reflog) {
       var reflogEntry = reflog.entryByIndex(0);
       assert.equal(
-        reflogEntry.message(),
+        NodeGit.Reflog.entryMessage(reflogEntry),
         customReflogMessage
       );
       assert.equal(
-        reflogEntry.idNew().toString(),
+        NodeGit.Reflog.entryIdNew(reflogEntry).toString(),
         oid
       );
       // only setTarget should have added to the entrycount
@@ -628,9 +627,30 @@ describe("Commit", function() {
   it("does not leak", function() {
     var test = this;
 
-    return leakTest(NodeGit.Commit, function() {
-        return NodeGit.Commit.lookup(test.repository, oid);
-    });
+    garbageCollect();
+    var Commit = NodeGit.Commit;
+    var startSelfFreeingCount = Commit.getSelfFreeingInstanceCount();
+    var startNonSelfFreeingCount = Commit.getNonSelfFreeingConstructedCount();
+
+    var resolve;
+    var promise = new Promise(function(_resolve) { resolve = _resolve; });
+
+    NodeGit.Commit.lookup(test.repository, oid)
+      .then(function() {
+        // get out of this promise chain to help GC get rid of the commit
+        setTimeout(resolve, 0);
+      });
+
+    return promise
+      .then(function() {
+        garbageCollect();
+        var endSelfFreeingCount = Commit.getSelfFreeingInstanceCount();
+        var endNonSelfFreeingCount = Commit.getNonSelfFreeingConstructedCount();
+        // any new self-freeing commits should have been freed
+        assert.equal(startSelfFreeingCount, endSelfFreeingCount);
+        // no new non-self-freeing commits should have been constructed
+        assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
+      });
   });
 
   it("duplicates signature", function() {

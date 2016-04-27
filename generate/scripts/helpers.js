@@ -220,7 +220,6 @@ var Helpers = {
     field.jsFunctionName = utils.camelCase(field.name);
     field.cppClassName = Helpers.cTypeToCppName(field.type);
     field.jsClassName = utils.titleCase(Helpers.cTypeToJsName(field.type));
-    field.ownedByThis = true;
 
     if (Helpers.isCallbackFunction(field.cType)) {
       Helpers.processCallback(field);
