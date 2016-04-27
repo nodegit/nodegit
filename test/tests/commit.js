@@ -4,6 +4,7 @@ var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
 var garbageCollect = require("../utils/garbage_collect.js");
+var leakTest = require("../utils/leak_test");
 
 var local = path.join.bind(path, __dirname);
 
@@ -627,30 +628,9 @@ describe("Commit", function() {
   it("does not leak", function() {
     var test = this;
 
-    garbageCollect();
-    var Commit = NodeGit.Commit;
-    var startSelfFreeingCount = Commit.getSelfFreeingInstanceCount();
-    var startNonSelfFreeingCount = Commit.getNonSelfFreeingConstructedCount();
-
-    var resolve;
-    var promise = new Promise(function(_resolve) { resolve = _resolve; });
-
-    NodeGit.Commit.lookup(test.repository, oid)
-      .then(function() {
-        // get out of this promise chain to help GC get rid of the commit
-        setTimeout(resolve, 0);
-      });
-
-    return promise
-      .then(function() {
-        garbageCollect();
-        var endSelfFreeingCount = Commit.getSelfFreeingInstanceCount();
-        var endNonSelfFreeingCount = Commit.getNonSelfFreeingConstructedCount();
-        // any new self-freeing commits should have been freed
-        assert.equal(startSelfFreeingCount, endSelfFreeingCount);
-        // no new non-self-freeing commits should have been constructed
-        assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
-      });
+    return leakTest(NodeGit.Commit, function() {
+        return NodeGit.Commit.lookup(test.repository, oid);
+    });
   });
 
   it("duplicates signature", function() {
