@@ -71,11 +71,8 @@
   },
   "types":
   {
-    "annotated": {
+    "annotated_commit": {
       "functions": {
-        "git_annotated_commit_free": {
-          "ignore": true
-        }
       }
     },
     "attr": {
@@ -1873,7 +1870,9 @@
           "ignore": true
         },
         "git_remote_stats": {
-          "ownedByThis": true
+          "return": {
+            "ownedByThis": true
+          }
         }
       }
     },
