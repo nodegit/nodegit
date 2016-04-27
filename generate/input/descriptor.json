@@ -2424,11 +2424,6 @@
             "ownedByThis": true
           }
         },
-        "git_tree_entry_id": {
-          "return": {
-            "ownedByThis": true
-          }
-        },
         "git_tree_entrycount": {
           "jsFunctionName": "entryCount"
         },
@@ -2465,7 +2460,14 @@
     },
     "tree_entry": {
       "dupFunction": "git_tree_entry_dup",
-      "freeFunctionName": "git_tree_entry_free"
+      "freeFunctionName": "git_tree_entry_free",
+      "functions": {
+        "git_tree_entry_id": {
+          "return": {
+            "ownedByThis": true
+          }
+        }
+      }
     },
     "writestream": {
       "cType": "git_writestream",
