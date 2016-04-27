@@ -58,30 +58,37 @@ void cl_git_rmfile(const char *filename)
 	cl_must_pass(p_unlink(filename));
 }
 
+char *cl_getenv(const char *name)
+{
+	git_buf out = GIT_BUF_INIT;
+	int error = git__getenv(&out, name);
+
+	cl_assert(error >= 0 || error == GIT_ENOTFOUND);
+
+	if (error == GIT_ENOTFOUND)
+		return NULL;
+
+	if (out.size == 0) {
+		char *dup = git__strdup("");
+		cl_assert(dup);
+
+		return dup;
+	}
+
+	return git_buf_detach(&out);
+}
+
+bool cl_is_env_set(const char *name)
+{
+	char *env = cl_getenv(name);
+	bool result = (env != NULL);
+	git__free(env);
+	return result;
+}
+
 #ifdef GIT_WIN32
 
 #include "win32/utf-conv.h"
-
-char *cl_getenv(const char *name)
-{
-	wchar_t *wide_name, *wide_value;
-	char *utf8_value = NULL;
-	DWORD value_len;
-
-	cl_assert(git__utf8_to_16_alloc(&wide_name, name) >= 0);
-
-	value_len = GetEnvironmentVariableW(wide_name, NULL, 0);
-
-	if (value_len) {
-		cl_assert(wide_value = git__malloc(value_len * sizeof(wchar_t)));
-		cl_assert(GetEnvironmentVariableW(wide_name, wide_value, value_len));
-		cl_assert(git__utf16_to_8_alloc(&utf8_value, wide_value) >= 0);
-		git__free(wide_value);
-	}
-
-	git__free(wide_name);
-	return utf8_value;
-}
 
 int cl_setenv(const char *name, const char *value)
 {
@@ -138,10 +145,6 @@ int cl_rename(const char *source, const char *dest)
 #else
 
 #include <stdlib.h>
-char *cl_getenv(const char *name)
-{
-	return getenv(name);
-}
 
 int cl_setenv(const char *name, const char *value)
 {
@@ -295,6 +298,8 @@ const char* cl_git_path_url(const char *path)
 
 		in_buf++;
 	}
+
+	cl_assert(url_buf.size < 4096);
 
 	strncpy(url, git_buf_cstr(&url_buf), 4096);
 	git_buf_free(&url_buf);
@@ -536,14 +541,23 @@ void cl_fake_home(void)
 
 void cl_sandbox_set_search_path_defaults(void)
 {
-	const char *sandbox_path = clar_sandbox_path();
+	git_buf path = GIT_BUF_INIT;
+
+	git_buf_joinpath(&path, clar_sandbox_path(), "__config");
+
+	if (!git_path_exists(path.ptr))
+		cl_must_pass(p_mkdir(path.ptr, 0777));
 
 	git_libgit2_opts(
-		GIT_OPT_SET_SEARCH_PATH, GIT_CONFIG_LEVEL_GLOBAL, sandbox_path);
+		GIT_OPT_SET_SEARCH_PATH, GIT_CONFIG_LEVEL_GLOBAL, path.ptr);
 	git_libgit2_opts(
-		GIT_OPT_SET_SEARCH_PATH, GIT_CONFIG_LEVEL_XDG, sandbox_path);
+		GIT_OPT_SET_SEARCH_PATH, GIT_CONFIG_LEVEL_XDG, path.ptr);
 	git_libgit2_opts(
-		GIT_OPT_SET_SEARCH_PATH, GIT_CONFIG_LEVEL_SYSTEM, sandbox_path);
+		GIT_OPT_SET_SEARCH_PATH, GIT_CONFIG_LEVEL_SYSTEM, path.ptr);
+	git_libgit2_opts(
+		GIT_OPT_SET_SEARCH_PATH, GIT_CONFIG_LEVEL_PROGRAMDATA, path.ptr);
+
+	git_buf_free(&path);
 }
 
 #ifdef GIT_WIN32

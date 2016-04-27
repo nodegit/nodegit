@@ -56,7 +56,7 @@ static int diff_insert_delta(
 
 	if (diff->opts.notify_cb) {
 		error = diff->opts.notify_cb(
-			diff, delta, matched_pathspec, diff->opts.notify_payload);
+			diff, delta, matched_pathspec, diff->opts.payload);
 
 		if (error) {
 			git__free(delta);
@@ -72,6 +72,32 @@ static int diff_insert_delta(
 		git__free(delta);
 
 	return error;
+}
+
+static bool diff_pathspec_match(
+	const char **matched_pathspec,
+	git_diff *diff,
+	const git_index_entry *entry)
+{
+	bool disable_pathspec_match =
+		DIFF_FLAG_IS_SET(diff, GIT_DIFF_DISABLE_PATHSPEC_MATCH);
+
+	/* If we're disabling fnmatch, then the iterator has already applied
+	 * the filters to the files for us and we don't have to do anything.
+	 * However, this only applies to *files* - the iterator will include
+	 * directories that we need to recurse into when not autoexpanding,
+	 * so we still need to apply the pathspec match to directories.
+	 */
+	if ((S_ISLNK(entry->mode) || S_ISREG(entry->mode)) &&
+		disable_pathspec_match) {
+		*matched_pathspec = entry->path;
+		return true;
+	}
+
+	return git_pathspec__match(
+		&diff->pathspec, entry->path, disable_pathspec_match,
+		DIFF_FLAG_IS_SET(diff, GIT_DIFF_IGNORE_CASE),
+		matched_pathspec, NULL);
 }
 
 static int diff_delta__from_one(
@@ -105,16 +131,12 @@ static int diff_delta__from_one(
 	if (status == GIT_DELTA_UNTRACKED &&
 		DIFF_FLAG_ISNT_SET(diff, GIT_DIFF_INCLUDE_UNTRACKED))
 		return 0;
-	
+
 	if (status == GIT_DELTA_UNREADABLE &&
 		DIFF_FLAG_ISNT_SET(diff, GIT_DIFF_INCLUDE_UNREADABLE))
 		return 0;
 
-	if (!git_pathspec__match(
-			&diff->pathspec, entry->path,
-			DIFF_FLAG_IS_SET(diff, GIT_DIFF_DISABLE_PATHSPEC_MATCH),
-			DIFF_FLAG_IS_SET(diff, GIT_DIFF_IGNORE_CASE),
-			&matched_pathspec, NULL))
+	if (!diff_pathspec_match(&matched_pathspec, diff, entry))
 		return 0;
 
 	delta = diff_delta__alloc(diff, status, entry->path);
@@ -408,8 +430,9 @@ static git_diff *diff_list_alloc(
 	diff->new_src = new_iter->type;
 	memcpy(&diff->opts, &dflt, sizeof(diff->opts));
 
-	if (git_vector_init(&diff->deltas, 0, git_diff_delta__cmp) < 0 ||
-		git_pool_init(&diff->pool, 1, 0) < 0) {
+	git_pool_init(&diff->pool, 1);
+
+	if (git_vector_init(&diff->deltas, 0, git_diff_delta__cmp) < 0) {
 		git_diff_free(diff);
 		return NULL;
 	}
@@ -470,11 +493,6 @@ static int diff_list_apply_options(
 		diff->diffcaps = diff->diffcaps | GIT_DIFFCAPS_TRUST_CTIME;
 
 	/* Don't set GIT_DIFFCAPS_USE_DEV - compile time option in core git */
-
-	/* Don't trust nanoseconds; we do not load nanos from disk */
-#ifdef GIT_USE_NSEC
-	diff->diffcaps = diff->diffcaps | GIT_DIFFCAPS_TRUST_NANOSECS;
-#endif
 
 	/* If not given explicit `opts`, check `diff.xyz` configs */
 	if (!opts) {
@@ -676,13 +694,6 @@ int git_diff__oid_for_entry(
 	return error;
 }
 
-static bool diff_time_eq(
-	const git_index_time *a, const git_index_time *b, bool use_nanos)
-{
-	return a->seconds == b->seconds &&
-		(!use_nanos || a->nanoseconds == b->nanoseconds);
-}
-
 typedef struct {
 	git_repository *repo;
 	git_iterator *old_iter;
@@ -757,11 +768,7 @@ static int maybe_modified(
 	const char *matched_pathspec;
 	int error = 0;
 
-	if (!git_pathspec__match(
-			&diff->pathspec, oitem->path,
-			DIFF_FLAG_IS_SET(diff, GIT_DIFF_DISABLE_PATHSPEC_MATCH),
-			DIFF_FLAG_IS_SET(diff, GIT_DIFF_IGNORE_CASE),
-			&matched_pathspec, NULL))
+	if (!diff_pathspec_match(&matched_pathspec, diff, oitem))
 		return 0;
 
 	memset(&noid, 0, sizeof(noid));
@@ -819,7 +826,6 @@ static int maybe_modified(
 	 */
 	} else if (git_oid_iszero(&nitem->id) && new_is_workdir) {
 		bool use_ctime = ((diff->diffcaps & GIT_DIFFCAPS_TRUST_CTIME) != 0);
-		bool use_nanos = ((diff->diffcaps & GIT_DIFFCAPS_TRUST_NANOSECS) != 0);
 		git_index *index;
 		git_iterator_index(&index, info->new_iter);
 
@@ -838,13 +844,12 @@ static int maybe_modified(
 			modified_uncertain =
 				(oitem->file_size <= 0 && nitem->file_size > 0);
 		}
-		else if (!diff_time_eq(&oitem->mtime, &nitem->mtime, use_nanos) ||
-			(use_ctime &&
-			 !diff_time_eq(&oitem->ctime, &nitem->ctime, use_nanos)) ||
+		else if (!git_index_time_eq(&oitem->mtime, &nitem->mtime) ||
+			(use_ctime && !git_index_time_eq(&oitem->ctime, &nitem->ctime)) ||
 			oitem->ino != nitem->ino ||
 			oitem->uid != nitem->uid ||
 			oitem->gid != nitem->gid ||
-			(index && nitem->mtime.seconds >= index->stamp.mtime))
+			git_index_entry_newer_than_index(nitem, index))
 		{
 			status = GIT_DELTA_MODIFIED;
 			modified_uncertain = true;
@@ -1055,6 +1060,12 @@ static int handle_unmatched_new_item(
 					&info->nitem, &untracked_state, info->new_iter)) < 0)
 				return error;
 
+			/* if we found nothing that matched our pathlist filter, exclude */
+			if (untracked_state == GIT_ITERATOR_STATUS_FILTERED) {
+				git_vector_pop(&diff->deltas);
+				git__free(last);
+			}
+
 			/* if we found nothing or just ignored items, update the record */
 			if (untracked_state == GIT_ITERATOR_STATUS_IGNORED ||
 				untracked_state == GIT_ITERATOR_STATUS_EMPTY) {
@@ -1235,7 +1246,18 @@ int git_diff__from_iterators(
 
 	/* run iterators building diffs */
 	while (!error && (info.oitem || info.nitem)) {
-		int cmp = info.oitem ?
+		int cmp;
+
+		/* report progress */
+		if (opts && opts->progress_cb) {
+			if ((error = opts->progress_cb(diff,
+					info.oitem ? info.oitem->path : NULL,
+					info.nitem ? info.nitem->path : NULL,
+					opts->payload)))
+				break;
+		}
+
+		cmp = info.oitem ?
 			(info.nitem ? diff->entrycomp(info.oitem, info.nitem) : -1) : 1;
 
 		/* create DELETED records for old items not matched in new */
@@ -1266,11 +1288,26 @@ cleanup:
 	return error;
 }
 
-#define DIFF_FROM_ITERATORS(MAKE_FIRST, MAKE_SECOND) do { \
+#define DIFF_FROM_ITERATORS(MAKE_FIRST, FLAGS_FIRST, MAKE_SECOND, FLAGS_SECOND) do { \
 	git_iterator *a = NULL, *b = NULL; \
-	char *pfx = opts ? git_pathspec_prefix(&opts->pathspec) : NULL; \
+	char *pfx = (opts && !(opts->flags & GIT_DIFF_DISABLE_PATHSPEC_MATCH)) ? \
+		git_pathspec_prefix(&opts->pathspec) : NULL; \
+	git_iterator_options a_opts = GIT_ITERATOR_OPTIONS_INIT, \
+		b_opts = GIT_ITERATOR_OPTIONS_INIT; \
+	a_opts.flags = FLAGS_FIRST; \
+	a_opts.start = pfx; \
+	a_opts.end = pfx; \
+	b_opts.flags = FLAGS_SECOND; \
+	b_opts.start = pfx; \
+	b_opts.end = pfx; \
 	GITERR_CHECK_VERSION(opts, GIT_DIFF_OPTIONS_VERSION, "git_diff_options"); \
-	if (!(error = MAKE_FIRST) && !(error = MAKE_SECOND)) \
+	if (opts && (opts->flags & GIT_DIFF_DISABLE_PATHSPEC_MATCH)) { \
+		a_opts.pathlist.strings = opts->pathspec.strings; \
+		a_opts.pathlist.count = opts->pathspec.count; \
+		b_opts.pathlist.strings = opts->pathspec.strings; \
+		b_opts.pathlist.count = opts->pathspec.count; \
+	} \
+	if (!error && !(error = MAKE_FIRST) && !(error = MAKE_SECOND)) \
 		error = git_diff__from_iterators(diff, repo, a, b, opts); \
 	git__free(pfx); git_iterator_free(a); git_iterator_free(b); \
 } while (0)
@@ -1282,8 +1319,8 @@ int git_diff_tree_to_tree(
 	git_tree *new_tree,
 	const git_diff_options *opts)
 {
-	int error = 0;
 	git_iterator_flag_t iflag = GIT_ITERATOR_DONT_IGNORE_CASE;
+	int error = 0;
 
 	assert(diff && repo);
 
@@ -1295,8 +1332,8 @@ int git_diff_tree_to_tree(
 		iflag = GIT_ITERATOR_IGNORE_CASE;
 
 	DIFF_FROM_ITERATORS(
-		git_iterator_for_tree(&a, old_tree, iflag, pfx, pfx),
-		git_iterator_for_tree(&b, new_tree, iflag, pfx, pfx)
+		git_iterator_for_tree(&a, old_tree, &a_opts), iflag,
+		git_iterator_for_tree(&b, new_tree, &b_opts), iflag
 	);
 
 	return error;
@@ -1320,10 +1357,10 @@ int git_diff_tree_to_index(
 	git_index *index,
 	const git_diff_options *opts)
 {
-	int error = 0;
-	bool index_ignore_case = false;
 	git_iterator_flag_t iflag = GIT_ITERATOR_DONT_IGNORE_CASE |
 		GIT_ITERATOR_INCLUDE_CONFLICTS;
+	bool index_ignore_case = false;
+	int error = 0;
 
 	assert(diff && repo);
 
@@ -1333,8 +1370,8 @@ int git_diff_tree_to_index(
 	index_ignore_case = index->ignore_case;
 
 	DIFF_FROM_ITERATORS(
-		git_iterator_for_tree(&a, old_tree, iflag, pfx, pfx),
-		git_iterator_for_index(&b, index, iflag, pfx, pfx)
+		git_iterator_for_tree(&a, old_tree, &a_opts), iflag,
+		git_iterator_for_index(&b, repo, index, &b_opts), iflag
 	);
 
 	/* if index is in case-insensitive order, re-sort deltas to match */
@@ -1358,10 +1395,11 @@ int git_diff_index_to_workdir(
 		return error;
 
 	DIFF_FROM_ITERATORS(
-		git_iterator_for_index(
-			&a, index, GIT_ITERATOR_INCLUDE_CONFLICTS, pfx, pfx),
-		git_iterator_for_workdir(
-			&b, repo, index, NULL, GIT_ITERATOR_DONT_AUTOEXPAND, pfx, pfx)
+		git_iterator_for_index(&a, repo, index, &a_opts),
+		GIT_ITERATOR_INCLUDE_CONFLICTS,
+
+		git_iterator_for_workdir(&b, repo, index, NULL, &b_opts),
+		GIT_ITERATOR_DONT_AUTOEXPAND
 	);
 
 	if (!error && DIFF_FLAG_IS_SET(*diff, GIT_DIFF_UPDATE_INDEX) && (*diff)->index_updated)
@@ -1385,9 +1423,8 @@ int git_diff_tree_to_workdir(
 		return error;
 
 	DIFF_FROM_ITERATORS(
-		git_iterator_for_tree(&a, old_tree, 0, pfx, pfx),
-		git_iterator_for_workdir(
-			&b, repo, index, old_tree, GIT_ITERATOR_DONT_AUTOEXPAND, pfx, pfx)
+		git_iterator_for_tree(&a, old_tree, &a_opts), 0,
+		git_iterator_for_workdir(&b, repo, index, old_tree, &b_opts), GIT_ITERATOR_DONT_AUTOEXPAND
 	);
 
 	return error;
@@ -1420,6 +1457,29 @@ int git_diff_tree_to_workdir_with_index(
 	}
 
 	*diff = d1;
+	return error;
+}
+
+int git_diff_index_to_index(
+	git_diff **diff,
+	git_repository *repo,
+	git_index *old_index,
+	git_index *new_index,
+	const git_diff_options *opts)
+{
+	int error = 0;
+
+	assert(diff && old_index && new_index);
+
+	DIFF_FROM_ITERATORS(
+		git_iterator_for_index(&a, repo, old_index, &a_opts), GIT_ITERATOR_DONT_IGNORE_CASE,
+		git_iterator_for_index(&b, repo, new_index, &b_opts), GIT_ITERATOR_DONT_IGNORE_CASE
+	);
+
+	/* if index is in case-insensitive order, re-sort deltas to match */
+	if (!error && (old_index->ignore_case || new_index->ignore_case))
+		diff_set_ignore_case(*diff, true);
+
 	return error;
 }
 
@@ -1599,6 +1659,7 @@ int git_diff_format_email__append_header_tobuf(
 	const git_oid *id,
 	const git_signature *author,
 	const char *summary,
+	const char *body,
 	size_t patch_no,
 	size_t total_patches,
 	bool exclude_patchno_marker)
@@ -1637,6 +1698,13 @@ int git_diff_format_email__append_header_tobuf(
 	}
 
 	error = git_buf_printf(out, "%s\n\n", summary);
+
+	if (body) {
+		git_buf_puts(out, body);
+
+		if (out->ptr[out->size - 1] != '\n')
+			git_buf_putc(out, '\n');
+	}
 
 	return error;
 }
@@ -1715,7 +1783,7 @@ int git_diff_format_email(
 
 	error = git_diff_format_email__append_header_tobuf(out,
 				opts->id, opts->author, summary == NULL ? opts->summary : summary,
-				opts->patch_no, opts->total_patches, ignore_marker);
+				opts->body, opts->patch_no, opts->total_patches, ignore_marker);
 
 	if (error < 0)
 		goto on_error;
@@ -1758,6 +1826,7 @@ int git_diff_commit_as_email(
 	opts.total_patches = total_patches;
 	opts.id = git_commit_id(commit);
 	opts.summary = git_commit_summary(commit);
+	opts.body = git_commit_body(commit);
 	opts.author = git_commit_author(commit);
 
 	if ((error = git_diff__commit(&diff, repo, commit, diff_opts)) < 0)

@@ -21,6 +21,18 @@ typedef int GIT_SOCKET;
 #define p_lstat(p,b) lstat(p,b)
 #define p_stat(p,b) stat(p, b)
 
+#if defined(GIT_USE_STAT_MTIMESPEC)
+# define st_atime_nsec st_atimespec.tv_nsec
+# define st_mtime_nsec st_mtimespec.tv_nsec
+# define st_ctime_nsec st_ctimespec.tv_nsec
+#elif defined(GIT_USE_STAT_MTIM)
+# define st_atime_nsec st_atim.tv_nsec
+# define st_mtime_nsec st_mtim.tv_nsec
+# define st_ctime_nsec st_ctim.tv_nsec
+#elif !defined(GIT_USE_STAT_MTIME_NSEC) && defined(GIT_USE_NEC)
+# error GIT_USE_NSEC defined but unknown struct stat nanosecond type
+#endif
+
 #define p_utimes(f, t) utimes(f, t)
 
 #define p_readlink(a, b, c) readlink(a, b, c)
@@ -52,8 +64,10 @@ extern char *p_realpath(const char *, char *);
 #define p_localtime_r(c, r) localtime_r(c, r)
 #define p_gmtime_r(c, r) gmtime_r(c, r)
 
+#define p_timeval timeval
+
 #ifdef HAVE_FUTIMENS
-GIT_INLINE(int) p_futimes(int f, const struct timeval t[2])
+GIT_INLINE(int) p_futimes(int f, const struct p_timeval t[2])
 {
 	struct timespec s[2];
 	s[0].tv_sec = t[0].tv_sec;

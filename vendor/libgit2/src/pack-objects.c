@@ -91,7 +91,7 @@ static unsigned name_hash(const char *name)
 static int packbuilder_config(git_packbuilder *pb)
 {
 	git_config *config;
-	int ret;
+	int ret = 0;
 	int64_t val;
 
 	if ((ret = git_repository_config_snapshot(&config, pb->repo)) < 0)
@@ -100,8 +100,10 @@ static int packbuilder_config(git_packbuilder *pb)
 #define config_get(KEY,DST,DFLT) do { \
 	ret = git_config_get_int64(&val, config, KEY); \
 	if (!ret) (DST) = val; \
-	else if (ret == GIT_ENOTFOUND) (DST) = (DFLT); \
-	else if (ret < 0) return -1; } while (0)
+	else if (ret == GIT_ENOTFOUND) { \
+	    (DST) = (DFLT); \
+	    ret = 0; \
+	} else if (ret < 0) goto out; } while (0)
 
 	config_get("pack.deltaCacheSize", pb->max_delta_cache_size,
 		   GIT_PACK_DELTA_CACHE_SIZE);
@@ -113,9 +115,10 @@ static int packbuilder_config(git_packbuilder *pb)
 
 #undef config_get
 
+out:
 	git_config_free(config);
 
-	return 0;
+	return ret;
 }
 
 int git_packbuilder_new(git_packbuilder **out, git_repository *repo)
@@ -135,8 +138,7 @@ int git_packbuilder_new(git_packbuilder **out, git_repository *repo)
 	if (!pb->walk_objects)
 		goto on_error;
 
-	if (git_pool_init(&pb->object_pool, sizeof(git_walk_object), 0) < 0)
-		goto on_error;
+	git_pool_init(&pb->object_pool, sizeof(git_walk_object));
 
 	pb->repo = repo;
 	pb->nr_threads = 1; /* do not spawn any thread by default */
@@ -606,6 +608,7 @@ static git_pobject **compute_write_order(git_packbuilder *pb)
 	}
 
 	if (wo_end != pb->nr_objects) {
+		git__free(wo);
 		giterr_set(GITERR_INVALID, "invalid write order");
 		return NULL;
 	}
@@ -626,10 +629,8 @@ static int write_pack(git_packbuilder *pb,
 	int error = 0;
 
 	write_order = compute_write_order(pb);
-	if (write_order == NULL) {
-		error = -1;
-		goto done;
-	}
+	if (write_order == NULL)
+		return -1;
 
 	/* Write pack header */
 	ph.hdr_signature = htonl(PACK_SIGNATURE);
@@ -847,9 +848,13 @@ static int try_delta(git_packbuilder *pb, struct unpacked *trg,
 
 		git_packbuilder__cache_unlock(pb);
 
-		if (overflow ||
-			!(trg_object->delta_data = git__realloc(delta_buf, delta_size)))
+		if (overflow) {
+			git__free(delta_buf);
 			return -1;
+		}
+
+		trg_object->delta_data = git__realloc(delta_buf, delta_size);
+		GITERR_CHECK_ALLOC(trg_object->delta_data);
 	} else {
 		/* create delta when writing the pack */
 		git_packbuilder__cache_unlock(pb);

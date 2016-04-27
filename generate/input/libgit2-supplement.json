@@ -82,28 +82,6 @@
     },
     "git_note_iterator": {
       "decl": "git_iterator"
-    },
-    "git_tree_entry": {
-      "fields": [
-        {
-          "name": "attr",
-          "type": "uint16_t"
-        },
-        {
-          "name": "oid",
-          "type": "git_oid"
-        },
-        {
-          "name": "filename_len",
-          "type": "size_t"
-        },
-        {
-          "name": "filename",
-          "structType": "char",
-          "structName": "filename[1]",
-          "type": "char *"
-        }
-      ]
     }
   },
   "new" : {
@@ -304,6 +282,18 @@
           "git_status_list_free",
           "git_status_list_get_perfdata",
           "git_status_list_new"
+        ]
+      ],
+      [
+        "tree_entry",
+        [
+          "git_tree_entry_filemode",
+          "git_tree_entry_filemode_raw",
+          "git_tree_entry_free",
+          "git_tree_entry_id",
+          "git_tree_entry_name",
+          "git_tree_entry_to_object",
+          "git_tree_entry_type"
         ]
       ]
     ],
@@ -523,48 +513,6 @@
         }
       ],
       [
-        "git_merge_options",
-        {
-          "type": "struct",
-          "fields": [
-            {
-              "type": "unsigned int",
-              "name": "version"
-            },
-            {
-              "type": "git_merge_tree_flag_t",
-              "name": "tree_flags"
-            },
-            {
-              "type": "unsigned int",
-              "name": "rename_threshold"
-            },
-            {
-              "type": "unsigned int",
-              "name": "target_limit"
-            },
-            {
-              "type": "git_diff_similarity_metric *",
-              "name": "metric",
-              "ignore": true
-            },
-            {
-              "type": "git_merge_file_favor_t",
-              "name": "file_favor"
-            },
-            {
-              "type": "unsigned int",
-              "name": "file_flags"
-            }
-          ],
-          "used": {
-            "needs": [
-              "git_merge_init_options"
-            ]
-          }
-        }
-      ],
-      [
         "git_off_t",
         {
           "type": "enum"
@@ -692,70 +640,6 @@
         }
       ],
       [
-        "git_diff_options",
-        {
-          "type": "struct",
-          "fields": [
-            {
-              "type": "unsigned int",
-              "name": "version"
-            },
-            {
-              "type": "uint32_t",
-              "name": "flags"
-            },
-            {
-              "type": "git_submodule_ignore_t",
-              "name": "ignore_submodules"
-            },
-            {
-              "type": "git_strarray",
-              "name": "pathspec"
-            },
-            {
-              "type": "git_diff_notify_cb",
-              "name": "notify_cb"
-            },
-            {
-              "type": "void *",
-              "name": "notify_payload"
-            },
-            {
-              "type": "uint32_t",
-              "name": "context_lines"
-            },
-            {
-              "type": "uint32_t",
-              "name": "interhunk_lines"
-            },
-            {
-              "type": "uint16_t",
-              "name": "id_abbrev"
-            },
-            {
-              "type": "git_off_t",
-              "name": "max_size"
-            },
-            {
-              "type": "const char *",
-              "name": "old_prefix"
-            },
-            {
-              "type": "const char *",
-              "name": "new_prefix"
-            }
-          ],
-          "used": {
-            "needs": [
-              "git_diff_init_options",
-              "git_diff_tree_to_workdir",
-              "git_diff_tree_to_workdirext",
-              "git_diff_tree_to_tree"
-            ]
-          }
-        }
-      ],
-      [
         "git_stash_apply_options",
         {
           "type": "struct",
@@ -827,6 +711,17 @@
         "git_status_list_free",
         "git_status_list_get_perfdata",
         "git_status_list_new"
+      ]
+    },
+    "tree": {
+      "functions": [
+        "git_tree_entry_filemode",
+        "git_tree_entry_filemode_raw",
+        "git_tree_entry_free",
+        "git_tree_entry_id",
+        "git_tree_entry_name",
+        "git_tree_entry_to_object",
+        "git_tree_entry_type"
       ]
     }
   },
