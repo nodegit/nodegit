@@ -12,6 +12,7 @@ var fromRegistry;
 try {
   fs.statSync(path.join(__dirname, "..", "include"));
   fs.statSync(path.join(__dirname, "..", "src"));
+  fs.statSync(path.join(__dirname, "..", "dist"));
   fromRegistry = true;
 }
 catch(e) {
@@ -63,7 +64,45 @@ function prepareAndBuild() {
   return prepareForBuild()
     .then(function() {
       return build();
+    })
+    .then(function() {
+      return transpileJavascript();
     });
+}
+
+function transpileJavascript() {
+  var cmd = pathForTool("babel");
+  var args = [
+    "--presets",
+    "es2015",
+    "-d",
+    "./dist",
+    "./lib"
+  ];
+  var opts = {
+    cwd: ".",
+    maxBuffer: Number.MAX_VALUE,
+    env: process.env,
+    stdio: "inherit"
+  };
+  var home = process.platform == "win32" ?
+              process.env.USERPROFILE : process.env.HOME;
+
+  opts.env.HOME = path.join(home, ".nodegit-gyp");
+
+  return new Promise(function(resolve, reject) {
+    var child = cp.spawn(cmd, args, opts);
+    child.on("close", function(code) {
+      console.log(code);
+      if (code) {
+        reject(code);
+        process.exitCode = 13;
+      }
+      else {
+        resolve();
+      }
+    });
+  });
 }
 
 function build() {
