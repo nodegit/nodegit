@@ -282,7 +282,7 @@ describe("Stage", function() {
 
       function afterWriteFn(repo, fileName) {
         return fse.chmod(path.join(repo.workdir(), fileName),
-          0755 /* new filemode */);
+          0o755 /* new filemode */);
       }
 
       return createAndCommitFiles(
@@ -290,7 +290,7 @@ describe("Stage", function() {
       )
       //Then, diff between head commit and workdir should have filemode change
       .then(function() {
-        return compareFilemodes(true, null, 0111 /* expect +x */)
+        return compareFilemodes(true, null, 0o111 /* expect +x */)
           .then(function() {
             return test.repository.stageFilemode(fileName, true);
           });
@@ -327,7 +327,7 @@ describe("Stage", function() {
 
       function afterWriteFn(repo, fileName) {
         return fse.chmod(path.join(repo.workdir(), fileName),
-          0755 /* new filemode */);
+          0o755 /* new filemode */);
       }
 
       return createAndCommitFiles(
@@ -338,7 +338,7 @@ describe("Stage", function() {
       )
       //Then, diff between head commit and workdir should have filemode change
       .then(function() {
-        return compareFilemodes(true, null, 0111 /* expect +x */);
+        return compareFilemodes(true, null, 0o111 /* expect +x */);
       })
       .then(function() {
         return test.repository.refreshIndex();
@@ -353,7 +353,7 @@ describe("Stage", function() {
       })
       .then(function() {
         //We expect the Index to have the filemode changes now.
-        return compareFilemodes(false, index, 0111 /* expect +x */)
+        return compareFilemodes(false, index, 0o111 /* expect +x */)
           .then(function() {
             //...then we attempt to unstage filemode
             return test.repository.stageFilemode(fileName, false /* unstage */);
@@ -368,7 +368,7 @@ describe("Stage", function() {
       })
       //We also expect the workdir to now have the filemode change.
       .then(function() {
-        return compareFilemodes(true, null, 0111 /* expect +x */);
+        return compareFilemodes(true, null, 0o111 /* expect +x */);
       });
     });
   } else if (process.platform == "win32") {
@@ -403,7 +403,7 @@ describe("Stage", function() {
         index = repoIndex;
         //Head commit vs index
         //We expect the Index to have +x
-        return compareFilemodes(false, index, -0111 /* expect +x */);
+        return compareFilemodes(false, index, -0o111 /* expect +x */);
       })
       .then(function() {
         //...then we attempt to unstage filemode
@@ -488,7 +488,7 @@ describe("Stage", function() {
       index = repoIndex;
       //Head commit vs index
       //We expect the Index to have +x
-      return compareFilemodes(false, index, -0111 /* expect +x */);
+      return compareFilemodes(false, index, -0o111 /* expect +x */);
     })
     .then(function() {
       //...then we attempt to unstage filemode
