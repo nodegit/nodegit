@@ -22,6 +22,7 @@
         "src/convenient_patch.cc",
         "src/convenient_hunk.cc",
         "src/str_array_converter.cc",
+        "src/thread_pool.cc",
         {% each %}
           {% if type != "enum" %}
             "src/{{ name }}.cc",
