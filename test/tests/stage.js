@@ -248,7 +248,7 @@ describe("Stage", function() {
           if (!delta) {
             return true;
           } else {
-            throw ("File change when no file change expected.");
+            throw new Error("File change when no file change expected.");
           }
         } else {
           assert(delta.newFile().mode() - delta.oldFile().mode() ===
