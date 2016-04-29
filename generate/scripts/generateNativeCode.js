@@ -1,10 +1,7 @@
 const path = require("path");
 const promisify = require("promisify-node");
 const fse = promisify(require("fs-extra"));
-const exec = promisify(function(command, opts, callback) {
-  return require("child_process").exec(command, opts, callback);
-});
-
+const exec = require('../../utils/execPromise');
 const utils = require("./utils");
 
 module.exports = function generateNativeCode() {
