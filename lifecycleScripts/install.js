@@ -121,7 +121,6 @@ function build() {
     return arg;
   });
 
-  console.log(args);
   return new Promise(function(resolve, reject) {
     var child = cp.spawn(cmd, args, opts);
     child.on("close", function(code) {

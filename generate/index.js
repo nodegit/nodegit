@@ -1,19 +1,34 @@
 var generateJson = require("./scripts/generateJson");
 var generateNativeCode = require("./scripts/generateNativeCode");
 var generateMissingTests = require("./scripts/generateMissingTests");
+var submoduleStatus = require("../lifecycleScripts/submodules/getStatus");
 
 module.exports = function generate() {
-  return new Promise(function(resolve, reject) {
-    try {
+  return submoduleStatus()
+    .then(function(statuses) {
+      var dirtySubmodules = statuses
+        .filter(function(status) {
+          return status.onNewCommit
+            || status.needsInitialization
+            || status.workDirDirty;
+        });
+
+      if (dirtySubmodules.length) {
+        console.log("WARNING - Some submodules are out-of-sync");
+        dirtySubmodules.forEach(function(submodule) {
+          console.log("\t" + submodule.name);
+        });
+      }
+    })
+    .then(function() {
       generateJson();
       generateNativeCode();
       generateMissingTests();
-      resolve();
-    }
-    catch(e) {
-      reject(e);
-    }
-  });
+    })
+    .catch(function(e) {
+      console.log("ERROR - Could not generate native code");
+      console.log(e);
+    });
 }
 
 if (require.main === module) {
