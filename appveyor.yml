@@ -40,6 +40,7 @@ matrix:
 install:
   - ps: Install-Product node $env:nodejs_version $env:platform
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
+  - npm install -g npm
   - cmd: npm install -g node-gyp
   - npm install
 
