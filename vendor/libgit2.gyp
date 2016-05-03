@@ -28,6 +28,7 @@
       ],
       "sources": [
         "libgit2/include/git2/sys/hashsig.h",
+        "libgit2/include/git2/sys/merge.h",
         "libgit2/src/annotated_commit.c",
         "libgit2/src/annotated_commit.h",
         "libgit2/src/array.h",
@@ -123,6 +124,7 @@
         "libgit2/src/merge_file.c",
         "libgit2/src/merge_file.h",
         "libgit2/src/merge.c",
+        "libgit2/src/merge_driver.c",
         "libgit2/src/merge.h",
         "libgit2/src/message.c",
         "libgit2/src/message.h",
@@ -162,6 +164,7 @@
         "libgit2/src/posix.h",
         "libgit2/src/pqueue.c",
         "libgit2/src/pqueue.h",
+        "libgit2/src/proxy.c",
         "libgit2/src/push.c",
         "libgit2/src/push.h",
         "libgit2/src/rebase.c",

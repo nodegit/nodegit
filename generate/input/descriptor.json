@@ -53,6 +53,10 @@
       "owner": "Object",
       "removeString": "OBJ_"
     },
+    "proxy": {
+      "JsName": "PROXY",
+      "isMask": false
+    },
     "ref": {
       "owner": "Reference",
       "JsName": "TYPE"
@@ -421,6 +425,9 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_commit_create_buffer": {
+          "ignore": true
         },
         "git_commit_create_from_callback": {
           "ignore": true
@@ -1276,6 +1283,9 @@
           "ignore": true
         }
       }
+    },
+    "merge_driver": {
+      "ignore": true
     },
     "message": {
       "functions": {
