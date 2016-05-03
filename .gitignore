@@ -1,14 +1,15 @@
-/node_modules/
 /build/
-/test/coverage/
-/test/repos/
-/test/test/
-/test/home/
-/src/
+/coverage/
+/dist/
 /include/
 /lib/enums.js
 /lib/nodegit.js
-/coverage/
+/node_modules/
+/src/
+/test/coverage/
+/test/home/
+/test/repos/
+/test/test/
 
 /generate/output
 /generate/**/*.json
