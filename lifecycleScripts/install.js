@@ -1,14 +1,11 @@
-var promisify = require("promisify-node");
 var path = require("path");
 var fs = require("fs");
 var cp = require("child_process");
 var prepareForBuild = require("./prepareForBuild");
-
-var exec = promisify(function(command, opts, callback) {
-  return cp.exec(command, opts, callback);
-});
+var exec = require("../utils/execPromise");
 
 var fromRegistry;
+
 try {
   fs.statSync(path.join(__dirname, "..", "include"));
   fs.statSync(path.join(__dirname, "..", "src"));
@@ -124,7 +121,6 @@ function build() {
     return arg;
   });
 
-  console.log(args);
   return new Promise(function(resolve, reject) {
     var child = cp.spawn(cmd, args, opts);
     child.on("close", function(code) {

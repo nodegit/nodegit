@@ -3,9 +3,7 @@ var path = require("path");
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
-var exec = promisify(function(command, opts, callback) {
-  return require("child_process").exec(command, opts, callback);
-});
+var exec = require("../../utils/execPromise");
 
 describe("Stage", function() {
   var RepoUtils = require("../utils/repository_setup");

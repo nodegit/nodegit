@@ -3,11 +3,11 @@ var path = require("path");
 
 var local = path.join.bind(path, __dirname);
 
+var submodules = require(local("submodules"));
 var configure = require(local("configureLibssh2"));
 var generate = require(local("../generate"));
 
 module.exports = function prepareForBuild() {
-
   return new Promise(function(resolve, reject) {
     cp.exec("npm install --ignore-scripts", function(err, stdout, stderr) {
       if (err) {
@@ -19,7 +19,11 @@ module.exports = function prepareForBuild() {
         console.info(stdout);
       }
     });
-  }).then(function() {
+  })
+  .then(function() {
+    return submodules();
+  })
+  .then(function() {
     return Promise.all([
       configure(),
       generate()

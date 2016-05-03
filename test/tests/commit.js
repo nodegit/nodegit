@@ -8,10 +8,7 @@ var leakTest = require("../utils/leak_test");
 
 var local = path.join.bind(path, __dirname);
 
-// Have to wrap exec, since it has a weird callback signature.
-var exec = promisify(function(command, opts, callback) {
-  return require("child_process").exec(command, opts, callback);
-});
+var exec = require("../../utils/execPromise");
 
 describe("Commit", function() {
   var NodeGit = require("../../");
