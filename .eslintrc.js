@@ -1,5 +1,5 @@
 module.exports = {
-  "extends": "airbnb",
+  "extends": "airbnb-base",
   "rules": {
     "brace-style": [0],
     "comma-dangle": [2, "never"],
@@ -15,7 +15,7 @@ module.exports = {
     "import/no-unresolved": [0],
     "indent": [0],
     "keyword-spacing": [0],
-    "max-len": ["error", 80, 4],
+    "max-len": [2, 80, 4],
     "new-cap": [0],
     "no-else-return": [0],
     "no-mixed-spaces-and-tabs": [0],
