@@ -93,7 +93,6 @@ function transpileJavascript() {
   return new Promise(function(resolve, reject) {
     var child = cp.spawn(cmd, args, opts);
     child.on("close", function(code) {
-      console.log(code);
       if (code) {
         reject(code);
         process.exitCode = 13;
