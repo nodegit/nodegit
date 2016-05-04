@@ -1,40 +1,40 @@
 # Change Log
 
-## [0.13.0](https://github.com/nodegit/nodegit/releases/tag/v0.13.0) (2016-05-04)
+# <a name="v0-13-0" href="#v0-13-0">v0.13.0</a> [(2016-05-04)](https://github.com/nodegit/nodegit/releases/tag/v0.13.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.2...v0.13.0)
 
-# Summary
+## Summary
 
 This is a big update! Lots of work was done to bring NodeGit up to the latest stable libgit2 version (v0.24.1), to use babel in the library, to make it more stable, remove memory leaks, squash bugs and in general just improve the library for all. Make sure to see all of the API changes below (there are a lot).
 
-# Node support
+## Node support
 
 We have added Node 6 as a supported platform! Going forward we aim to have 1:1 support for versions of Node that are either current or LTS. That means that v0.12 will not be supported soon so if you're on that please upgrade to at least Node v4. Also Node v5 will *NOT* be LTS so when Node stops supporting that in the coming months we will as well. You can read more about the current Node upgrade plan [here](https://nodejs.org/en/blog/release/v6.0.0/).
 
-# API Changes
+## API Changes
 -------
 
-## Modified
+### Modified
 
 - `Index#add`, `Index#addByPath`, `Index#clear`, `Index#conflictAdd`, `Index#conflictCleanup`, `Index#conflictGet`, `Index#conflictRemove`, `Index.open`, `Index#read`, `Index#readTree`, `Index#remove`, `Index#removeByPath`, `Index#removeDirectory`, `Index#read`, `Index#writeTree`, and `Index#writeTreeTo` are all now asynchronous functions [PR #971](https://github.com/nodegit/nodegit/pull/971)
 - Made `ancestoryEntry`, `outEntry` and `theirEntry` optional parameters on `Index#conflictAdd` [PR #997](https://github.com/nodegit/nodegit/pull/997)
 - `Repository#refreshIndex` will return an Index object back that has the latest data loaded off of disk [PR #986](https://github.com/nodegit/nodegit/pull/986)
 - `Commit.create` is now asynchronous [PR #1022](https://github.com/nodegit/nodegit/pull/1022)
 
-## Added
+### Added
 
 - `Diff#merge` will combine a diff into itself [PR #1000](https://github.com/nodegit/nodegit/pull/1000)
 - `ReflogEntry#committer`, `ReflogEntry#idNew`, `ReflogEntry#idOld`, and `ReflogEntry#message` have been added
 [PR #1013](https://github.com/nodegit/nodegit/pull/1013)
 
-## Removed
+### Removed
 
 - `Repository#openIndex` [PR #990](https://github.com/nodegit/nodegit/pull/990)
 - `Reflog#entryCommitter`, `Reflog#entryIdNew`, `Reflog#entryIdOld`, and `Reflog#entryMessage` have been moved to be under `ReflogEntry`
 [PR #1013](https://github.com/nodegit/nodegit/pull/1013)
 
-## Bug fixes
+### Bug fixes
 
 - `Branch.name` works now [PR #991](https://github.com/nodegit/nodegit/pull/991)
 - Fixed a crash with callbacks from libgit2 [PR #944](https://github.com/nodegit/nodegit/pull/944)
@@ -150,35 +150,35 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
   Additionally, the `TreeEntry` fields have been removed in lieu of the corresponding functions to return
   the data.
 
-## [0.12.2](https://github.com/nodegit/nodegit/releases/tag/v0.12.2) (2016-04-07)
+# <a name="v0-12-2" href="#v0-12-2">v0.12.2</a> [(2016-04-07)](https://github.com/nodegit/nodegit/releases/tag/v0.12.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.1...v0.12.2)
 
-# Added
+## Added
 
 - We now provide 32-bit binaries for linux [PR #980](https://github.com/nodegit/nodegit/pull/980)
 
-# Bug fixes
+## Bug fixes
 
 - Added memory clean up for references [PR #977](https://github.com/nodegit/nodegit/pull/977) and remotes [PR #981](https://github.com/nodegit/nodegit/pull/981)
 
-## [0.12.1](https://github.com/nodegit/nodegit/releases/tag/v0.12.1) (2016-03-30)
+# <a name="v0-12-1" href="#v0-12-1">v0.12.1</a> [(2016-03-30)](https://github.com/nodegit/nodegit/releases/tag/v0.12.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.0...v0.12.1)
 
-# Bug fixes
+## Bug fixes
 
 - Fixed post install script dying on windows [PR #978](https://github.com/nodegit/nodegit/pull/978)
 
-## [0.12.0](https://github.com/nodegit/nodegit/releases/tag/v0.12.0) (2016-03-28)
+# <a name="v0-12-0" href="#v0-12-0">v0.12.0</a> [(2016-03-28)](https://github.com/nodegit/nodegit/releases/tag/v0.12.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.9...v0.12.0)
 
-# API changes
+## API changes
 - `Ignore`
   - Made `Ignore.pathIsIgnored` async [PR #970](https://github.com/nodegit/nodegit/pull/970)
 
-# Bug fixes
+## Bug fixes
 
 - Added an error message when trying to install NodeGit without a required version of libstdc++ [PR #972](https://github.com/nodegit/nodegit/pull/972)
 - Fix a crash when grabbing content out of a buffer that has unicode [PR #966](https://github.com/nodegit/nodegit/pull/966)
@@ -187,19 +187,19 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - Fixed install when there is a space in the username on windows [PR #951](https://github.com/nodegit/nodegit/pull/951)
 - Bump to nan@2.2.0 [PR #952](https://github.com/nodegit/nodegit/pull/952)
 
-## [0.11.9](https://github.com/nodegit/nodegit/releases/tag/v0.11.9) (2016-03-09)
+# <a name="v0-11-9" href="#v0-11-9">v0.11.9</a> [(2016-03-09)](https://github.com/nodegit/nodegit/releases/tag/v0.11.9)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.8...v0.11.9)
 
 - Fixed crash when calculating diff via `ConvenientPatch` [PR #945](https://github.com/nodegit/nodegit/pull/945)
 
-## [0.11.8](https://github.com/nodegit/nodegit/releases/tag/v0.11.8) (2016-03-07)
+# <a name="v0-11-8" href="#v0-11-8">v0.11.8</a> [(2016-03-07)](https://github.com/nodegit/nodegit/releases/tag/v0.11.8)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.7...v0.11.8)
 
 - Removed callback throttling due to segmentation faults. Will be implemented later. [PR #943](https://github.com/nodegit/nodegit/pull/943)
 
-## [0.11.7](https://github.com/nodegit/nodegit/releases/tag/v0.11.7) (2016-03-07)
+# <a name="v0-11-7" href="#v0-11-7">v0.11.7</a> [(2016-03-07)](https://github.com/nodegit/nodegit/releases/tag/v0.11.7)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.6...v0.11.7)
 
@@ -209,7 +209,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - Fixed unicode in `Diff.blobToBuffer` getting corrupted [PR #935](https://github.com/nodegit/nodegit/pull/935)
 - Fixed fetching/pulling to bitbucket in versions > v5.6 of node [PR #942](https://github.com/nodegit/nodegit/pull/942)
 
-## [0.11.6](https://github.com/nodegit/nodegit/releases/tag/v0.11.6) (2016-03-01)
+# <a name="v0-11-6" href="#v0-11-6">v0.11.6</a> [(2016-03-01)](https://github.com/nodegit/nodegit/releases/tag/v0.11.6)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.5...v0.11.6)
 
@@ -220,27 +220,27 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - Fixed http parsing errors in Node 5.6 [PR #931](https://github.com/nodegit/nodegit/pull/931)
 - Fixed `Tree#walk` not returning the correct entries on `end` [PR #929](https://github.com/nodegit/nodegit/pull/929)
 
-## [0.11.5](https://github.com/nodegit/nodegit/releases/tag/v0.11.5) (2016-02-25)
+# <a name="v0-11-5" href="#v0-11-5">v0.11.5</a> [(2016-02-25)](https://github.com/nodegit/nodegit/releases/tag/v0.11.5)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.4...v0.11.5)
 
 - Fixed crash when calculating a diff [PR #922](https://github.com/nodegit/nodegit/pull/922)
 - Fixed an issue with return values getting randomly corrupted [PR #923](https://github.com/nodegit/nodegit/pull/923))
 
-## [0.11.4](https://github.com/nodegit/nodegit/releases/tag/v0.11.4) (2016-02-24)
+# <a name="v0-11-4" href="#v0-11-4">v0.11.4</a> [(2016-02-24)](https://github.com/nodegit/nodegit/releases/tag/v0.11.4)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.3...v0.11.4)
 
 - Fixed callback out values in callbacks from C++. This affects any NodeGit call that is passed a callback as an option [PR #921](https://github.com/nodegit/nodegit/pull/921)
 - Fixed an issue with building the debug version of NodeGit on windows [PR #918](https://github.com/nodegit/nodegit/pull/918)
 
-## [0.11.3](https://github.com/nodegit/nodegit/releases/tag/v0.11.3) (2016-02-22)
+# <a name="v0-11-3" href="#v0-11-3">v0.11.3</a> [(2016-02-22)](https://github.com/nodegit/nodegit/releases/tag/v0.11.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.2...v0.11.3)
 
 - Fixed an issue where initializing NodeGit would sometimes seg fault. Also fixed an error when fetching concurrently [PR #912](https://github.com/nodegit/nodegit/pull/912)
 
-## [0.11.2](https://github.com/nodegit/nodegit/releases/tag/v0.11.2) (2016-02-18)
+# <a name="v0-11-2" href="#v0-11-2">v0.11.2</a> [(2016-02-18)](https://github.com/nodegit/nodegit/releases/tag/v0.11.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.1...v0.11.2)
 
@@ -249,21 +249,21 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - Fixed seg-fault in linux that happens when getting the diff of very small files [PR #908](https://github.com/nodegit/nodegit/pull/908)
 - Fixed `RevWalk#fastWalk` dying when an error happens in libgit2 [PR #909](https://github.com/nodegit/nodegit/pull/909)
 
-## [0.11.1](https://github.com/nodegit/nodegit/releases/tag/v0.11.1) (2016-02-09)
+# <a name="v0-11-1" href="#v0-11-1">v0.11.1</a> [(2016-02-09)](https://github.com/nodegit/nodegit/releases/tag/v0.11.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.11.0...v0.11.1)
 
 - Numerous fixes and perf boosts to file history [PR #900](https://github.com/nodegit/nodegit/pull/900)[PR #896](https://github.com/nodegit/nodegit/pull/896)
 - Several doc fixes [PR #899](https://github.com/nodegit/nodegit/pull/899)[PR #897](https://github.com/nodegit/nodegit/pull/897)
 
-## [0.11.0](https://github.com/nodegit/nodegit/releases/tag/v0.11.0) (2016-02-04)
+# <a name="v0-11-0" href="#v0-11-0">v0.11.0</a> [(2016-02-04)](https://github.com/nodegit/nodegit/releases/tag/v0.11.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.10.0...v0.11.0)
 
 - Change `Revert.commit` and `Revert.revert` to by async. [PR #887](https://github.com/nodegit/nodegit/pull/887)
 - Added `RevWalk#fileHistoryWalk` for a faster way to retrieve history for a specific file. [PR #889](https://github.com/nodegit/nodegit/pull/889)
 
-## [0.10.0](https://github.com/nodegit/nodegit/releases/tag/v0.10.0) (2016-02-01)
+# <a name="v0-10-0" href="#v0-10-0">v0.10.0</a> [(2016-02-01)](https://github.com/nodegit/nodegit/releases/tag/v0.10.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.9.0...v0.10.0)
 
@@ -289,7 +289,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
   - `rawContent()` contains the unformatted content of the line. This is no longer a string from the line to the end of the file.
   - `content()` contains the utf8 formatted content of the line.
 
-## [0.9.0](https://github.com/nodegit/nodegit/releases/tag/v0.9.0) (2016-01-21)
+# <a name="v0-9-0" href="#v0-9-0">v0.9.0</a> [(2016-01-21)](https://github.com/nodegit/nodegit/releases/tag/v0.9.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.8.0...v0.9.0)
 
@@ -299,7 +299,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - `Repository#mergeBranches` now takes in a `MergeOptions` parameter [PR #873](https://github.com/nodegit/nodegit/pull/873)
 - Remove a NodeGit specific hack to make `Index#addAll` faster since that is fixed in libgit2 [PR #875](https://github.com/nodegit/nodegit/pull/875))
 
-## [0.8.0](https://github.com/nodegit/nodegit/releases/tag/v0.8.0) (2016-01-15)
+# <a name="v0-8-0" href="#v0-8-0">v0.8.0</a> [(2016-01-15)](https://github.com/nodegit/nodegit/releases/tag/v0.8.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.7.0...0.8.0)
 
@@ -308,7 +308,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - `Repository#stageFilemode` now can accept an array of strings for files to update
 - `Submodule#addToIndex`, `Submodule#addFinalize`, `Submodule#init`, `Submodule#open`, `Submodule#sync`, and `Submodule#update` are now all async methodss
 
-## [0.7.0](https://github.com/nodegit/nodegit/releases/tag/v0.7.0) (2016-01-08)
+# <a name="v0-7-0" href="#v0-7-0">v0.7.0</a> [(2016-01-08)](https://github.com/nodegit/nodegit/releases/tag/v0.7.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.3...0.7.0)
 
@@ -317,20 +317,20 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - Make GraphDescendentOf asynchronous
 - Fixed line length of utf8 stringss
 
-## [0.6.3](https://github.com/nodegit/nodegit/releases/tag/v0.6.3) (2015-12-16)
+# <a name="v0-6-3" href="#v0-6-3">v0.6.3</a> [(2015-12-16)](https://github.com/nodegit/nodegit/releases/tag/v0.6.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.2...0.6.3)
 
  - Fixed a bug where manually building for vanilla node would fail without explicitly
    setting the target
 
-## [0.6.2](https://github.com/nodegit/nodegit/releases/tag/v0.6.2) (2015-12-16)
+# <a name="v0-6-2" href="#v0-6-2">v0.6.2</a> [(2015-12-16)](https://github.com/nodegit/nodegit/releases/tag/v0.6.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.1...0.6.2)
 
  - Fixed a bug where manually building on windows would fail (if unable to download a prebuilt binary)
 
-## [0.6.1](https://github.com/nodegit/nodegit/releases/tag/v0.6.1) (2015-12-14)
+# <a name="v0-6-1" href="#v0-6-1">v0.6.1</a> [(2015-12-14)](https://github.com/nodegit/nodegit/releases/tag/v0.6.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.6.0...0.6.1)
 
@@ -338,7 +338,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
  - Added Repository.getSubmoduleNames
  - Added Submodule.Foreach
 
-## [0.6.0](https://github.com/nodegit/nodegit/releases/tag/v0.6.0) (2015-12-08)
+# <a name="v0-6-0" href="#v0-6-0">v0.6.0</a> [(2015-12-08)](https://github.com/nodegit/nodegit/releases/tag/v0.6.0)
 
  - Added file mode staging
  - Added a fast rev walk to do the rev walk in C++ and bubble the result up to JS
@@ -349,7 +349,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
  - Fixed weirdness in lifecycle scripts
  - Added downloading prebuilt binaries for electron
 
-## [0.4.1](https://github.com/nodegit/nodegit/tree/0.4.1) (2015-06-02)
+# <a name="v0-4-1" href="#v0-4-1">v0.4.1</a> [(2015-06-02)](https://github.com/nodegit/nodegit/tree/0.4.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.4.0...0.4.1)
 
@@ -413,7 +413,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - stop cleaning on post-install [\#562](https://github.com/nodegit/nodegit/pull/562) ([maxkorp](https://github.com/maxkorp))
 
-## [v0.4.0](https://github.com/nodegit/nodegit/tree/v0.4.0) (2015-05-07)
+# <a name="v0-4-0" href="#v0-4-0">v0.4.0</a> [(2015-05-07)](https://github.com/nodegit/nodegit/tree/v0.4.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.3...v0.4.0)
 
@@ -541,7 +541,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Add automatically generated change log file. [\#465](https://github.com/nodegit/nodegit/pull/465) ([skywinder](https://github.com/skywinder))
 
-## [v0.3.3](https://github.com/nodegit/nodegit/tree/v0.3.3) (2015-03-16)
+# <a name="v0-3-3" href="#v0-3-3">v0.3.3</a> [(2015-03-16)](https://github.com/nodegit/nodegit/tree/v0.3.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.2...v0.3.3)
 
@@ -549,7 +549,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Download all dev dependencies before build [\#491](https://github.com/nodegit/nodegit/pull/491) ([johnhaley81](https://github.com/johnhaley81))
 
-## [v0.3.2](https://github.com/nodegit/nodegit/tree/v0.3.2) (2015-03-16)
+# <a name="v0-3-2" href="#v0-3-2">v0.3.2</a> [(2015-03-16)](https://github.com/nodegit/nodegit/tree/v0.3.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.1...v0.3.2)
 
@@ -561,7 +561,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Confirm builder exists before building [\#490](https://github.com/nodegit/nodegit/pull/490) ([johnhaley81](https://github.com/johnhaley81))
 
-## [v0.3.1](https://github.com/nodegit/nodegit/tree/v0.3.1) (2015-03-14)
+# <a name="v0-3-1" href="#v0-3-1">v0.3.1</a> [(2015-03-14)](https://github.com/nodegit/nodegit/tree/v0.3.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.3.0...v0.3.1)
 
@@ -569,7 +569,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Revert node-pre-gyp to install not build [\#486](https://github.com/nodegit/nodegit/pull/486) ([tbranyen](https://github.com/tbranyen))
 
-## [v0.3.0](https://github.com/nodegit/nodegit/tree/v0.3.0) (2015-03-13)
+# <a name="v0-3-0" href="#v0-3-0">v0.3.0</a> [(2015-03-13)](https://github.com/nodegit/nodegit/tree/v0.3.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.7...v0.3.0)
 
@@ -779,11 +779,11 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Enable transfer progress [\#325](https://github.com/nodegit/nodegit/pull/325) ([tbranyen](https://github.com/tbranyen))
 
-## [v0.2.7](https://github.com/nodegit/nodegit/tree/v0.2.7) (2015-01-21)
+# <a name="v0-2-7" href="#v0-2-7">v0.2.7</a> [(2015-01-21)](https://github.com/nodegit/nodegit/tree/v0.2.7)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.6...v0.2.7)
 
-## [v0.2.6](https://github.com/nodegit/nodegit/tree/v0.2.6) (2015-01-20)
+# <a name="v0-2-6" href="#v0-2-6">v0.2.6</a> [(2015-01-20)](https://github.com/nodegit/nodegit/tree/v0.2.6)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.5...v0.2.6)
 
@@ -791,7 +791,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - \[WIP\] Added in some diff functions from libgit2 [\#348](https://github.com/nodegit/nodegit/pull/348) ([johnhaley81](https://github.com/johnhaley81))
 
-## [v0.2.5](https://github.com/nodegit/nodegit/tree/v0.2.5) (2015-01-20)
+# <a name="v0-2-5" href="#v0-2-5">v0.2.5</a> [(2015-01-20)](https://github.com/nodegit/nodegit/tree/v0.2.5)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.4...v0.2.5)
 
@@ -857,7 +857,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - moving some deps to devdeps [\#320](https://github.com/nodegit/nodegit/pull/320) ([maxkorp](https://github.com/maxkorp))
 
-## [v0.2.4](https://github.com/nodegit/nodegit/tree/v0.2.4) (2014-12-05)
+# <a name="v0-2-4" href="#v0-2-4">v0.2.4</a> [(2014-12-05)](https://github.com/nodegit/nodegit/tree/v0.2.4)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.3...v0.2.4)
 
@@ -909,11 +909,11 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Styling  [\#295](https://github.com/nodegit/nodegit/pull/295) ([maxkorp](https://github.com/maxkorp))
 
-## [v0.2.3](https://github.com/nodegit/nodegit/tree/v0.2.3) (2014-11-25)
+# <a name="v0-2-3" href="#v0-2-3">v0.2.3</a> [(2014-11-25)](https://github.com/nodegit/nodegit/tree/v0.2.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.2...v0.2.3)
 
-## [v0.2.2](https://github.com/nodegit/nodegit/tree/v0.2.2) (2014-11-25)
+# <a name="v0-2-2" href="#v0-2-2">v0.2.2</a> [(2014-11-25)](https://github.com/nodegit/nodegit/tree/v0.2.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.1...v0.2.2)
 
@@ -921,7 +921,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Moved some dependencies around to help the generate not fail [\#294](https://github.com/nodegit/nodegit/pull/294) ([johnhaley81](https://github.com/johnhaley81))
 
-## [v0.2.1](https://github.com/nodegit/nodegit/tree/v0.2.1) (2014-11-25)
+# <a name="v0-2-1" href="#v0-2-1">v0.2.1</a> [(2014-11-25)](https://github.com/nodegit/nodegit/tree/v0.2.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.2.0...v0.2.1)
 
@@ -929,7 +929,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Rewrite installer [\#293](https://github.com/nodegit/nodegit/pull/293) ([johnhaley81](https://github.com/johnhaley81))
 
-## [v0.2.0](https://github.com/nodegit/nodegit/tree/v0.2.0) (2014-11-25)
+# <a name="v0-2-0" href="#v0-2-0">v0.2.0</a> [(2014-11-25)](https://github.com/nodegit/nodegit/tree/v0.2.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.1.4...v0.2.0)
 
@@ -1121,7 +1121,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Better installation flow for developing. [\#180](https://github.com/nodegit/nodegit/pull/180) ([tbranyen](https://github.com/tbranyen))
 
-## [v0.1.4](https://github.com/nodegit/nodegit/tree/v0.1.4) (2014-06-13)
+# <a name="v0-1-4" href="#v0-1-4">v0.1.4</a> [(2014-06-13)](https://github.com/nodegit/nodegit/tree/v0.1.4)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.1.3...v0.1.4)
 
@@ -1143,7 +1143,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Fixed: "ReferenceError: error is not defined" [\#169](https://github.com/nodegit/nodegit/pull/169) ([danyshaanan](https://github.com/danyshaanan))
 
-## [v0.1.3](https://github.com/nodegit/nodegit/tree/v0.1.3) (2014-05-02)
+# <a name="v0-1-3" href="#v0-1-3">v0.1.3</a> [(2014-05-02)](https://github.com/nodegit/nodegit/tree/v0.1.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.1.2...v0.1.3)
 
@@ -1151,7 +1151,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Fix erroneous OS detection for installation in OS X. [\#156](https://github.com/nodegit/nodegit/pull/156) ([tbranyen](https://github.com/tbranyen))
 
-## [v0.1.2](https://github.com/nodegit/nodegit/tree/v0.1.2) (2014-05-02)
+# <a name="v0-1-2" href="#v0-1-2">v0.1.2</a> [(2014-05-02)](https://github.com/nodegit/nodegit/tree/v0.1.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.1.1...v0.1.2)
 
@@ -1189,7 +1189,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - WIP New installer. [\#140](https://github.com/nodegit/nodegit/pull/140) ([tbranyen](https://github.com/tbranyen))
 
-## [v0.1.1](https://github.com/nodegit/nodegit/tree/v0.1.1) (2014-03-23)
+# <a name="v0-1-1" href="#v0-1-1">v0.1.1</a> [(2014-03-23)](https://github.com/nodegit/nodegit/tree/v0.1.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.1.0...v0.1.1)
 
@@ -1267,7 +1267,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Add system dependencies for OSX install [\#82](https://github.com/nodegit/nodegit/pull/82) ([philschatz](https://github.com/philschatz))
 
-## [v0.1.0](https://github.com/nodegit/nodegit/tree/v0.1.0) (2013-09-07)
+# <a name="v0-1-0" href="#v0-1-0">v0.1.0</a> [(2013-09-07)](https://github.com/nodegit/nodegit/tree/v0.1.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.79...v0.1.0)
 
@@ -1301,7 +1301,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Updated LICENSE to MIT [\#75](https://github.com/nodegit/nodegit/pull/75) ([tbranyen](https://github.com/tbranyen))
 
-## [v0.0.79](https://github.com/nodegit/nodegit/tree/v0.0.79) (2013-04-05)
+# <a name="v0-0-79" href="#v0-0-79">v0.0.79</a> [(2013-04-05)](https://github.com/nodegit/nodegit/tree/v0.0.79)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.778...v0.0.79)
 
@@ -1311,7 +1311,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Python error on installing nodegit 0.0.77 [\#59](https://github.com/nodegit/nodegit/issues/59)
 
-## [v0.0.778](https://github.com/nodegit/nodegit/tree/v0.0.778) (2013-03-26)
+# <a name="v0-0-778" href="#v0-0-778">v0.0.778</a> [(2013-03-26)](https://github.com/nodegit/nodegit/tree/v0.0.778)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.77...v0.0.778)
 
@@ -1319,15 +1319,15 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - See issue \#59 [\#60](https://github.com/nodegit/nodegit/pull/60) ([dctr](https://github.com/dctr))
 
-## [v0.0.77](https://github.com/nodegit/nodegit/tree/v0.0.77) (2013-03-24)
+# <a name="v0-0-77" href="#v0-0-77">v0.0.77</a> [(2013-03-24)](https://github.com/nodegit/nodegit/tree/v0.0.77)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.76...v0.0.77)
 
-## [v0.0.76](https://github.com/nodegit/nodegit/tree/v0.0.76) (2013-03-24)
+# <a name="v0-0-76" href="#v0-0-76">v0.0.76</a> [(2013-03-24)](https://github.com/nodegit/nodegit/tree/v0.0.76)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.75...v0.0.76)
 
-## [v0.0.75](https://github.com/nodegit/nodegit/tree/v0.0.75) (2013-03-24)
+# <a name="v0-0-75" href="#v0-0-75">v0.0.75</a> [(2013-03-24)](https://github.com/nodegit/nodegit/tree/v0.0.75)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.74...v0.0.75)
 
@@ -1357,11 +1357,11 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Comment all code methods [\#1](https://github.com/nodegit/nodegit/issues/1)
 
-## [v0.0.74](https://github.com/nodegit/nodegit/tree/v0.0.74) (2013-03-21)
+# <a name="v0-0-74" href="#v0-0-74">v0.0.74</a> [(2013-03-21)](https://github.com/nodegit/nodegit/tree/v0.0.74)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.73...v0.0.74)
 
-## [v0.0.73](https://github.com/nodegit/nodegit/tree/v0.0.73) (2013-03-21)
+# <a name="v0-0-73" href="#v0-0-73">v0.0.73</a> [(2013-03-21)](https://github.com/nodegit/nodegit/tree/v0.0.73)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.72...v0.0.73)
 
@@ -1375,11 +1375,11 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Tree each method is synchronous [\#15](https://github.com/nodegit/nodegit/issues/15)
 
-## [v0.0.72](https://github.com/nodegit/nodegit/tree/v0.0.72) (2013-03-06)
+# <a name="v0-0-72" href="#v0-0-72">v0.0.72</a> [(2013-03-06)](https://github.com/nodegit/nodegit/tree/v0.0.72)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.71...v0.0.72)
 
-## [v0.0.71](https://github.com/nodegit/nodegit/tree/v0.0.71) (2013-03-06)
+# <a name="v0-0-71" href="#v0-0-71">v0.0.71</a> [(2013-03-06)](https://github.com/nodegit/nodegit/tree/v0.0.71)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.6...v0.0.71)
 
@@ -1407,7 +1407,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Refactor [\#37](https://github.com/nodegit/nodegit/pull/37) ([mmalecki](https://github.com/mmalecki))
 
-## [v0.0.6](https://github.com/nodegit/nodegit/tree/v0.0.6) (2011-12-19)
+# <a name="v0-0-6" href="#v0-0-6">v0.0.6</a> [(2011-12-19)](https://github.com/nodegit/nodegit/tree/v0.0.6)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.4...v0.0.6)
 
@@ -1421,7 +1421,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Node 0.6x fixes [\#34](https://github.com/nodegit/nodegit/pull/34) ([moneal](https://github.com/moneal))
 
-## [v0.0.4](https://github.com/nodegit/nodegit/tree/v0.0.4) (2011-05-14)
+# <a name="v0-0-4" href="#v0-0-4">v0.0.4</a> [(2011-05-14)](https://github.com/nodegit/nodegit/tree/v0.0.4)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.3...v0.0.4)
 
@@ -1433,7 +1433,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Branch history each method is asynchronous [\#11](https://github.com/nodegit/nodegit/issues/11)
 
-## [v0.0.3](https://github.com/nodegit/nodegit/tree/v0.0.3) (2011-04-13)
+# <a name="v0-0-3" href="#v0-0-3">v0.0.3</a> [(2011-04-13)](https://github.com/nodegit/nodegit/tree/v0.0.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.2...v0.0.3)
 
@@ -1443,11 +1443,11 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 - Windows link issue [\#12](https://github.com/nodegit/nodegit/issues/12)
 
-## [v0.0.2](https://github.com/nodegit/nodegit/tree/v0.0.2) (2011-03-14)
+# <a name="v0-0-2" href="#v0-0-2">v0.0.2</a> [(2011-03-14)](https://github.com/nodegit/nodegit/tree/v0.0.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.0.1...v0.0.2)
 
-## [v0.0.1](https://github.com/nodegit/nodegit/tree/v0.0.1) (2011-03-10)
+# <a name="v0-0-1" href="#v0-0-1">v0.0.1</a> [(2011-03-10)](https://github.com/nodegit/nodegit/tree/v0.0.1)
 
 
 
