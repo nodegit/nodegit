@@ -1,5 +1,155 @@
 # Change Log
 
+## [0.13.0](https://github.com/nodegit/nodegit/releases/tag/v0.13.0) (2016-05-04)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.2...v0.13.0)
+
+# Summary
+
+This is a big update! Lots of work was done to bring NodeGit up to the latest stable libgit2 version (v0.24.1), to use babel in the library, to make it more stable, remove memory leaks, squash bugs and in general just improve the library for all. Make sure to see all of the API changes below (there are a lot).
+
+# Node support
+
+We have added Node 6 as a supported platform! Going forward we aim to have 1:1 support for versions of Node that are either current or LTS. That means that v0.12 will not be supported soon so if you're on that please upgrade to at least Node v4. Also Node v5 will *NOT* be LTS so when Node stops supporting that in the coming months we will as well. You can read more about the current Node upgrade plan [here](https://nodejs.org/en/blog/release/v6.0.0/).
+
+# API Changes
+-------
+
+## Modified
+
+- `Index#add`, `Index#addByPath`, `Index#clear`, `Index#conflictAdd`, `Index#conflictCleanup`, `Index#conflictGet`, `Index#conflictRemove`, `Index.open`, `Index#read`, `Index#readTree`, `Index#remove`, `Index#removeByPath`, `Index#removeDirectory`, `Index#read`, `Index#writeTree`, and `Index#writeTreeTo` are all now asynchronous functions [PR #971](https://github.com/nodegit/nodegit/pull/971)
+- Made `ancestoryEntry`, `outEntry` and `theirEntry` optional parameters on `Index#conflictAdd` [PR #997](https://github.com/nodegit/nodegit/pull/997)
+- `Repository#refreshIndex` will return an Index object back that has the latest data loaded off of disk [PR #986](https://github.com/nodegit/nodegit/pull/986)
+- `Commit.create` is now asynchronous [PR #1022](https://github.com/nodegit/nodegit/pull/1022)
+
+## Added
+
+- `Diff#merge` will combine a diff into itself [PR #1000](https://github.com/nodegit/nodegit/pull/1000)
+- `ReflogEntry#committer`, `ReflogEntry#idNew`, `ReflogEntry#idOld`, and `ReflogEntry#message` have been added
+[PR #1013](https://github.com/nodegit/nodegit/pull/1013)
+
+## Removed
+
+- `Repository#openIndex` [PR #990](https://github.com/nodegit/nodegit/pull/990)
+- `Reflog#entryCommitter`, `Reflog#entryIdNew`, `Reflog#entryIdOld`, and `Reflog#entryMessage` have been moved to be under `ReflogEntry`
+[PR #1013](https://github.com/nodegit/nodegit/pull/1013)
+
+## Bug fixes
+
+- `Branch.name` works now [PR #991](https://github.com/nodegit/nodegit/pull/991)
+- Fixed a crash with callbacks from libgit2 [PR #944](https://github.com/nodegit/nodegit/pull/944)
+- Fixed a crash in `Tree#entryByName` [PR #998](https://github.com/nodegit/nodegit/pull/998)
+- More memory leaks have been plugged [PR #1005](https://github.com/nodegit/nodegit/pull/1005), [PR #1006](https://github.com/nodegit/nodegit/pull/1006), [PR #1014](https://github.com/nodegit/nodegit/pull/1014), and [PR #1015](https://github.com/nodegit/nodegit/pull/1015)
+- `Commit#getDiffWithOptions` now actually passes the options correctly [PR #1008](https://github.com/nodegit/nodegit/pull/1008)
+
+## Upgraded to libgit2 v0.24.1 [PR #1010](https://github.com/nodegit/nodegit/pull/1010)
+-------
+
+### Changes or improvements
+
+- Custom merge drivers can now be registered, which allows callers to
+  configure callbacks to honor `merge=driver` configuration in
+  `.gitattributes`.
+
+- Custom filters can now be registered with wildcard attributes, for
+  example `filter=*`.  Consumers should examine the attributes parameter
+  of the `check` function for details.
+
+- Symlinks are now followed when locking a file, which can be
+  necessary when multiple worktrees share a base repository.
+
+- You can now set your own user-agent to be sent for HTTP requests by
+  using the `Libgit2.OPT.SET_USER_AGENT` with `Libgit2.opts()`.
+
+- You can set custom HTTP header fields to be sent along with requests
+  by passing them in the fetch and push options.
+
+- Tree objects are now assumed to be sorted. If a tree is not
+  correctly formed, it will give bad results. This is the git approach
+  and cuts a significant amount of time when reading the trees.
+
+- Filter registration is now protected against concurrent
+  registration.
+
+- Filenames which are not valid on Windows in an index no longer cause
+  to fail to parse it on that OS.
+
+- Rebases can now be performed purely in-memory, without touching the
+  repository's workdir.
+
+- When adding objects to the index, or when creating new tree or commit
+  objects, the inputs are validated to ensure that the dependent objects
+  exist and are of the correct type.  This object validation can be
+  disabled with the `Libgit2.OPT.ENABLE_STRICT_OBJECT_CREATION` option.
+
+- The WinHTTP transport's handling of bad credentials now behaves like
+  the others, asking for credentials again.
+
+### API additions
+
+- `Blob.createFromStream()` and
+  `Blob.createFromStreamCommit` allow you to create a blob by
+  writing into a stream. Useful when you do not know the final size or
+  want to copy the contents from another stream.
+
+- `Config#lock` has been added, which allow for
+  transactional/atomic complex updates to the configuration, removing
+  the opportunity for concurrent operations and not committing any
+  changes until the unlock.
+
+- `DiffOptions` added a new callback `progress_cb` to report on the
+  progress of the diff as files are being compared. The documentation of
+  the existing callback `notify_cb` was updated to reflect that it only
+  gets called when new deltas are added to the diff.
+
+- `FetchOptions` and `PushOptions` have gained a `custom_headers`
+  field to set the extra HTTP header fields to send.
+
+- `Commit#headerField` allows you to look up a specific header
+  field in a commit.
+
+### Breaking API changes
+
+- `MergeOptions` now provides a `defaultDriver` that can be used
+  to provide the name of a merge driver to be used to handle files changed
+  during a merge.
+
+- The `Merge.TREE_FLAG` is now `Merge.FLAG`.  Subsequently,
+  `treeFlags` field of the `MergeOptions` structure is now named `flags`.
+
+- The `Merge.FILE_FLAGS` enum is now `Merge.FILE_FLAG` for
+  consistency with other enum type names.
+
+- `Cert` descendent types now have a proper `parent` member
+
+- It is the responsibility of the refdb backend to decide what to do
+  with the reflog on ref deletion. The file-based backend must delete
+  it, a database-backed one may wish to archive it.
+
+- `Index#add` and `Index#conflictAdd` will now use the case
+  as provided by the caller on case insensitive systems.  Previous
+  versions would keep the case as it existed in the index.  This does
+  not affect the higher-level `Index#addByPath` or
+  `Index#addFromBuffer` functions.
+
+- The `Config.LEVEL` enum has gained a higher-priority value
+  `PROGRAMDATA` which represent a rough Windows equivalent
+  to the system level configuration.
+
+- `RebaseOptions` now has a `mergeOptions` field.
+
+- The index no longer performs locking itself. This is not something
+  users of the library should have been relying on as it's not part of
+  the concurrency guarantees.
+
+- `Remote#connect()` now takes a `customHeaders` argument to set
+  the extra HTTP header fields to send.
+
+- `Tree.entryFilemode`, `Tree.entryFilemodeRaw`, `Tree.entryId`, `Tree.entryName`,
+  `Tree.entryToObject`, and `Tree.entryType` have all been moved to the `TreeEntry` prototype.
+  Additionally, the `TreeEntry` fields have been removed in lieu of the corresponding functions to return
+  the data.
+
 ## [0.12.2](https://github.com/nodegit/nodegit/releases/tag/v0.12.2) (2016-04-07)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.1...v0.12.2)
