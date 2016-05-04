@@ -304,15 +304,19 @@ describe("Stage", function() {
         return index.writeTree();
       })
       .then(function (oid) {
-        var signature = NodeGit.Signature.create("Foo bar",
-          "foo@bar.com", 123456789, 60);
-        return test.repository.createCommit("HEAD", signature, signature,
-            "initial commit", oid, []);
+        return test.repository.getHeadCommit()
+          .then(function(parent) {
+            var signature = NodeGit.Signature.create("Foo bar",
+            "foo@bar.com", 123456789, 60);
+            return test.repository.createCommit("HEAD", signature, signature,
+            "initial commit", oid, [parent]);
+          });
         //... alright, we did a commit.
       })
-      //Now if we compare head commit to index, should be a filemode change
+      // Now if we compare head commit to the workdir,
+      // there shouldn't be a filemode change
       .then(function() {
-        return compareFilemodes(false, index, 0111 /* expect +x */);
+        return compareFilemodes(true, null, 0);
       });
     });
 
