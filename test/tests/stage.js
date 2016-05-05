@@ -5,7 +5,7 @@ var fse = promisify(require("fs-extra"));
 
 var exec = require("../../utils/execPromise");
 
-describe("Stage", function() {
+describe.only("Stage", function() {
   var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
 	var test;
@@ -25,7 +25,7 @@ describe("Stage", function() {
 		return fse.remove(test.repository.workdir());
   });
 
-  function stagingTest(staging, newFileContent) {
+  function stagingTest(isUnstaged, newFileContent, discarding) {
     var fileContent = newFileContent ||
                       "One line of text\n" +
                       "Two lines of text\n"+
@@ -48,13 +48,22 @@ describe("Stage", function() {
                       "Nineteen lines of text\n"+
                       "Twenty lines of text\n";
     var fileName = "stagedLinesTest.txt";
-    var stagedFile;
+    var expectedContent;
     var workingDirFile;
     var getDiffFunction;
-    if (staging) {
-      stagedFile = fileContent.replace("Fifteen", "Changed fifteen");
-      workingDirFile = stagedFile.replace("Three", "Changed three")
+
+    if (!isUnstaged || discarding) {
+      expectedContent = fileContent.replace("Three", "Changed three")
                             .replace("Seventeen", "Changed seventeen");
+      workingDirFile = expectedContent.replace("Fifteen", "Changed fifteen");
+    }
+    else {
+      expectedContent = fileContent.replace("Fifteen", "Changed fifteen");
+      workingDirFile = expectedContent.replace("Three", "Changed three")
+                            .replace("Seventeen", "Changed seventeen");
+    }
+
+    if (isUnstaged) {
       getDiffFunction = function() {
         return test.repository.refreshIndex()
           .then(function(index) {
@@ -71,10 +80,6 @@ describe("Stage", function() {
       };
     }
     else {
-      stagedFile = fileContent.replace("Three", "Changed three")
-                            .replace("Seventeen", "Changed seventeen");
-      workingDirFile = stagedFile.replace("Fifteen", "Changed fifteen");
-
       getDiffFunction = function() {
         return RepoUtils.addFileToIndex(test.repository, fileName)
           .then(function() {
@@ -138,17 +143,28 @@ describe("Stage", function() {
           }
         });
       });
-      return test.repository.stageLines(fileName, linesToStage, !staging);
+
+      if (discarding) {
+        return test.repository.discardLines(fileName, linesToStage);
+      }
+
+      return test.repository.stageLines(fileName, linesToStage, !isUnstaged);
     })
     .then(function() {
-      return test.repository.refreshIndex();
-    })
-    .then(function(reloadedIndex) {
-      var pathOid = reloadedIndex.getByPath(fileName).id;
-      return test.repository.getBlob(pathOid);
+      if (discarding) {
+        return fse.readFile(
+          path.join(test.repository.workdir(), fileName), "utf8"
+        );
+      }
+
+      return test.repository.refreshIndex()
+        .then(function(reloadedIndex) {
+          var pathOid = reloadedIndex.getByPath(fileName).id;
+          return test.repository.getBlob(pathOid);
+        });
     })
     .then(function(resultFileContents) {
-      assert.equal(resultFileContents.toString(), stagedFile);
+      assert.equal(resultFileContents.toString(), expectedContent);
     });
   }
 
@@ -500,5 +516,9 @@ describe("Stage", function() {
     .then(function(freshIndex) {
       return compareFilemodes(false, freshIndex, 0 /* expect nochange */);
     });
+  });
+
+  it("can discard selected lines", function() {
+    return stagingTest(true, null, true);
   });
 });
