@@ -17,7 +17,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 ### Modified
 
-- `Index#add`, `Index#addByPath`, `Index#clear`, `Index#conflictAdd`, `Index#conflictCleanup`, `Index#conflictGet`, `Index#conflictRemove`, `Index.open`, `Index#read`, `Index#readTree`, `Index#remove`, `Index#removeByPath`, `Index#removeDirectory`, `Index#read`, `Index#writeTree`, and `Index#writeTreeTo` are all now asynchronous functions [PR #971](https://github.com/nodegit/nodegit/pull/971)
+- `Index#add`, `Index#addByPath`, `Index#clear`, `Index#conflictAdd`, `Index#conflictCleanup`, `Index#conflictGet`, `Index#conflictRemove`, `Index.open`, `Index#read`, `Index#readTree`, `Index#remove`, `Index#removeByPath`, `Index#removeDirectory`, `Index#read`, `Index#write`, `Index#writeTree`, and `Index#writeTreeTo` are all now asynchronous functions [PR #971](https://github.com/nodegit/nodegit/pull/971)
 - Made `ancestoryEntry`, `outEntry` and `theirEntry` optional parameters on `Index#conflictAdd` [PR #997](https://github.com/nodegit/nodegit/pull/997)
 - `Repository#refreshIndex` will return an Index object back that has the latest data loaded off of disk [PR #986](https://github.com/nodegit/nodegit/pull/986)
 - `Commit.create` is now asynchronous [PR #1022](https://github.com/nodegit/nodegit/pull/1022)
