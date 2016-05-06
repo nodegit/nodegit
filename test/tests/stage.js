@@ -5,7 +5,7 @@ var fse = promisify(require("fs-extra"));
 
 var exec = require("../../utils/execPromise");
 
-describe.only("Stage", function() {
+describe("Stage", function() {
   var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
 	var test;
