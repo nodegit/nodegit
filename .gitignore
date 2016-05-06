@@ -1,15 +1,14 @@
 /build/
 /coverage/
-/dist/
 /include/
-/lib/enums.js
-/lib/nodegit.js
+/js/lib/enums.js
+/js/lib/nodegit.js
+/lib/
 /node_modules/
 /src/
-/test/coverage/
-/test/home/
-/test/repos/
-/test/test/
+# Ignore the test directory except for keys
+/test/*
+!/test/keys/
 
 /generate/output
 /generate/**/*.json
