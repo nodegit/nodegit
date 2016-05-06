@@ -4,9 +4,9 @@ var local = path.join.bind(path, __dirname);
 
 describe("Cred", function() {
   var NodeGit = require("../../");
-  
-  var sshPublicKey = local("../id_rsa.pub");
-  var sshPrivateKey = local("../id_rsa");
+
+  var sshPublicKey = local("../keys/id_rsa.pub");
+  var sshPrivateKey = local("../keys/id_rsa");
 
   it("can create default credentials", function() {
     var defaultCreds = NodeGit.Cred.defaultNew();
@@ -28,7 +28,7 @@ describe("Cred", function() {
       ("username", "password");
     assert.ok(plaintextCreds instanceof NodeGit.Cred);
   });
-  
+
   it("can create credentials using agent", function() {
     var fromAgentCreds = NodeGit.Cred.sshKeyFromAgent
       ("username");

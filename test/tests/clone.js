@@ -12,10 +12,10 @@ describe("Clone", function() {
 
   var clonePath = local("../repos/clone");
 
-  var sshPublicKey = local("../id_rsa.pub");
-  var sshPrivateKey = local("../id_rsa");
-  var sshEncryptedPublicKey = local("../encrypted_rsa.pub");
-  var sshEncryptedPrivateKey = local("../encrypted_rsa");
+  var sshPublicKey = local("../keys/id_rsa.pub");
+  var sshPrivateKey = local("../keys/id_rsa");
+  var sshEncryptedPublicKey = local("../keys/encrypted_rsa.pub");
+  var sshEncryptedPrivateKey = local("../keys/encrypted_rsa");
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(30000);

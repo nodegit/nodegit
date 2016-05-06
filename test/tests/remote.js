@@ -196,8 +196,8 @@ describe("Remote", function() {
         credentials: function(url, userName) {
           return NodeGit.Cred.sshKeyNew(
             userName,
-            path.resolve("./test/nodegit-test-rsa.pub"),
-            path.resolve("./test/nodegit-test-rsa"),
+            path.resolve("./test/keys/nodegit-test-rsa.pub"),
+            path.resolve("./test/keys/nodegit-test-rsa"),
             ""
           );
         },
