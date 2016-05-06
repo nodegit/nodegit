@@ -21,7 +21,7 @@
       "email": "maxkorp@8bytealchemy.com"
     }
   ],
-  "main": "dist/nodegit.js",
+  "main": "lib/nodegit.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/nodegit/nodegit.git"
@@ -72,7 +72,8 @@
     "host": "https://nodegit.s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
-    "babel": "babel --presets es2015 -d ./dist ./lib",
+    "babel": "babel --presets es2015 -d ./lib ./js/lib",
+    "babelTests": "babel --presets es2015 -d ./test ./js/test",
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
     "coveralls": "cat ./test/coverage/merged.lcov | coveralls",
     "cppcov": "mkdir -p test/coverage/cpp && ./lcov-1.10/bin/lcov --gcov-tool /usr/bin/gcov-4.9 --capture --directory build/Release/obj.target/nodegit/src --output-file test/coverage/cpp/lcov_full.info",
@@ -82,7 +83,7 @@
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "install": "node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "lint": "eslint lib test/tests test/utils examples lifecycleScripts --quiet",
+    "lint": "eslint js examples --quiet",
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "mocha": "mocha test/runner test/tests --timeout 15000",
     "mochaDebug": "mocha --debug-brk test/runner test/tests --timeout 15000",
@@ -92,7 +93,7 @@
     "rebuildDebug": "node generate && npm run babel && node-gyp configure --debug build",
     "recompile": "node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
-    "test": "npm run lint && node --expose-gc test",
+    "test": "npm run lint && npm run babelTests && node --expose-gc test",
     "xcodeDebug": "node-gyp configure -- -f xcode"
   }
 }

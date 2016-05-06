@@ -7,7 +7,7 @@ if (process.platform !== "linux") {
 	return;
 }
 
-child_process.exec("node dist/nodegit.js", function(error, stdout, stderr) {
+child_process.exec("node lib/nodegit.js", function(error, stdout, stderr) {
 	if (stderr && ~stderr.indexOf("libstdc++")) {
 		console.log("[ERROR] Seems like the latest libstdc++ is missing on your system!");
 		console.log("");

@@ -9,7 +9,8 @@ var fromRegistry;
 try {
   fs.statSync(path.join(__dirname, "..", "include"));
   fs.statSync(path.join(__dirname, "..", "src"));
-  fs.statSync(path.join(__dirname, "..", "dist"));
+  fs.statSync(path.join(__dirname, "..", "lib"));
+  fs.statSync(path.join(__dirname, "..", "utils"));
   fromRegistry = true;
 } catch (e) {
   fromRegistry = false;
@@ -101,8 +102,8 @@ function transpileJavascript() {
     "--presets",
     "es2015",
     "-d",
-    "./dist",
-    "./lib"
+    "./lib",
+    "./js/lib"
   ];
   var opts = {
     cwd: ".",

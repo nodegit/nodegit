@@ -95,7 +95,6 @@ Diff.blobToBuffer= function(
   }
 
   opts = normalizeOptions(opts, NodeGit.DiffOptions);
-
   return blobToBuffer.call(
     this,
     old_blob,
