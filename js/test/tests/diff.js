@@ -245,7 +245,6 @@ describe("Diff", function() {
 
   it("can diff the contents of a file to a string with unicode characters",
     function(done) {
-    this.timeout(0);
     var evilString = "Unicode’s fun!\nAnd it’s good for you!\n";
     var buffer = new Buffer(evilString);
     var oid = Blob.createFromBuffer(this.repository, buffer, buffer.length);
