@@ -250,7 +250,6 @@ describe("Diff", function() {
     var oid = Blob.createFromBuffer(this.repository, buffer, buffer.length);
     Blob.lookup(this.repository, oid)
       .then(function(blob) {
-        blob.repo = this.repository;
         return Diff.blobToBuffer(
           blob,
           null,

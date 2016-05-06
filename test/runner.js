@@ -2,15 +2,15 @@ var promisify = require("promisify-node");
 var fse = promisify("fs-extra");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var exec = require('../utils/execPromise');
+var exec = require("../utils/execPromise");
 
-var NodeGit = require('..');
+var NodeGit = require("..");
 
 if(process.env.NODEGIT_TEST_THREADSAFETY) {
-  console.log('Enabling thread safety in NodeGit');
+  console.log("Enabling thread safety in NodeGit");
   NodeGit.enableThreadSafety();
 } else if (process.env.NODEGIT_TEST_THREADSAFETY_ASYNC) {
-  console.log('Enabling thread safety for async actions only in NodeGit');
+  console.log("Enabling thread safety for async actions only in NodeGit");
   NodeGit.setThreadSafetyStatus(NodeGit.THREAD_SAFETY.ENABLED_FOR_ASYNC_ONLY);
 }
 
@@ -22,7 +22,7 @@ before(function() {
   var url = "https://github.com/nodegit/test";
   return fse.remove(local("repos"))
     .then(function() {
-      fse.remove(local("home"))
+      fse.remove(local("home"));
     })
     .then(function() {
       fse.mkdir(local("repos"));
