@@ -102,7 +102,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
   the existing callback `notify_cb` was updated to reflect that it only
   gets called when new deltas are added to the diff.
 
-- `FetchOptions` and `PushOptions` have gained a `custom_headers`
+- `FetchOptions` and `PushOptions` have gained a `customHeaders`
   field to set the extra HTTP header fields to send.
 
 - `Commit#headerField` allows you to look up a specific header
