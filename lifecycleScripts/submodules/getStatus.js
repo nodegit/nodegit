@@ -5,6 +5,13 @@ var exec = require(path.join(rootDir, "./utils/execPromise"));
 module.exports = function getStatus() {
   return exec("git submodule status", { cwd: rootDir})
     .then(function(stdout) {
+      if (!stdout) {
+        // In the case where we pull from npm they pre-init the submodules for
+        // us and `git submodule status` returns empty-string. In that case
+        // we'll just assume that we're good.
+        return Promise.resolve([]);
+      }
+
       function getStatusPromiseFromLine(line) {
         var lineSections = line.trim().split(" ");
         var onNewCommit = !!~lineSections[0].indexOf("+");
