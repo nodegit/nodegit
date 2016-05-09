@@ -6,7 +6,7 @@ module.exports = function getStatus() {
   return exec("git submodule status", { cwd: rootDir})
     .then(function(stdout) {
       if (!stdout) {
-        // In the case where we pull from npm they pre-init the submoduels for
+        // In the case where we pull from npm they pre-init the submodules for
         // us and `git submodule status` returns empty-string. In that case
         // we'll just assume that we're good.
         return Promise.resolve([]);
