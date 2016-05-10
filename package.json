@@ -73,7 +73,7 @@
   },
   "scripts": {
     "babel": "babel --presets es2015 -d ./lib ./js/lib",
-    "babelTests": "babel --presets es2015 -d ./test ./js/test",
+    "babelTests": "babel --presets es2015 -d ./ ./js",
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
     "coveralls": "cat ./test/coverage/merged.lcov | coveralls",
     "cppcov": "mkdir -p test/coverage/cpp && ./lcov-1.10/bin/lcov --gcov-tool /usr/bin/gcov-4.9 --capture --directory build/Release/obj.target/nodegit/src --output-file test/coverage/cpp/lcov_full.info",
