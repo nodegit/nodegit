@@ -10,6 +10,7 @@
 
 #include "../include/init_ssh2.h"
 #include "../include/lock_master.h"
+#include "../include/nodegit.h"
 #include "../include/wrapper.h"
 #include "../include/promise_completion.h"
 #include "../include/functions/copy.h"
@@ -79,6 +80,8 @@ void OpenSSL_ThreadSetup() {
   CRYPTO_set_locking_callback(OpenSSL_LockingCallback);
   CRYPTO_set_id_callback(OpenSSL_IDCallback);
 }
+
+ThreadPool libgit2ThreadPool(10, uv_default_loop());
 
 extern "C" void init(Local<v8::Object> target) {
   // Initialize thread safety in openssl and libssh2
