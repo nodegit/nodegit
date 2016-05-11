@@ -73,8 +73,10 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
     unsigned int size = baton->out->size();
     Local<Array> result = Nan::New<Array>(size);
     for (unsigned int i = 0; i < size; i++) {
-      Nan::Set(result, Nan::New<Number>(i), GitOid::New(baton->out->at(i), false));
+      Nan::Set(result, Nan::New<Number>(i), GitOid::New(baton->out->at(i), true));
     }
+
+    delete baton->out;
 
     Local<v8::Value> argv[2] = {
       Nan::Null(),
