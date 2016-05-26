@@ -11,6 +11,7 @@ NodeGitWrapper<Traits>::NodeGitWrapper(typename Traits::cType *raw, bool selfFre
     } else {
       this->owner.Reset(owner);
       this->raw = raw;
+      selfFreeing = false;
     }
   } else {
     this->raw = raw;
