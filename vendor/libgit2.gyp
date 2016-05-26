@@ -276,13 +276,6 @@
                 }
             }
         }],
-        ["OS=='win'", {}, {
-          "sources": [
-            "libgit2/src/unix/map.c",
-            "libgit2/src/unix/posix.h",
-            "libgit2/src/unix/realpath.c",
-          ]
-        }],
         ["OS=='linux'", {
           "cflags": [
             "-DGIT_SSH",
@@ -290,7 +283,8 @@
             "-w",
           ],
           "defines": [
-              "GIT_OPENSSL"
+            "GIT_OPENSSL",
+            "GIT_USE_STAT_MTIM"
           ],
           "sources": [
               "libgit2/src/tls_stream.c",
@@ -341,8 +335,11 @@
             "libgit2/deps/regex"
           ],
           "sources": [
-            "libgit2/src/win32/w32_buffer.c",
-            "libgit2/src/win32/w32_buffer.h",
+            "libgit2/deps/regex/regex.c",
+            "libgit2/src/transports/winhttp.c",
+            "libgit2/src/unix/map.c",
+            "libgit2/src/unix/posix.h",
+            "libgit2/src/unix/realpath.c",
             "libgit2/src/win32/dir.c",
             "libgit2/src/win32/dir.h",
             "libgit2/src/win32/error.c",
@@ -353,8 +350,10 @@
             "libgit2/src/win32/map.c",
             "libgit2/src/win32/mingw-compat.h",
             "libgit2/src/win32/msvc-compat.h",
-            "libgit2/src/win32/posix.h",
+            "libgit2/src/win32/path_w32.c",
+            "libgit2/src/win32/path_w32.h",
             "libgit2/src/win32/posix_w32.c",
+            "libgit2/src/win32/posix.h",
             "libgit2/src/win32/precompiled.c",
             "libgit2/src/win32/precompiled.h",
             "libgit2/src/win32/pthread.c",
@@ -363,12 +362,10 @@
             "libgit2/src/win32/utf-conv.c",
             "libgit2/src/win32/utf-conv.h",
             "libgit2/src/win32/version.h",
+            "libgit2/src/win32/w32_buffer.c",
+            "libgit2/src/win32/w32_buffer.h",
             "libgit2/src/win32/w32_util.c",
             "libgit2/src/win32/w32_util.h",
-            "libgit2/src/win32/path_w32.c",
-            "libgit2/src/win32/path_w32.h",
-            "libgit2/src/transports/winhttp.c",
-            "libgit2/deps/regex/regex.c",
           ],
         }, {
           "libraries": [
