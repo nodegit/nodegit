@@ -1452,7 +1452,7 @@
       "ignore": true
     },
     "oid": {
-      "selfFreeing": "true",
+      "selfFreeing": true,
       "cpyFunction": "git_oid_cpy",
       "freeFunctionName": "free",
       "shouldAlloc": true,
