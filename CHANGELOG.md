@@ -1,5 +1,24 @@
 # Change Log
 
+## <a name="v0-13-1" href="#v0-13-1">v0.13.1</a> [(2016-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.13.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.13.0...v0.13.1)
+
+## Added
+
+- `Repository#discardLines` is now a thing [PR #1021](https://github.com/nodegit/nodegit/pull/1021)
+
+## Modified
+
+- Async methods now use a custom threadpool to prevent thread-locking the event loop [PR #1019](https://github.com/nodegit/nodegit/pull/1019)
+
+## Bug fixes
+
+- Fix building NodeGit from NPM [PR #1026](https://github.com/nodegit/nodegit/pull/1026)
+- Plug a memory leak in `RevWalk.fastWalk` [PR #1030](https://github.com/nodegit/nodegit/pull/1030)
+- Plug a memory leak with `Oid` [PR #1033](https://github.com/nodegit/nodegit/pull/1033)
+- Fixed some underlying libgit2 objects getting freed incorrectly [PR #1036](https://github.com/nodegit/nodegit/pull/1036)
+
 ## <a name="v0-13-0" href="#v0-13-0">v0.13.0</a> [(2016-05-04)](https://github.com/nodegit/nodegit/releases/tag/v0.13.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.12.2...v0.13.0)
