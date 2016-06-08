@@ -40,5 +40,11 @@ module.exports = function getStatus() {
         .split("\n")
         .map(getStatusPromiseFromLine)
       );
+    })
+    .catch(function() {
+      // In the case that NodeGit is required from another project via npm we
+      // won't be able to run submodule commands but that's ok since the
+      // correct version of libgit2 is published with nodegit.
+      return Promise.resolve([]);
     });
 };
