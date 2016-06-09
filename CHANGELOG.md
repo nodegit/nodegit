@@ -1,5 +1,13 @@
 # Change Log
 
+## <a name="v0-13-2" href="#v0-13-2">v0.13.2</a> [(2016-06-09)](https://github.com/nodegit/nodegit/releases/tag/v0.13.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.13.1...v0.13.2)
+
+- Stop `RevWalk#walk` from swallowing errors in the callback [PR #1047](https://github.com/nodegit/nodegit/pull/1047)
+- Stop swallowing errors in the install script [PR #1048](https://github.com/nodegit/nodegit/pull/1048)
+- Fix initializing submodules when installing from npm [PR #1050](https://github.com/nodegit/nodegit/pull/1050)
+
 ## <a name="v0-13-1" href="#v0-13-1">v0.13.1</a> [(2016-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.13.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.13.0...v0.13.1)
