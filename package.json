@@ -38,6 +38,7 @@
   ],
   "dependencies": {
     "fs-extra": "~0.26.2",
+    "lodash": "~3.10.1",
     "node-pre-gyp": "~0.6.15",
     "promisify-node": "~0.3.0"
   },
@@ -51,7 +52,6 @@
     "js-beautify": "~1.5.10",
     "jshint": "~2.8.0",
     "lcov-result-merger": "~1.0.2",
-    "lodash": "~3.10.1",
     "mocha": "~2.3.4",
     "nan": "^2.2.0",
     "node-gyp": "~3.0.3",
