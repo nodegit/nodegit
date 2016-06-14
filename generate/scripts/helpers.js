@@ -345,7 +345,7 @@ var Helpers = {
       if (fnDef.jsFunctionName == utils.camelCase(collidingName)) {
         fnDef.jsFunctionName = utils.camelCase(newName);
       }
-    }).value();
+    });
 
     if ("git_" + typeDef.typeName == fnDef.cFunctionName) {
       fnDef.useAsOnRootProto = true;

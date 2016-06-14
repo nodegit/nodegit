@@ -222,7 +222,7 @@ module.exports = function generateJson() {
     _.merge(enumerable, _.omit(override, ["values"]));
 
     output.push(enumerable);
-  }).value();
+  });
 
   output = _.sortBy(output, "typeName");
 
