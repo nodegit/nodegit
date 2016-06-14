@@ -4,6 +4,8 @@ var generateMissingTests = require("./scripts/generateMissingTests");
 var submoduleStatus = require("../lifecycleScripts/submodules/getStatus");
 
 module.exports = function generate() {
+  console.log("[nodegit] Generating native code");
+
   return submoduleStatus()
     .then(function(statuses) {
       var dirtySubmodules = statuses
@@ -14,9 +16,9 @@ module.exports = function generate() {
         });
 
       if (dirtySubmodules.length) {
-        console.log("WARNING - Some submodules are out-of-sync");
+        console.warn("[nodegit] WARNING - Some submodules are out-of-sync");
         dirtySubmodules.forEach(function(submodule) {
-          console.log("\t" + submodule.name);
+          console.warn("[nodegit]\t" + submodule.name);
         });
       }
     })
@@ -26,8 +28,8 @@ module.exports = function generate() {
       generateMissingTests();
     })
     .catch(function(e) {
-      console.log("ERROR - Could not generate native code");
-      console.log(e);
+      console.error("[nodegit] ERROR - Could not generate native code");
+      console.error(e);
     });
 }
 

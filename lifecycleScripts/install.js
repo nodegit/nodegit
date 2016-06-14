@@ -3,6 +3,8 @@ var nodePreGyp = new nodePreGypConstructor.Run();
 var buildFlags = require("../utils/buildFlags");
 
 module.exports = function install() {
+  console.log("[nodegit] Running install script");
+
   // we need to add 2 blank entires to help the parser later.
   var argv = ["", "", "install"];
 

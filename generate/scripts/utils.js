@@ -1,4 +1,3 @@
-const promisify = require("promisify-node");
 const fse = require("fs-extra");
 
 const fs = require("fs");

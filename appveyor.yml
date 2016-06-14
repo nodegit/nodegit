@@ -23,7 +23,6 @@ init:
 # what combinations to test
 environment:
   JOBS: 4
-  BUILD_ONLY: true
   GIT_SSH: c:\projects\nodegit\vendor\plink.exe
   GYP_MSVS_VERSION: 2013
   matrix:
