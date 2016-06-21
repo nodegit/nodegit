@@ -31,7 +31,7 @@ fse.remove(path).then(function() {
     return entry.getBlob();
   })
   .done(function(blob) {
-    console.log(entry.filename(), entry.sha(), blob.rawsize() + "b");
+    console.log(entry.name(), entry.sha(), blob.rawsize() + "b");
     console.log("========================================================\n\n");
     var firstTenLines = blob.toString().split("\n").slice(0, 10).join("\n");
     console.log(firstTenLines);
