@@ -1,12 +1,12 @@
 var path = require("path");
 
 var buildFlags = require("../utils/buildFlags");
-var exec = require("../utils/execPromise");
+var spawn = require("child_process").spawn;
 
 module.exports = function install() {
   console.log("[nodegit] Running install script");
 
-  var nodePreGypCmd = path.join(
+  var nodePreGyp = path.join(
     __dirname,
     "..",
     "node_modules",
@@ -15,27 +15,45 @@ module.exports = function install() {
   );
 
   if (process.platform === "win32") {
-    nodePreGypCmd += ".cmd";
+    nodePreGyp += ".cmd";
   }
 
-  var cmd = [nodePreGypCmd, "install"];
+  var args = ["install"];
 
   if (buildFlags.mustBuild) {
     console.info(
       "[nodegit] Pre-built download disabled, building from source."
     );
-    cmd.push("--build-from-source");
+    args.push("--build-from-source");
 
     if (buildFlags.debugBuild) {
       console.info("[nodegit] Building debug version.");
-      cmd.push("--debug");
+      args.push("--debug");
     }
   }
   else {
-    cmd.push("--fallback-to-build");
+    args.push("--fallback-to-build");
   }
 
-  return exec(cmd.join(" "))
+  return new Promise(function(resolve, reject) {
+    var spawnedNodePreGyp = spawn(nodePreGyp, args);
+
+    spawnedNodePreGyp.stdout.on("data", function(data) {
+      console.info(data.toString());
+    });
+
+    spawnedNodePreGyp.stderr.on("data", function(data) {
+      console.error(data.toString());
+    });
+
+    spawnedNodePreGyp.on("close", function(code) {
+      if (!code) {
+        resolve();
+      } else {
+        reject(code);
+      }
+    });
+  })
     .then(function() {
       console.info("[nodegit] Completed installation successfully.");
     });
@@ -46,7 +64,7 @@ if (require.main === module) {
   module.exports()
     .catch(function(e) {
       console.error("[nodegit] ERROR - Could not finish install");
-      console.error(e);
-      process.exit(1);
+      console.error("[nodegit] ERROR - finished with error code: " + e);
+      process.exit(e);
     });
 }
