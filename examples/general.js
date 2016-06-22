@@ -220,7 +220,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
         if (entry.isDirectory()) {
           promises.push(entry.getTree().then(dfs));
         } else if (entry.isFile()) {
-          console.log("Tree Entry:", entry.filename());
+          console.log("Tree Entry:", entry.name());
         }
       });
 

@@ -16,7 +16,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     return _entry.getBlob();
   })
   .then(function(blob) {
-    console.log(_entry.filename(), _entry.sha(), blob.rawsize() + "b");
+    console.log(_entry.name(), _entry.sha(), blob.rawsize() + "b");
     console.log("========================================================\n\n");
     var firstTenLines = blob.toString().split("\n").slice(0, 10).join("\n");
     console.log(firstTenLines);
