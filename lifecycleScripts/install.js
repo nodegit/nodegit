@@ -1,53 +1,52 @@
-var nodePreGypConstructor = require("node-pre-gyp");
-var nodePreGyp = new nodePreGypConstructor.Run();
+var path = require("path");
+
 var buildFlags = require("../utils/buildFlags");
+var exec = require("../utils/execPromise");
 
 module.exports = function install() {
   console.log("[nodegit] Running install script");
 
-  // we need to add 2 blank entires to help the parser later.
-  var argv = ["", "", "install"];
+  var nodePreGypCmd = path.join(
+    __dirname,
+    "..",
+    "node_modules",
+    ".bin",
+    "node-pre-gyp"
+  );
+
+  if (process.platform === "win32") {
+    nodePreGypCmd += ".cmd";
+  }
+
+  var cmd = [nodePreGypCmd, "install"];
 
   if (buildFlags.mustBuild) {
-    argv.push("--build-from-source");
+    console.info(
+      "[nodegit] Pre-built download disabled, building from source."
+    );
+    cmd.push("--build-from-source");
 
     if (buildFlags.debugBuild) {
-      argv.push("--debug");
+      console.info("[nodegit] Building debug version.");
+      cmd.push("--debug");
     }
   }
   else {
-    argv.push("--fallback-to-build");
+    cmd.push("--fallback-to-build");
   }
 
-  nodePreGyp.parseArgv(argv);
-
-  function run() {
-    var command = nodePreGyp.todo.shift();
-    if (!command) {
-      return;
-    }
-
-    nodePreGyp.commands[command.name](command.args, function (err) {
-      if (err) {
-        console.error(command.name + " error");
-        console.error("stack", err.stack);
-        console.error("not ok");
-        console.log(err.message);
-        return process.exit(1);
-      }
-      var args_array = [].slice.call(arguments, 1);
-      if (args_array.length) {
-        console.log.apply(console, args_array);
-      }
-      // now run the next command in the queue
-      process.nextTick(run);
+  return exec(cmd.join(" "))
+    .then(function() {
+      console.info("[nodegit] Completed installation successfully.");
     });
-  }
-
-  run();
 };
 
 // Called on the command line
 if (require.main === module) {
-  module.exports();
+  module.exports()
+    .catch(function(e) {
+      console.error("[nodegit] ERROR - Could not finish install");
+      console.error(e);
+      process.exit(1);
+    });
 }

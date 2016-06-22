@@ -1,8 +1,7 @@
-#!/usr/bin/env node
-
 var fse = require("fs-extra");
 var path = require("path");
-var child_process = require("child_process");
+
+var exec = require("../utils/execPromise");
 var buildFlags = require("../utils/buildFlags");
 
 var rootPath = path.join(__dirname, "..");
@@ -16,25 +15,37 @@ function printStandardLibError() {
   console.log("");
   console.log("$ sudo add-apt-repository ppa:ubuntu-toolchain-r/test");
   console.log("$ sudo apt-get update");
+  console.log("$ sudo apt-get install libstdc++-4.9-dev");
 }
 
-console.log("$ sudo apt-get install libstdc++-4.9-dev");
-child_process.exec("node dist/nodegit.js", function(error, stdout, stderr) {
-  if (stderr) {
-    if (process.pladtform !== "linux" && ~stderr.indexOf("libstdc++")) {
-      printStandardLibError();
-    }
+module.exports = function install() {
+  return exec("node dist/nodegit.js")
+    .then(function() {
+      // Is we're using NodeGit from a package manager then let's clean up after
+      // ourselves when we install successfully.
+      if (!buildFlags.mustBuild) {
+        fse.removeSync(path.join(rootPath, "vendor"));
+        fse.removeSync(path.join(rootPath, "src"));
+        fse.removeSync(path.join(rootPath, "include"));
+        fse.removeSync(path.join(rootPath, "build/Release/*.a"));
+        fse.removeSync(path.join(rootPath, "build/Release/obj.target"));
+      }
+    });
+};
 
-    return;
-  }
+// Called on the command line
+if (require.main === module) {
+  module.exports()
+    .catch(function(e) {
+      console.error("[nodegit] ERROR - Could not finish postinstall");
 
-  // Is we're using NodeGit from a package manager then let's clean up after
-  // ourselves when we install successfully.
-  if (!buildFlags.mustBuild) {
-    fse.removeSync(path.join(rootPath, "vendor"));
-    fse.removeSync(path.join(rootPath, "src"));
-    fse.removeSync(path.join(rootPath, "include"));
-    fse.removeSync(path.join(rootPath, "build/Release/*.a"));
-    fse.removeSync(path.join(rootPath, "build/Release/obj.target"));
-  }
-});
+      if (process.pladtform !== "linux" && ~e.indexOf("libstdc++")) {
+        printStandardLibError();
+      }
+      else {
+        console.error(e);
+      }
+
+      process.exit(1);
+    });
+}

@@ -42,6 +42,6 @@ if (require.main === module) {
     console.log("nothing to do");
   }
   else {
-    module.exports();
+    module.exports().done();
   }
 }
