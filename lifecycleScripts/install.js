@@ -1,5 +1,3 @@
-var path = require("path");
-
 var buildFlags = require("../utils/buildFlags");
 var spawn = require("child_process").spawn;
 
