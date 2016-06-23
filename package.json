@@ -55,9 +55,6 @@
     "mocha": "~2.3.4"
   },
   "vendorDependencies": {
-    "libgit2": {
-      "sha": "e8feafe32007ebd16a61820c70abd221655d053c"
-    },
     "libssh2": "1.6.0",
     "http_parser": "2.5.0"
   },
