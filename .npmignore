@@ -1,11 +1,14 @@
+/.travis/
 /build/
 /examples/
+/generate/
+/guides/
+/lib/
 /test/
 /vendor/Release/
 
-/generate/output
-/generate/**/*.json
-!/generate/input/*.json
+!/include
+!/src
 
 .astylerc
 .editorconfig
@@ -15,8 +18,10 @@
 .travis.yml
 appveyor.yml
 
-*.vcxproj
+!binding.gyp
+
 *.filters
-*.sln
 *.log
 *.md
+*.sln
+*.vcxproj

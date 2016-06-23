@@ -11,12 +11,13 @@ var exec = require(path.join(rootDir, "./utils/execPromise"));
 module.exports = function submodules() {
   return gitExecutableLocation()
     .catch(function() {
-      console.log("ERROR - Compilation of NodeGit requires git CLI to be " +
-        "installed and on the path");
+      console.error("[nodegit] ERROR - Compilation of NodeGit requires git " +
+        "CLI to be installed and on the path");
 
       throw new Error("git CLI is not installed or not on the path");
     })
     .then(function() {
+      console.log("[nodegit] Checking submodule status");
       return submoduleStatus();
     })
     .then(function(statuses) {
@@ -33,11 +34,11 @@ module.exports = function submodules() {
       });
 
       if (dirtySubmodules.length) {
-        console.log(
-          "ERROR - The following submodules have uncommited changes:"
+        console.error(
+          "[nodegit] ERROR - Some submodules have uncommited changes:"
         );
         dirtySubmodules.forEach(printSubmodule);
-        console.log(
+        console.error(
           "\nThey must either be committed or discarded before we build"
         );
 
@@ -53,11 +54,11 @@ module.exports = function submodules() {
         });
 
       if (outOfSyncSubmodules.length) {
-        console.log(
-          "WARNING - The following submodules are pointing to an new commit:"
+        console.warn(
+          "[nodegit] WARNING - Some submodules are pointing to an new commit:"
         );
         outOfSyncSubmodules.forEach(printSubmodule);
-        console.log("\nThey will not be updated.");
+        console.warn("\nThey will not be updated.");
       }
 
       return Promise.all(statuses
@@ -65,6 +66,8 @@ module.exports = function submodules() {
           return !status.onNewCommit;
         })
         .map(function(submoduleToUpdate) {
+          console.log("[nodegit] Initializing submodules");
+
           return exec(
             "git submodule update --init --recursive " + submoduleToUpdate.name
           );
