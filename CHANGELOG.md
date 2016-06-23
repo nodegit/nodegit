@@ -1,5 +1,35 @@
 # Change Log
 
+## <a name="v0-15-0" href="#v0-15-0">v0.15.0</a> [(2016-06-09)](https://github.com/nodegit/nodegit/releases/tag/v0.15.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.14.0...v0.15.0)
+
+- Update to libgit2 @ 37dba1a [PR #1041](https://github.com/nodegit/nodegit/pull/1041)
+
+This updates NodeGit to use the latest `HEAD` version of libgit2. The plan for staying on the official tagged releases
+of libgit2 is that they will get a maintenance branch and not-breaking API fixes will be backported to them. The first
+branch of this sort is `maint/0.14`. Going forward new releases of NodeGit will follow closely to the `master` branch
+of libgit2.
+
+Summary of changes that were brought in:
+
+https://github.com/libgit2/libgit2/commit/37dba1a739b5ee6c45dc9f3c0bd1f7f7a18f13f7
+-------
+
+### Changes or improvements
+
+* `NodeGit.FetchOptions`, and `NodeGit.PushOptions` now have a `proxyOpts` field that accepts a `NodeGit.ProxyOptions` object that allows NodeGit to use a proxy for all remote communication
+
+* `NodeGit.MergeOptions` has a `defaultDriver` field that lets the caller change the driver used to when both sides of a merge have changed
+
+### API additions
+
+* `Commit.createWithSignature` allows the caller to create a signed commit. There are no tests for this currently so it's labelled experimental.
+
+* `Blob`, `Commit`, `Tag`, and `Tree` all have a new prototype `dup` method on them to make a low-level copy of the libgit2 object if needed.
+
+* `Odb#expandIds` is exposed which takes in a list of short ids and expands them in-place to the full id of the object in the database
+
 ## <a name="v0-14-0" href="#v0-14-0">v0.14.0</a> [(2016-06-09)](https://github.com/nodegit/nodegit/releases/tag/v0.14.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.13.2...v0.14.0)
