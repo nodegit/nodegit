@@ -31,7 +31,7 @@ NodeGit
   </tbody>
 </table>
 
-**Stable: 0.13.2**
+**Stable: 0.14.0**
 
 ## Have a problem? Come chat with us! ##
 
