@@ -337,9 +337,6 @@
           "sources": [
             "libgit2/deps/regex/regex.c",
             "libgit2/src/transports/winhttp.c",
-            "libgit2/src/unix/map.c",
-            "libgit2/src/unix/posix.h",
-            "libgit2/src/unix/realpath.c",
             "libgit2/src/win32/dir.c",
             "libgit2/src/win32/dir.h",
             "libgit2/src/win32/error.c",
