@@ -6,10 +6,7 @@
 
 - Update to libgit2 @ 37dba1a [PR #1041](https://github.com/nodegit/nodegit/pull/1041)
 
-This updates NodeGit to use the latest `HEAD` version of libgit2. The plan for staying on the official tagged releases
-of libgit2 is that they will get a maintenance branch and not-breaking API fixes will be backported to them. The first
-branch of this sort is `maint/0.14`. Going forward new releases of NodeGit will follow closely to the `master` branch
-of libgit2.
+This updates NodeGit to use the latest `HEAD` version of libgit2. The plan for staying on the official tagged releases of libgit2 is that they will get a maintenance branch and not-breaking API fixes will be backported to them. The first branch of this sort is `maint/0.14`. Going forward new releases of NodeGit will follow closely to the `master` branch of libgit2.
 
 Summary of changes that were brought in:
 
