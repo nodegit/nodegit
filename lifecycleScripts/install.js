@@ -6,13 +6,7 @@ var spawn = require("child_process").spawn;
 module.exports = function install() {
   console.log("[nodegit] Running install script");
 
-  var nodePreGyp = path.join(
-    __dirname,
-    "..",
-    "node_modules",
-    ".bin",
-    "node-pre-gyp"
-  );
+  var nodePreGyp = "node-pre-gyp";
 
   if (process.platform === "win32") {
     nodePreGyp += ".cmd";

@@ -33,10 +33,6 @@
   "engines": {
     "node": ">= 0.12"
   },
-  "bundledDependencies": [
-    "lodash",
-    "node-pre-gyp"
-  ],
   "dependencies": {
     "fs-extra": "~0.26.2",
     "lodash": "^4.13.1",
