@@ -33,11 +33,11 @@ module.exports = function install() {
     var spawnedNodePreGyp = spawn(nodePreGyp, args);
 
     spawnedNodePreGyp.stdout.on("data", function(data) {
-      console.info(data.toString());
+      console.info(data.toString().trim());
     });
 
     spawnedNodePreGyp.stderr.on("data", function(data) {
-      console.error(data.toString());
+      console.error(data.toString().trim());
     });
 
     spawnedNodePreGyp.on("close", function(code) {
