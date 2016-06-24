@@ -2,7 +2,13 @@
 
 ## <a name="v0-15-1" href="#v0-15-1">v0.15.1</a> [(2016-06-20)](https://github.com/nodegit/nodegit/releases/tag/v0.15.1)
 
-[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.14.0...v0.15.1)
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.15.0...v0.15.1)
+
+- Fix postinstall breaking build if it fails.
+
+## <a name="v0-14-1" href="#v0-14-1">v0.14.1</a> [(2016-06-20)](https://github.com/nodegit/nodegit/releases/tag/v0.14.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.14.0...v0.14.1)
 
 - Fix postinstall breaking build if it fails.
 
