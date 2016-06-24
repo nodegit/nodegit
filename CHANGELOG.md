@@ -1,6 +1,12 @@
 # Change Log
 
-## <a name="v0-15-0" href="#v0-15-0">v0.15.0</a> [(2016-06-09)](https://github.com/nodegit/nodegit/releases/tag/v0.15.0)
+## <a name="v0-15-1" href="#v0-15-1">v0.15.1</a> [(2016-06-20)](https://github.com/nodegit/nodegit/releases/tag/v0.15.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.14.0...v0.15.1)
+
+- Fix postinstall breaking build if it fails.
+
+## <a name="v0-15-0" href="#v0-15-0">v0.15.0</a> [(2016-06-20)](https://github.com/nodegit/nodegit/releases/tag/v0.15.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.14.0...v0.15.0)
 
@@ -27,7 +33,7 @@ https://github.com/libgit2/libgit2/commit/37dba1a739b5ee6c45dc9f3c0bd1f7f7a18f13
 
 * `Odb#expandIds` is exposed which takes in a list of short ids and expands them in-place to the full id of the object in the database
 
-## <a name="v0-14-0" href="#v0-14-0">v0.14.0</a> [(2016-06-09)](https://github.com/nodegit/nodegit/releases/tag/v0.14.0)
+## <a name="v0-14-0" href="#v0-14-0">v0.14.0</a> [(2016-06-20)](https://github.com/nodegit/nodegit/releases/tag/v0.14.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.13.2...v0.14.0)
 
