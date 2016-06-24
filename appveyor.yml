@@ -60,4 +60,4 @@ build: off
 branches:
   only:
     - master
-    - v0.3
+    - maint/0.14
