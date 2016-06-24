@@ -25,7 +25,7 @@ module.exports = function install() {
     return Promise.resolve();
   }
 
-  return exec("node dist/nodegit.js")
+  return exec("node " + path.join(rootPath, "dist/nodegit.js"))
     .catch(function(e) {
       if (~e.toString().indexOf("Module version mismatch")) {
         console.warn(
@@ -63,7 +63,7 @@ module.exports = function install() {
 if (require.main === module) {
   module.exports()
     .catch(function(e) {
-      console.error("[nodegit] ERROR - Could not finish postinstall");
+      console.warn("[nodegit] WARN - Could not finish postinstall");
 
       if (
         process.pladtform === "linux" &&
@@ -74,7 +74,5 @@ if (require.main === module) {
       else {
         console.log(e);
       }
-
-      process.exit(1);
     });
 }
