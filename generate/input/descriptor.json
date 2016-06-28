@@ -1270,6 +1270,13 @@
             }
           }
         },
+        "git_merge_trees": {
+          "args": {
+            "ancestor_tree": {
+              "isOptional": true
+            }
+          }
+        },
         "git_merge_file": {
           "ignore": true
         },
