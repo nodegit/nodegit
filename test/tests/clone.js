@@ -314,4 +314,25 @@ describe("Clone", function() {
       }
     }).catch(function(reason) { });
   });
+
+  it("should fail fast if repo not found", function() {
+    var url = "https://github.com/nodegit/test404.git";
+    return Clone(url, clonePath, {
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: function() {
+            return 1;
+          },
+          credentials: function() {
+            return NodeGit.Cred.userpassPlaintextNew("fake-token",
+              "x-oauth-basic");
+          }
+        }
+      }
+    })
+    .catch(function(err) {
+      assert.ok(err);
+    });
+  });
+
 });
