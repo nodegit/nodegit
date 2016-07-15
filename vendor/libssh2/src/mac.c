@@ -96,6 +96,97 @@ mac_method_common_dtor(LIBSSH2_SESSION * session, void **abstract)
 
 
 
+#if LIBSSH2_HMAC_SHA512
+/* mac_method_hmac_sha512_hash
+ * Calculate hash using full sha512 value
+ */
+static int
+mac_method_hmac_sha2_512_hash(LIBSSH2_SESSION * session,
+                          unsigned char *buf, uint32_t seqno,
+                          const unsigned char *packet,
+                          uint32_t packet_len,
+                          const unsigned char *addtl,
+                          uint32_t addtl_len, void **abstract)
+{
+    libssh2_hmac_ctx ctx;
+    unsigned char seqno_buf[4];
+    (void) session;
+
+    _libssh2_htonu32(seqno_buf, seqno);
+
+    libssh2_hmac_ctx_init(ctx);
+    libssh2_hmac_sha512_init(&ctx, *abstract, 64);
+    libssh2_hmac_update(ctx, seqno_buf, 4);
+    libssh2_hmac_update(ctx, packet, packet_len);
+    if (addtl && addtl_len) {
+        libssh2_hmac_update(ctx, addtl, addtl_len);
+    }
+    libssh2_hmac_final(ctx, buf);
+    libssh2_hmac_cleanup(&ctx);
+
+    return 0;
+}
+
+
+
+static const LIBSSH2_MAC_METHOD mac_method_hmac_sha2_512 = {
+    "hmac-sha2-512",
+    64,
+    64,
+    mac_method_common_init,
+    mac_method_hmac_sha2_512_hash,
+    mac_method_common_dtor,
+};
+#endif
+
+
+
+#if LIBSSH2_HMAC_SHA256
+/* mac_method_hmac_sha256_hash
+ * Calculate hash using full sha256 value
+ */
+static int
+mac_method_hmac_sha2_256_hash(LIBSSH2_SESSION * session,
+                          unsigned char *buf, uint32_t seqno,
+                          const unsigned char *packet,
+                          uint32_t packet_len,
+                          const unsigned char *addtl,
+                          uint32_t addtl_len, void **abstract)
+{
+    libssh2_hmac_ctx ctx;
+    unsigned char seqno_buf[4];
+    (void) session;
+
+    _libssh2_htonu32(seqno_buf, seqno);
+
+    libssh2_hmac_ctx_init(ctx);
+    libssh2_hmac_sha256_init(&ctx, *abstract, 32);
+    libssh2_hmac_update(ctx, seqno_buf, 4);
+    libssh2_hmac_update(ctx, packet, packet_len);
+    if (addtl && addtl_len) {
+        libssh2_hmac_update(ctx, addtl, addtl_len);
+    }
+    libssh2_hmac_final(ctx, buf);
+    libssh2_hmac_cleanup(&ctx);
+
+    return 0;
+}
+
+
+
+static const LIBSSH2_MAC_METHOD mac_method_hmac_sha2_256 = {
+    "hmac-sha2-256",
+    32,
+    32,
+    mac_method_common_init,
+    mac_method_hmac_sha2_256_hash,
+    mac_method_common_dtor,
+};
+#endif
+
+
+
+
 /* mac_method_hmac_sha1_hash
  * Calculate hash using full sha1 value
  */
@@ -113,6 +204,7 @@ mac_method_hmac_sha1_hash(LIBSSH2_SESSION * session,
 
     _libssh2_htonu32(seqno_buf, seqno);
 
+    libssh2_hmac_ctx_init(ctx);
     libssh2_hmac_sha1_init(&ctx, *abstract, 20);
     libssh2_hmac_update(ctx, seqno_buf, 4);
     libssh2_hmac_update(ctx, packet, packet_len);
@@ -185,6 +277,7 @@ mac_method_hmac_md5_hash(LIBSSH2_SESSION * session, unsigned char *buf,
 
     _libssh2_htonu32(seqno_buf, seqno);
 
+    libssh2_hmac_ctx_init(ctx);
     libssh2_hmac_md5_init(&ctx, *abstract, 16);
     libssh2_hmac_update(ctx, seqno_buf, 4);
     libssh2_hmac_update(ctx, packet, packet_len);
@@ -257,6 +350,7 @@ mac_method_hmac_ripemd160_hash(LIBSSH2_SESSION * session,
 
     _libssh2_htonu32(seqno_buf, seqno);
 
+    libssh2_hmac_ctx_init(ctx);
     libssh2_hmac_ripemd160_init(&ctx, *abstract, 20);
     libssh2_hmac_update(ctx, seqno_buf, 4);
     libssh2_hmac_update(ctx, packet, packet_len);
@@ -291,6 +385,12 @@ static const LIBSSH2_MAC_METHOD mac_method_hmac_ripemd160_openssh_com = {
 #endif /* LIBSSH2_HMAC_RIPEMD */
 
 static const LIBSSH2_MAC_METHOD *mac_methods[] = {
+#if LIBSSH2_HMAC_SHA256
+    &mac_method_hmac_sha2_256,
+#endif
+#if LIBSSH2_HMAC_SHA512
+    &mac_method_hmac_sha2_512,
+#endif
     &mac_method_hmac_sha1,
     &mac_method_hmac_sha1_96,
 #if LIBSSH2_MD5

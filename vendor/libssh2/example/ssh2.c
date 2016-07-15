@@ -72,10 +72,16 @@ int main(int argc, char *argv[])
     char *userauthlist;
     LIBSSH2_SESSION *session;
     LIBSSH2_CHANNEL *channel;
+
 #ifdef WIN32
     WSADATA wsadata;
+    int err;
 
-    WSAStartup(MAKEWORD(2,0), &wsadata);
+    err = WSAStartup(MAKEWORD(2,0), &wsadata);
+    if (err != 0) {
+        fprintf(stderr, "WSAStartup failed with error: %d\n", err);
+        return 1;
+    }
 #endif
 
     if (argc > 1) {
@@ -237,7 +243,7 @@ int main(int argc, char *argv[])
 
     /* Other channel types are supported via:
      * libssh2_scp_send()
-     * libssh2_scp_recv()
+     * libssh2_scp_recv2()
      * libssh2_channel_direct_tcpip()
      */
 

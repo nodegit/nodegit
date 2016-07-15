@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign nostdinc
 
-EXTRA_DIST = libssh2_config.h.in
+EXTRA_DIST = libssh2_config.h.in libssh2_config_cmake.h.in CMakeLists.txt
 
 # samples
 noinst_PROGRAMS = direct_tcpip ssh2 scp scp_nonblock scp_write		\

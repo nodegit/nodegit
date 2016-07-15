@@ -21,6 +21,10 @@
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
+/* Define to 1 if you have the declaration of `SecureZeroMemory', and to 0 if
+   you don't. */
+#undef HAVE_DECL_SECUREZEROMEMORY
+
 /* disabled non-blocking sockets */
 #undef HAVE_DISABLED_NONBLOCKING
 
@@ -51,6 +55,12 @@
 /* use Ioctlsocket() for non-blocking sockets */
 #undef HAVE_IOCTLSOCKET_CASE
 
+/* Define if you have the bcrypt library. */
+#undef HAVE_LIBBCRYPT
+
+/* Define if you have the crypt32 library. */
+#undef HAVE_LIBCRYPT32
+
 /* Define if you have the gcrypt library. */
 #undef HAVE_LIBGCRYPT
 
@@ -68,6 +78,12 @@
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
+
+/* Define to 1 if you have the <ntdef.h> header file. */
+#undef HAVE_NTDEF_H
+
+/* Define to 1 if you have the <ntstatus.h> header file. */
+#undef HAVE_NTSTATUS_H
 
 /* use O_NONBLOCK for non-blocking sockets */
 #undef HAVE_O_NONBLOCK
@@ -138,6 +154,9 @@
 /* to make a symbol visible */
 #undef LIBSSH2_API
 
+/* Enable clearing of memory before being freed */
+#undef LIBSSH2_CLEAR_MEMORY
+
 /* Enable "none" cipher -- NOT RECOMMENDED */
 #undef LIBSSH2_CRYPT_NONE
 
@@ -152,6 +171,12 @@
 
 /* Enable "none" MAC -- NOT RECOMMENDED */
 #undef LIBSSH2_MAC_NONE
+
+/* Use OpenSSL */
+#undef LIBSSH2_OPENSSL
+
+/* Use Windows CNG */
+#undef LIBSSH2_WINCNG
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
