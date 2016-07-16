@@ -55,7 +55,7 @@
     "mocha": "~2.3.4"
   },
   "vendorDependencies": {
-    "libssh2": "1.6.0",
+    "libssh2": "1.7.0",
     "http_parser": "2.5.0"
   },
   "binary": {
