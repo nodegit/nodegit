@@ -31,7 +31,7 @@ matrix:
       env: export NODE_VERSION="5.8" TARGET_ARCH="ia32"
       sudo: required
     - os: linux
-      env: export NODE_VERSION="6" TARGET_ARCH="ia32"
+      env: export NODE_VERSION="6.2" TARGET_ARCH="ia32"
       sudo: required
 
 git:
