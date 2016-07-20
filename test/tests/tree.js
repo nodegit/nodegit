@@ -5,20 +5,38 @@ var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
 describe("Tree", function() {
+  var NodeGit = require("../../");
   var RepoUtils = require("../utils/repository_setup");
 
   var repoPath = local("../repos/tree");
+  var existingPath = local("../repos/workdir");
+  var oid = "5716e9757886eaf38d51c86b192258c960d9cfea";
 
   beforeEach(function() {
     var test = this;
     return RepoUtils.createRepository(repoPath)
       .then(function(repo) {
         test.repository = repo;
+      }).then(function() {
+        return NodeGit.Repository.open(existingPath);
+      }).then(function(repository) {
+        test.existingRepo = repository;
+        return repository.getCommit(oid);
+      }).then(function(commit) {
+        test.commit = commit;
       });
   });
 
   after(function() {
     return fse.remove(repoPath);
+  });
+
+  it("gets an entry by name",
+  function(done) {
+    this.commit.getTree().then(function(tree) {
+      var entry = tree.entryByName("README.md");
+        assert(entry);
+    }).done(done);
   });
 
   it("walks its entries and returns the same entries on both progress and end",
