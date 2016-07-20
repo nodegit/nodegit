@@ -122,10 +122,17 @@ describe("TreeEntry", function() {
       });
   });
 
-  it("can determine if an entry is a directory", function() {
+  it("can determine if an entry is not a file", function() {
     return this.commit.getEntry("example")
       .then(function(entry) {
         assert.equal(entry.isFile(), false);
+      });
+  });
+
+  it("can determine if an entry is a directory", function() {
+    return this.commit.getEntry("example")
+      .then(function(entry) {
+        assert.equal(entry.isDirectory(), true);
       });
   });
 });
