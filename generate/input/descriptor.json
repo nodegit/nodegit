@@ -2453,6 +2453,9 @@
         }
       }
     },
+    "time": {
+      "dupFunction": "git_time_dup"
+    },
     "trace": {
       "functions": {
         "git_trace_set": {
