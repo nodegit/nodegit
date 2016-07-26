@@ -2499,9 +2499,7 @@
           "jsFunctionName": "_entryByIndex"
         },
         "git_tree_entry_byname": {
-          "return": {
-            "ownedByThis": true
-          }
+          "jsFunctionName": "_entryByName"
         },
         "git_tree_entrycount": {
           "jsFunctionName": "entryCount"
