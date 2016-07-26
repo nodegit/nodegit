@@ -24,27 +24,27 @@ module.exports = function generateNativeCode() {
   };
 
   var partials = {
-    asyncFunction: utils.readFile("templates/partials/async_function.cc"),
-    callbackHelpers: utils.readFile("templates/partials/callback_helpers.cc"),
-    convertFromV8: utils.readFile("templates/partials/convert_from_v8.cc"),
-    convertToV8: utils.readFile("templates/partials/convert_to_v8.cc"),
-    doc: utils.readFile("templates/partials/doc.cc"),
-    fields: utils.readFile("templates/partials/fields.cc"),
-    guardArguments: utils.readFile("templates/partials/guard_arguments.cc"),
-    syncFunction: utils.readFile("templates/partials/sync_function.cc"),
-    fieldAccessors: utils.readFile("templates/partials/field_accessors.cc"),
-    traits: utils.readFile("templates/partials/traits.h")
+    asyncFunction: utils.readLocalFile("templates/partials/async_function.cc"),
+    callbackHelpers: utils.readLocalFile("templates/partials/callback_helpers.cc"),
+    convertFromV8: utils.readLocalFile("templates/partials/convert_from_v8.cc"),
+    convertToV8: utils.readLocalFile("templates/partials/convert_to_v8.cc"),
+    doc: utils.readLocalFile("templates/partials/doc.cc"),
+    fields: utils.readLocalFile("templates/partials/fields.cc"),
+    guardArguments: utils.readLocalFile("templates/partials/guard_arguments.cc"),
+    syncFunction: utils.readLocalFile("templates/partials/sync_function.cc"),
+    fieldAccessors: utils.readLocalFile("templates/partials/field_accessors.cc"),
+    traits: utils.readLocalFile("templates/partials/traits.h")
   };
 
   var templates = {
-    class_content: utils.readFile("templates/templates/class_content.cc"),
-    struct_content: utils.readFile("templates/templates/struct_content.cc"),
-    class_header: utils.readFile("templates/templates/class_header.h"),
-    struct_header: utils.readFile("templates/templates/struct_header.h"),
-    binding: utils.readFile("templates/templates/binding.gyp"),
-    nodegitCC: utils.readFile("templates/templates/nodegit.cc"),
-    nodegitJS: utils.readFile("templates/templates/nodegit.js"),
-    enums: utils.readFile("templates/templates/enums.js")
+    class_content: utils.readLocalFile("templates/templates/class_content.cc"),
+    struct_content: utils.readLocalFile("templates/templates/struct_content.cc"),
+    class_header: utils.readLocalFile("templates/templates/class_header.h"),
+    struct_header: utils.readLocalFile("templates/templates/struct_header.h"),
+    binding: utils.readLocalFile("templates/templates/binding.gyp"),
+    nodegitCC: utils.readLocalFile("templates/templates/nodegit.cc"),
+    nodegitJS: utils.readLocalFile("templates/templates/nodegit.js"),
+    enums: utils.readLocalFile("templates/templates/enums.js")
   };
 
   var filters = {
@@ -99,28 +99,32 @@ module.exports = function generateNativeCode() {
     return !idef.ignore;
   });
 
+  const tempDirPath = path.resolve(__dirname, "../../temp");
+  const tempSrcDirPath = path.join(tempDirPath, "src");
+  const tempIncludeDirPath = path.join(tempDirPath, "include");
 
-  fse.remove(path.resolve(__dirname, "../../src")).then(function() {
-    return fse.remove(path.resolve(__dirname, "../../include"));
+  const finalSrcDirPath = path.join(__dirname, '../../src');
+  const finalIncludeDirPath = path.join(__dirname, '../../include');
+
+  fse.remove(tempDirPath).then(function() {
+    return fse.copy(path.resolve(__dirname, "../templates/manual/include"), tempIncludeDirPath);
   }).then(function() {
-    return fse.copy(path.resolve(__dirname, "../templates/manual/include"), path.resolve(__dirname, "../../include"));
-  }).then(function() {
-    return fse.copy(path.resolve(__dirname, "../templates/manual/src"), path.resolve(__dirname, "../../src"));
+    return fse.copy(path.resolve(__dirname, "../templates/manual/src"), tempSrcDirPath);
   }).then(function() {
     // Write out single purpose templates.
     utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)), "binding.gyp");
-    utils.writeFile("../src/nodegit.cc", templates.nodegitCC.render(enabled), "nodegit.cc");
+    utils.writeFile("../temp/src/nodegit.cc", templates.nodegitCC.render(enabled), "nodegit.cc");
     utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)), "nodegit.js");
     // Write out all the classes.
     enabled.forEach(function(idef) {
       if (idef.type && idef.type != "enum") {
         utils.writeFile(
-          "../src/" + idef.filename + ".cc",
+          "../temp/src/" + idef.filename + ".cc",
           templates[idef.type + "_content"].render(idef),
           idef.type + "_content.cc"
         );
         utils.writeFile(
-          "../include/" + idef.filename + ".h",
+          "../temp/include/" + idef.filename + ".h",
           templates[idef.type + "_header"].render(idef),
           idef.type + "_header.h"
         );
@@ -133,17 +137,24 @@ module.exports = function generateNativeCode() {
       if (astyle) {
         return exec(
           "astyle --options=\".astylerc\" "
-          + path.resolve(__dirname, "../../src") + "/*.cc "
-          + path.resolve(__dirname, "../../include") + "/*.h"
+          + tempSrcDirPath + "/*.cc "
+          + tempIncludeDirPath + "/*.h"
         ).then(function() {
           return exec(
             "rm "
-            + path.resolve(__dirname, "../../src") + "/*.cc.orig "
-            + path.resolve(__dirname, "../../include") + "/*.h.orig "
+            + tempSrcDirPath + "/*.cc.orig "
+            + tempIncludeDirPath + "/*.h.orig "
           );
         });
       }
     }, function() {})
+  }).then(function() {
+    return Promise.all([
+      utils.syncDirs(tempSrcDirPath, finalSrcDirPath),
+      utils.syncDirs(tempIncludeDirPath, finalIncludeDirPath),
+    ]);
+  }).then(function() {
+    return fse.remove(tempDirPath);
   }).catch(console.log);
 
 };
