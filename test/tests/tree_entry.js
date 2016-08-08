@@ -122,10 +122,35 @@ describe("TreeEntry", function() {
       });
   });
 
-  it("can determine if an entry is a directory", function() {
+  it("can determine if an entry is not a file", function() {
     return this.commit.getEntry("example")
       .then(function(entry) {
         assert.equal(entry.isFile(), false);
+      });
+  });
+
+  it("can determine if an entry is a directory", function() {
+    return this.commit.getEntry("example")
+      .then(function(entry) {
+        assert.equal(entry.isDirectory(), true);
+      });
+  });
+
+  it("can determine if an entry is a submodule", function() {
+    var repo = this.repository;
+    return repo.getCommit("878ef6efbc5f85c4f63aeedf41addc262a621308")
+      .then(function(commit) {
+        return commit.getEntry("vendor/libgit2")
+        .then(function(entry) {
+          assert.equal(entry.isSubmodule(), true);
+      });
+    });
+  });
+
+  it("can determine if an entry is not a submodule", function() {
+    return this.commit.getEntry("example")
+      .then(function(entry) {
+        assert.equal(entry.isSubmodule(), false);
       });
   });
 });
