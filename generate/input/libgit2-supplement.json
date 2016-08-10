@@ -547,12 +547,17 @@
             {
               "type": "git_checkout_options",
               "name": "checkout_options"
+            },
+            {
+              "type": "git_merge_options",
+              "name": "merge_options"
             }
           ],
           "used": {
             "needs": [
               "git_rebase_init_options",
-              "git_checkout_init_options"
+              "git_checkout_init_options",
+              "git_merge_init_options"
             ]
           }
         }
