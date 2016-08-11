@@ -8,6 +8,7 @@ extern "C" {
   {% endeach %}
 }
 
+#include "../include/nodegit.h"
 #include "../include/lock_master.h"
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
