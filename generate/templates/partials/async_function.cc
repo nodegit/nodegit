@@ -192,7 +192,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         }
 
         Local<v8::Object> nodeObj = node->ToObject();
-        Local<v8::Value> checkValue = nodeObj->GetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked());
+        Local<v8::Value> checkValue = nodeObj->GetPrivate(Nan::New("NodeGitPromiseError").ToLocalChecked());
 
         if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined()) {
           Local<v8::Value> argv[1] = {

@@ -249,7 +249,7 @@
             {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
           {% endeach %});
           Local<v8::Object> parent = instance->handle();
-          parent->SetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked(), result);
+          parent->SetPrivate(Nan::New("NodeGitPromiseError").ToLocalChecked(), result);
 
           baton->result = {{ field.return.error }};
         }
