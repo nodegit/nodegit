@@ -124,7 +124,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
         }
 
         Local<v8::Object> nodeObj = node->ToObject();
-        Local<v8::Value> checkValue = nodeObj->GetHiddenValue(Nan::New("NodeGitPromiseError").ToLocalChecked());
+        Local<v8::Value> checkValue = GetPrivate(nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
 
         if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined())
         {
