@@ -12,6 +12,7 @@
     'gas_version%': 0,
     'use_obsolete_asm%': 'true',
     'openssl_fips%': 'false',
+    'node_byteorder%': 'small'
   },
   'targets': [
     {
