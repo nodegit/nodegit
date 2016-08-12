@@ -24,28 +24,12 @@
         ['exclude', 'md2/.*$'],
         ['exclude', 'store/.*$']
       ],
+      'defines': [
+        'PURIFY',
+        '_REENTRANT',
+        'NO_WINDOWS_BRAINDEATH'
+      ],
       'conditions': [
-        # FIPS
-        ['openssl_fips != ""', {
-          'defines': [
-            'OPENSSL_FIPS',
-          ],
-          'include_dirs': [
-            '<(openssl_fips)/include',
-          ],
-
-          # Trick fipsld, it expects to see libcrypto.a
-          'product_name': 'crypto',
-
-          'direct_dependent_settings': {
-            'defines': [
-              'OPENSSL_FIPS',
-            ],
-            'include_dirs': [
-              '<(openssl_fips)/include',
-            ],
-          },
-        }],
         [ 'OS=="aix"', {
             # AIX is missing /usr/include/endian.h
             'defines': [
