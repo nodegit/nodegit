@@ -24,6 +24,11 @@ module.exports = function install() {
     // cleaning up
     return Promise.resolve();
   }
+  if (buildFlags.isElectron) {
+    // If we're building for electron, we're unable to require things so we should
+    // just assume success, unfortunately.
+    return Promise.resolve();
+  }
 
   return exec("node " + path.join(rootPath, "dist/nodegit.js"))
     .catch(function(e) {
