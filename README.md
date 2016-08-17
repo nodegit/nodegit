@@ -85,6 +85,16 @@ addons:
       - libstdc++-4.9-dev
 ```
 
+In CircleCI:
+
+``` yaml
+  dependencies:
+    pre:
+      - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+      - sudo apt-get update
+      - sudo apt-get install -y libstdc++-4.9-dev
+```
+
 If you are still encountering problems while installing, you should try the
 [Building from source](http://www.nodegit.org/guides/install/from-source/)
 instructions.
