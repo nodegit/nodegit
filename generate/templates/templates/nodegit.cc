@@ -22,44 +22,6 @@
 #include "../include/convenient_patch.h"
 #include "../include/convenient_hunk.h"
 
-#if (NODE_MODULE_VERSION > 48)
-  v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
-                                      v8::Local<v8::String> key) {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Local<v8::Private> privateKey = v8::Private::ForApi(isolate, key);
-    v8::Local<v8::Value> value;
-    v8::Maybe<bool> result = object->HasPrivate(context, privateKey);
-    if (!(result.IsJust() && result.FromJust()))
-      return v8::Local<v8::Value>();
-    if (object->GetPrivate(context, privateKey).ToLocal(&value))
-      return value;
-    return v8::Local<v8::Value>();
-  }
-
-  void SetPrivate(v8::Local<v8::Object> object,
-                      v8::Local<v8::String> key,
-                      v8::Local<v8::Value> value) {
-    if (value.IsEmpty())
-      return;
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Local<v8::Private> privateKey = v8::Private::ForApi(isolate, key);
-    object->SetPrivate(context, privateKey, value);
-  }
-#else
-  v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
-                                      v8::Local<v8::String> key) {
-    return object->GetHiddenValue(key);
-  }
-
-  void SetPrivate(v8::Local<v8::Object> object,
-                      v8::Local<v8::String> key,
-                      v8::Local<v8::Value> value) {
-    object->SetHiddenValue(key, value);
-  }
-#endif
-
 void LockMasterEnable(const FunctionCallbackInfo<Value>& info) {
   LockMaster::Enable();
 }
