@@ -24,9 +24,9 @@ module.exports = function install() {
     // cleaning up
     return Promise.resolve();
   }
-  if (buildFlags.isElectron) {
-    // If we're building for electron, we're unable to require things so we should
-    // just assume success, unfortunately.
+  if (buildFlags.isElectron || buildFlags.isNWjs) {
+    // If we're building for electron or NWjs, we're unable to require the
+    // built library so we have to just assume success, unfortunately.
     return Promise.resolve();
   }
 
