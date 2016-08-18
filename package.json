@@ -36,7 +36,7 @@
   "dependencies": {
     "fs-extra": "~0.26.2",
     "lodash": "^4.13.1",
-    "nan": "^2.2.0",
+    "nan": "github:maxkorp/nan#4584fa5b2943c5db148ca66c5afebbf4c35b664c",
     "node-gyp": "^3.3.1",
     "node-pre-gyp": "~0.6.15",
     "promisify-node": "~0.3.0"
