@@ -12,22 +12,14 @@ description: How to install NodeGit with NW.js
 Install for nwjs
 ----------------
 
-For an application that is built using [NW.js](https://github.com/nwjs/nw.js) you'll need to have the `engines['nw.js']` set to the version of NW.js that you are targeting in your root `package.json` file.
+Please see the official nw.js docs [here](http://docs.nwjs.io/en/latest/For%20Users/Advanced/Use%20Native%20Node%20Modules/#node-pre-gyp)
 
-For example if you have an NS.js app that's targeting version 0.12.0 your package.json file would look something like
-
-```json
-{
-  "name": "nw-app",
-  "displayName": "My NW.js app",
-  "version": "0.0.1",
-  "description": "",
-  "engines": {
-    "nw.js": "0.12.0"
-  }
-}
+For a slightly simpler version of the third method, use an `.npmrc` file. For example if you have an NW.js app that's targeting version 0.13.0, your `.npmrc` file would look something like:
+```
+runtime = node-webkit
+target = 0.13.0
+target_arch = x64
+disturl = http://node-webkit.s3.amazonaws.com
 ```
 
-And when doing an `npm install` inside of your NW.js app's root folder it will compile NodeGit targeting that version of NW.js during the install.
-
-*NOTE: there are no pre-built binaries for NW.js, you must rebuild NodeGit. Visit our [building guides](../from-source) for help*
+*NOTE: NW.js support is not thoroughly tested. Additionally, there are no pre-built binaries for NW.js, you must compile NodeGit. Visit our [building guides](../from-source) for help*
