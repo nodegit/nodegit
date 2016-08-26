@@ -1330,6 +1330,7 @@
       }
     },
     "object": {
+      "selfFreeing": true,
       "functions": {
         "git_object_id": {
           "return": {
