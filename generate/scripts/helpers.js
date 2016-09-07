@@ -251,7 +251,7 @@ var Helpers = {
     arg.cppClassName = Helpers.cTypeToCppName(arg.cType);
     arg.jsClassName = utils.titleCase(Helpers.cTypeToJsName(arg.cType));
 
-    var libgitType = Helpers.decorateLibgitType(arg, libgit2.types, enums);
+    Helpers.decorateLibgitType(arg, libgit2.types, enums);
 
     // Some arguments can be callbacks
     if (Helpers.isCallbackFunction(type)) {
@@ -280,11 +280,6 @@ var Helpers = {
           argOverrides.cppClassName !== "Array" &&
           _.every(allArgs, function(_arg) { return !_arg.isSelf; });
       }
-
-      if (arg.isReturn && libgitType)  {
-        arg.selfFreeing = libgitType.selfFreeing;
-      }
-
       if (arg.isReturn && fnDef.return && fnDef.return.type === "int") {
         fnDef.return.isErrorCode = true;
         fnDef.isAsync = true;

@@ -2499,10 +2499,16 @@
           }
         },
         "git_tree_entry_byindex": {
-          "jsFunctionName": "_entryByIndex"
+          "jsFunctionName": "_entryByIndex",
+          "return": {
+            "ownedByThis": true
+          }
         },
         "git_tree_entry_byname": {
-          "jsFunctionName": "_entryByName"
+          "jsFunctionName": "_entryByName",
+          "return": {
+            "ownedByThis": true
+          }
         },
         "git_tree_entrycount": {
           "jsFunctionName": "entryCount"
@@ -2539,6 +2545,7 @@
       }
     },
     "tree_entry": {
+      "selfFreeing": true,
       "dupFunction": "git_tree_entry_dup",
       "freeFunctionName": "git_tree_entry_free",
       "functions": {
