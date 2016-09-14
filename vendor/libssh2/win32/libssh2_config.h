@@ -23,6 +23,7 @@
 #define HAVE_SELECT
 
 #ifdef _MSC_VER
+#if _MSC_VER < 1900
 #define snprintf _snprintf
 #if _MSC_VER < 1500
 #define vsnprintf _vsnprintf
@@ -33,10 +34,10 @@
 #else
 #define strncasecmp strnicmp
 #define strcasecmp stricmp
+#endif
 #endif /* _MSC_VER */
 
 /* Enable newer diffie-hellman-group-exchange-sha1 syntax */
 #define LIBSSH2_DH_GEX_NEW 1
 
 #endif /* LIBSSH2_CONFIG_H */
-
