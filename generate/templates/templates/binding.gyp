@@ -77,7 +77,27 @@
             ],
             "defines": [
               "_HAS_EXCEPTIONS=1"
-            ]
+            ],
+            "configurations": {
+              "Debug": {
+                "msvs_settings": {
+                  "VCLinkerTool": {
+                    "AdditionalOptions": [
+                      "/FORCE:MULTIPLE"
+                    ]
+                  }
+                }
+              },
+              "Release": {
+                "msvs_settings": {
+                  "VCLinkerTool": {
+                    "AdditionalOptions": [
+                      "/FORCE:MULTIPLE"
+                    ]
+                  }
+                }
+              }
+            }
           }
         ], [
           "OS=='linux' and '<!(echo \"$CXX\")'=='clang++'", {
