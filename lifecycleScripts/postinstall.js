@@ -24,6 +24,11 @@ module.exports = function install() {
     // cleaning up
     return Promise.resolve();
   }
+  if (buildFlags.isElectron || buildFlags.isNWjs) {
+    // If we're building for electron or NWjs, we're unable to require the
+    // built library so we have to just assume success, unfortunately.
+    return Promise.resolve();
+  }
 
   return exec("node " + path.join(rootPath, "dist/nodegit.js"))
     .catch(function(e) {
