@@ -12,24 +12,14 @@ description: How to install NodeGit with Electron
 Install for Electron
 ----------------------
 
-For an application that is built using [Electron](https://github.com/atom/Electron) you'll need to have the `engines.electron` set to the version of Electron that you are targeting in your root `package.json` file.
+Please see the official electron docs [here](https://github.com/electron/electron/blob/master/docs/tutorial/using-native-node-modules.md)
 
-For example if you have an Electron app that's targeting version 0.20.7 your package.json file would look something like:
-
-```json
-{
-  "name": "elec-app",
-  "displayName": "My Electron app",
-  "version": "0.0.1",
-  "description": "",
-  "main": "main.js",
-  "author": "",
-  "engines": {
-    "electron": "0.20.7"
-  }
-}
+For a slightly simpler version of the first method, use an `.npmrc` file. For example if you have an Electron app that's targeting version 1.2.8 your .npmrc file would look something like:
+```
+runtime = electron
+target = 1.2.8
+target_arch = x64
+disturl = https://atom.io/download/atom-shell
 ```
 
-And when doing an `npm install` or `apm install` inside of your Electron's root folder it will compile NodeGit targeting that version of Electron during the install.
-
-*NOTE: there are no pre-built binaries for Electron, you must rebuild NodeGit. Visit our [building guides](../from-source) for help*
+*NOTE: We try to provide prebuilt binaries for electron, but we don't always have them available for every version. If prebuilts are not available and you have trouble with local compilation, visit our [building guides](../from-source) for help*
