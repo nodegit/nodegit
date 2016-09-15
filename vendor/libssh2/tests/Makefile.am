@@ -14,6 +14,8 @@ endif
 check_PROGRAMS = $(ctests)
 
 TESTS_ENVIRONMENT = SSHD=$(SSHD) EXEEXT=$(EXEEXT)
+TESTS_ENVIRONMENT += srcdir=$(top_srcdir)/tests builddir=$(top_builddir)/tests
 
 EXTRA_DIST = ssh2.sh mansyntax.sh
 EXTRA_DIST += etc/host etc/host.pub etc/user etc/user.pub
+EXTRA_DIST += CMakeLists.txt libssh2_config_cmake.h.in sshd_fixture.sh.in

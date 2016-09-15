@@ -1,5 +1,5 @@
 /* Copyright (c) 2004-2007 Sara Golemon <sarag@libssh2.org>
- * Copyright (c) 2009-2010 by Daniel Stenberg
+ * Copyright (c) 2009-2014 by Daniel Stenberg
  * Copyright (c) 2010  Simon Josefsson
  * All rights reserved.
  *
@@ -51,10 +51,29 @@
 #include <stdio.h>
 #include <errno.h>
 
-int _libssh2_error(LIBSSH2_SESSION* session, int errcode, const char* errmsg)
+int _libssh2_error_flags(LIBSSH2_SESSION* session, int errcode, const char* errmsg, int errflags)
 {
-    session->err_msg = errmsg;
+    if (session->err_flags & LIBSSH2_ERR_FLAG_DUP)
+        LIBSSH2_FREE(session, (char *)session->err_msg);
+
     session->err_code = errcode;
+    session->err_flags = 0;
+
+    if ((errmsg != NULL) && ((errflags & LIBSSH2_ERR_FLAG_DUP) != 0)) {
+        size_t len = strlen(errmsg);
+        char *copy = LIBSSH2_ALLOC(session, len + 1);
+        if (copy) {
+            memcpy(copy, errmsg, len + 1);
+            session->err_flags = LIBSSH2_ERR_FLAG_DUP;
+            session->err_msg = copy;
+        }
+        else
+            /* Out of memory: this code path is very unlikely */
+            session->err_msg = "former error forgotten (OOM)";
+    }
+    else
+        session->err_msg = errmsg;
+
 #ifdef LIBSSH2DEBUG
     if((errcode == LIBSSH2_ERROR_EAGAIN) && !session->api_block_mode)
         /* if this is EAGAIN and we're in non-blocking mode, don't generate
@@ -65,6 +84,11 @@ int _libssh2_error(LIBSSH2_SESSION* session, int errcode, const char* errmsg)
 #endif
 
     return errcode;
+}
+
+int _libssh2_error(LIBSSH2_SESSION* session, int errcode, const char* errmsg)
+{
+    return _libssh2_error_flags(session, errcode, errmsg, 0);
 }
 
 #ifdef WIN32
@@ -94,9 +118,14 @@ static int wsa2errno(void)
  * Replacement for the standard recv, return -errno on failure.
  */
 ssize_t
-_libssh2_recv(libssh2_socket_t sock, void *buffer, size_t length, int flags, void **abstract)
+_libssh2_recv(libssh2_socket_t sock, void *buffer, size_t length,
+              int flags, void **abstract)
 {
-    ssize_t rc = recv(sock, buffer, length, flags);
+    ssize_t rc;
+
+    (void) abstract;
+
+    rc = recv(sock, buffer, length, flags);
 #ifdef WIN32
     if (rc < 0 )
         return -wsa2errno();
@@ -128,7 +157,11 @@ ssize_t
 _libssh2_send(libssh2_socket_t sock, const void *buffer, size_t length,
               int flags, void **abstract)
 {
-    ssize_t rc = send(sock, buffer, length, flags);
+    ssize_t rc;
+
+    (void) abstract;
+
+    rc = send(sock, buffer, length, flags);
 #ifdef WIN32
     if (rc < 0 )
         return -wsa2errno();
@@ -257,15 +290,15 @@ libssh2_base64_decode(LIBSSH2_SESSION *session, char **data,
             continue;
         switch (i % 4) {
         case 0:
-            d[len] = v << 2;
+            d[len] = (unsigned char)(v << 2);
             break;
         case 1:
             d[len++] |= v >> 4;
-            d[len] = v << 4;
+            d[len] = (unsigned char)(v << 4);
             break;
         case 2:
             d[len++] |= v >> 2;
-            d[len] = v << 6;
+            d[len] = (unsigned char)(v << 6);
             break;
         case 3:
             d[len++] |= v;
@@ -371,6 +404,8 @@ libssh2_free(LIBSSH2_SESSION *session, void *ptr)
 }
 
 #ifdef LIBSSH2DEBUG
+#include <stdarg.h>
+
 LIBSSH2_API int
 libssh2_trace(LIBSSH2_SESSION * session, int bitmask)
 {
@@ -596,7 +631,7 @@ int __cdecl _libssh2_gettimeofday(struct timeval *tp, void *tzp)
     unsigned __int64 ns100; /*time since 1 Jan 1601 in 100ns units */
     FILETIME ft;
   }  _now;
-
+  (void)tzp;
   if(tp)
     {
       GetSystemTimeAsFileTime (&_now.ft);
@@ -610,3 +645,12 @@ int __cdecl _libssh2_gettimeofday(struct timeval *tp, void *tzp)
 
 
 #endif
+
+void *_libssh2_calloc(LIBSSH2_SESSION* session, size_t size)
+{
+    void *p = LIBSSH2_ALLOC(session, size);
+    if(p) {
+        memset(p, 0, size);
+    }
+    return p;
+}

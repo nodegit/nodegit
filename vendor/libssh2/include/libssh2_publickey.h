@@ -69,7 +69,8 @@ typedef struct _libssh2_publickey_list {
     libssh2_publickey_attribute *attrs; /* free me */
 } libssh2_publickey_list;
 
-/* Generally use the first macro here, but if both name and value are string literals, you can use _fast() to take advantage of preprocessing */
+/* Generally use the first macro here, but if both name and value are string
+   literals, you can use _fast() to take advantage of preprocessing */
 #define libssh2_publickey_attribute(name, value, mandatory) \
   { (name), strlen(name), (value), strlen(value), (mandatory) },
 #define libssh2_publickey_attribute_fast(name, value, mandatory) \

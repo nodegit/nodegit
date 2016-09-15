@@ -48,10 +48,12 @@
 /* MAX_SFTP_READ_SIZE is how much data is asked for at max in each FXP_READ
  * packets.
  */
-#define MAX_SFTP_READ_SIZE 2000
+#define MAX_SFTP_READ_SIZE 30000
 
 struct sftp_pipeline_chunk {
     struct list_node node;
+    libssh2_uint64_t offset; /* READ: offset at which to start reading
+                                WRITE: not used */
     size_t len; /* WRITE: size of the data to write
                    READ: how many bytes that was asked for */
     size_t sent;
@@ -174,6 +176,11 @@ struct _LIBSSH2_SFTP
 
     /* State variable used in sftp_write() */
     libssh2_nonblocking_states write_state;
+
+    /* State variables used in sftp_fsync() */
+    libssh2_nonblocking_states fsync_state;
+    unsigned char *fsync_packet;
+    uint32_t fsync_request_id;
 
     /* State variables used in libssh2_sftp_readdir() */
     libssh2_nonblocking_states readdir_state;

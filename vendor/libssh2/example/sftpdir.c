@@ -52,24 +52,51 @@
 #define PRIu64 __PRI64_PREFIX "u"
 #endif  /* PRIu64 */
 
+const char *keyfile1="~/.ssh/id_rsa.pub";
+const char *keyfile2="~/.ssh/id_rsa";
+const char *username="username";
+const char *password="password";
+
+static void kbd_callback(const char *name, int name_len,
+                         const char *instruction, int instruction_len,
+                         int num_prompts,
+                         const LIBSSH2_USERAUTH_KBDINT_PROMPT *prompts,
+                         LIBSSH2_USERAUTH_KBDINT_RESPONSE *responses,
+                         void **abstract)
+{
+    (void)name;
+    (void)name_len;
+    (void)instruction;
+    (void)instruction_len;
+    if (num_prompts == 1) {
+        responses[0].text = strdup(password);
+        responses[0].length = strlen(password);
+    }
+    (void)prompts;
+    (void)abstract;
+} /* kbd_callback */
+
 int main(int argc, char *argv[])
 {
     unsigned long hostaddr;
-    int sock, i, auth_pw = 1;
+    int rc, sock, i, auth_pw = 0;
     struct sockaddr_in sin;
     const char *fingerprint;
+    char *userauthlist;
     LIBSSH2_SESSION *session;
-    const char *username="username";
-    const char *password="password";
     const char *sftppath="/tmp/secretdir";
-    int rc;
     LIBSSH2_SFTP *sftp_session;
     LIBSSH2_SFTP_HANDLE *sftp_handle;
 
 #ifdef WIN32
     WSADATA wsadata;
+    int err;
 
-    WSAStartup(MAKEWORD(2,0), &wsadata);
+    err = WSAStartup(MAKEWORD(2,0), &wsadata);
+    if (err != 0) {
+        fprintf(stderr, "WSAStartup failed with error: %d\n", err);
+        return 1;
+    }
 #endif
 
     if (argc > 1) {
@@ -136,21 +163,63 @@ int main(int argc, char *argv[])
     }
     fprintf(stderr, "\n");
 
-    if (auth_pw) {
+    /* check what authentication methods are available */
+    userauthlist = libssh2_userauth_list(session, username, strlen(username));
+    fprintf(stderr, "Authentication methods: %s\n", userauthlist);
+    if (strstr(userauthlist, "password") != NULL) {
+        auth_pw |= 1;
+    }
+    if (strstr(userauthlist, "keyboard-interactive") != NULL) {
+        auth_pw |= 2;
+    }
+    if (strstr(userauthlist, "publickey") != NULL) {
+        auth_pw |= 4;
+    }
+
+    /* if we got an 5. argument we set this option if supported */
+    if(argc > 5) {
+        if ((auth_pw & 1) && !strcasecmp(argv[5], "-p")) {
+            auth_pw = 1;
+        }
+        if ((auth_pw & 2) && !strcasecmp(argv[5], "-i")) {
+            auth_pw = 2;
+        }
+        if ((auth_pw & 4) && !strcasecmp(argv[5], "-k")) {
+            auth_pw = 4;
+        }
+    }
+
+    if (auth_pw & 1) {
         /* We could authenticate via password */
         if (libssh2_userauth_password(session, username, password)) {
-            fprintf(stderr, "Authentication by password failed.\n");
+            fprintf(stderr, "\tAuthentication by password failed!\n");
             goto shutdown;
+        } else {
+            fprintf(stderr, "\tAuthentication by password succeeded.\n");
+        }
+    } else if (auth_pw & 2) {
+        /* Or via keyboard-interactive */
+        if (libssh2_userauth_keyboard_interactive(session, username,
+                                                  &kbd_callback) ) {
+            fprintf(stderr,
+                "\tAuthentication by keyboard-interactive failed!\n");
+            goto shutdown;
+        } else {
+            fprintf(stderr,
+                "\tAuthentication by keyboard-interactive succeeded.\n");
+        }
+    } else if (auth_pw & 4) {
+        /* Or by public key */
+        if (libssh2_userauth_publickey_fromfile(session, username, keyfile1,
+                                                keyfile2, password)) {
+            fprintf(stderr, "\tAuthentication by public key failed!\n");
+            goto shutdown;
+        } else {
+            fprintf(stderr, "\tAuthentication by public key succeeded.\n");
         }
     } else {
-        /* Or by public key */
-        if (libssh2_userauth_publickey_fromfile(session, username,
-                            "/home/username/.ssh/id_rsa.pub",
-                            "/home/username/.ssh/id_rsa",
-                            password)) {
-            fprintf(stderr, "\tAuthentication by public key failed\n");
-            goto shutdown;
-        }
+        fprintf(stderr, "No supported authentication methods found!\n");
+        goto shutdown;
     }
 
     fprintf(stderr, "libssh2_sftp_init()!\n");

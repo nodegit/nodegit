@@ -8,7 +8,7 @@ int libssh2_poll(LIBSSH2_POLLFD *fds, unsigned int nfds, long timeout);
 .SH DESCRIPTION
 This function is deprecated. Do note use. We encourage users to instead use
 the \fIpoll(3)\fP or \fIselect(3)\fP functions to check for socket activity or
-when specific sockets are ready to get recevied from or send to.
+when specific sockets are ready to get received from or send to.
 
 Poll for activity on a socket, channel, listener, or any combination of these
 three types. The calling semantics for this function generally match

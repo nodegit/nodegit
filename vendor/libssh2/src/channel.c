@@ -1,6 +1,6 @@
 /* Copyright (c) 2004-2007 Sara Golemon <sarag@libssh2.org>
  * Copyright (c) 2005 Mikhail Gusarov <dottedmag@dottedmag.net>
- * Copyright (c) 2008-2011 by Daniel Stenberg
+ * Copyright (c) 2008-2014 by Daniel Stenberg
  *
  * All rights reserved.
  *
@@ -158,14 +158,12 @@ _libssh2_channel_open(LIBSSH2_SESSION * session, const char *channel_type,
                        "Opening Channel - win %d pack %d", window_size,
                        packet_size);
         session->open_channel =
-            LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
+            LIBSSH2_CALLOC(session, sizeof(LIBSSH2_CHANNEL));
         if (!session->open_channel) {
             _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                            "Unable to allocate space for channel data");
             return NULL;
         }
-        memset(session->open_channel, 0, sizeof(LIBSSH2_CHANNEL));
-
         session->open_channel->channel_type_len = channel_type_len;
         session->open_channel->channel_type =
             LIBSSH2_ALLOC(session, channel_type_len);
@@ -268,8 +266,28 @@ _libssh2_channel_open(LIBSSH2_SESSION * session, const char *channel_type,
         }
 
         if (session->open_data[0] == SSH_MSG_CHANNEL_OPEN_FAILURE) {
-            _libssh2_error(session, LIBSSH2_ERROR_CHANNEL_FAILURE,
-                           "Channel open failure");
+            unsigned int reason_code = _libssh2_ntohu32(session->open_data + 5);
+            switch (reason_code) {
+            case SSH_OPEN_ADMINISTRATIVELY_PROHIBITED:
+                _libssh2_error(session, LIBSSH2_ERROR_CHANNEL_FAILURE,
+                               "Channel open failure (admininstratively prohibited)");
+                break;
+            case SSH_OPEN_CONNECT_FAILED:
+                _libssh2_error(session, LIBSSH2_ERROR_CHANNEL_FAILURE,
+                               "Channel open failure (connect failed)");
+                break;
+            case SSH_OPEN_UNKNOWN_CHANNELTYPE:
+                _libssh2_error(session, LIBSSH2_ERROR_CHANNEL_FAILURE,
+                               "Channel open failure (unknown channel type)");
+                break;
+            case SSH_OPEN_RESOURCE_SHORTAGE:
+                _libssh2_error(session, LIBSSH2_ERROR_CHANNEL_FAILURE,
+                               "Channel open failure (resource shortage)");
+                break;
+            default:
+                _libssh2_error(session, LIBSSH2_ERROR_CHANNEL_FAILURE,
+                               "Channel open failure");
+            }
         }
     }
 
@@ -451,7 +469,7 @@ channel_forward_listen(LIBSSH2_SESSION * session, const char *host,
             LIBSSH2_ALLOC(session, session->fwdLstn_packet_len);
         if (!session->fwdLstn_packet) {
             _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
-                           "Unable to allocate memeory for setenv packet");
+                           "Unable to allocate memory for setenv packet");
             return NULL;
         }
 
@@ -509,12 +527,11 @@ channel_forward_listen(LIBSSH2_SESSION * session, const char *host,
         if (data[0] == SSH_MSG_REQUEST_SUCCESS) {
             LIBSSH2_LISTENER *listener;
 
-            listener = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_LISTENER));
+            listener = LIBSSH2_CALLOC(session, sizeof(LIBSSH2_LISTENER));
             if (!listener)
                 _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                                "Unable to allocate memory for listener queue");
             else {
-                memset(listener, 0, sizeof(LIBSSH2_LISTENER));
                 listener->host =
                     LIBSSH2_ALLOC(session, session->fwdLstn_host_len + 1);
                 if (!listener->host) {
@@ -525,8 +542,7 @@ channel_forward_listen(LIBSSH2_SESSION * session, const char *host,
                 }
                 else {
                     listener->session = session;
-                    memcpy(listener->host, host ? host : "0.0.0.0",
-                           session->fwdLstn_host_len);
+                    memcpy(listener->host, host, session->fwdLstn_host_len);
                     listener->host[session->fwdLstn_host_len] = 0;
                     if (data_len >= 5 && !port) {
                         listener->port = _libssh2_ntohu32(data + 1);
@@ -606,6 +622,7 @@ int _libssh2_channel_forward_cancel(LIBSSH2_LISTENER *listener)
     size_t packet_len =
         host_len + 14 + sizeof("cancel-tcpip-forward") - 1;
     int rc;
+    int retcode = 0;
 
     if (listener->chanFwdCncl_state == libssh2_NB_state_idle) {
         _libssh2_debug(session, LIBSSH2_TRACE_CONN,
@@ -615,7 +632,7 @@ int _libssh2_channel_forward_cancel(LIBSSH2_LISTENER *listener)
         s = packet = LIBSSH2_ALLOC(session, packet_len);
         if (!packet) {
             _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
-                           "Unable to allocate memeory for setenv packet");
+                           "Unable to allocate memory for setenv packet");
             return LIBSSH2_ERROR_ALLOC;
         }
 
@@ -644,9 +661,11 @@ int _libssh2_channel_forward_cancel(LIBSSH2_LISTENER *listener)
             _libssh2_error(session, LIBSSH2_ERROR_SOCKET_SEND,
                            "Unable to send global-request packet for forward "
                            "listen request");
-            LIBSSH2_FREE(session, packet);
-            listener->chanFwdCncl_state = libssh2_NB_state_idle;
-            return LIBSSH2_ERROR_SOCKET_SEND;
+            /* set the state to something we don't check for, for the
+               unfortunate situation where we get an EAGAIN further down
+               when trying to bail out due to errors! */
+            listener->chanFwdCncl_state = libssh2_NB_state_sent;
+            retcode = LIBSSH2_ERROR_SOCKET_SEND;
         }
         LIBSSH2_FREE(session, packet);
 
@@ -670,9 +689,7 @@ int _libssh2_channel_forward_cancel(LIBSSH2_LISTENER *listener)
 
     LIBSSH2_FREE(session, listener);
 
-    listener->chanFwdCncl_state = libssh2_NB_state_idle;
-
-    return 0;
+    return retcode;
 }
 
 /*
@@ -787,7 +804,7 @@ static int channel_setenv(LIBSSH2_CHANNEL *channel,
             LIBSSH2_ALLOC(session, channel->setenv_packet_len);
         if (!channel->setenv_packet) {
             return _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
-                                  "Unable to allocate memeory "
+                                  "Unable to allocate memory "
                                   "for setenv packet");
         }
 
@@ -1235,6 +1252,11 @@ _libssh2_channel_process_startup(LIBSSH2_CHANNEL *channel,
         { SSH_MSG_CHANNEL_SUCCESS, SSH_MSG_CHANNEL_FAILURE, 0 };
     int rc;
 
+    if (channel->process_state == libssh2_NB_state_end) {
+        return _libssh2_error(session, LIBSSH2_ERROR_BAD_USE,
+                              "Channel can not be reused");
+    }
+
     if (channel->process_state == libssh2_NB_state_idle) {
         /* 10 = packet_type(1) + channel(4) + request_len(4) + want_reply(1) */
         channel->process_packet_len = request_len + 10;
@@ -1281,7 +1303,7 @@ _libssh2_channel_process_startup(LIBSSH2_CHANNEL *channel,
         else if (rc) {
             LIBSSH2_FREE(session, channel->process_packet);
             channel->process_packet = NULL;
-            channel->process_state = libssh2_NB_state_idle;
+            channel->process_state = libssh2_NB_state_end;
             return _libssh2_error(session, rc,
                                   "Unable to send channel request");
         }
@@ -1303,14 +1325,14 @@ _libssh2_channel_process_startup(LIBSSH2_CHANNEL *channel,
         if (rc == LIBSSH2_ERROR_EAGAIN) {
             return rc;
         } else if (rc) {
-            channel->process_state = libssh2_NB_state_idle;
+            channel->process_state = libssh2_NB_state_end;
             return _libssh2_error(session, rc,
                                   "Failed waiting for channel success");
         }
 
         code = data[0];
         LIBSSH2_FREE(session, data);
-        channel->process_state = libssh2_NB_state_idle;
+        channel->process_state = libssh2_NB_state_end;
 
         if (code == SSH_MSG_CHANNEL_SUCCESS)
             return 0;
@@ -1412,6 +1434,9 @@ _libssh2_channel_flush(LIBSSH2_CHANNEL *channel, int streamid)
 
         channel->flush_state = libssh2_NB_state_created;
     }
+
+    channel->read_avail -= channel->flush_flush_bytes;
+    channel->remote.window_size -= channel->flush_flush_bytes;
 
     if (channel->flush_refund_bytes) {
         int rc;
@@ -1543,6 +1568,9 @@ _libssh2_channel_receive_window_adjust(LIBSSH2_CHANNEL * channel,
 {
     int rc;
 
+    if(store)
+        *store = channel->remote.window_size;
+
     if (channel->adjust_state == libssh2_NB_state_idle) {
         if (!force
             && (adjustment + channel->adjust_queue <
@@ -1552,14 +1580,10 @@ _libssh2_channel_receive_window_adjust(LIBSSH2_CHANNEL * channel,
                            "for channel %lu/%lu",
                            adjustment, channel->local.id, channel->remote.id);
             channel->adjust_queue += adjustment;
-            if(store)
-                *store = channel->remote.window_size;
             return 0;
         }
 
         if (!adjustment && !channel->adjust_queue) {
-            if(store)
-                *store = channel->remote.window_size;
             return 0;
         }
 
@@ -1597,8 +1621,6 @@ _libssh2_channel_receive_window_adjust(LIBSSH2_CHANNEL * channel,
 
     channel->adjust_state = libssh2_NB_state_idle;
 
-    if(store)
-        *store = channel->remote.window_size;
     return 0;
 }
 
@@ -1624,7 +1646,7 @@ libssh2_channel_receive_window_adjust(LIBSSH2_CHANNEL *channel,
     int rc;
 
     if(!channel)
-        return LIBSSH2_ERROR_BAD_USE;
+        return (unsigned long)LIBSSH2_ERROR_BAD_USE;
 
     BLOCK_ADJUST(rc, channel->session,
                  _libssh2_channel_receive_window_adjust(channel, adj,
@@ -1671,7 +1693,7 @@ _libssh2_channel_extended_data(LIBSSH2_CHANNEL *channel, int ignore_mode)
                        "Setting channel %lu/%lu handle_extended_data"
                        " mode to %d",
                        channel->local.id, channel->remote.id, ignore_mode);
-        channel->remote.extended_data_ignore_mode = ignore_mode;
+        channel->remote.extended_data_ignore_mode = (char)ignore_mode;
 
         channel->extData2_state = libssh2_NB_state_created;
     }
@@ -1750,22 +1772,36 @@ ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
     LIBSSH2_PACKET *read_packet;
     LIBSSH2_PACKET *read_next;
 
-    if (channel->read_state == libssh2_NB_state_idle) {
-        _libssh2_debug(session, LIBSSH2_TRACE_CONN,
-                       "channel_read() wants %d bytes from channel %lu/%lu "
-                       "stream #%d",
-                       (int) buflen, channel->local.id, channel->remote.id,
-                       stream_id);
-        channel->read_state = libssh2_NB_state_created;
+    _libssh2_debug(session, LIBSSH2_TRACE_CONN,
+                   "channel_read() wants %d bytes from channel %lu/%lu "
+                   "stream #%d",
+                   (int) buflen, channel->local.id, channel->remote.id,
+                   stream_id);
+
+    /* expand the receiving window first if it has become too narrow */
+    if( (channel->read_state == libssh2_NB_state_jump1) ||
+        (channel->remote.window_size < channel->remote.window_size_initial / 4 * 3 + buflen) ) {
+
+        uint32_t adjustment = channel->remote.window_size_initial + buflen - channel->remote.window_size;
+        if (adjustment < LIBSSH2_CHANNEL_MINADJUST)
+            adjustment = LIBSSH2_CHANNEL_MINADJUST;
+
+        /* the actual window adjusting may not finish so we need to deal with
+           this special state here */
+        channel->read_state = libssh2_NB_state_jump1;
+        rc = _libssh2_channel_receive_window_adjust(channel, adjustment,
+                                                    0, NULL);
+        if (rc)
+            return rc;
+
+        channel->read_state = libssh2_NB_state_idle;
     }
 
-    rc = 1; /* set to >0 to let the while loop start */
-
-    /* Process all pending incoming packets in all states in order to "even
-       out" the network readings. Tests prove that this way produces faster
-       transfers. */
-    while (rc > 0)
+    /* Process all pending incoming packets. Tests prove that this way
+       produces faster transfers. */
+    do {
         rc = _libssh2_transport_read(session);
+    } while (rc > 0);
 
     if ((rc < 0) && (rc != LIBSSH2_ERROR_EAGAIN))
         return _libssh2_error(session, rc, "transport read");
@@ -1847,8 +1883,6 @@ ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
     }
 
     if (!bytes_read) {
-        channel->read_state = libssh2_NB_state_idle;
-
         /* If the channel is already at EOF or even closed, we need to signal
            that back. We may have gotten that info while draining the incoming
            transport layer until EAGAIN so we must not be fooled by that
@@ -1861,11 +1895,9 @@ ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
         /* if the transport layer said EAGAIN then we say so as well */
         return _libssh2_error(session, rc, "would block");
     }
-    else
-        /* make sure we remain in the created state to focus on emptying the
-           data we already have in the packet brigade before we try to read
-           more off the network again */
-        channel->read_state = libssh2_NB_state_created;
+
+    channel->read_avail -= bytes_read;
+    channel->remote.window_size -= bytes_read;
 
     return bytes_read;
 }
@@ -2009,12 +2041,22 @@ _libssh2_channel_write(LIBSSH2_CHANNEL *channel, int stream_id,
             rc = _libssh2_transport_read(session);
         while (rc > 0);
 
-        if((rc < 0) && (rc != LIBSSH2_ERROR_EAGAIN))
-            return rc;
+        if((rc < 0) && (rc != LIBSSH2_ERROR_EAGAIN)) {
+            return _libssh2_error(channel->session, rc,
+                                  "Failure while draining incoming flow");
+        }
 
-        if(channel->local.window_size <= 0)
+        if(channel->local.window_size <= 0) {
             /* there's no room for data so we stop */
+
+            /* Waiting on the socket to be writable would be wrong because we
+             * would be back here immediately, but a readable socket might
+             * herald an incoming window adjustment.
+             */
+            session->socket_block_directions = LIBSSH2_SESSION_BLOCK_INBOUND;
+
             return (rc==LIBSSH2_ERROR_EAGAIN?rc:0);
+        }
 
         channel->write_bufwrite = buflen;
 
@@ -2251,7 +2293,6 @@ int _libssh2_channel_close(LIBSSH2_CHANNEL * channel)
 {
     LIBSSH2_SESSION *session = channel->session;
     int rc = 0;
-    int retcode;
 
     if (channel->local.close) {
         /* Already closed, act like we sent another close,
@@ -2260,9 +2301,15 @@ int _libssh2_channel_close(LIBSSH2_CHANNEL * channel)
         return 0;
     }
 
-    if (!channel->local.eof)
-        if ((retcode = channel_send_eof(channel)))
-            return retcode;
+    if (!channel->local.eof) {
+        if ((rc = channel_send_eof(channel))) {
+            if (rc == LIBSSH2_ERROR_EAGAIN) {
+                return rc;
+            }
+            _libssh2_error(session, rc,
+                "Unable to send EOF, but closing channel anyway");
+        }
+    }
 
     /* ignore if we have received a remote eof or not, as it is now too
        late for us to wait for it. Continue closing! */
@@ -2278,19 +2325,22 @@ int _libssh2_channel_close(LIBSSH2_CHANNEL * channel)
     }
 
     if (channel->close_state == libssh2_NB_state_created) {
-        retcode = _libssh2_transport_send(session, channel->close_packet, 5,
-                                          NULL, 0);
-        if (retcode == LIBSSH2_ERROR_EAGAIN) {
+        rc = _libssh2_transport_send(session, channel->close_packet, 5,
+                                     NULL, 0);
+        if (rc == LIBSSH2_ERROR_EAGAIN) {
             _libssh2_error(session, rc,
                            "Would block sending close-channel");
-            return retcode;
-        } else if (retcode) {
-            channel->close_state = libssh2_NB_state_idle;
-            return _libssh2_error(session, retcode,
-                                  "Unable to send close-channel request");
-        }
+            return rc;
 
-        channel->close_state = libssh2_NB_state_sent;
+        } else if (rc) {
+            _libssh2_error(session, rc,
+                           "Unable to send close-channel request, "
+                           "but closing anyway");
+            /* skip waiting for the response and fall through to
+               LIBSSH2_CHANNEL_CLOSE below */
+
+        } else
+            channel->close_state = libssh2_NB_state_sent;
     }
 
     if (channel->close_state == libssh2_NB_state_sent) {
@@ -2550,7 +2600,7 @@ libssh2_channel_window_read_ex(LIBSSH2_CHANNEL *channel,
  * libssh2_channel_window_write_ex
  *
  * Check the status of the write window Returns the number of bytes which may
- * be safely writen on the channel without blocking window_size_initial (if
+ * be safely written on the channel without blocking window_size_initial (if
  * passed) will be populated with the size of the initial window as defined by
  * the channel_open request
  */
