@@ -18,7 +18,7 @@
 #define HAVE_GETTIMEOFDAY
 #endif /* __MINGW32__ */
 
-#define HAVE_LIBCRYPT32
+#define LIBSSH2_OPENSSL
 #define HAVE_WINSOCK2_H
 #define HAVE_IOCTLSOCKET
 #define HAVE_SELECT
