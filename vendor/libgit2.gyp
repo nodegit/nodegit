@@ -16,6 +16,7 @@
       "defines": [
         "GIT_THREADS",
         "GIT_SSH",
+        "GIT_SSH_MEMORY_CREDENTIALS",
         # Node's util.h may be accidentally included so use this to guard
         # against compilation error.
         "SRC_UTIL_H_",
