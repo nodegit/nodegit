@@ -5,6 +5,8 @@ var fse = promisify(require("fs-extra"));
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
+var leakTest = require("../utils/leak_test");
+
 describe("Revwalk", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
@@ -307,6 +309,14 @@ describe("Revwalk", function() {
       .then(function() {
         return fse.remove(repoPath);
       });
+  });
+
+  it("does not leak", function() {
+    var test = this;
+
+    return leakTest(NodeGit.Revwalk, function() {
+      return Promise.resolve(NodeGit.Revwalk.create(test.repository));
+    });
   });
 
   // This test requires forcing garbage collection, so mocha needs to be run
