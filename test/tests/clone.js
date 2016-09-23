@@ -12,10 +12,10 @@ describe("Clone", function() {
 
   var clonePath = local("../repos/clone");
 
-  var sshPublicKey = local("../id_rsa.pub");
-  var sshPrivateKey = local("../id_rsa");
-  var sshEncryptedPublicKey = local("../encrypted_rsa.pub");
-  var sshEncryptedPrivateKey = local("../encrypted_rsa");
+  var sshPublicKeyPath = local("../id_rsa.pub");
+  var sshPrivateKeyPath = local("../id_rsa");
+  var sshEncryptedPublicKeyPath = local("../encrypted_rsa.pub");
+  var sshEncryptedPrivateKeyPath = local("../encrypted_rsa");
 
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(30000);
@@ -219,8 +219,8 @@ describe("Clone", function() {
           credentials: function(url, userName) {
             return NodeGit.Cred.sshKeyNew(
               userName,
-              sshPublicKey,
-              sshPrivateKey,
+              sshPublicKeyPath,
+              sshPrivateKeyPath,
               "");
           }
         }
@@ -245,8 +245,8 @@ describe("Clone", function() {
           credentials: function(url, userName) {
             return NodeGit.Cred.sshKeyNew(
               userName,
-              sshEncryptedPublicKey,
-              sshEncryptedPrivateKey,
+              sshEncryptedPublicKeyPath,
+              sshEncryptedPrivateKeyPath,
               "test-password"
             );
           }
