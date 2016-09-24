@@ -80,26 +80,11 @@
                 "AdditionalOptions": [
                   "/EHsc"
                 ]
-              }
-            },
-            "configurations": {
-              "Debug": {
-                "msvs_settings": {
-                  "VCLinkerTool": {
-                    "AdditionalOptions": [
-                      "/FORCE:MULTIPLE"
-                    ]
-                  }
-                }
               },
-              "Release": {
-                "msvs_settings": {
-                  "VCLinkerTool": {
-                    "AdditionalOptions": [
-                      "/FORCE:MULTIPLE"
-                    ]
-                  }
-                }
+              "VCLinkerTool": {
+                "AdditionalOptions": [
+                  "/FORCE:MULTIPLE"
+                ]
               }
             }
           }
