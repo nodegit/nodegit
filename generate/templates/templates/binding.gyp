@@ -72,12 +72,16 @@
         ],
         [
           "OS=='win'", {
-            "cflags": [
-              "/EHsc"
-            ],
             "defines": [
               "_HAS_EXCEPTIONS=1"
             ],
+            "msvs_settings": {
+              "VCCLCompilerTool": {
+                "AdditionalOptions": [
+                  "/EHsc"
+                ]
+              }
+            },
             "configurations": {
               "Debug": {
                 "msvs_settings": {
