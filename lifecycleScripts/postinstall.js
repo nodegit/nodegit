@@ -71,7 +71,7 @@ if (require.main === module) {
       console.warn("[nodegit] WARN - Could not finish postinstall");
 
       if (
-        process.pladtform === "linux" &&
+        process.platform === "linux" &&
         ~e.toString().indexOf("libstdc++")
       ) {
         printStandardLibError();
