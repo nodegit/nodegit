@@ -8,7 +8,7 @@ LIBSSH2
 
 LIBSSH2 is a client-side library written in C that aims to 
 implement the SSH2 protocol. It is an open source project, 
-to be found at http://libssh2.org. 
+to be found at https://libssh2.org.
 
 GNV
 ---
@@ -190,7 +190,7 @@ You will need to have the following available:
 
 Optional:
 
-- curl, to be found at  http://curl.haxx.se
+- curl, to be found at  https://curl.haxx.se
   You might want to use curl to download the libssh2 kit directly
   to you VMS machine. Interestingly, sftp in curl is implemented using
   libssh2, soon to be expected on VMS as well, hopefully.
@@ -217,7 +217,7 @@ $ then
 $   delete libssh2-'libssh2_version'-'currentday'.tar.gz;*
 $ endif
 $!
-$ curl 'proxy_line' "http://libssh2.org/snapshots/libssh2-''libssh2_version'-''currentday'.tar.gz" -
+$ curl 'proxy_line' "https://libssh2.org/snapshots/libssh2-''libssh2_version'-''currentday'.tar.gz" -
                     -o libssh2-'libssh2_version'-'currentday'.tar.gz
 $!
 $!

@@ -12,7 +12,7 @@ int libssh2_session_supported_algs(LIBSSH2_SESSION* session,
 \fIsession\fP - An instance of initialized LIBSSH2_SESSION (the function will
 use its pointer to the memory allocation function).  \fImethod_type\fP - Method
 type. See .BR \fIlibssh2_session_method_pref(3)\fP.  \fIalgs\fP - Address of a
-pointer that will point to an array af returned algorithms
+pointer that will point to an array of returned algorithms
 
 Get a list of supported algorithms for the given \fImethod_type\fP. The
 method_type parameter is equivalent to method_type in
@@ -36,7 +36,7 @@ const char **algorithms;
 int rc, i;
 LIBSSH2_SESSION *session;
 
-/* initilize session */
+/* initialize session */
 session = libssh2_session_init();
 rc = libssh2_session_supported_algs(session,
                                     LIBSSH2_METHOD_CRYPT_CS,

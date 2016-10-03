@@ -31,10 +31,13 @@
 #ifdef HAVE_ARPA_INET_H
 # include <arpa/inet.h>
 #endif
-
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 #include <sys/types.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
@@ -92,8 +95,15 @@ int main(int argc, char *argv[])
 
 #ifdef WIN32
     WSADATA wsadata;
-    WSAStartup(MAKEWORD(2,0), &wsadata);
+    int err;
+
+    err = WSAStartup(MAKEWORD(2,0), &wsadata);
+    if (err != 0) {
+        fprintf(stderr, "WSAStartup failed with error: %d\n", err);
+        return 1;
+    }
 #endif
+
     if (argc > 1)
         /* must be ip address only */
         hostname = argv[1];

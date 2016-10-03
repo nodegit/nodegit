@@ -1,6 +1,6 @@
 /* Copyright (c) 2004-2007, Sara Golemon <sarag@libssh2.org>
  * Copyright (c) 2005 Mikhail Gusarov <dottedmag@dottedmag.net>
- * Copyright (c) 2009-2011 by Daniel Stenberg
+ * Copyright (c) 2009-2014 by Daniel Stenberg
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -211,12 +211,13 @@ userauth_password(LIBSSH2_SESSION *session,
                sizeof(session->userauth_pswd_packet_requirev_state));
 
         /*
-         * 40 = acket_type(1) + username_len(4) + service_len(4) +
+         * 40 = packet_type(1) + username_len(4) + service_len(4) +
          * service(14)"ssh-connection" + method_len(4) + method(8)"password" +
          * chgpwdbool(1) + password_len(4) */
         session->userauth_pswd_data_len = username_len + 40;
 
-        session->userauth_pswd_data0 = ~SSH_MSG_USERAUTH_PASSWD_CHANGEREQ;
+        session->userauth_pswd_data0 =
+            (unsigned char) ~SSH_MSG_USERAUTH_PASSWD_CHANGEREQ;
 
         /* TODO: remove this alloc with a fixed buffer in the session
            struct */
@@ -276,13 +277,13 @@ userauth_password(LIBSSH2_SESSION *session,
                                           0, NULL, 0,
                                           &session->
                                           userauth_pswd_packet_requirev_state);
-            if (rc == LIBSSH2_ERROR_EAGAIN) {
-                return _libssh2_error(session, LIBSSH2_ERROR_EAGAIN,
-                                      "Would block waiting");
-            } else if (rc) {
-                session->userauth_pswd_state = libssh2_NB_state_idle;
-                return _libssh2_error(session, LIBSSH2_ERROR_TIMEOUT,
-                                      "Would block waiting");
+
+            if (rc) {
+                if (rc != LIBSSH2_ERROR_EAGAIN)
+                    session->userauth_pswd_state = libssh2_NB_state_idle;
+
+                return _libssh2_error(session, rc,
+                                      "Waiting for password response");
             }
 
             if (session->userauth_pswd_data[0] == SSH_MSG_USERAUTH_SUCCESS) {
@@ -441,66 +442,33 @@ libssh2_userauth_password_ex(LIBSSH2_SESSION *session, const char *username,
     return rc;
 }
 
-/*
- * file_read_publickey
- *
- * Read a public key from an id_???.pub style file
- *
- * Returns an allocated string containing the decoded key in *pubkeydata
- * on success.
- * Returns an allocated string containing the key method (e.g. "ssh-dss")
- * in method on success.
- */
 static int
-file_read_publickey(LIBSSH2_SESSION * session, unsigned char **method,
-                    size_t *method_len,
-                    unsigned char **pubkeydata,
-                    size_t *pubkeydata_len,
-                    const char *pubkeyfile)
+memory_read_publickey(LIBSSH2_SESSION * session, unsigned char **method,
+                      size_t *method_len,
+                      unsigned char **pubkeydata,
+                      size_t *pubkeydata_len,
+                      const char *pubkeyfiledata,
+                      size_t pubkeyfiledata_len)
 {
-    FILE *fd;
-    char c;
     unsigned char *pubkey = NULL, *sp1, *sp2, *tmp;
-    size_t pubkey_len = 0;
+    size_t pubkey_len = pubkeyfiledata_len;
     unsigned int tmp_len;
 
-    _libssh2_debug(session, LIBSSH2_TRACE_AUTH, "Loading public key file: %s",
-                   pubkeyfile);
-    /* Read Public Key */
-    fd = fopen(pubkeyfile, "r");
-    if (!fd) {
-        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
-                              "Unable to open public key file");
-    }
-    while (!feof(fd) && 1 == fread(&c, 1, 1, fd) && c != '\r' && c != '\n')
-        pubkey_len++;
-    if (feof(fd)) {
-        /* the last character was EOF */
-        pubkey_len--;
-    }
-    rewind(fd);
-
-    if (pubkey_len <= 1) {
-        fclose(fd);
+    if (pubkeyfiledata_len <= 1) {
         return _libssh2_error(session, LIBSSH2_ERROR_FILE,
                               "Invalid data in public key file");
     }
 
-    pubkey = LIBSSH2_ALLOC(session, pubkey_len);
+    pubkey = LIBSSH2_ALLOC(session, pubkeyfiledata_len);
     if (!pubkey) {
-        fclose(fd);
         return _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                               "Unable to allocate memory for public key data");
     }
-    if (fread(pubkey, 1, pubkey_len, fd) != pubkey_len) {
-        LIBSSH2_FREE(session, pubkey);
-        fclose(fd);
-        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
-                              "Unable to read public key from file");
-    }
-    fclose(fd);
+
+    memcpy(pubkey, pubkeyfiledata, pubkeyfiledata_len);
+
     /*
-     * Remove trailing whitespace
+     *   Remove trailing whitespace
      */
     while (pubkey_len && isspace(pubkey[pubkey_len - 1]))
         pubkey_len--;
@@ -528,6 +496,108 @@ file_read_publickey(LIBSSH2_SESSION * session, unsigned char **method,
                               (char *) sp1, sp2 - sp1)) {
         LIBSSH2_FREE(session, pubkey);
         return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                                  "Invalid key data, not base64 encoded");
+    }
+
+    /* Wasting some bytes here (okay, more than some), but since it's likely
+     * to be freed soon anyway, we'll just avoid the extra free/alloc and call
+     * it a wash
+     */
+    *method = pubkey;
+    *method_len = sp1 - pubkey - 1;
+
+    *pubkeydata = tmp;
+    *pubkeydata_len = tmp_len;
+
+    return 0;
+}
+
+/*
+ * file_read_publickey
+ *
+ * Read a public key from an id_???.pub style file
+ *
+ * Returns an allocated string containing the decoded key in *pubkeydata
+ * on success.
+ * Returns an allocated string containing the key method (e.g. "ssh-dss")
+ * in method on success.
+ */
+static int
+file_read_publickey(LIBSSH2_SESSION * session, unsigned char **method,
+                    size_t *method_len,
+                    unsigned char **pubkeydata,
+                    size_t *pubkeydata_len,
+                    const char *pubkeyfile)
+{
+    FILE *fd;
+    char c;
+    unsigned char *pubkey = NULL, *sp1, *sp2, *tmp;
+    size_t pubkey_len = 0, sp_len;
+    unsigned int tmp_len;
+
+    _libssh2_debug(session, LIBSSH2_TRACE_AUTH, "Loading public key file: %s",
+                   pubkeyfile);
+    /* Read Public Key */
+    fd = fopen(pubkeyfile, "r");
+    if (!fd) {
+        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                              "Unable to open public key file");
+    }
+    while (!feof(fd) && 1 == fread(&c, 1, 1, fd) && c != '\r' && c != '\n') {
+        pubkey_len++;
+    }
+    rewind(fd);
+
+    if (pubkey_len <= 1) {
+        fclose(fd);
+        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                              "Invalid data in public key file");
+    }
+
+    pubkey = LIBSSH2_ALLOC(session, pubkey_len);
+    if (!pubkey) {
+        fclose(fd);
+        return _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                              "Unable to allocate memory for public key data");
+    }
+    if (fread(pubkey, 1, pubkey_len, fd) != pubkey_len) {
+        LIBSSH2_FREE(session, pubkey);
+        fclose(fd);
+        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                              "Unable to read public key from file");
+    }
+    fclose(fd);
+    /*
+     * Remove trailing whitespace
+     */
+    while (pubkey_len && isspace(pubkey[pubkey_len - 1])) {
+        pubkey_len--;
+    }
+
+    if (!pubkey_len) {
+        LIBSSH2_FREE(session, pubkey);
+        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                              "Missing public key data");
+    }
+
+    if ((sp1 = memchr(pubkey, ' ', pubkey_len)) == NULL) {
+        LIBSSH2_FREE(session, pubkey);
+        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                              "Invalid public key data");
+    }
+
+    sp1++;
+
+    sp_len = sp1 > pubkey ? (sp1 - pubkey) - 1 : 0;
+    if ((sp2 = memchr(sp1, ' ', pubkey_len - sp_len)) == NULL) {
+        /* Assume that the id string is missing, but that it's okay */
+        sp2 = pubkey + pubkey_len;
+    }
+
+    if (libssh2_base64_decode(session, (char **) &tmp, &tmp_len,
+                              (char *) sp1, sp2 - sp1)) {
+        LIBSSH2_FREE(session, pubkey);
+        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
                               "Invalid key data, not base64 encoded");
     }
 
@@ -543,7 +613,43 @@ file_read_publickey(LIBSSH2_SESSION * session, unsigned char **method,
     return 0;
 }
 
+static int
+memory_read_privatekey(LIBSSH2_SESSION * session,
+                       const LIBSSH2_HOSTKEY_METHOD ** hostkey_method,
+                       void **hostkey_abstract,
+                       const unsigned char *method, int method_len,
+                       const char *privkeyfiledata, size_t privkeyfiledata_len,
+                       const char *passphrase)
+{
+    const LIBSSH2_HOSTKEY_METHOD **hostkey_methods_avail =
+        libssh2_hostkey_methods();
 
+    *hostkey_method = NULL;
+    *hostkey_abstract = NULL;
+    while (*hostkey_methods_avail && (*hostkey_methods_avail)->name) {
+        if ((*hostkey_methods_avail)->initPEMFromMemory
+             && strncmp((*hostkey_methods_avail)->name, (const char *) method,
+                        method_len) == 0) {
+            *hostkey_method = *hostkey_methods_avail;
+            break;
+        }
+        hostkey_methods_avail++;
+    }
+    if (!*hostkey_method) {
+        return _libssh2_error(session, LIBSSH2_ERROR_METHOD_NONE,
+                              "No handler for specified private key");
+    }
+
+    if ((*hostkey_method)->
+        initPEMFromMemory(session, privkeyfiledata, privkeyfiledata_len,
+                          (unsigned char *) passphrase,
+                          hostkey_abstract)) {
+        return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                              "Unable to initialize private key from file");
+    }
+
+    return 0;
+}
 
 /* libssh2_file_read_privatekey
  * Read a PEM encoded private key from an id_??? style file
@@ -592,6 +698,43 @@ struct privkey_file {
 };
 
 static int
+sign_frommemory(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
+                const unsigned char *data, size_t data_len, void **abstract)
+{
+    struct privkey_file *pk_file = (struct privkey_file *) (*abstract);
+    const LIBSSH2_HOSTKEY_METHOD *privkeyobj;
+    void *hostkey_abstract;
+    struct iovec datavec;
+    int rc;
+
+    rc = memory_read_privatekey(session, &privkeyobj, &hostkey_abstract,
+                                session->userauth_pblc_method,
+                                session->userauth_pblc_method_len,
+                                pk_file->filename,
+                                strlen(pk_file->filename),
+                                pk_file->passphrase);
+    if(rc)
+        return rc;
+
+    libssh2_prepare_iovec(&datavec, 1);
+    datavec.iov_base = (void *)data;
+    datavec.iov_len  = data_len;
+
+    if (privkeyobj->signv(session, sig, sig_len, 1, &datavec,
+                          &hostkey_abstract)) {
+        if (privkeyobj->dtor) {
+            privkeyobj->dtor(session, abstract);
+        }
+        return -1;
+    }
+
+    if (privkeyobj->dtor) {
+        privkeyobj->dtor(session, &hostkey_abstract);
+    }
+    return 0;
+}
+
+static int
 sign_fromfile(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
               const unsigned char *data, size_t data_len, void **abstract)
 {
@@ -609,13 +752,14 @@ sign_fromfile(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
     if(rc)
         return rc;
 
+    libssh2_prepare_iovec(&datavec, 1);
     datavec.iov_base = (void *)data;
     datavec.iov_len  = data_len;
 
     if (privkeyobj->signv(session, sig, sig_len, 1, &datavec,
                           &hostkey_abstract)) {
         if (privkeyobj->dtor) {
-            privkeyobj->dtor(session, abstract);
+            privkeyobj->dtor(session, &hostkey_abstract);
         }
         return -1;
     }
@@ -644,9 +788,9 @@ userauth_hostbased_fromfile(LIBSSH2_SESSION *session,
 
     if (session->userauth_host_state == libssh2_NB_state_idle) {
         const LIBSSH2_HOSTKEY_METHOD *privkeyobj;
-        unsigned char *pubkeydata, *sig;
-        size_t pubkeydata_len;
-        size_t sig_len;
+        unsigned char *pubkeydata, *sig = NULL;
+        size_t pubkeydata_len = 0;
+        size_t sig_len = 0;
         void *abstract;
         unsigned char buf[5];
         struct iovec datavec[4];
@@ -731,6 +875,7 @@ userauth_hostbased_fromfile(LIBSSH2_SESSION *session,
         }
 
         _libssh2_htonu32(buf, session->session_id_len);
+        libssh2_prepare_iovec(datavec, 4);
         datavec[0].iov_base = (void *)buf;
         datavec[0].iov_len = 4;
         datavec[1].iov_base = (void *)session->session_id;
@@ -738,7 +883,9 @@ userauth_hostbased_fromfile(LIBSSH2_SESSION *session,
         datavec[2].iov_base = (void *)session->userauth_host_packet;
         datavec[2].iov_len = session->userauth_host_packet_len;
 
-        if (privkeyobj->signv(session, &sig, &sig_len, 3, datavec, &abstract)) {
+        if (privkeyobj && privkeyobj->signv &&
+                          privkeyobj->signv(session, &sig, &sig_len, 3,
+                                            datavec, &abstract)) {
             LIBSSH2_FREE(session, session->userauth_host_method);
             session->userauth_host_method = NULL;
             LIBSSH2_FREE(session, session->userauth_host_packet);
@@ -749,7 +896,7 @@ userauth_hostbased_fromfile(LIBSSH2_SESSION *session,
             return -1;
         }
 
-        if (privkeyobj->dtor) {
+        if (privkeyobj && privkeyobj->dtor) {
             privkeyobj->dtor(session, &abstract);
         }
 
@@ -1211,6 +1358,65 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
                           "username/public key combination");
 }
 
+ /*
+  * userauth_publickey_frommemory
+  * Authenticate using a keypair from memory
+  */
+static int
+userauth_publickey_frommemory(LIBSSH2_SESSION *session,
+                              const char *username,
+                              size_t username_len,
+                              const char *publickeydata,
+                              size_t publickeydata_len,
+                              const char *privatekeydata,
+                              size_t privatekeydata_len,
+                              const char *passphrase)
+{
+    unsigned char *pubkeydata = NULL;
+    size_t pubkeydata_len = 0;
+    struct privkey_file privkey_file;
+    void *abstract = &privkey_file;
+    int rc;
+
+    privkey_file.filename = privatekeydata;
+    privkey_file.passphrase = passphrase;
+
+    if (session->userauth_pblc_state == libssh2_NB_state_idle) {
+        if (publickeydata_len && publickeydata) {
+            rc = memory_read_publickey(session, &session->userauth_pblc_method,
+                                       &session->userauth_pblc_method_len,
+                                       &pubkeydata, &pubkeydata_len,
+                                       publickeydata, publickeydata_len);
+            if(rc)
+                return rc;
+        }
+        else if (privatekeydata_len && privatekeydata) {
+            /* Compute public key from private key. */
+            if (_libssh2_pub_priv_keyfilememory(session,
+                                                &session->userauth_pblc_method,
+                                                &session->userauth_pblc_method_len,
+                                                &pubkeydata, &pubkeydata_len,
+                                                privatekeydata, privatekeydata_len,
+                                                passphrase))
+                return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                                      "Unable to extract public key "
+                                      "from private key.");
+        }
+        else {
+            return _libssh2_error(session, LIBSSH2_ERROR_FILE,
+                                  "Invalid data in public and private key.");
+        }
+    }
+
+    rc = _libssh2_userauth_publickey(session, username, username_len,
+                                     pubkeydata, pubkeydata_len,
+                                     sign_frommemory, &abstract);
+    if(pubkeydata)
+        LIBSSH2_FREE(session, pubkeydata);
+
+    return rc;
+}
+
 /*
  * userauth_publickey_fromfile
  * Authenticate using a keypair found in the named files
@@ -1260,6 +1466,36 @@ userauth_publickey_fromfile(LIBSSH2_SESSION *session,
     if(pubkeydata)
         LIBSSH2_FREE(session, pubkeydata);
 
+    return rc;
+}
+
+/* libssh2_userauth_publickey_frommemory
+ * Authenticate using a keypair from memory
+ */
+LIBSSH2_API int
+libssh2_userauth_publickey_frommemory(LIBSSH2_SESSION *session,
+                                      const char *user,
+                                      size_t user_len,
+                                      const char *publickeyfiledata,
+                                      size_t publickeyfiledata_len,
+                                      const char *privatekeyfiledata,
+                                      size_t privatekeyfiledata_len,
+                                      const char *passphrase)
+{
+    int rc;
+
+    if(NULL == passphrase)
+        /* if given a NULL pointer, make it point to a zero-length
+           string to save us from having to check this all over */
+        passphrase="";
+
+    BLOCK_ADJUST(rc, session,
+                 userauth_publickey_frommemory(session, user, user_len,
+                                               publickeyfiledata,
+                                               publickeyfiledata_len,
+                                               privatekeyfiledata,
+                                               privatekeyfiledata_len,
+                                               passphrase));
     return rc;
 }
 
@@ -1501,41 +1737,35 @@ userauth_keyboard_interactive(LIBSSH2_SESSION * session,
 
             if(session->userauth_kybd_num_prompts) {
                 session->userauth_kybd_prompts =
-                    LIBSSH2_ALLOC(session,
-                                  sizeof(LIBSSH2_USERAUTH_KBDINT_PROMPT) *
-                                  session->userauth_kybd_num_prompts);
+                    LIBSSH2_CALLOC(session,
+                                   sizeof(LIBSSH2_USERAUTH_KBDINT_PROMPT) *
+                                   session->userauth_kybd_num_prompts);
                 if (!session->userauth_kybd_prompts) {
                     _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                                    "Unable to allocate memory for "
                                    "keyboard-interactive prompts array");
                     goto cleanup;
                 }
-                memset(session->userauth_kybd_prompts, 0,
-                       sizeof(LIBSSH2_USERAUTH_KBDINT_PROMPT) *
-                       session->userauth_kybd_num_prompts);
 
                 session->userauth_kybd_responses =
-                    LIBSSH2_ALLOC(session,
-                                  sizeof(LIBSSH2_USERAUTH_KBDINT_RESPONSE) *
-                                  session->userauth_kybd_num_prompts);
+                    LIBSSH2_CALLOC(session,
+                                   sizeof(LIBSSH2_USERAUTH_KBDINT_RESPONSE) *
+                                   session->userauth_kybd_num_prompts);
                 if (!session->userauth_kybd_responses) {
                     _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                                    "Unable to allocate memory for "
                                    "keyboard-interactive responses array");
                     goto cleanup;
                 }
-                memset(session->userauth_kybd_responses, 0,
-                       sizeof(LIBSSH2_USERAUTH_KBDINT_RESPONSE) *
-                       session->userauth_kybd_num_prompts);
 
-                for(i = 0; i != session->userauth_kybd_num_prompts; ++i) {
+                for(i = 0; i < session->userauth_kybd_num_prompts; i++) {
                     /* string    prompt[1] (ISO-10646 UTF-8) */
                     session->userauth_kybd_prompts[i].length =
                         _libssh2_ntohu32(s);
                     s += 4;
                     session->userauth_kybd_prompts[i].text =
-                        LIBSSH2_ALLOC(session,
-                                      session->userauth_kybd_prompts[i].length);
+                        LIBSSH2_CALLOC(session,
+                                       session->userauth_kybd_prompts[i].length);
                     if (!session->userauth_kybd_prompts[i].text) {
                         _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
                                        "Unable to allocate memory for "
@@ -1569,7 +1799,7 @@ userauth_keyboard_interactive(LIBSSH2_SESSION * session,
                 + 4             /* int       num-responses */
                 ;
 
-            for(i = 0; i != session->userauth_kybd_num_prompts; ++i) {
+            for(i = 0; i < session->userauth_kybd_num_prompts; i++) {
                 /* string    response[1] (ISO-10646 UTF-8) */
                 session->userauth_kybd_packet_len +=
                     4 + session->userauth_kybd_responses[i].length;
@@ -1592,7 +1822,7 @@ userauth_keyboard_interactive(LIBSSH2_SESSION * session,
             s++;
             _libssh2_store_u32(&s, session->userauth_kybd_num_prompts);
 
-            for(i = 0; i != session->userauth_kybd_num_prompts; ++i) {
+            for(i = 0; i < session->userauth_kybd_num_prompts; i++) {
                 _libssh2_store_str(&s,
                                    session->userauth_kybd_responses[i].text,
                                    session->userauth_kybd_responses[i].length);
@@ -1628,14 +1858,14 @@ userauth_keyboard_interactive(LIBSSH2_SESSION * session,
         session->userauth_kybd_data = NULL;
 
         if (session->userauth_kybd_prompts) {
-            for(i = 0; i != session->userauth_kybd_num_prompts; ++i) {
+            for(i = 0; i < session->userauth_kybd_num_prompts; i++) {
                 LIBSSH2_FREE(session, session->userauth_kybd_prompts[i].text);
                 session->userauth_kybd_prompts[i].text = NULL;
             }
         }
 
         if (session->userauth_kybd_responses) {
-            for(i = 0; i != session->userauth_kybd_num_prompts; ++i) {
+            for(i = 0; i < session->userauth_kybd_num_prompts; i++) {
                 LIBSSH2_FREE(session,
                              session->userauth_kybd_responses[i].text);
                 session->userauth_kybd_responses[i].text = NULL;

@@ -75,7 +75,8 @@ libssh2_keepalive_send (LIBSSH2_SESSION *session,
         size_t len = sizeof (keepalive_data) - 1;
         int rc;
 
-        keepalive_data[len - 1] = session->keepalive_want_reply;
+        keepalive_data[len - 1] =
+            (unsigned char)session->keepalive_want_reply;
 
         rc = _libssh2_transport_send(session, keepalive_data, len, NULL, 0);
         /* Silently ignore PACKET_EAGAIN here: if the write buffer is
@@ -90,8 +91,8 @@ libssh2_keepalive_send (LIBSSH2_SESSION *session,
         if (seconds_to_next)
             *seconds_to_next = session->keepalive_interval;
     } else if (seconds_to_next) {
-        *seconds_to_next = (int) session->keepalive_last_sent
-            + session->keepalive_interval - now;
+        *seconds_to_next = (int) (session->keepalive_last_sent - now)
+            + session->keepalive_interval;
     }
 
     return 0;

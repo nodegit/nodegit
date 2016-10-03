@@ -8,6 +8,9 @@ LIBSSH2_CHANNEL *
 libssh2_scp_recv(LIBSSH2_SESSION *session, const char *path, struct stat *sb);
 
 .SH DESCRIPTION
+This function is \fBDEPRECATED\fP. Use \fIlibssh2_scp_recv2(3)\fP
+instead!
+
 \fIsession\fP - Session instance as returned by 
 .BR libssh2_session_init_ex(3)
 

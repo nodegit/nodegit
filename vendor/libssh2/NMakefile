@@ -1,5 +1,10 @@
 !include "win32/config.mk"
 
+!if "$(WITH_WINCNG)" == "1"
+!include "Makefile.WinCNG.inc"
+!else
+!include "Makefile.OpenSSL.inc"
+!endif
 !include "Makefile.inc"
 
 OBJECTS=$(CSOURCES:.c=.obj)
@@ -12,6 +17,7 @@ all-sub: win32\objects.mk
 
 clean: 
 	-rmdir 2>NUL /s/q $(TARGET)
+	-del 2>NUL win32\objects.mk
 
 real-clean vclean: clean
 	-del 2>NUL libssh2.dll
@@ -19,7 +25,6 @@ real-clean vclean: clean
 	-del 2>NUL libssh2.ilk
 	-del 2>NUL libssh2.lib
 	-del 2>NUL *.pdb
-	-del 2>NUL win32\objects.mk
 
 win32\objects.mk: Makefile.inc
 	@echo OBJECTS = \>$@

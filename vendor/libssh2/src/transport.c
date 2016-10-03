@@ -52,7 +52,7 @@
 #include "mac.h"
 
 #define MAX_BLOCKSIZE 32    /* MUST fit biggest crypto block size we use/get */
-#define MAX_MACSIZE 20      /* MUST fit biggest MAC length we support */
+#define MAX_MACSIZE 64      /* MUST fit biggest MAC length we support */
 
 #ifdef LIBSSH2DEBUG
 #define UNPRINTABLE_CHAR '.'
@@ -241,8 +241,12 @@ fullpacket(LIBSSH2_SESSION * session, int encrypted /* 1 or 0 */ )
         rc = _libssh2_packet_add(session, p->payload,
                                  session->fullpacket_payload_len,
                                  session->fullpacket_macstate);
-        if (rc)
+        if (rc == LIBSSH2_ERROR_EAGAIN)
             return rc;
+        if (rc) {
+            session->fullpacket_state = libssh2_NB_state_idle;
+            return rc;
+        }
     }
 
     session->fullpacket_state = libssh2_NB_state_idle;
@@ -524,6 +528,7 @@ int _libssh2_transport_read(LIBSSH2_SESSION * session)
             /* now decrypt the lot */
             rc = decrypt(session, &p->buf[p->readidx], p->wptr, numdecrypt);
             if (rc != LIBSSH2_ERROR_NONE) {
+                p->total_num = 0;   /* no packet buffer available */
                 return rc;
             }
 
@@ -531,7 +536,7 @@ int _libssh2_transport_read(LIBSSH2_SESSION * session)
             p->readidx += numdecrypt;
             /* advance write pointer */
             p->wptr += numdecrypt;
-            /* increse data_num */
+            /* increase data_num */
             p->data_num += numdecrypt;
 
             /* bytes left to take care of without decryption */
@@ -547,7 +552,7 @@ int _libssh2_transport_read(LIBSSH2_SESSION * session)
             p->readidx += numbytes;
             /* advance write pointer */
             p->wptr += numbytes;
-            /* increse data_num */
+            /* increase data_num */
             p->data_num += numbytes;
         }
 
@@ -824,7 +829,7 @@ int _libssh2_transport_send(LIBSSH2_SESSION *session,
        the MAC and the packet_length field itself */
     _libssh2_htonu32(p->outbuf, packet_length - 4);
     /* store padding_length */
-    p->outbuf[4] = padding_length;
+    p->outbuf[4] = (unsigned char)padding_length;
 
     /* fill the padding area with random junk */
     _libssh2_random(p->outbuf + 5 + data_len, padding_length);
