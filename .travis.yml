@@ -2,6 +2,7 @@ branches:
   only:
     - master
     - /^v\d+\.\d+\.\d+$/
+    - maint/0.14
 
 compiler: clang
 
