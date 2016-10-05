@@ -77,8 +77,19 @@ before_install:
       export JOBS=4;
     fi
 
+# node 0.12 is sometimes failing
+# with a "Callback called more than once" error
+# Despite that error, it seems like modules do get installed correctly,
+# and the rest of the build proceeds as normal.
+# So we ignore that error, just for node 0.12
+# If npm install ever fails in a more significant way,
+# the rest of the build should hopefully fail anyway.
 install:
-  - npm install
+  - if [[ $NODE_VERSION == "0.12" ]]; then
+      npm install || true;
+    else
+      npm install;
+    fi
 
 # This is a random private key used purely for testing.
 before_script:
