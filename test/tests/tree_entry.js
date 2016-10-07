@@ -2,6 +2,8 @@ var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
+var leakTest = require("../utils/leak_test");
+
 describe("TreeEntry", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
@@ -152,5 +154,16 @@ describe("TreeEntry", function() {
       .then(function(entry) {
         assert.equal(entry.isSubmodule(), false);
       });
+  });
+
+  it("does not leak", function() {
+    var test = this;
+
+    return leakTest(NodeGit.TreeEntry, function() {
+      return test.commit.getTree()
+        .then(function(tree) {
+          return tree.entryByPath("example");
+        });
+    });
   });
 });
