@@ -72,30 +72,19 @@
         ],
         [
           "OS=='win'", {
-            "cflags": [
-              "/EHsc"
-            ],
             "defines": [
               "_HAS_EXCEPTIONS=1"
             ],
-            "configurations": {
-              "Debug": {
-                "msvs_settings": {
-                  "VCLinkerTool": {
-                    "AdditionalOptions": [
-                      "/FORCE:MULTIPLE"
-                    ]
-                  }
-                }
+            "msvs_settings": {
+              "VCCLCompilerTool": {
+                "AdditionalOptions": [
+                  "/EHsc"
+                ]
               },
-              "Release": {
-                "msvs_settings": {
-                  "VCLinkerTool": {
-                    "AdditionalOptions": [
-                      "/FORCE:MULTIPLE"
-                    ]
-                  }
-                }
+              "VCLinkerTool": {
+                "AdditionalOptions": [
+                  "/FORCE:MULTIPLE"
+                ]
               }
             }
           }
