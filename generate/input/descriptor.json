@@ -2100,15 +2100,13 @@
       "ignore": true
     },
     "revwalk": {
+      "selfFreeing": true,
       "dependencies": [
         "../include/commit.h",
         "../include/functions/copy.h"
       ],
       "functions": {
         "git_revwalk_add_hide_cb": {
-          "ignore": true
-        },
-        "git_revwalk_free": {
           "ignore": true
         },
         "git_revwalk_new": {
