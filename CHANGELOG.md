@@ -94,6 +94,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 - Made `ancestoryEntry`, `outEntry` and `theirEntry` optional parameters on `Index#conflictAdd` [PR #997](https://github.com/nodegit/nodegit/pull/997)
 - `Repository#refreshIndex` will return an Index object back that has the latest data loaded off of disk [PR #986](https://github.com/nodegit/nodegit/pull/986)
 - `Commit.create` is now asynchronous [PR #1022](https://github.com/nodegit/nodegit/pull/1022)
+- `Remote.create` is now asynchronous [PR #990](https://github.com/nodegit/nodegit/pull/990)
 
 ### Added
 
@@ -103,7 +104,7 @@ We have added Node 6 as a supported platform! Going forward we aim to have 1:1 s
 
 ### Removed
 
-- `Repository#openIndex` [PR #990](https://github.com/nodegit/nodegit/pull/990)
+- `Repository#openIndex` [PR #989](https://github.com/nodegit/nodegit/pull/989), use `Repository#index` or `Repository#refreshIndex` instead
 - `Reflog#entryCommitter`, `Reflog#entryIdNew`, `Reflog#entryIdOld`, and `Reflog#entryMessage` have been moved to be under `ReflogEntry`
 [PR #1013](https://github.com/nodegit/nodegit/pull/1013)
 
