@@ -29,9 +29,8 @@ var util = {
     }
   },
 
-  writeFile: function(file, content, header) {
+  writeFile: function(filePath, content, header) {
     try {
-      var file = local(file);
       if (typeof content == "object") {
         content = JSON.stringify(content, null, 2)
       }
@@ -45,8 +44,8 @@ var util = {
           content;
       }
 
-      fse.ensureFileSync(file);
-      fse.writeFileSync(file, content);
+      fse.ensureFileSync(filePath);
+      fse.writeFileSync(filePath, content);
       return true;
     }
     catch (exception) {

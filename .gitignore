@@ -6,7 +6,6 @@
 /lib/nodegit.js
 /node_modules/
 /src/
-/temp/
 /test/coverage/
 /test/home/
 /test/repos/

@@ -58,7 +58,7 @@ module.exports = function generateMissingTests() {
 
   Promise.all(promises).then(
     function() {
-      utils.writeFile("output/missing-tests.json", output);
+      utils.writeFile(path.join(__dirname, "..", "/output/missing-tests.json"), output);
     },
     function(fail) {
       console.error(fail);

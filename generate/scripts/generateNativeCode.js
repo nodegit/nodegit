@@ -1,6 +1,7 @@
 const path = require("path");
 const promisify = require("promisify-node");
 const fse = promisify(require("fs-extra"));
+const os = require('os');
 const exec = require('../../utils/execPromise');
 const utils = require("./utils");
 
@@ -99,7 +100,7 @@ module.exports = function generateNativeCode() {
     return !idef.ignore;
   });
 
-  const tempDirPath = path.resolve(__dirname, "../../temp");
+  const tempDirPath = path.join(os.tmpdir(), 'nodegit_build');
   const tempSrcDirPath = path.join(tempDirPath, "src");
   const tempIncludeDirPath = path.join(tempDirPath, "include");
 
@@ -113,18 +114,19 @@ module.exports = function generateNativeCode() {
   }).then(function() {
     // Write out single purpose templates.
     utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)), "binding.gyp");
-    utils.writeFile("../temp/src/nodegit.cc", templates.nodegitCC.render(enabled), "nodegit.cc");
+    utils.writeFile(path.join(tempSrcDirPath, "nodegit.cc"), templates.nodegitCC.render(enabled), "nodegit.cc");
     utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)), "nodegit.js");
     // Write out all the classes.
     enabled.forEach(function(idef) {
       if (idef.type && idef.type != "enum") {
         utils.writeFile(
-          "../temp/src/" + idef.filename + ".cc",
+          path.format({dir: tempSrcDirPath, name: idef.filename, ext: ".cc"}),
           templates[idef.type + "_content"].render(idef),
           idef.type + "_content.cc"
         );
+
         utils.writeFile(
-          "../temp/include/" + idef.filename + ".h",
+          path.format({dir: tempIncludeDirPath, name: idef.filename, ext: ".h"}),
           templates[idef.type + "_header"].render(idef),
           idef.type + "_header.h"
         );
