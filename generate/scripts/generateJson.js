@@ -231,7 +231,7 @@ module.exports = function generateJson() {
   }
 
 
-  utils.writeFile(path.join(__dirname, "..", "output", "idefs.json"), output);
+  utils.writeLocalFile("output/idefs.json", output);
 };
 
 if (require.main === module) {

@@ -113,9 +113,9 @@ module.exports = function generateNativeCode() {
     return fse.copy(path.resolve(__dirname, "../templates/manual/src"), tempSrcDirPath);
   }).then(function() {
     // Write out single purpose templates.
-    utils.writeFile("../binding.gyp", beautify(templates.binding.render(enabled)), "binding.gyp");
+    utils.writeLocalFile("../binding.gyp", beautify(templates.binding.render(enabled)), "binding.gyp");
     utils.writeFile(path.join(tempSrcDirPath, "nodegit.cc"), templates.nodegitCC.render(enabled), "nodegit.cc");
-    utils.writeFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)), "nodegit.js");
+    utils.writeLocalFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)), "nodegit.js");
     // Write out all the classes.
     enabled.forEach(function(idef) {
       if (idef.type && idef.type != "enum") {
@@ -133,7 +133,7 @@ module.exports = function generateNativeCode() {
       }
     });
 
-    utils.writeFile("../lib/enums.js", beautify(templates.enums.render(enabled)), "enums.js");
+    utils.writeLocalFile("../lib/enums.js", beautify(templates.enums.render(enabled)), "enums.js");
   }).then(function() {
     return exec("command -v astyle").then(function(astyle) {
       if (astyle) {

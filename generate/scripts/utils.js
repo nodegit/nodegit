@@ -11,13 +11,8 @@ var util = {
   pointerRegex: /\s*\*\s*/,
   doublePointerRegex: /\s*\*\*\s*/,
 
-  readLocalFile: function(file) {
-    try {
-      return fs.readFileSync(local(file)).toString();
-    }
-    catch (unhandledException) {
-      return "";
-    }
+  readLocalFile: function(filePath) {
+    return util.readFile(local(filePath));
   },
 
   readFile: function(filePath) {
@@ -27,6 +22,10 @@ var util = {
     catch (unhandledException) {
       return "";
     }
+  },
+
+  writeLocalFile: function(filePath, content, header) {
+    return util.writeFile(local(filePath), content, header);
   },
 
   writeFile: function(filePath, content, header) {
