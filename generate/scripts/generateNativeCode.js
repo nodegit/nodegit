@@ -120,13 +120,13 @@ module.exports = function generateNativeCode() {
     enabled.forEach(function(idef) {
       if (idef.type && idef.type != "enum") {
         utils.writeFile(
-          path.format({dir: tempSrcDirPath, name: idef.filename, ext: ".cc"}),
+          path.join(tempSrcDirPath, idef.filename + ".cc"),
           templates[idef.type + "_content"].render(idef),
           idef.type + "_content.cc"
         );
 
         utils.writeFile(
-          path.format({dir: tempIncludeDirPath, name: idef.filename, ext: ".h"}),
+          path.join(tempIncludeDirPath, idef.filename + ".h"),
           templates[idef.type + "_header"].render(idef),
           idef.type + "_header.h"
         );
