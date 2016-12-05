@@ -82,6 +82,20 @@
     },
     "git_note_iterator": {
       "decl": "git_iterator"
+    },
+    "git_repository_init_options": {
+      "fields": [
+        {
+          "type": "uint32_t",
+          "name": "flags",
+          "comments": "A bitfield of Repository.INIT_FLAG values"
+        },
+        {
+          "type": "const char *",
+          "name": "template_path",
+          "comments": "Only used if flags contains Repository.INIT_FLAG.EXTERNAL_TEMPLATE"
+        }
+      ]
     }
   },
   "new" : {
