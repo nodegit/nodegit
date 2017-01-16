@@ -277,7 +277,7 @@
                 }
             }
         }],
-        ["OS=='linux'", {
+        ["OS=='linux' or OS.endswith('bsd')" , {
           "cflags": [
             "-DGIT_SSH",
             "-DGIT_SSL",
