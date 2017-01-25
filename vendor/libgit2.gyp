@@ -279,15 +279,21 @@
                 }
             }
         }],
+        ["OS=='mac' or OS=='linux' or OS.endswith('bsd')", {
+          "cflags": [
+            "-DGIT_CURL"
+          ],
+          "defines": [
+            "GIT_CURL"
+          ]
+        }],
         ["OS=='linux' or OS.endswith('bsd')" , {
           "cflags": [
-            "-DGIT_CURL",
             "-DGIT_SSH",
             "-DGIT_SSL",
             "-w",
           ],
           "defines": [
-            "GIT_CURL",
             "GIT_OPENSSL",
             "GIT_USE_STAT_MTIM"
           ],
