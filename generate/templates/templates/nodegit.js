@@ -78,8 +78,8 @@ var importExtension = function(name) {
 rawApi.Utils = {};
 require("./utils/lookup_wrapper");
 require("./utils/normalize_options");
-require("./utils/normalize_fetch_options");
 require("./utils/shallow_clone");
+require("./utils/normalize_fetch_options");
 
 // Load up extra types;
 require("./status_file");
