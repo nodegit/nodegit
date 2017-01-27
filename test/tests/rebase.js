@@ -667,7 +667,7 @@ describe("Rebase", function() {
               "There should not be a rebase in progress");
           })
           .catch(function(e) {
-            assert.equal(e.message, "There is no rebase in progress");
+            assert.equal(e.message, "there is no rebase in progress");
           });
       })
       .then(function() {

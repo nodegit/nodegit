@@ -388,13 +388,8 @@ describe("Remote", function() {
       // catches linux / osx failure to use anonymous credentials
       // stops callback infinite loop
       .catch(function (reason) {
-        if (reason.message !==
-          "Method push has thrown an error.")
-        {
-          throw reason;
-        } else {
-          return Promise.resolve();
-        }
+        assert.equal(reason.message.replace(/\n|\r/g, ""),
+          "failed to set credentials: The parameter is incorrect.");
       });
   });
 
