@@ -36,7 +36,7 @@ NodeGit
 
 ## Have a problem? Come chat with us! ##
 
-https://libgit2.slack.com/
+Visit [slack.libgit2.org](http://slack.libgit2.org/) to sign up, then join us in #nodegit.
 
 ## Maintained by ##
 Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
