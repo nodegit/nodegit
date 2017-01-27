@@ -13,22 +13,14 @@ sudo: false
 
 env:
   matrix:
-    - export NODE_VERSION="0.12" TARGET_ARCH="x64"
-    - export NODE_VERSION="4.5" TARGET_ARCH="x64"
-    - export NODE_VERSION="5.12" TARGET_ARCH="x64"
+    - export NODE_VERSION="4" TARGET_ARCH="x64"
     - export NODE_VERSION="6.5" TARGET_ARCH="x64"
 
 matrix:
   fast_finish: true
   include:
     - os: linux
-      env: export NODE_VERSION="0.12" TARGET_ARCH="ia32"
-      sudo: required
-    - os: linux
-      env: export NODE_VERSION="4.5" TARGET_ARCH="ia32"
-      sudo: required
-    - os: linux
-      env: export NODE_VERSION="5.12" TARGET_ARCH="ia32"
+      env: export NODE_VERSION="4" TARGET_ARCH="ia32"
       sudo: required
     - os: linux
       env: export NODE_VERSION="6.5" TARGET_ARCH="ia32"
@@ -52,6 +44,7 @@ before_install:
   - export CC=clang
   - export CXX=clang++
   - export npm_config_clang=1
+  - export JOBS=4
 
   - if [ $TARGET_ARCH == "ia32" ]; then
       sudo ln -s /usr/include/asm-generic /usr/include/asm;
@@ -64,9 +57,8 @@ before_install:
 
   - nvm install $NODE_VERSION
 
-  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
+  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
       export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
-      export JOBS=4;
       export CC=/usr/bin/gcc-4.9;
       export CXX=/usr/bin/g++-4.9;
       export npm_config_clang=0;
@@ -74,22 +66,10 @@ before_install:
       tar xvfz lcov-1.10.tar.gz;
     else
       export GYP_DEFINES="use_obsolete_asm=true";
-      export JOBS=4;
     fi
 
-# node 0.12 is sometimes failing
-# with a "Callback called more than once" error
-# Despite that error, it seems like modules do get installed correctly,
-# and the rest of the build proceeds as normal.
-# So we ignore that error, just for node 0.12
-# If npm install ever fails in a more significant way,
-# the rest of the build should hopefully fail anyway.
 install:
-  - if [[ $NODE_VERSION == "0.12" ]]; then
-      npm install || true;
-    else
-      npm install;
-    fi
+  - npm install;
 
 # This is a random private key used purely for testing.
 before_script:
@@ -104,7 +84,7 @@ before_script:
 
 script:
   - if [ $TARGET_ARCH == "x64" ]; then
-      if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "0.12" ]; then
+      if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
         npm test && npm run cov && npm run coveralls;
       else
         npm test;
@@ -122,7 +102,7 @@ after_success:
       node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "4.1" ] && [ $TARGET_ARCH == "x64" ]; then
+  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ] && [ $TARGET_ARCH == "x64" ]; then
       .travis/deploy-docs.sh;
     fi
 
