@@ -11,8 +11,14 @@ module.exports = function generateJson() {
   _ = require("lodash");
   // libgit2's docs aren't complete so we'll add in what they're missing here
   libgit2.types.forEach(function(type) {
-    if (supplement.types[type[0]]) {
-      _.merge(type[1], supplement.types[type[0]]);
+    var supplementType = supplement.types[type[0]];
+    if (supplementType) {
+        if (supplementType.decl) {
+            type[1].decl = supplementType.decl;
+        }
+        if (supplementType.fields) {
+            type[1].fields = _.unionBy(supplementType.fields, type[1].fields, "name");
+        }
     }
   });
 
