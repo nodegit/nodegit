@@ -48,6 +48,7 @@
       {% elsif field.isCallbackFunction %}
         Nan::Callback *callback = NULL;
         int throttle = {%if field.return.throttle %}{{ field.return.throttle }}{%else%}0{%endif%};
+        bool waitForResult = true;
 
         if (value->IsFunction()) {
           callback = new Nan::Callback(value.As<Function>());
@@ -59,12 +60,19 @@
             Local<Value> objectCallback = maybeObjectCallback.ToLocalChecked();
             if (objectCallback->IsFunction()) {
               callback = new Nan::Callback(objectCallback.As<Function>());
+
               Nan::MaybeLocal<Value> maybeObjectThrottle = Nan::Get(object, Nan::New("throttle").ToLocalChecked());
               if(!maybeObjectThrottle.IsEmpty()) {
                 Local<Value> objectThrottle = maybeObjectThrottle.ToLocalChecked();
                 if (objectThrottle->IsNumber()) {
                   throttle = (int)objectThrottle.As<Number>()->Value();
                 }
+              }
+
+              Nan::MaybeLocal<Value> maybeObjectWaitForResult = Nan::Get(object, Nan::New("waitForResult").ToLocalChecked());
+              if(!maybeObjectWaitForResult.IsEmpty()) {
+                Local<Value> objectWaitForResult = maybeObjectWaitForResult.ToLocalChecked();
+                waitForResult = (bool)objectWaitForResult->BooleanValue();
               }
             }
           }
@@ -74,7 +82,7 @@
             wrapper->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
           }
 
-          wrapper->{{ field.name }}.SetCallback(callback, throttle);
+          wrapper->{{ field.name }}.SetCallback(callback, throttle, waitForResult);
         }
 
       {% elsif field.payloadFor %}
