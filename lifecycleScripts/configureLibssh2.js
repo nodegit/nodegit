@@ -1,6 +1,10 @@
 var cp = require("child_process");
 var path = require("path");
-var rooted = path.join.bind(path, __dirname, "..");
+var rooted = function (dir) {
+  var fullPath = path.join(__dirname, "..", dir);
+  var escapedPathForShell = fullPath.replace(/ /g, "\\ ");
+  return escapedPathForShell;
+};
 
 module.exports = function retrieveExternalDependencies() {
   if (process.platform === "win32") {
