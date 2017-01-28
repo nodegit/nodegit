@@ -183,6 +183,7 @@
           }
         },
         "git_branch_create_from_annotated": {
+          "isAsync": true,
           "args": {
             "ref_out": {
               "isReturn": true
@@ -193,6 +194,9 @@
             "force": {
               "isOptional": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_branch_next": {
