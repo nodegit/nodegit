@@ -15,6 +15,7 @@ env:
   matrix:
     - export NODE_VERSION="4" TARGET_ARCH="x64"
     - export NODE_VERSION="6.5" TARGET_ARCH="x64"
+    - export NODE_VERSION="7.4" TARGET_ARCH="x64"
 
 matrix:
   fast_finish: true
@@ -24,6 +25,9 @@ matrix:
       sudo: required
     - os: linux
       env: export NODE_VERSION="6.5" TARGET_ARCH="ia32"
+      sudo: required
+    - os: linux
+      env: export NODE_VERSION="7.4" TARGET_ARCH="ia32"
       sudo: required
 
 git:
