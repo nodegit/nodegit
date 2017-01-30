@@ -116,10 +116,7 @@ fse.remove(path.resolve(__dirname, repoDir))
 // the repository instead of just writing it.
 .then(function(index) {
   if (!index.hasConflicts()) {
-    return index.write()
-      .then(function() {
-        return index.writeTreeTo(repository);
-      });
+    return index.writeTreeTo(repository);
   }
 })
 
