@@ -111,20 +111,19 @@
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
         {% endeach %}
       ) {
-        {{ field.name|titleCase }}Baton* baton =
-          new {{ field.name|titleCase }}Baton({{ field.return.noResults }});
+        {{ field.name|titleCase }}Baton baton({{ field.return.noResults }});
 
         {% each field.args|argsInfo as arg %}
-          baton->{{ arg.name }} = {{ arg.name }};
+          baton.{{ arg.name }} = {{ arg.name }};
         {% endeach %}
 
-        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
+        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(&baton);
 
         if (instance->{{ field.name }}.WillBeThrottled()) {
-          return baton->defaultResult;
+          return baton.defaultResult;
         }
 
-        return baton->ExecuteAsync({{ field.name }}_async);
+        return baton.ExecuteAsync({{ field.name }}_async);
       }
 
       void {{ cppClassName }}::{{ field.name }}_async(void *untypedBaton) {

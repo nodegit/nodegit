@@ -6,14 +6,13 @@
     {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
   {% endeach %}
 ) {
-  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton =
-    new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton({{ cbFunction.return.noResults }});
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton baton({{ cbFunction.return.noResults }});
 
   {% each cbFunction.args|argsInfo as arg %}
-    baton->{{ arg.name }} = {{ arg.name }};
+    baton.{{ arg.name }} = {{ arg.name }};
   {% endeach %}
 
-  return baton->ExecuteAsync({{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  return baton.ExecuteAsync({{ cppFunctionName }}_{{ cbFunction.name }}_async);
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void *untypedBaton) {
