@@ -5,7 +5,10 @@
 #include <queue>
 
 class ThreadPool {
+public:
   typedef void (*Callback) (void *);
+
+private:
   struct Work {
     Callback workCallback;
     Callback completionCallback;
@@ -47,6 +50,7 @@ class ThreadPool {
   void RunCompletionCallbacks();
   static void RunReverseCallbacks(uv_async_t *handle);
   void RunReverseCallbacks();
+
 public:
   // Initializes thread pool and spins up the requested number of threads
   // The provided loop will be used for completion callbacks, whenever
