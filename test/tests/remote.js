@@ -1,6 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
+var _ = require("lodash");
 
 var garbageCollect = require("../utils/garbage_collect.js");
 
@@ -388,8 +389,15 @@ describe("Remote", function() {
       // catches linux / osx failure to use anonymous credentials
       // stops callback infinite loop
       .catch(function (reason) {
-        assert.equal(reason.message.replace(/\n|\r/g, ""),
-          "failed to set credentials: The parameter is incorrect.");
+        const messageWithoutNewlines = reason.message.replace(/\n|\r/g, "");
+        const validErrors = [
+          "Method push has thrown an error.",
+          "failed to set credentials: The parameter is incorrect."
+        ];
+        assert.ok(
+          _.includes(validErrors, messageWithoutNewlines),
+          "Unexpected error: " + reason.message
+        );
       });
   });
 
