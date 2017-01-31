@@ -1298,4 +1298,26 @@ describe("Merge", function() {
         assert.ok(repository.isDefaultState());
       });
   });
+
+  it("can retrieve error code on if common merge base not found", function() {
+    var repo;
+    return NodeGit.Repository.open(local("../repos/workdir"))
+    .then(function(r) {
+      repo = r;
+      return repo.getCommit("4bd806114ce26503c103c85dcc985021951bbc18");
+    })
+    .then(function(commit) {
+      return commit.getParents(commit.parentcount());
+    })
+    .then(function(parents) {
+      return NodeGit.Merge.base(repo, parents[0], parents[1])
+      .then(function() {
+        return Promise.reject(new Error(
+          "should not be able to retrieve common merge base"));
+      }, function(err) {
+        assert.equal("No merge base found", err.message);
+        assert.equal(NodeGit.Error.CODE.ENOTFOUND, err.errno);
+      });
+    });
+  });
 });
