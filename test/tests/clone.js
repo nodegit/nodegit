@@ -166,6 +166,37 @@ describe("Clone", function() {
     });
   });
 
+  it("can clone without waiting for callback results", function() {
+    var test = this;
+    var url = "https://github.com/nodegit/test.git";
+    var lastReceivedObjects = 0;
+    var cloneFinished = false;
+    var opts = {
+        fetchOpts: {
+          callbacks: {
+            transferProgress: {
+              waitForResult: false,
+              callback: function(progress) {
+                var receivedObjects = progress.receivedObjects();
+                assert.false(
+                  cloneFinished,
+                  "callback running after clone completion"
+                );
+                assert.gt(receivedObjects, lastReceivedObjects);
+                lastReceivedObjects = receivedObjects;
+              }
+            }
+          }
+        }
+    };
+
+    return Clone(url, clonePath, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+      cloneFinished = true;
+      test.repository = repo;
+    });
+  });
+
   it("can clone using nested function", function() {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
