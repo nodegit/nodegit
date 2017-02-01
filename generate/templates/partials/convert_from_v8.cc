@@ -1,6 +1,12 @@
 {%if not isPayload %}
 // start convert_from_v8 block
+  {%if cType|isPointer %}
+  {{ cType }} from_{{ name }} = NULL;
+  {%elsif cType|isDoublePointer %}
+  {{ cType }} from_{{ name }} = NULL;
+  {%else%}
   {{ cType }} from_{{ name }};
+  {%endif%}
   {%if isOptional | or isBoolean %}
 
     {%if cppClassName == 'GitStrarray'%}
