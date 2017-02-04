@@ -60,4 +60,11 @@ describe("Revert", function() {
       assert.ok(_.endsWith(fileName, entries[0].path));
     });
   });
+
+  it("RevertOptions is optional", function() {
+    return Revert.revert(test.repository, test.firstCommit, null)
+      .catch(function(error) {
+        throw error;
+      });
+  });
 });
