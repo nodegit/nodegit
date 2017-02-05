@@ -8,6 +8,7 @@ describe("Reset", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Reset = NodeGit.Reset;
+  var AnnotatedCommit = NodeGit.AnnotatedCommit;
 
   var reposPath = local("../repos/workdir");
   var currentCommitOid = "32789a79e71fbc9e04d3eff7425e1771eb595150";
@@ -104,25 +105,38 @@ describe("Reset", function() {
     });
   });
 
-  it("can perform a soft reset", function() {
-    var test = this;
-
-    return Reset.reset(test.repo, test.previousCommit, Reset.TYPE.SOFT)
+  function resetFrom(repo, commit, resetType, annotated) {
+    var promise = null;
+    if (annotated) {
+      promise = AnnotatedCommit.lookup(repo, commit.id())
+      .then(function(annotatedCommit) {
+        return Reset.fromAnnotated(repo, annotatedCommit, resetType);
+      });
+    } else {
+      promise = Reset.reset(repo, commit, resetType);
+    }
+    return promise
     .then(function() {
-      return test.repo.refreshIndex();
+      return repo.refreshIndex();
     })
     .then(function(index) {
       return index.writeTree();
     })
     .then(function(oid) {
-      return test.repo.getTree(oid);
+      return repo.getTree(oid);
     })
     .then(function(tree) {
       return tree.getEntry(filePath);
     })
     .then(function(entry) {
       return entry.getBlob();
-    })
+    });
+  }
+
+  it("can perform a soft reset", function() {
+    var test = this;
+
+    return resetFrom(test.repo, test.previousCommit, Reset.TYPE.SOFT, false)
     .then(function(blob) {
       var currentCommitContents = test.currentCommitBlob.toString();
       var previousCommitContents = test.previousCommitBlob.toString();
@@ -130,7 +144,26 @@ describe("Reset", function() {
 
       // With a soft reset all of the changes should be in the index
       // still so the index should still == what we had at the current
-      // commit and not the one we reset to
+      // commit and not the one nwe reset to
+      assert(resetContents == currentCommitContents);
+      assert(resetContents != previousCommitContents);
+
+      return Reset(test.repo, test.currentCommit, Reset.TYPE.HARD);
+    });
+  });
+
+  it("can perform an annotated soft reset", function() {
+    var test = this;
+
+    return resetFrom(test.repo, test.previousCommit, Reset.TYPE.SOFT, true)
+    .then(function(blob) {
+      var currentCommitContents = test.currentCommitBlob.toString();
+      var previousCommitContents = test.previousCommitBlob.toString();
+      var resetContents = blob.toString();
+
+      // With a soft reset all of the changes should be in the index
+      // still so the index should still == what we had at the current
+      // commit and not the one nwe reset to
       assert(resetContents == currentCommitContents);
       assert(resetContents != previousCommitContents);
 
@@ -141,22 +174,32 @@ describe("Reset", function() {
   it("can perform a mixed reset", function() {
     var test = this;
 
-    return Reset.reset(test.repo, test.previousCommit, Reset.TYPE.MIXED)
-    .then(function() {
-      return test.repo.refreshIndex();
+    return resetFrom(test.repo, test.previousCommit, Reset.TYPE.MIXED, false)
+    .then(function(blob) {
+      var currentCommitContents = test.currentCommitBlob.toString();
+      var previousCommitContents = test.previousCommitBlob.toString();
+      var resetContents = blob.toString();
+
+      // With a mixed reset all of the changes should removed from the index
+      // but still in the working directory. (i.e. unstaged)
+      assert(resetContents != currentCommitContents);
+      assert(resetContents == previousCommitContents);
+
+      return fse.readFile(path.join(test.repo.workdir(), filePath));
     })
-    .then(function(index) {
-      return index.writeTree();
-    })
-    .then(function(oid) {
-      return test.repo.getTree(oid);
-    })
-    .then(function(tree) {
-      return tree.getEntry(filePath);
-    })
-    .then(function(entry) {
-      return entry.getBlob();
-    })
+    .then(function(fileContents) {
+      var currentCommitContents = test.currentCommitBlob.toString();
+
+      assert(fileContents == currentCommitContents);
+
+      return Reset.reset(test.repo, test.currentCommit, Reset.TYPE.HARD);
+    });
+  });
+
+  it("can perform an annotated mixed reset", function() {
+    var test = this;
+
+    return resetFrom(test.repo, test.previousCommit, Reset.TYPE.MIXED, true)
     .then(function(blob) {
       var currentCommitContents = test.currentCommitBlob.toString();
       var previousCommitContents = test.previousCommitBlob.toString();
@@ -181,22 +224,32 @@ describe("Reset", function() {
   it("can perform a hard reset", function() {
     var test = this;
 
-    return Reset.reset(test.repo, test.previousCommit, Reset.TYPE.HARD)
-    .then(function() {
-      return test.repo.refreshIndex();
+    return resetFrom(test.repo, test.previousCommit, Reset.TYPE.HARD, false)
+    .then(function(blob) {
+      var currentCommitContents = test.currentCommitBlob.toString();
+      var previousCommitContents = test.previousCommitBlob.toString();
+      var resetContents = blob.toString();
+
+      // With a hard reset all of the changes should removed from the index
+      // and also removed from the working directory
+      assert(resetContents != currentCommitContents);
+      assert(resetContents == previousCommitContents);
+
+      return fse.readFile(path.join(test.repo.workdir(), filePath));
     })
-    .then(function(index) {
-      return index.writeTree();
-    })
-    .then(function(oid) {
-      return test.repo.getTree(oid);
-    })
-    .then(function(tree) {
-      return tree.getEntry(filePath);
-    })
-    .then(function(entry) {
-      return entry.getBlob();
-    })
+    .then(function(fileContents) {
+      var previousCommitContents = test.previousCommitBlob.toString();
+
+      assert(fileContents == previousCommitContents);
+
+      return Reset.reset(test.repo, test.currentCommit, Reset.TYPE.HARD);
+    });
+  });
+
+  it("can perform an annotated hard reset", function() {
+    var test = this;
+
+    return resetFrom(test.repo, test.previousCommit, Reset.TYPE.HARD, true)
     .then(function(blob) {
       var currentCommitContents = test.currentCommitBlob.toString();
       var previousCommitContents = test.previousCommitBlob.toString();

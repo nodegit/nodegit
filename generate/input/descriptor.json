@@ -2097,6 +2097,17 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_reset_from_annotated": {
+          "args": {
+            "checkout_opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
