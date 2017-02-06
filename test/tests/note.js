@@ -58,12 +58,14 @@ describe("Note", function() {
     var noteRef = "refs/notes/commits";
     var sig = Signature.create("John", "john@doe.com", Date.now(), 0);
 
-    return Note.remove(this.repository, noteRef, sig, sig, sha)
+    return Note.create(this.repository, noteRef, sig, sig, sha, "Testing!", 1)
+      .then((noteSha) => Note.remove(this.repository, noteRef, sig, sig, sha))
       .then(function() {
         return Note.read(test.repository, noteRef, sha).catch(function(ex) {
-          assert.equal(ex.message, "Note could not be found");
+          assert.equal(ex.message, "note could not be found");
           done();
         });
-      });
+      })
+      .catch(done);
   });
 });

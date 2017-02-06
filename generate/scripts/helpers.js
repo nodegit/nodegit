@@ -22,7 +22,8 @@ var cTypeMappings = {
   "size_t": "Number",
   "uint16_t": "Number",
   "uint32_t": "Number",
-  "uint64_t": "Number"
+  "uint64_t": "Number",
+  "double": "Number"
 }
 
 var collisionMappings = {
