@@ -1,5 +1,26 @@
 # Change Log
 
+## <a name="v0-16-0" href="#v0-16-0">v0.16.0</a> [(2016-09-15)](https://github.com/nodegit/nodegit/releases/tag/v0.16.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.15.1...v0.16.0)
+
+- Bump libssh2 to 1.7.0 [PR #1071](https://github.com/nodegit/nodegit/pull1071)
+- Js cleanup [PR #1074](https://github.com/nodegit/nodegit/pull1074)
+- Expose merge options and diff flags [PR #1076](https://github.com/nodegit/nodegit/pull1076)
+- Fix Tree#entryByName function and add test [PR #1079](https://github.com/nodegit/nodegit/pull1079)
+- Add isSubmodule() method [PR #1080](https://github.com/nodegit/nodegit/pull1080)
+- Fix two typos in the documentation for Commit#parents [PR #1081](https://github.com/nodegit/nodegit/pull1081)
+- Memory management: duplicate time [PR #1090](https://github.com/nodegit/nodegit/pull1090)
+- Preempt nan to fix deprecated calls to Get/SetHiddenValue [PR #1106](https://github.com/nodegit/nodegit/pull1106)
+- Try re-enabling node >6.2 [PR #1107](https://github.com/nodegit/nodegit/pull1107)
+- Bump openssl to 1.0.2h (same as node 6.3.1) [PR #1108](https://github.com/nodegit/nodegit/pull1108)
+- Don't run postbuild when we detect electron install [PR #1111](https://github.com/nodegit/nodegit/pull1111)
+- Added instructions for CircleCI users [PR #1113](https://github.com/nodegit/nodegit/pull1113)
+- Fix up electron and nw.js docs [PR #1114](https://github.com/nodegit/nodegit/pull1114)
+- Patch libssh2 to work with vs2015 [PR #1125](https://github.com/nodegit/nodegit/pull1125)
+- Fix CI [PR #1126](https://github.com/nodegit/nodegit/pull1126)
+
+
 ## <a name="v0-15-1" href="#v0-15-1">v0.15.1</a> [(2016-06-20)](https://github.com/nodegit/nodegit/releases/tag/v0.15.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.15.0...v0.15.1)
