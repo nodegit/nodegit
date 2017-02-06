@@ -11,6 +11,7 @@ ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop) {
 
   uv_async_init(loop, &reverseAsync, RunReverseCallbacks);
   reverseAsync.data = this;
+  uv_unref((uv_handle_t *)&reverseAsync);
   uv_mutex_init(&reverseMutex);
 
   workInProgressCount = 0;
