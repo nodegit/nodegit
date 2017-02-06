@@ -74,6 +74,8 @@
         "libgit2/src/config_file.h",
         "libgit2/src/config.c",
         "libgit2/src/config.h",
+        "libgit2/src/curl_stream.c",
+        "libgit2/src/curl_stream.h",
         "libgit2/src/crlf.c",
         "libgit2/src/date.c",
         "libgit2/src/delta.c",
@@ -288,6 +290,14 @@
                     ],
                 }
             }
+        }],
+        ["OS=='mac' or OS=='linux' or OS.endswith('bsd')", {
+          "cflags": [
+            "-DGIT_CURL"
+          ],
+          "defines": [
+            "GIT_CURL"
+          ]
         }],
         ["OS=='linux' or OS.endswith('bsd')" , {
           "cflags": [

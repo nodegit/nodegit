@@ -87,13 +87,22 @@
               }
             }
           }
-        ], [
+        ],
+        [
+          "OS=='linux' or OS=='mac'", {
+            "libraries": [
+              "-lcurl"
+            ]
+          }
+        ],
+        [
           "OS=='linux' and '<!(echo \"$CXX\")'=='clang++'", {
             "cflags": [
               "-Wno-c++11-extensions"
             ]
           }
-        ], [
+        ],
+        [
           "OS=='linux' and '<!(echo \"$CXX\")'!='clang++'", {
             "cflags": [
               "-std=c++0x"

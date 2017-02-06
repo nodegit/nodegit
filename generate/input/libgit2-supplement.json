@@ -482,6 +482,10 @@
               "type": "git_fetch_prune_t"
             },
             {
+              "name": "proxy_opts",
+              "type": "git_proxy_options"
+            },
+            {
               "name": "update_fetchhead",
               "type": "int"
             },
