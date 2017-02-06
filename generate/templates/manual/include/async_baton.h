@@ -5,15 +5,13 @@
 #include <nan.h>
 
 #include "lock_master.h"
-#include "functions/sleep_for_ms.h"
+#include "nodegit.h"
 
 // Base class for Batons used for callbacks (for example,
 // JS functions passed as callback parameters,
 // or field properties of configuration objects whose values are callbacks)
 struct AsyncBaton {
-  uv_async_t req;
-
-  bool done;
+  uv_sem_t semaphore;
 };
 
 template<typename ResultT>
@@ -23,22 +21,28 @@ struct AsyncBatonWithResult : public AsyncBaton {
 
   AsyncBatonWithResult(const ResultT &defaultResult)
     : defaultResult(defaultResult) {
+    uv_sem_init(&semaphore, 0);
   }
 
-  ResultT ExecuteAsync(uv_async_cb asyncCallback) {
-    result = 0;
-    req.data = this;
-    done = false;
+  ~AsyncBatonWithResult() {
+    uv_sem_destroy(&semaphore);
+  }
 
-    uv_async_init(uv_default_loop(), &req, asyncCallback);
+  void Done() {
+    // signal completion
+    uv_sem_post(&semaphore);
+  }
+
+  ResultT ExecuteAsync(ThreadPool::Callback asyncCallback) {
+    result = 0;
+
     {
       LockMaster::TemporaryUnlock temporaryUnlock;
 
-      uv_async_send(&req);
+      libgit2ThreadPool.ExecuteReverseCallback(asyncCallback, this);
 
-      while(!done) {
-        sleep_for_ms(1);
-      }
+      // wait for completion
+      uv_sem_wait(&semaphore);
     }
 
     return result;

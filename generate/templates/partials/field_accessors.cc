@@ -111,26 +111,25 @@
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
         {% endeach %}
       ) {
-        {{ field.name|titleCase }}Baton* baton =
-          new {{ field.name|titleCase }}Baton({{ field.return.noResults }});
+        {{ field.name|titleCase }}Baton baton({{ field.return.noResults }});
 
         {% each field.args|argsInfo as arg %}
-          baton->{{ arg.name }} = {{ arg.name }};
+          baton.{{ arg.name }} = {{ arg.name }};
         {% endeach %}
 
-        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
+        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(&baton);
 
         if (instance->{{ field.name }}.WillBeThrottled()) {
-          return baton->defaultResult;
+          return baton.defaultResult;
         }
 
-        return baton->ExecuteAsync((uv_async_cb) {{ field.name }}_async);
+        return baton.ExecuteAsync({{ field.name }}_async);
       }
 
-      void {{ cppClassName }}::{{ field.name }}_async(uv_async_t* req, int status) {
+      void {{ cppClassName }}::{{ field.name }}_async(void *untypedBaton) {
         Nan::HandleScope scope;
 
-        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(req->data);
+        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(untypedBaton);
         {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
 
         if (instance->{{ field.name }}.GetCallback()->IsEmpty()) {
@@ -138,7 +137,7 @@
             baton->result = baton->defaultResult; // no results acquired
           {% endif %}
 
-          baton->done = true;
+          baton->Done();
           return;
         }
 
@@ -179,8 +178,6 @@
         Nan::TryCatch tryCatch;
         Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
 
-        uv_close((uv_handle_t*) &baton->req, NULL);
-
         if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppClassName }}::{{ field.name }}_promiseCompleted)) {
           return;
         }
@@ -209,7 +206,7 @@
             baton->result = baton->defaultResult;
           }
         {% endeach %}
-        baton->done = true;
+        baton->Done();
       }
 
       void {{ cppClassName }}::{{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result) {
@@ -253,7 +250,7 @@
 
           baton->result = {{ field.return.error }};
         }
-        baton->done = true;
+        baton->Done();
       }
     {% endif %}
   {% endif %}
