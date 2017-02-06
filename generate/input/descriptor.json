@@ -2175,6 +2175,11 @@
           }
         },
         "git_stash_save": {
+          "args": {
+            "message": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
