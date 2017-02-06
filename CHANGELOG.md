@@ -33,6 +33,8 @@ Summary of changes that were brought in:
 
 https://github.com/nodegit/nodegit/pull/1187#issuecomment-277760323
 
+### Changes to NodeGit outside of libgit2 bump
+
 - Define GIT_SSH_MEMORY_CREDENTIALS for libgit2 [PR #949](https://github.com/nodegit/nodegit/pull/949)
 - Add "Path" to ssh variable names in tests for clarity [PR #1135](https://github.com/nodegit/nodegit/pull/1135)
 - Fix revwalk memory leaks [PR #1137](https://github.com/nodegit/nodegit/pull/1137)
