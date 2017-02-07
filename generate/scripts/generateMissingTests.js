@@ -12,7 +12,7 @@ module.exports = function generateMissingTests() {
       var testFilePath = path.join(testFilesPath, idef.filename + ".js");
       var result = {};
 
-      var file = utils.readFile(testFilePath);
+      var file = utils.readLocalFile(testFilePath);
       if (file) {
         var fieldsResult = [];
         var functionsResult = [];
@@ -58,7 +58,7 @@ module.exports = function generateMissingTests() {
 
   Promise.all(promises).then(
     function() {
-      utils.writeFile("output/missing-tests.json", output);
+      utils.writeLocalFile("/output/missing-tests.json", output);
     },
     function(fail) {
       console.error(fail);
