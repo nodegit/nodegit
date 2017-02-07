@@ -38,9 +38,9 @@ using namespace v8;
 class ConvenientPatch : public Nan::ObjectWrap {
   public:
     static Nan::Persistent<Function> constructor_template;
-    static void InitializeComponent (Local<v8::Object> target);
+    static void InitializeComponent (v8::Local<v8::Object> target);
 
-    static Local<v8::Value> New(void *raw);
+    static v8::Local<v8::Value> New(void *raw);
 
     ConvenientLineStats GetLineStats();
     git_delta_t GetStatus();

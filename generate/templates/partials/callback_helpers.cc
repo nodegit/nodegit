@@ -30,7 +30,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
     {% endif %}
   {% endeach %}
 
-  Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
+  v8::Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
     {% each cbFunction.args|argsInfo as arg %}
       {% if arg | isPayload %}
         {%-- payload is always the last arg --%}
@@ -54,7 +54,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
   };
 
   Nan::TryCatch tryCatch;
-  Local<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
+  v8::Local<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
 
   if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted)) {
     return;
@@ -124,7 +124,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseComp
     {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each cbFunction.args|argsInfo as arg %}
       {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
     {% endeach %});
-    Local<v8::Object> parent = instance->handle();
+    v8::Local<v8::Object> parent = instance->handle();
     SetPrivate(parent, Nan::New("NodeGitPromiseError").ToLocalChecked(), result);
 
     baton->result = {{ cbFunction.return.error }};

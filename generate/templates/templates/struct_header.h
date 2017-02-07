@@ -29,8 +29,8 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
     // grant full access to base class
     friend class NodeGitWrapper<{{ cppClassName }}Traits>;
   public:
-    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = Local<v8::Object>());
-    static void InitializeComponent (Local<v8::Object> target);
+    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+    static void InitializeComponent (v8::Local<v8::Object> target);
 
     {% each fields as field %}
       {% if not field.ignore %}

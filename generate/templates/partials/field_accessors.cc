@@ -39,7 +39,7 @@
         }
 
       {% elsif field.isLibgitType %}
-        Local<Object> {{ field.name }}(value->ToObject());
+        v8::Local<Object> {{ field.name }}(value->ToObject());
 
         wrapper->{{ field.name }}.Reset({{ field.name }});
 
@@ -52,16 +52,16 @@
         if (value->IsFunction()) {
           callback = new Nan::Callback(value.As<Function>());
         } else if (value->IsObject()) {
-          Local<Object> object = value.As<Object>();
-          Local<String> callbackKey;
+          v8::Local<Object> object = value.As<Object>();
+          v8::Local<String> callbackKey;
           Nan::MaybeLocal<Value> maybeObjectCallback = Nan::Get(object, Nan::New("callback").ToLocalChecked());
           if (!maybeObjectCallback.IsEmpty()) {
-            Local<Value> objectCallback = maybeObjectCallback.ToLocalChecked();
+            v8::Local<Value> objectCallback = maybeObjectCallback.ToLocalChecked();
             if (objectCallback->IsFunction()) {
               callback = new Nan::Callback(objectCallback.As<Function>());
               Nan::MaybeLocal<Value> maybeObjectThrottle = Nan::Get(object, Nan::New("throttle").ToLocalChecked());
               if(!maybeObjectThrottle.IsEmpty()) {
-                Local<Value> objectThrottle = maybeObjectThrottle.ToLocalChecked();
+                v8::Local<Value> objectThrottle = maybeObjectThrottle.ToLocalChecked();
                 if (objectThrottle->IsNumber()) {
                   throttle = (int)objectThrottle.As<Number>()->Value();
                 }
@@ -153,7 +153,7 @@
           {% endif %}
         {% endeach %}
 
-        Local<Value> argv[{{ field.args|jsArgsCount }}] = {
+        v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
           {% each field.args|argsInfo as arg %}
             {% if arg.name == "payload" %}
               {%-- payload is always the last arg --%}
@@ -176,7 +176,7 @@
         };
 
         Nan::TryCatch tryCatch;
-        Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
+        v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
 
         if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppClassName }}::{{ field.name }}_promiseCompleted)) {
           return;
@@ -245,7 +245,7 @@
           {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each field.args|argsInfo as arg %}
             {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
           {% endeach %});
-          Local<v8::Object> parent = instance->handle();
+          v8::Local<v8::Object> parent = instance->handle();
           SetPrivate(parent, Nan::New("NodeGitPromiseError").ToLocalChecked(), result);
 
           baton->result = {{ field.return.error }};

@@ -68,7 +68,7 @@ void {{ cppClassName }}::ConstructFields() {
     {% if not field.ignore %}
       {% if not field.isEnum %}
         {% if field.hasConstructor |or field.isLibgitType %}
-          Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(
+          v8::Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(
             {%if not field.cType|isPointer %}&{%endif%}this->raw->{{ field.name }},
             false
           )->ToObject();
@@ -82,7 +82,7 @@ void {{ cppClassName }}::ConstructFields() {
           this->raw->{{ fields|payloadFor field.name }} = (void *)this;
         {% elsif field.payloadFor %}
 
-          Local<Value> {{ field.name }} = Nan::Undefined();
+          v8::Local<Value> {{ field.name }} = Nan::Undefined();
           this->{{ field.name }}.Reset({{ field.name }});
         {% endif %}
       {% endif %}
@@ -90,10 +90,10 @@ void {{ cppClassName }}::ConstructFields() {
   {% endeach %}
 }
 
-void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
+void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
   Nan::HandleScope scope;
 
-  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
+  v8::Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
@@ -108,7 +108,7 @@ void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
 
   InitializeTemplate(tpl);
 
-  Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+  v8::Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
   constructor_template.Reset(_constructor_template);
   Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
 }
