@@ -40,42 +40,52 @@ NAN_METHOD(GitRemote::ReferenceList)
 void GitRemote::ReferenceListWorker::Execute()
 {
   giterr_clear();
-  baton->error_code = git_remote_connect(
-    baton->remote,
-    GIT_DIRECTION_FETCH,
-    baton->callbacks,
-    baton->proxy_opts,
-    baton->custom_headers
-  );
 
-  if (baton->error_code != GIT_OK) {
-    baton->error = git_error_dup(giterr_last());
-    delete baton->out;
-    baton->out = NULL;
-    return;
-  }
+  {
+    LockMaster lockMaster(
+      /*asyncAction: */true,
+      baton->remote,
+      baton->callbacks,
+      baton->proxy_opts,
+      baton->custom_headers
+    );
+    baton->error_code = git_remote_connect(
+      baton->remote,
+      GIT_DIRECTION_FETCH,
+      baton->callbacks,
+      baton->proxy_opts,
+      baton->custom_headers
+    );
 
-  const git_remote_head **remote_heads;
-  size_t num_remote_heads;
-  baton->error_code = git_remote_ls(
-    &remote_heads,
-    &num_remote_heads,
-    baton->remote
-  );
+    if (baton->error_code != GIT_OK) {
+      baton->error = git_error_dup(giterr_last());
+      delete baton->out;
+      baton->out = NULL;
+      return;
+    }
 
-  git_remote_disconnect(baton->remote);
-  if (baton->error_code != GIT_OK) {
-    baton->error = git_error_dup(giterr_last());
-    delete baton->out;
-    baton->out = NULL;
-    return;
-  }
+    const git_remote_head **remote_heads;
+    size_t num_remote_heads;
+    baton->error_code = git_remote_ls(
+      &remote_heads,
+      &num_remote_heads,
+      baton->remote
+    );
 
-  baton->out->reserve(num_remote_heads);
+    git_remote_disconnect(baton->remote);
+    if (baton->error_code != GIT_OK) {
+      baton->error = git_error_dup(giterr_last());
+      delete baton->out;
+      baton->out = NULL;
+      return;
+    }
 
-  for (size_t head_index = 0; head_index < num_remote_heads; ++head_index) {
-    git_remote_head *remote_head = git_remote_head_dup(remote_heads[head_index]);
-    baton->out->push_back(remote_head);
+    baton->out->reserve(num_remote_heads);
+
+    for (size_t head_index = 0; head_index < num_remote_heads; ++head_index) {
+      git_remote_head *remote_head = git_remote_head_dup(remote_heads[head_index]);
+      baton->out->push_back(remote_head);
+    }
   }
 }
 
@@ -88,7 +98,6 @@ void GitRemote::ReferenceListWorker::HandleOKCallback()
     for (unsigned int i = 0; i < size; i++) {
       Nan::Set(result, Nan::New<Number>(i), GitRemoteHead::New(baton->out->at(i), true));
     }
-
 
     delete baton->out;
 
