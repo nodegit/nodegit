@@ -24,7 +24,7 @@ NAN_METHOD(GitRemote::ReferenceList)
   baton->proxy_opts = Nan::ObjectWrap::Unwrap<GitProxyOptions>(info[1]->ToObject())->GetValue();
   baton->custom_headers = StrArrayConverter::Convert(info[2]);
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
   ReferenceListWorker *worker = new ReferenceListWorker(baton, callback);
   worker->SaveToPersistent("remote", info.This());
   if (!info[1]->IsUndefined() && !info[0]->IsNull())
@@ -63,6 +63,7 @@ void GitRemote::ReferenceListWorker::Execute()
     baton->remote
   );
 
+  git_remote_disconnect(baton->remote);
   if (baton->error_code != GIT_OK) {
     baton->error = git_error_dup(giterr_last());
     delete baton->out;
@@ -72,12 +73,10 @@ void GitRemote::ReferenceListWorker::Execute()
 
   baton->out->reserve(num_remote_heads);
 
-  for (unsigned int head_index = 0; head_index < num_remote_heads; ++head_index) {
+  for (size_t head_index = 0; head_index < num_remote_heads; ++head_index) {
     git_remote_head *remote_head = git_remote_head_dup(remote_heads[head_index]);
     baton->out->push_back(remote_head);
   }
-
-  git_remote_disconnect(baton->remote);
 }
 
 void GitRemote::ReferenceListWorker::HandleOKCallback()
@@ -89,6 +88,7 @@ void GitRemote::ReferenceListWorker::HandleOKCallback()
     for (unsigned int i = 0; i < size; i++) {
       Nan::Set(result, Nan::New<Number>(i), GitRemoteHead::New(baton->out->at(i), true));
     }
+
 
     delete baton->out;
 
