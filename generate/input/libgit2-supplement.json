@@ -126,6 +126,40 @@
         },
         "group": "rebase"
       },
+      "git_remote_reference_list": {
+        "args": [
+          {
+            "name": "out",
+            "type": "std::vector<git_remote_head*> *"
+          },
+          {
+            "name": "callbacks",
+            "type": "git_remote_callbacks *"
+          },
+          {
+            "name": "proxy_opts",
+            "type": "git_proxy_options *"
+          },
+          {
+            "name": "custom_headers",
+            "type": "git_strarray *"
+          },
+          {
+            "name": "remote",
+            "type": "git_remote *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/remote/ls.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "remote",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_reset": {
         "type": "function",
         "file": "reset.h",
@@ -275,6 +309,12 @@
           "git_reflog_entry_id_new",
           "git_reflog_entry_id_old",
           "git_reflog_entry_message"
+        ]
+      ],
+      [
+        "remote",
+        [
+          "git_remote_reference_list"
         ]
       ],
       [
@@ -610,6 +650,39 @@
           "used": {
             "needs": [
               "git_remote_init_callbacks"
+            ]
+          }
+        }
+      ],
+      [
+        "git_remote_head",
+        {
+          "types": "struct",
+          "fields": [
+            {
+              "type": "int",
+              "name": "local"
+            },
+            {
+              "type": "git_oid",
+              "name": "oid"
+            },
+            {
+              "type": "git_oid",
+              "name": "loid"
+            },
+            {
+              "type": "char *",
+              "name": "name"
+            },
+            {
+              "type": "char *",
+              "name": "symref_target"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_remote_reference_list"
             ]
           }
         }
