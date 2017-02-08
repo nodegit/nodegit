@@ -1972,6 +1972,13 @@
         }
       }
     },
+    "remote_head": {
+      "dependencies": [
+        "../include/functions/free.h"
+      ],
+      "freeFunctionName": "git_remote_head_free",
+      "selfFreeing": true
+    },
     "repository": {
       "dependencies": [
         "git2/sys/repository.h"

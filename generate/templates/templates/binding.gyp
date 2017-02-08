@@ -18,6 +18,7 @@
         "src/promise_completion.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
+        "src/functions/free.cc",
         "src/convenient_patch.cc",
         "src/convenient_hunk.cc",
         "src/str_array_converter.cc",
