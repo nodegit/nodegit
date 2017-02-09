@@ -1,16 +1,6 @@
 NAN_METHOD(GitRemote::ReferenceList)
 {
-  if (info.Length() == 0 || !info[0]->IsObject()) {
-    return Nan::ThrowError("RemoteCallbacks callbacks is required.");
-  }
-  if (info.Length() == 1 || !info[1]->IsObject()) {
-    return Nan::ThrowError("ProxyOptions proxy_opts is required.");
-  }
-
-  if (info.Length() == 2 || !(Nan::To<bool>(info[2]).FromJust())) {
-    return Nan::ThrowError("Array, String Object, or string custom_headers is required.");
-  }
-  if (info.Length() == 3 || !info[3]->IsFunction()) {
+  if (info.Length() == 0 || !info[0]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -20,19 +10,10 @@ NAN_METHOD(GitRemote::ReferenceList)
   baton->error = NULL;
   baton->out = new std::vector<git_remote_head*>;
   baton->remote = Nan::ObjectWrap::Unwrap<GitRemote>(info.This())->GetValue();
-  baton->callbacks = Nan::ObjectWrap::Unwrap<GitRemoteCallbacks>(info[0]->ToObject())->GetValue();
-  baton->proxy_opts = Nan::ObjectWrap::Unwrap<GitProxyOptions>(info[1]->ToObject())->GetValue();
-  baton->custom_headers = StrArrayConverter::Convert(info[2]);
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   ReferenceListWorker *worker = new ReferenceListWorker(baton, callback);
   worker->SaveToPersistent("remote", info.This());
-  if (!info[1]->IsUndefined() && !info[0]->IsNull())
-    worker->SaveToPersistent("callbacks", info[0]->ToObject());
-  if (!info[2]->IsUndefined() && !info[1]->IsNull())
-    worker->SaveToPersistent("proxy_opts", info[1]->ToObject());
-  if (!info[3]->IsUndefined() && !info[2]->IsNull())
-    worker->SaveToPersistent("custom_headers", info[2]->ToObject());
   Nan::AsyncQueueWorker(worker);
   return;
 }
@@ -44,25 +25,8 @@ void GitRemote::ReferenceListWorker::Execute()
   {
     LockMaster lockMaster(
       /*asyncAction: */true,
-      baton->remote,
-      baton->callbacks,
-      baton->proxy_opts,
-      baton->custom_headers
+      baton->remote
     );
-    baton->error_code = git_remote_connect(
-      baton->remote,
-      GIT_DIRECTION_FETCH,
-      baton->callbacks,
-      baton->proxy_opts,
-      baton->custom_headers
-    );
-
-    if (baton->error_code != GIT_OK) {
-      baton->error = git_error_dup(giterr_last());
-      delete baton->out;
-      baton->out = NULL;
-      return;
-    }
 
     const git_remote_head **remote_heads;
     size_t num_remote_heads;
@@ -72,7 +36,6 @@ void GitRemote::ReferenceListWorker::Execute()
       baton->remote
     );
 
-    git_remote_disconnect(baton->remote);
     if (baton->error_code != GIT_OK) {
       baton->error = git_error_dup(giterr_last());
       delete baton->out;

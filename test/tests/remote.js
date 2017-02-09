@@ -501,9 +501,15 @@ describe("Remote", function() {
 
     return this.repository.getRemote("origin")
       .then(function(remote) {
-        return remote.referenceList();
+        return Promise.all([
+          remote,
+          remote.connect(NodeGit.Enums.DIRECTION.FETCH)
+        ]);
       })
-      .then(function(remoteHeads) {
+      .then(function([remote]) {
+        return Promise.all([remote, remote.referenceList()]);
+      })
+      .then(function([remote, remoteHeads]) {
         var remoteHeadsBySha = fp.flow([
           fp.map(function(remoteHead) {
             return {
@@ -526,6 +532,21 @@ describe("Remote", function() {
             ), "Expectations for head " + remoteHeadName + " were not met.");
           })
         ])(expectedRemoteHeads);
+
+        return remote.disconnect();
+      });
+  });
+
+  it("will error when retrieving reference list if not connected", function() {
+    return this.repository.getRemote("origin")
+      .then(function(remote) {
+        return remote.referenceList();
+      })
+      .then(function() {
+        assert.fail("Unconnected remote should have no reference list.");
+      })
+      .catch(function(notConnectedError) {
+        assert(notConnectedError.message === "this remote has never connected");
       });
   });
 });

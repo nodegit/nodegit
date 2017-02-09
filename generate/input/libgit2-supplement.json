@@ -133,18 +133,6 @@
             "type": "std::vector<git_remote_head*> *"
           },
           {
-            "name": "callbacks",
-            "type": "git_remote_callbacks *"
-          },
-          {
-            "name": "proxy_opts",
-            "type": "git_proxy_options *"
-          },
-          {
-            "name": "custom_headers",
-            "type": "git_strarray *"
-          },
-          {
             "name": "remote",
             "type": "git_remote *"
           }
