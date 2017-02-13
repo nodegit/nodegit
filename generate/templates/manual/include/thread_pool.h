@@ -19,12 +19,13 @@ private:
     }
   };
 
-  struct ReverseCall {
-    Callback reverseCallback;
+  struct LoopCallback {
+    Callback callback;
     void *data;
+    bool isWork;
 
-    ReverseCall(Callback reverseCallback, void *data)
-      : reverseCallback(reverseCallback), data(data) {
+    LoopCallback(Callback callback, void *data, bool isWork)
+      : callback(callback), data(data), isWork(isWork) {
     }
   };
 
@@ -34,22 +35,17 @@ private:
   uv_sem_t workSemaphore;
   int workInProgressCount;
 
-  // completion callbacks to be performed on the loop
-  std::queue<Work> completionQueue;
-  uv_mutex_t completionMutex;
-  uv_async_t completionAsync;
-
-  // async callback made from the threadpool, executed in the loop
-  std::queue<ReverseCall> reverseQueue;
-  uv_mutex_t reverseMutex;
-  uv_async_t reverseAsync;
+  // completion and async callbacks to be performed on the loop
+  std::queue<LoopCallback> loopQueue;
+  uv_mutex_t loopMutex;
+  uv_async_t loopAsync;
 
   static void RunEventQueue(void *threadPool);
   void RunEventQueue();
-  static void RunCompletionCallbacks(uv_async_t* handle);
-  void RunCompletionCallbacks();
-  static void RunReverseCallbacks(uv_async_t *handle);
-  void RunReverseCallbacks();
+  static void RunLoopCallbacks(uv_async_t* handle);
+  void RunLoopCallbacks();
+
+  void QueueLoopCallback(Callback callback, void *data, bool isWork);
 
 public:
   // Initializes thread pool and spins up the requested number of threads
@@ -61,7 +57,6 @@ public:
   // QueueWork should be called on the loop provided in the constructor.
   void QueueWork(Callback workCallback, Callback completionCallback, void *data);
   // Queues a callback on the loop provided in the constructor
-  // these block the calling thread's execution until the callback completes
   void ExecuteReverseCallback(Callback reverseCallback, void *data);
 };
 
