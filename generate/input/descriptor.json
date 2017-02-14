@@ -2541,6 +2541,9 @@
             }
           }
         },
+        "git_treebuilder_write_with_buffer": {
+          "ignore": true
+        },
         "git_treebuilder_new": {
           "args": {
             "source": {
