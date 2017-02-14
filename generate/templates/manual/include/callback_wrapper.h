@@ -47,7 +47,7 @@ public:
     }
     // throttle if needed
     uint64_t now = uv_hrtime();
-    if(lastCallTime > 0 && now < lastCallTime + throttle * 1000000) {
+    if(lastCallTime > 0 && now < lastCallTime + throttle * (uint64_t)1000000) {
       // throttled
       return true;
     } else {
