@@ -172,7 +172,7 @@
         "git_libgit2_opts"
       ],
       "meta": {},
-      "lines": 284
+      "lines": 312
     },
     {
       "file": "config.h",
@@ -241,7 +241,7 @@
         "git_describe_result_free"
       ],
       "meta": {},
-      "lines": 158
+      "lines": 161
     },
     {
       "file": "diff.h",
@@ -423,7 +423,7 @@
         "git_merge"
       ],
       "meta": {},
-      "lines": 578
+      "lines": 579
     },
     {
       "file": "message.h",
@@ -556,7 +556,7 @@
         "git_oid_shorten_free"
       ],
       "meta": {},
-      "lines": 265
+      "lines": 264
     },
     {
       "file": "oidarray.h",
@@ -754,7 +754,6 @@
     {
       "file": "remote.h",
       "functions": [
-        "git_remote_rename_problem_cb",
         "git_remote_create",
         "git_remote_create_with_fetchspec",
         "git_remote_create_anonymous",
@@ -993,7 +992,7 @@
         "git_submodule_location"
       ],
       "meta": {},
-      "lines": 641
+      "lines": 632
     },
     {
       "file": "sys/commit.h",
@@ -1123,10 +1122,12 @@
         "git_repository_set_odb",
         "git_repository_set_refdb",
         "git_repository_set_index",
-        "git_repository_set_bare"
+        "git_repository_set_bare",
+        "git_repository_submodule_cache_all",
+        "git_repository_submodule_cache_clear"
       ],
       "meta": {},
-      "lines": 136
+      "lines": 165
     },
     {
       "file": "sys/stream.h",
@@ -1250,13 +1251,14 @@
         "git_treebuilder_filter_cb",
         "git_treebuilder_filter",
         "git_treebuilder_write",
+        "git_treebuilder_write_with_buffer",
         "git_treewalk_cb",
         "git_tree_walk",
         "git_tree_dup",
         "git_tree_create_updated"
       ],
       "meta": {},
-      "lines": 465
+      "lines": 478
     },
     {
       "file": "types.h",
@@ -1974,6 +1976,9 @@
       "examples": {
         "blame.c": [
           "ex/HEAD/blame.html#git_blob_free-5"
+        ],
+        "general.c": [
+          "ex/HEAD/general.html#git_blob_free-2"
         ]
       }
     },
@@ -2050,7 +2055,7 @@
           "ex/HEAD/cat-file.html#git_blob_rawcontent-1"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_blob_rawcontent-2"
+          "ex/HEAD/general.html#git_blob_rawcontent-3"
         ]
       }
     },
@@ -2083,8 +2088,8 @@
           "ex/HEAD/cat-file.html#git_blob_rawsize-2"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_blob_rawsize-3",
-          "ex/HEAD/general.html#git_blob_rawsize-4"
+          "ex/HEAD/general.html#git_blob_rawsize-4",
+          "ex/HEAD/general.html#git_blob_rawsize-5"
         ]
       }
     },
@@ -3165,9 +3170,9 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_commit_lookup-5",
           "ex/HEAD/general.html#git_commit_lookup-6",
-          "ex/HEAD/general.html#git_commit_lookup-7"
+          "ex/HEAD/general.html#git_commit_lookup-7",
+          "ex/HEAD/general.html#git_commit_lookup-8"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_lookup-1"
@@ -3234,10 +3239,11 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_commit_free-8",
           "ex/HEAD/general.html#git_commit_free-9",
           "ex/HEAD/general.html#git_commit_free-10",
-          "ex/HEAD/general.html#git_commit_free-11"
+          "ex/HEAD/general.html#git_commit_free-11",
+          "ex/HEAD/general.html#git_commit_free-12",
+          "ex/HEAD/general.html#git_commit_free-13"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_free-2",
@@ -3270,7 +3276,7 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_commit_id-12"
+          "ex/HEAD/general.html#git_commit_id-14"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_id-6"
@@ -3354,9 +3360,9 @@
           "ex/HEAD/cat-file.html#git_commit_message-4"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_commit_message-13",
-          "ex/HEAD/general.html#git_commit_message-14",
-          "ex/HEAD/general.html#git_commit_message-15"
+          "ex/HEAD/general.html#git_commit_message-15",
+          "ex/HEAD/general.html#git_commit_message-16",
+          "ex/HEAD/general.html#git_commit_message-17"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_message-9",
@@ -3456,8 +3462,8 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_commit_time-16",
-          "ex/HEAD/general.html#git_commit_time-17"
+          "ex/HEAD/general.html#git_commit_time-18",
+          "ex/HEAD/general.html#git_commit_time-19"
         ]
       }
     },
@@ -3509,7 +3515,7 @@
           "ex/HEAD/cat-file.html#git_commit_committer-5"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_commit_committer-18"
+          "ex/HEAD/general.html#git_commit_committer-20"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_committer-11"
@@ -3542,8 +3548,8 @@
           "ex/HEAD/cat-file.html#git_commit_author-6"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_commit_author-19",
-          "ex/HEAD/general.html#git_commit_author-20"
+          "ex/HEAD/general.html#git_commit_author-21",
+          "ex/HEAD/general.html#git_commit_author-22"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_author-12",
@@ -3662,7 +3668,7 @@
           "ex/HEAD/cat-file.html#git_commit_parentcount-8"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_commit_parentcount-21"
+          "ex/HEAD/general.html#git_commit_parentcount-23"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_parentcount-19",
@@ -3703,7 +3709,7 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_commit_parent-22"
+          "ex/HEAD/general.html#git_commit_parent-24"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_commit_parent-21",
@@ -3982,7 +3988,7 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_commit_create_v-23"
+          "ex/HEAD/general.html#git_commit_create_v-25"
         ],
         "init.c": [
           "ex/HEAD/init.html#git_commit_create_v-1"
@@ -4212,8 +4218,8 @@
     "git_libgit2_features": {
       "type": "function",
       "file": "common.h",
-      "line": 136,
-      "lineto": 136,
+      "line": 154,
+      "lineto": 154,
       "args": [],
       "argline": "",
       "sig": "",
@@ -4228,8 +4234,8 @@
     "git_libgit2_opts": {
       "type": "function",
       "file": "common.h",
-      "line": 284,
-      "lineto": 284,
+      "line": 312,
+      "lineto": 312,
       "args": [
         {
           "name": "option",
@@ -4244,7 +4250,7 @@
         "comment": " 0 on success, \n<\n0 on failure"
       },
       "description": "<p>Set or query a library global option</p>\n",
-      "comments": "<p>Available options:</p>\n\n<pre><code>* opts(GIT_OPT_GET_MWINDOW_SIZE, size_t *):\n\n    &gt; Get the maximum mmap window size\n\n* opts(GIT_OPT_SET_MWINDOW_SIZE, size_t):\n\n    &gt; Set the maximum mmap window size\n\n* opts(GIT_OPT_GET_MWINDOW_MAPPED_LIMIT, size_t *):\n\n    &gt; Get the maximum memory that will be mapped in total by the library\n\n* opts(GIT_OPT_SET_MWINDOW_MAPPED_LIMIT, size_t):\n\n    &gt;Set the maximum amount of memory that can be mapped at any time        by the library\n\n* opts(GIT_OPT_GET_SEARCH_PATH, int level, git_buf *buf)\n\n    &gt; Get the search path for a given level of config data.  &quot;level&quot; must       &gt; be one of `GIT_CONFIG_LEVEL_SYSTEM`, `GIT_CONFIG_LEVEL_GLOBAL`,       &gt; `GIT_CONFIG_LEVEL_XDG`, or `GIT_CONFIG_LEVEL_PROGRAMDATA`.        &gt; The search path is written to the `out` buffer.\n\n* opts(GIT_OPT_SET_SEARCH_PATH, int level, const char *path)\n\n    &gt; Set the search path for a level of config data.  The search path      &gt; applied to shared attributes and ignore files, too.       &gt;       &gt; - `path` lists directories delimited by GIT_PATH_LIST_SEPARATOR.      &gt;   Pass NULL to reset to the default (generally based on environment       &gt;   variables).  Use magic path `$PATH` to include the old value        &gt;   of the path (if you want to prepend or append, for instance).       &gt;       &gt; - `level` must be `GIT_CONFIG_LEVEL_SYSTEM`,      &gt;   `GIT_CONFIG_LEVEL_GLOBAL`, `GIT_CONFIG_LEVEL_XDG`, or       &gt;   `GIT_CONFIG_LEVEL_PROGRAMDATA`.\n\n* opts(GIT_OPT_SET_CACHE_OBJECT_LIMIT, git_otype type, size_t size)\n\n    &gt; Set the maximum data size for the given type of object to be      &gt; considered eligible for caching in memory.  Setting to value to       &gt; zero means that that type of object will not be cached.       &gt; Defaults to 0 for GIT_OBJ_BLOB (i.e. won&#39;t cache blobs) and 4k        &gt; for GIT_OBJ_COMMIT, GIT_OBJ_TREE, and GIT_OBJ_TAG.\n\n* opts(GIT_OPT_SET_CACHE_MAX_SIZE, ssize_t max_storage_bytes)\n\n    &gt; Set the maximum total data size that will be cached in memory     &gt; across all repositories before libgit2 starts evicting objects        &gt; from the cache.  This is a soft limit, in that the library might      &gt; briefly exceed it, but will start aggressively evicting objects       &gt; from cache when that happens.  The default cache size is 256MB.\n\n* opts(GIT_OPT_ENABLE_CACHING, int enabled)\n\n    &gt; Enable or disable caching completely.     &gt;       &gt; Because caches are repository-specific, disabling the cache       &gt; cannot immediately clear all cached objects, but each cache will      &gt; be cleared on the next attempt to update anything in it.\n\n* opts(GIT_OPT_GET_CACHED_MEMORY, ssize_t *current, ssize_t *allowed)\n\n    &gt; Get the current bytes in cache and the maximum that would be      &gt; allowed in the cache.\n\n* opts(GIT_OPT_GET_TEMPLATE_PATH, git_buf *out)\n\n    &gt; Get the default template path.        &gt; The path is written to the `out` buffer.\n\n* opts(GIT_OPT_SET_TEMPLATE_PATH, const char *path)\n\n    &gt; Set the default template path.        &gt;       &gt; - `path` directory of template.\n\n* opts(GIT_OPT_SET_SSL_CERT_LOCATIONS, const char *file, const char *path)\n\n    &gt; Set the SSL certificate-authority locations.      &gt;       &gt; - `file` is the location of a file containing several     &gt;   certificates concatenated together.     &gt; - `path` is the location of a directory holding several       &gt;   certificates, one per file.     &gt;       &gt; Either parameter may be `NULL`, but not both.\n\n* opts(GIT_OPT_SET_USER_AGENT, const char *user_agent)\n\n    &gt; Set the value of the User-Agent header.  This value will be       &gt; appended to &quot;git/1.0&quot;, for compatibility with other git clients.      &gt;       &gt; - `user_agent` is the value that will be delivered as the     &gt;   User-Agent header on HTTP requests.\n\n* opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, int enabled)\n\n    &gt; Enable strict input validation when creating new objects      &gt; to ensure that all inputs to the new objects are valid.  For      &gt; example, when this is enabled, the parent(s) and tree inputs      &gt; will be validated when creating a new commit.  This defaults      &gt; to enabled.\n\n* opts(GIT_OPT_SET_SSL_CIPHERS, const char *ciphers)\n\n    &gt; Set the SSL ciphers use for HTTPS connections.        &gt;       &gt; - `ciphers` is the list of ciphers that are eanbled.\n</code></pre>\n",
+      "comments": "<p>Available options:</p>\n\n<pre><code>* opts(GIT_OPT_GET_MWINDOW_SIZE, size_t *):\n\n    &gt; Get the maximum mmap window size\n\n* opts(GIT_OPT_SET_MWINDOW_SIZE, size_t):\n\n    &gt; Set the maximum mmap window size\n\n* opts(GIT_OPT_GET_MWINDOW_MAPPED_LIMIT, size_t *):\n\n    &gt; Get the maximum memory that will be mapped in total by the library\n\n* opts(GIT_OPT_SET_MWINDOW_MAPPED_LIMIT, size_t):\n\n    &gt;Set the maximum amount of memory that can be mapped at any time        by the library\n\n* opts(GIT_OPT_GET_SEARCH_PATH, int level, git_buf *buf)\n\n    &gt; Get the search path for a given level of config data.  &quot;level&quot; must       &gt; be one of `GIT_CONFIG_LEVEL_SYSTEM`, `GIT_CONFIG_LEVEL_GLOBAL`,       &gt; `GIT_CONFIG_LEVEL_XDG`, or `GIT_CONFIG_LEVEL_PROGRAMDATA`.        &gt; The search path is written to the `out` buffer.\n\n* opts(GIT_OPT_SET_SEARCH_PATH, int level, const char *path)\n\n    &gt; Set the search path for a level of config data.  The search path      &gt; applied to shared attributes and ignore files, too.       &gt;       &gt; - `path` lists directories delimited by GIT_PATH_LIST_SEPARATOR.      &gt;   Pass NULL to reset to the default (generally based on environment       &gt;   variables).  Use magic path `$PATH` to include the old value        &gt;   of the path (if you want to prepend or append, for instance).       &gt;       &gt; - `level` must be `GIT_CONFIG_LEVEL_SYSTEM`,      &gt;   `GIT_CONFIG_LEVEL_GLOBAL`, `GIT_CONFIG_LEVEL_XDG`, or       &gt;   `GIT_CONFIG_LEVEL_PROGRAMDATA`.\n\n* opts(GIT_OPT_SET_CACHE_OBJECT_LIMIT, git_otype type, size_t size)\n\n    &gt; Set the maximum data size for the given type of object to be      &gt; considered eligible for caching in memory.  Setting to value to       &gt; zero means that that type of object will not be cached.       &gt; Defaults to 0 for GIT_OBJ_BLOB (i.e. won&#39;t cache blobs) and 4k        &gt; for GIT_OBJ_COMMIT, GIT_OBJ_TREE, and GIT_OBJ_TAG.\n\n* opts(GIT_OPT_SET_CACHE_MAX_SIZE, ssize_t max_storage_bytes)\n\n    &gt; Set the maximum total data size that will be cached in memory     &gt; across all repositories before libgit2 starts evicting objects        &gt; from the cache.  This is a soft limit, in that the library might      &gt; briefly exceed it, but will start aggressively evicting objects       &gt; from cache when that happens.  The default cache size is 256MB.\n\n* opts(GIT_OPT_ENABLE_CACHING, int enabled)\n\n    &gt; Enable or disable caching completely.     &gt;       &gt; Because caches are repository-specific, disabling the cache       &gt; cannot immediately clear all cached objects, but each cache will      &gt; be cleared on the next attempt to update anything in it.\n\n* opts(GIT_OPT_GET_CACHED_MEMORY, ssize_t *current, ssize_t *allowed)\n\n    &gt; Get the current bytes in cache and the maximum that would be      &gt; allowed in the cache.\n\n* opts(GIT_OPT_GET_TEMPLATE_PATH, git_buf *out)\n\n    &gt; Get the default template path.        &gt; The path is written to the `out` buffer.\n\n* opts(GIT_OPT_SET_TEMPLATE_PATH, const char *path)\n\n    &gt; Set the default template path.        &gt;       &gt; - `path` directory of template.\n\n* opts(GIT_OPT_SET_SSL_CERT_LOCATIONS, const char *file, const char *path)\n\n    &gt; Set the SSL certificate-authority locations.      &gt;       &gt; - `file` is the location of a file containing several     &gt;   certificates concatenated together.     &gt; - `path` is the location of a directory holding several       &gt;   certificates, one per file.     &gt;       &gt; Either parameter may be `NULL`, but not both.\n\n* opts(GIT_OPT_SET_USER_AGENT, const char *user_agent)\n\n    &gt; Set the value of the User-Agent header.  This value will be       &gt; appended to &quot;git/1.0&quot;, for compatibility with other git clients.      &gt;       &gt; - `user_agent` is the value that will be delivered as the     &gt;   User-Agent header on HTTP requests.\n\n* opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, int enabled)\n\n    &gt; Enable strict input validation when creating new objects      &gt; to ensure that all inputs to the new objects are valid.  For      &gt; example, when this is enabled, the parent(s) and tree inputs      &gt; will be validated when creating a new commit.  This defaults      &gt; to enabled.\n\n* opts(GIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION, int enabled)\n\n    &gt; Validate the target of a symbolic ref when creating it.  For      &gt; example, `foobar` is not a valid ref, therefore `foobar` is       &gt; not a valid target for a symbolic ref by default, whereas     &gt; `refs/heads/foobar` is.  Disabling this bypasses validation       &gt; so that an arbitrary strings such as `foobar` can be used     &gt; for a symbolic ref target.  This defaults to enabled.\n\n* opts(GIT_OPT_SET_SSL_CIPHERS, const char *ciphers)\n\n    &gt; Set the SSL ciphers use for HTTPS connections.        &gt;       &gt; - `ciphers` is the list of ciphers that are eanbled.\n</code></pre>\n",
       "group": "libgit2"
     },
     "git_config_entry_free": {
@@ -4466,7 +4472,7 @@
       "group": "config",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_config_open_ondisk-24"
+          "ex/HEAD/general.html#git_config_open_ondisk-26"
         ]
       }
     },
@@ -4576,7 +4582,13 @@
       },
       "description": "<p>Free the configuration and its associated memory and files</p>\n",
       "comments": "",
-      "group": "config"
+      "group": "config",
+      "examples": {
+        "general.c": [
+          "ex/HEAD/general.html#git_config_free-27",
+          "ex/HEAD/general.html#git_config_free-28"
+        ]
+      }
     },
     "git_config_get_entry": {
       "type": "function",
@@ -4643,7 +4655,7 @@
       "group": "config",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_config_get_int32-25"
+          "ex/HEAD/general.html#git_config_get_int32-29"
         ]
       }
     },
@@ -4776,7 +4788,7 @@
       "group": "config",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_config_get_string-26"
+          "ex/HEAD/general.html#git_config_get_string-30"
         ]
       }
     },
@@ -5588,8 +5600,8 @@
     "git_describe_commit": {
       "type": "function",
       "file": "describe.h",
-      "line": 120,
-      "lineto": 123,
+      "line": 123,
+      "lineto": 126,
       "args": [
         {
           "name": "result",
@@ -5625,8 +5637,8 @@
     "git_describe_workdir": {
       "type": "function",
       "file": "describe.h",
-      "line": 137,
-      "lineto": 140,
+      "line": 140,
+      "lineto": 143,
       "args": [
         {
           "name": "out",
@@ -5662,8 +5674,8 @@
     "git_describe_format": {
       "type": "function",
       "file": "describe.h",
-      "line": 150,
-      "lineto": 153,
+      "line": 153,
+      "lineto": 156,
       "args": [
         {
           "name": "out",
@@ -5699,8 +5711,8 @@
     "git_describe_result_free": {
       "type": "function",
       "file": "describe.h",
-      "line": 158,
-      "lineto": 158,
+      "line": 161,
+      "lineto": 161,
       "args": [
         {
           "name": "result",
@@ -6920,7 +6932,7 @@
       "group": "giterr",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#giterr_last-27"
+          "ex/HEAD/general.html#giterr_last-31"
         ],
         "network/clone.c": [
           "ex/HEAD/network/clone.html#giterr_last-2"
@@ -7317,7 +7329,7 @@
           "ex/HEAD/diff.html#git_libgit2_init-13"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_libgit2_init-28"
+          "ex/HEAD/general.html#git_libgit2_init-32"
         ],
         "init.c": [
           "ex/HEAD/init.html#git_libgit2_init-2"
@@ -7620,7 +7632,7 @@
       "group": "index",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_index_free-29"
+          "ex/HEAD/general.html#git_index_free-33"
         ],
         "init.c": [
           "ex/HEAD/init.html#git_index_free-4"
@@ -7954,7 +7966,7 @@
       "group": "index",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_index_entrycount-30"
+          "ex/HEAD/general.html#git_index_entrycount-34"
         ]
       }
     },
@@ -8008,7 +8020,7 @@
       "group": "index",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_index_get_byindex-31"
+          "ex/HEAD/general.html#git_index_get_byindex-35"
         ]
       }
     },
@@ -8923,8 +8935,8 @@
     "git_merge_init_options": {
       "type": "function",
       "file": "merge.h",
-      "line": 304,
-      "lineto": 306,
+      "line": 305,
+      "lineto": 307,
       "args": [
         {
           "name": "opts",
@@ -8950,8 +8962,8 @@
     "git_merge_analysis": {
       "type": "function",
       "file": "merge.h",
-      "line": 375,
-      "lineto": 380,
+      "line": 376,
+      "lineto": 381,
       "args": [
         {
           "name": "analysis_out",
@@ -8992,8 +9004,8 @@
     "git_merge_base": {
       "type": "function",
       "file": "merge.h",
-      "line": 391,
-      "lineto": 395,
+      "line": 392,
+      "lineto": 396,
       "args": [
         {
           "name": "out",
@@ -9037,8 +9049,8 @@
     "git_merge_bases": {
       "type": "function",
       "file": "merge.h",
-      "line": 406,
-      "lineto": 410,
+      "line": 407,
+      "lineto": 411,
       "args": [
         {
           "name": "out",
@@ -9074,8 +9086,8 @@
     "git_merge_base_many": {
       "type": "function",
       "file": "merge.h",
-      "line": 421,
-      "lineto": 425,
+      "line": 422,
+      "lineto": 426,
       "args": [
         {
           "name": "out",
@@ -9111,8 +9123,8 @@
     "git_merge_bases_many": {
       "type": "function",
       "file": "merge.h",
-      "line": 436,
-      "lineto": 440,
+      "line": 437,
+      "lineto": 441,
       "args": [
         {
           "name": "out",
@@ -9148,8 +9160,8 @@
     "git_merge_base_octopus": {
       "type": "function",
       "file": "merge.h",
-      "line": 451,
-      "lineto": 455,
+      "line": 452,
+      "lineto": 456,
       "args": [
         {
           "name": "out",
@@ -9185,8 +9197,8 @@
     "git_merge_file": {
       "type": "function",
       "file": "merge.h",
-      "line": 473,
-      "lineto": 478,
+      "line": 474,
+      "lineto": 479,
       "args": [
         {
           "name": "out",
@@ -9227,8 +9239,8 @@
     "git_merge_file_from_index": {
       "type": "function",
       "file": "merge.h",
-      "line": 494,
-      "lineto": 500,
+      "line": 495,
+      "lineto": 501,
       "args": [
         {
           "name": "out",
@@ -9274,8 +9286,8 @@
     "git_merge_file_result_free": {
       "type": "function",
       "file": "merge.h",
-      "line": 507,
-      "lineto": 507,
+      "line": 508,
+      "lineto": 508,
       "args": [
         {
           "name": "result",
@@ -9296,8 +9308,8 @@
     "git_merge_trees": {
       "type": "function",
       "file": "merge.h",
-      "line": 525,
-      "lineto": 531,
+      "line": 526,
+      "lineto": 532,
       "args": [
         {
           "name": "out",
@@ -9343,8 +9355,8 @@
     "git_merge_commits": {
       "type": "function",
       "file": "merge.h",
-      "line": 548,
-      "lineto": 553,
+      "line": 549,
+      "lineto": 554,
       "args": [
         {
           "name": "out",
@@ -9385,8 +9397,8 @@
     "git_merge": {
       "type": "function",
       "file": "merge.h",
-      "line": 573,
-      "lineto": 578,
+      "line": 574,
+      "lineto": 579,
       "args": [
         {
           "name": "repo",
@@ -10116,7 +10128,7 @@
           "ex/HEAD/cat-file.html#git_object_free-17"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_object_free-32"
+          "ex/HEAD/general.html#git_object_free-36"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_object_free-38"
@@ -10163,8 +10175,8 @@
           "ex/HEAD/cat-file.html#git_object_type2string-21"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_object_type2string-33",
-          "ex/HEAD/general.html#git_object_type2string-34"
+          "ex/HEAD/general.html#git_object_type2string-37",
+          "ex/HEAD/general.html#git_object_type2string-38"
         ]
       }
     },
@@ -10393,6 +10405,9 @@
       "examples": {
         "cat-file.c": [
           "ex/HEAD/cat-file.html#git_odb_free-22"
+        ],
+        "general.c": [
+          "ex/HEAD/general.html#git_odb_free-39"
         ]
       }
     },
@@ -10432,7 +10447,7 @@
           "ex/HEAD/cat-file.html#git_odb_read-23"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_odb_read-35"
+          "ex/HEAD/general.html#git_odb_read-40"
         ]
       }
     },
@@ -10703,7 +10718,7 @@
       "group": "odb",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_odb_write-36"
+          "ex/HEAD/general.html#git_odb_write-41"
         ]
       }
     },
@@ -11048,7 +11063,7 @@
           "ex/HEAD/cat-file.html#git_odb_object_free-24"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_odb_object_free-37"
+          "ex/HEAD/general.html#git_odb_object_free-42"
         ]
       }
     },
@@ -11097,7 +11112,7 @@
       "group": "odb",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_odb_object_data-38"
+          "ex/HEAD/general.html#git_odb_object_data-43"
         ]
       }
     },
@@ -11127,7 +11142,7 @@
           "ex/HEAD/cat-file.html#git_odb_object_size-25"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_odb_object_size-39"
+          "ex/HEAD/general.html#git_odb_object_size-44"
         ]
       }
     },
@@ -11154,7 +11169,7 @@
       "group": "odb",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_odb_object_type-40"
+          "ex/HEAD/general.html#git_odb_object_type-45"
         ]
       }
     },
@@ -11405,22 +11420,22 @@
       "group": "oid",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_oid_fromstr-41",
-          "ex/HEAD/general.html#git_oid_fromstr-42",
-          "ex/HEAD/general.html#git_oid_fromstr-43",
-          "ex/HEAD/general.html#git_oid_fromstr-44",
-          "ex/HEAD/general.html#git_oid_fromstr-45",
           "ex/HEAD/general.html#git_oid_fromstr-46",
           "ex/HEAD/general.html#git_oid_fromstr-47",
-          "ex/HEAD/general.html#git_oid_fromstr-48"
+          "ex/HEAD/general.html#git_oid_fromstr-48",
+          "ex/HEAD/general.html#git_oid_fromstr-49",
+          "ex/HEAD/general.html#git_oid_fromstr-50",
+          "ex/HEAD/general.html#git_oid_fromstr-51",
+          "ex/HEAD/general.html#git_oid_fromstr-52",
+          "ex/HEAD/general.html#git_oid_fromstr-53"
         ]
       }
     },
     "git_oid_fromstrp": {
       "type": "function",
       "file": "oid.h",
-      "line": 57,
-      "lineto": 57,
+      "line": 56,
+      "lineto": 56,
       "args": [
         {
           "name": "out",
@@ -11430,7 +11445,7 @@
         {
           "name": "str",
           "type": "const char *",
-          "comment": "input hex string; must be at least 4 characters\n      long and null-terminated."
+          "comment": "input hex string; must be null-terminated."
         }
       ],
       "argline": "git_oid *out, const char *str",
@@ -11446,8 +11461,8 @@
     "git_oid_fromstrn": {
       "type": "function",
       "file": "oid.h",
-      "line": 70,
-      "lineto": 70,
+      "line": 69,
+      "lineto": 69,
       "args": [
         {
           "name": "out",
@@ -11471,15 +11486,15 @@
         "type": "int",
         "comment": " 0 or an error code"
       },
-      "description": "<p>Parse N characters of a hex formatted object id into a git_oid</p>\n",
-      "comments": "<p>If N is odd, N-1 characters will be parsed instead. The remaining space in the git_oid will be set to zero.</p>\n",
+      "description": "<p>Parse N characters of a hex formatted object id into a git_oid.</p>\n",
+      "comments": "<p>If N is odd, the last byte&#39;s high nibble will be read in and the low nibble set to zero.</p>\n",
       "group": "oid"
     },
     "git_oid_fromraw": {
       "type": "function",
       "file": "oid.h",
-      "line": 78,
-      "lineto": 78,
+      "line": 77,
+      "lineto": 77,
       "args": [
         {
           "name": "out",
@@ -11505,8 +11520,8 @@
     "git_oid_fmt": {
       "type": "function",
       "file": "oid.h",
-      "line": 90,
-      "lineto": 90,
+      "line": 89,
+      "lineto": 89,
       "args": [
         {
           "name": "out",
@@ -11530,12 +11545,12 @@
       "group": "oid",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_oid_fmt-49",
-          "ex/HEAD/general.html#git_oid_fmt-50",
-          "ex/HEAD/general.html#git_oid_fmt-51",
-          "ex/HEAD/general.html#git_oid_fmt-52",
-          "ex/HEAD/general.html#git_oid_fmt-53",
-          "ex/HEAD/general.html#git_oid_fmt-54"
+          "ex/HEAD/general.html#git_oid_fmt-54",
+          "ex/HEAD/general.html#git_oid_fmt-55",
+          "ex/HEAD/general.html#git_oid_fmt-56",
+          "ex/HEAD/general.html#git_oid_fmt-57",
+          "ex/HEAD/general.html#git_oid_fmt-58",
+          "ex/HEAD/general.html#git_oid_fmt-59"
         ],
         "network/fetch.c": [
           "ex/HEAD/network/fetch.html#git_oid_fmt-1",
@@ -11552,8 +11567,8 @@
     "git_oid_nfmt": {
       "type": "function",
       "file": "oid.h",
-      "line": 101,
-      "lineto": 101,
+      "line": 100,
+      "lineto": 100,
       "args": [
         {
           "name": "out",
@@ -11584,8 +11599,8 @@
     "git_oid_pathfmt": {
       "type": "function",
       "file": "oid.h",
-      "line": 116,
-      "lineto": 116,
+      "line": 115,
+      "lineto": 115,
       "args": [
         {
           "name": "out",
@@ -11611,8 +11626,8 @@
     "git_oid_tostr_s": {
       "type": "function",
       "file": "oid.h",
-      "line": 129,
-      "lineto": 129,
+      "line": 128,
+      "lineto": 128,
       "args": [
         {
           "name": "oid",
@@ -11633,8 +11648,8 @@
     "git_oid_tostr": {
       "type": "function",
       "file": "oid.h",
-      "line": 148,
-      "lineto": 148,
+      "line": 147,
+      "lineto": 147,
       "args": [
         {
           "name": "out",
@@ -11688,8 +11703,8 @@
     "git_oid_cpy": {
       "type": "function",
       "file": "oid.h",
-      "line": 156,
-      "lineto": 156,
+      "line": 155,
+      "lineto": 155,
       "args": [
         {
           "name": "out",
@@ -11722,8 +11737,8 @@
     "git_oid_cmp": {
       "type": "function",
       "file": "oid.h",
-      "line": 165,
-      "lineto": 165,
+      "line": 164,
+      "lineto": 164,
       "args": [
         {
           "name": "a",
@@ -11749,8 +11764,8 @@
     "git_oid_equal": {
       "type": "function",
       "file": "oid.h",
-      "line": 174,
-      "lineto": 174,
+      "line": 173,
+      "lineto": 173,
       "args": [
         {
           "name": "a",
@@ -11776,8 +11791,8 @@
     "git_oid_ncmp": {
       "type": "function",
       "file": "oid.h",
-      "line": 185,
-      "lineto": 185,
+      "line": 184,
+      "lineto": 184,
       "args": [
         {
           "name": "a",
@@ -11808,8 +11823,8 @@
     "git_oid_streq": {
       "type": "function",
       "file": "oid.h",
-      "line": 194,
-      "lineto": 194,
+      "line": 193,
+      "lineto": 193,
       "args": [
         {
           "name": "id",
@@ -11835,8 +11850,8 @@
     "git_oid_strcmp": {
       "type": "function",
       "file": "oid.h",
-      "line": 204,
-      "lineto": 204,
+      "line": 203,
+      "lineto": 203,
       "args": [
         {
           "name": "id",
@@ -11862,8 +11877,8 @@
     "git_oid_iszero": {
       "type": "function",
       "file": "oid.h",
-      "line": 211,
-      "lineto": 211,
+      "line": 210,
+      "lineto": 210,
       "args": [
         {
           "name": "id",
@@ -11892,8 +11907,8 @@
     "git_oid_shorten_new": {
       "type": "function",
       "file": "oid.h",
-      "line": 232,
-      "lineto": 232,
+      "line": 231,
+      "lineto": 231,
       "args": [
         {
           "name": "min_length",
@@ -11914,8 +11929,8 @@
     "git_oid_shorten_add": {
       "type": "function",
       "file": "oid.h",
-      "line": 258,
-      "lineto": 258,
+      "line": 257,
+      "lineto": 257,
       "args": [
         {
           "name": "os",
@@ -11941,8 +11956,8 @@
     "git_oid_shorten_free": {
       "type": "function",
       "file": "oid.h",
-      "line": 265,
-      "lineto": 265,
+      "line": 264,
+      "lineto": 264,
       "args": [
         {
           "name": "os",
@@ -14102,7 +14117,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_reference_lookup-55"
+          "ex/HEAD/general.html#git_reference_lookup-60"
         ]
       }
     },
@@ -14391,7 +14406,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_reference_target-56"
+          "ex/HEAD/general.html#git_reference_target-61"
         ]
       }
     },
@@ -14440,7 +14455,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_reference_symbolic_target-57"
+          "ex/HEAD/general.html#git_reference_symbolic_target-62"
         ]
       }
     },
@@ -14467,7 +14482,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_reference_type-58"
+          "ex/HEAD/general.html#git_reference_type-63"
         ]
       }
     },
@@ -14735,7 +14750,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_reference_list-59"
+          "ex/HEAD/general.html#git_reference_list-64"
         ]
       }
     },
@@ -14852,6 +14867,9 @@
       "comments": "",
       "group": "reference",
       "examples": {
+        "general.c": [
+          "ex/HEAD/general.html#git_reference_free-65"
+        ],
         "status.c": [
           "ex/HEAD/status.html#git_reference_free-3"
         ]
@@ -15547,8 +15565,8 @@
     "git_remote_create": {
       "type": "function",
       "file": "remote.h",
-      "line": 40,
-      "lineto": 44,
+      "line": 38,
+      "lineto": 42,
       "args": [
         {
           "name": "out",
@@ -15589,8 +15607,8 @@
     "git_remote_create_with_fetchspec": {
       "type": "function",
       "file": "remote.h",
-      "line": 57,
-      "lineto": 62,
+      "line": 55,
+      "lineto": 60,
       "args": [
         {
           "name": "out",
@@ -15631,8 +15649,8 @@
     "git_remote_create_anonymous": {
       "type": "function",
       "file": "remote.h",
-      "line": 75,
-      "lineto": 78,
+      "line": 73,
+      "lineto": 76,
       "args": [
         {
           "name": "out",
@@ -15671,8 +15689,8 @@
     "git_remote_lookup": {
       "type": "function",
       "file": "remote.h",
-      "line": 91,
-      "lineto": 91,
+      "line": 89,
+      "lineto": 89,
       "args": [
         {
           "name": "out",
@@ -15714,8 +15732,8 @@
     "git_remote_dup": {
       "type": "function",
       "file": "remote.h",
-      "line": 103,
-      "lineto": 103,
+      "line": 101,
+      "lineto": 101,
       "args": [
         {
           "name": "dest",
@@ -15741,8 +15759,8 @@
     "git_remote_owner": {
       "type": "function",
       "file": "remote.h",
-      "line": 111,
-      "lineto": 111,
+      "line": 109,
+      "lineto": 109,
       "args": [
         {
           "name": "remote",
@@ -15763,8 +15781,8 @@
     "git_remote_name": {
       "type": "function",
       "file": "remote.h",
-      "line": 119,
-      "lineto": 119,
+      "line": 117,
+      "lineto": 117,
       "args": [
         {
           "name": "remote",
@@ -15785,8 +15803,8 @@
     "git_remote_url": {
       "type": "function",
       "file": "remote.h",
-      "line": 130,
-      "lineto": 130,
+      "line": 128,
+      "lineto": 128,
       "args": [
         {
           "name": "remote",
@@ -15812,8 +15830,8 @@
     "git_remote_pushurl": {
       "type": "function",
       "file": "remote.h",
-      "line": 141,
-      "lineto": 141,
+      "line": 139,
+      "lineto": 139,
       "args": [
         {
           "name": "remote",
@@ -15839,8 +15857,8 @@
     "git_remote_set_url": {
       "type": "function",
       "file": "remote.h",
-      "line": 154,
-      "lineto": 154,
+      "line": 152,
+      "lineto": 152,
       "args": [
         {
           "name": "repo",
@@ -15876,8 +15894,8 @@
     "git_remote_set_pushurl": {
       "type": "function",
       "file": "remote.h",
-      "line": 167,
-      "lineto": 167,
+      "line": 165,
+      "lineto": 165,
       "args": [
         {
           "name": "repo",
@@ -15913,8 +15931,8 @@
     "git_remote_add_fetch": {
       "type": "function",
       "file": "remote.h",
-      "line": 180,
-      "lineto": 180,
+      "line": 178,
+      "lineto": 178,
       "args": [
         {
           "name": "repo",
@@ -15945,8 +15963,8 @@
     "git_remote_get_fetch_refspecs": {
       "type": "function",
       "file": "remote.h",
-      "line": 191,
-      "lineto": 191,
+      "line": 189,
+      "lineto": 189,
       "args": [
         {
           "name": "array",
@@ -15972,8 +15990,8 @@
     "git_remote_add_push": {
       "type": "function",
       "file": "remote.h",
-      "line": 204,
-      "lineto": 204,
+      "line": 202,
+      "lineto": 202,
       "args": [
         {
           "name": "repo",
@@ -16004,8 +16022,8 @@
     "git_remote_get_push_refspecs": {
       "type": "function",
       "file": "remote.h",
-      "line": 215,
-      "lineto": 215,
+      "line": 213,
+      "lineto": 213,
       "args": [
         {
           "name": "array",
@@ -16031,8 +16049,8 @@
     "git_remote_refspec_count": {
       "type": "function",
       "file": "remote.h",
-      "line": 223,
-      "lineto": 223,
+      "line": 221,
+      "lineto": 221,
       "args": [
         {
           "name": "remote",
@@ -16053,8 +16071,8 @@
     "git_remote_get_refspec": {
       "type": "function",
       "file": "remote.h",
-      "line": 232,
-      "lineto": 232,
+      "line": 230,
+      "lineto": 230,
       "args": [
         {
           "name": "remote",
@@ -16080,8 +16098,8 @@
     "git_remote_connect": {
       "type": "function",
       "file": "remote.h",
-      "line": 249,
-      "lineto": 249,
+      "line": 247,
+      "lineto": 247,
       "args": [
         {
           "name": "remote",
@@ -16127,8 +16145,8 @@
     "git_remote_ls": {
       "type": "function",
       "file": "remote.h",
-      "line": 271,
-      "lineto": 271,
+      "line": 269,
+      "lineto": 269,
       "args": [
         {
           "name": "out",
@@ -16164,8 +16182,8 @@
     "git_remote_connected": {
       "type": "function",
       "file": "remote.h",
-      "line": 282,
-      "lineto": 282,
+      "line": 280,
+      "lineto": 280,
       "args": [
         {
           "name": "remote",
@@ -16186,8 +16204,8 @@
     "git_remote_stop": {
       "type": "function",
       "file": "remote.h",
-      "line": 292,
-      "lineto": 292,
+      "line": 290,
+      "lineto": 290,
       "args": [
         {
           "name": "remote",
@@ -16208,8 +16226,8 @@
     "git_remote_disconnect": {
       "type": "function",
       "file": "remote.h",
-      "line": 301,
-      "lineto": 301,
+      "line": 299,
+      "lineto": 299,
       "args": [
         {
           "name": "remote",
@@ -16230,8 +16248,8 @@
     "git_remote_free": {
       "type": "function",
       "file": "remote.h",
-      "line": 311,
-      "lineto": 311,
+      "line": 309,
+      "lineto": 309,
       "args": [
         {
           "name": "remote",
@@ -16264,8 +16282,8 @@
     "git_remote_list": {
       "type": "function",
       "file": "remote.h",
-      "line": 322,
-      "lineto": 322,
+      "line": 320,
+      "lineto": 320,
       "args": [
         {
           "name": "out",
@@ -16329,7 +16347,7 @@
         {
           "name": "opts",
           "type": "git_fetch_options *",
-          "comment": "the `git_push_options` instance to initialize."
+          "comment": "the `git_fetch_options` instance to initialize."
         },
         {
           "name": "version",
@@ -16835,7 +16853,7 @@
       "group": "repository",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_repository_open-60"
+          "ex/HEAD/general.html#git_repository_open-66"
         ],
         "network/git2.c": [
           "ex/HEAD/network/git2.html#git_repository_open-5"
@@ -17040,7 +17058,7 @@
           "ex/HEAD/diff.html#git_repository_free-16"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_repository_free-61"
+          "ex/HEAD/general.html#git_repository_free-67"
         ],
         "init.c": [
           "ex/HEAD/init.html#git_repository_free-6"
@@ -17432,7 +17450,12 @@
       },
       "description": "<p>Get a snapshot of the repository&#39;s configuration</p>\n",
       "comments": "<p>Convenience function to take a snapshot from the repository&#39;s configuration.  The contents of this snapshot will not change, even if the underlying config files are modified.</p>\n\n<p>The configuration file must be freed once it&#39;s no longer being used by the user.</p>\n",
-      "group": "repository"
+      "group": "repository",
+      "examples": {
+        "general.c": [
+          "ex/HEAD/general.html#git_repository_config_snapshot-68"
+        ]
+      }
     },
     "git_repository_odb": {
       "type": "function",
@@ -17465,7 +17488,7 @@
           "ex/HEAD/cat-file.html#git_repository_odb-33"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_repository_odb-62"
+          "ex/HEAD/general.html#git_repository_odb-69"
         ]
       }
     },
@@ -17524,7 +17547,7 @@
       "group": "repository",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_repository_index-63"
+          "ex/HEAD/general.html#git_repository_index-70"
         ],
         "init.c": [
           "ex/HEAD/init.html#git_repository_index-11"
@@ -17992,7 +18015,7 @@
         {
           "name": "checkout_opts",
           "type": "const git_checkout_options *",
-          "comment": "Checkout options to be used for a HARD reset.\n The checkout_strategy field will be overridden (based on reset_type).\n This parameter can be used to propagate notify and progress callbacks."
+          "comment": "Optional checkout options to be used for a HARD reset.\n The checkout_strategy field will be overridden (based on reset_type).\n This parameter can be used to propagate notify and progress callbacks."
         }
       ],
       "argline": "git_repository *repo, git_object *target, git_reset_t reset_type, const git_checkout_options *checkout_opts",
@@ -18167,7 +18190,7 @@
         {
           "name": "given_opts",
           "type": "const git_revert_options *",
-          "comment": "merge flags"
+          "comment": "the revert options (or null for defaults)"
         }
       ],
       "argline": "git_repository *repo, git_commit *commit, const git_revert_options *given_opts",
@@ -18341,7 +18364,7 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_revwalk_new-64"
+          "ex/HEAD/general.html#git_revwalk_new-71"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_revwalk_new-49",
@@ -18399,7 +18422,7 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_revwalk_push-65"
+          "ex/HEAD/general.html#git_revwalk_push-72"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_revwalk_push-51"
@@ -18623,7 +18646,7 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_revwalk_next-66"
+          "ex/HEAD/general.html#git_revwalk_next-73"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_revwalk_next-54"
@@ -18658,7 +18681,7 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_revwalk_sorting-67"
+          "ex/HEAD/general.html#git_revwalk_sorting-74"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_revwalk_sorting-55",
@@ -18738,7 +18761,7 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_revwalk_free-68"
+          "ex/HEAD/general.html#git_revwalk_free-75"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_revwalk_free-57"
@@ -18842,8 +18865,8 @@
       "group": "signature",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_signature_new-69",
-          "ex/HEAD/general.html#git_signature_new-70"
+          "ex/HEAD/general.html#git_signature_new-76",
+          "ex/HEAD/general.html#git_signature_new-77"
         ]
       }
     },
@@ -18990,6 +19013,10 @@
       "comments": "<p>Because the signature is not an opaque structure, it is legal to free it manually, but be sure to free the &quot;name&quot; and &quot;email&quot; strings in addition to the structure itself.</p>\n",
       "group": "signature",
       "examples": {
+        "general.c": [
+          "ex/HEAD/general.html#git_signature_free-78",
+          "ex/HEAD/general.html#git_signature_free-79"
+        ],
         "init.c": [
           "ex/HEAD/init.html#git_signature_free-13"
         ],
@@ -19471,7 +19498,7 @@
       "group": "strarray",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_strarray_free-71"
+          "ex/HEAD/general.html#git_strarray_free-80"
         ],
         "remote.c": [
           "ex/HEAD/remote.html#git_strarray_free-16",
@@ -19512,8 +19539,8 @@
     "git_submodule_update_init_options": {
       "type": "function",
       "file": "submodule.h",
-      "line": 179,
-      "lineto": 180,
+      "line": 170,
+      "lineto": 171,
       "args": [
         {
           "name": "opts",
@@ -19539,8 +19566,8 @@
     "git_submodule_update": {
       "type": "function",
       "file": "submodule.h",
-      "line": 200,
-      "lineto": 200,
+      "line": 191,
+      "lineto": 191,
       "args": [
         {
           "name": "submodule",
@@ -19571,8 +19598,8 @@
     "git_submodule_lookup": {
       "type": "function",
       "file": "submodule.h",
-      "line": 229,
-      "lineto": 232,
+      "line": 220,
+      "lineto": 223,
       "args": [
         {
           "name": "out",
@@ -19603,8 +19630,8 @@
     "git_submodule_free": {
       "type": "function",
       "file": "submodule.h",
-      "line": 239,
-      "lineto": 239,
+      "line": 230,
+      "lineto": 230,
       "args": [
         {
           "name": "submodule",
@@ -19625,8 +19652,8 @@
     "git_submodule_foreach": {
       "type": "function",
       "file": "submodule.h",
-      "line": 259,
-      "lineto": 262,
+      "line": 250,
+      "lineto": 253,
       "args": [
         {
           "name": "repo",
@@ -19662,8 +19689,8 @@
     "git_submodule_add_setup": {
       "type": "function",
       "file": "submodule.h",
-      "line": 289,
-      "lineto": 294,
+      "line": 280,
+      "lineto": 285,
       "args": [
         {
           "name": "out",
@@ -19704,8 +19731,8 @@
     "git_submodule_add_finalize": {
       "type": "function",
       "file": "submodule.h",
-      "line": 306,
-      "lineto": 306,
+      "line": 297,
+      "lineto": 297,
       "args": [
         {
           "name": "submodule",
@@ -19726,8 +19753,8 @@
     "git_submodule_add_to_index": {
       "type": "function",
       "file": "submodule.h",
-      "line": 318,
-      "lineto": 320,
+      "line": 309,
+      "lineto": 311,
       "args": [
         {
           "name": "submodule",
@@ -19753,8 +19780,8 @@
     "git_submodule_owner": {
       "type": "function",
       "file": "submodule.h",
-      "line": 333,
-      "lineto": 333,
+      "line": 324,
+      "lineto": 324,
       "args": [
         {
           "name": "submodule",
@@ -19775,8 +19802,8 @@
     "git_submodule_name": {
       "type": "function",
       "file": "submodule.h",
-      "line": 341,
-      "lineto": 341,
+      "line": 332,
+      "lineto": 332,
       "args": [
         {
           "name": "submodule",
@@ -19802,8 +19829,8 @@
     "git_submodule_path": {
       "type": "function",
       "file": "submodule.h",
-      "line": 352,
-      "lineto": 352,
+      "line": 343,
+      "lineto": 343,
       "args": [
         {
           "name": "submodule",
@@ -19829,8 +19856,8 @@
     "git_submodule_url": {
       "type": "function",
       "file": "submodule.h",
-      "line": 360,
-      "lineto": 360,
+      "line": 351,
+      "lineto": 351,
       "args": [
         {
           "name": "submodule",
@@ -19851,8 +19878,8 @@
     "git_submodule_resolve_url": {
       "type": "function",
       "file": "submodule.h",
-      "line": 370,
-      "lineto": 370,
+      "line": 361,
+      "lineto": 361,
       "args": [
         {
           "name": "out",
@@ -19883,8 +19910,8 @@
     "git_submodule_branch": {
       "type": "function",
       "file": "submodule.h",
-      "line": 378,
-      "lineto": 378,
+      "line": 369,
+      "lineto": 369,
       "args": [
         {
           "name": "submodule",
@@ -19905,8 +19932,8 @@
     "git_submodule_set_branch": {
       "type": "function",
       "file": "submodule.h",
-      "line": 391,
-      "lineto": 391,
+      "line": 382,
+      "lineto": 382,
       "args": [
         {
           "name": "repo",
@@ -19937,8 +19964,8 @@
     "git_submodule_set_url": {
       "type": "function",
       "file": "submodule.h",
-      "line": 405,
-      "lineto": 405,
+      "line": 396,
+      "lineto": 396,
       "args": [
         {
           "name": "repo",
@@ -19969,8 +19996,8 @@
     "git_submodule_index_id": {
       "type": "function",
       "file": "submodule.h",
-      "line": 413,
-      "lineto": 413,
+      "line": 404,
+      "lineto": 404,
       "args": [
         {
           "name": "submodule",
@@ -19991,8 +20018,8 @@
     "git_submodule_head_id": {
       "type": "function",
       "file": "submodule.h",
-      "line": 421,
-      "lineto": 421,
+      "line": 412,
+      "lineto": 412,
       "args": [
         {
           "name": "submodule",
@@ -20013,8 +20040,8 @@
     "git_submodule_wd_id": {
       "type": "function",
       "file": "submodule.h",
-      "line": 434,
-      "lineto": 434,
+      "line": 425,
+      "lineto": 425,
       "args": [
         {
           "name": "submodule",
@@ -20035,8 +20062,8 @@
     "git_submodule_ignore": {
       "type": "function",
       "file": "submodule.h",
-      "line": 459,
-      "lineto": 460,
+      "line": 450,
+      "lineto": 451,
       "args": [
         {
           "name": "submodule",
@@ -20057,8 +20084,8 @@
     "git_submodule_set_ignore": {
       "type": "function",
       "file": "submodule.h",
-      "line": 472,
-      "lineto": 475,
+      "line": 463,
+      "lineto": 466,
       "args": [
         {
           "name": "repo",
@@ -20089,8 +20116,8 @@
     "git_submodule_update_strategy": {
       "type": "function",
       "file": "submodule.h",
-      "line": 487,
-      "lineto": 488,
+      "line": 478,
+      "lineto": 479,
       "args": [
         {
           "name": "submodule",
@@ -20111,8 +20138,8 @@
     "git_submodule_set_update": {
       "type": "function",
       "file": "submodule.h",
-      "line": 500,
-      "lineto": 503,
+      "line": 491,
+      "lineto": 494,
       "args": [
         {
           "name": "repo",
@@ -20143,8 +20170,8 @@
     "git_submodule_fetch_recurse_submodules": {
       "type": "function",
       "file": "submodule.h",
-      "line": 516,
-      "lineto": 517,
+      "line": 507,
+      "lineto": 508,
       "args": [
         {
           "name": "submodule",
@@ -20165,8 +20192,8 @@
     "git_submodule_set_fetch_recurse_submodules": {
       "type": "function",
       "file": "submodule.h",
-      "line": 529,
-      "lineto": 532,
+      "line": 520,
+      "lineto": 523,
       "args": [
         {
           "name": "repo",
@@ -20197,8 +20224,8 @@
     "git_submodule_init": {
       "type": "function",
       "file": "submodule.h",
-      "line": 547,
-      "lineto": 547,
+      "line": 538,
+      "lineto": 538,
       "args": [
         {
           "name": "submodule",
@@ -20224,8 +20251,8 @@
     "git_submodule_repo_init": {
       "type": "function",
       "file": "submodule.h",
-      "line": 562,
-      "lineto": 565,
+      "line": 553,
+      "lineto": 556,
       "args": [
         {
           "name": "out",
@@ -20256,8 +20283,8 @@
     "git_submodule_sync": {
       "type": "function",
       "file": "submodule.h",
-      "line": 575,
-      "lineto": 575,
+      "line": 566,
+      "lineto": 566,
       "args": [
         {
           "name": "submodule",
@@ -20278,8 +20305,8 @@
     "git_submodule_open": {
       "type": "function",
       "file": "submodule.h",
-      "line": 589,
-      "lineto": 591,
+      "line": 580,
+      "lineto": 582,
       "args": [
         {
           "name": "repo",
@@ -20305,8 +20332,8 @@
     "git_submodule_reload": {
       "type": "function",
       "file": "submodule.h",
-      "line": 603,
-      "lineto": 603,
+      "line": 594,
+      "lineto": 594,
       "args": [
         {
           "name": "submodule",
@@ -20332,8 +20359,8 @@
     "git_submodule_status": {
       "type": "function",
       "file": "submodule.h",
-      "line": 619,
-      "lineto": 623,
+      "line": 610,
+      "lineto": 614,
       "args": [
         {
           "name": "status",
@@ -20374,8 +20401,8 @@
     "git_submodule_location": {
       "type": "function",
       "file": "submodule.h",
-      "line": 639,
-      "lineto": 641,
+      "line": 630,
+      "lineto": 632,
       "args": [
         {
           "name": "location_status",
@@ -21569,6 +21596,50 @@
       "comments": "<p>Clear the working directory and set core.bare to true.  You may also want to call <code>git_repository_set_index(repo, NULL)</code> since a bare repo typically does not have an index, but this function will not do that for you.</p>\n",
       "group": "repository"
     },
+    "git_repository_submodule_cache_all": {
+      "type": "function",
+      "file": "sys/repository.h",
+      "line": 149,
+      "lineto": 150,
+      "args": [
+        {
+          "name": "repo",
+          "type": "git_repository *",
+          "comment": "the repository whose submodules will be cached."
+        }
+      ],
+      "argline": "git_repository *repo",
+      "sig": "git_repository *",
+      "return": {
+        "type": "int",
+        "comment": null
+      },
+      "description": "<p>Load and cache all submodules.</p>\n",
+      "comments": "<p>Because the <code>.gitmodules</code> file is unstructured, loading submodules is an O(N) operation.  Any operation (such as <code>git_rebase_init</code>) that requires accessing all submodules is O(N^2) in the number of submodules, if it has to look each one up individually.  This function loads all submodules and caches them so that subsequent calls to <code>git_submodule_lookup</code> are O(1).</p>\n",
+      "group": "repository"
+    },
+    "git_repository_submodule_cache_clear": {
+      "type": "function",
+      "file": "sys/repository.h",
+      "line": 164,
+      "lineto": 165,
+      "args": [
+        {
+          "name": "repo",
+          "type": "git_repository *",
+          "comment": "the repository whose submodule cache will be cleared"
+        }
+      ],
+      "argline": "git_repository *repo",
+      "sig": "git_repository *",
+      "return": {
+        "type": "int",
+        "comment": null
+      },
+      "description": "<p>Clear the submodule cache.</p>\n",
+      "comments": "<p>Clear the submodule cache populated by <code>git_repository_submodule_cache_all</code>. If there is no cache, do nothing.</p>\n\n<p>The cache incorporates data from the repository&#39;s configuration, as well as the state of the working tree, the index, and HEAD.  So any time any of these has changed, the cache might become invalid.</p>\n",
+      "group": "repository"
+    },
     "git_stream_register_tls": {
       "type": "function",
       "file": "sys/stream.h",
@@ -21982,7 +22053,7 @@
       "group": "tag",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_tag_lookup-72"
+          "ex/HEAD/general.html#git_tag_lookup-81"
         ]
       }
     },
@@ -22043,7 +22114,12 @@
       },
       "description": "<p>Close an open tag</p>\n",
       "comments": "<p>You can no longer use the git_tag pointer after this call.</p>\n\n<p>IMPORTANT: You MUST call this method when you are through with a tag to release memory. Failure to do so will cause a memory leak.</p>\n",
-      "group": "tag"
+      "group": "tag",
+      "examples": {
+        "general.c": [
+          "ex/HEAD/general.html#git_tag_free-82"
+        ]
+      }
     },
     "git_tag_id": {
       "type": "function",
@@ -22117,7 +22193,7 @@
       "group": "tag",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_tag_target-73"
+          "ex/HEAD/general.html#git_tag_target-83"
         ]
       }
     },
@@ -22174,7 +22250,7 @@
           "ex/HEAD/cat-file.html#git_tag_target_type-36"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_tag_target_type-74"
+          "ex/HEAD/general.html#git_tag_target_type-84"
         ]
       }
     },
@@ -22204,7 +22280,7 @@
           "ex/HEAD/cat-file.html#git_tag_name-37"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_tag_name-75"
+          "ex/HEAD/general.html#git_tag_name-85"
         ],
         "tag.c": [
           "ex/HEAD/tag.html#git_tag_name-20"
@@ -22265,7 +22341,7 @@
           "ex/HEAD/cat-file.html#git_tag_message-40"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_tag_message-76"
+          "ex/HEAD/general.html#git_tag_message-86"
         ],
         "tag.c": [
           "ex/HEAD/tag.html#git_tag_message-21"
@@ -23022,8 +23098,8 @@
       "group": "tree",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_tree_lookup-77",
-          "ex/HEAD/general.html#git_tree_lookup-78"
+          "ex/HEAD/general.html#git_tree_lookup-87",
+          "ex/HEAD/general.html#git_tree_lookup-88"
         ],
         "init.c": [
           "ex/HEAD/init.html#git_tree_lookup-14"
@@ -23092,6 +23168,10 @@
         "diff.c": [
           "ex/HEAD/diff.html#git_tree_free-17",
           "ex/HEAD/diff.html#git_tree_free-18"
+        ],
+        "general.c": [
+          "ex/HEAD/general.html#git_tree_free-89",
+          "ex/HEAD/general.html#git_tree_free-90"
         ],
         "init.c": [
           "ex/HEAD/init.html#git_tree_free-15"
@@ -23175,7 +23255,7 @@
           "ex/HEAD/cat-file.html#git_tree_entrycount-41"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_tree_entrycount-79"
+          "ex/HEAD/general.html#git_tree_entrycount-91"
         ]
       }
     },
@@ -23207,7 +23287,7 @@
       "group": "tree",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_tree_entry_byname-80"
+          "ex/HEAD/general.html#git_tree_entry_byname-92"
         ]
       }
     },
@@ -23242,7 +23322,7 @@
           "ex/HEAD/cat-file.html#git_tree_entry_byindex-42"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_tree_entry_byindex-81"
+          "ex/HEAD/general.html#git_tree_entry_byindex-93"
         ]
       }
     },
@@ -23380,8 +23460,8 @@
           "ex/HEAD/cat-file.html#git_tree_entry_name-43"
         ],
         "general.c": [
-          "ex/HEAD/general.html#git_tree_entry_name-82",
-          "ex/HEAD/general.html#git_tree_entry_name-83"
+          "ex/HEAD/general.html#git_tree_entry_name-94",
+          "ex/HEAD/general.html#git_tree_entry_name-95"
         ]
       }
     },
@@ -23548,7 +23628,7 @@
       "group": "tree",
       "examples": {
         "general.c": [
-          "ex/HEAD/general.html#git_tree_entry_to_object-84"
+          "ex/HEAD/general.html#git_tree_entry_to_object-96"
         ]
       }
     },
@@ -23805,11 +23885,43 @@
       "comments": "<p>The tree builder will be written to the given <code>repo</code>, and its identifying SHA1 hash will be stored in the <code>id</code> pointer.</p>\n",
       "group": "treebuilder"
     },
+    "git_treebuilder_write_with_buffer": {
+      "type": "function",
+      "file": "tree.h",
+      "line": 389,
+      "lineto": 390,
+      "args": [
+        {
+          "name": "oid",
+          "type": "git_oid *",
+          "comment": "Pointer to store the OID of the newly written tree"
+        },
+        {
+          "name": "bld",
+          "type": "git_treebuilder *",
+          "comment": "Tree builder to write"
+        },
+        {
+          "name": "tree",
+          "type": "git_buf *",
+          "comment": "Shared buffer for writing the tree. Will be grown as necessary."
+        }
+      ],
+      "argline": "git_oid *oid, git_treebuilder *bld, git_buf *tree",
+      "sig": "git_oid *::git_treebuilder *::git_buf *",
+      "return": {
+        "type": "int",
+        "comment": " 0 or an error code"
+      },
+      "description": "<p>Write the contents of the tree builder as a tree object\n using a shared git_buf.</p>\n",
+      "comments": "",
+      "group": "treebuilder"
+    },
     "git_tree_walk": {
       "type": "function",
       "file": "tree.h",
-      "line": 406,
-      "lineto": 410,
+      "line": 419,
+      "lineto": 423,
       "args": [
         {
           "name": "tree",
@@ -23845,8 +23957,8 @@
     "git_tree_dup": {
       "type": "function",
       "file": "tree.h",
-      "line": 419,
-      "lineto": 419,
+      "line": 432,
+      "lineto": 432,
       "args": [
         {
           "name": "out",
@@ -23872,8 +23984,8 @@
     "git_tree_create_updated": {
       "type": "function",
       "file": "tree.h",
-      "line": 465,
-      "lineto": 465,
+      "line": 478,
+      "lineto": 478,
       "args": [
         {
           "name": "out",
@@ -24449,37 +24561,11 @@
       "description": "<p>Packbuilder progress notification function </p>\n",
       "comments": ""
     },
-    "git_remote_rename_problem_cb": {
-      "type": "callback",
-      "file": "remote.h",
-      "line": 29,
-      "lineto": 29,
-      "args": [
-        {
-          "name": "problematic_refspec",
-          "type": "const char *",
-          "comment": null
-        },
-        {
-          "name": "payload",
-          "type": "void *",
-          "comment": null
-        }
-      ],
-      "argline": "const char *problematic_refspec, void *payload",
-      "sig": "const char *::void *",
-      "return": {
-        "type": "int",
-        "comment": null
-      },
-      "description": "<p>git2/remote.h</p>\n",
-      "comments": "<p>@{</p>\n"
-    },
     "git_push_transfer_progress": {
       "type": "callback",
       "file": "remote.h",
-      "line": 335,
-      "lineto": 339,
+      "line": 333,
+      "lineto": 337,
       "args": [
         {
           "name": "current",
@@ -24539,7 +24625,7 @@
         "type": "int",
         "comment": null
       },
-      "description": "",
+      "description": "<p>Callback used to inform of upcoming updates.</p>\n",
       "comments": ""
     },
     "git_revwalk_hide_cb": {
@@ -25052,8 +25138,8 @@
     "git_treewalk_cb": {
       "type": "callback",
       "file": "tree.h",
-      "line": 380,
-      "lineto": 381,
+      "line": 393,
+      "lineto": 394,
       "args": [
         {
           "name": "root",
@@ -25642,7 +25728,8 @@
             "git_remote_default_branch",
             "git_repository_discover",
             "git_repository_message",
-            "git_submodule_resolve_url"
+            "git_submodule_resolve_url",
+            "git_treebuilder_write_with_buffer"
           ]
         }
       }
@@ -27440,17 +27527,17 @@
           {
             "type": "unsigned int",
             "name": "max_candidates_tags",
-            "comments": ""
+            "comments": " default: 10 "
           },
           {
             "type": "unsigned int",
             "name": "describe_strategy",
-            "comments": " default: 10 "
+            "comments": " default: GIT_DESCRIBE_DEFAULT "
           },
           {
             "type": "const char *",
             "name": "pattern",
-            "comments": " default: GIT_DESCRIBE_DEFAULT "
+            "comments": ""
           },
           {
             "type": "int",
@@ -27467,6 +27554,29 @@
           "returns": [],
           "needs": [
             "git_describe_commit",
+            "git_describe_workdir"
+          ]
+        }
+      }
+    ],
+    [
+      "git_describe_result",
+      {
+        "decl": "git_describe_result",
+        "type": "struct",
+        "value": "git_describe_result",
+        "file": "describe.h",
+        "line": 111,
+        "lineto": 111,
+        "tdef": "typedef",
+        "description": " A struct that stores the result of a describe operation.",
+        "comments": "",
+        "used": {
+          "returns": [],
+          "needs": [
+            "git_describe_commit",
+            "git_describe_format",
+            "git_describe_result_free",
             "git_describe_workdir"
           ]
         }
@@ -29558,7 +29668,7 @@
         "type": "enum",
         "file": "common.h",
         "line": 111,
-        "lineto": 116,
+        "lineto": 134,
         "block": "GIT_FEATURE_THREADS\nGIT_FEATURE_HTTPS\nGIT_FEATURE_SSH\nGIT_FEATURE_NSEC",
         "tdef": "typedef",
         "description": " Combinations of these values describe the features with which libgit2\n was compiled",
@@ -29567,25 +29677,25 @@
           {
             "type": "int",
             "name": "GIT_FEATURE_THREADS",
-            "comments": "",
+            "comments": "<p>If set, libgit2 was built thread-aware and can be safely used from multiple\n threads.</p>\n",
             "value": 1
           },
           {
             "type": "int",
             "name": "GIT_FEATURE_HTTPS",
-            "comments": "",
+            "comments": "<p>If set, libgit2 was built with and linked against a TLS implementation.\n Custom TLS streams may still be added by the user to support HTTPS\n regardless of this.</p>\n",
             "value": 2
           },
           {
             "type": "int",
             "name": "GIT_FEATURE_SSH",
-            "comments": "",
+            "comments": "<p>If set, libgit2 was built with and linked against libssh2. A custom\n transport may still be added by the user to support libssh2 regardless of\n this.</p>\n",
             "value": 4
           },
           {
             "type": "int",
             "name": "GIT_FEATURE_NSEC",
-            "comments": "",
+            "comments": "<p>If set, libgit2 was built with support for sub-second resolution in file\n modification times.</p>\n",
             "value": 8
           }
         ],
@@ -30564,14 +30674,15 @@
           "GIT_OPT_SET_SSL_CERT_LOCATIONS",
           "GIT_OPT_SET_USER_AGENT",
           "GIT_OPT_ENABLE_STRICT_OBJECT_CREATION",
+          "GIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION",
           "GIT_OPT_SET_SSL_CIPHERS",
           "GIT_OPT_GET_USER_AGENT"
         ],
         "type": "enum",
         "file": "common.h",
-        "line": 144,
-        "lineto": 162,
-        "block": "GIT_OPT_GET_MWINDOW_SIZE\nGIT_OPT_SET_MWINDOW_SIZE\nGIT_OPT_GET_MWINDOW_MAPPED_LIMIT\nGIT_OPT_SET_MWINDOW_MAPPED_LIMIT\nGIT_OPT_GET_SEARCH_PATH\nGIT_OPT_SET_SEARCH_PATH\nGIT_OPT_SET_CACHE_OBJECT_LIMIT\nGIT_OPT_SET_CACHE_MAX_SIZE\nGIT_OPT_ENABLE_CACHING\nGIT_OPT_GET_CACHED_MEMORY\nGIT_OPT_GET_TEMPLATE_PATH\nGIT_OPT_SET_TEMPLATE_PATH\nGIT_OPT_SET_SSL_CERT_LOCATIONS\nGIT_OPT_SET_USER_AGENT\nGIT_OPT_ENABLE_STRICT_OBJECT_CREATION\nGIT_OPT_SET_SSL_CIPHERS\nGIT_OPT_GET_USER_AGENT",
+        "line": 162,
+        "lineto": 181,
+        "block": "GIT_OPT_GET_MWINDOW_SIZE\nGIT_OPT_SET_MWINDOW_SIZE\nGIT_OPT_GET_MWINDOW_MAPPED_LIMIT\nGIT_OPT_SET_MWINDOW_MAPPED_LIMIT\nGIT_OPT_GET_SEARCH_PATH\nGIT_OPT_SET_SEARCH_PATH\nGIT_OPT_SET_CACHE_OBJECT_LIMIT\nGIT_OPT_SET_CACHE_MAX_SIZE\nGIT_OPT_ENABLE_CACHING\nGIT_OPT_GET_CACHED_MEMORY\nGIT_OPT_GET_TEMPLATE_PATH\nGIT_OPT_SET_TEMPLATE_PATH\nGIT_OPT_SET_SSL_CERT_LOCATIONS\nGIT_OPT_SET_USER_AGENT\nGIT_OPT_ENABLE_STRICT_OBJECT_CREATION\nGIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION\nGIT_OPT_SET_SSL_CIPHERS\nGIT_OPT_GET_USER_AGENT",
         "tdef": "typedef",
         "description": " Global library options",
         "comments": "<p>These are used to select which global option to set or get and are used in <code>git_libgit2_opts()</code>.</p>\n",
@@ -30668,15 +30779,21 @@
           },
           {
             "type": "int",
-            "name": "GIT_OPT_SET_SSL_CIPHERS",
+            "name": "GIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION",
             "comments": "",
             "value": 15
           },
           {
             "type": "int",
-            "name": "GIT_OPT_GET_USER_AGENT",
+            "name": "GIT_OPT_SET_SSL_CIPHERS",
             "comments": "",
             "value": 16
+          },
+          {
+            "type": "int",
+            "name": "GIT_OPT_GET_USER_AGENT",
+            "comments": "",
+            "value": 17
           }
         ],
         "used": {
@@ -30697,8 +30814,8 @@
         ],
         "type": "enum",
         "file": "merge.h",
-        "line": 311,
-        "lineto": 340,
+        "line": 312,
+        "lineto": 341,
         "block": "GIT_MERGE_ANALYSIS_NONE\nGIT_MERGE_ANALYSIS_NORMAL\nGIT_MERGE_ANALYSIS_UP_TO_DATE\nGIT_MERGE_ANALYSIS_FASTFORWARD\nGIT_MERGE_ANALYSIS_UNBORN",
         "tdef": "typedef",
         "description": " The results of `git_merge_analysis` indicate the merge opportunities.",
@@ -31259,8 +31376,8 @@
         ],
         "type": "enum",
         "file": "merge.h",
-        "line": 345,
-        "lineto": 363,
+        "line": 346,
+        "lineto": 364,
         "block": "GIT_MERGE_PREFERENCE_NONE\nGIT_MERGE_PREFERENCE_NO_FASTFORWARD\nGIT_MERGE_PREFERENCE_FASTFORWARD_ONLY",
         "tdef": "typedef",
         "description": " The user's stated preference for merges.",
@@ -31937,7 +32054,8 @@
             "git_tree_lookup",
             "git_tree_lookup_prefix",
             "git_treebuilder_insert",
-            "git_treebuilder_write"
+            "git_treebuilder_write",
+            "git_treebuilder_write_with_buffer"
           ]
         }
       }
@@ -31949,8 +32067,8 @@
         "type": "struct",
         "value": "git_oid_shorten",
         "file": "oid.h",
-        "line": 216,
-        "lineto": 216,
+        "line": 215,
+        "lineto": 215,
         "tdef": "typedef",
         "description": " OID Shortener object",
         "comments": "",
@@ -32428,7 +32546,7 @@
           {
             "type": "int",
             "name": "GIT_PROXY_NONE",
-            "comments": "<p>Do not attempt to connect through a proxy</p>\n\n<p>If built against lbicurl, it itself may attempt to connect\n to a proxy if the environment variables specify it.</p>\n",
+            "comments": "<p>Do not attempt to connect through a proxy</p>\n\n<p>If built against libcurl, it itself may attempt to connect\n to a proxy if the environment variables specify it.</p>\n",
             "value": 0
           },
           {
@@ -32541,8 +32659,8 @@
         "type": "struct",
         "value": "git_push_update",
         "file": "remote.h",
-        "line": 343,
-        "lineto": 360,
+        "line": 341,
+        "lineto": 358,
         "block": "char * src_refname\nchar * dst_refname\ngit_oid src\ngit_oid dst",
         "tdef": "typedef",
         "description": " Represents an update which will be performed on the remote during push",
@@ -33357,8 +33475,8 @@
         ],
         "type": "enum",
         "file": "remote.h",
-        "line": 328,
-        "lineto": 332,
+        "line": 326,
+        "lineto": 330,
         "block": "GIT_REMOTE_COMPLETION_DOWNLOAD\nGIT_REMOTE_COMPLETION_INDEXING\nGIT_REMOTE_COMPLETION_ERROR\nGIT_REMOTE_COMPLETION_DOWNLOAD\nGIT_REMOTE_COMPLETION_INDEXING\nGIT_REMOTE_COMPLETION_ERROR",
         "tdef": "typedef",
         "description": " Argument to the completion callback which tells it which operation\n finished.",
@@ -33624,6 +33742,8 @@
             "git_repository_set_workdir",
             "git_repository_state",
             "git_repository_state_cleanup",
+            "git_repository_submodule_cache_all",
+            "git_repository_submodule_cache_clear",
             "git_repository_workdir",
             "git_repository_wrap_odb",
             "git_reset",
@@ -35219,15 +35339,14 @@
           "unsigned int version",
           "git_checkout_options checkout_opts",
           "git_fetch_options fetch_opts",
-          "unsigned int clone_checkout_strategy",
           "int allow_fetch"
         ],
         "type": "struct",
         "value": "git_submodule_update_options",
         "file": "submodule.h",
         "line": 129,
-        "lineto": 163,
-        "block": "unsigned int version\ngit_checkout_options checkout_opts\ngit_fetch_options fetch_opts\nunsigned int clone_checkout_strategy\nint allow_fetch",
+        "lineto": 154,
+        "block": "unsigned int version\ngit_checkout_options checkout_opts\ngit_fetch_options fetch_opts\nint allow_fetch",
         "tdef": "typedef",
         "description": " Submodule update options structure",
         "comments": "<p>Use the GIT_SUBMODULE_UPDATE_OPTIONS_INIT to get the default settings, like this:</p>\n\n<p>git_submodule_update_options opts = GIT_SUBMODULE_UPDATE_OPTIONS_INIT;</p>\n",
@@ -35240,17 +35359,12 @@
           {
             "type": "git_checkout_options",
             "name": "checkout_opts",
-            "comments": " These options are passed to the checkout step. To disable\n checkout, set the `checkout_strategy` to\n `GIT_CHECKOUT_NONE`. Generally you will want the use\n GIT_CHECKOUT_SAFE to update files in the working\n directory. Use the `clone_checkout_strategy` field\n to set the checkout strategy that will be used in\n the case where update needs to clone the repository."
+            "comments": " These options are passed to the checkout step. To disable\n checkout, set the `checkout_strategy` to\n `GIT_CHECKOUT_NONE`. Generally you will want the use\n GIT_CHECKOUT_SAFE to update files in the working\n directory. "
           },
           {
             "type": "git_fetch_options",
             "name": "fetch_opts",
             "comments": " Options which control the fetch, including callbacks.\n\n The callbacks to use for reporting fetch progress, and for acquiring\n credentials in the event they are needed."
-          },
-          {
-            "type": "unsigned int",
-            "name": "clone_checkout_strategy",
-            "comments": " The checkout strategy to use when the sub repository needs to\n be cloned. Use GIT_CHECKOUT_SAFE to create all files\n in the working directory for the newly cloned repository."
           },
           {
             "type": "int",
@@ -35686,6 +35800,7 @@
             "git_treebuilder_new",
             "git_treebuilder_remove",
             "git_treebuilder_write",
+            "git_treebuilder_write_with_buffer",
             "git_treewalk_cb"
           ]
         }
@@ -35740,8 +35855,8 @@
         "type": "struct",
         "value": "git_tree_update",
         "file": "tree.h",
-        "line": 434,
-        "lineto": 443,
+        "line": 447,
+        "lineto": 456,
         "block": "git_tree_update_t action\ngit_oid id\ngit_filemode_t filemode\nconst char * path",
         "tdef": "typedef",
         "description": " An action to perform during the update of a tree",
@@ -35785,8 +35900,8 @@
         ],
         "type": "enum",
         "file": "tree.h",
-        "line": 424,
-        "lineto": 429,
+        "line": 437,
+        "lineto": 442,
         "block": "GIT_TREE_UPDATE_UPSERT\nGIT_TREE_UPDATE_REMOVE",
         "tdef": "typedef",
         "description": " The kind of update to perform",
@@ -35834,7 +35949,8 @@
             "git_treebuilder_insert",
             "git_treebuilder_new",
             "git_treebuilder_remove",
-            "git_treebuilder_write"
+            "git_treebuilder_write",
+            "git_treebuilder_write_with_buffer"
           ]
         }
       }
@@ -35848,8 +35964,8 @@
         ],
         "type": "enum",
         "file": "tree.h",
-        "line": 384,
-        "lineto": 387,
+        "line": 397,
+        "lineto": 400,
         "block": "GIT_TREEWALK_PRE\nGIT_TREEWALK_POST",
         "tdef": "typedef",
         "description": " Tree traversal modes ",
@@ -36703,6 +36819,8 @@
         "git_repository_set_workdir",
         "git_repository_state",
         "git_repository_state_cleanup",
+        "git_repository_submodule_cache_all",
+        "git_repository_submodule_cache_clear",
         "git_repository_workdir",
         "git_repository_wrap_odb"
       ]
@@ -36936,7 +37054,8 @@
         "git_treebuilder_insert",
         "git_treebuilder_new",
         "git_treebuilder_remove",
-        "git_treebuilder_write"
+        "git_treebuilder_write",
+        "git_treebuilder_write_with_buffer"
       ]
     ]
   ],
