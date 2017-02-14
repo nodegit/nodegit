@@ -252,6 +252,8 @@
         "libgit2/src/varint.h",
         "libgit2/src/vector.c",
         "libgit2/src/vector.h",
+        "libgit2/src/worktree.c",
+        "libgit2/src/worktree.h",
         "libgit2/src/xdiff/xdiff.h",
         "libgit2/src/xdiff/xdiffi.c",
         "libgit2/src/xdiff/xdiffi.h",
