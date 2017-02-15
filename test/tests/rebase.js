@@ -1028,22 +1028,18 @@ describe.only("Rebase", function() {
             nextCalls++;
 
             return Promise.resolve();
-          }, function({
-            ontoName,
-            ontoSha,
-            originalHeadName,
-            originalHeadSha,
-            rebase,
-            rewritten
-          }) {
+          }, function(rebaseMetadata) {
             calledBeforeFinishFn = true;
 
-            assert.equal(ontoName, theirBranchName);
-            assert.equal(ontoSha, theirBranchSha);
-            assert.equal(originalHeadName, ourBranchName);
-            assert.equal(originalHeadSha, ourBranchShaPreRebase);
+            assert.equal(rebaseMetadata.ontoName, theirBranchName);
+            assert.equal(rebaseMetadata.ontoSha, theirBranchSha);
+            assert.equal(rebaseMetadata.originalHeadName, ourBranchName);
+            assert.equal(
+              rebaseMetadata.originalHeadSha,
+              ourBranchShaPreRebase
+            );
             assert.deepEqual(
-              rewritten,
+              rebaseMetadata.rewritten,
               [[ourBranchShaPreRebase, ourBranchShaPostRebase]]
             );
           });
@@ -1180,22 +1176,18 @@ describe.only("Rebase", function() {
             nextCalls++;
 
             return Promise.resolve();
-          }, function({
-            ontoName,
-            ontoSha,
-            originalHeadName,
-            originalHeadSha,
-            rebase,
-            rewritten
-          }) {
+          }, function(rebaseMetadata) {
             calledBeforeFinishFn = true;
 
-            assert.equal(ontoName, theirBranchName);
-            assert.equal(ontoSha, theirBranchSha);
-            assert.equal(originalHeadName, ourBranchName);
-            assert.equal(originalHeadSha, ourBranchShaPreRebase);
+            assert.equal(rebaseMetadata.ontoName, theirBranchName);
+            assert.equal(rebaseMetadata.ontoSha, theirBranchSha);
+            assert.equal(rebaseMetadata.originalHeadName, ourBranchName);
+            assert.equal(
+              rebaseMetadata.originalHeadSha,
+              ourBranchShaPreRebase
+            );
             assert.deepEqual(
-              rewritten,
+              rebaseMetadata.rewritten,
               [[ourBranchShaPreRebase, ourBranchShaPostRebase]]
             );
 
