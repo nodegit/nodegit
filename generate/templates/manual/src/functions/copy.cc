@@ -26,7 +26,10 @@ git_remote_head *git_remote_head_dup(const git_remote_head *src) {
   dest->local = src->local;
   git_oid_cpy(&dest->oid, &src->oid);
   git_oid_cpy(&dest->loid, &src->loid);
-  dest->name = strdup(src->name);
+
+  dest->name = src->name
+    ? strdup(src->name)
+    : NULL;
   dest->symref_target = src->symref_target
     ? strdup(src->symref_target)
     : NULL;
