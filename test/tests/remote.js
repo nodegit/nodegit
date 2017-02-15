@@ -506,10 +506,13 @@ describe("Remote", function() {
           remote.connect(NodeGit.Enums.DIRECTION.FETCH)
         ]);
       })
-      .then(function([remote]) {
+      .then(function(results) {
+        var remote = results[0];
         return Promise.all([remote, remote.referenceList()]);
       })
-      .then(function([remote, remoteHeads]) {
+      .then(function(results) {
+        var remote = results[0];
+        var remoteHeads = results[1];
         var remoteHeadsBySha = fp.flow([
           fp.map(function(remoteHead) {
             return {
