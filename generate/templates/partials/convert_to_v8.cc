@@ -33,12 +33,12 @@
 
   {%-- // FIXME this is not general purpose enough. --%}
   {% if size %}
-    Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}}->{{ size }});
+    v8::Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}}->{{ size }});
     for (unsigned int i = 0; i < {{= parsedName =}}->{{ size }}; i++) {
       Nan::Set(tmpArray, Nan::New<Number>(i), Nan::New<String>({{= parsedName =}}->{{ key }}[i]).ToLocalChecked());
     }
   {% else %}
-    Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}});
+    v8::Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}});
   {% endif %}
 
   to = tmpArray;

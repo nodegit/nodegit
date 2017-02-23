@@ -121,7 +121,7 @@ void OpenSSL_ThreadSetup() {
 
 ThreadPool libgit2ThreadPool(10, uv_default_loop());
 
-extern "C" void init(Local<v8::Object> target) {
+extern "C" void init(v8::Local<v8::Object> target) {
   // Initialize thread safety in openssl and libssh2
   OpenSSL_ThreadSetup();
   init_ssh2();
@@ -146,7 +146,7 @@ extern "C" void init(Local<v8::Object> target) {
   NODE_SET_METHOD(target, "getThreadSafetyStatus", LockMasterGetStatus);
   NODE_SET_METHOD(target, "getThreadSafetyDiagnostics", LockMasterGetDiagnostics);
 
-  Local<v8::Object> threadSafety = Nan::New<v8::Object>();
+  v8::Local<v8::Object> threadSafety = Nan::New<v8::Object>();
   threadSafety->Set(Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
   threadSafety->Set(Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
   threadSafety->Set(Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));

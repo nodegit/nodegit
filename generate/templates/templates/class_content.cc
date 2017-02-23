@@ -43,10 +43,10 @@ using namespace node;
     {% endeach %}
   }
 
-  void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
+  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
     Nan::HandleScope scope;
 
-    Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
+    v8::Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
 
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
     tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
@@ -69,17 +69,17 @@ using namespace node;
 
     InitializeTemplate(tpl);
 
-    Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+    v8::Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
     constructor_template.Reset(_constructor_template);
     Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
   }
 
 {% else %}
 
-  void {{ cppClassName }}::InitializeComponent(Local<v8::Object> target) {
+  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
     Nan::HandleScope scope;
 
-    Local<Object> object = Nan::New<Object>();
+    v8::Local<Object> object = Nan::New<Object>();
 
     {% each functions as function %}
       {% if not function.ignore %}

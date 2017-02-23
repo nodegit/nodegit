@@ -1,7 +1,7 @@
 {% each fields|fieldsInfo as field %}
   {% if not field.ignore %}
     NAN_METHOD({{ cppClassName }}::{{ field.cppFunctionName }}) {
-      Local<v8::Value> to;
+      v8::Local<v8::Value> to;
 
       {% if field | isFixedLengthString %}
       char* {{ field.name }} = (char *)Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue()->{{ field.name }};

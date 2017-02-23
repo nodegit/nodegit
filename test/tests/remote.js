@@ -2,6 +2,7 @@ var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 var _ = require("lodash");
+var fp = require("lodash/fp");
 
 var garbageCollect = require("../utils/garbage_collect.js");
 
@@ -442,6 +443,113 @@ describe("Remote", function() {
         // the remote should be freed now
         assert.equal(startSelfFreeingCount,
           Remote.getSelfFreeingInstanceCount());
+      });
+  });
+
+  it("can retrieve the list of references advertised by a remote", function() {
+    var expectedRemoteHeads = {
+      HEAD: {
+        local: 0,
+        oid: "32789a79e71fbc9e04d3eff7425e1771eb595150",
+        loid: "0000000000000000000000000000000000000000",
+        name: "HEAD",
+        symrefTarget: "refs/heads/master"
+      },
+      "refs/heads/checkout-test": {
+        local: 0,
+        oid: "1729c73906bb8467f4095c2f4044083016b4dfde",
+        loid: "0000000000000000000000000000000000000000",
+        name: "refs/heads/checkout-test",
+        symrefTarget: null
+      },
+      "refs/heads/master": {
+        local: 0,
+        oid: "32789a79e71fbc9e04d3eff7425e1771eb595150",
+        loid: "0000000000000000000000000000000000000000",
+        name: "refs/heads/master",
+        symrefTarget: null
+      },
+      "refs/heads/rev-walk": {
+        local: 0,
+        oid: "32789a79e71fbc9e04d3eff7425e1771eb595150",
+        loid: "0000000000000000000000000000000000000000",
+        name: "refs/heads/rev-walk",
+        symrefTarget: null
+      },
+      "refs/tags/annotated-tag": {
+        local: 0,
+        oid: "dc800017566123ff3c746b37284a24a66546667e",
+        loid: "0000000000000000000000000000000000000000",
+        name: "refs/tags/annotated-tag",
+        symrefTarget: null
+      },
+      "refs/tags/annotated-tag^{}": {
+        local: 0,
+        oid: "32789a79e71fbc9e04d3eff7425e1771eb595150",
+        loid: "0000000000000000000000000000000000000000",
+        name: "refs/tags/annotated-tag^{}",
+        symrefTarget: null
+      },
+      "refs/tags/light-weight-tag": {
+        local: 0,
+        oid: "32789a79e71fbc9e04d3eff7425e1771eb595150",
+        loid: "0000000000000000000000000000000000000000",
+        name: "refs/tags/light-weight-tag",
+        symrefTarget: null
+      }
+    };
+
+    return this.repository.getRemote("origin")
+      .then(function(remote) {
+        return Promise.all([
+          remote,
+          remote.connect(NodeGit.Enums.DIRECTION.FETCH)
+        ]);
+      })
+      .then(function(results) {
+        var remote = results[0];
+        return Promise.all([remote, remote.referenceList()]);
+      })
+      .then(function(results) {
+        var remote = results[0];
+        var remoteHeads = results[1];
+        var remoteHeadsBySha = fp.flow([
+          fp.map(function(remoteHead) {
+            return {
+              local: remoteHead.local(),
+              oid: remoteHead.oid().toString(),
+              loid: remoteHead.loid().toString(),
+              name: remoteHead.name(),
+              symrefTarget: remoteHead.symrefTarget()
+            };
+          }),
+          fp.keyBy("name")
+        ])(remoteHeads);
+
+        fp.flow([
+          fp.keys,
+          fp.forEach(function(remoteHeadName) {
+            assert(fp.isEqual(
+              expectedRemoteHeads[remoteHeadName],
+              remoteHeadsBySha[remoteHeadName]
+            ), "Expectations for head " + remoteHeadName + " were not met.");
+          })
+        ])(expectedRemoteHeads);
+
+        return remote.disconnect();
+      });
+  });
+
+  it("will error when retrieving reference list if not connected", function() {
+    return this.repository.getRemote("origin")
+      .then(function(remote) {
+        return remote.referenceList();
+      })
+      .then(function() {
+        assert.fail("Unconnected remote should have no reference list.");
+      })
+      .catch(function(notConnectedError) {
+        assert(notConnectedError.message === "this remote has never connected");
       });
   });
 });

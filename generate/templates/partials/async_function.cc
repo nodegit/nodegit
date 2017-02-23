@@ -61,7 +61,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[{{args|jsArgsCount}}]));
+  Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[{{args|jsArgsCount}}]));
   {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback);
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
@@ -129,14 +129,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
   {%endif%}
     {%if return.isResultOrError %}
-    Local<v8::Value> result = Nan::New<v8::Number>(baton->error_code);
+    v8::Local<v8::Value> result = Nan::New<v8::Number>(baton->error_code);
 
     {%elsif not .|returnsCount %}
-    Local<v8::Value> result = Nan::Undefined();
+    v8::Local<v8::Value> result = Nan::Undefined();
     {%else%}
-    Local<v8::Value> to;
+    v8::Local<v8::Value> to;
       {%if .|returnsCount > 1 %}
-    Local<Object> result = Nan::New<Object>();
+    v8::Local<Object> result = Nan::New<Object>();
       {%endif%}
       {%each .|returnsInfo 0 1 as _return %}
         {%partial convertToV8 _return %}
@@ -145,17 +145,17 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {%endif%}
       {%endeach%}
       {%if .|returnsCount == 1 %}
-    Local<v8::Value> result = to;
+    v8::Local<v8::Value> result = to;
       {%endif%}
     {%endif%}
-    Local<v8::Value> argv[2] = {
+    v8::Local<v8::Value> argv[2] = {
       Nan::Null(),
       result
     };
     callback->Call(2, argv);
   } else {
     if (baton->error) {
-      Local<v8::Value> argv[1] = {
+      v8::Local<v8::Value> argv[1] = {
         Nan::Error(baton->error->message)
       };
       callback->Call(1, argv);
@@ -163,7 +163,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
-      std::queue< Local<v8::Value> > workerArguments;
+      std::queue< v8::Local<v8::Value> > workerArguments;
 {%each args|argsInfo as arg %}
   {%if not arg.isReturn %}
     {%if not arg.isSelf %}
@@ -175,7 +175,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
 {%endeach%}
       bool callbackFired = false;
       while(!workerArguments.empty()) {
-        Local<v8::Value> node = workerArguments.front();
+        v8::Local<v8::Value> node = workerArguments.front();
         workerArguments.pop();
 
         if (
@@ -191,11 +191,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
           continue;
         }
 
-        Local<v8::Object> nodeObj = node->ToObject();
-        Local<v8::Value> checkValue = GetPrivate(nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
+        v8::Local<v8::Object> nodeObj = node->ToObject();
+        v8::Local<v8::Value> checkValue = GetPrivate(nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
 
         if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined()) {
-          Local<v8::Value> argv[1] = {
+          v8::Local<v8::Value> argv[1] = {
             checkValue->ToObject()
           };
           callback->Call(1, argv);
@@ -203,10 +203,10 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
           break;
         }
 
-        Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        v8::Local<v8::Array> properties = nodeObj->GetPropertyNames();
         for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
-          Local<v8::String> propName = properties->Get(propIndex)->ToString();
-          Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+          v8::Local<v8::String> propName = properties->Get(propIndex)->ToString();
+          v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
           if (!nodeToQueue->IsUndefined()) {
             workerArguments.push(nodeToQueue);
           }
@@ -214,9 +214,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       }
 
       if (!callbackFired) {
-        Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
+        v8::Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
         err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-        Local<v8::Value> argv[1] = {
+        v8::Local<v8::Value> argv[1] = {
           err
         };
         callback->Call(1, argv);

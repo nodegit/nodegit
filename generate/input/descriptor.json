@@ -1805,6 +1805,9 @@
       }
     },
     "remote": {
+      "dependencies": [
+        "../include/remote_head.h"
+      ],
       "cType": "git_remote",
       "selfFreeing": true,
       "functions": {
@@ -1970,7 +1973,11 @@
       }
     },
     "remote_head": {
-      "ignore": true
+      "dependencies": [
+        "../include/functions/free.h"
+      ],
+      "freeFunctionName": "git_remote_head_free",
+      "selfFreeing": true
     },
     "repository": {
       "dependencies": [
