@@ -293,7 +293,8 @@
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd')", {
           "cflags": [
-            "-DGIT_CURL"
+            "-DGIT_CURL",
+            "<!(curl-config --cflags)"
           ],
           "defines": [
             "GIT_CURL"
