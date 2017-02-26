@@ -12,7 +12,6 @@ description: Learning NodeGit
 - [Basics](install/)
 - [From source](install/from-source)
 - [Electron](install/electron/)
-- [NW.js](install/nw.js/)
 
 ***
 
