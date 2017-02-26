@@ -92,9 +92,9 @@
           }
         ],
         [
-          "OS=='linux' or OS=='mac'", {
+          "OS=='linux' or OS=='mac' or OS.endswith('bsd')", {
             "libraries": [
-              "-lcurl"
+              "<!(curl-config --libs)"
             ]
           }
         ],
