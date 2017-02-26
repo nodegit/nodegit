@@ -586,6 +586,24 @@ describe("Commit", function() {
     });
   });
 
+  it("can get header fields", function() {
+    var commit = this.commit;
+    return commit.headerField("parent").then(function(field) {
+      assert.equal(field,
+        "ecfd36c80a3e9081f200dfda2391acadb56dac27");
+      return commit.headerField("author");
+    })
+    .then(function(field) {
+      assert.equal(field,
+        "Michael Robinson <mike@panmedia.co.nz> 1362012884 +1300");
+      return commit.headerField("committer");
+    })
+    .then(function(field) {
+      assert.equal(field,
+        "Michael Robinson <mike@panmedia.co.nz> 1362012884 +1300");
+    });
+  });
+
   describe("Commit's Author", function() {
     before(function() {
       this.author = this.commit.author();
@@ -619,6 +637,28 @@ describe("Commit", function() {
 
     it("has an email", function() {
       assert.equal(this.committer.email(), "mike@panmedia.co.nz");
+    });
+  });
+
+  describe("Commit's Body", function() {
+
+    it("null if only summary", function() {
+      var test = this;
+      return NodeGit.Commit.lookup(test.repository,
+        "15315cf41ad76400d9189c85a5827b77b8c392f1")
+      .then(function(commit) {
+        assert.equal(commit.body(), null);
+      });
+    });
+
+    it("non-null when body exists", function() {
+      var test = this;
+      return NodeGit.Commit.lookup(test.repository,
+        "c82fb078a192ea221c9f1093c64321c60d64aa0d")
+      .then(function(commit) {
+        assert.equal(commit.body(),
+          "Added new methods in checkout and repository");
+      });
     });
   });
 
