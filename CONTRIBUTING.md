@@ -6,7 +6,8 @@ Contribution Guidelines
 We try to be available pretty often to help when problems come up. We like to split incoming questions
 into two categories: potential bugs/features, and questions. If you want a feature added, or think you've found a bug
 in the code (or in the examples), search the [issue tracker](https://github.com/nodegit/nodegit/issues) and if you dont
-find anything, file a new issue. If you just have questions, instead of using issues, contact us in our [Gitter room](https://gitter.im/nodegit/nodegit).
+find anything, file a new issue. If you just have questions, instead of using issues, [sign up](http://slack.libgit2.org/)
+to libgit2's Slack instance and then contact us in the [#nodegit channel](https://libgit2.slack.com/messages/nodegit/).
 
 ## How to Help ##
 
@@ -21,7 +22,7 @@ These are all good easy ways to start getting involved with the project. You can
 and see if you can help with any existing issues. Please comment with your intention and any questions before getting
 started; duplicating work or doing something that would be rejected always sucks.
 
-Additionally, [the documentation](http://www.nodegit.org) needs some love. Get in touch with one of us on Gitter if
+Additionally, [the documentation](http://www.nodegit.org) needs some love. Get in touch with one of us on Slack if
 you'd like to lend a hand with that.
 
-For anything else, Gitter is probably the best way to get in touch as well. Happy coding, merge you soon!
+For anything else, Slack is probably the best way to get in touch as well. Happy coding, merge you soon!

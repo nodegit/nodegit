@@ -1805,6 +1805,9 @@
       }
     },
     "remote": {
+      "dependencies": [
+        "../include/remote_head.h"
+      ],
       "cType": "git_remote",
       "selfFreeing": true,
       "functions": {
@@ -1970,7 +1973,11 @@
       }
     },
     "remote_head": {
-      "ignore": true
+      "dependencies": [
+        "../include/functions/free.h"
+      ],
+      "freeFunctionName": "git_remote_head_free",
+      "selfFreeing": true
     },
     "repository": {
       "dependencies": [
@@ -2044,6 +2051,11 @@
       "functions": {
         "git_revert": {
           "isAsync": true,
+          "args": {
+            "given_opts": {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
@@ -2175,6 +2187,11 @@
           }
         },
         "git_stash_save": {
+          "args": {
+            "message": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -2456,7 +2473,11 @@
       }
     },
     "time": {
-      "dupFunction": "git_time_dup"
+      "dupFunction": "git_time_dup",
+      "dependencies": [
+        "git2/sys/time.h"
+      ]
+
     },
     "trace": {
       "functions": {

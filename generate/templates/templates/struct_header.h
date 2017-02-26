@@ -29,8 +29,8 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
     // grant full access to base class
     friend class NodeGitWrapper<{{ cppClassName }}Traits>;
   public:
-    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = Local<v8::Object>());
-    static void InitializeComponent (Local<v8::Object> target);
+    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+    static void InitializeComponent (v8::Local<v8::Object> target);
 
     {% each fields as field %}
       {% if not field.ignore %}
@@ -44,7 +44,7 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
             {% endeach %}
           );
 
-          static void {{ field.name }}_async(uv_async_t* req, int status);
+          static void {{ field.name }}_async(void *baton);
           static void {{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
           struct {{ field.name|titleCase }}Baton : public AsyncBatonWithResult<{{ field.return.type }}> {
             {% each field.args|argsInfo as arg %}

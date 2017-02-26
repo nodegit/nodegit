@@ -1,5 +1,88 @@
 # Change Log
 
+## <a name="v0-17-0" href="#v0-17-0">v0.17.0</a> [(2017-01-06)](https://github.com/nodegit/nodegit/releases/tag/v0.17.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.16.0...v0.17.0)
+
+### Targeted Platform Changes
+
+In this release we had added support for Node v7 and latest Electron. We have removed support for Node v0.12 and v5.
+
+We are also deprecating nw.js support since it is currently broken, no one in the current team uses it and we would not be able to currently support nw.js in an effective manner with a good user experience. 
+
+### Now building against shared libcurl lib
+
+For proxy support we now use libcurl for HTTP/HTTPS transport which should have no noticeable change in NodeGit remote operations but if changes are noticed this is worth mentioning as a potential source.
+
+### Memory leak fixes and stability increases
+
+Many PR's were made to fix memory leaks as they were found so memory usage should go down in this version for long running scripts. Additionally, when performing operations with callbacks (transfer progress, credentials, etc...) there was a small chance for a segfault when NodeGit would schedule the callback to go into JavaScript. This is now fixed.
+
+### Fixes to the build
+
+Many users, especially on windows, were experiencing errors during the build. The build still isn't perfect but a lot of the bugs were fixed.
+
+### Bump libgit2 to 0bf0526
+
+The majority of changes to NodeGit v17 were in libgit2. The API breaking changes that are known are:
+
+- `RevWalk` is returning different results [libgit2 PR #3921](https://github.com/libgit2/libgit2/pull/3921)
+- Changes in error messages returned [libgit2 PR #4049](https://github.com/libgit2/libgit2/pull/4049)
+
+Summary of changes that were brought in:
+
+https://github.com/nodegit/nodegit/pull/1187#issuecomment-277760323
+
+### Changes to NodeGit outside of libgit2 bump
+
+- Define GIT_SSH_MEMORY_CREDENTIALS for libgit2 [PR #949](https://github.com/nodegit/nodegit/pull/949)
+- Add "Path" to ssh variable names in tests for clarity [PR #1135](https://github.com/nodegit/nodegit/pull/1135)
+- Fix revwalk memory leaks [PR #1137](https://github.com/nodegit/nodegit/pull/1137)
+- Fix tree entry leaks [PR #1138](https://github.com/nodegit/nodegit/pull/1138)
+- Fix typo in postinstall script [PR #1141](https://github.com/nodegit/nodegit/pull/1141)
+- Fix windows exception handling in build [PR #1143](https://github.com/nodegit/nodegit/pull/1143)
+- Fix CI failures on node 0.12 [PR #1144](https://github.com/nodegit/nodegit/pull/1144)
+- Fix postinstall script crash when install location has spaces in its path [PR #1148](https://github.com/nodegit/nodegit/pull/1148)
+- Update 0.13 changelog [PR #1151](https://github.com/nodegit/nodegit/pull/1151)
+- Minor documentation fix in Checkout.index [PR #1164](https://github.com/nodegit/nodegit/pull/1164)
+- FreeBSD also uses struct timespec st_mtim [PR #1165](https://github.com/nodegit/nodegit/pull/1165)
+- README.md needs to show where to get Slack invitation [PR #1170](https://github.com/nodegit/nodegit/pull/1170)
+- Add @async tag to `Tree#getEntry` [PR #1178](https://github.com/nodegit/nodegit/pull/1178)
+- Fix incorrect anchor link in TESTING.md [PR #1179](https://github.com/nodegit/nodegit/pull/1179)
+- Added tests for Tag [PR #1180](https://github.com/nodegit/nodegit/pull/1180)
+- Added tests for Branch [PR #1181](https://github.com/nodegit/nodegit/pull/1181)
+- Escape the spaces in dir for shell command [PR #1186](https://github.com/nodegit/nodegit/pull/1186)
+- Bump libgit to 0bf0526 [PR #1187](https://github.com/nodegit/nodegit/pull/1187)
+- Checkout's tree* functions do not support Oid as a parameter [PR #1190](https://github.com/nodegit/nodegit/pull/1190)
+- Build against shared library for libcurl [PR #1195](https://github.com/nodegit/nodegit/pull/1195)
+- Move libuv calls to correct thread [PR #1197](https://github.com/nodegit/nodegit/pull/1197)
+- Update `Repository#createBranch` docs [PR #1198](https://github.com/nodegit/nodegit/pull/1198)
+- Remove Node v0.12 and v5 [PR #1199](https://github.com/nodegit/nodegit/pull/1199)
+- Specify acceptable types for `lookup` and `dwim` in Reference [PR #1203](https://github.com/nodegit/nodegit/pull/1203)
+- Build for Node 7.4.0 [PR #1204](https://github.com/nodegit/nodegit/pull/1204)
+- Write the index to a repository directly in merge-cleanly.js examples [PR #1205](https://github.com/nodegit/nodegit/pull/1205)
+
+## <a name="v0-16-0" href="#v0-16-0">v0.16.0</a> [(2016-09-15)](https://github.com/nodegit/nodegit/releases/tag/v0.16.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.15.1...v0.16.0)
+
+- Bump libssh2 to 1.7.0 [PR #1071](https://github.com/nodegit/nodegit/pull1071)
+- Js cleanup [PR #1074](https://github.com/nodegit/nodegit/pull1074)
+- Expose merge options and diff flags [PR #1076](https://github.com/nodegit/nodegit/pull1076)
+- Fix Tree#entryByName function and add test [PR #1079](https://github.com/nodegit/nodegit/pull1079)
+- Add isSubmodule() method [PR #1080](https://github.com/nodegit/nodegit/pull1080)
+- Fix two typos in the documentation for Commit#parents [PR #1081](https://github.com/nodegit/nodegit/pull1081)
+- Memory management: duplicate time [PR #1090](https://github.com/nodegit/nodegit/pull1090)
+- Preempt nan to fix deprecated calls to Get/SetHiddenValue [PR #1106](https://github.com/nodegit/nodegit/pull1106)
+- Try re-enabling node >6.2 [PR #1107](https://github.com/nodegit/nodegit/pull1107)
+- Bump openssl to 1.0.2h (same as node 6.3.1) [PR #1108](https://github.com/nodegit/nodegit/pull1108)
+- Don't run postbuild when we detect electron install [PR #1111](https://github.com/nodegit/nodegit/pull1111)
+- Added instructions for CircleCI users [PR #1113](https://github.com/nodegit/nodegit/pull1113)
+- Fix up electron and nw.js docs [PR #1114](https://github.com/nodegit/nodegit/pull1114)
+- Patch libssh2 to work with vs2015 [PR #1125](https://github.com/nodegit/nodegit/pull1125)
+- Fix CI [PR #1126](https://github.com/nodegit/nodegit/pull1126)
+
+
 ## <a name="v0-15-1" href="#v0-15-1">v0.15.1</a> [(2016-06-20)](https://github.com/nodegit/nodegit/releases/tag/v0.15.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.15.0...v0.15.1)

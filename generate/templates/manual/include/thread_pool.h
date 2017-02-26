@@ -5,14 +5,26 @@
 #include <queue>
 
 class ThreadPool {
+public:
   typedef void (*Callback) (void *);
+
+private:
   struct Work {
     Callback workCallback;
-    Callback loopCallback;
+    Callback completionCallback;
     void *data;
 
-    Work(Callback workCallback, Callback loopCallback, void *data)
-      : workCallback(workCallback), loopCallback(loopCallback), data(data) {
+    Work(Callback workCallback, Callback completionCallback, void *data)
+      : workCallback(workCallback), completionCallback(completionCallback), data(data) {
+    }
+  };
+
+  struct ReverseCall {
+    Callback reverseCallback;
+    void *data;
+
+    ReverseCall(Callback reverseCallback, void *data)
+      : reverseCallback(reverseCallback), data(data) {
     }
   };
 
@@ -23,14 +35,22 @@ class ThreadPool {
   int workInProgressCount;
 
   // completion callbacks to be performed on the loop
-  std::queue<Work> loopQueue;
-  uv_mutex_t loopMutex;
-  uv_async_t loopAsync;
+  std::queue<Work> completionQueue;
+  uv_mutex_t completionMutex;
+  uv_async_t completionAsync;
+
+  // async callback made from the threadpool, executed in the loop
+  std::queue<ReverseCall> reverseQueue;
+  uv_mutex_t reverseMutex;
+  uv_async_t reverseAsync;
 
   static void RunEventQueue(void *threadPool);
   void RunEventQueue();
-  static void RunLoopCallbacks(uv_async_t* handle);
-  void RunLoopCallbacks();
+  static void RunCompletionCallbacks(uv_async_t* handle);
+  void RunCompletionCallbacks();
+  static void RunReverseCallbacks(uv_async_t *handle);
+  void RunReverseCallbacks();
+
 public:
   // Initializes thread pool and spins up the requested number of threads
   // The provided loop will be used for completion callbacks, whenever
@@ -39,7 +59,10 @@ public:
   // Queues work on the thread pool, followed by completion call scheduled
   // on the loop provided in the constructor.
   // QueueWork should be called on the loop provided in the constructor.
-  void QueueWork(Callback workCallback, Callback loopCallback, void *data);
+  void QueueWork(Callback workCallback, Callback completionCallback, void *data);
+  // Queues a callback on the loop provided in the constructor
+  // these block the calling thread's execution until the callback completes
+  void ExecuteReverseCallback(Callback reverseCallback, void *data);
 };
 
 #endif

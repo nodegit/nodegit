@@ -17,10 +17,10 @@ class Wrapper : public Nan::ObjectWrap {
   public:
 
     static Nan::Persistent<FunctionTemplate> constructor_template;
-    static void InitializeComponent (Local<v8::Object> target);
+    static void InitializeComponent (v8::Local<v8::Object> target);
 
     void *GetValue();
-    static Local<v8::Value> New(const void *raw);
+    static v8::Local<v8::Value> New(const void *raw);
 
   private:
     Wrapper(void *raw);

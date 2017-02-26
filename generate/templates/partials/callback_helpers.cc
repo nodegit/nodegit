@@ -6,20 +6,19 @@
     {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
   {% endeach %}
 ) {
-  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton =
-    new {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton({{ cbFunction.return.noResults }});
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton baton({{ cbFunction.return.noResults }});
 
   {% each cbFunction.args|argsInfo as arg %}
-    baton->{{ arg.name }} = {{ arg.name }};
+    baton.{{ arg.name }} = {{ arg.name }};
   {% endeach %}
 
-  return baton->ExecuteAsync((uv_async_cb) {{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  return baton.ExecuteAsync({{ cppFunctionName }}_{{ cbFunction.name }}_async);
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_async_t* req, int status) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void *untypedBaton) {
   Nan::HandleScope scope;
 
-  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(req->data);
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(untypedBaton);
 
   {% each cbFunction.args|argsInfo as arg %}
     {% if arg | isPayload %}
@@ -31,7 +30,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
     {% endif %}
   {% endeach %}
 
-  Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
+  v8::Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
     {% each cbFunction.args|argsInfo as arg %}
       {% if arg | isPayload %}
         {%-- payload is always the last arg --%}
@@ -55,9 +54,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
   };
 
   Nan::TryCatch tryCatch;
-  Local<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
-
-  uv_close((uv_handle_t*) &baton->req, NULL);
+  v8::Local<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
 
   if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted)) {
     return;
@@ -88,7 +85,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(uv_as
     }
   {% endeach %}
 
-  baton->done = true;
+  baton->Done();
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result) {
@@ -127,12 +124,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseComp
     {{ cppClassName }}* instance = static_cast<{{ cppClassName }}*>(baton->{% each cbFunction.args|argsInfo as arg %}
       {% if arg.payload == true %}{{arg.name}}{% elsif arg.lastArg %}{{arg.name}}{% endif %}
     {% endeach %});
-    Local<v8::Object> parent = instance->handle();
+    v8::Local<v8::Object> parent = instance->handle();
     SetPrivate(parent, Nan::New("NodeGitPromiseError").ToLocalChecked(), result);
 
     baton->result = {{ cbFunction.return.error }};
   }
-  baton->done = true;
+  baton->Done();
 }
   {%endif%}
 {%endeach%}

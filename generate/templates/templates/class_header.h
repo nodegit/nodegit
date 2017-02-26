@@ -52,7 +52,7 @@ class {{ cppClassName }} : public
     friend class NodeGitWrapper<{{ cppClassName }}Traits>;
   {%endif %}
   public:
-    static void InitializeComponent (Local<v8::Object> target);
+    static void InitializeComponent (v8::Local<v8::Object> target);
 
     {% each functions as function %}
       {% if not function.ignore %}
@@ -67,7 +67,7 @@ class {{ cppClassName }} : public
             {% endeach %}
     );
 
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_async(uv_async_t* req, int status);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_async(void *baton);
     static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
     struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : public AsyncBatonWithResult<{{ arg.return.type }}> {
       {% each arg.args|argsInfo as cbArg %}
@@ -95,7 +95,7 @@ class {{ cppClassName }} : public
         {% endif %}
       )
     {}
-    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, Local<v8::Object> owner = Local<v8::Object>())
+    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>())
       : NodeGitWrapper<{{ cppClassName }}Traits>(raw, selfFreeing, owner)
     {}
     ~{{ cppClassName }}();

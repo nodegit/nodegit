@@ -10,7 +10,7 @@ using namespace v8;
 
 class StrArrayConverter {
   public:
-    static git_strarray *Convert (Local<v8::Value> val);
+    static git_strarray *Convert (v8::Local<v8::Value> val);
 };
 
 #endif

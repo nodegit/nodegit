@@ -37,7 +37,7 @@ describe("Revparse", function() {
       })
       .catch(function(error) {
         assert.ok(error instanceof Error);
-        assert.equal(error.message, "Revspec 'INVALID' not found.");
+        assert.equal(error.message, "revspec 'INVALID' not found");
       });
   });
 

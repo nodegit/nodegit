@@ -18,7 +18,7 @@
         "src/promise_completion.cc",
         "src/wrapper.cc",
         "src/functions/copy.cc",
-        "src/functions/sleep_for_ms.cc",
+        "src/functions/free.cc",
         "src/convenient_patch.cc",
         "src/convenient_hunk.cc",
         "src/str_array_converter.cc",
@@ -88,13 +88,22 @@
               }
             }
           }
-        ], [
+        ],
+        [
+          "OS=='linux' or OS=='mac'", {
+            "libraries": [
+              "-lcurl"
+            ]
+          }
+        ],
+        [
           "OS=='linux' and '<!(echo \"$CXX\")'=='clang++'", {
             "cflags": [
               "-Wno-c++11-extensions"
             ]
           }
-        ], [
+        ],
+        [
           "OS=='linux' and '<!(echo \"$CXX\")'!='clang++'", {
             "cflags": [
               "-std=c++0x"

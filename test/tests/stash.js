@@ -31,15 +31,13 @@ describe("Stash", function() {
       });
   });
 
-  it("can save and drop a stash", function() {
+  function saveDropStash(repo, stashMessage) {
     var fileName = "README.md";
     var fileContent = "Cha-cha-cha-chaaaaaangessssss";
-    var repo = this.repository;
     var filePath = path.join(repo.workdir(), fileName);
     var oldContent;
     var stashes = [];
     var stashOid;
-    var stashMessage = "stash test";
 
     return fse.readFile(filePath)
       .then(function(content) {
@@ -82,6 +80,14 @@ describe("Stash", function() {
             return Promise.reject(e);
           });
       });
+  }
+
+  it("can save and drop a stash", function() {
+    saveDropStash(this.repository, "stash test");
+  });
+
+  it("can save a stash with no message and drop it", function() {
+    saveDropStash(this.repository, null);
   });
 
   it("can save and pop a stash", function() {

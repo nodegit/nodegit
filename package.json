@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -52,7 +52,8 @@
     "js-beautify": "~1.5.10",
     "jshint": "~2.8.0",
     "lcov-result-merger": "~1.0.2",
-    "mocha": "~2.3.4"
+    "mocha": "~2.3.4",
+    "walk": "^2.3.9"
   },
   "vendorDependencies": {
     "libssh2": "1.7.0",
