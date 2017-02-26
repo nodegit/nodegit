@@ -2051,6 +2051,11 @@
       "functions": {
         "git_revert": {
           "isAsync": true,
+          "args": {
+            "given_opts": {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
