@@ -1315,7 +1315,7 @@ describe("Merge", function() {
         return Promise.reject(new Error(
           "should not be able to retrieve common merge base"));
       }, function(err) {
-        assert.equal("No merge base found", err.message);
+        assert.equal("no merge base found", err.message);
         assert.equal(NodeGit.Error.CODE.ENOTFOUND, err.errno);
       });
     });
