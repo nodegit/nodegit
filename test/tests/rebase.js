@@ -4,7 +4,7 @@ var local = path.join.bind(path, __dirname);
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 
-describe.only("Rebase", function() {
+describe("Rebase", function() {
   var NodeGit = require("../../");
   var RepoUtils = require("../utils/repository_setup");
 
