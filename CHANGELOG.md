@@ -1,5 +1,74 @@
 # Change Log
 
+## <a name="v0-18-0" href="#v0-18-0">v0.18.0</a> [(2017-02-28)](https://github.com/nodegit/nodegit/releases/tag/v0.18.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.17.0...v0.18.0)
+
+### API Changes
+
+ - All callbacks that go to libgit2 now have an optional `waitForResult` flag that can be `true`/`false`. Defaults to false. When true it will not stop libgit2 from continuing on before the JS code is fully executed and resolved (in cases of a Promise). This is useful for progress callbacks (like fetching) where the bubbling up of the progress to JS doesn't really need the C/C++ code to wait for the JS code to fully handle the event before continuing. This can have serious performance implications for many callbacks that can be fired quite frequently.
+ - `given_opts` in `Revert.revert` are now optional
+ - `checkout_opts` in `Reset.fromAnnotated` and `Reset.reset` are now optional
+ - `Reset.fromAnnotated` is now async
+ - `message` on `Stash.save` is now optional
+ - `options` on `Stash.apply` and `Stash.pop` is now optional
+ - Added `processMergeMessageCallback` on `Repository#mergeBranches` to allow for custom merge messages
+ - Add `beforeFinishFn` to `Repository#rebaseBranches` and `Repository#continueRebase`. This is called before the invocation of `finish()`. If the callback returns a promise, `finish()` will be called when the promise resolves. The `beforeFinishFn` will be called with an object that has on it:
+  - `ontoName` The name of the branch that we rebased onto
+  - `ontoSha` The sha that we rebased onto
+  - `originalHeadName` The name of the branch that we rebased
+  - `originalHeadSha` The sha of the branch that was rebased
+  - `rewitten` which is an array of sha pairs that contain which contain what the commit sha was before the rebase and what the commit sha is after the rebase 
+
+### Summary of Changes from bumping libgit2 to 43275f5
+
+[PR #1123](https://github.com/nodegit/nodegit/pull/1223) bumped libgit2 which brought in many changes and bug fixes.
+
+#### Included merged libgit2 PRs:
+
+ - [Use a shared buffer in calls of git_treebuilder_write to avoid heap contention #3892](https://github.com/libgit2/libgit2/pull/3892)
+ - [WinHTTP: set proper error messages when SSL fails #4050](https://github.com/libgit2/libgit2/pull/4050)
+ - [Clang analyzer run #4051](https://github.com/libgit2/libgit2/pull/4051)
+ - [Extend packfile in increments of page_size. #4053](https://github.com/libgit2/libgit2/pull/4053)
+ - [Fix general example memory leaks #4078](https://github.com/libgit2/libgit2/pull/4078)
+ - [WIP: some coverity & compiler warning fixes #4086](https://github.com/libgit2/libgit2/pull/4086)
+ - [Fix a few recent warnings #4087](https://github.com/libgit2/libgit2/pull/4087)
+ - [Fix uninitialized variable warning #4095](https://github.com/libgit2/libgit2/pull/4095)
+ - [Update docs for git_oid_fromstrn and p #4096](https://github.com/libgit2/libgit2/pull/4096)
+ - [Fix digest credentials for proxy in windows #4104](https://github.com/libgit2/libgit2/pull/4104)
+ - [Vector reverse overflow #4105](https://github.com/libgit2/libgit2/pull/4105)
+ - [Flag given_opts in git_revert as optional #4108](https://github.com/libgit2/libgit2/pull/4108)
+ - [Flag checkout_opts in git_reset as optional #4109](https://github.com/libgit2/libgit2/pull/4109)
+ - [dirname with DOS prefixes #4111](https://github.com/libgit2/libgit2/pull/4111)
+ - [Add support for lowercase proxy environment variables #4112](https://github.com/libgit2/libgit2/pull/4112)
+ - [Flag options in git_stash_apply and git_stash_pop as being optional #4117](https://github.com/libgit2/libgit2/pull/4117)
+ - [rename detection: don't try to detect submodule renames #4119](https://github.com/libgit2/libgit2/pull/4119)
+ - [tests: fix permissions on testrepo.git index file #4121](https://github.com/libgit2/libgit2/pull/4121)
+
+#### Included non-merged libgit2 PRs:
+
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+ - [Fix proxy auto detect not utilizing callbacks #4097](https://github.com/libgit2/libgit2/pull/4097)
+
+### Summary of Changes to NodeGit outside of libgit2 bump
+
+ - Don't overwrite C++ files for things that haven't changed [PR #1091](https://github.com/nodegit/nodegit/pull/1091)
+ - Add the option to "fire and forget" callbacks so libgit2 doesn't wait for JS to finish before proceeding [PR #1208](https://github.com/nodegit/nodegit/pull/1208)
+ - Send back the error code from libgit2 when a call fails [PR #1209](https://github.com/nodegit/nodegit/pull/1209)
+ - Initialize pointers to null [PR #1210](https://github.com/nodegit/nodegit/pull/1210)
+ - Replace Gitter with Slack [PR #1212](https://github.com/nodegit/nodegit/pull/1212)
+ - Make `given_opts` in `Revert.revert` optional [PR #1213](https://github.com/nodegit/nodegit/pull/1213)
+ - Make `Reset.fromAnnotated` async and `checkout_opts` optional [PR #1214](https://github.com/nodegit/nodegit/pull/1214)
+ - Make `message` on `Stash.save` optional [PR #1215](https://github.com/nodegit/nodegit/pull/1215)
+ - Add `Remote.ls` to NodeGit [PR #1218](https://github.com/nodegit/nodegit/pull/1218)
+ - Add `processMergeMessageCallback` to `Repository#mergeBranches` to allow for custom merge messages [PR #1219](https://github.com/nodegit/nodegit/pull/1219)
+ - Bump libgit2 to 43275f5 [PR #1223](https://github.com/nodegit/nodegit/pull/1223) from srajko/bump-libgit
+ - Provide rebase details on finish [PR #1224](https://github.com/nodegit/nodegit/pull/1224)
+ - Use wider int to calculate throttle window [PR #1232](https://github.com/nodegit/nodegit/pull/1232)
+ - Update comment to reflect the correct path for generated code output [PR #1236](https://github.com/nodegit/nodegit/pull/1236)
+ - Remove nwjs example from the docs [PR #1238](https://github.com/nodegit/nodegit/pull/1238)
+ - Remove `sudo` requirement from linux 32-bit builds [PR #1241](https://github.com/nodegit/nodegit/pull/1241)
+
 ## <a name="v0-17-0" href="#v0-17-0">v0.17.0</a> [(2017-01-06)](https://github.com/nodegit/nodegit/releases/tag/v0.17.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.16.0...v0.17.0)
