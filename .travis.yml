@@ -22,13 +22,10 @@ matrix:
   include:
     - os: linux
       env: export NODE_VERSION="4" TARGET_ARCH="ia32"
-      sudo: required
     - os: linux
       env: export NODE_VERSION="6.5" TARGET_ARCH="ia32"
-      sudo: required
     - os: linux
       env: export NODE_VERSION="7.4" TARGET_ARCH="ia32"
-      sudo: required
 
 git:
   depth: 1
@@ -49,10 +46,6 @@ before_install:
   - export CXX=clang++
   - export npm_config_clang=1
   - export JOBS=4
-
-  - if [ $TARGET_ARCH == "ia32" ]; then
-      sudo ln -s /usr/include/asm-generic /usr/include/asm;
-    fi
 
   - if [ $TRAVIS_OS_NAME != "linux" ]; then
       git clone https://github.com/creationix/nvm.git ./.nvm;
@@ -87,14 +80,10 @@ before_script:
   - git config --global user.email johndoe@example.com
 
 script:
-  - if [ $TARGET_ARCH == "x64" ]; then
-      if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
-        npm test && npm run cov && npm run coveralls;
-      else
-        npm test;
-      fi
+    if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
+      npm test && npm run cov && npm run coveralls;
     else
-      echo "Not running tests because the binary is not built for 64-bit systems";
+      npm test;
     fi
 
 after_success:
