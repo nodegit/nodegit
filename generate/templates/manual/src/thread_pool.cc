@@ -4,15 +4,10 @@ ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop) {
   uv_mutex_init(&workMutex);
   uv_sem_init(&workSemaphore, 0);
 
-  uv_async_init(loop, &completionAsync, RunCompletionCallbacks);
-  completionAsync.data = this;
-  uv_unref((uv_handle_t *)&completionAsync);
-  uv_mutex_init(&completionMutex);
-
-  uv_async_init(loop, &reverseAsync, RunReverseCallbacks);
-  reverseAsync.data = this;
-  uv_unref((uv_handle_t *)&reverseAsync);
-  uv_mutex_init(&reverseMutex);
+  uv_async_init(loop, &loopAsync, RunLoopCallbacks);
+  loopAsync.data = this;
+  uv_unref((uv_handle_t *)&loopAsync);
+  uv_mutex_init(&loopMutex);
 
   workInProgressCount = 0;
 
@@ -26,25 +21,29 @@ void ThreadPool::QueueWork(Callback workCallback, Callback completionCallback, v
   uv_mutex_lock(&workMutex);
   // there is work on the thread pool - reference the handle so
   // node doesn't terminate
-  uv_ref((uv_handle_t *)&completionAsync);
+  uv_ref((uv_handle_t *)&loopAsync);
   workQueue.push(Work(workCallback, completionCallback, data));
   workInProgressCount++;
   uv_mutex_unlock(&workMutex);
   uv_sem_post(&workSemaphore);
 }
 
-void ThreadPool::ExecuteReverseCallback(Callback reverseCallback, void *data) {
+void ThreadPool::QueueLoopCallback(Callback callback, void *data, bool isWork) {
   // push the callback into the queue
-  uv_mutex_lock(&reverseMutex);
-  ReverseCall reverseCall(reverseCallback, data);
-  bool queueWasEmpty = reverseQueue.empty();
-  reverseQueue.push(reverseCall);
-  // we only trigger RunReverseCallbacks via the reverseAsync handle if the queue
-  // was empty.  Otherwise, we depend on RunReverseCallbacks to re-trigger itself
+  uv_mutex_lock(&loopMutex);
+  LoopCallback loopCallback(callback, data, isWork);
+  bool queueWasEmpty = loopQueue.empty();
+  loopQueue.push(loopCallback);
+  // we only trigger RunLoopCallbacks via the loopAsync handle if the queue
+  // was empty.  Otherwise, we depend on RunLoopCallbacks to re-trigger itself
   if (queueWasEmpty) {
-    uv_async_send(&reverseAsync);
+    uv_async_send(&loopAsync);
   }
-  uv_mutex_unlock(&reverseMutex);
+  uv_mutex_unlock(&loopMutex);
+}
+
+void ThreadPool::ExecuteReverseCallback(Callback reverseCallback, void *data) {
+  QueueLoopCallback(reverseCallback, data, false);
 }
 
 void ThreadPool::RunEventQueue(void *threadPool) {
@@ -64,63 +63,40 @@ void ThreadPool::RunEventQueue() {
     // perform the queued work
     (*work.workCallback)(work.data);
 
-    // schedule the callback on the loop
-    uv_mutex_lock(&completionMutex);
-    completionQueue.push(work);
-    uv_mutex_unlock(&completionMutex);
-    uv_async_send(&completionAsync);
+    // schedule the completion callback on the loop
+    QueueLoopCallback(work.completionCallback, work.data, true);
   }
 }
 
-void ThreadPool::RunCompletionCallbacks(uv_async_t* handle) {
-  static_cast<ThreadPool *>(handle->data)->RunCompletionCallbacks();
+void ThreadPool::RunLoopCallbacks(uv_async_t* handle) {
+  static_cast<ThreadPool *>(handle->data)->RunLoopCallbacks();
 }
 
-void ThreadPool::RunCompletionCallbacks() {
-  // uv_async_send can coalesce calls, so we are not guaranteed one
-  // RunCompletionCallbacks per uv_async_send call
-  // so we always process the entire completionQueue
-  int callbacksCompleted = 0;
-  uv_mutex_lock(&completionMutex);
-  while(!completionQueue.empty()) {
-    Work work = completionQueue.front();
-    completionQueue.pop();
-    uv_mutex_unlock(&completionMutex);
-    // perform the queued loop callback
-    (*work.completionCallback)(work.data);
-    callbacksCompleted++;
-    uv_mutex_lock(&completionMutex);
-  }
-  uv_mutex_unlock(&completionMutex);
+void ThreadPool::RunLoopCallbacks() {
+  // get the next callback to run
+  uv_mutex_lock(&loopMutex);
+  LoopCallback loopCallback = loopQueue.front();
+  uv_mutex_unlock(&loopMutex);
 
-  uv_mutex_lock(&workMutex);
+  // perform the queued loop callback
+  (*loopCallback.callback)(loopCallback.data);
+
+  // pop the queue, and if necessary, re-trigger RunLoopCallbacks
+  uv_mutex_lock(&loopMutex);
+  loopQueue.pop();
+  if (!loopQueue.empty()) {
+    uv_async_send(&loopAsync);
+  }
+  uv_mutex_unlock(&loopMutex);
+
   // if there is no ongoing work / completion processing, node doesn't need
   // to be prevented from terminating
-  workInProgressCount -= callbacksCompleted;
-  if(!workInProgressCount) {
-    uv_unref((uv_handle_t *)&completionAsync);
+  if (loopCallback.isWork) {
+    uv_mutex_lock(&workMutex);
+    workInProgressCount --;
+    if(!workInProgressCount) {
+      uv_unref((uv_handle_t *)&loopAsync);
+    }
+    uv_mutex_unlock(&workMutex);
   }
-  uv_mutex_unlock(&workMutex);
-}
-
-void ThreadPool::RunReverseCallbacks(uv_async_t* handle) {
-  static_cast<ThreadPool *>(handle->data)->RunReverseCallbacks();
-}
-
-void ThreadPool::RunReverseCallbacks() {
-  // get the next callback to run
-  uv_mutex_lock(&reverseMutex);
-  ReverseCall reverseCall = reverseQueue.front();
-  uv_mutex_unlock(&reverseMutex);
-
-  // execute callback
-  (*reverseCall.reverseCallback)(reverseCall.data);
-
-  // pop the queue, and if necessary, re-trigger RunReverseCallbacks
-  uv_mutex_lock(&reverseMutex);
-  reverseQueue.pop();
-  if (!reverseQueue.empty()) {
-    uv_async_send(&reverseAsync);
-  }
-  uv_mutex_unlock(&reverseMutex);
 }

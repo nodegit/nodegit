@@ -48,6 +48,7 @@
       {% elsif field.isCallbackFunction %}
         Nan::Callback *callback = NULL;
         int throttle = {%if field.return.throttle %}{{ field.return.throttle }}{%else%}0{%endif%};
+        bool waitForResult = true;
 
         if (value->IsFunction()) {
           callback = new Nan::Callback(value.As<Function>());
@@ -59,12 +60,19 @@
             v8::Local<Value> objectCallback = maybeObjectCallback.ToLocalChecked();
             if (objectCallback->IsFunction()) {
               callback = new Nan::Callback(objectCallback.As<Function>());
+
               Nan::MaybeLocal<Value> maybeObjectThrottle = Nan::Get(object, Nan::New("throttle").ToLocalChecked());
               if(!maybeObjectThrottle.IsEmpty()) {
                 v8::Local<Value> objectThrottle = maybeObjectThrottle.ToLocalChecked();
                 if (objectThrottle->IsNumber()) {
                   throttle = (int)objectThrottle.As<Number>()->Value();
                 }
+              }
+
+              Nan::MaybeLocal<Value> maybeObjectWaitForResult = Nan::Get(object, Nan::New("waitForResult").ToLocalChecked());
+              if(!maybeObjectWaitForResult.IsEmpty()) {
+                Local<Value> objectWaitForResult = maybeObjectWaitForResult.ToLocalChecked();
+                waitForResult = (bool)objectWaitForResult->BooleanValue();
               }
             }
           }
@@ -74,7 +82,7 @@
             wrapper->raw->{{ field.name }} = ({{ field.cType }}){{ field.name }}_cppCallback;
           }
 
-          wrapper->{{ field.name }}.SetCallback(callback, throttle);
+          wrapper->{{ field.name }}.SetCallback(callback, throttle, waitForResult);
         }
 
       {% elsif field.payloadFor %}
@@ -111,19 +119,28 @@
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
         {% endeach %}
       ) {
-        {{ field.name|titleCase }}Baton baton({{ field.return.noResults }});
+        {{ field.name|titleCase }}Baton *baton =
+          new {{ field.name|titleCase }}Baton({{ field.return.noResults }});
 
         {% each field.args|argsInfo as arg %}
-          baton.{{ arg.name }} = {{ arg.name }};
+          baton->{{ arg.name }} = {{ arg.name }};
         {% endeach %}
 
-        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(&baton);
+        {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
+
+        {{ field.return.type }} result;
 
         if (instance->{{ field.name }}.WillBeThrottled()) {
-          return baton.defaultResult;
+          result = baton->defaultResult;
+          delete baton;
+        } else if (instance->{{ field.name }}.ShouldWaitForResult()) {
+          result = baton->ExecuteAsync({{ field.name }}_async);
+          delete baton;
+        } else {
+          result = baton->defaultResult;
+          baton->ExecuteAsync({{ field.name }}_async, deleteBaton);
         }
-
-        return baton.ExecuteAsync({{ field.name }}_async);
+        return result;
       }
 
       void {{ cppClassName }}::{{ field.name }}_async(void *untypedBaton) {

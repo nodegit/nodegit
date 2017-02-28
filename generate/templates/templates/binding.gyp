@@ -12,6 +12,7 @@
       },
 
       "sources": [
+        "src/async_baton.cc",
         "src/lock_master.cc",
         "src/nodegit.cc",
         "src/init_ssh2.cc",
