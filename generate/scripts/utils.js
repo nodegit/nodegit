@@ -37,7 +37,7 @@ var util = {
       if (header) {
         var commentPrefix = ~header.indexOf('.gyp') ? '#' : '//'
         content = commentPrefix +
-          " This is a generated file, modify: generate/templates/" +
+          " This is a generated file, modify: generate/templates/templates/" +
           header +
           "\n\n" +
           content;
