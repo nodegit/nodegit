@@ -155,8 +155,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     callback->Call(2, argv);
   } else {
     if (baton->error) {
+      v8::Local<v8::Object> err;
+      if (baton->error->message) {
+        err = Nan::Error(baton->error->message)->ToObject();
+      } else {
+        err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
+      }
+      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
       v8::Local<v8::Value> argv[1] = {
-        Nan::Error(baton->error->message)
+        err
       };
       callback->Call(1, argv);
       if (baton->error->message)

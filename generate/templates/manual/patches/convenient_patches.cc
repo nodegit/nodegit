@@ -95,8 +95,15 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
   }
 
   if (baton->error) {
+    Local<v8::Object> err;
+    if (baton->error->message) {
+      err = Nan::Error(baton->error->message)->ToObject();
+    } else {
+      err = Nan::Error("Method convenientFromDiff has thrown an error.")->ToObject();
+    }
+    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
     Local<v8::Value> argv[1] = {
-      Nan::Error(baton->error->message)
+      err
     };
     callback->Call(1, argv);
     if (baton->error->message)
