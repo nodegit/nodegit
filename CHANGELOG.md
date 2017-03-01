@@ -11,7 +11,6 @@
  - `checkout_opts` in `Reset.fromAnnotated` and `Reset.reset` are now optional
  - `Reset.fromAnnotated` is now async
  - `message` on `Stash.save` is now optional
- - `options` on `Stash.apply` and `Stash.pop` is now optional
  - Added `processMergeMessageCallback` on `Repository#mergeBranches` to allow for custom merge messages
  - Add `beforeFinishFn` to `Repository#rebaseBranches` and `Repository#continueRebase`. This is called before the invocation of `finish()`. If the callback returns a promise, `finish()` will be called when the promise resolves. The `beforeFinishFn` will be called with an object that has on it:
   - `ontoName` The name of the branch that we rebased onto
