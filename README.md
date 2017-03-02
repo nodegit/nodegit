@@ -95,6 +95,12 @@ In CircleCI:
       - sudo apt-get install -y libstdc++-4.9-dev
 ```
 
+If you receive errors about *lifecycleScripts* preinstall/install you probably miss *libssl-dev*
+In Ubuntu:
+```
+sudo apt-get install libssl-dev
+```
+
 If you are still encountering problems while installing, you should try the
 [Building from source](http://www.nodegit.org/guides/install/from-source/)
 instructions.
