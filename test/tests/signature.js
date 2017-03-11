@@ -72,7 +72,7 @@ describe("Signature", function() {
     .then(function(repo) {
       var sig = repo.defaultSignature();
       assert.equal(sig.name(), "unknown");
-      assert.equal(sig.email(), "unknown@unknown.com");
+      assert.equal(sig.email(), "unknown@example.com");
     })
     .then(cleanUp)
     .then(done)
