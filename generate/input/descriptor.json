@@ -2527,6 +2527,16 @@
     "tree": {
       "selfFreeing": true,
       "functions": {
+        "git_tree_create_updated": {
+          "args": {
+            "updates": {
+              "cType": "git_tree_update *",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitTreeUpdate"
+            }
+          }
+        },
         "git_tree_entry_byid": {
           "return": {
             "ownedByThis": true

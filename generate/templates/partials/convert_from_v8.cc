@@ -48,12 +48,12 @@
   {%elsif cppClassName == 'Array'%}
 
   Array *tmp_{{ name }} = Array::Cast(*info[{{ jsArg }}]);
-  from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|replace '**' '*' }}));
+  from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|unPointer }}));
       for (unsigned int i = 0; i < tmp_{{ name }}->Length(); i++) {
     {%--
       // FIXME: should recursively call convertFromv8.
     --%}
-      from_{{ name }}[i] = Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(tmp_{{ name }}->Get(Nan::New(static_cast<double>(i)))->ToObject())->GetValue();
+      from_{{ name }}[i] = {%if not cType|isDoublePointer %}*{%endif%}Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(tmp_{{ name }}->Get(Nan::New(static_cast<double>(i)))->ToObject())->GetValue();
       }
   {%elsif cppClassName == 'Function'%}
   {%elsif cppClassName == 'Buffer'%}
