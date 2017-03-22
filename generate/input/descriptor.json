@@ -2593,6 +2593,10 @@
         }
       }
     },
+    "tree_update": {
+      "hasConstructor": true,
+      "ignoreInit": true
+    },
     "writestream": {
       "cType": "git_writestream",
       "needsForwardDeclaration": false
