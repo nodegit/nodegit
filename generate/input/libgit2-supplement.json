@@ -259,6 +259,28 @@
           "type": "int"
         },
         "group": "stash"
+      },
+      "git_writestream_write": {
+        "type": "function",
+        "file": "types.h",
+        "args": [
+          {
+            "name": "stream",
+            "type": "git_writestream *"
+          },
+          {
+            "name": "buffer",
+            "type": "const char *"
+          },
+          {
+            "name": "len",
+            "type": "size_t"
+          }
+        ],
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
       }
     },
     "groups": [
@@ -342,6 +364,12 @@
           "git_tree_entry_name",
           "git_tree_entry_to_object",
           "git_tree_entry_type"
+        ]
+      ],
+      [
+        "writestream",
+        [
+          "git_writestream_write"
         ]
       ]
     ],

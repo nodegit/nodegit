@@ -480,4 +480,18 @@ describe("Blob", function() {
         });
     });
   });
+
+  it("can create a blob from a Writestream", function () {
+    var test = new Buffer("test\n");
+    var testOid = "9daeafb9864cf43055ae93beb0afd6c7d144bfa4";
+
+    return NodeGit.Blob.createFromStream(this.repository, "")
+      .then(function(stream) {
+        stream.write(test, test.byteLength);
+        return NodeGit.Blob.createFromstreamCommit(stream);
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(), testOid);
+      });
+  });
 });

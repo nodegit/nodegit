@@ -2840,7 +2840,19 @@
     },
     "writestream": {
       "cType": "git_writestream",
-      "needsForwardDeclaration": false
+      "needsForwardDeclaration": false,
+      "functions": {
+        "git_writestream_write": {
+          "isAsync": true,
+          "cFunctionName": "(*(*baton).stream).write",
+          "args": {
+            "buffer": {
+              "cppClassName": "Buffer",
+              "jsClassName": "Buffer"
+            }
+          }
+        }
+      }
     }
   }
 }
