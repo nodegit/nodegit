@@ -8,6 +8,7 @@ describe("Reference", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Reference = NodeGit.Reference;
+  var Reflog = NodeGit.Reflog;
 
   var reposPath = local("../repos/workdir");
   var refName = "refs/heads/master";
@@ -75,4 +76,49 @@ describe("Reference", function() {
       });
   });
 
+  it("can rename a reference", function() {
+    var newRefName = "refs/heads/chasta-boran";
+    var ref = this.reference;
+    var repo = this.repository;
+    var reflogMessage = "reflog message";
+    var refExistsMessage = "Renamed ref still exists";
+
+    return repo.getReference(newRefName)
+      .then(function() {
+        // The new ref name should not exist yet
+        throw new Error(refExistsMessage);
+      })
+      .catch(function(err) {
+        // Should throw an error explaining that the ref
+        // does not exist
+        assert.ok(err.message.includes(newRefName));
+        return ref.rename(newRefName, 0, reflogMessage);
+      })
+      .then(function(reference) {
+        // The ref should be renamed at this point
+        assert.equal(reference.name(), newRefName);
+        return repo.getReference(refName);
+      })
+      .then(function() {
+        // The original ref name should not be found
+        throw new Error(refExistsMessage);
+      })
+      .catch(function(err) {
+        assert.ok(err.message.includes(refName));
+        return Reflog.read(repo, newRefName);
+      })
+      .then(function(reflog) {
+        var refEntryMessage = reflog
+          .entryByIndex(reflog.entrycount() - 1)
+          .message();
+        // The reflog should have the message passed to
+        // the rename
+        assert.equal(refEntryMessage, reflogMessage);
+        return repo.getReference(newRefName);
+      })
+      .then(function(newRef) {
+        // Set the ref name back to `master`
+        return newRef.rename(refName, 0, "another reflog message");
+      });
+  });
 });
