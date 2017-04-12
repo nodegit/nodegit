@@ -2696,6 +2696,14 @@
             "isErrorCode": true
           },
           "isAsync": true
+        },
+        "git_tag_peel": {
+          "args": {
+            "tag_target_out": {
+              "isReturn": true
+            }
+          },
+          "isAsync": true
         }
       }
     },
