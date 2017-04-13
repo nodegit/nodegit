@@ -114,9 +114,6 @@
         "libgit2/src/graph.c",
         "libgit2/src/hash.c",
         "libgit2/src/hash.h",
-        "libgit2/src/hash/hash_generic.c",
-        "libgit2/src/hash/hash_generic.h",
-        "libgit2/src/hash/hash_openssl.h",
         "libgit2/src/hashsig.c",
         "libgit2/src/ident.c",
         "libgit2/src/ignore.c",
@@ -296,7 +293,11 @@
             "-DGIT_CURL"
           ],
           "defines": [
-            "GIT_CURL"
+            "GIT_CURL",
+            "OPENSSL_SHA1"
+          ],
+          "sources": [
+            "libgit2/src/hash/hash_openssl.h"
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd')" , {
@@ -317,6 +318,7 @@
         ["OS=='win'", {
           "defines": [
             "GIT_WINHTTP",
+            "WIN32_SHA1"
           ],
           "msvs_settings": {
             "VCLinkerTool": {
@@ -359,6 +361,8 @@
           ],
           "sources": [
             "libgit2/deps/regex/regex.c",
+            "libgit2/src/hash/hash_win32.c",
+            "libgit2/src/hash/hash_win32.h",
             "libgit2/src/transports/winhttp.c",
             "libgit2/src/win32/dir.c",
             "libgit2/src/win32/dir.h",
