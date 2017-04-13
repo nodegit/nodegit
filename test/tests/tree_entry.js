@@ -156,6 +156,28 @@ describe("TreeEntry", function() {
       });
   });
 
+  it("can convert entry into a blob", function() {
+    var repo = this.repository;
+    return this.commit.getEntry("README.md")
+      .then(function(entry) {
+        return entry.toObject(repo);
+      })
+      .then(function(object) {
+        assert.equal(object.isBlob(), true);
+      });
+  });
+
+  it("can convert entry into a tree", function() {
+    var repo = this.repository;
+    return this.commit.getEntry("example")
+      .then(function(entry) {
+        return entry.toObject(repo);
+      })
+      .then(function(object) {
+        assert.equal(object.isTree(), true);
+      });
+  });
+
   it("does not leak", function() {
     var test = this;
 

@@ -2590,6 +2590,17 @@
           "return": {
             "ownedByThis": true
           }
+        },
+        "git_tree_entry_to_object": {
+          "args": {
+            "object_out": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
         }
       }
     },
