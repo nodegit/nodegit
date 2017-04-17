@@ -176,7 +176,7 @@ void LockMasterImpl::Lock(bool acquireMutexes) {
       if(failure) {
         // we have failed to lock a mutex... unlock everything we have locked
         std::for_each(objectMutexes.begin(), it, uv_mutex_unlock);
-        if (alreadyLocked > it && alreadyLocked != objectMutexes.end()) {
+        if (alreadyLocked >= it && alreadyLocked != objectMutexes.end()) {
           uv_mutex_unlock(*alreadyLocked);
         }
         // now do a blocking lock on what we couldn't lock
