@@ -1,6 +1,7 @@
 branches:
   only:
     - master
+    - /^release.*/
     - /^v\d+\.\d+\.\d+$/
 
 compiler: clang

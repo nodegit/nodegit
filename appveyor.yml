@@ -59,4 +59,4 @@ build: off
 branches:
   only:
     - master
-    - release/*
+    - /^release.*/
