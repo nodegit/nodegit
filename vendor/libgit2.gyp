@@ -288,9 +288,7 @@
             ],
             "sources": [
                 "libgit2/src/stransport_stream.c",
-                "libgit2/src/stransport_stream.h",
-                "libgit2/src/tls_stream.c",
-                "libgit2/src/tls_stream.h"
+                "libgit2/src/stransport_stream.h"
             ],
             "link_settings": {
                 "xcode_settings": {
@@ -307,10 +305,12 @@
           ],
           "defines": [
             "GIT_CURL",
-            "OPENSSL_SHA1"
+            "GIT_SHA1_OPENSSL"
           ],
           "sources": [
-            "libgit2/src/hash/hash_openssl.h"
+            "libgit2/src/hash/hash_openssl.h",
+            "libgit2/src/tls_stream.c",
+            "libgit2/src/tls_stream.h"
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd')" , {
@@ -320,12 +320,7 @@
             "-w",
           ],
           "defines": [
-            "GIT_OPENSSL",
             "GIT_USE_STAT_MTIM"
-          ],
-          "sources": [
-              "libgit2/src/tls_stream.c",
-              "libgit2/src/tls_stream.h"
           ]
         }],
         ["OS=='win'", {
