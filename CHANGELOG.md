@@ -1,5 +1,69 @@
 # Change Log
 
+## <a name="v0-19-0" href="#v0-19-0">v0.19.0</a> [(2017-04-20)](https://github.com/nodegit/nodegit/releases/tag/v0.19.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.18.0...v0.19.0)
+
+#### Summary of changes outside of libgit2 bump:
+ - You can now convert tree entries in blobs [PR #1272](https://github.com/nodegit/nodegit/pull/1272)
+
+#### Included merged libgti2 PRs:
+
+ - [fileops: fix leaking fd in `mmap_ro_file` #4201](https://github.com/libgit2/libgit2/pull/4201)
+ - [README: document our relation to changes in upstream #4198](https://github.com/libgit2/libgit2/pull/4198)
+ - [filter: only close filter if it's been initialized correctly #4196](https://github.com/libgit2/libgit2/pull/4196)
+ - [Fix building against OpenSSL v1.1 #4195](https://github.com/libgit2/libgit2/pull/4195)
+ - [pkgconfig: fix handling of prefixes containing whitespaces #4193](https://github.com/libgit2/libgit2/pull/4193)
+ - [Refactor some of the win32 POSIX emulation #4192](https://github.com/libgit2/libgit2/pull/4192)
+ - [Correct non-existent file references in `odb.h` #4188](https://github.com/libgit2/libgit2/pull/4188)
+ - [Coverity #4183](https://github.com/libgit2/libgit2/pull/4183)
+ - [git_treebuilder_write_with_buffer refactorings #4182](https://github.com/libgit2/libgit2/pull/4182)
+ - [Fix memory leaks #4180](https://github.com/libgit2/libgit2/pull/4180)
+ - [sha1dc: perf improvements from upstream #4178](https://github.com/libgit2/libgit2/pull/4178)
+ - [inet_pton: don't assume addr families don't exist #4176](https://github.com/libgit2/libgit2/pull/4176)
+ - [git_futils: don't O_EXCL and O_TRUNC #4175](https://github.com/libgit2/libgit2/pull/4175)
+ - [Fix the documentation for git_cred_acquire_cb #4172](https://github.com/libgit2/libgit2/pull/4172)
+ - [Fix typo in remote.h API #4171](https://github.com/libgit2/libgit2/pull/4171)
+ - [Fix resolving absolute symlinks (on at least Win32) #4169](https://github.com/libgit2/libgit2/pull/4169)
+ - [Coverity fixes #4167](https://github.com/libgit2/libgit2/pull/4167)
+ - [Remove `map_free` macros #4166](https://github.com/libgit2/libgit2/pull/4166)
+ - [Worktree fixes #4163](https://github.com/libgit2/libgit2/pull/4163)
+ - [merge_driver: fix const-correctness for source getters #4162](https://github.com/libgit2/libgit2/pull/4162)
+ - [submodule: catch when submodule is not staged on update #4161](https://github.com/libgit2/libgit2/pull/4161)
+ - [Diff fixes #4160](https://github.com/libgit2/libgit2/pull/4160)
+ - [Skip uninteresting commits in revwalk timesort iterator #4157](https://github.com/libgit2/libgit2/pull/4157)
+ - [git_futils_readbuffer: don't compute sha-1 #4156](https://github.com/libgit2/libgit2/pull/4156)
+ - [Support namespaced references again #4154](https://github.com/libgit2/libgit2/pull/4154)
+ - [rebase: ignore untracked files in submodules #4151](https://github.com/libgit2/libgit2/pull/4151)
+ - [git_commit_create: freshen tree objects in commit #4150](https://github.com/libgit2/libgit2/pull/4150)
+ - [cmake: only enable supported compiler warning flags #4148](https://github.com/libgit2/libgit2/pull/4148)
+ - [winhttp: disambiguate error messages when sending requests #4146](https://github.com/libgit2/libgit2/pull/4146)
+ - [tests: refs::create: fix memory leak #4145](https://github.com/libgit2/libgit2/pull/4145)
+ - [Fix: make reflog include \"(merge)\" for merge commits #4143](https://github.com/libgit2/libgit2/pull/4143)
+ - [Fix minor typos in CONVENTIONS.md #4142](https://github.com/libgit2/libgit2/pull/4142)
+ - [Fix inet_pton tests triggering an assert in Haiku #4141](https://github.com/libgit2/libgit2/pull/4141)
+ - [README: Mention how to run tests #4139](https://github.com/libgit2/libgit2/pull/4139)
+ - [tests: Add create__symbolic_with_arbitrary_content #4138](https://github.com/libgit2/libgit2/pull/4138)
+ - [appveyor: don't rewrite the system mingw #4137](https://github.com/libgit2/libgit2/pull/4137)
+ - [Introduce (optional) SHA1 collision attack detection #4136](https://github.com/libgit2/libgit2/pull/4136)
+ - [Provide error on gcc < 4.1 when THREADSAFE #4135](https://github.com/libgit2/libgit2/pull/4135)
+ - [fix regression from #4092 #4133](https://github.com/libgit2/libgit2/pull/4133)
+ - [Attrcache cleanups #4131](https://github.com/libgit2/libgit2/pull/4131)
+ - [Improve clar messages #4130](https://github.com/libgit2/libgit2/pull/4130)
+ - [Minor comment fix #4127](https://github.com/libgit2/libgit2/pull/4127)
+ - [refdb: catch additional per-worktree refs #4124](https://github.com/libgit2/libgit2/pull/4124)
+ - [Signature cleanups #4122](https://github.com/libgit2/libgit2/pull/4122)
+ - [Changes to provide option to turn off/on ofs_delta #4115](https://github.com/libgit2/libgit2/pull/4115)
+ - [khash cleanups #4092](https://github.com/libgit2/libgit2/pull/4092)
+ - [fsync all the things #4030](https://github.com/libgit2/libgit2/pull/4030)
+ - [Worktree implementation #3436](https://github.com/libgit2/libgit2/pull/3436)
+
+#### Included non-merged libgit2 PRs:
+
+ - [Parallelize checkout_create_the_new for ntfs perf gains #4205](https://github.com/libgit2/libgit2/pull/4205)
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+ - [Fix proxy auto detect not utilizing callbacks #4097](https://github.com/libgit2/libgit2/pull/4097)
+
 ## <a name="v0-18-0" href="#v0-18-0">v0.18.0</a> [(2017-02-28)](https://github.com/nodegit/nodegit/releases/tag/v0.18.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.17.0...v0.18.0)
