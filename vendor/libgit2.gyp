@@ -331,7 +331,7 @@
         ["OS=='win'", {
           "defines": [
             "GIT_WINHTTP",
-            "WIN32_SHA1"
+            "GIT_SHA1_WIN32"
           ],
           "msvs_settings": {
             "VCLinkerTool": {
