@@ -318,6 +318,7 @@
             "-w",
           ],
           "defines": [
+            "GIT_OPENSSL",
             "GIT_USE_STAT_MTIM"
           ]
         }],
