@@ -119,7 +119,6 @@
         "libgit2/src/hash/hash_common_crypto.h",
         "libgit2/src/hash/hash_generic.c",
         "libgit2/src/hash/hash_generic.h",
-        "libgit2/src/hash/hash_openssl.h",
         "libgit2/src/hash/sha1dc/sha1.c",
         "libgit2/src/hash/sha1dc/sha1.h",
         "libgit2/src/hash/sha1dc/ubc_check.c",
