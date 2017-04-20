@@ -31,11 +31,12 @@
         "libgit2/include/git2/sys/hashsig.h",
         "libgit2/include/git2/sys/merge.h",
         "libgit2/include/git2/sys/time.h",
+        "libgit2/include/git2/worktree.h",
         "libgit2/src/annotated_commit.c",
         "libgit2/src/annotated_commit.h",
-        "libgit2/src/array.h",
         "libgit2/src/apply.c",
         "libgit2/src/apply.h",
+        "libgit2/src/array.h",
         "libgit2/src/attr_file.c",
         "libgit2/src/attr_file.h",
         "libgit2/src/attr.c",
@@ -74,9 +75,9 @@
         "libgit2/src/config_file.h",
         "libgit2/src/config.c",
         "libgit2/src/config.h",
+        "libgit2/src/crlf.c",
         "libgit2/src/curl_stream.c",
         "libgit2/src/curl_stream.h",
-        "libgit2/src/crlf.c",
         "libgit2/src/date.c",
         "libgit2/src/delta.c",
         "libgit2/src/delta.h",
@@ -114,21 +115,27 @@
         "libgit2/src/graph.c",
         "libgit2/src/hash.c",
         "libgit2/src/hash.h",
+        "libgit2/src/hash/sha1dc/sha1.c",
+        "libgit2/src/hash/sha1dc/sha1.h",
+        "libgit2/src/hash/sha1dc/ubc_check.c",
+        "libgit2/src/hash/sha1dc/ubc_check.h",
         "libgit2/src/hashsig.c",
         "libgit2/src/ident.c",
+        "libgit2/src/idxmap.c",
         "libgit2/src/ignore.c",
         "libgit2/src/ignore.h",
         "libgit2/src/index.c",
         "libgit2/src/index.h",
         "libgit2/src/indexer.c",
+        "libgit2/src/indexer.h",
         "libgit2/src/iterator.c",
         "libgit2/src/iterator.h",
         "libgit2/src/khash.h",
         "libgit2/src/map.h",
+        "libgit2/src/merge_driver.c",
         "libgit2/src/merge_file.c",
         "libgit2/src/merge_file.h",
         "libgit2/src/merge.c",
-        "libgit2/src/merge_driver.c",
         "libgit2/src/merge.h",
         "libgit2/src/message.c",
         "libgit2/src/message.h",
@@ -146,11 +153,13 @@
         "libgit2/src/odb_pack.c",
         "libgit2/src/odb.c",
         "libgit2/src/odb.h",
+        "libgit2/src/offmap.c",
         "libgit2/src/offmap.h",
         "libgit2/src/oid.c",
         "libgit2/src/oid.h",
         "libgit2/src/oidarray.c",
         "libgit2/src/oidarray.h",
+        "libgit2/src/oidmap.c",
         "libgit2/src/oidmap.h",
         "libgit2/src/openssl_stream.c",
         "libgit2/src/openssl_stream.h",
@@ -158,14 +167,14 @@
         "libgit2/src/pack-objects.h",
         "libgit2/src/pack.c",
         "libgit2/src/pack.h",
-        "libgit2/src/path.c",
-        "libgit2/src/path.h",
-        "libgit2/src/patch.c",
-        "libgit2/src/patch.h",
         "libgit2/src/patch_generate.c",
         "libgit2/src/patch_generate.h",
         "libgit2/src/patch_parse.c",
         "libgit2/src/patch_parse.h",
+        "libgit2/src/patch.c",
+        "libgit2/src/patch.h",
+        "libgit2/src/path.c",
+        "libgit2/src/path.h",
         "libgit2/src/pathspec.c",
         "libgit2/src/pathspec.h",
         "libgit2/src/pool.c",
@@ -249,6 +258,8 @@
         "libgit2/src/varint.h",
         "libgit2/src/vector.c",
         "libgit2/src/vector.h",
+        "libgit2/src/worktree.c",
+        "libgit2/src/worktree.h",
         "libgit2/src/xdiff/xdiff.h",
         "libgit2/src/xdiff/xdiffi.c",
         "libgit2/src/xdiff/xdiffi.h",
@@ -275,9 +286,7 @@
             ],
             "sources": [
                 "libgit2/src/stransport_stream.c",
-                "libgit2/src/stransport_stream.h",
-                "libgit2/src/tls_stream.c",
-                "libgit2/src/tls_stream.h"
+                "libgit2/src/stransport_stream.h"
             ],
             "link_settings": {
                 "xcode_settings": {
@@ -294,10 +303,12 @@
           ],
           "defines": [
             "GIT_CURL",
-            "OPENSSL_SHA1"
+            "GIT_SHA1_OPENSSL"
           ],
           "sources": [
-            "libgit2/src/hash/hash_openssl.h"
+            "libgit2/src/hash/hash_openssl.h",
+            "libgit2/src/tls_stream.c",
+            "libgit2/src/tls_stream.h"
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd')" , {
@@ -309,16 +320,12 @@
           "defines": [
             "GIT_OPENSSL",
             "GIT_USE_STAT_MTIM"
-          ],
-          "sources": [
-              "libgit2/src/tls_stream.c",
-              "libgit2/src/tls_stream.h"
           ]
         }],
         ["OS=='win'", {
           "defines": [
             "GIT_WINHTTP",
-            "WIN32_SHA1"
+            "GIT_SHA1_WIN32"
           ],
           "msvs_settings": {
             "VCLinkerTool": {
