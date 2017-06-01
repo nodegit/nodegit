@@ -60,4 +60,40 @@ struct AsyncBatonWithResult : public AsyncBaton {
   }
 };
 
+struct AsyncBatonWithNoResult : public AsyncBaton {
+ /* ResultT result;
+  ResultT defaultResult;*/ // result returned if the callback doesn't return anything valid
+  void (*onCompletion)(AsyncBaton *);
+
+  void Done() {
+    if (onCompletion) {
+      onCompletion(this);
+    } else {
+      // signal completion
+      uv_sem_post(&semaphore);
+    }
+  }
+
+  void ExecuteAsync(ThreadPool::Callback asyncCallback, void (*onCompletion)(AsyncBaton *) = NULL) {
+    this->onCompletion = onCompletion;
+    if (!onCompletion) {
+      uv_sem_init(&semaphore, 0);
+    }
+
+    {
+      LockMaster::TemporaryUnlock temporaryUnlock;
+
+      libgit2ThreadPool.ExecuteReverseCallback(asyncCallback, this);
+
+      if (!onCompletion) {
+        // wait for completion
+        uv_sem_wait(&semaphore);
+        uv_sem_destroy(&semaphore);
+      }
+    }
+
+    return;
+  }
+};
+
 #endif

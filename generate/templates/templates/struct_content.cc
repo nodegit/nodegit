@@ -54,9 +54,13 @@ using namespace std;
     {% if not field.ignore %}
       {% if not field.isEnum %}
         {% if field.isCallbackFunction %}
-  if (this->{{ field.name }}.HasCallback()) {
-    this->raw->{{ fields|payloadFor field.name }} = NULL;
-  }
+          if (this->{{ field.name }}.HasCallback()) {
+            {% if isExtendedStruct %}
+              (({{ cType }}_extended *)this->raw)->payload = NULL;
+            {% else %}
+              this->raw->{{ fields|payloadFor field.name }} = NULL;
+            {% endif %}
+          }
         {% endif %}
       {% endif %}
     {% endif %}
@@ -79,7 +83,12 @@ void {{ cppClassName }}::ConstructFields() {
           // Set the static method call and set the payload for this function to be
           // the current instance
           this->raw->{{ field.name }} = NULL;
-          this->raw->{{ fields|payloadFor field.name }} = (void *)this;
+          //TODO: solve this problem
+          {% if isExtendedStruct  %}
+            (({{ cType }}_extended *)this->raw)->payload = (void *)this;
+          {% else %}
+            this->raw->{{ fields|payloadFor field.name }} = (void *)this;
+          {% endif %}
         {% elsif field.payloadFor %}
 
           v8::Local<Value> {{ field.name }} = Nan::Undefined();

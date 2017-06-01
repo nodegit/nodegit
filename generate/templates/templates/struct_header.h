@@ -24,7 +24,12 @@ using namespace node;
 using namespace v8;
 
 {%partial traits .%}
-
+{% if isExtendedStruct %}
+struct {{ cType }}_extended {
+  {{ cType }} raw;
+  void* payload;
+};
+{% endif %}
 class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
     // grant full access to base class
     friend class NodeGitWrapper<{{ cppClassName }}Traits>;
@@ -46,15 +51,27 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
 
           static void {{ field.name }}_async(void *baton);
           static void {{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
-          struct {{ field.name|titleCase }}Baton : public AsyncBatonWithResult<{{ field.return.type }}> {
-            {% each field.args|argsInfo as arg %}
-              {{ arg.cType }} {{ arg.name}};
-            {% endeach %}
+          {% if field.return.type == 'void' %}
+            struct {{ field.name|titleCase }}Baton : public AsyncBatonWithNoResult{
+              {% each field.args|argsInfo as arg %}
+                {{ arg.cType }} {{ arg.name }};
+              {% endeach %}
 
-            {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
-              : AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {
-              }
-          };
+              {{ field.name|titleCase }}Baton()
+                : AsyncBatonWithNoResult() {
+                }
+            };
+          {% else %}
+            struct {{ field.name|titleCase }}Baton : public AsyncBatonWithResult<{{ field.return.type }}> {
+              {% each field.args|argsInfo as arg %}
+                {{ arg.cType }} {{ arg.name }};
+              {% endeach %}
+
+              {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
+                : AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {
+                }
+            };
+          {% endif %}
           static {{ cppClassName }} * {{ field.name }}_getInstanceFromBaton (
             {{ field.name|titleCase }}Baton *baton);
         {% endif %}

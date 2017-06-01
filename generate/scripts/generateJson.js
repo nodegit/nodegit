@@ -61,6 +61,7 @@ module.exports = function generateJson() {
   // Split each type from the array into classes/structs and enums
   // each entry is of type ['name', {definingobject}]
   libgit2.types.forEach(function(current) {
+    console.log(current[1]);
     current[1].typeName = current[0];
 
     // just log these out to a file for fun
@@ -106,6 +107,7 @@ module.exports = function generateJson() {
   }, {}).valueOf();
 
   // decorate the definitions with required data to build the C++ files
+  //TODO: add self ref tag here
   types.forEach(function(typeDef) {
     var typeName = typeDef.typeName;
     typeDef.cType = typeName;
@@ -169,8 +171,17 @@ module.exports = function generateJson() {
       }
     };
 
+    var addSelfReferentialField = function(prop){
+      if (helpers.isSelfReferential(prop.type)) {
+        prop.isSelfReferential = true;
+        def.isExtendedStruct = true;
+      }
+    };
+
     def.fields.forEach(addDependencies);
+    def.fields.forEach(addSelfReferentialField);
     def.functions.forEach(addDependencies);
+
 
     Object.keys(dependencies).forEach(function (dependencyFilename) {
       def.dependencies.push("../include/" + dependencyFilename + ".h");
@@ -183,7 +194,6 @@ module.exports = function generateJson() {
       fn.cppClassName = def.cppClassName;
     });
   });
-
   // Process enums
   _(enums).forEach(function(enumerable) {
     output.some(function(obj) {

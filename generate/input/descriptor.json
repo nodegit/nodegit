@@ -879,6 +879,7 @@
       }
     },
     "filter": {
+      "hasConstructor": true,
       "functions": {
         "git_filter_list_apply_to_blob": {
           "ignore": true
@@ -920,29 +921,20 @@
           "ignore": true
         }
       },
+      "cDependencies": [
+        "git2/sys/filter.h"
+      ],
       "fields": {
-        "initialize": {
-          "ignore": true
-        },
-        "shutdown": {
-          "ignore": true
-        },
-        "check": {
-          "ignore": true
-        },
-        "apply": {
-          "ignore": true
-        },
-        "cleanup": {
+        "stream": {
           "ignore": true
         }
-      },
+      }
+    },
+    "filter_source": {
+      "ignore": false,
       "cDependencies": [
         "git2/sys/filter.h"
       ]
-    },
-    "filter_source": {
-      "ignore": true
     },
     "graph": {
       "functions": {

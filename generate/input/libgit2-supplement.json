@@ -274,6 +274,17 @@
         ]
       ],
       [
+        "filter_source",
+        [
+          "git_filter_source_repo",
+          "git_filter_source_path",
+          "git_filter_source_filemode",
+          "git_filter_source_id",
+          "git_filter_source_mode",
+          "git_filter_source_flags"
+        ]
+      ],
+      [
         "odb_object",
         [
           "git_odb_object_data",
@@ -422,33 +433,27 @@
             },
             {
               "type": "git_filter_init_fn",
-              "name": "initialize",
-              "ignore": true
+              "name": "initialize"
             },
             {
               "type": "git_filter_shutdown_fn",
-              "name": "shutdown",
-              "ignore": true
+              "name": "shutdown"
             },
             {
               "type": "git_filter_check_fn",
-              "name": "check",
-              "ignore": true
+              "name": "check"
             },
             {
               "type": "git_filter_apply_fn",
-              "name": "apply",
-              "ignore": true
+              "name": "apply"
             },
             {
               "type": "git_filter_stream_fn",
-              "name": "stream",
-              "ignore": true
+              "name": "stream"
             },
             {
               "type": "git_filter_cleanup_fn",
-              "name": "cleanup",
-              "ignore": true
+              "name": "cleanup"
             }
           ]
         }
@@ -765,14 +770,26 @@
         "git_annotated_commit_lookup"
       ]
     },
-    "odb": {
+    "filter": {
       "functions": [
-        "git_odb_object_data",
-        "git_odb_object_dup",
-        "git_odb_object_free",
-        "git_odb_object_id",
-        "git_odb_object_size",
-        "git_odb_object_type"
+        "git_filter_list_apply_to_blob",
+        "git_filter_list_apply_to_data",
+        "git_filter_list_apply_to_file",
+        "git_filter_list_contains",
+        "git_filter_list_free",
+        "git_filter_list_length",
+        "git_filter_list_load",
+        "git_filter_list_new",
+        "git_filter_list_push",
+        "git_filter_list_stream_blob",
+        "git_filter_list_stream_data",
+        "git_filter_list_stream_file",
+        "git_filter_source_filemode",
+        "git_filter_source_flags",
+        "git_filter_source_id",
+        "git_filter_source_mode",
+        "git_filter_source_path",
+        "git_filter_source_repo"
       ]
     },
     "merge": {
@@ -782,6 +799,16 @@
         "git_merge_head_from_id",
         "git_merge_head_from_ref",
         "git_merge_head_id"
+      ]
+    },
+    "odb": {
+      "functions": [
+        "git_odb_object_data",
+        "git_odb_object_dup",
+        "git_odb_object_free",
+        "git_odb_object_id",
+        "git_odb_object_size",
+        "git_odb_object_type"
       ]
     },
     "reflog": {
