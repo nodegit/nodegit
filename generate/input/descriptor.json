@@ -879,6 +879,7 @@
       }
     },
     "filter": {
+      "selfFreeing": false,
       "hasConstructor": true,
       "functions": {
         "git_filter_list_apply_to_blob": {
@@ -927,6 +928,21 @@
       "fields": {
         "stream": {
           "ignore": true
+        }
+      }
+    },
+    "filter_registry": {
+      "functions": {
+        "git_filter_register": {
+          "jsFunctionName": "register",
+          "args": {
+            "filter": {
+              "isSelf": false
+            }
+          }
+        },
+        "git_filter_unregister": {
+          "jsFunctionName": "unregister"
         }
       }
     },

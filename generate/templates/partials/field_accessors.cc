@@ -195,12 +195,11 @@
 
         v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
           {% each field.args|argsInfo as arg %}
-            {% if arg.name == "payload" %}
+            {% if arg.cppClassName == "String" %}
               {% if isExtendedStruct %}
-                Nan::New((({{cType}}_extended *)instance)->payload),
+                Nan::New<String>(*baton->{{ arg.name }}).ToLocalChecked(),
               {% else %}
-                {%-- payload is always the last arg --%}
-                Nan::New(instance->{{ fields|payloadFor field.name }}),
+                Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
               {% endif %}
             {% elsif arg.isJsArg %}
               {% if arg.isEnum %}
@@ -210,8 +209,13 @@
               {% elsif arg.cType == "size_t" %}
                 // HACK: NAN should really have an overload for Nan::New to support size_t
                 Nan::New((unsigned int)baton->{{ arg.name }}),
-              {% elsif arg.cppClassName == 'String' %}
-                Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
+              {% elsif arg.name == "payload" %}
+                {% if isExtendedStruct %}
+                  Nan::New((({{cType}}_extended *)instance)->payload),
+                {% else %}
+                  {%-- payload is always the last arg --%}
+                  Nan::New(instance->{{ fields|payloadFor field.name }}),
+                {% endif %}
               {% else %}
                 Nan::New(baton->{{ arg.name }}),
               {% endif %}

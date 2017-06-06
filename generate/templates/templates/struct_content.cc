@@ -35,9 +35,15 @@ using namespace std;
   {% if ignoreInit == true %}
   this->raw = new {{ cType }};
   {% else %}
-  {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
-  this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
-  memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+    {% if isExtendedStruct %}
+      {{ cType }}_extended wrappedValue = {{ cType|upper }}_INIT;
+      this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}_extended));
+      memcpy(this->raw, &wrappedValue, sizeof({{ cType }}_extended));
+    {% else %}
+      {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
+      this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
+      memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+    {% endif %}
   {% endif %}
 
   this->ConstructFields();
@@ -83,7 +89,6 @@ void {{ cppClassName }}::ConstructFields() {
           // Set the static method call and set the payload for this function to be
           // the current instance
           this->raw->{{ field.name }} = NULL;
-          //TODO: solve this problem
           {% if isExtendedStruct  %}
             (({{ cType }}_extended *)this->raw)->payload = (void *)this;
           {% else %}
