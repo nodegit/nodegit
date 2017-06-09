@@ -189,18 +189,46 @@
           if (baton->{{ arg.name }} == NULL) {
               baton->{{ arg.name }} = "";
           }
+            {% elsif arg.cppClassName == "String" %}
+            v8::Local<v8::Value> src;
+          if (baton->{{ arg.name }} == NULL) {
+              src = Nan::Null();
+          } 
+          else {
+            src = Nan::New<String>(*baton->{{ arg.name }}).ToLocalChecked();
+          }
             {% endif %}
           {% endif %}
         {% endeach %}
 
-        v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
-          {% each field.args|argsInfo as arg %}
-            {% if arg.cppClassName == "String" %}
-              {% if isExtendedStruct %}
-                Nan::New<String>(*baton->{{ arg.name }}).ToLocalChecked(),
-              {% else %}
-                Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
+        {% if field.isSelfReferential %}
+          v8::Local<Value> argv[{{ field.args|jsArgsCount|subtract 1 }}] = {
+        {% else %}
+          v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
+        {% endif %}
+        {% each field.args|argsInfo as arg %}
+          {% if field.isSelfReferential %}
+            {% if not arg.firstArg %}
+              {% if field.args|jsArgsCount|subtract 1|or 0 %}
+                {% if arg.cppClassName == "String" %}
+                  src,
+                {% elsif arg.isJsArg %}
+                  {% if arg.isEnum %}
+                    Nan::New((int)baton->{{ arg.name }}),
+                  {% elsif arg.isLibgitType %}
+                    {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false),
+                  {% elsif arg.cType == "size_t" %}
+                    Nan::New((unsigned int)baton->{{ arg.name }}),
+                  {% elsif arg.name == "payload" %}
+                  {% else %}
+                    Nan::New(baton->{{ arg.name }}),
+                  {% endif %}
+                {% endif %}
               {% endif %}
+            {% endif %}
+          {% else %}
+            {% if arg.cppClassName == "String" %}
+              Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
             {% elsif arg.isJsArg %}
               {% if arg.isEnum %}
                 Nan::New((int)baton->{{ arg.name }}),
@@ -210,21 +238,16 @@
                 // HACK: NAN should really have an overload for Nan::New to support size_t
                 Nan::New((unsigned int)baton->{{ arg.name }}),
               {% elsif arg.name == "payload" %}
-                {% if isExtendedStruct %}
-                  Nan::New((({{cType}}_extended *)instance)->payload),
-                {% else %}
-                  {%-- payload is always the last arg --%}
-                  Nan::New(instance->{{ fields|payloadFor field.name }}),
-                {% endif %}
               {% else %}
                 Nan::New(baton->{{ arg.name }}),
               {% endif %}
             {% endif %}
-          {% endeach %}
+          {% endif %}
+        {% endeach %}
         };
 
         Nan::TryCatch tryCatch;
-        v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
+        v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount|subtract 1 }}, argv);
 
         if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppClassName }}::{{ field.name }}_promiseCompleted)) {
           return;

@@ -15,9 +15,15 @@ module.exports = function(args) {
 
     if (cArg === args.length -1) {
       arg.lastArg = true;
+      arg.firstArg = false;
+    }
+    else if(cArg === 0){
+      arg.firstArg = true;
+      arg.lastArg = false;
     }
     else {
       arg.lastArg = false;
+      arg.firstArg = false;
     }
 
     arg.cArg = cArg;
