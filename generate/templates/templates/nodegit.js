@@ -58,6 +58,8 @@ _ConvenientPatch.prototype.hunks = promisify(_ConvenientPatch_hunks);
 var _ConvenientHunk = rawApi.ConvenientHunk;
 var _ConvenientHunk_lines = _ConvenientHunk.prototype.lines;
 _ConvenientHunk.prototype.lines = promisify(_ConvenientHunk_lines);
+
+var _FilterRegistry = rawApi.FilterRegistry;
 /* jshint ignore:end */
 
 // Set the exports prototype to the raw API.
@@ -86,6 +88,8 @@ require("./status_file");
 require("./enums.js");
 
 // Import extensions
+// [Manual] extensions
+importExtension("filter_registry");
 {% each %}
   {% if type != "enum" %}
     importExtension("{{ filename }}");

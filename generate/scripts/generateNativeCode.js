@@ -72,6 +72,7 @@ module.exports = function generateNativeCode() {
     titleCase: require("../templates/filters/title_case"),
     toBool: require('../templates/filters/to_bool'),
     unPointer: require("../templates/filters/un_pointer"),
+    setUnsigned: require("../templates/filters/unsigned"),
     upper: require("../templates/filters/upper")
   };
 

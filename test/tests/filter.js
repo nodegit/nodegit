@@ -29,6 +29,13 @@ describe("Filter", function() {
       })
       .then(function(emptyRepo) {
         test.emptyRepo = emptyRepo;
+      })
+      .then(function() {
+        return fse.writeFile(
+          path.join(reposPath, ".gitattributes"), 
+          "* filter="+ filterName +" diff=lfs merge=lfs -text", {
+          encoding: "utf-8",
+        });
       });
   });
 
@@ -37,7 +44,7 @@ describe("Filter", function() {
     Registry.unregister(filterName);
   });
 
-  describe.only("Register and unregister", function(){
+  describe("Register and unregister", function(){
     it("Registering filter for the first time", function() {
       // registering custom filter
       var result = Registry.register(filterName, {
@@ -95,79 +102,33 @@ describe("Filter", function() {
   });
 
   describe("Initialize callback", function(){
-
-    it.only("Testing Initialize callback", function() {
-      var test = this,
-        testFilePath = path.join(reposPath, "package.json"),
-        flags = Status.SHOW.INDEX_AND_WORKDIR;
-
-      // registering custom filter
+    /* TODO: first setup and check init callback
+    *  , based on what it's supposed to do
+    */
+    it.only("Testing initialize callback", function() {
+      // test if anything has changed and appy something, then check
       var result = Registry.register(filterName, {
         initialize: function() {
           console.log("inside INIT");
+          return 0;
         },
         apply: function() {
           console.log("inside APPLY");
         },
+        stream: function() {
+          console.log("inside STREAM");
+        },
         check: function(){
           console.log("inside CHECK");
           return 0;
+        },
+        shutdown: function(){
+          console.log("inside SHUTDOWN");
+          return 0;
         }
       }, 0);
-      
       assert.strictEqual(result, 0);
-
-      // creating .gitattributes
-      var gitattributeFilePromise = fse.writeFile(
-        path.join(reposPath, ".gitattributes"), 
-        "* filter="+ filterName +" diff=lfs merge=lfs -text", {
-        encoding: "utf-8",
-      });
-      //creating test file that will be used to trigger custom filter
-      var testFilePromise = fse.writeFile(
-        testFilePath, 
-        "initial text", {
-        encoding: "utf-8",
-      });
-
-      Attr.cacheFlush(this.repository);
-
-      // setup complete, testing initialize of custom filter
-      return Promise.all([gitattributeFilePromise, testFilePromise])
-        // create necessary files
-        .then(function() {
-          return Attr.get(
-            test.repository, 
-            flags, 
-            path.join(reposPath, ".gitattributes"), 
-            "filter");
-        })
-        // check attribute values
-        .then(function(data) {
-          console.log("data: ", data);
-          assert.strictEqual(data, filterName);
-        })
-        // modify file
-        .then(function() {
-          return fse.writeFile(testFilePath, 
-          "Modified Content", 
-          {
-            encoding: "utf-8"
-          });
-        })
-        // perform checkout, which should trigger filter
-        .then(function() {
-          var opts = {
-            checkoutStrategy: Checkout.STRATEGY.FORCE,
-            paths: "package.json"
-          };
-          return Checkout.head(test.repository, opts);
-        })
-        .then(function() {
-          console.log("Post checkout");
-        });
     });
-
   });
 
   describe("Shutdown callback", function(){
@@ -229,33 +190,6 @@ describe("Filter", function() {
 
   describe("Check Callback", function(){
 
-    it("Normal check usage", function(){
-      var result = Registry.register(filterName, {
-        initialize: function() {
-          console.log("inside INIT");
-          return 0;
-        },
-        apply: function() {
-          console.log("inside APPLY");
-        },
-        stream: function() {
-          console.log("inside STREAM");
-        },
-        check: function(){
-          console.log("inside CHECK");
-          return 0;
-        },
-        shutdown: function(){
-          console.log("inside SHUTDOWN");
-          return 0;
-        }
-      }, 0);
-      assert.strictEqual(result, 0);
-      // do some action like change package.json
-      // checkout -> clean -> to odb
-      assert.strictEqual(result, 0);
-    });
-
     it(
       "GIT_PASSTHROUGH should be returned" +
       " if filter is not to be applied", function(){
@@ -286,6 +220,115 @@ describe("Filter", function() {
       verify -> apply callback should get -30 or anything except 0
       check if contents of file modified are not changed and staged?
       */
+    });
+
+    it.only("Testing check callback", function() {
+      var test = this,
+        testFilePath = path.join(reposPath, "package.json"),
+        flags = Status.SHOW.INDEX_AND_WORKDIR;
+
+      // registering custom filter
+      var result = Registry.register(filterName, {
+        initialize: function() {
+          console.log("inside INIT");
+        },
+        apply: function() {
+          console.log("inside APPLY");
+        },
+        check: function(){
+          console.log("inside CHECK");
+          return 0;
+        }
+      }, 0);
+      
+      assert.strictEqual(result, 0);
+
+      // creating .gitattributes
+      /*var gitattributeFilePromise = fse.writeFile(
+        path.join(reposPath, ".gitattributes"), 
+        "* filter="+ filterName +" diff=lfs merge=lfs -text", {
+        encoding: "utf-8",
+      });*/
+      //creating test file that will be used to trigger custom filter
+      Attr.cacheFlush(this.repository);
+      /*var testFilePromise = fse.writeFile(
+        testFilePath, 
+        "initial text", {
+        encoding: "utf-8",
+      });*/
+
+      return fse.writeFile(
+        testFilePath, 
+        "initial text", {
+        encoding: "utf-8",
+      })
+      .then(function() {
+        return Attr.get(
+          test.repository, 
+          flags, 
+          path.join(reposPath, ".gitattributes"), 
+          "filter");
+      })
+      // check attribute values
+      .then(function(data) {
+        console.log("data: ", data);
+        assert.strictEqual(data, filterName);
+      })
+      // modify file
+      .then(function() {
+        return fse.writeFile(testFilePath, 
+        "Modified Content", 
+        {
+          encoding: "utf-8"
+        });
+      })
+      // perform checkout, which should trigger filter
+      .then(function() {
+        var opts = {
+          checkoutStrategy: Checkout.STRATEGY.FORCE,
+          paths: "package.json"
+        };
+        return Checkout.head(test.repository, opts);
+      })
+      .then(function() {
+        console.log("Post checkout");
+      });
+
+
+      /*// setup complete, testing initialize of custom filter
+      return Promise.all([gitattributeFilePromise, testFilePromise])
+        // create necessary files
+        .then(function() {
+          return Attr.get(
+            test.repository, 
+            flags, 
+            path.join(reposPath, ".gitattributes"), 
+            "filter");
+        })
+        // check attribute values
+        .then(function(data) {
+          console.log("data: ", data);
+          assert.strictEqual(data, filterName);
+        })
+        // modify file
+        .then(function() {
+          return fse.writeFile(testFilePath, 
+          "Modified Content", 
+          {
+            encoding: "utf-8"
+          });
+        })
+        // perform checkout, which should trigger filter
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          console.log("Post checkout");
+        });*/
     });
   });
 

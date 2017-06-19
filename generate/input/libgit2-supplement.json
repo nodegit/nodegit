@@ -274,13 +274,6 @@
         ]
       ],
       [
-        "filter_registry",
-        [
-          "git_filter_register",
-          "git_filter_unregister"
-        ]
-      ],
-      [
         "filter_source",
         [
           "git_filter_source_repo",

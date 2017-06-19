@@ -21,6 +21,7 @@
 {% endeach %}
 #include "../include/convenient_patch.h"
 #include "../include/convenient_hunk.h"
+#include "../include/filter_registry.h"
 
 #if (NODE_MODULE_VERSION > 48)
   v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
@@ -140,6 +141,7 @@ extern "C" void init(v8::Local<v8::Object> target) {
 
   ConvenientHunk::InitializeComponent(target);
   ConvenientPatch::InitializeComponent(target);
+  GitFilterRegistry::InitializeComponent(target);
 
   NODE_SET_METHOD(target, "enableThreadSafety", LockMasterEnable);
   NODE_SET_METHOD(target, "setThreadSafetyStatus", LockMasterSetStatus);

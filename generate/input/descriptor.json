@@ -931,21 +931,6 @@
         }
       }
     },
-    "filter_registry": {
-      "functions": {
-        "git_filter_register": {
-          "jsFunctionName": "register",
-          "args": {
-            "filter": {
-              "isSelf": false
-            }
-          }
-        },
-        "git_filter_unregister": {
-          "jsFunctionName": "unregister"
-        }
-      }
-    },
     "filter_source": {
       "ignore": false,
       "cDependencies": [

@@ -202,7 +202,7 @@
         {% endeach %}
 
         {% if field.isSelfReferential %}
-          v8::Local<Value> argv[{{ field.args|jsArgsCount|subtract 1 }}] = {
+          v8::Local<Value> argv[{{ field.args|jsArgsCount|subtract 2| setUnsigned }}] = {
         {% else %}
           v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
         {% endif %}
@@ -247,7 +247,7 @@
         };
 
         Nan::TryCatch tryCatch;
-        v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount|subtract 1 }}, argv);
+        v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount|subtract 2| setUnsigned }}, argv);
 
         if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppClassName }}::{{ field.name }}_promiseCompleted)) {
           return;
