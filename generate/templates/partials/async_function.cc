@@ -16,9 +16,13 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {{ cppFunctionName }}_globalPayload* globalPayload = new {{ cppFunctionName }}_globalPayload;
     {%endif%}
     {%if arg.cppClassName == "GitBuf" %}
-      baton->{{arg.name}} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));;
-      baton->{{arg.name}}->ptr = NULL;
-      baton->{{arg.name}}->size = baton->{{arg.name}}->asize = 0;
+      {%if cppFunctionName == "Set"%}
+        baton->{{arg.name}} = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This())->GetValue();
+      {%else%}
+        baton->{{arg.name}} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
+        baton->{{arg.name}}->ptr = NULL;
+        baton->{{arg.name}}->size = baton->{{arg.name}}->asize = 0;
+      {%endif%}
     {%endif%}
   {%endeach%}
 
@@ -57,7 +61,11 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%endif%}
       {%endif%}
     {%elsif arg.shouldAlloc %}
-  baton->{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
+      {%if arg.cppClassName == "GitBuf" %}
+      {%else%}
+      // culprit found
+        baton->{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
+      {%endif%}
     {%endif%}
   {%endeach%}
 
@@ -273,8 +281,11 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
     {%endif%}
     {%if arg.cppClassName == "GitBuf" %}
-  git_buf_free(baton->{{ arg.name }});
-  free((void *)baton->{{ arg.name }});
+      {%if cppFunctionName == "Set" %}
+      {%else%}
+        git_buf_free(baton->{{ arg.name }});
+        free((void *)baton->{{ arg.name }});
+      {%endif%}
     {%endif%}
   {%endeach%}
 

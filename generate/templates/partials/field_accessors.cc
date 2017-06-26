@@ -202,7 +202,11 @@
         {% endeach %}
 
         {% if field.isSelfReferential %}
-          v8::Local<Value> argv[{{ field.args|jsArgsCount|subtract 2| setUnsigned }}] = {
+          {% if field.args|jsArgsCount|subtract 2| setUnsigned == 0 %}
+            v8::Local<Value> *argv = NULL;
+          {% else %}
+            v8::Local<Value> argv[{{ field.args|jsArgsCount|subtract 2| setUnsigned }}] = {
+          {% endif %}  
         {% else %}
           v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
         {% endif %}
@@ -244,7 +248,11 @@
             {% endif %}
           {% endif %}
         {% endeach %}
-        };
+        {% if not field.isSelfReferential %}
+          };
+        {% elsif field.args|jsArgsCount|subtract 2| setUnsigned > 0  %}
+          };
+        {% endif %}
 
         Nan::TryCatch tryCatch;
         v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount|subtract 2| setUnsigned }}, argv);

@@ -6,16 +6,69 @@ var assert = require("assert"),
 
 describe("Filter", function() {
   var NodeGit = require("../../");
+  // var Buffer = NodeGit.Buf;
+  // var FilterSource = NodeGit.FilterSource;
 
-  var emptyRepoPath = local("../repos/empty"),
-    filterName = "psuedo_filter",
-    // newRepoPath = local("../repos/newrepo"),
-    Registry = NodeGit.FilterRegistry,
-    Checkout = NodeGit.Checkout,
-    Repository = NodeGit.Repository,
-    Attr = NodeGit.Attr,
-    Status = NodeGit.Status,
-    reposPath = local("../repos/workdir");
+  var emptyRepoPath = local("../repos/empty");
+  var filterName = "psuedo_filter";
+  var Registry = NodeGit.FilterRegistry;
+  var Checkout = NodeGit.Checkout;
+  var Repository = NodeGit.Repository;
+    // Attr = NodeGit.Attr,
+    // Status = NodeGit.Status,
+  var reposPath = local("../repos/workdir");
+
+  var packageJsonPath = path.join(reposPath, "package.json");
+  var readmePath = path.join(reposPath, "README.md");
+  
+  function commitFile(repo, fileName, fileContent, commitMessage) {
+    var index;
+    var treeOid;
+    var parent;
+
+    return fse.writeFile(path.join(repo.workdir(), fileName), fileContent)
+    .then(function() {
+      return repo.refreshIndex();
+    })
+    .then(function(indexResult) {
+      index = indexResult;
+    })
+    .then(function() {
+      return index.addByPath(fileName);
+    })
+    .then(function() {
+      return index.write();
+    })
+    .then(function() {
+      return index.writeTree();
+    })
+    .then(function(oidResult) {
+      treeOid = oidResult;
+      return NodeGit.Reference.nameToId(repo, "HEAD");
+    })
+    .then(function(head) {
+      return repo.getCommit(head);
+    })
+    .then(function(parentResult) {
+      parent = parentResult;
+      return Promise.all([
+        NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
+        NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
+      ]);
+    })
+    .then(function(signatures) {
+      var author = signatures[0];
+      var committer = signatures[1];
+
+      return repo.createCommit(
+        "HEAD",
+        author,
+        committer,
+        "message",
+        treeOid,
+        [parent]);
+    });
+  }
 
   beforeEach(function() {
     var test = this;
@@ -31,9 +84,10 @@ describe("Filter", function() {
         test.emptyRepo = emptyRepo;
       })
       .then(function() {
+        // FIXME: updated * wildcard to *.md -> update test cases
         return fse.writeFile(
           path.join(reposPath, ".gitattributes"), 
-          "* filter="+ filterName +" diff=lfs merge=lfs -text", {
+          "*.md filter="+ filterName +" diff=lfs merge=lfs -text", {
           encoding: "utf-8",
         });
       });
@@ -41,248 +95,108 @@ describe("Filter", function() {
 
   afterEach(function() {
     //Unregistering the filter to avoid GIT_EEXISTS
-    Registry.unregister(filterName);
+    return Registry.unregister(filterName)
+      .then(function(error_code){
+        if(error_code) {
+          console.log("Error code: ", error_code);
+        }
+      })
+      .catch(function(error) {
+        if (error.errno !== -3) {
+          throw new Error(error);
+        }
+      });
   });
 
-  describe("Register and unregister", function(){
+  describe("Register and Unregister (now callback)", function(){
     it("Registering filter for the first time", function() {
+
       // registering custom filter
-      var result = Registry.register(filterName, {
-        initialize: function() {
-          console.log("inside INIT");
-        },
+      return Registry.register(filterName, {
         apply: function() {
-          console.log("inside APPLY");
-        },
-        stream: function() {
-          console.log("inside STREAM");
+          // console.log("inside APPLY");
+          return;
         },
         check: function(){
-          console.log("inside CHECK");
+          // console.log("inside CHECK");
+          return;
         }
-      }, 0);
-      assert.strictEqual(result, 0);
+      }, 0)
+      .then(function(result) {
+        assert.strictEqual(result, 0);
+      });
     });
 
     it("Registering filter and re-registering same filter", function() {
       // registering custom filter
-      var result = Registry.register(filterName, {
-        initialize: function() {
-          console.log("inside INIT");
-        },
+      return Registry.register(filterName, {
         apply: function() {
-          console.log("inside APPLY");
-        },
-        stream: function() {
-          console.log("inside STREAM");
+          return;
         },
         check: function(){
-          console.log("inside CHECK");
+          return;
         }
-      }, 0);
-      assert.strictEqual(result, 0);
-
-      result = Registry.register(filterName, {
-        initialize: function() {
-          console.log("inside INIT");
-        },
-        apply: function() {
-          console.log("inside APPLY");
-        },
-        stream: function() {
-          console.log("inside STREAM");
-        },
-        check: function(){
-          console.log("inside CHECK");
-        }
-      }, 0);
-      assert.strictEqual(result, -4);
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+          return;
+        })
+        .then(function() {
+          return Registry.register(filterName, {
+            apply: function() {
+              return;
+            },
+            check: function(){
+              return;
+            }
+          }, 0);
+        })
+        .catch(function(error) {
+          assert.strictEqual(error.errno, -4);
+        });
     });
-
   });
 
   describe("Initialize callback", function(){
-    /* TODO: first setup and check init callback
-    *  , based on what it's supposed to do
-    */
-    it.only("Testing initialize callback", function() {
-      // test if anything has changed and appy something, then check
-      var result = Registry.register(filterName, {
-        initialize: function() {
-          console.log("inside INIT");
-          return 0;
-        },
-        apply: function() {
-          console.log("inside APPLY");
-        },
-        stream: function() {
-          console.log("inside STREAM");
-        },
-        check: function(){
-          console.log("inside CHECK");
-          return 0;
-        },
-        shutdown: function(){
-          console.log("inside SHUTDOWN");
-          return 0;
-        }
-      }, 0);
-      assert.strictEqual(result, 0);
-    });
-  });
-
-  describe("Shutdown callback", function(){
-
-    it("Testing shutdown callback", function(){
-      var result = Registry.register(filterName, {
-        initialize: function() {
-          console.log("inside INIT");
-          return 0;
-        },
-        apply: function() {
-          console.log("inside APPLY");
-        },
-        stream: function() {
-          console.log("inside STREAM");
-        },
-        check: function(){
-          console.log("inside CHECK");
-          return 0;
-        },
-        shutdown: function(){
-          console.log("inside SHUTDOWN");
-          return 0;
-        }
-      }, 0);
-      assert.strictEqual(result, 0);
-
-      result = Registry.unregister(filterName);
-      assert.strictEqual(result, 0);
-    });
-
-    // TODO: shutdown is supposed to work even if
-    // intialize call back is not provided/call not made
-    it("Testing shutdown callback with initialize callback", function(){
-      var result = Registry.register(filterName, {
-        apply: function() {
-          console.log("inside APPLY");
-        },
-        stream: function() {
-          console.log("inside STREAM");
-        },
-        check: function(){
-          console.log("inside CHECK");
-          return 0;
-        },
-        shutdown: function(){
-          console.log("inside SHUTDOWN");
-          return 0;
-        }
-      }, 0);
-      assert.strictEqual(result, 0);
-
-      result = Registry.unregister(filterName);
-      // somewhere here test the result of the shutdown callback
-      assert.strictEqual(result, 0);
-    });
     
-  });
-
-  describe("Check Callback", function(){
-
-    it(
-      "GIT_PASSTHROUGH should be returned" +
-      " if filter is not to be applied", function(){
-      var result = Registry.register(filterName, {
+    it("Testing initialize callback", function() {
+      var test = this;
+      // test if anything has changed and appy something, then check
+      return Registry.register(filterName, {
         initialize: function() {
-          console.log("inside INIT");
+          fse.writeFileSync(
+            readmePath,
+            "Initialized", {
+              encoding: "utf-8"
+            }
+          );
           return 0;
         },
         apply: function() {
-          console.log("inside APPLY");
+          return;
         },
-        stream: function() {
-          console.log("inside STREAM");
-        },
-        check: function(){
-          console.log("inside CHECK");
-          return 0;
-        },
-        shutdown: function(){
-          console.log("inside SHUTDOWN");
-          return 0;
+        check: function() {
+          return -30;
         }
-      }, 0);
-      assert.strictEqual(result, 0);
-      /* 
-      do some action like change package.json
-      the filter should return GIT_PASSTHROUGH
-      verify -> apply callback should get -30 or anything except 0
-      check if contents of file modified are not changed and staged?
-      */
-    });
-
-    it.only("Testing check callback", function() {
-      var test = this,
-        testFilePath = path.join(reposPath, "package.json"),
-        flags = Status.SHOW.INDEX_AND_WORKDIR;
-
-      // registering custom filter
-      var result = Registry.register(filterName, {
-        initialize: function() {
-          console.log("inside INIT");
-        },
-        apply: function() {
-          console.log("inside APPLY");
-        },
-        check: function(){
-          console.log("inside CHECK");
-          return 0;
-        }
-      }, 0);
-      
-      assert.strictEqual(result, 0);
-
-      // creating .gitattributes
-      /*var gitattributeFilePromise = fse.writeFile(
-        path.join(reposPath, ".gitattributes"), 
-        "* filter="+ filterName +" diff=lfs merge=lfs -text", {
-        encoding: "utf-8",
-      });*/
-      //creating test file that will be used to trigger custom filter
-      Attr.cacheFlush(this.repository);
-      /*var testFilePromise = fse.writeFile(
-        testFilePath, 
-        "initial text", {
-        encoding: "utf-8",
-      });*/
-
-      return fse.writeFile(
-        testFilePath, 
-        "initial text", {
-        encoding: "utf-8",
+      }, 0)
+      .then(function(result) {
+        assert.strictEqual(result, 0);
       })
       .then(function() {
-        return Attr.get(
-          test.repository, 
-          flags, 
-          path.join(reposPath, ".gitattributes"), 
-          "filter");
+        //assert the package json does not contain Initialized TEXT
+        var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+          readmeContent = fse.readFileSync(readmePath, "utf-8");
+
+        assert.notEqual(packageContent, "");
+        assert.notEqual(readmeContent, "Initialized");
       })
-      // check attribute values
-      .then(function(data) {
-        console.log("data: ", data);
-        assert.strictEqual(data, filterName);
-      })
-      // modify file
       .then(function() {
-        return fse.writeFile(testFilePath, 
-        "Modified Content", 
-        {
-          encoding: "utf-8"
+        return fse.writeFile(
+          packageJsonPath, 
+          "Changing content to trigger checkout", {
+          encoding: "utf-8",
         });
       })
-      // perform checkout, which should trigger filter
       .then(function() {
         var opts = {
           checkoutStrategy: Checkout.STRATEGY.FORCE,
@@ -291,34 +205,52 @@ describe("Filter", function() {
         return Checkout.head(test.repository, opts);
       })
       .then(function() {
-        console.log("Post checkout");
+        var postInitializeReadmeContents = fse.readFileSync(
+          readmePath, "utf-8");
+
+        assert.strictEqual(
+          postInitializeReadmeContents, "Initialized");
       });
+    });
+  });
 
+  describe("Shutdown callback", function(){
 
-      /*// setup complete, testing initialize of custom filter
-      return Promise.all([gitattributeFilePromise, testFilePromise])
-        // create necessary files
-        .then(function() {
-          return Attr.get(
-            test.repository, 
-            flags, 
-            path.join(reposPath, ".gitattributes"), 
-            "filter");
+    it("Testing shutdown callback", function(){
+      var test = this;
+      return Registry.register(filterName, {
+        apply: function() {
+          return;
+        },
+        check: function(){
+          return -30;
+        },
+        shutdown: function(){
+          fse.writeFileSync(
+            readmePath,
+            "Shutdown", {
+              encoding: "utf-8"
+            }
+          );
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
         })
-        // check attribute values
-        .then(function(data) {
-          console.log("data: ", data);
-          assert.strictEqual(data, filterName);
-        })
-        // modify file
         .then(function() {
-          return fse.writeFile(testFilePath, 
-          "Modified Content", 
-          {
-            encoding: "utf-8"
+          var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+          readmeContent = fse.readFileSync(readmePath, "utf-8");
+
+          assert.notEqual(packageContent, "");
+          assert.notEqual(readmeContent, "Shutdown");
+        })
+        .then(function() {
+          return fse.writeFile(
+            packageJsonPath, 
+            "Changing content to trigger checkout", {
+            encoding: "utf-8",
           });
         })
-        // perform checkout, which should trigger filter
         .then(function() {
           var opts = {
             checkoutStrategy: Checkout.STRATEGY.FORCE,
@@ -327,28 +259,423 @@ describe("Filter", function() {
           return Checkout.head(test.repository, opts);
         })
         .then(function() {
-          console.log("Post checkout");
-        });*/
+          return Registry.unregister(filterName);
+        })
+        .then(function() {
+          var postUnregisterReadmeContent = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.strictEqual(
+            postUnregisterReadmeContent, "Shutdown");
+        });
+    });
+
+    it("Testing shutdown callback without initialize callback", function(){
+      var test = this;
+      return Registry.register(filterName, {
+        apply: function() {
+          return;
+        },
+        check: function(){
+          return -30;
+        },
+        shutdown: function(){
+          fse.writeFileSync(
+            readmePath,
+            "Shutdown", {
+              encoding: "utf-8"
+            }
+          );
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+          readmeContent = fse.readFileSync(readmePath, "utf-8");
+
+          assert.notEqual(packageContent, "");
+          assert.notEqual(readmeContent, "Shutdown");
+        })
+        .then(function() {
+          return fse.writeFile(
+            packageJsonPath, 
+            "Changing content to trigger checkout", {
+            encoding: "utf-8",
+          });
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          return Registry.unregister(filterName);
+        })
+        .then(function() {
+          var postUnregisterReadmeContent = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.strictEqual(
+            postUnregisterReadmeContent, "Shutdown");
+        });
+    });
+    
+  });
+
+  describe("Check and Apply callback", function(){
+
+    it(
+      "if GIT_PASSTHROUGH is returned" +
+      " filter should not to be applied", function(){
+      var test = this;
+      
+      return Registry.register(filterName, {
+        apply: function() {
+          fse.writeFileSync(
+            readmePath,
+            "Filter Applied", {
+              encoding: "utf-8"
+            }
+          );
+        },
+        check: function() {
+          return -30;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          //assert the package json does not contain Initialized TEXT
+          var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+            readmeContent = fse.readFileSync(readmePath, "utf-8");
+
+          assert.notStrictEqual(packageContent, "");
+          assert.notStrictEqual(readmeContent, "Filter Applied");
+        })
+        .then(function() {
+          return fse.writeFile(
+            packageJsonPath, 
+            "Changing content to trigger checkout", {
+            encoding: "utf-8",
+          });
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          var postInitializeReadmeContents = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.notStrictEqual(
+            postInitializeReadmeContents, "Filter Applied"
+          );
+        });
+
+    });
+
+    it("if GIT_OK is passed, filter should be applied", function() {
+      var test = this;
+      
+      return Registry.register(filterName, {
+        apply: function() {
+          fse.writeFileSync(
+            readmePath,
+            "Filter Applied", {
+              encoding: "utf-8"
+            }
+          );
+        },
+        check: function() {
+          return 0;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          //assert the package json does not contain Initialized TEXT
+          var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+            readmeContent = fse.readFileSync(readmePath, "utf-8");
+
+          assert.notStrictEqual(packageContent, "");
+          assert.notStrictEqual(readmeContent, "Filter Applied");
+        })
+        .then(function() {
+          return fse.writeFile(
+            packageJsonPath, 
+            "Changing content to trigger checkout", {
+            encoding: "utf-8",
+          });
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          var postInitializeReadmeContents = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.strictEqual(
+            postInitializeReadmeContents, "Filter Applied"
+          );
+        });
+    });
+
+    it("if GIT_PASSTHROUGH is returned from Apply callback", function() {
+      var test = this;
+      
+      var tempBuffer = new Buffer("some new fancy filter", "utf8");
+      console.log("tempBuffer: ", tempBuffer);
+
+      // check the contents of to inside of apply 
+      //call back and check if the to structure is 
+      //being poulated v/s just being null
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {
+          // console.log("To: ", to.ptr());
+          // console.log("From: ", from.ptr());
+          // to.ptr = "some random text 2";
+          // console.log("To: ", to.ptr());
+          // console.log("[changed]From: ", from.ptr());
+          // console.log("Source: ", source);
+          fse.writeFileSync(
+            readmePath,
+            "Filter Applied", {
+              encoding: "utf-8"
+            }
+          );
+          return 0;
+        },
+        check: function() {
+          return 0;
+        },
+        cleanup: function() {
+          // console.log("Inside CLEANUP");
+          return;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          //assert the package json does not contain Initialized TEXT
+          var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+            readmeContent = fse.readFileSync(readmePath, "utf-8");
+
+          assert.notStrictEqual(packageContent, "");
+          assert.notStrictEqual(readmeContent, "Filter Applied");
+        })
+        .then(function() {
+          return fse.writeFile(
+            packageJsonPath, 
+            "Changing content to trigger checkout", {
+            encoding: "utf-8",
+          });
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          var postInitializeReadmeContents = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.strictEqual(
+            postInitializeReadmeContents, "Filter Applied"
+          );
+        });
+    });
+
+    it.only("using buffers to control data flow inside filter", function() {
+      var test = this;
+
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {
+          var tempBuffer = new Buffer("fancy filter", "utf8");
+          // console.log("tempBuffer: ", tempBuffer);
+
+          // console.log("To: ", to.ptr());
+          // console.log("From: ", from.ptr());
+          var newTo = to.set(tempBuffer, 12)
+            .then(function(buf) {
+              // console.log("buffer: ", buf);
+              return buf;
+            });
+          return newTo.then(function(ret) {
+            console.log("To[New]: ", to.ptr());
+            return 0;
+          });
+        },
+        check: function() {
+          return 0;
+        },
+        cleanup: function() {
+          return;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          var readmeContent = fse.readFileSync(readmePath, "utf-8");
+          assert.notStrictEqual(readmeContent, "testing commit contents");
+        })
+        .then(function() {
+          return commitFile(test.repository, "README.md", 
+            "testing commit contents", 
+            "test commit");
+        })
+        .then(function() {
+          var postInitializeReadmeContents = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.strictEqual(
+            postInitializeReadmeContents, "testing commit contents"
+          );
+        });
     });
   });
 
-  describe("Apply Callback", function(){
-    it("Verify apply callback", function(){
-      /*
-      register filter
-      make changes -> checkout
-      verify return value from apply
-      verify changes
-      */
-    });
-    it("Verify apply callback did not work", function(){
-      /*
-      register filter
-      make changes -> checkout
-      verify return value from apply as GIT_PASSTHROUGH
-      verify changes
-      */
-    });
-  });
+  describe("Cleanup callback", function() {
+    it("Cleanup callback is called after" +
+     " filter has been applied", function() {
+       var test = this;
+        // test if anything has changed and appy something, then check
+        return Registry.register(filterName, {
+          initialize: function() {
+            fse.writeFileSync(
+              readmePath,
+              "Initialized", {
+                encoding: "utf-8"
+              }
+            );
+            return 0;
+          },
+          apply: function() {
+            return 0;
+          },
+          check: function() {
+            return 0;
+          },
+          cleanup: function() {
+            fse.writeFileSync(
+              readmePath,
+              "Cleaned Up", {
+                encoding: "utf-8"
+              }
+            );
+          }
+        }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          //assert the package json does not contain Initialized TEXT
+          var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+            readmeContent = fse.readFileSync(readmePath, "utf-8");
 
+          assert.notEqual(packageContent, "");
+          assert.notEqual(readmeContent, "Initialized");
+        })
+        .then(function() {
+          return fse.writeFile(
+            packageJsonPath, 
+            "Changing content to trigger checkout", {
+            encoding: "utf-8",
+          });
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          var postInitializeReadmeContents = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.strictEqual(
+            postInitializeReadmeContents, "Cleaned Up");
+        });
+     });
+
+     it("Cleanup callback should not be called if" +
+      " Check callback returns GIT_PASSTHROUGH", function() {
+       var test = this;
+        // test if anything has changed and appy something, then check
+        return Registry.register(filterName, {
+          initialize: function() {
+            fse.writeFileSync(
+              readmePath,
+              "Initialized", {
+                encoding: "utf-8"
+              }
+            );
+            return 0;
+          },
+          apply: function() {
+            return 0;
+          },
+          check: function() {
+            return -30;
+          },
+          cleanup: function() {
+            fse.writeFileSync(
+              readmePath,
+              "Cleaned Up", {
+                encoding: "utf-8"
+              }
+            );
+          }
+        }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          //assert the package json does not contain Initialized TEXT
+          var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
+            readmeContent = fse.readFileSync(readmePath, "utf-8");
+
+          assert.notEqual(packageContent, "");
+          assert.notEqual(readmeContent, "Initialized");
+        })
+        .then(function() {
+          return fse.writeFile(
+            packageJsonPath, 
+            "Changing content to trigger checkout", {
+            encoding: "utf-8",
+          });
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          var postInitializeReadmeContents = fse.readFileSync(
+            readmePath, "utf-8");
+
+          assert.notStrictEqual(
+            postInitializeReadmeContents, "Cleaned Up");
+        });
+     });
+  });
 });

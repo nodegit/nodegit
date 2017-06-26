@@ -61,7 +61,6 @@ module.exports = function generateJson() {
   // Split each type from the array into classes/structs and enums
   // each entry is of type ['name', {definingobject}]
   libgit2.types.forEach(function(current) {
-    console.log(current[1]);
     current[1].typeName = current[0];
 
     // just log these out to a file for fun

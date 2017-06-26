@@ -61,6 +61,9 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
     return Nan::ThrowError("Number priority is required.");
   }
 
+  if (info.Length() == 3 || !info[3]->IsFunction()) {
+    return Nan::ThrowError("Callback is required and must be a Function.");
+  }
   // start convert_from_v8 block
   const char * from_name = NULL;
 
@@ -73,46 +76,138 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
   // ensure the final byte of our new string is null, extra casts added to ensure compatibility with various C types
   // used in the nodejs binding generation:
   memset((void *)(((char *)from_name) + name.length()), 0, 1);
-  // end convert_from_v8 block
-  // start convert_from_v8 block
-  git_filter * from_filter = NULL;
+
+  FilterBaton *baton = new FilterBaton;
+  
+  git_filter *from_filter = NULL;
   from_filter = Nan::ObjectWrap::Unwrap<GitFilter>(info[1]->ToObject())->GetValue();
-  // end convert_from_v8 block
-  // start convert_from_v8 block
+  
+  baton->filter = from_filter;
+  baton->filter_name = (char *) malloc(name.length() + 1);
+  strcpy(baton->filter_name, from_name);
+  baton->error_code = GIT_OK;
+
   int from_priority;
   from_priority = (int) info[2]->ToNumber()->Value();
-  // end convert_from_v8 block
+
+  baton->filter_priority = from_priority;
+
+  /* This will delete the filter name from persistent handle */
   bool result = GitFilterRegistry::persistentHandle.IsEmpty();
   Nan::New(GitFilterRegistry::persistentHandle)->Set(info[0]->ToString(), info[1]->ToObject());
-  // Nan::Persistent<v8::Object> testSample = GitFilterRegistry::persistentHandle;
-  // Nan::New<v8::Object>(GitFilterRegistry::persistentHandle)->Set(name, info.This());
-  // Nan::Set(GitFilterRegistry::persistentHandle, name, info.This());
-  v8::Local<Object> temp = Nan::New<v8::Object>(GitFilterRegistry::persistentHandle);
-  // v8::Local<v8::String> key = Nan::New<String>("omg").ToLocalChecked();
+
+  v8::Local<Object> handleRef = Nan::New<v8::Object>(GitFilterRegistry::persistentHandle);
   v8::Local<v8::String> key = info[0]->ToString();
-  v8::Maybe<bool> result2 = Nan::Has(temp, key);
-  // New(GitFilterRegistry::persistentHandle)->Set(name, in)
-  // v8::New(persistentHandle).Set(name, info.This());
-  // v8::Local<v8::Object> testObject = Nan::New(GitFilterRegistry::persistentHandle);
-  // testObject->Set(name, from_filter);
-  // Nan::Set(testObject, Nan::New<String>("omg").ToLocalChecked(), info[1]->ToObject());
+  v8::Maybe<bool> result2 = Nan::Has(handleRef, key);
 
-  // v8::Local<v8::Object> testObject2 = Nan::New(GitFilterRegistry::persistentHandle);
-  // Nan::MaybeLocal<Value> res1 = Nan::Get(testObject2, Nan::New<String>("omg").ToLocalChecked());
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
+  RegisterWorker *worker = new RegisterWorker(baton, callback);
 
+  worker->SaveToPersistent("filter_name", info[0]->ToObject());
+  worker->SaveToPersistent("filter_priority", info[2]->ToObject());
+
+  AsyncLibgit2QueueWorker(worker);
+  return;
+}
+// no v8 in execute
+void GitFilterRegistry::RegisterWorker::Execute() {
+  
   giterr_clear();
 
   {
-    LockMaster lockMaster(/*asyncAction: */false, from_name, from_filter);
+    LockMaster lockMaster(/*asyncAction: */true, baton->filter_name, baton->filter);
+    int result = git_filter_register(baton->filter_name, baton->filter, baton->filter_priority);
+    baton->error_code = result;
 
-    int result = git_filter_register(from_name, from_filter, from_priority);
- 
-    v8::Local<v8::Value> to;
-    // start convert_to_v8 block
-    to = Nan::New<Number>(result);
-    // end convert_to_v8 block
-    return info.GetReturnValue().Set(scope.Escape(to));
+    if (result != GIT_OK && giterr_last() != NULL) {
+      baton->error = git_error_dup(giterr_last());
+    }
   }
+}
+
+void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
+  if (baton->error_code == GIT_OK) {
+    v8::Local<v8::Value> result = Nan::New(baton->error_code);
+    v8::Local<v8::Value> argv[2] = {
+      Nan::Null(),
+      result
+    };
+    callback->Call(2, argv);
+  } else {
+    if (baton->error) {
+      v8::Local<v8::Object> err;
+      if (baton->error->message) {
+        err = Nan::Error(baton->error->message)->ToObject();
+      } else {
+        err = Nan::Error("Method register has thrown an error.")->ToObject();
+      }
+      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      v8::Local<v8::Value> argv[1] = {
+        err
+      };
+      callback->Call(1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
+    } else if (baton->error_code < 0) {
+      std::queue< v8::Local<v8::Value> > workerArguments;
+      workerArguments.push(GetFromPersistent("filter_name"));
+      workerArguments.push(GetFromPersistent("filter_priority"));
+
+      bool callbackFired = false;
+      while(!workerArguments.empty()) {
+        v8::Local<v8::Value> node = workerArguments.front();
+        workerArguments.pop();
+
+        if (
+          !node->IsObject()
+          || node->IsArray()
+          || node->IsBooleanObject()
+          || node->IsDate()
+          || node->IsFunction()
+          || node->IsNumberObject()
+          || node->IsRegExp()
+          || node->IsStringObject()
+        ) {
+          continue;
+        }
+
+        v8::Local<v8::Object> nodeObj = node->ToObject();
+        v8::Local<v8::Value> checkValue = GetPrivate(nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
+
+        if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined()) {
+          v8::Local<v8::Value> argv[1] = {
+            checkValue->ToObject()
+          };
+          callback->Call(1, argv);
+          callbackFired = true;
+          break;
+        }
+
+        v8::Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
+          v8::Local<v8::String> propName = properties->Get(propIndex)->ToString();
+          v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+          if (!nodeToQueue->IsUndefined()) {
+            workerArguments.push(nodeToQueue);
+          }
+        }
+      }
+
+      if (!callbackFired) {
+        v8::Local<v8::Object> err = Nan::Error("Method register has thrown an error.")->ToObject();
+        err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        v8::Local<v8::Value> argv[1] = {
+          err
+        };
+        callback->Call(1, argv);
+      }
+    } else {
+      callback->Call(0, NULL);
+    }
+  }
+  delete baton;
+  return;
 }
    
 /*
@@ -127,7 +222,10 @@ NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
     return Nan::ThrowError("String name is required.");
   }
 
-  // start convert_from_v8 block
+  if (info.Length() == 1 || !info[1]->IsFunction()) {
+    return Nan::ThrowError("Callback is required and must be a Function.");
+  }
+
   const char * from_name = NULL;
 
   String::Utf8Value name(info[0]->ToString());
@@ -139,12 +237,22 @@ NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
   // ensure the final byte of our new string is null, extra casts added to ensure compatibility with various C types
   // used in the nodejs binding generation:
   memset((void *)(((char *)from_name) + name.length()), 0, 1);
-  // end convert_from_v8 block
- 
-  giterr_clear();
+
+  SimpleFilterBaton *baton = new SimpleFilterBaton;
+  baton->filter_name = (char *) malloc(name.length() + 1);
+  strcpy(baton->filter_name, from_name);
+  baton->error_code = GIT_OK;
+
+  /* Setting up Async Worker */
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
+  UnRegisterWorker *worker = new UnRegisterWorker(baton, callback);
+
+  worker->SaveToPersistent("filter_name", info[0]);
+
+  /*giterr_clear();
 
   {
-    LockMaster lockMaster(/*asyncAction: */false, from_name);
+    LockMaster lockMaster(false, from_name);
 
     int result = git_filter_unregister(from_name);
  
@@ -153,5 +261,133 @@ NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
     to = Nan::New<Number>(result);
     // end convert_to_v8 block
     return info.GetReturnValue().Set(scope.Escape(to));
+  }*/
+  // Remove persistent reference for given filter
+  /*v8::Local<Object> handleRef = Nan::New<v8::Object>(GitFilterRegistry::persistentHandle);
+  Nan::Maybe<bool> _delete_result = Nan::Delete(handleRef, info[0]->ToString());
+
+  Nan::Maybe<bool> result3 = Nan::Has(handleRef, info[0]->ToString());
+
+  if(!GitFilterRegistry::persistentHandle.IsEmpty()){
+    printf("not empty\n");
+    GitFilterRegistry::persistentHandle.Reset();
+  } else {
+    printf("empty\n");
+  }*/
+
+  AsyncLibgit2QueueWorker(worker);
+  return;
+}
+
+// no v8 in execute
+void GitFilterRegistry::UnRegisterWorker::Execute() {
+  
+  giterr_clear();
+
+  {
+    LockMaster lockMaster(/*asyncAction: */true, baton->filter_name);
+    int result = git_filter_unregister(baton->filter_name);
+    baton->error_code = result;
+
+    if (result != GIT_OK && giterr_last() != NULL) {
+      baton->error = git_error_dup(giterr_last());
+    }
   }
+  /*// Remove persistent reference for given filter
+  *v8::Local<Object> handleRef = Nan::New<v8::Object>(GitFilterRegistry::persistentHandle);
+  Nan::Maybe<bool> _delete_result = Nan::Delete(handleRef, info[0]->ToString());
+
+  Nan::Maybe<bool> result3 = Nan::Has(handleRef, info[0]->ToString());
+
+  if(!GitFilterRegistry::persistentHandle.IsEmpty()){
+    printf("not empty\n");
+    GitFilterRegistry::persistentHandle.Reset();
+  } else {
+    printf("empty\n");
+  }*/
+}
+
+void GitFilterRegistry::UnRegisterWorker::HandleOKCallback() {
+
+  if (baton->error_code == GIT_OK) {
+    v8::Local<v8::Value> result = Nan::New(baton->error_code);
+    v8::Local<v8::Value> argv[2] = {
+      Nan::Null(),
+      result
+    };
+    callback->Call(2, argv);
+  } else {
+    if (baton->error) {
+      v8::Local<v8::Object> err;
+      if (baton->error->message) {
+        err = Nan::Error(baton->error->message)->ToObject();
+      } else {
+        err = Nan::Error("Method register has thrown an error.")->ToObject();
+      }
+      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      v8::Local<v8::Value> argv[1] = {
+        err
+      };
+      callback->Call(1, argv);
+      if (baton->error->message)
+        free((void *)baton->error->message);
+      free((void *)baton->error);
+    } else if (baton->error_code < 0) {
+      std::queue< v8::Local<v8::Value> > workerArguments;
+      workerArguments.push(GetFromPersistent("filter_name"));
+      
+      bool callbackFired = false;
+      while(!workerArguments.empty()) {
+        v8::Local<v8::Value> node = workerArguments.front();
+        workerArguments.pop();
+
+        if (
+          !node->IsObject()
+          || node->IsArray()
+          || node->IsBooleanObject()
+          || node->IsDate()
+          || node->IsFunction()
+          || node->IsNumberObject()
+          || node->IsRegExp()
+          || node->IsStringObject()
+        ) {
+          continue;
+        }
+
+        v8::Local<v8::Object> nodeObj = node->ToObject();
+        v8::Local<v8::Value> checkValue = GetPrivate(nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
+
+        if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined()) {
+          v8::Local<v8::Value> argv[1] = {
+            checkValue->ToObject()
+          };
+          callback->Call(1, argv);
+          callbackFired = true;
+          break;
+        }
+
+        v8::Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
+          v8::Local<v8::String> propName = properties->Get(propIndex)->ToString();
+          v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+          if (!nodeToQueue->IsUndefined()) {
+            workerArguments.push(nodeToQueue);
+          }
+        }
+      }
+
+      if (!callbackFired) {
+        v8::Local<v8::Object> err = Nan::Error("Method register has thrown an error.")->ToObject();
+        err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        v8::Local<v8::Value> argv[1] = {
+          err
+        };
+        callback->Call(1, argv);
+      }
+    } else {
+      callback->Call(0, NULL);
+    }
+  }
+  delete baton;
+  return;
 }
