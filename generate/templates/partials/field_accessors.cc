@@ -215,7 +215,8 @@
             {% if not arg.firstArg %}
               {% if field.args|jsArgsCount|subtract 1|or 0 %}
                 {% if arg.cppClassName == "String" %}
-                  src,
+                  {%-- src is always the last arg --%}
+                  src
                 {% elsif arg.isJsArg %}
                   {% if arg.isEnum %}
                     Nan::New((int)baton->{{ arg.name }}),
@@ -224,6 +225,7 @@
                   {% elsif arg.cType == "size_t" %}
                     Nan::New((unsigned int)baton->{{ arg.name }}),
                   {% elsif arg.name == "payload" %}
+                    {%-- skip, filters should not have a payload --%}
                   {% else %}
                     Nan::New(baton->{{ arg.name }}),
                   {% endif %}
@@ -231,8 +233,9 @@
               {% endif %}
             {% endif %}
           {% else %}
-            {% if arg.cppClassName == "String" %}
-              Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
+            {% if arg.name == "payload" %}
+              {%-- payload is always the last arg --%}
+              Nan::New(instance->{{ fields|payloadFor field.name }})
             {% elsif arg.isJsArg %}
               {% if arg.isEnum %}
                 Nan::New((int)baton->{{ arg.name }}),
@@ -241,7 +244,8 @@
               {% elsif arg.cType == "size_t" %}
                 // HACK: NAN should really have an overload for Nan::New to support size_t
                 Nan::New((unsigned int)baton->{{ arg.name }}),
-              {% elsif arg.name == "payload" %}
+              {% elsif arg.cppClassName == "String" %}
+                Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
               {% else %}
                 Nan::New(baton->{{ arg.name }}),
               {% endif %}
@@ -255,12 +259,17 @@
         {% endif %}
 
         Nan::TryCatch tryCatch;
-        v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount|subtract 2| setUnsigned }}, argv);
+
+        {% if field.isSelfReferential %}
+          v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount|subtract 2| setUnsigned }}, argv);
+        {% else  %}
+          v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
+        {% endif %}
 
         if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppClassName }}::{{ field.name }}_promiseCompleted)) {
           return;
         }
-        //TODO: fix for void cases
+        
         {% if field.return.type == "void" %}
           baton->Done();
         {% else %}

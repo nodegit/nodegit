@@ -63,7 +63,6 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%elsif arg.shouldAlloc %}
       {%if arg.cppClassName == "GitBuf" %}
       {%else%}
-      // culprit found
         baton->{{ arg.name }} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
       {%endif%}
     {%endif%}
