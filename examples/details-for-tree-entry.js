@@ -17,10 +17,10 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
         var indexEntry = index.getByPath(treeEntry.path());
 
         // With the index entry we can now view the details for the tree entry
-        console.log("Entry path: " + indexEntry.path());
-        console.log("Entry time in seconds: " + indexEntry.mtime().seconds());
-        console.log("Entry oid: " + indexEntry.id().toString());
-        console.log("Entry size: " + indexEntry.fileSize());
+        console.log("Entry path: " + indexEntry.path);
+        console.log("Entry time in seconds: " + indexEntry.mtime.seconds());
+        console.log("Entry oid: " + indexEntry.id.toString());
+        console.log("Entry size: " + indexEntry.fileSize);
       });
     });
   })
