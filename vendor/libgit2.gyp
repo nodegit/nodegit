@@ -27,6 +27,9 @@
         "openssl/openssl.gyp:openssl",
         "libssh2"
       ],
+      'cflags': [
+        '<!(pkg-config libcurl --cflags 2>/dev/null || echo "")',
+      ],
       "sources": [
         "libgit2/include/git2/sys/hashsig.h",
         "libgit2/include/git2/sys/merge.h",
