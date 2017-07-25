@@ -91,7 +91,6 @@ describe("Blob", function() {
   });
 
   after(function() {
-    console.log("cleaning");
     return exec("git clean -xdf", {cwd: reposPath})
       .then(function() {
         return exec("git checkout master", {cwd: reposPath});
