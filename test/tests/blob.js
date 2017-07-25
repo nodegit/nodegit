@@ -3,6 +3,7 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 var promisify = require("promisify-node");
 var fse = promisify("fs-extra");
+var exec = require("../../utils/execPromise");
 
 describe("Blob", function() {
   var NodeGit = require("../../");
@@ -14,6 +15,7 @@ describe("Blob", function() {
 
   var reposPath = local("../repos/workdir");
   var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
+  var previousCommitOid = "";
 
   function commitFile(repo, fileName, fileContent, commitMessage) {
     var index;
@@ -64,6 +66,16 @@ describe("Blob", function() {
     });
   }
 
+  before(function() {
+    return Repository.open(reposPath)
+      .then(function(repository) {
+        return repository.getHeadCommit();
+      })
+      .then(function(commit) {
+        previousCommitOid = commit.id();
+      });
+  });
+
   beforeEach(function() {
     var test = this;
 
@@ -75,6 +87,17 @@ describe("Blob", function() {
       })
       .then(function(blob) {
         test.blob = blob;
+      });
+  });
+
+  after(function() {
+    console.log("cleaning");
+    return exec("git clean -xdf", {cwd: reposPath})
+      .then(function() {
+        return exec("git checkout master", {cwd: reposPath});
+      })
+      .then(function() {
+        return exec("git reset --hard " + previousCommitOid, {cwd: reposPath});
       });
   });
 
