@@ -2562,6 +2562,19 @@
         "git_treebuilder_filter": {
           "ignore": true
         },
+        "git_treebuilder_get": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_treebuilder_insert": {
+          "isAsync": false,
+          "args": {
+            "out": {
+              "ownedByThis": true
+            }
+          }
+        },
         "git_treebuilder_write": {
           "args": {
             "id": {
@@ -2582,7 +2595,7 @@
       }
     },
     "tree_entry": {
-      "selfFreeing": true,
+      "selfFreeing": false,
       "dupFunction": "git_tree_entry_dup",
       "freeFunctionName": "git_tree_entry_free",
       "functions": {
