@@ -172,12 +172,10 @@
         {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
 
         if (instance->{{ field.name }}.GetCallback()->IsEmpty()) {
-          {% if field.return.type == "void" %}
-            baton->Done();
-          {% else %}
+          {% if field.return.type == "int" %}
             baton->result = baton->defaultResult; // no results acquired
-            baton->Done();
           {% endif %}
+          baton->Done();
           return;
         }
 
@@ -186,17 +184,17 @@
             {%-- Do nothing --%}
           {% elsif arg.isJsArg %}
             {% if arg.cType == "const char *" %}
-          if (baton->{{ arg.name }} == NULL) {
-              baton->{{ arg.name }} = "";
-          }
+              if (baton->{{ arg.name }} == NULL) {
+                  baton->{{ arg.name }} = "";
+              }
             {% elsif arg.cppClassName == "String" %}
-            v8::Local<v8::Value> src;
-          if (baton->{{ arg.name }} == NULL) {
-              src = Nan::Null();
-          } 
-          else {
-            src = Nan::New<String>(*baton->{{ arg.name }}).ToLocalChecked();
-          }
+              v8::Local<v8::Value> src;
+              if (baton->{{ arg.name }} == NULL) {
+                  src = Nan::Null();
+              } 
+              else {
+                src = Nan::New<String>(*baton->{{ arg.name }}).ToLocalChecked();
+              }
             {% endif %}
           {% endif %}
         {% endeach %}

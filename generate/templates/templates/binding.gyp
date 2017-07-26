@@ -10,7 +10,6 @@
       "variables": {
         "coverage%": 0
       },
-      
       "sources": [
         "src/async_baton.cc",
         "src/lock_master.cc",

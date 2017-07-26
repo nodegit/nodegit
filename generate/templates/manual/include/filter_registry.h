@@ -1,5 +1,3 @@
-// This is a generated file, modify: generate/templates/templates/class_header.h
-
 #ifndef GITFILTERREGISTRY_H
 #define GITFILTERREGISTRY_H
 #include <nan.h>
@@ -23,11 +21,9 @@ using namespace node;
 using namespace v8;
 
 
-class GitFilterRegistry : public
-  Nan::ObjectWrap
-{
+class GitFilterRegistry : public Nan::ObjectWrap {
    public:
-    static void InitializeComponent (v8::Local<v8::Object> target);
+    static void InitializeComponent(v8::Local<v8::Object> target);
 
     static Nan::Persistent<v8::Object> persistentHandle;
 
@@ -37,48 +33,42 @@ class GitFilterRegistry : public
 
     static NAN_METHOD(GitFilterUnregister);
 
-    struct FilterBaton {
-      const git_error* error;
+    struct FilterRegisterBaton {
+      const git_error *error;
       git_filter *filter;
       char *filter_name;
       int filter_priority;
       int error_code;
     };
 
-    struct SimpleFilterBaton {
-      const git_error* error;
+    struct FilterUnregisterBaton {
+      const git_error *error;
       char *filter_name;
       int error_code;
     };
 
     class RegisterWorker : public Nan::AsyncWorker {
       public:
-        RegisterWorker(
-          FilterBaton *_baton,
-          Nan::Callback *callback
-        ) : Nan::AsyncWorker(callback)
-          , baton(_baton) {};
+        RegisterWorker(FilterRegisterBaton *_baton, Nan::Callback *callback) 
+        : Nan::AsyncWorker(callback), baton(_baton) {};
         ~RegisterWorker() {};
         void Execute();
         void HandleOKCallback();
 
       private:
-        FilterBaton *baton;
+        FilterRegisterBaton *baton;
     };
 
-    class UnRegisterWorker : public Nan::AsyncWorker {
+    class UnregisterWorker : public Nan::AsyncWorker {
       public:
-        UnRegisterWorker(
-          SimpleFilterBaton *_baton,
-          Nan::Callback *callback
-        ) : Nan::AsyncWorker(callback)
-          , baton(_baton) {};
-        ~UnRegisterWorker() {};
+        UnregisterWorker(FilterUnregisterBaton *_baton, Nan::Callback *callback) 
+        : Nan::AsyncWorker(callback), baton(_baton) {};
+        ~UnregisterWorker() {};
         void Execute();
         void HandleOKCallback();
 
       private:
-        SimpleFilterBaton *baton;
+        FilterUnregisterBaton *baton;
     };
 };
 

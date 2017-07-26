@@ -52,7 +52,7 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
           static void {{ field.name }}_async(void *baton);
           static void {{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
           {% if field.return.type == 'void' %}
-            struct {{ field.name|titleCase }}Baton : public AsyncBatonWithNoResult{
+            struct {{ field.name|titleCase }}Baton : public AsyncBatonWithNoResult {
               {% each field.args|argsInfo as arg %}
                 {{ arg.cType }} {{ arg.name }};
               {% endeach %}

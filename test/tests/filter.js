@@ -1,8 +1,8 @@
-var assert = require("assert"),
-  promisify = require("promisify-node"),
-  fse = promisify(require("fs-extra")),
-  path = require("path"),
-  local = path.join.bind(path, __dirname);
+var assert = require("assert");
+var promisify = require("promisify-node");
+var fse = promisify(require("fs-extra"));
+var path = require("path");
+var local = path.join.bind(path, __dirname);
 
 describe("Filter", function() {
   var NodeGit = require("../../");
@@ -16,16 +16,10 @@ describe("Filter", function() {
 
   var packageJsonPath = path.join(reposPath, "package.json");
   var readmePath = path.join(reposPath, "README.md");
-  
-  var GIT_PASSTHROUGH = -30;
 
   var mockFilter = {
-    apply: function() {
-      return;
-    },
-    check: function(){
-      return;
-    }
+    apply: function() {},
+    check: function() {}
   };
 
   function commitFile(repo, fileName, fileContent, commitMessage) {
@@ -34,47 +28,48 @@ describe("Filter", function() {
     let parent;
 
     return fse.writeFile(path.join(repo.workdir(), fileName), fileContent)
-    .then(function() {
-      return repo.refreshIndex();
-    })
-    .then(function(indexResult) {
-      index = indexResult;
-    })
-    .then(function() {
-      return index.addByPath(fileName);
-    })
-    .then(function() {
-      return index.write();
-    })
-    .then(function() {
-      return index.writeTree();
-    })
-    .then(function(oidResult) {
-      treeOid = oidResult;
-      return NodeGit.Reference.nameToId(repo, "HEAD");
-    })
-    .then(function(head) {
-      return repo.getCommit(head);
-    })
-    .then(function(parentResult) {
-      parent = parentResult;
-      return Promise.all([
-        NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
-        NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
-      ]);
-    })
-    .then(function(signatures) {
-      let author = signatures[0];
-      let committer = signatures[1];
+      .then(function() {
+        return repo.refreshIndex();
+      })
+      .then(function(indexResult) {
+        index = indexResult;
+      })
+      .then(function() {
+        return index.addByPath(fileName);
+      })
+      .then(function() {
+        return index.write();
+      })
+      .then(function() {
+        return index.writeTree();
+      })
+      .then(function(oidResult) {
+        treeOid = oidResult;
+        return NodeGit.Reference.nameToId(repo, "HEAD");
+      })
+      .then(function(head) {
+        return repo.getCommit(head);
+      })
+      .then(function(parentResult) {
+        parent = parentResult;
+        return Promise.all([
+          NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
+          NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
+        ]);
+      })
+      .then(function(signatures) {
+        let author = signatures[0];
+        let committer = signatures[1];
 
-      return repo.createCommit(
-        "HEAD",
-        author,
-        committer,
-        commitMessage,
-        treeOid,
-        [parent]);
-    });
+        return repo.createCommit(
+          "HEAD",
+          author,
+          committer,
+          commitMessage,
+          treeOid,
+          [parent]
+        );
+      });
   }
 
   beforeEach(function() {
@@ -89,22 +84,17 @@ describe("Filter", function() {
         test.emptyRepo = emptyRepo;
         return fse.writeFile(
           path.join(reposPath, ".gitattributes"), 
-          "*.md filter="+ filterName +" -text", {
-          encoding: "utf-8",
-        });
+          "*.md filter=" + filterName + " -text",
+          { encoding: "utf-8" }
+        );
       });
   });
 
   afterEach(function() {
     return Registry.unregister(filterName)
       .catch(function(error) {
-        switch(error) {
-          case -1:
-            throw new Error("Cannot unregister filter");
-          // case -3:
-          //   throw new Error('Cannot find filter to unregister');
-          default:
-            return;
+        if (error === NodeGit.Error.CODE.ERROR) {
+          throw new Error("Cannot unregister filter");
         }
       });
   });
@@ -122,29 +112,29 @@ describe("Filter", function() {
     it("can register a filter", function() {
       return Registry.register(filterName, mockFilter, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
         });
     });
 
     it("can register multiple filters", function() {
       return Registry.register(filterName, mockFilter, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return Registry.register(secondFilter, mockFilter, 1);
         })
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
         });
     });
 
     it("cannot register the same filter twice", function() {
       return Registry.register(filterName, mockFilter, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return Registry.register(filterName, mockFilter, 0);
         })
         .catch(function(error) {
-          assert.strictEqual(error.errno, -4);
+          assert.strictEqual(error.errno, NodeGit.Error.CODE.EEXISTS);
         });
     });
   });
@@ -157,21 +147,21 @@ describe("Filter", function() {
     it("can unregister the filter", function() {
       return Registry.unregister(filterName)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
         });
     });
 
     it("cannot unregister the filter twice", function() {
       return Registry.unregister(filterName)
         .then(function(result) { 
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return Registry.unregister(filterName);
         })
         .then(function(result) {
-          assert.fail(result, -3, "Should not have unregistered successfully");
+          assert.fail("Should not have unregistered successfully");
         })
         .catch(function(error) {
-          assert.strictEqual(error.errno, -3);
+          assert.strictEqual(error.errno, NodeGit.Error.CODE.ENOTFOUND);
         });
     });
   });
@@ -183,22 +173,21 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         initialize: function() {
           initialized = true;
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
-        apply: function() {
-          return;
-        },
+        apply: function() {},
         check: function() {
-          return -30;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         }
       }, 0)
       .then(function(result) {
-        assert.strictEqual(result, 0);
+        assert.strictEqual(result, NodeGit.Error.CODE.OK);
       })
       .then(function() {
         return fse.writeFile(
           packageJsonPath, 
-          "Changing content to trigger checkout");
+          "Changing content to trigger checkout"
+        );
       })
       .then(function() {
         var opts = {
@@ -218,22 +207,21 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         initialize: function() {
           initialized = true;
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
-        apply: function() {
-          return;
-        },
+        apply: function() {},
         check: function() {
-          return -30;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         }
       }, 0)
       .then(function(result) {
-        assert.strictEqual(result, 0);
+        assert.strictEqual(result, NodeGit.Error.CODE.OK);
         global.gc();
 
         return fse.writeFile(
           packageJsonPath, 
-          "Changing content to trigger checkout");
+          "Changing content to trigger checkout"
+        );
       })
       .then(function() {
         var opts = {
@@ -253,22 +241,21 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         initialize: function() {
           initialized = true;
-          return -1;
+          return NodeGit.Error.CODE.ERROR;
         },
-        apply: function() {
-          return;
-        },
+        apply: function() {},
         check: function() {
-          return -30;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         }
       }, 0)
       .then(function(result) {
-        assert.strictEqual(result, 0);
+        assert.strictEqual(result, NodeGit.Error.CODE.OK);
       })
       .then(function() {
         return fse.writeFile(
           packageJsonPath, 
-          "Changing content to trigger checkout");
+          "Changing content to trigger checkout"
+        );
       })
       .then(function() {
         var opts = {
@@ -291,23 +278,21 @@ describe("Filter", function() {
       var test = this;
       var shutdown = false;
       return Registry.register(filterName, {
-        apply: function() {
-          return;
-        },
+        apply: function() {},
         check: function(){
-          return -30;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         },
         shutdown: function(){
           shutdown = true;
         }
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
             packageJsonPath, 
-            "Changing content to trigger checkout", {
-            encoding: "utf-8",
-          });
+            "Changing content to trigger checkout",
+            { encoding: "utf-8" }
+          );
         })
         .then(function() {
           var opts = {
@@ -320,7 +305,7 @@ describe("Filter", function() {
           return Registry.unregister(filterName);
         })
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           assert.strictEqual(shutdown, true);
         });
     });
@@ -329,23 +314,21 @@ describe("Filter", function() {
       var test = this;
       var shutdown = false;
       return Registry.register(filterName, {
-        apply: function() {
-          return;
-        },
+        apply: function() {},
         check: function(){
-          return -30;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         },
         shutdown: function(){
           shutdown = true;
         }
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
             packageJsonPath, 
-            "Changing content to trigger checkout", {
-            encoding: "utf-8",
-          });
+            "Changing content to trigger checkout",
+            { encoding: "utf-8" }
+          );
         })
         .then(function() {
           var opts = {
@@ -359,7 +342,7 @@ describe("Filter", function() {
           return Registry.unregister(filterName);
         })
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           assert.strictEqual(shutdown, true);
         });
     });
@@ -368,11 +351,9 @@ describe("Filter", function() {
       var test = this;
       var shutdown = false;
       return Registry.register(filterName, {
-        apply: function() {
-          return;
-        },
+        apply: function() {},
         check: function(){
-          return -30;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         },
         shutdown: function(){
           shutdown = true;
@@ -380,12 +361,12 @@ describe("Filter", function() {
         }
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
             packageJsonPath, 
-            "Changing content to trigger checkout", {
-            encoding: "utf-8",
-          });
+            "Changing content to trigger checkout",
+            { encoding: "utf-8" }
+          );
         })
         .then(function() {
           var opts = {
@@ -398,7 +379,7 @@ describe("Filter", function() {
           return Registry.unregister(filterName);
         })
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           assert.strictEqual(shutdown, true);
         })
         .catch(function(error) {
@@ -421,16 +402,16 @@ describe("Filter", function() {
           applied = true;
         },
         check: function() {
-          return GIT_PASSTHROUGH;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         }
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
             packageJsonPath, 
-            "Changing content to trigger checkout", {
-            encoding: "utf-8",
-          });
+            "Changing content to trigger checkout",
+            { encoding: "utf-8" }
+          );
         })
         .then(function() {
           var opts = {
@@ -453,16 +434,16 @@ describe("Filter", function() {
           applied = true;
         },
         check: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         }
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
             packageJsonPath, 
-            "Changing content to trigger checkout", {
-            encoding: "utf-8",
-          });
+            "Changing content to trigger checkout", 
+            { encoding: "utf-8" }
+          );
         })
         .then(function() {
           var opts = {
@@ -483,23 +464,27 @@ describe("Filter", function() {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
             .then(function() {
-              return GIT_PASSTHROUGH;
+              return NodeGit.Error.CODE.PASSTHROUGH;
             });
         },
         check: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         }
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
         })
         .then(function() {
-          var readmeContent = fse.readFileSync(packageJsonPath, "utf-8");
+          var readmeContent = fse.readFileSync(
+            packageJsonPath, 
+            "utf-8"
+          );
           assert.notStrictEqual(readmeContent, message);
 
           return fse.writeFile(
             packageJsonPath, 
-            "Changing content to trigger checkout");
+            "Changing content to trigger checkout"
+          );
         })
         .then(function() {
           var opts = {
@@ -510,7 +495,9 @@ describe("Filter", function() {
         })
         .then(function() {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, "utf-8");
+            readmePath, 
+            "utf-8"
+          );
 
           assert.notStrictEqual(postInitializeReadmeContents, message);
         });
@@ -523,18 +510,21 @@ describe("Filter", function() {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
             .then(function(buf) {
-              return 0;
+              return NodeGit.Error.CODE.OK;
             });
         },
         check: function(src, attr) {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         }
       }, 0)
         .then(function(result) {
           assert.strictEqual(result, 0);
         })
         .then(function() {
-          var readmeContent = fse.readFileSync(readmePath, "utf-8");
+          var readmeContent = fse.readFileSync(
+            readmePath, 
+            "utf-8"
+          );
           assert.notStrictEqual(readmeContent, message);
           fse.writeFileSync(readmePath, "whoa", "utf8");
 
@@ -546,7 +536,9 @@ describe("Filter", function() {
         })
         .then(function() {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, "utf-8");
+            readmePath, 
+            "utf-8"
+          );
 
           assert.strictEqual(postInitializeReadmeContents, message);
         });
@@ -559,18 +551,21 @@ describe("Filter", function() {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
             .then(function(buf) {
-              return 0;
+              return NodeGit.Error.CODE.OK;
             });
         },
         check: function(src, attr) {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         }
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
         })
         .then(function() {
-          var readmeContent = fse.readFileSync(readmePath, "utf-8");
+          var readmeContent = fse.readFileSync(
+            readmePath, 
+            "utf-8"
+          );
           assert.notStrictEqual(readmeContent, message);
           fse.writeFileSync(readmePath, "whoa", "utf8");
           global.gc();
@@ -583,7 +578,9 @@ describe("Filter", function() {
         })
         .then(function() {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, "utf-8");
+            readmePath, 
+            "utf-8"
+          );
 
           assert.strictEqual(postInitializeReadmeContents, message);
         });
@@ -596,34 +593,39 @@ describe("Filter", function() {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
             .then(function(buf) {
-              return 0;
+              return NodeGit.Error.CODE.OK;
             });
         },
         check: function(src, attr) {
-          return src.path() === "README.md" ? 0 : GIT_PASSTHROUGH;
+          return src.path() === "README.md" ? 
+            0 : NodeGit.Error.CODE.PASSTHROUGH;
         },
-        cleanup: function() {
-          return;
-        }
+        cleanup: function() {}
       }, 0)
         .then(function(result) {
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
         })
         .then(function() {
-          var readmeContent = fse.readFileSync(readmePath, "utf-8");
+          var readmeContent = fse.readFileSync(
+            readmePath, 
+            "utf-8"
+          );
           assert.notStrictEqual(readmeContent, "testing commit contents");
         })
         .then(function() {
           return commitFile(test.repository, "README.md", 
             "testing commit contents", 
-            "test commit");
+            "test commit"
+          );
         })
         .then(function(oid) {
           return test.repository.getHeadCommit();
         })
         .then(function(commit) {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, "utf-8");
+            readmePath, 
+            "utf-8"
+          );
 
           assert.strictEqual(
             postInitializeReadmeContents, "testing commit contents"
@@ -648,28 +650,31 @@ describe("Filter", function() {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
             .then(function(buf) {
-              return 0;
+              return NodeGit.Error.CODE.OK;
             });
         },
         check: function(src, attr) {
-          return src.path() === "README.md" ? 0 : GIT_PASSTHROUGH;
+          return src.path() === "README.md" ?
+            0 : NodeGit.Error.CODE.PASSTHROUGH;
         },
-        cleanup: function() {
-          return;
-        }
+        cleanup: function() {}
       }, 0)
         .then(function(result) {
           global.gc();
-          assert.strictEqual(result, 0);
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
         })
         .then(function() {
-          var readmeContent = fse.readFileSync(readmePath, "utf-8");
+          var readmeContent = fse.readFileSync(
+            readmePath, 
+            "utf-8"
+          );
           assert.notStrictEqual(readmeContent, "testing commit contents");
         })
         .then(function() {
           return commitFile(test.repository, "README.md", 
             "testing commit contents", 
-            "test commit");
+            "test commit"
+          );
         })
         .then(function(oid) {
           global.gc();
@@ -677,7 +682,9 @@ describe("Filter", function() {
         })
         .then(function(commit) {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, "utf-8");
+            readmePath, 
+            "utf-8"
+          );
 
           assert.strictEqual(
             postInitializeReadmeContents, "testing commit contents"
@@ -703,30 +710,33 @@ describe("Filter", function() {
       var cleaned = false;
       return Registry.register(filterName, {
         initialize: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         apply: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         check: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         cleanup: function() {
           cleaned = true;
         }
       }, 0)
       .then(function(result) {
-        assert.strictEqual(result, 0);
+        assert.strictEqual(result, NodeGit.Error.CODE.OK);
       })
       .then(function() {
-        var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
+        var packageContent = fse.readFileSync(
+          packageJsonPath,
+          "utf-8"
+        );
         assert.notEqual(packageContent, "");
 
         return fse.writeFile(
           packageJsonPath, 
-          "Changing content to trigger checkout", {
-          encoding: "utf-8",
-        });
+          "Changing content to trigger checkout",
+          { encoding: "utf-8" }
+        );
       })
       .then(function() {
         var opts = {
@@ -745,31 +755,34 @@ describe("Filter", function() {
       var cleaned = false;
       return Registry.register(filterName, {
         initialize: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         apply: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         check: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         cleanup: function() {
           cleaned = true;
         }
       }, 0)
       .then(function(result) {
-        assert.strictEqual(result, 0);
+        assert.strictEqual(result, NodeGit.Error.CODE.OK);
       })
       .then(function() {
-        var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
+        var packageContent = fse.readFileSync(
+          packageJsonPath, 
+          "utf-8"
+        );
         assert.notEqual(packageContent, "");
 
         global.gc();
         return fse.writeFile(
           packageJsonPath, 
-          "Changing content to trigger checkout", {
-          encoding: "utf-8",
-        });
+          "Changing content to trigger checkout",
+          { encoding: "utf-8" }
+        );
       })
       .then(function() {
         var opts = {
@@ -789,24 +802,30 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         initialize: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         apply: function() {
-          return 0;
+          return NodeGit.Error.CODE.OK;
         },
         check: function() {
-          return GIT_PASSTHROUGH;
+          return NodeGit.Error.CODE.PASSTHROUGH;
         },
         cleanup: function() {
           cleaned = true;
         }
       }, 0)
       .then(function(result) {
-        assert.strictEqual(result, 0);
+        assert.strictEqual(result, NodeGit.Error.CODE.OK);
       })
       .then(function() {
-        var packageContent = fse.readFileSync(packageJsonPath, "utf-8"),
-          readmeContent = fse.readFileSync(readmePath, "utf-8");
+        var packageContent = fse.readFileSync(
+          packageJsonPath, 
+          "utf-8"
+        );
+        var readmeContent = fse.readFileSync(
+          readmePath, 
+          "utf-8"
+        );
 
         assert.notEqual(packageContent, "");
         assert.notEqual(readmeContent, "Initialized");
@@ -814,9 +833,9 @@ describe("Filter", function() {
       .then(function() {
         return fse.writeFile(
           packageJsonPath, 
-          "Changing content to trigger checkout", {
-          encoding: "utf-8",
-        });
+          "Changing content to trigger checkout",
+          { encoding: "utf-8" }
+        );
       })
       .then(function() {
         var opts = {

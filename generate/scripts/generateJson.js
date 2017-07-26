@@ -106,7 +106,6 @@ module.exports = function generateJson() {
   }, {}).valueOf();
 
   // decorate the definitions with required data to build the C++ files
-  //TODO: add self ref tag here
   types.forEach(function(typeDef) {
     var typeName = typeDef.typeName;
     typeDef.cType = typeName;

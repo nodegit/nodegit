@@ -61,8 +61,6 @@ struct AsyncBatonWithResult : public AsyncBaton {
 };
 
 struct AsyncBatonWithNoResult : public AsyncBaton {
- /* ResultT result;
-  ResultT defaultResult;*/ // result returned if the callback doesn't return anything valid
   void (*onCompletion)(AsyncBaton *);
 
   void Done() {
