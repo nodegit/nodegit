@@ -30,7 +30,6 @@ environment:
     - nodejs_version: "stable"
     - nodejs_version: "7"
     - nodejs_version: "6"
-    - nodejs_version: "4"
 
 matrix:
   fast_finish: true
@@ -46,7 +45,7 @@ install:
 test_script:
   - node --version
   - npm --version
-  - cmd: npm test
+  - appveyor-retry call npm test
 
 on_success:
   - IF %APPVEYOR_REPO_TAG%==true npm install -g node-pre-gyp
