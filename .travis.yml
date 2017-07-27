@@ -67,7 +67,7 @@ before_install:
     fi
 
 install:
-  - npm install;
+  - travis_retry npm install;
 
 # This is a random private key used purely for testing.
 before_script:
