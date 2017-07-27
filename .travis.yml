@@ -58,7 +58,7 @@ before_install:
 
   - nvm install $NODE_VERSION
 
-  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "stable" ]; then
+  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
       export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
       export CC=/usr/bin/gcc-4.9;
       export CXX=/usr/bin/g++-4.9;
@@ -84,8 +84,8 @@ before_script:
   - git config --global user.email johndoe@example.com
 
 script:
-    if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "stable" ]; then
-      npm test && npm run cov && npm run coveralls;
+    if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
+      travis_retry npm test && npm run cov && npm run coveralls;
     else
       travis_retry npm test;
     fi
@@ -99,7 +99,7 @@ after_success:
       node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "stable" ] && [ $TARGET_ARCH == "x64" ]; then
+  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ] && [ $TARGET_ARCH == "x64" ]; then
       .travis/deploy-docs.sh;
     fi
 
