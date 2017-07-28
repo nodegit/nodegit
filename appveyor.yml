@@ -27,8 +27,9 @@ environment:
   GYP_MSVS_VERSION: 2013
   matrix:
     # Node.js
-    - nodejs_version: "6"
+    - nodejs_version: "stable"
     - nodejs_version: "7"
+    - nodejs_version: "6"
 
 matrix:
   fast_finish: true
