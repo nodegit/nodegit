@@ -50,7 +50,7 @@
     "coveralls": "~2.11.4",
     "eslint": "^4.3.0",
     "gulp-eslint": "^4.0.0",
-    "gulp-reporter": "^2.1.0",
+    "gulp-reporter": "github:gucong3000/gulp-reporter#node_4",
     "istanbul": "~0.3.20",
     "js-beautify": "~1.5.10",
     "lcov-result-merger": "~1.0.2",

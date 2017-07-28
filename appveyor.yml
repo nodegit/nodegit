@@ -39,12 +39,12 @@ install:
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - npm install -g npm
   - cmd: npm install -g node-gyp
-  - npm install
+  - appveyor-retry call npm install
 
 test_script:
   - node --version
   - npm --version
-  - cmd: npm test
+  - appveyor-retry call npm test
 
 on_success:
   - IF %APPVEYOR_REPO_TAG%==true npm install -g node-pre-gyp
