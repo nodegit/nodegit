@@ -13,16 +13,19 @@ sudo: false
 
 env:
   matrix:
-    - export NODE_VERSION="6.5" TARGET_ARCH="x64"
+    - export NODE_VERSION="stable" TARGET_ARCH="x64"
     - export NODE_VERSION="7.4" TARGET_ARCH="x64"
+    - export NODE_VERSION="6.5" TARGET_ARCH="x64"
 
 matrix:
   fast_finish: true
   include:
     - os: linux
-      env: export NODE_VERSION="6.5" TARGET_ARCH="ia32"
+      env: export NODE_VERSION="stable" TARGET_ARCH="ia32"
     - os: linux
       env: export NODE_VERSION="7.4" TARGET_ARCH="ia32"
+    - os: linux
+      env: export NODE_VERSION="6.5" TARGET_ARCH="ia32"
 
 git:
   depth: 1
@@ -63,7 +66,7 @@ before_install:
     fi
 
 install:
-  - npm install;
+  - travis_retry npm install;
 
 # This is a random private key used purely for testing.
 before_script:
@@ -78,9 +81,9 @@ before_script:
 
 script:
     if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
-      npm test && npm run cov && npm run coveralls;
+      travis_retry npm test && npm run cov && npm run coveralls;
     else
-      npm test;
+      travis_retry npm test;
     fi
 
 after_success:
