@@ -1,0 +1,47 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "root": true,
+  "rules": {
+    "no-cond-assign": [
+      "error",
+      "except-parens"
+    ],
+    "curly": [
+      "error"
+    ],
+    "no-eq-null": [
+      "error"
+    ],
+    "no-eval": [
+      "error"
+    ],
+    "wrap-iife": [
+      "error"
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 80,
+        "ignoreComments": true
+      }
+    ],
+    "no-proto": [
+      "error"
+    ],
+    "quotes": [
+      "error"
+    ],
+    "no-undef": [
+      "error"
+    ],
+    "no-unused-vars": [
+      "error"
+    ],
+    "no-invalid-this":  [
+      "error"
+    ]
+  }
+}

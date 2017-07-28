@@ -48,11 +48,14 @@
     "clean-for-publish": "~1.0.2",
     "combyne": "~0.8.1",
     "coveralls": "~2.11.4",
+    "eslint": "^4.3.0",
+    "gulp-eslint": "^4.0.0",
+    "gulp-reporter": "^2.1.0",
     "istanbul": "~0.3.20",
     "js-beautify": "~1.5.10",
-    "jshint": "~2.8.0",
     "lcov-result-merger": "~1.0.2",
     "mocha": "~2.3.4",
+    "vinyl-fs": "^2.4.4",
     "walk": "^2.3.9"
   },
   "vendorDependencies": {
@@ -75,7 +78,6 @@
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "install": "node lifecycleScripts/preinstall && node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "lint": "jshint lib test/tests test/utils examples lifecycleScripts",
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "mocha": "mocha test/runner test/tests --timeout 15000",
     "mochaDebug": "mocha --debug-brk test/runner test/tests --timeout 15000",
@@ -85,7 +87,8 @@
     "rebuildDebug": "node generate && npm run babel && node-gyp configure --debug build",
     "recompile": "node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
-    "test": "npm run lint && node --expose-gc test",
+    "pretest": "node lifecycleScripts/lint.js",
+    "test": "node --expose-gc test",
     "xcodeDebug": "node-gyp configure -- -f xcode"
   }
 }

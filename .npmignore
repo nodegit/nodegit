@@ -15,6 +15,7 @@
 .gitignore
 .gitmodules
 .jshintrc
+.eslintrc*
 .travis.yml
 appveyor.yml
 
