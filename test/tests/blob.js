@@ -62,7 +62,8 @@ describe("Blob", function() {
         committer,
         commitMessage,
         treeOid,
-        [parent]);
+        [parent]
+      );
     });
   }
 
@@ -291,7 +292,8 @@ describe("Blob", function() {
             test.repository,
             newFileName,
             "this\nis\nfun\guys",
-            "added LF ending file");
+            "added LF ending file"
+          );
         })
         .then(function(oid) {
           return test.repository.getCommit(oid);
@@ -311,7 +313,8 @@ describe("Blob", function() {
           return Blob.filteredContent(
             test.lfBlob, 
             newFileName, 
-            0);
+            0
+          );
         })
         .then(function(content) {
           var ending = content.match(lineEndingRegex);
@@ -333,7 +336,8 @@ describe("Blob", function() {
             test.repository,
             newFileName,
             "this\nis\nfun\guys",
-            "added LF ending file");
+            "added LF ending file"
+          );
         })
         .then(function(oid) {
           return test.repository.getCommit(oid);
@@ -353,7 +357,8 @@ describe("Blob", function() {
           return Blob.filteredContent(
             test.lfBlob, 
             newFileName, 
-            1);
+            1
+          );
         })
         .then(function(content) {
           var ending = content.match(lineEndingRegex);
@@ -376,7 +381,8 @@ describe("Blob", function() {
             test.repository,
             newFileName,
             binary,
-            "binary content");
+            "binary content"
+          );
         })
         .then(function(oid) {
           return test.repository.getCommit(oid);
@@ -395,7 +401,8 @@ describe("Blob", function() {
           return Blob.filteredContent(
             test.bblob, 
             newFileName, 
-            1);
+            1
+          );
         })
         .then(function(content) {
           assert.strictEqual(content, "");
@@ -416,7 +423,8 @@ describe("Blob", function() {
             test.repository,
             newFileName,
             binary,
-            "binary content");
+            "binary content"
+          );
         })
         .then(function(oid) {
           return test.repository.getCommit(oid);
@@ -435,7 +443,8 @@ describe("Blob", function() {
           return Blob.filteredContent(
             test.bblob, 
             newFileName, 
-            0);
+            0
+          );
         })
         .then(function(content) {
           assert.strictEqual(content, binary.toString());
@@ -447,7 +456,8 @@ describe("Blob", function() {
         .catch(function(err) {
           assert.strictEqual(
             err.message, 
-            "Blob blob is required.");
+            "Blob blob is required."
+          );
         });
     });
 
@@ -465,7 +475,8 @@ describe("Blob", function() {
         .catch(function(err) {
           assert.strictEqual(
             err.message, 
-            "Number check_for_binary_data is required.");
+            "Number check_for_binary_data is required."
+          );
         });
     });
   });
