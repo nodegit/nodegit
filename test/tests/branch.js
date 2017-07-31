@@ -11,6 +11,7 @@ describe("Branch", function() {
   var branchName2 = "test-branch2";
   var fullBranchName = "refs/heads/" + branchName;
   var fullBranchName2 = "refs/heads/" + branchName2;
+  var remoteName = "origin";
   var upstreamName = "origin/master";
   var fullUpstreamName = "refs/remotes/origin/master";
   var nonHeadCommit = "c82fb078a192ea221c9f1093c64321c60d64aa0d";
@@ -82,6 +83,27 @@ describe("Branch", function() {
     return NodeGit.Branch.name(branch)
       .then(function(branchNameToTest) {
         assert.equal(branchNameToTest, branchName);
+      });
+  });
+
+  it("can get the remote name of a branch", function() {
+    var repo = this.repository;
+
+    return NodeGit.Branch.remoteName(repo, fullUpstreamName)
+      .then(function(remoteNameToTest) {
+        assert.equal(remoteNameToTest, remoteName);
+      });
+  });
+
+  it("cannot get remote name from a non-remote branch", function() {
+    var repo = this.repository;
+
+    return NodeGit.Branch.remoteName(repo, fullBranchName)
+      .then(function() {
+        assert.fail("The ref should not have been a remote");
+      })
+      .catch(function(err) {
+        assert.strictEqual(err.errno, -1);
       });
   });
 
