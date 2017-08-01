@@ -202,6 +202,32 @@
         "git_branch_next": {
           "ignore": true
         },
+        "git_branch_remote_name": {
+          "cppFunctionName": "RemoteName",
+          "jsFunctionName": "remoteName",
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "cppClassName": "GitBuf", 
+              "jsClassName": "Buffer",
+              "cType": "git_buf *"
+            },
+            "repo": {
+              "cppClassName": "GitRepository",
+              "jsClassName": "Repo",
+              "cType": "git_repository *"
+            },
+            "canonical_branch_name": {
+              "cppClassName": "String",
+              "jsClassName": "String",
+              "cType": "const char *"
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_branch_set_upstream": {
           "isAsync": true,
           "args": {
@@ -221,7 +247,10 @@
             "isErrorCode": true
           }
         }
-      }
+      },
+      "dependencies": [
+        "../include/buf.h"
+      ]
     },
     "buf": {
       "functions": {
