@@ -35,9 +35,15 @@ using namespace std;
   {% if ignoreInit == true %}
   this->raw = new {{ cType }};
   {% else %}
-  {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
-  this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
-  memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+    {% if isExtendedStruct %}
+      {{ cType }}_extended wrappedValue = {{ cType|upper }}_INIT;
+      this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}_extended));
+      memcpy(this->raw, &wrappedValue, sizeof({{ cType }}_extended));
+    {% else %}
+      {{ cType }} wrappedValue = {{ cType|upper }}_INIT;
+      this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
+      memcpy(this->raw, &wrappedValue, sizeof({{ cType }}));
+    {% endif %}
   {% endif %}
 
   this->ConstructFields();
@@ -54,9 +60,13 @@ using namespace std;
     {% if not field.ignore %}
       {% if not field.isEnum %}
         {% if field.isCallbackFunction %}
-  if (this->{{ field.name }}.HasCallback()) {
-    this->raw->{{ fields|payloadFor field.name }} = NULL;
-  }
+          if (this->{{ field.name }}.HasCallback()) {
+            {% if isExtendedStruct %}
+              (({{ cType }}_extended *)this->raw)->payload = NULL;
+            {% else %}
+              this->raw->{{ fields|payloadFor field.name }} = NULL;
+            {% endif %}
+          }
         {% endif %}
       {% endif %}
     {% endif %}
@@ -79,7 +89,11 @@ void {{ cppClassName }}::ConstructFields() {
           // Set the static method call and set the payload for this function to be
           // the current instance
           this->raw->{{ field.name }} = NULL;
-          this->raw->{{ fields|payloadFor field.name }} = (void *)this;
+          {% if isExtendedStruct  %}
+            (({{ cType }}_extended *)this->raw)->payload = (void *)this;
+          {% else %}
+            this->raw->{{ fields|payloadFor field.name }} = (void *)this;
+          {% endif %}
         {% elsif field.payloadFor %}
 
           v8::Local<Value> {{ field.name }} = Nan::Undefined();

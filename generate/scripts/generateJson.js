@@ -169,8 +169,17 @@ module.exports = function generateJson() {
       }
     };
 
+    var addSelfReferentialField = function(prop){
+      if (helpers.isSelfReferential(prop.type)) {
+        prop.isSelfReferential = true;
+        def.isExtendedStruct = true;
+      }
+    };
+
     def.fields.forEach(addDependencies);
+    def.fields.forEach(addSelfReferentialField);
     def.functions.forEach(addDependencies);
+
 
     Object.keys(dependencies).forEach(function (dependencyFilename) {
       def.dependencies.push("../include/" + dependencyFilename + ".h");
@@ -183,7 +192,6 @@ module.exports = function generateJson() {
       fn.cppClassName = def.cppClassName;
     });
   });
-
   // Process enums
   _(enums).forEach(function(enumerable) {
     output.some(function(obj) {

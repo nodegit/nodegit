@@ -10,7 +10,6 @@
       "variables": {
         "coverage%": 0
       },
-
       "sources": [
         "src/async_baton.cc",
         "src/lock_master.cc",
@@ -22,6 +21,7 @@
         "src/functions/free.cc",
         "src/convenient_patch.cc",
         "src/convenient_hunk.cc",
+        "src/filter_registry.cc",
         "src/str_array_converter.cc",
         "src/thread_pool.cc",
         {% each %}
