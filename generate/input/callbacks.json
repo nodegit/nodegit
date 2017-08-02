@@ -311,6 +311,102 @@
       "error": -1
     }
   },
+  "git_filter_apply_fn": { 
+    "args": [ 
+      { 
+        "name": "self", 
+        "cType": "git_filter *" 
+      }, 
+      { 
+        "name": "payload", 
+        "cType": "void **" 
+      }, 
+      { 
+        "name": "to", 
+        "cType": "git_buf *" 
+      }, 
+      { 
+        "name": "from", 
+        "cType": "const git_buf *" 
+      }, 
+      { 
+        "name": "src", 
+        "cType": "const git_filter_source *" 
+      } 
+    ], 
+    "return": { 
+      "type": "int", 
+      "noResults": -30, 
+      "success": 0, 
+      "error": -1 
+    } 
+  }, 
+  "git_filter_check_fn": { 
+    "args": [ 
+      { 
+        "name": "self", 
+        "cType": "git_filter *" 
+      }, 
+      { 
+        "name": "payload",
+        "cType": "void **"
+      }, 
+      { 
+        "name": "src",
+        "cType": "const git_filter_source *"
+      }, 
+      { 
+        "name": "attr_values", 
+        "cType": "const char **" 
+      } 
+    ], 
+    "return": { 
+      "type": "int", 
+      "noResults": -30, 
+      "success": 0, 
+      "error": -1 
+    } 
+  }, 
+  "git_filter_cleanup_fn": { 
+    "args": [ 
+      { 
+        "name": "self", 
+        "cType": "git_filter *" 
+      }, 
+      { 
+        "name": "payload", 
+        "cType": "void *" 
+      } 
+    ], 
+    "return": { 
+      "type": "void" 
+    } 
+  }, 
+  "git_filter_init_fn": { 
+    "args": [ 
+      { 
+        "name": "self", 
+        "cType": "git_filter *" 
+      } 
+    ], 
+    "return": { 
+      "type": "int", 
+      "noResults": 0,
+      "success": 0, 
+      "error": -1 
+    } 
+  }, 
+  "git_filter_shutdown_fn": { 
+    "args": [ 
+      { 
+        "name": "self", 
+        "cType": "git_filter *" 
+      } 
+    ], 
+    "return": { 
+      "type": "void" 
+    } 
+  },
   "git_index_matched_path_cb": {
     "args": [
       {

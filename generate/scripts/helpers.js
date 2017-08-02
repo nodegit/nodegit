@@ -1,4 +1,5 @@
-var callbackTypePattern = /\s*_cb/;
+var callbackTypePattern = /\s*_(cb|fn)/,
+  selfReferentialTypePattern = /\s*_fn/;
 
 var utils = require("./utils");
 var _ = require("lodash");
@@ -91,6 +92,10 @@ var Helpers = {
     return payloadName && ~payloadName.indexOf("_payload")
       && Helpers.isCallbackFunction(cbField.cType)
       && ~cbField.name.indexOf(payloadName.replace("_payload", ""));
+  },
+
+  isSelfReferential: function(cType){
+    return selfReferentialTypePattern.test(cType);
   },
 
   getLibgitType: function(normalizedType, types) {

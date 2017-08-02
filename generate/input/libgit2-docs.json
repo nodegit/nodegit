@@ -2632,6 +2632,38 @@
       "comments": "<p>The name of the branch matches the definition of the name for git_branch_lookup. That is, if the returned name is given to git_branch_lookup() then the reference is returned that was given to this function.</p>\n",
       "group": "branch"
     },
+    "git_branch_remote_name": {
+      "type": "function",
+      "file": "branch.h",
+      "line": 274,
+      "lineto": 277,
+      "args": [
+        {
+          "name": "out",
+          "type": "git_buf *",
+          "comment": "where the name is stored."
+        },
+        {
+          "name": "repo",
+          "type": "git_respository *",
+          "comment": "the repo to check."
+        },
+        {
+          "name": "canonical_branch_name",
+          "type": "const char *",
+          "comment": "the ref name of the branch"
+        }
+      ],
+      "argline": "git_buf *out, git_repository *repo, const char *canonical_branch_name",
+      "sig": "git_buf *::git_repository *::const char *",
+      "return": {
+        "type": "int",
+        "comment": " 0 on success; otherwise an error code (e.g., if the\n  ref is no local or remote branch)."
+      },
+      "description": "<p>Return the name of the given remote branch.</p>\n",
+      "comments": "<p></p>\n",
+      "group": "branch"
+    },
     "git_branch_upstream": {
       "type": "function",
       "file": "branch.h",
@@ -36087,6 +36119,7 @@
         "git_branch_name",
         "git_branch_next",
         "git_branch_set_upstream",
+        "git_branch_remote_name",
         "git_branch_upstream"
       ]
     ],

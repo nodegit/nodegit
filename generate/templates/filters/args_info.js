@@ -13,12 +13,8 @@ module.exports = function(args) {
       jsArg++;
     }
 
-    if (cArg === args.length -1) {
-      arg.lastArg = true;
-    }
-    else {
-      arg.lastArg = false;
-    }
+    arg.lastArg = cArg === args.length - 1;
+    arg.firstArg = !arg.lastArg && cArg === 0;
 
     arg.cArg = cArg;
     arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
