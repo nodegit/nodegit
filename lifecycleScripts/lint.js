@@ -10,7 +10,7 @@ vfs.src([
   .pipe(eslint())
   .pipe(reporter({
     // fail only error write before 2017-7-31
-    expires: new Date("2017-7-31"),
+    expires: new Date("2017-8-2"),
     author: null,
   })).resume().on("error", (e) => {
     console.error(String(e))
