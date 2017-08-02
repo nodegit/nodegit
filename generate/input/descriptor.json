@@ -2241,6 +2241,7 @@
           "isAsync": false
         },
         "git_status_file": {
+          "isAsync": true,
           "args": {
             "status_flags": {
               "isReturn": true
