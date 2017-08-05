@@ -91,9 +91,9 @@
           }
         ],
         [
-          "OS=='linux' or OS=='mac'", {
+          "OS=='linux' or OS=='mac' or OS.endswith('bsd')", {
             "libraries": [
-              "-lcurl"
+              "<!(pkg-config libcurl --libs 2>/dev/null || echo)"
             ]
           }
         ],
