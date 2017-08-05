@@ -299,7 +299,8 @@
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd')", {
           "cflags": [
-            "-DGIT_CURL"
+            "-DGIT_CURL",
+            "<!(pkg-config libcurl --cflags 2>/dev/null || echo)"
           ],
           "defines": [
             "GIT_CURL",
