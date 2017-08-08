@@ -1681,8 +1681,12 @@
     "rebase": {
       "functions": {
         "git_rebase_commit": {
+          "isAsync": true,
           "args": {
             "id": {
+              "cType": "git_oid *",
+              "cppClassName": "GitOid",
+              "jsClassName": "Oid",
               "isReturn": true,
               "shouldAlloc": true
             },
@@ -1695,6 +1699,9 @@
             "message": {
               "isOptional": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_rebase_finish": {
