@@ -1268,13 +1268,35 @@
     "merge": {
       "functions": {
         "git_merge": {
+          "isAsync": true,
           "args": {
+            "repo": {
+              "cppClassName": "GitRepository",
+              "cType": "git_repository *",
+              "jsClassName": "Repo"
+            },
             "their_heads": {
               "cType": "const git_annotated_commit **",
               "cppClassName": "Array",
               "jsClassName": "Array",
               "arrayElementCppClassName": "GitAnnotatedCommit"
+            },
+            "their_heads_len": {
+              "cType": "size_t",
+              "cppClassName": "Number",
+              "jsClassName": "Number"
+            },
+            "merge_opts": {
+              "cType": "git_merge_options *",
+              "cppClassName": "GitMergeOptions"
+            },
+            "checkout_opts": {
+              "cType": "git_checkout_options *",
+              "cppClassName": "GitCheckoutOptions"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_merge_analysis": {
