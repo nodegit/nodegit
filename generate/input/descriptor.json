@@ -1729,6 +1729,22 @@
               "isOptional": true
             }
           }
+        },
+        "git_rebase_abort": {
+          "isAsync": true,
+          "args": {
+            "rebase": {
+              "cType": "git_rebase *",
+              "cppClassName": "GitRebase",
+              "jsClassName": "Rebase",
+              "isOptional": false,
+              "isSelf": true,
+              "isReturn": false
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
