@@ -402,6 +402,7 @@
       "selfFreeing": true,
       "functions": {
         "git_commit_amend": {
+          "isAsync": true,
           "args": {
             "author": {
               "isOptional": true
