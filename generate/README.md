@@ -1,4 +1,4 @@
-## Generate
+## /generate
 
 The scripts and templates in this dir, help generate the source code and tests for NodeGit. The major components of generate are:
 
@@ -18,4 +18,4 @@ The scripts and templates in this dir, help generate the source code and tests f
 
   All the Combyne templates are placed here. The filters, partials, templates all help NodeGit generate the source code.
 
-// TODO: link to combyne, tutorial and docs.
+  > For more information on Combyne: [tbranyen/combyne](https://github.com/tbranyen/combyne)
