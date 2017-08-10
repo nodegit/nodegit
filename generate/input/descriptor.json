@@ -1844,6 +1844,17 @@
       "needsForwardDeclaration": false,
       "ignore": true
     },
+    "reflog": {
+      "functions": {
+        "git_reflog_write": {
+          "isAsync": true,
+          "isSelf": true,
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
+    },
     "reflog_entry": {
       "functions": {
         "git_reflog_entry_id_new": {
