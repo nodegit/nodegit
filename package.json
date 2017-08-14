@@ -65,7 +65,7 @@
     "host": "https://nodegit.s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
-    "babel": "babel --presets es2015 -d dist lib",
+    "babel": "babel --presets es2015 -d ./dist ./lib",
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
     "coveralls": "cat ./test/coverage/merged.lcov | coveralls",
     "cppcov": "mkdir -p test/coverage/cpp && ./lcov-1.10/bin/lcov --gcov-tool /usr/bin/gcov-4.9 --capture --directory build/Release/obj.target/nodegit/src --output-file test/coverage/cpp/lcov_full.info",
