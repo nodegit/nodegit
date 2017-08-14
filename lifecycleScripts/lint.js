@@ -5,7 +5,8 @@ vfs.src([
   "**/*.js",
   "!node_modules/**/*",
   "!dist/**/*",
-  "!test/repos/**/*"
+  "!test/repos/**/*",
+  "!.git/**/*"
 ])
   .pipe(eslint())
   .pipe(reporter({
