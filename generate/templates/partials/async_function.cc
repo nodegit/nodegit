@@ -10,11 +10,6 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  {%if cppClassName == "GitStatus" %}
-    {%if cppFunctionName == "File" %}
-  baton->status_flags = (unsigned int *)malloc(sizeof(unsigned int));
-    {%endif%}
-  {%endif%}
 
   {%each args|argsInfo as arg %}
     {%if arg.globalPayload %}
@@ -264,12 +259,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       {%endif%}
     {%endeach%}
   }
-
-  {%if cppClassName == "GitStatus" %}
-    {%if cppFunctionName == "File" %}
-  free((void *)baton->status_flags);
-    {%endif%}
-  {%endif%}
 
   {%each args|argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}

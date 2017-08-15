@@ -2301,7 +2301,8 @@
           "isAsync": true,
           "args": {
             "status_flags": {
-              "isReturn": true
+              "isReturn": true,
+              "shouldAlloc": true
             },
             "return": {
               "isErrorCode": true
