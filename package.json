@@ -49,13 +49,16 @@
     "combyne": "~0.8.1",
     "coveralls": "~2.11.4",
     "eslint": "^4.4.1",
+    "gulp-debug": "^3.1.0",
     "gulp-eslint": "^4.0.0",
     "gulp-reporter": "^2.2.1",
+    "husky": "^0.14.3",
     "istanbul": "~0.3.20",
     "js-beautify": "~1.5.10",
     "lcov-result-merger": "~1.0.2",
     "mocha": "~2.3.4",
-    "vinyl-fs": "^2.4.4",
+    "through2": "^2.0.3",
+    "vinyl": "^2.1.0",
     "walk": "^2.3.9"
   },
   "vendorDependencies": {
@@ -87,7 +90,8 @@
     "rebuildDebug": "node generate && npm run babel && node-gyp configure --debug build",
     "recompile": "node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
-    "pretest": "node lifecycleScripts/lint.js",
+    "precommit": "npm run pretest -- --fix",
+    "pretest": "node lifecycleScripts/lint",
     "test": "node --expose-gc test",
     "xcodeDebug": "node-gyp configure -- -f xcode"
   }
