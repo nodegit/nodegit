@@ -247,10 +247,13 @@ describe("Diff", function() {
     function(done) {
     var evilString = "Unicode’s fun!\nAnd it’s good for you!\n";
     var buffer = new Buffer(evilString);
-    var oid = Blob.createFromBuffer(this.repository, buffer, buffer.length);
-    Blob.lookup(this.repository, oid)
+    var test = this;
+    Blob.createFromBuffer(test.repository, buffer, buffer.length)
+      .then(function(oid) {
+        return Blob.lookup(test.repository, oid);
+      })
       .then(function(blob) {
-        blob.repo = this.repository;
+        blob.repo = test.repository;
         return Diff.blobToBuffer(
           blob,
           null,

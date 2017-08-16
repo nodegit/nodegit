@@ -130,7 +130,7 @@
       "selfFreeing": true,
       "functions": {
         "git_blob_create_frombuffer": {
-          "isAsync": false,
+          "isAsync": true,
           "args": {
             "id": {
               "isReturn": true
@@ -141,11 +141,59 @@
             }
           }
         },
+        "git_blob_create_fromworkdir": {
+          "isAsync": true,
+          "args": {
+            "id": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_blob_create_fromdisk": {
+          "isAsync": true,
+          "args": {
+            "id": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_blob_create_fromchunks": {
           "ignore": true
         },
         "git_blob_filtered_content": {
-          "ignore": true
+          "isAsync": true,
+          "isPrototypeMethod": false,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "cppClassName": "GitBuf",
+              "jsClassName": "Buffer"
+            },
+            "blob": {
+              "cppClassName": "GitBlob",
+              "jsClassName": "Blob",
+              "isSelf": false
+            },
+            "as_path": {
+              "cppClassName": "String",
+              "jsClassName": "String",
+              "cType": "const char *"
+            },
+            "check_for_binary_data": {
+              "cppClassName": "Number",
+              "jsClassName": "Number",
+              "cType": "int"
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_blob_id": {
           "return": {
