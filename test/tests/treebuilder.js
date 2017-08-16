@@ -5,10 +5,14 @@ var promisify = require("promisify-node");
 var readDir = promisify(fs.readdir);
 var local = path.join.bind(path, __dirname);
 
+var leakTest = require("../utils/leak_test");
+
 describe("TreeBuilder", function(){
 
     var Git = require("../../");
     var reposPath = local("../repos/workdir");
+    var oid = "111dd657329797f6165f52f5085f61ac976dcf04";
+
     //setup test repo each test
     beforeEach(function() {
       var test = this;
@@ -74,6 +78,21 @@ describe("TreeBuilder", function(){
         assert(newTreeEntry.isTree(),
           "Created a tree (new folder) that is a tree");
         return Git.Tree.lookup(test.repo, newTreeEntry.oid());
+      });
+    });
+
+    it("does not leak inserts", function() {
+      var test = this;
+
+      // The underlying C++ git_tree_entry is owned by the treebuilder that
+      // creates it. But since git_tree_entry is duplicable the generator will
+      // duplicate it and mark it as self freeing.
+      // Validate this with the leakTest.
+      return leakTest(Git.TreeEntry, function() {
+        return Git.Treebuilder.create(test.repo, null)
+        .then(function(builder) {
+          return builder.insert("test", oid, Git.TreeEntry.FILEMODE.BLOB);
+        });
       });
     });
 });
