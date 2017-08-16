@@ -1539,9 +1539,7 @@ describe("Merge", function() {
       .then(function(theirAnnotatedCommit) {
         return NodeGit.Merge(repository, theirAnnotatedCommit);
       })
-      .then(function(result) {
-        assert.equal(result, 0);
-
+      .then(function() {
         assert.equal(repository.state(),
           NodeGit.Repository.STATE.MERGE);
         // verify the convenience method

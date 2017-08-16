@@ -658,7 +658,7 @@ describe("Rebase", function() {
           });
       })
       .then(function() {
-        return rebase.abort(ourSignature);
+        return rebase.abort();
       })
       .then(function() {
         return NodeGit.Rebase.open(repository)
