@@ -2529,19 +2529,22 @@
       "functions": {
         "git_tree_entry_byid": {
           "return": {
-            "ownedByThis": true
+            "ownedByThis": true,
+            "selfFreeing": false
           }
         },
         "git_tree_entry_byindex": {
           "jsFunctionName": "_entryByIndex",
           "return": {
-            "ownedByThis": true
+            "ownedByThis": true,
+            "selfFreeing": false
           }
         },
         "git_tree_entry_byname": {
           "jsFunctionName": "_entryByName",
           "return": {
-            "ownedByThis": true
+            "ownedByThis": true,
+            "selfFreeing": false
           }
         },
         "git_tree_entrycount": {
@@ -2564,6 +2567,7 @@
         },
         "git_treebuilder_get": {
           "return": {
+            "selfFreeing": false,
             "ownedByThis": true
           }
         },
@@ -2571,6 +2575,7 @@
           "isAsync": false,
           "args": {
             "out": {
+              "selfFreeing": false,
               "ownedByThis": true
             }
           }
@@ -2595,7 +2600,7 @@
       }
     },
     "tree_entry": {
-      "selfFreeing": false,
+      "selfFreeing": true,
       "dupFunction": "git_tree_entry_dup",
       "freeFunctionName": "git_tree_entry_free",
       "functions": {
