@@ -394,12 +394,12 @@ describe("Blob", function() {
         .then(function(entry) {
           return entry.getBlob();
         })
-        .then(function(bblob) {
-          test.bblob = bblob;
-          assert.equal(true, bblob.isBinary());
+        .then(function(binaryBlob) {
+          test.binaryBlob = binaryBlob;
+          assert.equal(true, binaryBlob.isBinary());
         
           return Blob.filteredContent(
-            test.bblob, 
+            test.binaryBlob, 
             newFileName, 
             1
           );
@@ -436,12 +436,12 @@ describe("Blob", function() {
         .then(function(entry) {
           return entry.getBlob();
         })
-        .then(function(bblob) {
-          test.bblob = bblob;
-          assert.equal(true, bblob.isBinary());
+        .then(function(binaryBlob) {
+          test.binaryBlob = binaryBlob;
+          assert.equal(true, binaryBlob.isBinary());
         
           return Blob.filteredContent(
-            test.bblob, 
+            test.binaryBlob, 
             newFileName, 
             0
           );
