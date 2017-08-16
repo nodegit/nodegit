@@ -31,8 +31,8 @@ NodeGit
   </tbody>
 </table>
 
-**Stable (libgit2#master): 0.19.0**
-**Stable (libgit2@0.24): 0.14.1**
+**Stable (libgit2#master): 0.20.0**
+**Stable (libgit2@v0.26.0): 0.26.0**
 
 ## Have a problem? Come chat with us! ##
 
