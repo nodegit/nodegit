@@ -81,6 +81,8 @@
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "install": "node lifecycleScripts/preinstall && node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
+    "lint": "node lifecycleScripts/lint",
+    "lint:fix": "npm run lint -- --fix",
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "mocha": "mocha test/runner test/tests --timeout 15000",
     "mochaDebug": "mocha --debug-brk test/runner test/tests --timeout 15000",
@@ -90,8 +92,8 @@
     "rebuildDebug": "node generate && npm run babel && node-gyp configure --debug build",
     "recompile": "node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
-    "precommit": "npm run pretest -- --fix",
-    "pretest": "node lifecycleScripts/lint",
+    "precommit": "npm run lint:fix",
+    "pretest": "npm run lint",
     "test": "node --expose-gc test",
     "xcodeDebug": "node-gyp configure -- -f xcode"
   }
