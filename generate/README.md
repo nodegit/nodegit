@@ -1,6 +1,6 @@
 ## /generate
 
-The scripts and templates in this dir, help generate the source code and tests for NodeGit. The major components of generate are:
+The scripts and templates in this dir help generate the source code and tests for NodeGit. The major components of generate are:
 
   1. Input
   2. Scripts
