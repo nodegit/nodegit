@@ -405,6 +405,7 @@ describe("Filter", function() {
     var message = "some new fancy filter";
     var length = message.length;
     var tempBuffer = new Buffer(message, "utf-8");
+    var largeBufferSize = 300000000;
 
     it("should not apply when check returns GIT_PASSTHROUGH", function(){
       var test = this;
@@ -560,11 +561,11 @@ describe("Filter", function() {
     it("applies the massive filter data on checkout", function() {
       this.timeout(350000);
       var test = this;
-      var largeBuffer = Buffer.alloc(300000000, "a");
+      var largeBuffer = Buffer.alloc(largeBufferSize, "a");
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {    
-          return to.set(largeBuffer, 300000000)
+          return to.set(largeBuffer, largeBufferSize)
             .then(function() {
               return NodeGit.Error.CODE.OK;
             });
@@ -578,17 +579,17 @@ describe("Filter", function() {
         })
         .then(function() {
           var fd = fse.openSync(readmePath, "r");
-          var readBuf = Buffer.alloc(300000000);
+          var readBuf = Buffer.allocUnsafe(largeBufferSize);
           var readLength = fse.readSync(
             fd,
             readBuf,
             0,
-            300000000,
+            largeBufferSize,
             0
           );
           fse.closeSync(fd);
 
-          assert.notStrictEqual(readLength, 300000000);
+          assert.notStrictEqual(readLength, largeBufferSize);
           fse.writeFileSync(readmePath, "whoa", "utf8");
 
           var opts = {
@@ -599,19 +600,19 @@ describe("Filter", function() {
         })
         .then(function() {
           var fd = fse.openSync(readmePath, "r");
-          var readBuf = Buffer.alloc(300000000);
+          var readBuf = Buffer.allocUnsafe(300000000);
           var readLength = fse.readSync(
             fd,
             readBuf,
             0,
-            300000000,
+            largeBufferSize,
             0
           );
           fse.closeSync(fd);
 
           assert.strictEqual(
             readLength,
-            300000000
+            largeBufferSize
           );
         });
     });
