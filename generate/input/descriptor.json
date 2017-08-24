@@ -326,7 +326,8 @@
             "buffer": {
               "isReturn": true,
               "isSelf": false,
-              "shouldAlloc": true
+              "shouldAlloc": true,
+              "doNotConvert": true
             },
             "data": {
               "cppClassName": "Buffer",

@@ -389,6 +389,19 @@ describe("Filter", function() {
   });
 
   describe("Apply", function() {
+    before(function() { 
+      var test = this;
+      return fse.readFile(readmePath, "utf8")
+        .then((function(content) {
+          test.originalReadmeContent = content;
+        }));
+    });
+
+    afterEach(function() {
+      this.timeout(15000);
+      return fse.writeFile(readmePath, this.originalReadmeContent);
+    });
+
     var message = "some new fancy filter";
     var length = message.length;
     var tempBuffer = new Buffer(message, "utf-8");
@@ -509,7 +522,7 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
@@ -544,13 +557,72 @@ describe("Filter", function() {
         });
     });
 
+    it("applies the massive filter data on checkout", function() {
+      this.timeout(350000);
+      var test = this;
+      var largeBuffer = Buffer.alloc(300000000, "a");
+
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {    
+          return to.set(largeBuffer, 300000000)
+            .then(function() {
+              return NodeGit.Error.CODE.OK;
+            });
+        },
+        check: function(src, attr) {
+          return NodeGit.Error.CODE.OK;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          var fd = fse.openSync(readmePath, "r");
+          var readBuf = Buffer.alloc(300000000);
+          var readLength = fse.readSync(
+            fd,
+            readBuf,
+            0,
+            300000000,
+            0
+          );
+          fse.closeSync(fd);
+
+          assert.notStrictEqual(readLength, 300000000);
+          fse.writeFileSync(readmePath, "whoa", "utf8");
+
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: ["README.md"]
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          var fd = fse.openSync(readmePath, "r");
+          var readBuf = Buffer.alloc(300000000);
+          var readLength = fse.readSync(
+            fd,
+            readBuf,
+            0,
+            300000000,
+            0
+          );
+          fse.closeSync(fd);
+
+          assert.strictEqual(
+            readLength,
+            300000000
+          );
+        });
+    });
+
     it("applies the filter data on checkout with gc", function() {
       var test = this;
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
@@ -592,7 +664,7 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
@@ -649,7 +721,7 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
