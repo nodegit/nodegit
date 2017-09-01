@@ -39,7 +39,7 @@
     "nan": "^2.2.0",
     "node-gyp": "^3.5.0",
     "node-pre-gyp": "~0.6.32",
-    "promisify-node": "~0.3.0"
+    "promisify-node": "~0.4.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.3.19",

@@ -34,14 +34,14 @@ catch (ex) {
           var _{{ idef.jsClassName }}_{{ fn.jsFunctionName}}
             = _{{ idef.jsClassName }}.prototype.{{ fn.jsFunctionName }};
           _{{ idef.jsClassName }}.prototype.{{ fn.jsFunctionName }}
-            = promisify(_{{ idef.jsClassName }}_{{ fn.jsFunctionName}});
+            = promisify(_{{ idef.jsClassName }}_{{ fn.jsFunctionName}}, function() { return true; });
 
         {% else %}
 
           var _{{ idef.jsClassName }}_{{ fn.jsFunctionName}}
             = _{{ idef.jsClassName }}.{{ fn.jsFunctionName }};
           _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}
-            = promisify(_{{ idef.jsClassName }}_{{ fn.jsFunctionName}});
+            = promisify(_{{ idef.jsClassName }}_{{ fn.jsFunctionName}}, function() { return true; });
 
         {% endif %}
 
@@ -53,18 +53,18 @@ catch (ex) {
 
 var _ConvenientPatch = rawApi.ConvenientPatch;
 var _ConvenientPatch_hunks = _ConvenientPatch.prototype.hunks;
-_ConvenientPatch.prototype.hunks = promisify(_ConvenientPatch_hunks);
+_ConvenientPatch.prototype.hunks = promisify(_ConvenientPatch_hunks, function() { return true; });
 
 var _ConvenientHunk = rawApi.ConvenientHunk;
 var _ConvenientHunk_lines = _ConvenientHunk.prototype.lines;
-_ConvenientHunk.prototype.lines = promisify(_ConvenientHunk_lines);
+_ConvenientHunk.prototype.lines = promisify(_ConvenientHunk_lines, function() { return true; });
 
 var _FilterRegistry = rawApi.FilterRegistry;
 var _FilterRegistry_register = _FilterRegistry.register;
-_FilterRegistry.register = promisify(_FilterRegistry_register);
+_FilterRegistry.register = promisify(_FilterRegistry_register, function() { return true; });
 
 var _FilterRegistry_unregister = _FilterRegistry.unregister;
-_FilterRegistry.unregister = promisify(_FilterRegistry_unregister);
+_FilterRegistry.unregister = promisify(_FilterRegistry_unregister, function() { return true; });
 
 /* jshint ignore:end */
 
