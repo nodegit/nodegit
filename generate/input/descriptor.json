@@ -173,7 +173,8 @@
             "out": {
               "isReturn": true,
               "cppClassName": "GitBuf",
-              "jsClassName": "Buffer"
+              "jsClassName": "Buffer",
+              "shouldAlloc": true
             },
             "blob": {
               "cppClassName": "GitBlob",
@@ -259,7 +260,8 @@
               "isReturn": true,
               "cppClassName": "GitBuf", 
               "jsClassName": "Buffer",
-              "cType": "git_buf *"
+              "cType": "git_buf *",
+              "shouldAlloc": true
             },
             "repo": {
               "cppClassName": "GitRepository",
@@ -307,9 +309,9 @@
           "jsFunctionName": "grow",
           "args": {
             "buffer": {
-              "isReturn": true,
-              "isSelf": false,
-              "shouldAlloc": true
+              "isReturn": false,
+              "isSelf": true,
+              "shouldAlloc": false
             }
           },
           "return": {
@@ -324,10 +326,9 @@
           "jsFunctionName": "set",
           "args": {
             "buffer": {
-              "isReturn": true,
-              "isSelf": false,
-              "shouldAlloc": true,
-              "doNotConvert": true
+              "isReturn": false,
+              "isSelf": true,
+              "shouldAlloc": false
             },
             "data": {
               "cppClassName": "Buffer",
@@ -538,6 +539,19 @@
           "return": {
             "ownedByThis": true
           }
+        },
+        "git_commit_header_field": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "isSelf": false,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
@@ -602,6 +616,12 @@
         },
         "git_config_get_string_buf": {
           "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
@@ -673,6 +693,19 @@
           "isAsync": true,
           "return": {
             "isErrorCode": true
+          }
+        },
+        "git_config_find_programdata": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true,
+              "isSelf": false,
+              "shouldAlloc": true
+            }
           }
         }
       },
@@ -882,6 +915,19 @@
         },
         "git_diff_status_char": {
           "ignore": true
+        },
+        "git_diff_to_buf": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true,
+              "isSelf": false,
+              "shouldAlloc": true
+            }
+          }
         },
         "git_diff_tree_to_index": {
           "args": {
@@ -1969,7 +2015,9 @@
           "isAsync": true,
           "args": {
             "out": {
-              "isReturn": true
+              "isReturn": true,
+              "shouldAlloc": true,
+              "isSelf": false
             },
             "remote": {
               "isSelf": true
@@ -2116,6 +2164,13 @@
           "isAsync": true,
           "return": {
             "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true,
+              "isSelf": false,
+              "shouldAlloc": true
+            }
           }
         },
         "git_repository_init_init_options": {
@@ -2473,6 +2528,19 @@
             },
             "submodule": {
               "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_submodule_resolve_url": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true,
+              "isSelf": false
             }
           },
           "return": {

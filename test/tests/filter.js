@@ -405,7 +405,7 @@ describe("Filter", function() {
     var message = "some new fancy filter";
     var length = message.length;
     var tempBuffer = new Buffer(message, "utf-8");
-    var largeBufferSize = 300000000;
+    var largeBufferSize = 500000000;
 
     it("should not apply when check returns GIT_PASSTHROUGH", function(){
       var test = this;
@@ -600,7 +600,7 @@ describe("Filter", function() {
         })
         .then(function() {
           var fd = fse.openSync(readmePath, "r");
-          var readBuf = Buffer.allocUnsafe(300000000);
+          var readBuf = Buffer.allocUnsafe(largeBufferSize);
           var readLength = fse.readSync(
             fd,
             readBuf,
