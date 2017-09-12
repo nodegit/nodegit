@@ -130,7 +130,7 @@
       "selfFreeing": true,
       "functions": {
         "git_blob_create_frombuffer": {
-          "isAsync": false,
+          "isAsync": true,
           "args": {
             "id": {
               "isReturn": true
@@ -141,11 +141,59 @@
             }
           }
         },
+        "git_blob_create_fromworkdir": {
+          "isAsync": true,
+          "args": {
+            "id": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_blob_create_fromdisk": {
+          "isAsync": true,
+          "args": {
+            "id": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_blob_create_fromchunks": {
           "ignore": true
         },
         "git_blob_filtered_content": {
-          "ignore": true
+          "isAsync": true,
+          "isPrototypeMethod": false,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "cppClassName": "GitBuf",
+              "jsClassName": "Buffer"
+            },
+            "blob": {
+              "cppClassName": "GitBlob",
+              "jsClassName": "Blob",
+              "isSelf": false
+            },
+            "as_path": {
+              "cppClassName": "String",
+              "jsClassName": "String",
+              "cType": "const char *"
+            },
+            "check_for_binary_data": {
+              "cppClassName": "Number",
+              "jsClassName": "Number",
+              "cType": "int"
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_blob_id": {
           "return": {
@@ -402,6 +450,7 @@
       "selfFreeing": true,
       "functions": {
         "git_commit_amend": {
+          "isAsync": true,
           "args": {
             "author": {
               "isOptional": true
@@ -1268,13 +1317,35 @@
     "merge": {
       "functions": {
         "git_merge": {
+          "isAsync": true,
           "args": {
+            "repo": {
+              "cppClassName": "GitRepository",
+              "cType": "git_repository *",
+              "jsClassName": "Repo"
+            },
             "their_heads": {
               "cType": "const git_annotated_commit **",
               "cppClassName": "Array",
               "jsClassName": "Array",
               "arrayElementCppClassName": "GitAnnotatedCommit"
+            },
+            "their_heads_len": {
+              "cType": "size_t",
+              "cppClassName": "Number",
+              "jsClassName": "Number"
+            },
+            "merge_opts": {
+              "cType": "git_merge_options *",
+              "cppClassName": "GitMergeOptions"
+            },
+            "checkout_opts": {
+              "cType": "git_checkout_options *",
+              "cppClassName": "GitCheckoutOptions"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_merge_analysis": {
@@ -1659,8 +1730,12 @@
     "rebase": {
       "functions": {
         "git_rebase_commit": {
+          "isAsync": true,
           "args": {
             "id": {
+              "cType": "git_oid *",
+              "cppClassName": "GitOid",
+              "jsClassName": "Oid",
               "isReturn": true,
               "shouldAlloc": true
             },
@@ -1673,6 +1748,9 @@
             "message": {
               "isOptional": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_rebase_finish": {
@@ -1699,6 +1777,22 @@
             "opts": {
               "isOptional": true
             }
+          }
+        },
+        "git_rebase_abort": {
+          "isAsync": true,
+          "args": {
+            "rebase": {
+              "cType": "git_rebase *",
+              "cppClassName": "GitRebase",
+              "jsClassName": "Rebase",
+              "isOptional": false,
+              "isSelf": true,
+              "isReturn": false
+            }
+          },
+          "return": {
+            "isErrorCode": true
           }
         }
       }
@@ -1797,6 +1891,17 @@
       ],
       "needsForwardDeclaration": false,
       "ignore": true
+    },
+    "reflog": {
+      "functions": {
+        "git_reflog_write": {
+          "isAsync": true,
+          "isSelf": true,
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
     },
     "reflog_entry": {
       "functions": {
@@ -2241,9 +2346,11 @@
           "isAsync": false
         },
         "git_status_file": {
+          "isAsync": true,
           "args": {
             "status_flags": {
-              "isReturn": true
+              "isReturn": true,
+              "shouldAlloc": true
             },
             "return": {
               "isErrorCode": true
@@ -2551,19 +2658,22 @@
       "functions": {
         "git_tree_entry_byid": {
           "return": {
-            "ownedByThis": true
+            "ownedByThis": true,
+            "selfFreeing": false
           }
         },
         "git_tree_entry_byindex": {
           "jsFunctionName": "_entryByIndex",
           "return": {
-            "ownedByThis": true
+            "ownedByThis": true,
+            "selfFreeing": false
           }
         },
         "git_tree_entry_byname": {
           "jsFunctionName": "_entryByName",
           "return": {
-            "ownedByThis": true
+            "ownedByThis": true,
+            "selfFreeing": false
           }
         },
         "git_tree_entrycount": {
@@ -2583,6 +2693,21 @@
       "functions": {
         "git_treebuilder_filter": {
           "ignore": true
+        },
+        "git_treebuilder_get": {
+          "return": {
+            "selfFreeing": false,
+            "ownedByThis": true
+          }
+        },
+        "git_treebuilder_insert": {
+          "isAsync": false,
+          "args": {
+            "out": {
+              "selfFreeing": false,
+              "ownedByThis": true
+            }
+          }
         },
         "git_treebuilder_write": {
           "args": {

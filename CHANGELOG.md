@@ -1,5 +1,86 @@
 # Change Log
 
+## <a name="v0-20-0" href="#v0-20-0">v0.20.0</a> [(2017-08-16)](https://github.com/nodegit/nodegit/releases/tag/v0.20.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.19.0...v0.20.0)
+
+#### Summary of changes outside of libgit2 bump:
+ - [BREAKING: Added blob methods and converted to async #1327](https://github.com/nodegit/nodegit/pull/1327)
+ - [BREAKING: Convert sync methods to async methods #1348](https://github.com/nodegit/nodegit/pull/1348)
+ - [Exposed libgit2 git_branch_remote_name method #1340](https://github.com/nodegit/nodegit/pull/1340)
+ - [Adding git_filter support in nodegit #1331](https://github.com/nodegit/nodegit/pull/1331)
+ - [Add CI build config for node stable version #1337](https://github.com/nodegit/nodegit/pull/1337)
+ - [removed node v4 tests #1330](https://github.com/nodegit/nodegit/pull/1330)
+
+#### Included merged libgti2 PRs:
+ - [Include fixups #4288](https://github.com/libgit2/libgit2/pull/4288)
+ - [Docs: Fix inline comments for git_diff_hunk #4330](https://github.com/libgit2/libgit2/pull/4330)
+ - [oid: use memcmp in git_oid__hashcmp #4328](https://github.com/libgit2/libgit2/pull/4328)
+ - [sha1_lookup: drop sha1_entry_pos function #4327](https://github.com/libgit2/libgit2/pull/4327)
+ - [sha1_position: convert do-while to while #4326](https://github.com/libgit2/libgit2/pull/4326)
+ - [patch_generate: represent buffers as void pointers #4304](https://github.com/libgit2/libgit2/pull/4304)
+ - [Remove unused 'sys/remote.h' header #4323](https://github.com/libgit2/libgit2/pull/4323)
+ - [tests: rebase::submodule: verify initialization method calls #4320](https://github.com/libgit2/libgit2/pull/4320)
+ - [tests: rewrite rebase-submodule .gitmodule file #4275](https://github.com/libgit2/libgit2/pull/4275)
+ - [tsort: remove idempotent conditional assignment #4314](https://github.com/libgit2/libgit2/pull/4314)
+ - [Build with patched libcurl #4317](https://github.com/libgit2/libgit2/pull/4317)
+ - [win32: provide fast-path for retrying filesystem operations #4311](https://github.com/libgit2/libgit2/pull/4311)
+ - [Configuration file fixes with includes #4250](https://github.com/libgit2/libgit2/pull/4250)
+ - [Patch ID calculation #4272](https://github.com/libgit2/libgit2/pull/4272)
+ - [signature: don't leave a dangling pointer to the strings on parse failure #4306](https://github.com/libgit2/libgit2/pull/4306)
+ - [git_reset_*: pass parameters as const pointers #4287](https://github.com/libgit2/libgit2/pull/4287)
+ - [tests: config: fix missing declaration causing error #4291](https://github.com/libgit2/libgit2/pull/4291)
+ - [Convert port with htons() in p_getaddrinfo() #4280](https://github.com/libgit2/libgit2/pull/4280)
+ - [Out of tree builds #4235](https://github.com/libgit2/libgit2/pull/4235)
+ - [cmake: Permit disabling external http-parser #4278](https://github.com/libgit2/libgit2/pull/4278)
+ - [merge: fix potential free of uninitialized memory #4277](https://github.com/libgit2/libgit2/pull/4277)
+ - [merge: perform exact rename detection in linear time #4202](https://github.com/libgit2/libgit2/pull/4202)
+ - [travis: upgrade container to Ubuntu 14.04 #4211](https://github.com/libgit2/libgit2/pull/4211)
+ - [Fix template dir empty string #4273](https://github.com/libgit2/libgit2/pull/4273)
+ - [adding GIT_FILTER_VERSION to GIT_FILTER_INIT as part of convention #4267](https://github.com/libgit2/libgit2/pull/4267)
+ - [travis: replace use of deprecated homebrew/dupes tap #4268](https://github.com/libgit2/libgit2/pull/4268)
+ - [Test improvements #4269](https://github.com/libgit2/libgit2/pull/4269)
+ - [Read prefix tests #4265](https://github.com/libgit2/libgit2/pull/4265)
+ - [Allow creation of a configuration object in an in-memory repository #4263](https://github.com/libgit2/libgit2/pull/4263)
+ - [travis: install openssl explicitly #4266](https://github.com/libgit2/libgit2/pull/4266)
+ - [smart_protocol: fix parsing of server ACK responses #4261](https://github.com/libgit2/libgit2/pull/4261)
+ - [odb_read_prefix: reset error in backends loop #4264](https://github.com/libgit2/libgit2/pull/4264)
+ - [Update version number to 0.26 #4262](https://github.com/libgit2/libgit2/pull/4262)
+ - [CHANGELOG: add various changes introduced since v0.25 #4254](https://github.com/libgit2/libgit2/pull/4254)
+ - [Ensure packfiles with different contents have different names #4088](https://github.com/libgit2/libgit2/pull/4088)
+ - [Update to forced checkout and untracked files #4260](https://github.com/libgit2/libgit2/pull/4260)
+ - [settings: rename `GIT_OPT_ENABLE_SYNCHRONOUS_OBJECT_CREATION` #4259](https://github.com/libgit2/libgit2/pull/4259)
+ - [Buffer growing cleanups #4255](https://github.com/libgit2/libgit2/pull/4255)
+ - [Coverity fixes #4253](https://github.com/libgit2/libgit2/pull/4253)
+ - [SHA1DC update #4258](https://github.com/libgit2/libgit2/pull/4258)
+ - [Fix path computations for compressed index entries #4236](https://github.com/libgit2/libgit2/pull/4236)
+ - [(Temporarily) disable UNC tests #4256](https://github.com/libgit2/libgit2/pull/4256)
+ - [fix build with libressl #4251](https://github.com/libgit2/libgit2/pull/4251)
+ - [Fix issue with directory glob ignore in subdirectories #4239](https://github.com/libgit2/libgit2/pull/4239)
+ - [Submodule working directory #4243](https://github.com/libgit2/libgit2/pull/4243)
+ - [Introduce home directory expansion function for config files, attribute files #4179](https://github.com/libgit2/libgit2/pull/4179)
+ - [Fix proxy auto detect not utilizing callbacks #4097](https://github.com/libgit2/libgit2/pull/4097)
+ - [git_repository_set_head: use tag name in reflog #4174](https://github.com/libgit2/libgit2/pull/4174)
+ - [revparse: support open-ended ranges #4231](https://github.com/libgit2/libgit2/pull/4231)
+ - [Fix GCC warnings #4240](https://github.com/libgit2/libgit2/pull/4240)
+ - [Update README: VS -> VSTS #4238](https://github.com/libgit2/libgit2/pull/4238)
+ - [tests: repo: fix repo discovery tests on overlayfs #4232](https://github.com/libgit2/libgit2/pull/4232)
+ - [libssh2 shutdown #4229](https://github.com/libgit2/libgit2/pull/4229)
+ - [WIP: squash some memleaks #4226](https://github.com/libgit2/libgit2/pull/4226)
+ - [Verify object hashes #4197](https://github.com/libgit2/libgit2/pull/4197)
+ - [transport: provide a getter for the proxy options #4206](https://github.com/libgit2/libgit2/pull/4206)
+ - [Debian HTTPS feature test failure #4216](https://github.com/libgit2/libgit2/pull/4216)
+ - [Do not free config when creating remote #4224](https://github.com/libgit2/libgit2/pull/4224)
+ - [socket_stream: continue to next addrinfo on socket creation failure #4219](https://github.com/libgit2/libgit2/pull/4219)
+ - [Honor read-only flag when writing to config backends #4217](https://github.com/libgit2/libgit2/pull/4217)
+ - [diff_parse: free object instead of its pointer #4215](https://github.com/libgit2/libgit2/pull/4215)
+
+#### Included non-merged libgit2 PRs:
+
+ - [Parallelize checkout_create_the_new for ntfs perf gains #4205](https://github.com/libgit2/libgit2/pull/4205)
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+
+
 ## <a name="v0-19-0" href="#v0-19-0">v0.19.0</a> [(2017-04-20)](https://github.com/nodegit/nodegit/releases/tag/v0.19.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.18.0...v0.19.0)
@@ -81,7 +162,7 @@
   - `ontoSha` The sha that we rebased onto
   - `originalHeadName` The name of the branch that we rebased
   - `originalHeadSha` The sha of the branch that was rebased
-  - `rewitten` which is an array of sha pairs that contain which contain what the commit sha was before the rebase and what the commit sha is after the rebase 
+  - `rewitten` which is an array of sha pairs that contain which contain what the commit sha was before the rebase and what the commit sha is after the rebase
 
 ### Summary of Changes from bumping libgit2 to 43275f5
 
@@ -140,7 +221,7 @@
 
 In this release we had added support for Node v7 and latest Electron. We have removed support for Node v0.12 and v5.
 
-We are also deprecating nw.js support since it is currently broken, no one in the current team uses it and we would not be able to currently support nw.js in an effective manner with a good user experience. 
+We are also deprecating nw.js support since it is currently broken, no one in the current team uses it and we would not be able to currently support nw.js in an effective manner with a good user experience.
 
 ### Now building against shared libcurl lib
 
