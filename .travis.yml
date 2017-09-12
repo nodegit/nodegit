@@ -13,7 +13,7 @@ sudo: false
 
 env:
   matrix:
-    - export NODE_VERSION="stable" TARGET_ARCH="x64"
+    - export NODE_VERSION="8.3.0" TARGET_ARCH="x64"
     - export NODE_VERSION="7.4" TARGET_ARCH="x64"
     - export NODE_VERSION="6.5" TARGET_ARCH="x64"
 
@@ -21,7 +21,7 @@ matrix:
   fast_finish: true
   include:
     - os: linux
-      env: export NODE_VERSION="stable" TARGET_ARCH="ia32"
+      env: export NODE_VERSION="8.3.0" TARGET_ARCH="ia32"
     - os: linux
       env: export NODE_VERSION="7.4" TARGET_ARCH="ia32"
     - os: linux
