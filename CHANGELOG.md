@@ -1,5 +1,13 @@
 # Change Log
 
+## <a name="v0-20-2" href="#v0-20-2">v0.20.2</a> [(2017-08-16)](https://github.com/nodegit/nodegit/releases/tag/v0.20.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.0...v0.20.2)
+
+#### Summary of changes outside of libgit2 bump:
+ - [Fixed an issue where large buffer allocations in filters (> 256MB) causes a segfault #1368](https://github.com/nodegit/nodegit/pull/1368)
+ - [Fix git_tree_entry double free #1332](https://github.com/nodegit/nodegit/pull/1332)
+
 ## <a name="v0-20-0" href="#v0-20-0">v0.20.0</a> [(2017-08-16)](https://github.com/nodegit/nodegit/releases/tag/v0.20.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.19.0...v0.20.0)
