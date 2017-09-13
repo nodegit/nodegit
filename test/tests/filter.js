@@ -83,7 +83,7 @@ describe("Filter", function() {
       .then(function(emptyRepo) {
         test.emptyRepo = emptyRepo;
         return fse.writeFile(
-          path.join(reposPath, ".gitattributes"), 
+          path.join(reposPath, ".gitattributes"),
           "*.md filter=" + filterName + " -text",
           { encoding: "utf-8" }
         );
@@ -153,7 +153,7 @@ describe("Filter", function() {
 
     it("cannot unregister the filter twice", function() {
       return Registry.unregister(filterName)
-        .then(function(result) { 
+        .then(function(result) {
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return Registry.unregister(filterName);
         })
@@ -185,7 +185,7 @@ describe("Filter", function() {
       })
       .then(function() {
         return fse.writeFile(
-          packageJsonPath, 
+          packageJsonPath,
           "Changing content to trigger checkout"
         );
       })
@@ -219,7 +219,7 @@ describe("Filter", function() {
         global.gc();
 
         return fse.writeFile(
-          packageJsonPath, 
+          packageJsonPath,
           "Changing content to trigger checkout"
         );
       })
@@ -253,7 +253,7 @@ describe("Filter", function() {
       })
       .then(function() {
         return fse.writeFile(
-          packageJsonPath, 
+          packageJsonPath,
           "Changing content to trigger checkout"
         );
       })
@@ -289,7 +289,7 @@ describe("Filter", function() {
         .then(function(result) {
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
-            packageJsonPath, 
+            packageJsonPath,
             "Changing content to trigger checkout",
             { encoding: "utf-8" }
           );
@@ -309,7 +309,7 @@ describe("Filter", function() {
           assert.strictEqual(shutdown, true);
         });
     });
-    
+
     it("filter successfully shuts down on garbage collect", function() {
       var test = this;
       var shutdown = false;
@@ -325,7 +325,7 @@ describe("Filter", function() {
         .then(function(result) {
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
-            packageJsonPath, 
+            packageJsonPath,
             "Changing content to trigger checkout",
             { encoding: "utf-8" }
           );
@@ -363,7 +363,7 @@ describe("Filter", function() {
         .then(function(result) {
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
-            packageJsonPath, 
+            packageJsonPath,
             "Changing content to trigger checkout",
             { encoding: "utf-8" }
           );
@@ -389,14 +389,28 @@ describe("Filter", function() {
   });
 
   describe("Apply", function() {
+    before(function() {
+      var test = this;
+      return fse.readFile(readmePath, "utf8")
+        .then((function(content) {
+          test.originalReadmeContent = content;
+        }));
+    });
+
+    afterEach(function() {
+      this.timeout(15000);
+      return fse.writeFile(readmePath, this.originalReadmeContent);
+    });
+
     var message = "some new fancy filter";
     var length = message.length;
     var tempBuffer = new Buffer(message, "utf-8");
+    var largeBufferSize = 500000000;
 
     it("should not apply when check returns GIT_PASSTHROUGH", function(){
       var test = this;
       var applied = false;
-      
+
       return Registry.register(filterName, {
         apply: function() {
           applied = true;
@@ -408,7 +422,7 @@ describe("Filter", function() {
         .then(function(result) {
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
-            packageJsonPath, 
+            packageJsonPath,
             "Changing content to trigger checkout",
             { encoding: "utf-8" }
           );
@@ -440,8 +454,8 @@ describe("Filter", function() {
         .then(function(result) {
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return fse.writeFile(
-            packageJsonPath, 
-            "Changing content to trigger checkout", 
+            packageJsonPath,
+            "Changing content to trigger checkout",
             { encoding: "utf-8" }
           );
         })
@@ -476,13 +490,13 @@ describe("Filter", function() {
         })
         .then(function() {
           var readmeContent = fse.readFileSync(
-            packageJsonPath, 
+            packageJsonPath,
             "utf-8"
           );
           assert.notStrictEqual(readmeContent, message);
 
           return fse.writeFile(
-            packageJsonPath, 
+            packageJsonPath,
             "Changing content to trigger checkout"
           );
         })
@@ -495,7 +509,7 @@ describe("Filter", function() {
         })
         .then(function() {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
 
@@ -509,7 +523,7 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
@@ -522,7 +536,7 @@ describe("Filter", function() {
         })
         .then(function() {
           var readmeContent = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
           assert.notStrictEqual(readmeContent, message);
@@ -536,7 +550,7 @@ describe("Filter", function() {
         })
         .then(function() {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
 
@@ -544,13 +558,76 @@ describe("Filter", function() {
         });
     });
 
+    // this test is useless on 32 bit CI, because we cannot construct
+    // a buffer big enough to test anything of significance :)...
+    if (process.arch === "x64") {
+      it("applies the massive filter data on checkout", function() {
+        this.timeout(350000);
+        var test = this;
+        var largeBuffer = Buffer.alloc(largeBufferSize, "a");
+
+        return Registry.register(filterName, {
+          apply: function(to, from, source) {
+            return to.set(largeBuffer, largeBufferSize)
+            .then(function() {
+              return NodeGit.Error.CODE.OK;
+            });
+          },
+          check: function(src, attr) {
+            return NodeGit.Error.CODE.OK;
+          }
+        }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          var fd = fse.openSync(readmePath, "r");
+          var readBuf = Buffer.allocUnsafe(largeBufferSize);
+          var readLength = fse.readSync(
+            fd,
+            readBuf,
+            0,
+            largeBufferSize,
+            0
+          );
+          fse.closeSync(fd);
+
+          assert.notStrictEqual(readLength, largeBufferSize);
+          fse.writeFileSync(readmePath, "whoa", "utf8");
+
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: ["README.md"]
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          var fd = fse.openSync(readmePath, "r");
+          var readBuf = Buffer.allocUnsafe(largeBufferSize);
+          var readLength = fse.readSync(
+            fd,
+            readBuf,
+            0,
+            largeBufferSize,
+            0
+          );
+          fse.closeSync(fd);
+
+          assert.strictEqual(
+            readLength,
+            largeBufferSize
+          );
+        });
+      });
+    }
+
     it("applies the filter data on checkout with gc", function() {
       var test = this;
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
@@ -563,7 +640,7 @@ describe("Filter", function() {
         })
         .then(function() {
           var readmeContent = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
           assert.notStrictEqual(readmeContent, message);
@@ -578,7 +655,7 @@ describe("Filter", function() {
         })
         .then(function() {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
 
@@ -592,12 +669,12 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
         check: function(src, attr) {
-          return src.path() === "README.md" ? 
+          return src.path() === "README.md" ?
             0 : NodeGit.Error.CODE.PASSTHROUGH;
         },
         cleanup: function() {}
@@ -607,14 +684,14 @@ describe("Filter", function() {
         })
         .then(function() {
           var readmeContent = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
           assert.notStrictEqual(readmeContent, "testing commit contents");
         })
         .then(function() {
-          return commitFile(test.repository, "README.md", 
-            "testing commit contents", 
+          return commitFile(test.repository, "README.md",
+            "testing commit contents",
             "test commit"
           );
         })
@@ -623,7 +700,7 @@ describe("Filter", function() {
         })
         .then(function(commit) {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
 
@@ -649,7 +726,7 @@ describe("Filter", function() {
       return Registry.register(filterName, {
         apply: function(to, from, source) {
           return to.set(tempBuffer, length)
-            .then(function(buf) {
+            .then(function() {
               return NodeGit.Error.CODE.OK;
             });
         },
@@ -665,14 +742,14 @@ describe("Filter", function() {
         })
         .then(function() {
           var readmeContent = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
           assert.notStrictEqual(readmeContent, "testing commit contents");
         })
         .then(function() {
-          return commitFile(test.repository, "README.md", 
-            "testing commit contents", 
+          return commitFile(test.repository, "README.md",
+            "testing commit contents",
             "test commit"
           );
         })
@@ -682,7 +759,7 @@ describe("Filter", function() {
         })
         .then(function(commit) {
           var postInitializeReadmeContents = fse.readFileSync(
-            readmePath, 
+            readmePath,
             "utf-8"
           );
 
@@ -733,7 +810,7 @@ describe("Filter", function() {
         assert.notEqual(packageContent, "");
 
         return fse.writeFile(
-          packageJsonPath, 
+          packageJsonPath,
           "Changing content to trigger checkout",
           { encoding: "utf-8" }
         );
@@ -772,14 +849,14 @@ describe("Filter", function() {
       })
       .then(function() {
         var packageContent = fse.readFileSync(
-          packageJsonPath, 
+          packageJsonPath,
           "utf-8"
         );
         assert.notEqual(packageContent, "");
 
         global.gc();
         return fse.writeFile(
-          packageJsonPath, 
+          packageJsonPath,
           "Changing content to trigger checkout",
           { encoding: "utf-8" }
         );
@@ -819,11 +896,11 @@ describe("Filter", function() {
       })
       .then(function() {
         var packageContent = fse.readFileSync(
-          packageJsonPath, 
+          packageJsonPath,
           "utf-8"
         );
         var readmeContent = fse.readFileSync(
-          readmePath, 
+          readmePath,
           "utf-8"
         );
 
@@ -832,7 +909,7 @@ describe("Filter", function() {
       })
       .then(function() {
         return fse.writeFile(
-          packageJsonPath, 
+          packageJsonPath,
           "Changing content to trigger checkout",
           { encoding: "utf-8" }
         );

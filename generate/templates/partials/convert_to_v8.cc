@@ -43,12 +43,16 @@
 
   to = tmpArray;
 {% elsif cppClassName == 'GitBuf' %}
+  {% if doNotConvert %}
+  to = Nan::Null();
+  {% else %}
   if ({{= parsedName =}}) {
     to = Nan::New<String>({{= parsedName =}}->ptr, {{= parsedName = }}->size).ToLocalChecked();
   }
   else {
     to = Nan::Null();
   }
+  {% endif %}
 {% else %}
   {% if copy %}
     if ({{= parsedName =}} != NULL) {
