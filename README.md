@@ -194,9 +194,9 @@ Git.Repository.open("tmp")
 
 For more examples, check the `examples/` folder.
 
-## Unit tests. ##
+## Running tests. ##
 
-You will need to build locally before running the tests.  See above.
+Run the following command to run the tests.  (Note: You need to build locally first. Please see the above steps on how to do so)
 
 ``` bash
 npm test
