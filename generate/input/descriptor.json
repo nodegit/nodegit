@@ -2137,9 +2137,6 @@
         "push_transfer_progress": {
           "ignore": true
         },
-        "push_update_reference": {
-          "ignore": true
-        },
         "sideband_progress": {
           "ignore": true
         },

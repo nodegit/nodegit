@@ -908,5 +908,27 @@
       "success": 0,
       "error": -1
     }
+  },
+  "git_push_update_reference_cb": {
+    "args": [
+      {
+        "name": "refname",
+        "cType": "const char *"
+      },
+      {
+        "name": "status",
+        "cType": "const char *"
+      },
+      {
+        "name": "data",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
   }
 }
