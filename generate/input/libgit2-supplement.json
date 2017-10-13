@@ -632,6 +632,10 @@
               "ignore": true
             },
             {
+              "type": "git_push_update_reference_cb",
+              "name": "push_update_reference"
+            },
+            {
               "type": "void *",
               "name": "payload"
             }
