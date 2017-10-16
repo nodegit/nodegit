@@ -1213,7 +1213,28 @@
           "jsFunctionName": "entryCount"
         },
         "git_index_find": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "at_pos": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_index_find_prefix": {
+          "isAsync": true,
+          "args": {
+            "at_pos": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_free": {
           "ignore": true

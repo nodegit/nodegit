@@ -13,6 +13,7 @@ describe("Index", function() {
   var RepoUtils = require("../utils/repository_setup");
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
+  var ErrorCodes = NodeGit.Error.CODE;
 
   var reposPath = local("../repos/workdir");
 
@@ -357,6 +358,69 @@ describe("Index", function() {
       })
       .then(function(index) {
         assert(index.hasConflicts());
+      });
+  });
+
+  it("can find the specified file in the index", function() {
+    var test = this;
+
+    return test.index.find("src/wrapper.cc")
+      .then(function(position) {
+        assert.notEqual(position, null);
+      });
+  });
+
+  it("cannot find the specified file in the index", function() {
+    var test = this;
+
+    return test.index.find("src/thisisfake.cc")
+      .then(function(position) {
+        assert.fail("the item should not be found");
+      })
+      .catch(function(error) {
+        assert.strictEqual(error.errno, ErrorCodes.ENOTFOUND);
+      });
+  });
+
+  it("cannot find the directory in the index", function() {
+    var test = this;
+
+    return test.index.find("src")
+      .then(function(position) {
+        assert.fail("the item should not be found");
+      })
+      .catch(function(error) {
+        assert.strictEqual(error.errno, ErrorCodes.ENOTFOUND);
+      });
+  });
+
+  it("can find the specified prefix in the index", function() {
+    var test = this;
+
+    return test.index.findPrefix("src/")
+      .then(function(position) {
+        assert.notEqual(position, null);
+      });
+  });
+
+  it("cannot find the specified prefix in the index", function() {
+    var test = this;
+
+    return test.index.find("testing123/")
+      .then(function(position) {
+        assert.fail("the item should not be found");
+      })
+      .catch(function(error) {
+        assert.strictEqual(error.errno, ErrorCodes.ENOTFOUND);
+      });
+  });
+
+  it("can find the prefix when a file shares the name", function() {
+    var test = this;
+
+    return test.index.find("LICENSE")
+      .then(function(position) {
+        assert.notEqual(position, null);
       });
   });
 });
