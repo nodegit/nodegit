@@ -1,5 +1,68 @@
 # Change Log
 
+## <a name="v0-20-2" href="#v0-20-3">v0.20.3</a> [(2017-10-18)](https://github.com/nodegit/nodegit/releases/tag/v0.20.3)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.2...v0.20.3)
+
+#### Summary of changes outside of libgit2 bump:
+ - [Bumped libgit to libgit-next head #1387](https://github.com/nodegit/nodegit/pull/1387)
+ - [Added a better normalizeOptions pattern for the submodule update routine #1388](https://github.com/nodegit/nodegit/pull/1388)
+  - [Updated input docs to allow for git_push_update_reference_cb to generate #1386](https://github.com/nodegit/nodegit/pull/1386)
+  - [Updated descriptors for git_index_find and git_index_find_prefix #1391](https://github.com/nodegit/nodegit/pull/1391)
+
+#### Included merged libgti2 PRs:
+ - [Fix template dir empty string #4273](https://github.com/libgit2/libgit2/pull/4273)
+ - [travis: upgrade container to Ubuntu 14.04 #4211](https://github.com/libgit2/libgit2/pull/4211)
+ - [merge: perform exact rename detection in linear time #4202](https://github.com/libgit2/libgit2/pull/4202)
+ - [merge: fix potential free of uninitialized memory #4277](https://github.com/libgit2/libgit2/pull/4277)
+ - [cmake: Permit disabling external http-parser #4278](https://github.com/libgit2/libgit2/pull/4278)
+ - [Out of tree builds #4235](https://github.com/libgit2/libgit2/pull/4235)
+ - [Convert port with htons() in p_getaddrinfo() #4280](https://github.com/libgit2/libgit2/pull/4280)
+ - [tests: config: fix missing declaration causing error #4291](https://github.com/libgit2/libgit2/pull/4291)
+ - [git_reset_*: pass parameters as const pointers #4287](https://github.com/libgit2/libgit2/pull/4287)
+ - [signature: don't leave a dangling pointer to the strings on parse failure #4306](https://github.com/libgit2/libgit2/pull/4306)
+ - [Patch ID calculation #4272](https://github.com/libgit2/libgit2/pull/4272)
+ - [Configuration file fixes with includes #4250](https://github.com/libgit2/libgit2/pull/4250)
+ - [win32: provide fast-path for retrying filesystem operations #4311](https://github.com/libgit2/libgit2/pull/4311)
+ - [Build with patched libcurl #4317](https://github.com/libgit2/libgit2/pull/4317)
+ - [tsort: remove idempotent conditional assignment #4314](https://github.com/libgit2/libgit2/pull/4314)
+ - [tests: rebase::submodule: verify initialization method calls #4320](https://github.com/libgit2/libgit2/pull/4320)
+ - [Remove unused 'sys/remote.h' header #4323](https://github.com/libgit2/libgit2/pull/4323)
+ - [patch_generate: represent buffers as void pointers #4304](https://github.com/libgit2/libgit2/pull/4304)
+ - [sha1_position: convert do-while to while #4326](https://github.com/libgit2/libgit2/pull/4326)
+ - [sha1_lookup: drop sha1_entry_pos function #4327](https://github.com/libgit2/libgit2/pull/4327)
+ - [oid: use memcmp in git_oid__hashcmp #4328](https://github.com/libgit2/libgit2/pull/4328)
+ - [Docs: Fix inline comments for git_diff_hunk #4330](https://github.com/libgit2/libgit2/pull/4330)
+ - [Split up CMakeLists.txt build instructions #4282](https://github.com/libgit2/libgit2/pull/4282)
+ - [-Werror builds for Travis #4279](https://github.com/libgit2/libgit2/pull/4279)
+ - [Submodules with bare repo #4305](https://github.com/libgit2/libgit2/pull/4305)
+ - [Fix negative ignore rules with patterns #4296](https://github.com/libgit2/libgit2/pull/4296)
+ - [README: Mention Guile-Git bindings. #4342](https://github.com/libgit2/libgit2/pull/4342)
+ - [features.h: allow building without CMake-generated feature header #4346](https://github.com/libgit2/libgit2/pull/4346)
+ - [Clear the remote_ref_name buffer in git_push_update_tips() #4344](https://github.com/libgit2/libgit2/pull/4344)
+ - [Fix AppVeyor build failures due to CRTDBG linking issue #4347](https://github.com/libgit2/libgit2/pull/4347)
+ - [diff: cleanup hash ctx in `git_diff_patchid` #4348](https://github.com/libgit2/libgit2/pull/4348)
+ - [Reproducible builds #4334](https://github.com/libgit2/libgit2/pull/4334)
+ - [Static linking for bundled deps #4339](https://github.com/libgit2/libgit2/pull/4339)
+ - [Use SOCK_CLOEXEC when creating sockets #4364](https://github.com/libgit2/libgit2/pull/4364)
+ - [Document that a commit is not a descendant of itself #4362](https://github.com/libgit2/libgit2/pull/4362)
+ - [refs: do not use peeled OID if peeling to a tag #4367](https://github.com/libgit2/libgit2/pull/4367)
+ - [remote: add typedef to normalize push_update_reference callback #4363](https://github.com/libgit2/libgit2/pull/4363)
+ - [travis: add custom apt sources #4321](https://github.com/libgit2/libgit2/pull/4321)
+ - [Fix Issue #4047 Check return codes and free objects #4370](https://github.com/libgit2/libgit2/pull/4370)
+ - [Plug some leaks in curl's proxy handling #4359](https://github.com/libgit2/libgit2/pull/4359)
+ - [Checkout typechange-only deltas #4369](https://github.com/libgit2/libgit2/pull/4369)
+ - [tests: checkout::tree: verify status entrycount changes on chmod #4371](https://github.com/libgit2/libgit2/pull/4371)
+ - [transports: smart: fix memory leak when skipping symbolic refs #4368](https://github.com/libgit2/libgit2/pull/4368)
+ - [cmake: fix linking in Xcode with object libraries only #4372](https://github.com/libgit2/libgit2/pull/4372)
+ - [cmake: use static dependencies when building static libgit2 #4356](https://github.com/libgit2/libgit2/pull/4356)
+
+#### Included non-merged libgit2 PRs:
+ - [Parallelize checkout_create_the_new for ntfs perf gains #4205](https://github.com/libgit2/libgit2/pull/4205)
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+
+
+
 ## <a name="v0-20-2" href="#v0-20-2">v0.20.2</a> [(2017-08-16)](https://github.com/nodegit/nodegit/releases/tag/v0.20.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.0...v0.20.2)
