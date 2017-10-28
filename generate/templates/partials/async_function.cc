@@ -161,6 +161,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
       }
       err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
       v8::Local<v8::Value> argv[1] = {
         err
       };
@@ -222,6 +223,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       if (!callbackFired) {
         v8::Local<v8::Object> err = Nan::Error("Method {{ jsFunctionName }} has thrown an error.")->ToObject();
         err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
         v8::Local<v8::Value> argv[1] = {
           err
         };

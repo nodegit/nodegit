@@ -107,6 +107,7 @@ void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
       err = Nan::Error("Method register has thrown an error.")->ToObject();
     }
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.register").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
@@ -118,6 +119,7 @@ void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
   else if (baton->error_code < 0) {
     v8::Local<v8::Object> err = Nan::Error("Method register has thrown an error.")->ToObject();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.register").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
@@ -191,6 +193,7 @@ void GitFilterRegistry::UnregisterWorker::HandleOKCallback() {
       err = Nan::Error("Method register has thrown an error.")->ToObject();
     }
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.unregister").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
@@ -202,6 +205,7 @@ void GitFilterRegistry::UnregisterWorker::HandleOKCallback() {
   else if (baton->error_code < 0) {
     v8::Local<v8::Object> err = Nan::Error("Method unregister has thrown an error.")->ToObject();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.unregister").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
