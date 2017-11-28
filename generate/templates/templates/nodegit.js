@@ -1,3 +1,4 @@
+var _ = require("lodash");
 var promisify = require("promisify-node");
 var rawApi;
 
@@ -14,6 +15,12 @@ catch (ex) {
 
   rawApi = require("../build/Debug/nodegit.node");
 }
+
+// For disccussion on why `cloneDeep` is required, see:
+// https://github.com/facebook/jest/issues/3552
+// https://github.com/facebook/jest/issues/3550
+// https://github.com/nodejs/node/issues/5016
+rawApi = _.cloneDeep(rawApi);
 
 // Native methods do not return an identifiable function, so we
 // have to override them here
