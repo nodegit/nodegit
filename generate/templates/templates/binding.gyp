@@ -98,16 +98,9 @@
           }
         ],
         [
-          "OS=='linux' and '<!(echo \"$CXX\")'=='clang++'", {
+          "OS=='linux' or OS.endswith('bsd')", {
             "cflags": [
-              "-Wno-c++11-extensions"
-            ]
-          }
-        ],
-        [
-          "OS=='linux' and '<!(echo \"$CXX\")'!='clang++'", {
-            "cflags": [
-              "-std=c++0x"
+              "-std=c++11"
             ]
           }
         ]

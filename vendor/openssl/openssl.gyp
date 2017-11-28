@@ -152,7 +152,7 @@
           }],
         ]
       }],
-      ['is_clang==1 or gcc_version>=43', {
+      ['gcc_version>=43', {
         'cflags': ['-Wno-old-style-declaration'],
       }],
       ['OS=="solaris"', {
