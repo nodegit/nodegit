@@ -61,7 +61,14 @@ describe("Revert", function() {
     });
   });
 
-  it("RevertOptions is optional", function() {
+  it("RevertOptions is optional (unspecified)", function() {
+    return Revert.revert(test.repository, test.firstCommit)
+      .catch(function(error) {
+        throw error;
+      });
+  });
+
+  it("RevertOptions is optional (null)", function() {
     return Revert.revert(test.repository, test.firstCommit, null)
       .catch(function(error) {
         throw error;
