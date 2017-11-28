@@ -87,6 +87,7 @@ void GitRemote::ReferenceListWorker::HandleOKCallback()
   {
     Local<v8::Object> err = Nan::Error("Reference List has thrown an error.")->ToObject();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Remote.referenceList").ToLocalChecked());
     Local<v8::Value> argv[1] = {
       err
     };

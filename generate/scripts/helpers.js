@@ -315,6 +315,7 @@ var Helpers = {
 
     fnDef.cppFunctionName = Helpers.cTypeToCppName(key, "git_" + typeDef.typeName);
     fnDef.jsFunctionName = Helpers.cTypeToJsName(key, "git_" + typeDef.typeName);
+    fnDef.jsClassName = typeDef.jsClassName;
 
     if (fnDef.cppFunctionName == typeDef.cppClassName) {
       fnDef.cppFunctionName = fnDef.cppFunctionName.replace("Git", "");

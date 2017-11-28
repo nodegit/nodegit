@@ -95,6 +95,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
         err = Nan::Error("Method fastWalk has thrown an error.")->ToObject();
       }
       err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
       Local<v8::Value> argv[1] = {
         err
       };
@@ -159,6 +160,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       {
         Local<v8::Object> err = Nan::Error("Method next has thrown an error.")->ToObject();
         err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
         Local<v8::Value> argv[1] = {
           err
         };
