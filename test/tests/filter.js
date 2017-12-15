@@ -976,7 +976,13 @@ describe("Filter", function() {
           assert.notStrictEqual(readmeContent, message);
           fse.writeFileSync(readmePath, "whoa", "utf8");
 
-          return FilterList.load(test.repository, null, "README.md", NodeGit.Filter.MODE.CLEAN, NodeGit.Filter.FLAG.DEFAULT);
+          return FilterList.load(
+            test.repository,
+            null,
+            "README.md",
+            NodeGit.Filter.MODE.CLEAN,
+            NodeGit.Filter.FLAG.DEFAULT
+          );
         })
         .then(function(_list) {
           list = _list;
@@ -1014,11 +1020,19 @@ describe("Filter", function() {
           assert.notStrictEqual(readmeContent, message);
           fse.writeFileSync(readmePath, "whoa", "utf8");
 
-          return FilterList.load(test.repository, null, "README.md", NodeGit.Filter.MODE.CLEAN, NodeGit.Filter.FLAG.DEFAULT);
+          return FilterList.load(
+            test.repository,
+            null,
+            "README.md",
+            NodeGit.Filter.MODE.CLEAN,
+            NodeGit.Filter.FLAG.DEFAULT
+          );
         })
         .then(function(_list) {
           list = _list;
+          /* jshint ignore:start */
           return list.applyToData(new String("garbo garbo garbo garbo"));
+          /* jshint ignore:end */
         })
         .then(function(content) {
           assert.strictEqual(content, message);
@@ -1052,7 +1066,13 @@ describe("Filter", function() {
           assert.notStrictEqual(readmeContent, message);
           fse.writeFileSync(readmePath, "whoa", "utf8");
 
-          return FilterList.load(test.repository, null, "README.md", NodeGit.Filter.MODE.CLEAN, NodeGit.Filter.FLAG.DEFAULT);
+          return FilterList.load(
+            test.repository,
+            null,
+            "README.md",
+            NodeGit.Filter.MODE.CLEAN,
+            NodeGit.Filter.FLAG.DEFAULT
+          );
         })
         .then(function(_list) {
           list = _list;
