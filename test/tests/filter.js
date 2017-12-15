@@ -946,10 +946,6 @@ describe("Filter", function() {
     var length = message.length;
     var tempBuffer = new Buffer(message, "utf-8");
 
-    it("test test test", function() {
-      assert.equal(true, true);
-    });
-
     it("applies the filters for a path on demand", function() {
       var test = this;
       var list;
@@ -989,7 +985,7 @@ describe("Filter", function() {
           return list.applyToFile(test.repository, "README.md");
         })
         .then(function(content) {
-          assert.strictEqual(content, message);
+          assert.equal(content, message);
           list.free();
         });
     });
@@ -1035,7 +1031,7 @@ describe("Filter", function() {
           /* jshint ignore:end */
         })
         .then(function(content) {
-          assert.strictEqual(content, message);
+          assert.equal(content, message);
           list.free();
         });
     });
@@ -1092,7 +1088,7 @@ describe("Filter", function() {
           return list.applyToBlob(blob);
         })
         .then(function(content) {
-          assert.strictEqual(content, message);
+          assert.equal(content, message);
           list.free();
         });
     });
