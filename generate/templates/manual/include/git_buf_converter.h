@@ -4,13 +4,13 @@
 #include <v8.h>
 
 #include "nan.h"
-#include "git2/strarray.h"
+#include "git2/buffer.h"
 
 using namespace v8;
 
-class StrArrayConverter {
+class GitBufConverter {
   public:
-    static git_strarray *Convert (v8::Local<v8::Value> val);
+    static git_buf *Convert(v8::Local<v8::Value> val);
 };
 
 #endif

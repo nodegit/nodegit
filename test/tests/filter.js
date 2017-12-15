@@ -12,6 +12,7 @@ describe("Filter", function() {
   var Registry = NodeGit.FilterRegistry;
   var Checkout = NodeGit.Checkout;
   var Repository = NodeGit.Repository;
+  var FilterList = NodeGit.FilterList;
   var reposPath = local("../repos/workdir");
 
   var packageJsonPath = path.join(reposPath, "package.json");
@@ -924,6 +925,156 @@ describe("Filter", function() {
       .then(function() {
         assert.notStrictEqual(cleaned, true);
       });
+    });
+  });
+
+  describe("Manually Apply", function() {
+    before(function() {
+      var test = this;
+      return fse.readFile(readmePath, "utf8")
+        .then((function(content) {
+          test.originalReadmeContent = content;
+        }));
+    });
+
+    afterEach(function() {
+      this.timeout(15000);
+      return fse.writeFile(readmePath, this.originalReadmeContent);
+    });
+
+    var message = "some new fancy filter";
+    var length = message.length;
+    var tempBuffer = new Buffer(message, "utf-8");
+
+    it("test test test", function() {
+      assert.equal(true, true);
+    });
+
+    it("applies the filters for a path on demand", function() {
+      var test = this;
+      var list;
+
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {
+          return to.set(tempBuffer, length)
+            .then(function() {
+              return NodeGit.Error.CODE.OK;
+            });
+        },
+        check: function(src, attr) {
+          return NodeGit.Error.CODE.OK;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          var readmeContent = fse.readFileSync(
+            readmePath,
+            "utf-8"
+          );
+          assert.notStrictEqual(readmeContent, message);
+          fse.writeFileSync(readmePath, "whoa", "utf8");
+
+          return FilterList.load(test.repository, null, "README.md", NodeGit.Filter.MODE.CLEAN, NodeGit.Filter.FLAG.DEFAULT);
+        })
+        .then(function(_list) {
+          list = _list;
+          return list.applyToFile(test.repository, "README.md");
+        })
+        .then(function(content) {
+          assert.strictEqual(content, message);
+          list.free();
+        });
+    });
+
+    it("applies the filters to a buffer on demand", function() {
+      var test = this;
+      var list;
+
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {
+          return to.set(tempBuffer, length)
+            .then(function() {
+              return NodeGit.Error.CODE.OK;
+            });
+        },
+        check: function(src, attr) {
+          return NodeGit.Error.CODE.OK;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          var readmeContent = fse.readFileSync(
+            readmePath,
+            "utf-8"
+          );
+          assert.notStrictEqual(readmeContent, message);
+          fse.writeFileSync(readmePath, "whoa", "utf8");
+
+          return FilterList.load(test.repository, null, "README.md", NodeGit.Filter.MODE.CLEAN, NodeGit.Filter.FLAG.DEFAULT);
+        })
+        .then(function(_list) {
+          list = _list;
+          return list.applyToData(new String("garbo garbo garbo garbo"));
+        })
+        .then(function(content) {
+          assert.strictEqual(content, message);
+          list.free();
+        });
+    });
+
+    it("applies the filters to a blob on demand", function() {
+      var test = this;
+      var list;
+
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {
+          return to.set(tempBuffer, length)
+            .then(function() {
+              return NodeGit.Error.CODE.OK;
+            });
+        },
+        check: function(src, attr) {
+          return NodeGit.Error.CODE.OK;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, 0);
+        })
+        .then(function() {
+          var readmeContent = fse.readFileSync(
+            readmePath,
+            "utf-8"
+          );
+          assert.notStrictEqual(readmeContent, message);
+          fse.writeFileSync(readmePath, "whoa", "utf8");
+
+          return FilterList.load(test.repository, null, "README.md", NodeGit.Filter.MODE.CLEAN, NodeGit.Filter.FLAG.DEFAULT);
+        })
+        .then(function(_list) {
+          list = _list;
+
+          return test.repository.getHeadCommit();
+        })
+        .then(function(commit) {
+          return commit.getTree();
+        })
+        .then(function(tree) {
+          return tree.entryByPath("README.md");
+        })
+        .then(function(entry) {
+          return test.repository.getBlob(entry.id());
+        })
+        .then(function(blob) {
+          return list.applyToBlob(blob);
+        })
+        .then(function(content) {
+          assert.strictEqual(content, message);
+          list.free();
+        });
     });
   });
 });
