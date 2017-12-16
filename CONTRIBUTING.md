@@ -5,7 +5,7 @@ Contribution Guidelines
 
 We try to be available pretty often to help when problems come up. We like to split incoming questions
 into two categories: potential bugs/features, and questions. If you want a feature added, or think you've found a bug
-in the code (or in the examples), search the [issue tracker](https://github.com/nodegit/nodegit/issues) and if you dont
+in the code (or in the examples), search the [issue tracker](https://github.com/nodegit/nodegit/issues) and if you don't
 find anything, file a new issue. If you just have questions, instead of using issues, [sign up](http://slack.libgit2.org/)
 to libgit2's Slack instance and then contact us in the [#nodegit channel](https://libgit2.slack.com/messages/nodegit/).
 
