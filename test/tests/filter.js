@@ -929,9 +929,14 @@ describe("Filter", function() {
   });
 
   describe("Manually Apply", function() {
-    before(function() {
+    beforeEach(function() {
       var test = this;
-      return fse.readFile(readmePath, "utf8")
+      var opts = {
+        checkoutStrategy: Checkout.STRATEGY.FORCE,
+        paths: "README.md"
+      };
+      return Checkout.head(test.repository, opts)
+        .then(() => fse.readFile(readmePath, "utf8"))
         .then((function(content) {
           test.originalReadmeContent = content;
         }));
@@ -942,7 +947,7 @@ describe("Filter", function() {
       return fse.writeFile(readmePath, this.originalReadmeContent);
     });
 
-    var message = "some new fancy filter";
+    var message = "This is the filtered content, friends";
     var length = message.length;
     var tempBuffer = new Buffer(message, "utf-8");
 
