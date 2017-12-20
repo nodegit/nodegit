@@ -2245,6 +2245,9 @@
             "isErrorCode": true
           },
           "args": {
+            "ceiling_dirs": {
+              "isOptional": true
+            },
             "out": {
               "isReturn": true,
               "isSelf": false,

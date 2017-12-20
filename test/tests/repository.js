@@ -200,13 +200,23 @@ describe("Repository", function() {
     });
   });
 
-  it("can discover if a path is part of a repository", function() {
+  function discover(ceiling) {
     var testPath = path.join(reposPath, "lib", "util", "normalize_oid.js");
     var expectedPath = path.join(reposPath, ".git");
-    return NodeGit.Repository.discover(testPath, 0, "")
+    return NodeGit.Repository.discover(testPath, 0, ceiling)
       .then(function(foundPath) {
         assert.equal(expectedPath, foundPath);
       });
+  }
+
+  it("can discover if a path is part of a repository, null ceiling",
+      function() {
+    return discover(null);
+  });
+
+  it("can discover if a path is part of a repository, empty ceiling",
+      function() {
+    return discover("");
   });
 
   it("can create a repo using initExt", function() {
