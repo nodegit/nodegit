@@ -220,4 +220,14 @@ describe("Tag", function() {
         assert(object.type(), Obj.TYPE.TAG);
       });
   });
+
+  it("can peel a tag", function() {
+    return this.repository.getTagByName(tagName)
+      .then(function(tag) {
+        return tag.peel();
+      })
+      .then(function(object) {
+        assert.equal(object.isCommit(), true);
+      });
+  });
 });
