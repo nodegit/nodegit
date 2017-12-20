@@ -274,6 +274,16 @@
         ]
       ],
       [
+        "filter_list",
+        [
+          "git_filter_list_apply_to_blob",
+          "git_filter_list_apply_to_data",
+          "git_filter_list_apply_to_file",
+          "git_filter_list_free",
+          "git_filter_list_load"
+        ]
+      ],
+      [
         "filter_source",
         [
           "git_filter_source_repo",
@@ -772,13 +782,6 @@
     },
     "filter": {
       "functions": [
-        "git_filter_list_apply_to_blob",
-        "git_filter_list_apply_to_data",
-        "git_filter_list_apply_to_file",
-        "git_filter_list_contains",
-        "git_filter_list_free",
-        "git_filter_list_length",
-        "git_filter_list_load",
         "git_filter_list_new",
         "git_filter_list_push",
         "git_filter_list_stream_blob",

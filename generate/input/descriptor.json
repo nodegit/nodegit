@@ -258,7 +258,7 @@
           "args": {
             "out": {
               "isReturn": true,
-              "cppClassName": "GitBuf", 
+              "cppClassName": "GitBuf",
               "jsClassName": "Buffer",
               "cType": "git_buf *",
               "shouldAlloc": true
@@ -1008,19 +1008,76 @@
       "hasConstructor": true,
       "functions": {
         "git_filter_list_apply_to_blob": {
-          "ignore": true
+          "async": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            },
+            "filters": {
+              "isSelf": true
+            }
+          }
         },
         "git_filter_list_apply_to_data": {
-          "ignore": true
+          "async": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            },
+            "filters": {
+              "isSelf": true
+            }
+          }
         },
         "git_filter_list_apply_to_file": {
-          "ignore": true
+          "async": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            },
+            "filters": {
+              "isSelf": true
+            }
+          }
         },
         "git_filter_list_free": {
-          "ignore": true
+          "async": true,
+          "args": {
+            "filters": {
+              "isSelf": true
+            }
+          }
         },
         "git_filter_list_load": {
-          "ignore": true
+          "async": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "filters": {
+              "isReturn": true,
+              "cType": "git_filter_list **"
+            },
+            "repo": {
+              "cType": "git_repository *"
+            },
+            "blob": {
+              "isOptional": true,
+              "cType": "git_blob *"
+            }
+          }
         },
         "git_filter_list_push": {
           "ignore": true
@@ -1769,6 +1826,9 @@
       }
     },
     "pathspec": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ],
       "functions": {
         "git_pathspec_match_list_free": {
           "ignore": true
@@ -2001,6 +2061,7 @@
     },
     "remote": {
       "dependencies": [
+        "../include/str_array_converter.h",
         "../include/remote_head.h"
       ],
       "cType": "git_remote",
@@ -2282,6 +2343,9 @@
       }
     },
     "reset": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ],
       "functions": {
         "git_reset": {
           "args": {
@@ -2615,6 +2679,9 @@
       }
     },
     "tag": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ],
       "selfFreeing": true,
       "functions": {
         "git_tag_foreach": {
