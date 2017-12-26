@@ -327,4 +327,40 @@ describe("Repository", function() {
         assert.equal(numMergeHeads, 1);
       });
   });
+
+  it("can get reference commit that points at lightweight tag", function() {
+    var repository = this.repository;
+    var oid = null;
+    return repository.getHeadCommit()
+      .then(function(commit) {
+        oid = commit.id().toString();
+        return repository.createLightweightTag(
+          oid, "getReferenceCommitLightweight");
+      })
+      .then(function() {
+        return repository.getReferenceCommit(
+          "refs/tags/getReferenceCommitLightweight");
+      })
+      .then(function(commit) {
+        assert.equal(commit.id().toString(), oid);
+      });
+  });
+
+  it("can get reference commit that points at annotated tag", function() {
+    var repository = this.repository;
+    var oid = null;
+    return repository.getHeadCommit()
+      .then(function(commit) {
+        oid = commit.id().toString();
+        return repository.createTag(
+          oid, "getReferenceCommitAnnotated", "");
+      })
+      .then(function() {
+        return repository.getReferenceCommit(
+          "refs/tags/getReferenceCommitAnnotated");
+      })
+      .then(function(commit) {
+        assert.equal(commit.id().toString(), oid);
+      });
+  });
 });
