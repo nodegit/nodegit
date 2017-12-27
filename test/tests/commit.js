@@ -13,7 +13,9 @@ var exec = require("../../utils/execPromise");
 describe("Commit", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
+  var Commit = NodeGit.Commit;
   var Diff = NodeGit.Diff;
+  var Oid = NodeGit.Oid;
 
   var reposPath = local("../repos/workdir");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
@@ -601,6 +603,31 @@ describe("Commit", function() {
     .then(function(field) {
       assert.equal(field,
         "Michael Robinson <mike@panmedia.co.nz> 1362012884 +1300");
+    });
+  });
+
+  it("can lookup using a short id", function () {
+    return NodeGit.Repository.open(reposPath)
+    .then(function (repo) {
+      return Commit.lookupPrefix(repo, Oid.fromString("bf1da765"), 8);
+    })
+    .then(function (commit) {
+      assert.equal(commit.id().toString(),
+        "bf1da765e357a9b936d6d511f2c7b78e0de53632");
+    });
+  });
+
+  it("can find nth gen ancestor", function () {
+    return NodeGit.Repository.open(reposPath)
+    .then(function (repo) {
+      return repo.getCommit("b52067acaa755c3b3fc21b484ffed2bce4150f62");
+    })
+    .then(function (commit) {
+      return commit.nthGenAncestor(3);
+    })
+    .then(function (commit) {
+      assert.equal(commit.id().toString(),
+        "9b2f3a37d46d47248d2704b6a46ec7e197bcd48c");
     });
   });
 
