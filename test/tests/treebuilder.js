@@ -36,7 +36,7 @@ describe("TreeBuilder", function(){
       //get latest commit
       return test.repo.getHeadCommit()
       //get tree of commit
-      .then(function(commit){ return commit.getTree(); })
+      .then(function(commit){ return commit.tree(); })
       //make treebuilder from tree
       .then(function(tree){ return Git.Treebuilder.create(test.repo, tree); })
       //verify treebuilder can do stuff
@@ -58,7 +58,7 @@ describe("TreeBuilder", function(){
       //get latest commit
       return test.repo.getHeadCommit()
       //get tree of commit
-      .then(function(commit){ return commit.getTree(); })
+      .then(function(commit){ return commit.tree(); })
       //make treebuilder from tree
       .then(function(tree){ return Git.Treebuilder.create(test.repo, tree); })
       //verify treebuilder can do stuff

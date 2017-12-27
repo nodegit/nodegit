@@ -23,7 +23,7 @@ describe("Patch", function() {
         return test.repository.getBranchCommit("master");
       })
       .then(function(masterCommit) {
-        return masterCommit.getTree();
+        return masterCommit.tree();
       })
       .then(function(tree) {
         test.masterCommitTree = tree;

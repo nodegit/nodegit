@@ -458,7 +458,7 @@ describe("Commit", function() {
     var commitTreeEntryCount = 0;
     var expectedCommitTreeEntryCount = 198;
 
-    return this.commit.getTree().then(function(tree) {
+    return this.commit.tree().then(function(tree) {
       return new Promise(function(resolve, fail) {
 
         var treeWalker = tree.walk();

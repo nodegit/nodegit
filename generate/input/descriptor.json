@@ -535,6 +535,13 @@
             "ownedByThis": true
           }
         },
+        "git_commit_tree": {
+          "isAsync": true,
+          "return" : {
+            "isReturn": true,
+            "isErrorCode": true
+          }
+        },
         "git_commit_tree_id": {
           "return": {
             "ownedByThis": true

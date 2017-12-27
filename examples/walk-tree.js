@@ -10,7 +10,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
     return repo.getMasterCommit();
   })
   .then(function(firstCommitOnMaster) {
-      return firstCommitOnMaster.getTree();
+      return firstCommitOnMaster.tree();
   })
   .then(function(tree) {
     // `walk()` returns an event.
