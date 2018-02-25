@@ -1,7 +1,6 @@
 # appveyor file
 # http://www.appveyor.com/docs/appveyor-yml
 
-os: Windows Server 2012 R2
 image: Visual Studio 2015
 
 platform:
@@ -24,7 +23,7 @@ init:
 environment:
   JOBS: 4
   GIT_SSH: c:\projects\nodegit\vendor\plink.exe
-  GYP_MSVS_VERSION: 2013
+  GYP_MSVS_VERSION: 2015
   matrix:
     # Node.js
     - nodejs_version: "9"
