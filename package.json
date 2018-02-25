@@ -34,11 +34,11 @@
     "node": ">= 4"
   },
   "dependencies": {
-    "fs-extra": "~0.26.2",
+    "fs-extra": "~0.27.0",
     "lodash": "^4.13.1",
-    "nan": "^2.2.0",
-    "node-gyp": "^3.5.0",
-    "node-pre-gyp": "~0.6.32",
+    "nan": "^2.9.2",
+    "node-gyp": "^3.6.2",
+    "node-pre-gyp": "~0.6.39",
     "promisify-node": "~0.3.0"
   },
   "devDependencies": {
