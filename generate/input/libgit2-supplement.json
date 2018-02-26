@@ -531,6 +531,10 @@
             {
               "name": "download_tags",
               "type": "git_remote_autotag_option_t"
+            },
+            {
+              "name": "custom_headers",
+              "type": "git_strarray"
             }
           ],
           "used": {
