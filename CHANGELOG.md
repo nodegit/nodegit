@@ -1,6 +1,30 @@
 # Change Log
 
-## <a name="v0-20-2" href="#v0-20-3">v0.20.3</a> [(2017-10-18)](https://github.com/nodegit/nodegit/releases/tag/v0.20.3)
+## <a name="v0-21-0" href="#v0-21-0">v0.21.0</a> [(2018-02-26)](https://github.com/nodegit/nodegit/releases/tag/v0.21.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.3...v0.21.0)
+
+### Summary of changes to NodeGit:
+ - [Generate default options for Revert.revert to prevent an exception #1404](https://github.com/nodegit/nodegit/pull/1404)
+ - [fix issue with re-require()'ing native modules #1354](https://github.com/nodegit/nodegit/pull/1354)
+ - [Expose JavaScript function name in a rejected promise #1393](https://github.com/nodegit/nodegit/pull/1393)
+ - [Fix compiling with clang #1344](https://github.com/nodegit/nodegit/pull/1344)
+ - [Fix typos #1415](https://github.com/nodegit/nodegit/pull/1415)
+ - [build: add NetBSD support to opensslconf.h #1374](https://github.com/nodegit/nodegit/pull/1374)
+ - [Fix example by forcing backslashes with path.posix #1346](https://github.com/nodegit/nodegit/pull/1346)
+ - [Expose the Node.js GC when running `mocha `scripts #1258](https://github.com/nodegit/nodegit/pull/1258)
+ - [Exposed filter_list; Fixed discard lines to use filters #1414](https://github.com/nodegit/nodegit/pull/1414)
+ - [Add tests for AnnotatedCommit #1325](https://github.com/nodegit/nodegit/pull/1325)
+ - [Adding docs for NodeGit #1350](https://github.com/nodegit/nodegit/pull/1350)
+ - [Fix details-for-tree-entry.js to access fields instead of calling a function #1326](https://github.com/nodegit/nodegit/pull/1326)
+ - [Add JavaScript version of `git_tag_peel()` #1269](https://github.com/nodegit/nodegit/pull/1269)
+ - [Fixed documentation error #1417](https://github.com/nodegit/nodegit/pull/1417)
+ - [Annoate Blame.file as async #1421](https://github.com/nodegit/nodegit/pull/1421)
+ - [Add two missing tests to Commit #1422](https://github.com/nodegit/nodegit/pull/1422)
+ - [CI: Update Node.js versions + some deps #1444](https://github.com/nodegit/nodegit/pull/1444)
+ - [Expose fetch_options.custom_headers #1430](https://github.com/nodegit/nodegit/pull/1430)
+
+## <a name="v0-20-3" href="#v0-20-3">v0.20.3</a> [(2017-10-18)](https://github.com/nodegit/nodegit/releases/tag/v0.20.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.2...v0.20.3)
 
