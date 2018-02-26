@@ -62,7 +62,7 @@
   "binary": {
     "module_name": "nodegit",
     "module_path": "./build/Release/",
-    "host": "https://nodegit.s3.amazonaws.com/nodegit/nodegit/"
+    "host": "https://axonodegit.s3.amazonaws.com/nodegit/nodegit/"
   },
   "scripts": {
     "babel": "babel --presets es2015 -d ./dist ./lib",
