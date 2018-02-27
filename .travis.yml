@@ -6,12 +6,17 @@ branches:
     - /^v\d+\.\d+\.\d+$/
 
 compiler: clang
+language: node_js
+
+# Stage order; the default stage is "test", which in our case is actually building and deploying
+stages:
+  - "Extended testing & documentation deploying"
+  - test
 
 env:
   - TARGET_ARCH="x64"
   - TARGET_ARCH="ia32"
 
-language: node_js
 node_js:
   - "9.6"
   - "8.9"
@@ -26,6 +31,12 @@ jobs:
   exclude:
     - os: osx
       env: TARGET_ARCH="ia32"
+  include:
+    - stage: "Extended testing & documentation deploying"
+      os: linux
+      node_js: "8.9"
+      env: TARGET_ARCH="x64" EXTENDED_TESTING="true"
+
 
 git:
   depth: 1
@@ -47,7 +58,7 @@ before_install:
   - export npm_config_clang=1
   - export JOBS=4
 
-  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [[ $TRAVIS_NODE_VERSION == "8"* ]]; then
+  - if [ -z "$TRAVIS_TAG" ] && [ $EXTENDED_TESTING == "true" ]; then
       export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
       export CC=/usr/bin/gcc-4.9;
       export CXX=/usr/bin/g++-4.9;
@@ -73,7 +84,7 @@ before_script:
   - git config --global user.email johndoe@example.com
 
 script:
-    if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [[ $TRAVIS_NODE_VERSION == "8"* ]]; then
+    if [ -z "$TRAVIS_TAG" ] && [ $EXTENDED_TESTING == "true" ]; then
       travis_retry npm test && npm run cov && npm run coveralls;
     else
       travis_retry npm test;
@@ -88,7 +99,7 @@ after_success:
       node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [[ $TRAVIS_NODE_VERSION == "8"* ]] && [ $TARGET_ARCH == "x64" ]; then
+  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $EXTENDED_TESTING == "true" ]; then
       .travis/deploy-docs.sh;
     fi
 
