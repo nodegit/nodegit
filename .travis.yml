@@ -18,10 +18,10 @@ env:
   - TARGET_ARCH="ia32"
 
 node_js:
-  - "9.6"
-  - "8.9"
-  - "7.10"
-  - "6.13"
+  - "9"
+  - "8"
+  - "7"
+  - "6"
 
 os:
   - linux
@@ -34,7 +34,7 @@ jobs:
   include:
     - stage: "Extended testing & documentation deploying"
       os: linux
-      node_js: "8.9"
+      node_js: "8"
       env: TARGET_ARCH="x64" EXTENDED_TESTING="true"
 
 
