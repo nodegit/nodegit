@@ -39,7 +39,7 @@ jobs:
 
 
 git:
-  depth: 1
+  depth: 5
 
 addons:
   apt:
