@@ -36,7 +36,7 @@ jobs:
     - stage: "Extended testing"
       os: linux
       node_js: "8"
-      env: TARGET_ARCH="x64" EXTENDED_TESTING="true"
+      env: TARGET_ARCH="x64" EXTENDED_TESTING="false"
     - stage: "Deploy documentation"
       os: linux
       node_js: "8"
