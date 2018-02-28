@@ -10,8 +10,9 @@ language: node_js
 
 # Stage order; the default stage is "test", which in our case is actually building and deploying
 stages:
-  - "Extended testing & documentation deploying"
+  - "Extended testing"
   - test
+  - "Deploy documentation"
 
 env:
   - TARGET_ARCH="x64"
@@ -32,10 +33,14 @@ jobs:
     - os: osx
       env: TARGET_ARCH="ia32"
   include:
-    - stage: "Extended testing & documentation deploying"
+    - stage: "Extended testing"
       os: linux
       node_js: "8"
       env: TARGET_ARCH="x64" EXTENDED_TESTING="true"
+    - stage: "Deploy documentation"
+      os: linux
+      node_js: "8"
+      env: TARGET_ARCH="x64" DEPLOY_DOCUMENTATION="true"
 
 
 git:
@@ -99,7 +104,7 @@ after_success:
       node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $EXTENDED_TESTING == "true" ]; then
+  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $DEPLOY_DOCUMENTATION == "true" ]; then
       .travis/deploy-docs.sh;
     fi
 
