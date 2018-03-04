@@ -230,4 +230,21 @@ describe("Tag", function() {
         assert.equal(object.isCommit(), true);
       });
   });
+
+  it("can get tag's target id", function() {
+    return this.repository.getTagByName(tagName)
+      .then(function(tag) {
+        assert.equal(commitPointedTo, tag.targetId());
+      });
+  });
+
+  it("can get tag's owner", function() {
+    var repository = this.repository;
+    return this.repository.getTagByName(tagName)
+      .then(function(tag) {
+        var owner = tag.owner();
+        assert.ok(owner instanceof Repository);
+        assert.equal(repository.path(), owner.path());
+      });
+  });
 });
