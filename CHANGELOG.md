@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-21-1" href="#v0-21-1">v0.21.1</a> [(2018-03-05)](https://github.com/nodegit/nodegit/releases/tag/v0.21.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.0...v0.21.1)
+
+#### Summary of changes
+- Fixed an issue where having html escape characters in the path portion of an ssh url always fails when performing remote actions.
+
+#### Included non-merged libgit2 PRs:
+- [Unescape special characters in SSH repo paths #4557](https://github.com/libgit2/libgit2/pull/4557)
+
 ## <a name="v0-21-0" href="#v0-21-0">v0.21.0</a> [(2018-02-26)](https://github.com/nodegit/nodegit/releases/tag/v0.21.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.3...v0.21.0)
@@ -34,7 +44,7 @@
   - [Updated input docs to allow for git_push_update_reference_cb to generate #1386](https://github.com/nodegit/nodegit/pull/1386)
   - [Updated descriptors for git_index_find and git_index_find_prefix #1391](https://github.com/nodegit/nodegit/pull/1391)
 
-#### Included merged libgti2 PRs:
+#### Included merged libgit2 PRs:
  - [Fix template dir empty string #4273](https://github.com/libgit2/libgit2/pull/4273)
  - [travis: upgrade container to Ubuntu 14.04 #4211](https://github.com/libgit2/libgit2/pull/4211)
  - [merge: perform exact rename detection in linear time #4202](https://github.com/libgit2/libgit2/pull/4202)
@@ -87,7 +97,7 @@
 
 
 
-## <a name="v0-20-2" href="#v0-20-2">v0.20.2</a> [(2017-08-16)](https://github.com/nodegit/nodegit/releases/tag/v0.20.2)
+## <a name="v0-20-2" href="#v0-20-2">v0.20.2</a> [(2017-09-13)](https://github.com/nodegit/nodegit/releases/tag/v0.20.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.0...v0.20.2)
 
