@@ -117,7 +117,7 @@
  - [Add CI build config for node stable version #1337](https://github.com/nodegit/nodegit/pull/1337)
  - [removed node v4 tests #1330](https://github.com/nodegit/nodegit/pull/1330)
 
-#### Included merged libgti2 PRs:
+#### Included merged libgit2 PRs:
  - [Include fixups #4288](https://github.com/libgit2/libgit2/pull/4288)
  - [Docs: Fix inline comments for git_diff_hunk #4330](https://github.com/libgit2/libgit2/pull/4330)
  - [oid: use memcmp in git_oid__hashcmp #4328](https://github.com/libgit2/libgit2/pull/4328)
@@ -193,7 +193,7 @@
 #### Summary of changes outside of libgit2 bump:
  - You can now convert tree entries in blobs [PR #1272](https://github.com/nodegit/nodegit/pull/1272)
 
-#### Included merged libgti2 PRs:
+#### Included merged libgit2 PRs:
 
  - [fileops: fix leaking fd in `mmap_ro_file` #4201](https://github.com/libgit2/libgit2/pull/4201)
  - [README: document our relation to changes in upstream #4198](https://github.com/libgit2/libgit2/pull/4198)
