@@ -29,7 +29,7 @@
  - [Fix details-for-tree-entry.js to access fields instead of calling a function #1326](https://github.com/nodegit/nodegit/pull/1326)
  - [Add JavaScript version of `git_tag_peel()` #1269](https://github.com/nodegit/nodegit/pull/1269)
  - [Fixed documentation error #1417](https://github.com/nodegit/nodegit/pull/1417)
- - [Annoate Blame.file as async #1421](https://github.com/nodegit/nodegit/pull/1421)
+ - [Annotate Blame.file as async #1421](https://github.com/nodegit/nodegit/pull/1421)
  - [Add two missing tests to Commit #1422](https://github.com/nodegit/nodegit/pull/1422)
  - [CI: Update Node.js versions + some deps #1444](https://github.com/nodegit/nodegit/pull/1444)
  - [Expose fetch_options.custom_headers #1430](https://github.com/nodegit/nodegit/pull/1430)
