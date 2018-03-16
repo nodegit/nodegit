@@ -523,7 +523,7 @@
           "ignore": true
         },
         "git_commit_extract_signature": {
-          "ignore": true
+          "isAsync": true
         },
         "git_commit_id": {
           "return": {

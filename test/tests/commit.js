@@ -718,4 +718,43 @@ describe("Commit", function() {
     // the self-freeing signature should get freed
     assert.equal(startSelfFreeingCount, endSelfFreeingCount);
   });
+
+  describe("Commit's Signature", function() {
+    it.only("Can retrieve the gpg signature from a commit", function() {
+      var expectedSignedData =
+        "tree f4661419a6fbbe865f78644fec722c023ce4b65f\n" +
+        "parent 32789a79e71fbc9e04d3eff7425e1771eb595150\n" +
+        "author Tyler Ang-Wanek <tylerw@axosoft.com> 1521227848 -0700\n" +
+        "committer Tyler Ang-Wanek <tylerw@axosoft.com> 1521227848 -0700\n\n" +
+        "GPG Signed commit\n";
+
+      var expectedSignature =
+        "-----BEGIN PGP SIGNATURE-----\n\n" +
+        "iQEcBAABCAAGBQJarBhIAAoJEE8pfTd/81lKQA4IAL8Mu5kc4B/MX9s4XB26Ahap\n" +
+        "n06kCx3RQ1KHMZIRomAjCnb48WieNVuy1y+Ut0RgfCxxrJ1ZnzFG3kF2bIKwIxNI\n" +
+        "tYIC76iWny+mrVnb2mjKYjn/3F4c4VJGENq9ITiV1WeE4yJ8dHw2ox2D+hACzTvQ\n" +
+        "KVroedk8BDFJxS6DFb20To35xbAVhwBnAGRcII4Wi5PPMFpqAhGLfq3Czv95ddSz\n" +
+        "BHlyp27+YWSpV0Og0dqOEhsdDYaPrOBGRcoRiqjue+l5tgK/QerLFZ4aovZzpuEP\n" +
+        "Xx1yZfqXIiy4Bo40qScSrdnmnp/kMq/NQGR3jYU+SleFHVKNFsya9UwurMaezY0=\n" +
+        "=eZzi\n-----END PGP SIGNATURE-----";
+
+      return NodeGit.Commit.lookup(
+        this.repository,
+        "cc1401eaac4e9e77190e98a9353b305f0c6313d8"
+      )
+        .then(function(commit) {
+          return commit.getSignature();
+        })
+        .then(function(extractSignature) {
+          assert.equal(
+            extractSignature.signature,
+            expectedSignature
+          );
+          assert.equal(
+            extractSignature.signedData,
+            expectedSignedData
+          );
+        });
+    });
+  });
 });
