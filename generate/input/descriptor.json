@@ -666,7 +666,15 @@
           "ignore": true
         },
         "git_config_open_ondisk": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true
+            }
+          }
         },
         "git_config_parse_bool": {
           "ignore": true

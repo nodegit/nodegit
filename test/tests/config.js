@@ -6,8 +6,101 @@ var exec = require("../../utils/execPromise");
 
 describe("Config", function() {
   var NodeGit = require("../../");
+  var Repository = NodeGit.Repository;
+  var Config = NodeGit.Config;
 
   var reposPath = local("../repos/workdir");
+
+  describe("openOnDisk", function() {
+    var configPath = path.join(reposPath, ".git/config");
+
+    it("opens the same config as the repo", function() {
+      var repo;
+      var onDiskConfig;
+      return Repository.open(reposPath)
+        .then(function(_repo) {
+          repo = _repo;
+          return Config.openOndisk(configPath);
+        })
+        .then(function(config) {
+          onDiskConfig = config;
+          return repo.config();
+        })
+        .then(function(repoConfig) {
+          return Promise.all([
+            onDiskConfig.getString("core.filemode"),
+            onDiskConfig.getString("core.bare"),
+            onDiskConfig.getString("core.ignorecase"),
+            repoConfig.getString("core.filemode"),
+            repoConfig.getString("core.bare"),
+            repoConfig.getString("core.ignorecase")
+          ]);
+        })
+        .then(function(results) {
+          var onDiskFileMode = results[0];
+          var onDiskBare = results[1];
+          var onDiskIgnorecase = results[2];
+          var repoFileMode = results[3];
+          var repoBare = results[4];
+          var repoIgnorecase = results[5];
+
+          assert.equal(onDiskFileMode, repoFileMode);
+          assert.equal(onDiskBare, repoBare);
+          assert.equal(onDiskIgnorecase, repoIgnorecase);
+        });
+    });
+
+    it("opens the config and can change a value", function() {
+      var repo;
+      var onDiskConfig;
+      var repoConfig;
+      var originalFileMode;
+      return Repository.open(reposPath)
+        .then(function(_repo) {
+          repo = _repo;
+          return Config.openOndisk(configPath);
+        })
+        .then(function(config) {
+          onDiskConfig = config;
+          return repo.config();
+        })
+        .then(function(_repoConfig) {
+          repoConfig = _repoConfig;
+          return Promise.all([
+            onDiskConfig.getString("core.filemode"),
+            repoConfig.getString("core.filemode")
+          ]);
+        })
+        .then(function(results) {
+          var onDiskFileMode = results[0];
+          var repoFileMode = results[1];
+
+          assert.equal(onDiskFileMode, repoFileMode);
+          originalFileMode = onDiskFileMode;
+          var oppositeFileMode = onDiskFileMode === "true" ? "false" : "true";
+
+          return onDiskConfig.setString(
+            "core.filemode",
+            oppositeFileMode
+          );
+        })
+        .then(function() {
+          return Config.openOndisk(configPath);
+        })
+        .then(function(config) {
+          return Promise.all([
+            config.getString("core.filemode"),
+            repoConfig.getString("core.filemode")
+          ]);
+        })
+        .then(function(results) {
+          var onDiskFileMode = results[0];
+          var repoFileMode = results[1];
+          assert.notEqual(onDiskFileMode, originalFileMode);
+          assert.equal(onDiskFileMode, repoFileMode);
+        });
+    });
+  });
 
   it("can get and set a global value", function() {
     var savedUserName;
