@@ -576,13 +576,40 @@
           "ignore": true
         },
         "git_config_find_global": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_find_system": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_find_xdg": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_foreach": {
           "ignore": true
@@ -627,7 +654,16 @@
           }
         },
         "git_config_get_path": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_iterator_free": {
           "ignore": true
