@@ -1,5 +1,32 @@
 # Change Log
 
+## <a name="v0-21-2" href="#v0-21-2">v0.21.2</a [(2018-03-19)](https://github.com/nodegit/nodegit/releases/tag/v0.21.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.1...v0.21.2)
+
+#### Summary of changes
+- Drop support for node 7
+- Fixed an issue where fast-forward rebase would throw an error unexepctedly.
+- Expose git_commit_extract_signature
+- TreeEntry.prototype.path() should always return posix style separators
+- Expose git_config_open_ondisk
+- Expose git_config_find_global
+- Expose git_config_find_system
+- Expose git_config_find_xdg
+- Expose git_config_get_path
+
+#### Merged PRs into NodeGit
+ - [Fix typo in CHANGELOG.md #1455](https://github.com/nodegit/nodegit/pull/1455)
+ - [Add two tests for Tag #1452](https://github.com/nodegit/nodegit/pull/1452)
+ - [Handle fast-forward merges properly in repository.performRebase #1457](https://github.com/nodegit/nodegit/pull/1457)
+ - [Enable git_commit_extract_signature #1458](https://github.com/nodegit/nodegit/pull/1458)
+ - [removes 'only' from test #1460](https://github.com/nodegit/nodegit/pull/1460)
+ - [Deploy documentation and make extended tests visible #1447](https://github.com/nodegit/nodegit/pull/1447)
+ - [resolves #1433 TreeEntry#path should return posix path #1434](https://github.com/nodegit/nodegit/pull/1434)
+ - [Exposed git_config_open_ondisk #1459](https://github.com/nodegit/nodegit/pull/1459)
+ - [Expose git_config functions #1463](https://github.com/nodegit/nodegit/pull/1463)
+
+
 ## <a name="v0-21-1" href="#v0-21-1">v0.21.1</a> [(2018-03-05)](https://github.com/nodegit/nodegit/releases/tag/v0.21.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.0...v0.21.1)
@@ -14,7 +41,7 @@
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.3...v0.21.0)
 
-### Summary of changes to NodeGit:
+#### Summary of changes to NodeGit:
  - [Generate default options for Revert.revert to prevent an exception #1404](https://github.com/nodegit/nodegit/pull/1404)
  - [fix issue with re-require()'ing native modules #1354](https://github.com/nodegit/nodegit/pull/1354)
  - [Expose JavaScript function name in a rejected promise #1393](https://github.com/nodegit/nodegit/pull/1393)
