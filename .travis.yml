@@ -1,37 +1,49 @@
+sudo: false
+
 branches:
   only:
     - master
     - /^v\d+\.\d+\.\d+$/
 
 compiler: clang
+language: node_js
+
+# Stage order; the default stage is "test", which in our case is actually building and deploying
+stages:
+  - "Extended testing"
+  - test
+  - "Deploy documentation"
+
+env:
+  - TARGET_ARCH="x64"
+  - TARGET_ARCH="ia32"
+
+node_js:
+  - "9"
+  - "8"
+  - "6"
 
 os:
   - linux
   - osx
 
-sudo: false
-
-env:
-  matrix:
-    - export NODE_VERSION="9.6" TARGET_ARCH="x64"
-    - export NODE_VERSION="8.9" TARGET_ARCH="x64"
-    - export NODE_VERSION="7.10" TARGET_ARCH="x64"
-    - export NODE_VERSION="6.13" TARGET_ARCH="x64"
-
-matrix:
-  fast_finish: true
+jobs:
+  exclude:
+    - os: osx
+      env: TARGET_ARCH="ia32"
   include:
-    - os: linux
-      env: export NODE_VERSION="9.6" TARGET_ARCH="ia32"
-    - os: linux
-      env: export NODE_VERSION="8.9" TARGET_ARCH="ia32"
-    - os: linux
-      env: export NODE_VERSION="7.10" TARGET_ARCH="ia32"
-    - os: linux
-      env: export NODE_VERSION="6.13" TARGET_ARCH="ia32"
+    - stage: "Extended testing"
+      os: linux
+      node_js: "8"
+      env: TARGET_ARCH="x64" EXTENDED_TESTING="false"
+    - stage: "Deploy documentation"
+      os: linux
+      node_js: "8"
+      env: TARGET_ARCH="x64" DEPLOY_DOCUMENTATION="true"
+
 
 git:
-  depth: 1
+  depth: 5
 
 addons:
   apt:
@@ -50,14 +62,7 @@ before_install:
   - export npm_config_clang=1
   - export JOBS=4
 
-  - if [ $TRAVIS_OS_NAME != "linux" ]; then
-      git clone https://github.com/creationix/nvm.git ./.nvm;
-      source ./.nvm/nvm.sh;
-    fi
-
-  - nvm install $NODE_VERSION
-
-  - if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
+  - if [ -z "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" == "true" ]; then
       export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
       export CC=/usr/bin/gcc-4.9;
       export CXX=/usr/bin/g++-4.9;
@@ -83,7 +88,7 @@ before_script:
   - git config --global user.email johndoe@example.com
 
 script:
-    if [ -z "$TRAVIS_TAG" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ]; then
+    if [ -z "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" == "true" ]; then
       travis_retry npm test && npm run cov && npm run coveralls;
     else
       travis_retry npm test;
@@ -98,7 +103,7 @@ after_success:
       node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ] && [ $TRAVIS_OS_NAME == "linux" ] && [ $NODE_VERSION == "6" ] && [ $TARGET_ARCH == "x64" ]; then
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ -n "$TRAVIS_TAG" ] && [ "$DEPLOY_DOCUMENTATION" == "true" ]; then
       .travis/deploy-docs.sh;
     fi
 
