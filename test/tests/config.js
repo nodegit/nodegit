@@ -30,23 +30,18 @@ describe("Config", function() {
           return Promise.all([
             onDiskConfig.getString("core.filemode"),
             onDiskConfig.getString("core.bare"),
-            onDiskConfig.getString("core.ignorecase"),
             repoConfig.getString("core.filemode"),
-            repoConfig.getString("core.bare"),
-            repoConfig.getString("core.ignorecase")
+            repoConfig.getString("core.bare")
           ]);
         })
         .then(function(results) {
           var onDiskFileMode = results[0];
           var onDiskBare = results[1];
-          var onDiskIgnorecase = results[2];
-          var repoFileMode = results[3];
-          var repoBare = results[4];
-          var repoIgnorecase = results[5];
+          var repoFileMode = results[2];
+          var repoBare = results[3];
 
           assert.equal(onDiskFileMode, repoFileMode);
           assert.equal(onDiskBare, repoBare);
-          assert.equal(onDiskIgnorecase, repoIgnorecase);
         });
     });
 
