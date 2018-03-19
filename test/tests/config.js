@@ -98,6 +98,13 @@ describe("Config", function() {
           var repoFileMode = results[1];
           assert.notEqual(onDiskFileMode, originalFileMode);
           assert.equal(onDiskFileMode, repoFileMode);
+        })
+        .then(function() {
+          // cleanup
+          return onDiskConfig.setString(
+            "core.filemode",
+            originalFileMode
+          );
         });
     });
   });
