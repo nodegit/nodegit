@@ -720,7 +720,7 @@ describe("Commit", function() {
   });
 
   describe("Commit's Signature", function() {
-    it.only("Can retrieve the gpg signature from a commit", function() {
+    it("Can retrieve the gpg signature from a commit", function() {
       var expectedSignedData =
         "tree f4661419a6fbbe865f78644fec722c023ce4b65f\n" +
         "parent 32789a79e71fbc9e04d3eff7425e1771eb595150\n" +
