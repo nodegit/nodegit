@@ -187,4 +187,24 @@ describe("Config", function() {
         });
     });
   });
+
+  describe("getPath", function() {
+    it("can get path for a given config", function() {
+      return NodeGit.Repository.open(reposPath)
+        .then(function(repo) {
+          return repo.config();
+        })
+        .then(function(config) {
+          return Promise.all([
+            config.getPath("core.filemode"),
+            config.getString("core.filemode")
+          ]);
+        })
+        .then(function(results) {
+          var localFilemode = results[0];
+          var repoFilemode = results[1];
+          assert.equal(localFilemode, repoFilemode);
+        });
+    });
+  });
 });
