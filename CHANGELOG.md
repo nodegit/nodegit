@@ -1,6 +1,6 @@
 # Change Log
 
-## <a name="v0-21-2" href="#v0-21-2">v0.21.2</a [(2018-03-19)](https://github.com/nodegit/nodegit/releases/tag/v0.21.2)
+## <a name="v0-21-2" href="#v0-21-2">v0.21.2</a> [(2018-03-19)](https://github.com/nodegit/nodegit/releases/tag/v0.21.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.1...v0.21.2)
 
