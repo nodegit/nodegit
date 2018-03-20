@@ -95,7 +95,7 @@ script:
     fi
 
 after_success:
-  - if [ -n "$TRAVIS_TAG" ]; then
+  - if [ -n "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" != "true" ] && [ "$DEPLOY_DOCUMENTATION" != "true" ]; then
       npm install -g node-pre-gyp;
       npm install -g aws-sdk;
       node lifecycleScripts/clean;
