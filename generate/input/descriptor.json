@@ -2533,10 +2533,10 @@
             "status_flags": {
               "isReturn": true,
               "shouldAlloc": true
-            },
-            "return": {
-              "isErrorCode": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_status_foreach": {
