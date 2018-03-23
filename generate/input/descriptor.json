@@ -2785,6 +2785,19 @@
           },
           "isAsync": true
         },
+        "git_tag_list_match": {
+          "args": {
+            "tag_names": {
+              "isReturn": true,
+              "shouldAlloc": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "size": "count",
+              "key": "strings"
+            }
+          },
+          "isAsync": true
+        },
         "git_tag_tagger": {
           "return": {
             "ownedByThis": true
