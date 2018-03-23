@@ -29,7 +29,7 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
   giterr_clear();
 
   {
-    LockMaster lockMaster(true, baton->diff);
+    LockMaster lockMaster(false, true, baton->diff);
     std::vector<git_patch *> patchesToBeFreed;
 
     for (int i = 0; i < git_diff_num_deltas(baton->diff); ++i) {

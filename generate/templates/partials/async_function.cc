@@ -52,7 +52,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%endif%}
       {%endif%}
     {%elsif arg.shouldAlloc %}
-      baton->{{arg.name}} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));  
+      baton->{{arg.name}} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
       {%if arg.cppClassName == "GitBuf" %}
         baton->{{arg.name}}->ptr = NULL;
         baton->{{arg.name}}->size = baton->{{arg.name}}->asize = 0;
@@ -81,7 +81,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   giterr_clear();
 
   {
-    LockMaster lockMaster(/*asyncAction: */true{%each args|argsInfo as arg %}
+    LockMaster lockMaster(/*globalWriteLock*/false, /*asyncAction: */true{%each args|argsInfo as arg %}
       {%if arg.cType|isPointer%}{%if not arg.cType|isDoublePointer%}
         ,baton->{{ arg.name }}
       {%endif%}{%endif%}

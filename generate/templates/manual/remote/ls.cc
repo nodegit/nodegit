@@ -24,6 +24,7 @@ void GitRemote::ReferenceListWorker::Execute()
 
   {
     LockMaster lockMaster(
+      /*globalWriteLock*/false,
       /*asyncAction: */true,
       baton->remote
     );

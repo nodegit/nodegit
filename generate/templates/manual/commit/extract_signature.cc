@@ -77,6 +77,7 @@ void GitCommit::ExtractSignatureWorker::Execute()
 
   {
     LockMaster lockMaster(
+      /*globalWriteLock*/false,
       /*asyncAction: */true,
       baton->repo
     );
