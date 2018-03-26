@@ -4,8 +4,8 @@ var path = require("path");
 describe("Libgit2", function() {
   var NodeGit = require("../../");
   var Libgit2 = NodeGit.Libgit2;
-  var certPath = path.resolve("../certs");
-  var certFile = path.join(certPath, "fakecert.crt");
+  var certPath = path.resolve("/certs");
+  var certFile = path.join(__dirname, "../certs/fakecert.crt");
 
   if (process.platform !== "win32") {
     describe("setSslLocations", function() {
