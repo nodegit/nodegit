@@ -1,10 +1,11 @@
+
 NAN_METHOD(GitLibgit2::SetSslLocations)
 {
-  if (info.Length() == 0 || !info[0]->IsString() || !info[0]->IsUndefined() || !info[0]->IsNull()) {
+  if (info.Length() == 0 || (!info[0]->IsString() && !info[0]->IsUndefined() && !info[0]->IsNull())) {
     return Nan::ThrowError("CAInfo must be a string or null/undefined.");
   }
 
-  if (info.Length() == 1 || !info[1]->IsString() || !info[1]->IsUndefined() || !info[1]->IsNull()) {
+  if (info.Length() == 1 || (!info[1]->IsString() && !info[1]->IsUndefined() && !info[1]->IsNull())) {
     return Nan::ThrowError("CAPath must be a string or null/undefined.");
   }
 
@@ -20,11 +21,13 @@ NAN_METHOD(GitLibgit2::SetSslLocations)
   baton->ca_path = NULL;
 
   if (info[0]->IsString()) {
-    baton->ca_info = info[0]->ToString();
+    String::Utf8Value str(info[0]->ToString());
+    baton->ca_info = *str;
   }
 
   if (info[1]->IsString()) {
-    baton->ca_path = info[1]->ToString();
+    String::Utf8Value str(info[1]->ToString());
+    baton->ca_path = *str;
   }
 
   Nan::Callback *callback;
@@ -80,7 +83,7 @@ void GitLibgit2::SetSslLocationsWorker::HandleOKCallback()
   {
     Local<v8::Object> err = Nan::Error("Set SSL Locations has thrown an error.")->ToObject();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Libgit2Opts.setSslLocations").ToLocalChecked());
+    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Libgit2.setSslLocations").ToLocalChecked());
     Local<v8::Value> argv[1] = {
       err
     };

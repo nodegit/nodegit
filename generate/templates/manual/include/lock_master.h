@@ -36,20 +36,20 @@ private:
     AddParameters(args...);
   }
 
-  void ConstructorImpl();
+  void ConstructorImpl(bool);
   void DestructorImpl();
   void ObjectToLock(const void *);
   void ObjectsToLockAdded();
 public:
 
   // we lock on construction
-  template<typename ...Types> LockMaster(bool asyncAction, const Types*... types) {
+  template<typename ...Types> LockMaster(bool globalWriteLock, bool asyncAction, const Types*... types) {
     if((status == Disabled) || ((status == EnabledForAsyncOnly) && !asyncAction)) {
       impl = NULL;
       return;
     }
 
-    ConstructorImpl();
+    ConstructorImpl(globalWriteLock);
     AddParameters(types...);
     ObjectsToLockAdded();
   }

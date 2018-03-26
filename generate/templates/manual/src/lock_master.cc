@@ -32,6 +32,9 @@ class LockMasterImpl {
   // A libuv key used to store the current thread-specific LockMasterImpl instance
   static uv_key_t currentLockMasterKey;
 
+  // A libuv read-write lock used for mananging global locks
+  static uv_rwlock_t globalRwLock;
+
   // Cleans up any mutexes that are not currently used
   static NAN_GC_CALLBACK(CleanupMutexes);
 
@@ -41,6 +44,9 @@ public:
   // INSTANCE variables / methods
 
 private:
+  // Should this instance use the global write lock or just a read lock?
+  bool globalWriteLock;
+
   // The set of objects this LockMaster is responsible for locking
   std::set<const void *> objectsToLock;
 
@@ -48,14 +54,15 @@ private:
   std::vector<uv_mutex_t *> GetMutexes(int useCountDelta);
   void Register();
   void Unregister();
-
+  void AcquireReadWriteLock();
+  void ReleaseReadWriteLock();
 public:
   static LockMasterImpl *CurrentLockMasterImpl() {
     return (LockMasterImpl *)uv_key_get(&currentLockMasterKey);
   }
   static LockMaster::Diagnostics GetDiagnostics();
 
-  LockMasterImpl() {
+  LockMasterImpl(bool _globalWriteLock) {
     Register();
   }
 
@@ -75,10 +82,12 @@ public:
 std::map<const void *, ObjectInfo> LockMasterImpl::mutexes;
 uv_mutex_t LockMasterImpl::mapMutex;
 uv_key_t LockMasterImpl::currentLockMasterKey;
+uv_rwlock_t LockMasterImpl::globalRwLock;
 
 void LockMasterImpl::Initialize() {
   uv_mutex_init(&mapMutex);
   uv_key_create(&currentLockMasterKey);
+  uv_rwlock_init(&globalRwLock);
   Nan::AddGCEpilogueCallback(CleanupMutexes);
 }
 
@@ -115,6 +124,24 @@ NAN_GC_CALLBACK(LockMasterImpl::CleanupMutexes) {
 
 void LockMaster::Initialize() {
   LockMasterImpl::Initialize();
+}
+
+void LockMasterImpl::AcquireReadWriteLock() {
+  if (globalWriteLock) {
+    uv_rwlock_wrlock(&globalRwLock);
+    return;
+  }
+
+  uv_rwlock_rdlock(&globalRwLock);
+}
+
+void LockMasterImpl::ReleaseReadWriteLock() {
+  if (globalWriteLock) {
+    uv_rwlock_wrunlock(&globalRwLock);
+    return;
+  }
+
+  uv_rwlock_rdunlock(&globalRwLock);
 }
 
 std::vector<uv_mutex_t *> LockMasterImpl::GetMutexes(int useCountDelta) {
@@ -155,6 +182,8 @@ void LockMasterImpl::Unregister() {
 }
 
 void LockMasterImpl::Lock(bool acquireMutexes) {
+  AcquireReadWriteLock();
+
   std::vector<uv_mutex_t *> objectMutexes = GetMutexes(acquireMutexes * 1);
 
   auto alreadyLocked = objectMutexes.end();
@@ -191,6 +220,8 @@ void LockMasterImpl::Lock(bool acquireMutexes) {
 }
 
 void LockMasterImpl::Unlock(bool releaseMutexes) {
+  ReleaseReadWriteLock();
+
   // Get the mutexes but don't decrement their use count until after we've
   // unlocked them all.
   std::vector<uv_mutex_t *> objectMutexes = GetMutexes(0);
@@ -210,8 +241,8 @@ LockMaster::Diagnostics LockMasterImpl::GetDiagnostics() {
 
 // LockMaster
 
-void LockMaster::ConstructorImpl() {
-  impl = new LockMasterImpl();
+void LockMaster::ConstructorImpl(bool globalWriteLock) {
+  impl = new LockMasterImpl(globalWriteLock);
 }
 
 void LockMaster::DestructorImpl() {
