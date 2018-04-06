@@ -24,10 +24,11 @@ describe("Tag", function() {
     assert.equal(tag.targetType(), Obj.TYPE.COMMIT);
     assert.equal(tag.message(), tagMessage);
 
-    var target = tag.target();
-
-    assert.ok(target.isCommit());
-    assert.equal(target.id().toString(), commitPointedTo);
+    return tag.target()
+      .then(function(target) {
+        assert.ok(target.isCommit());
+        assert.equal(target.id().toString(), commitPointedTo);
+      });
   }
 
   beforeEach(function() {
@@ -42,21 +43,21 @@ describe("Tag", function() {
   it("can get a tag from a repo via the tag name", function() {
     return this.repository.getTagByName(tagName)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
   it("can get a tag from a repo via the long tag name", function() {
     return this.repository.getTagByName(tagFullName)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
   it("can get a tag from a repo via the tag's OID as a string", function() {
     return this.repository.getTag(tagOid)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
@@ -65,7 +66,7 @@ describe("Tag", function() {
 
     return this.repository.getTag(oid)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
@@ -87,7 +88,7 @@ describe("Tag", function() {
 
     return repository.createTag(oid, name, tagMessage)
       .then(function(tag) {
-        testTag(tag, name);
+        return testTag(tag, name);
       })
       .then(function() {
         return repository.createTag(oid, name, tagMessage);
@@ -167,8 +168,8 @@ describe("Tag", function() {
         return repository.getTag(oid);
       })
       .then(function(tag) {
-        testTag(tag, name);
         assert(tag.tagger(), signature);
+        return testTag(tag, name);
       })
       .then(function() {
         // overwriting is okay
