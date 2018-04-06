@@ -95,14 +95,21 @@
             "value_out": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_attr_get_many": {
+          "isAsync": true,
           "args": {
             "values_out": {
               "isReturn": true,
               "jsClassName": "Array"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         }
       }
@@ -139,6 +146,9 @@
               "cppClassName": "Buffer",
               "jsClassName": "Buffer"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_blob_create_fromworkdir": {
@@ -475,6 +485,9 @@
             "update_ref": {
               "isOptional": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_commit_author": {
@@ -1475,6 +1488,9 @@
     },
     "mempack": {
       "functions": {
+        "git_mempack_dump": {
+          "ignore": true
+        },
         "git_mempack_new": {
           "ignore": true
         },
@@ -1556,6 +1572,9 @@
     "message": {
       "functions": {
         "git_message_prettify": {
+          "ignore": true
+        },
+        "git_message_trailers": {
           "ignore": true
         }
       }
@@ -1814,6 +1833,9 @@
         "git_patch_free": {
           "ignore": true
         },
+        "git_patch_from_blob_and_buffer": {
+          "ignore": true
+        },
         "git_patch_from_buffers": {
           "ignore": true
         },
@@ -2030,7 +2052,10 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_reference_next": {
           "ignore": true
@@ -2184,7 +2209,10 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_get_push_refspecs": {
           "args": {
@@ -2197,7 +2225,10 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_get_refspec": {
           "return": {
@@ -2533,10 +2564,10 @@
             "status_flags": {
               "isReturn": true,
               "shouldAlloc": true
-            },
-            "return": {
-              "isErrorCode": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_status_foreach": {
@@ -2783,7 +2814,10 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_tag_tagger": {
           "return": {
@@ -2791,10 +2825,14 @@
           }
         },
         "git_tag_target": {
+          "isAsync": true,
           "args": {
             "target_out": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_tag_target_id": {
@@ -2814,7 +2852,10 @@
               "isReturn": true
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
@@ -2822,8 +2863,17 @@
       "dupFunction": "git_time_dup",
       "dependencies": [
         "git2/sys/time.h"
-      ]
-
+      ],
+      "fields": {
+        "sign": {
+          "ignore": true
+        }
+      },
+      "functions": {
+        "git_time_sign": {
+          "ignore": true
+        }
+      }
     },
     "trace": {
       "functions": {
@@ -2916,10 +2966,14 @@
           }
         },
         "git_treebuilder_write": {
+          "isAsync": true,
           "args": {
             "id": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_treebuilder_write_with_buffer": {

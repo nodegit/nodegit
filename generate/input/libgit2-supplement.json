@@ -86,6 +86,30 @@
   },
   "new" : {
     "functions": {
+      "git_branch_remote_name": {
+        "type": "function",
+        "file": "branch.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_buf *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "canonical_branch_name",
+            "type": "const char *"
+          }
+        ],
+        "isAsync": true,
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        },
+        "group": "branch"
+      },
       "git_commit_extract_signature": {
         "args": [
           {
@@ -804,6 +828,61 @@
             ]
           }
         }
+      ],
+      [
+        "git_worktree_add_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "int",
+              "name": "lock"
+            }
+          ]
+        }
+      ],
+      [
+        "git_worktree_prune_t",
+        {
+          "type": "enum",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "git_worktree_prune_valid",
+              "value": 1
+            },
+            {
+              "type": "unsigned int",
+              "name": "git_worktree_prune_locked",
+              "value": 2
+            },
+            {
+              "type": "unsigned int",
+              "name": "git_worktree_prune_working_tree",
+              "value": 4
+            }
+          ]
+        }
+      ],
+      [
+        "git_worktree_prune_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "uint32_t",
+              "name": "flags"
+            }
+          ]
+        }
       ]
     ]
   },
@@ -840,6 +919,11 @@
         "git_merge_head_from_id",
         "git_merge_head_from_ref",
         "git_merge_head_id"
+      ]
+    },
+    "message": {
+      "functions": [
+        "git_message_trailer_array_free"
       ]
     },
     "odb": {
@@ -881,6 +965,9 @@
     }
   },
   "groups": {
+    "branch": [
+      "git_branch_remote_name"
+    ],
     "stash": [
       "git_stash_save"
     ]

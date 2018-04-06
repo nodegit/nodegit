@@ -1,5 +1,6 @@
 const fse = require("fs-extra");
 const walk = require("walk");
+const _ = require('lodash');
 
 const fs = require("fs");
 const path = require("path");
@@ -62,13 +63,7 @@ var util = {
     }).join("");
   },
 
-  camelCase: function(str) {
-    return str.split(/_|\//).map(function(val, index) {
-      return (index >= 1
-        ? val[0].toUpperCase() + val.slice(1)
-        : val[0].toLowerCase() + val.slice(1));
-    }).join("");
-  },
+  camelCase: _.camelCase,
 
   getFilePathsRelativeToDir: function(dir) {
     const files = [];
