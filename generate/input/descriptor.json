@@ -3011,6 +3011,22 @@
         }
       }
     },
+    "worktree": {
+      "selfFreeing": true,
+      "cType": "git_worktree",
+      "freeFunctionName": "git_worktree_free",
+      "functions": {
+        "git_worktree_free": {
+          "ignore": true
+        },
+        "git_worktree_add_init_options": {
+          "ignore": true
+        },
+        "git_worktree_prune_init_options": {
+          "ignore": true
+        }
+      }
+    },
     "writestream": {
       "cType": "git_writestream",
       "needsForwardDeclaration": false
