@@ -62,9 +62,9 @@
   {%elsif cppClassName|isV8Value %}
 
     {%if cType|isPointer %}
-  *from_{{ name }} = ({{ cType|unPointer }}) {{ cast }} {%if isEnum %}(int){%endif%} info[{{ jsArg }}]->To{{ cppClassName }}()->Value();
+      *from_{{ name }} = ({{ cType|unPointer }}) {{ cast }} {%if isEnum %}(int){%endif%} info[{{ jsArg }}].As<v8::{{ cppClassName }}>()->Value();
     {%else%}
-  from_{{ name }} = ({{ cType }}) {{ cast }} {%if isEnum %}(int){%endif%} info[{{ jsArg }}]->To{{ cppClassName }}()->Value();
+      from_{{ name }} = ({{ cType }}) {{ cast }} {%if isEnum %}(int){%endif%} info[{{ jsArg }}].As<v8::{{ cppClassName }}>()->Value();
     {%endif%}
   {%elsif cppClassName == 'GitOid'%}
   if (info[{{ jsArg }}]->IsString()) {

@@ -89,7 +89,7 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
       Nan::Null(),
       result
     };
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
 
     return;
   }
@@ -106,7 +106,7 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
     Local<v8::Value> argv[1] = {
       err
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
     if (baton->error->message)
     {
       free((void *)baton->error->message);
@@ -124,7 +124,7 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
     Local<v8::Value> argv[1] = {
       err
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
 
     return;
   }

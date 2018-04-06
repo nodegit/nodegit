@@ -115,14 +115,14 @@ void GitCommit::ExtractSignatureWorker::HandleOKCallback()
       Nan::Null(),
       result
     };
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
   }
   else if (baton->error)
   {
     Local<v8::Value> argv[1] = {
       Nan::Error(baton->error->message)
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
     if (baton->error->message)
     {
       free((void *)baton->error->message);
@@ -138,11 +138,11 @@ void GitCommit::ExtractSignatureWorker::HandleOKCallback()
     Local<v8::Value> argv[1] = {
       err
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
   }
   else
   {
-    callback->Call(0, NULL);
+    callback->Call(0, NULL, async_resource);
   }
 
   git_buf_free(&baton->signature);

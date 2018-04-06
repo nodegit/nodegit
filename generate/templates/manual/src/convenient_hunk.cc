@@ -135,7 +135,7 @@ void ConvenientHunk::LinesWorker::HandleOKCallback() {
     Nan::Null(),
     result
   };
-  callback->Call(2, argv);
+  callback->Call(2, argv, async_resource);
 }
 
 NAN_METHOD(ConvenientHunk::OldStart) {

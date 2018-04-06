@@ -36,7 +36,7 @@
   "dependencies": {
     "fs-extra": "~0.27.0",
     "lodash": "^4.13.1",
-    "nan": "^2.9.2",
+    "nan": "^2.10.0",
     "node-gyp": "^3.6.2",
     "node-pre-gyp": "~0.6.39",
     "promisify-node": "~0.3.0"
