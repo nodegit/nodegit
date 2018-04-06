@@ -13,6 +13,7 @@ describe("Tag", function() {
 
   var reposPath = local("../repos/workdir");
   var tagName = "annotated-tag";
+  var tagPattern = "annotated*";
   var tagFullName = "refs/tags/" + tagName;
   var tagOid = "dc800017566123ff3c746b37284a24a66546667e";
   var commitPointedTo = "32789a79e71fbc9e04d3eff7425e1771eb595150";
@@ -76,6 +77,13 @@ describe("Tag", function() {
           return tagNameTest == tagName;
         });
 
+        assert.equal(tagNames.length, 1);
+      });
+  });
+
+  it("can list tags of a pattern in a repo", function() {
+    return Tag.listMatch(tagPattern, this.repository)
+      .then(function(tagNames) {
         assert.equal(tagNames.length, 1);
       });
   });
