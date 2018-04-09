@@ -12,7 +12,7 @@ NAN_METHOD(GitRevwalk::FastWalk)
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->max_count = (unsigned int)info[0]->ToNumber()->Value();
+  baton->max_count = Nan::To<unsigned int>(info[0]).FromJust();
   baton->out = new std::vector<git_oid*>;
   baton->out->reserve(baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
@@ -82,7 +82,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       Nan::Null(),
       result
     };
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
   }
   else
   {
@@ -99,7 +99,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       Local<v8::Value> argv[1] = {
         err
       };
-      callback->Call(1, argv);
+      callback->Call(1, argv, async_resource);
       if (baton->error->message)
       {
         free((void *)baton->error->message);
@@ -139,7 +139,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
           Local<v8::Value> argv[1] = {
             checkValue->ToObject()
           };
-          callback->Call(1, argv);
+          callback->Call(1, argv, async_resource);
           callbackFired = true;
           break;
         }
@@ -164,12 +164,12 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
         Local<v8::Value> argv[1] = {
           err
         };
-        callback->Call(1, argv);
+        callback->Call(1, argv, async_resource);
       }
     }
     else
     {
-      callback->Call(0, NULL);
+      callback->Call(0, NULL, async_resource);
     }
   }
 }

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "../include/promise_completion.h"
 
 Nan::Persistent<v8::Function> PromiseCompletion::newFn;
@@ -19,7 +20,7 @@ bool PromiseCompletion::ForwardIfPromise(v8::Local<v8::Value> result, AsyncBaton
   Nan::HandleScope scope;
 
   // check if the result is a promise
-  if (result->IsObject()) {
+  if (!result.IsEmpty() && result->IsObject()) {
     Nan::MaybeLocal<v8::Value> maybeThenProp = Nan::Get(result->ToObject(), Nan::New("then").ToLocalChecked());
     if (!maybeThenProp.IsEmpty()) {
       v8::Local<v8::Value> thenProp = maybeThenProp.ToLocalChecked();

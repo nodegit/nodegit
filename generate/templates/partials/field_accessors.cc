@@ -122,7 +122,7 @@
           {% endeach %});
         {% endif %}
       }
-      
+
       {{ field.return.type }} {{ cppClassName }}::{{ field.name }}_cppCallback (
         {% each field.args|argsInfo as arg %}
           {{ arg.cType }} {{ arg.name}}{% if not arg.lastArg %},{% endif %}
@@ -136,7 +136,7 @@
         {% endeach %}
 
         {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
-        
+
         {% if field.return.type == "void" %}
           if (instance->{{ field.name }}.WillBeThrottled()) {
             delete baton;
@@ -163,7 +163,7 @@
           return result;
         {% endif %}
       }
-      
+
 
       void {{ cppClassName }}::{{ field.name }}_async(void *untypedBaton) {
         Nan::HandleScope scope;
@@ -191,7 +191,7 @@
               v8::Local<v8::Value> src;
               if (baton->{{ arg.name }} == NULL) {
                   src = Nan::Null();
-              } 
+              }
               else {
                 src = Nan::New<String>(*baton->{{ arg.name }}).ToLocalChecked();
               }
@@ -204,7 +204,7 @@
             v8::Local<Value> *argv = NULL;
           {% else %}
             v8::Local<Value> argv[{{ field.args|jsArgsCount|subtract 2| setUnsigned }}] = {
-          {% endif %}  
+          {% endif %}
         {% else %}
           v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
         {% endif %}
@@ -258,16 +258,22 @@
 
         Nan::TryCatch tryCatch;
 
+        // TODO This should take an async_resource, but we will need to figure out how to pipe the correct context into this
         {% if field.isSelfReferential %}
-          v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount|subtract 2| setUnsigned }}, argv);
+          Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*(instance->{{ field.name }}.GetCallback()), {{ field.args|jsArgsCount|subtract 2| setUnsigned }}, argv);
         {% else  %}
-          v8::Local<v8::Value> result = instance->{{ field.name }}.GetCallback()->Call({{ field.args|jsArgsCount }}, argv);
+          Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*(instance->{{ field.name }}.GetCallback()), {{ field.args|jsArgsCount }}, argv);
         {% endif %}
+
+        v8::Local<v8::Value> result;
+        if (!maybeResult.IsEmpty()) {
+          result = maybeResult.ToLocalChecked();
+        }
 
         if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppClassName }}::{{ field.name }}_promiseCompleted)) {
           return;
         }
-        
+
         {% if field.return.type == "void" %}
           baton->Done();
         {% else %}
@@ -284,7 +290,7 @@
               baton->result = {{ field.return.success }};
               {% else %}
               if (result->IsNumber()) {
-                baton->result = (int)result->ToNumber()->Value();
+                baton->result = Nan::To<int>(result).FromJust();
               }
               else {
                 baton->result = baton->defaultResult;
@@ -320,7 +326,7 @@
                 baton->result = {{ field.return.success }};
                 {% else %}
                 if (result->IsNumber()) {
-                  baton->result = (int)result->ToNumber()->Value();
+                  baton->result = Nan::To<int>(result).FromJust();
                 }
                 else{
                   baton->result = baton->defaultResult;

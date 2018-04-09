@@ -65,11 +65,13 @@ describe("TreeBuilder", function(){
       .then(function(rootTreeBuilder){
         //new dir builder
         return Git.Treebuilder.create(test.repo, null)
-        .then(function(newTreeBuilder){
-          //insert new dir
+        .then(function(newTreeBuilder) {
+          return newTreeBuilder.write();
+        })
+        .then(function(oid) {
           return rootTreeBuilder.insert(
             "mynewfolder",
-            newTreeBuilder.write(),
+            oid,
             Git.TreeEntry.FILEMODE.TREE
           );
         });

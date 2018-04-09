@@ -268,7 +268,7 @@ void ConvenientPatch::HunksWorker::HandleOKCallback() {
     Nan::Null(),
     result
   };
-  callback->Call(2, argv);
+  callback->Call(2, argv, async_resource);
 }
 
 NAN_METHOD(ConvenientPatch::LineStats) {

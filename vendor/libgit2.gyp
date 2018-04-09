@@ -74,11 +74,13 @@
         "libgit2/src/config_cache.c",
         "libgit2/src/config_file.c",
         "libgit2/src/config_file.h",
+        "libgit2/src/config_parse.c",
+        "libgit2/src/config_parse.h",
         "libgit2/src/config.c",
         "libgit2/src/config.h",
         "libgit2/src/crlf.c",
-        "libgit2/src/curl_stream.c",
-        "libgit2/src/curl_stream.h",
+        "libgit2/src/streams/curl.c",
+        "libgit2/src/streams/curl.h",
         "libgit2/src/date.c",
         "libgit2/src/delta.c",
         "libgit2/src/delta.h",
@@ -162,12 +164,14 @@
         "libgit2/src/oidarray.h",
         "libgit2/src/oidmap.c",
         "libgit2/src/oidmap.h",
-        "libgit2/src/openssl_stream.c",
-        "libgit2/src/openssl_stream.h",
+        "libgit2/src/streams/openssl.c",
+        "libgit2/src/streams/openssl.h",
         "libgit2/src/pack-objects.c",
         "libgit2/src/pack-objects.h",
         "libgit2/src/pack.c",
         "libgit2/src/pack.h",
+        "libgit2/src/parse.c",
+        "libgit2/src/parse.h",
         "libgit2/src/patch_generate.c",
         "libgit2/src/patch_generate.h",
         "libgit2/src/patch_parse.c",
@@ -213,8 +217,8 @@
         "libgit2/src/sha1_lookup.h",
         "libgit2/src/signature.c",
         "libgit2/src/signature.h",
-        "libgit2/src/socket_stream.c",
-        "libgit2/src/socket_stream.h",
+        "libgit2/src/streams/socket.c",
+        "libgit2/src/streams/socket.h",
         "libgit2/src/sortedcache.c",
         "libgit2/src/sortedcache.h",
         "libgit2/src/stash.c",
@@ -233,6 +237,7 @@
         "libgit2/src/thread-utils.h",
         "libgit2/src/trace.c",
         "libgit2/src/trace.h",
+        "libgit2/src/trailer.c",
         "libgit2/src/transaction.c",
         "libgit2/src/transport.c",
         "libgit2/src/transports/auth.c",
@@ -286,8 +291,8 @@
                 "GIT_USE_STAT_MTIMESPEC"
             ],
             "sources": [
-                "libgit2/src/stransport_stream.c",
-                "libgit2/src/stransport_stream.h"
+                "libgit2/src/streams/stransport.c",
+                "libgit2/src/streams/stransport.h"
             ],
             "link_settings": {
                 "xcode_settings": {
@@ -308,8 +313,8 @@
           ],
           "sources": [
             "libgit2/src/hash/hash_openssl.h",
-            "libgit2/src/tls_stream.c",
-            "libgit2/src/tls_stream.h"
+            "libgit2/src/streams/tls.c",
+            "libgit2/src/streams/tls.h"
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd')" , {

@@ -18,7 +18,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   baton->error = NULL;
   String::Utf8Value from_js_file_path(info[0]->ToString());
   baton->file_path = strdup(*from_js_file_path);
-  baton->max_count = (unsigned int)info[1]->ToNumber()->Value();
+  baton->max_count = Nan::To<unsigned int>(info[1]).FromJust();
   baton->out = new std::vector< std::pair<git_commit *, std::pair<char *, git_delta_t> > *>;
   baton->out->reserve(baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
@@ -282,7 +282,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
       Nan::Null(),
       result
     };
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
 
     delete baton->out;
     return;
@@ -300,7 +300,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     Local<v8::Value> argv[1] = {
       err
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
     if (baton->error->message)
     {
       free((void *)baton->error->message);
@@ -317,9 +317,9 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     Local<v8::Value> argv[1] = {
       err
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
     return;
   }
 
-  callback->Call(0, NULL);
+  callback->Call(0, NULL, async_resource);
 }

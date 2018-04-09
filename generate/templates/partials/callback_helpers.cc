@@ -54,7 +54,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
   };
 
   Nan::TryCatch tryCatch;
-  v8::Local<v8::Value> result = callback->Call({{ cbFunction.args|jsArgsCount }}, argv);
+  // TODO This should take an async_resource, but we will need to figure out how to pipe the correct context into this
+  Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*callback, {{ cbFunction.args|jsArgsCount }}, argv);
+  v8::Local<v8::Value> result;
+  if (!maybeResult.IsEmpty()) {
+    result = maybeResult.ToLocalChecked();
+  }
 
   if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted)) {
     return;
@@ -73,7 +78,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
       baton->result = {{ cbFunction.return.success }};
       {% else %}
       if (result->IsNumber()) {
-        baton->result = (int)result->ToNumber()->Value();
+        baton->result = Nan::To<int>(result).FromJust();
       }
       else {
         baton->result = baton->defaultResult;
@@ -107,7 +112,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseComp
         baton->result = {{ cbFunction.return.success }};
         {% else %}
         if (result->IsNumber()) {
-          baton->result = (int)result->ToNumber()->Value();
+          baton->result = Nan::To<int>(result).FromJust();
         }
         else {
           baton->result = baton->defaultResult;
