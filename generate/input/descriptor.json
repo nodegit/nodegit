@@ -524,7 +524,27 @@
           }
         },
         "git_commit_create_buffer": {
-          "ignore": true
+          "args": {
+            "out": {
+              "isReturn": true,
+              "cppClassName": "GitBuf",
+              "jsClassName": "Buffer",
+              "shouldAlloc": true
+            },
+            "message_encoding": {
+              "isOptional": true
+            },
+            "parents": {
+              "cType": "const git_commit **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitCommit"
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_commit_create_from_callback": {
           "ignore": true
