@@ -19,6 +19,10 @@
     {
       "name": "Max Korp",
       "email": "maxkorp@8bytealchemy.com"
+    },
+    {
+      "name": "Tyler Ang-Wanek",
+      "email": "tylerw@axosoft.com"
     }
   ],
   "main": "dist/nodegit.js",
