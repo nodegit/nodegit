@@ -1,5 +1,52 @@
 # Change Log
 
+## <a name="v0-22-0" href="#v0-22-0">v0.22.0</a> [(2018-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.22.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.2...v0.22.0)
+
+#### Summary of changes
+- Expose [Tag.listMatch](https://libgit2.github.com/libgit2/#v0.26.3/group/tag/git_tag_list_match)
+- Expose [Repo.prototype.createCommitBuffer](https://libgit2.github.com/libgit2/#v0.26.3/group/commit/git_commit_create_buffer)
+- Bump Libgt2 to 0.27.0. For more information about what was in this release. [Check upstream](https://github.com/libgit2/libgit2/releases/tag/v0.27.0).
+- Errors are now properly thrown from
+  - `Attr.prototype.get`
+  - `Blob.createFrombuffer`
+  - `Blob.createFromworkdir`
+  - `Reference.list`
+  - `Remote.prototype.getFetchRefspecs`
+  - `Remote.prototype.getPushRefspecs`
+  - `Status.file`
+- WorkTree is now exposed
+  - Static methods
+    - `add`
+    - `list`
+    - `lookup`
+    - `openFromRepository`
+  - Instance methods
+    - `isLocked`
+    - `isPrunable`
+    - `lock`
+    - `prune`
+    - `unlock`
+    - `validate`
+- **BREAKING** Functions that are now async
+  - `Attr.prototype.getMany`
+  - `Tag.prototype.target`
+  - `Treebuilder.prototype.Write`
+- **BREAKING** Diffs generated from `Diff.treeToIndex` and `Diff.treeToWorkdirWithIndex` conditionally support `Diff.OPTION.IGNORE_CASE`. Only on repositories where the index is case insensitive will the flag be set on the output diff. The flag itself is ignored when passed to `DiffOptions`.
+
+#### Merged PRs into NodeGit
+- [Add JavaScript Tag.listMatch function for git_tag_list_match #1470](https://github.com/nodegit/nodegit/pull/1470)
+- [Expose error code in Status.file #1468](https://github.com/nodegit/nodegit/pull/1468)
+- [Travis documentation deploy fixes #1466](https://github.com/nodegit/nodegit/pull/1466)
+- [Bump to libgit2 v0.27.0 #1477](https://github.com/nodegit/nodegit/pull/1477)
+- [Add repo.createCommitBuffer #1481](https://github.com/nodegit/nodegit/pull/1481)
+
+#### Included non-merged libgit2 PRs:
+ - [Parallelize checkout_create_the_new for ntfs perf gains #4205](https://github.com/libgit2/libgit2/pull/4205)
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+
+
 ## <a name="v0-21-2" href="#v0-21-2">v0.21.2</a> [(2018-03-19)](https://github.com/nodegit/nodegit/releases/tag/v0.21.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.1...v0.21.2)
