@@ -95,7 +95,7 @@ script:
     fi
 
 after_success:
-  - if [ -n "$TRAVIS_TAG" ]; then
+  - if [ -n "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" != "true" ] && [ "$DEPLOY_DOCUMENTATION" != "true" ]; then
       npm install -g node-pre-gyp;
       npm install -g aws-sdk;
       node lifecycleScripts/clean;
@@ -103,7 +103,7 @@ after_success:
       node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ -n "$TRAVIS_TAG" ] && [ "$DEPLOY_DOCUMENTATION" == "true" ]; then
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ -n "$TRAVIS_TAG" ] && [ "$DEPLOY_DOCUMENTATION" == "true" ]; then
       .travis/deploy-docs.sh;
     fi
 
