@@ -13,23 +13,23 @@ var config = {
 	}
 };
 
-var entry;
-
-nodegit.Clone("https://github.com/nodegit/nodegit.git", path, config).then(function(repo){
-	console.log(1);
-	var p = Promise.resolve();
-	nodegit.Submodule.foreach(repo, function(submodule){
-		submodule.update(1, config);
-		p = p.then(function(){
-			return new Promise(function(resolve, reject){
-				submodule.update(1, config).then(resolve, reject);
+nodegit.Clone("https://github.com/nodegit/nodegit.git", path, config)
+	.then(function(repo){
+		console.log(1);
+		var p = Promise.resolve();
+		nodegit.Submodule.foreach(repo, function(submodule){
+			submodule.update(1, config);
+			p = p.then(function(){
+				return new Promise(function(resolve, reject){
+					submodule.update(1, config).then(resolve, reject);
+				});
+			});
+		}).then(function(){
+			p.then(function(){
+				console.log("Cloned!");
+			},function(error){
+				console.error(error);
 			});
 		});
-	}).then(function(){
-		p.then(function(){
-			console.log("Cloned!");
-		},function(error){
-			console.error(error);
-		});
-	});
-}).catch(console.log);
+	})
+	.catch(console.log);
