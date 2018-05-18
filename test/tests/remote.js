@@ -129,6 +129,37 @@ describe("Remote", function() {
       });
   });
 
+  it("can monitor transfer progress while pushing", function() {
+    var repo = this.repository;
+    var wasCalled = false;
+
+    return Remote.create(repo, "test2", url2)
+      .then(function(remote) {
+        var fetchOpts = {
+          callbacks: {
+            credentials: function(url, userName) {
+              return NodeGit.Cred.sshKeyFromAgent(userName);
+            },
+            certificateCheck: function() {
+              return 1;
+            },
+            pushTransferProgress: function() {
+              wasCalled = true;
+            }
+          }
+        };
+
+        var ref = "refs/heads/master";
+        var refs = [ref + ":" + ref];
+        return remote.push(refs, fetchOpts);
+      })
+      .then(function() {
+        assert.ok(wasCalled);
+
+        return Remote.delete(repo, "test2");
+      });
+  });
+
   it("can monitor transfer progress while downloading", function() {
     // Set a reasonable timeout here now that our repository has grown.
     this.timeout(600000);
