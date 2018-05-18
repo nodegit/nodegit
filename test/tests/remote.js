@@ -133,6 +133,9 @@ describe("Remote", function() {
     var repo = this.repository;
     var wasCalled = false;
 
+    // NOTE: This doesn't work, the credentials callback fails.
+    // Did manage to get it working by setting up a local bare repo and pushing to it.
+
     return Remote.create(repo, "test2", url2)
       .then(function(remote) {
         var fetchOpts = {
