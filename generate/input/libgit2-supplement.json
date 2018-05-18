@@ -699,6 +699,10 @@
               "name": "transfer_progress"
             },
             {
+              "type": "git_push_transfer_progress",
+              "name": "push_transfer_progress"
+            },
+            {
               "type": "git_transport_cb",
               "name": "transport",
               "ignore": true

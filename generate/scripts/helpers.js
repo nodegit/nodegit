@@ -85,6 +85,11 @@ var Helpers = {
   },
 
   isCallbackFunction: function(cType) {
+    // TODO: Fix this
+    if (cType === 'git_push_transfer_progress') {
+      return true;
+    }
+
     return callbackTypePattern.test(cType);
   },
 

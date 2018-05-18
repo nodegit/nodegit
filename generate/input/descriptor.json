@@ -2311,9 +2311,6 @@
         "push_negotiation": {
           "ignore": true
         },
-        "push_transfer_progress": {
-          "ignore": true
-        },
         "sideband_progress": {
           "ignore": true
         },
@@ -2916,6 +2913,9 @@
       }
     },
     "transfer_progress": {
+      "dupFunction": "git_transfer_progress_dup"
+    },
+    "push_transfer_progress": {
       "dupFunction": "git_transfer_progress_dup"
     },
     "transport": {
