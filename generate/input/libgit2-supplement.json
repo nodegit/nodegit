@@ -699,7 +699,7 @@
               "name": "transfer_progress"
             },
             {
-              "type": "git_push_transfer_progress",
+              "type": "git_push_transfer_progress_cb",
               "name": "push_transfer_progress"
             },
             {

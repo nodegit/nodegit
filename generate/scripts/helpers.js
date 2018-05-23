@@ -85,12 +85,6 @@ var Helpers = {
   },
 
   isCallbackFunction: function(cType) {
-    // NOTE: Added this just to get it working, I'm not sure how else to get
-    // around this, as the fieldOverrides are applied after this.
-    if (cType === 'git_push_transfer_progress') {
-      return true;
-    }
-
     return callbackTypePattern.test(cType);
   },
 
