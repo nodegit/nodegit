@@ -49,14 +49,15 @@ var RepositorySetup = {
 	},
 
 	createRepository:
-	function createRepository(repoPath){
+	function createRepository(repoPath, isBare){
 		// Create a new repository in a clean directory
 		return fse.remove(repoPath)
 		.then(function() {
 			return fse.ensureDir(repoPath);
 		})
 		.then(function() {
-			return NodeGit.Repository.init(repoPath, 0);
+			var bare = typeof isBare !== "undefined" ? isBare : 0;
+			return NodeGit.Repository.init(repoPath, bare);
 		});
 	},
 

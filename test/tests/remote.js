@@ -5,6 +5,7 @@ var _ = require("lodash");
 var fp = require("lodash/fp");
 
 var garbageCollect = require("../utils/garbage_collect.js");
+var RepoUtils = require("../utils/repository_setup");
 
 describe("Remote", function() {
   var NodeGit = require("../../");
@@ -12,6 +13,7 @@ describe("Remote", function() {
   var Remote = NodeGit.Remote;
 
   var reposPath = local("../repos/workdir");
+  var bareReposPath = local("../repos/bare");
   var url = "https://github.com/nodegit/test";
   var url2 = "https://github.com/nodegit/test2";
   var privateUrl = "git@github.com:nodegit/private";
@@ -133,34 +135,33 @@ describe("Remote", function() {
     var repo = this.repository;
     var wasCalled = false;
 
-    // NOTE: This doesn't work, the credentials callback fails.
-    // Did manage to get it working by setting up a local bare repo and pushing to it.
-
-    return Remote.create(repo, "test2", url2)
-      .then(function(remote) {
-        var fetchOpts = {
-          callbacks: {
-            credentials: function(url, userName) {
-              return NodeGit.Cred.sshKeyFromAgent(userName);
-            },
-            certificateCheck: function() {
-              return 1;
-            },
-            pushTransferProgress: function() {
-              wasCalled = true;
-            }
-          }
-        };
-
-        var ref = "refs/heads/master";
-        var refs = [ref + ":" + ref];
-        return remote.push(refs, fetchOpts);
-      })
+    return RepoUtils.createRepository(bareReposPath, 1)
       .then(function() {
-        assert.ok(wasCalled);
+        return Remote.create(repo, "bare", bareReposPath)
+          .then(function(remote) {
+            var fetchOpts = {
+              callbacks: {
+                credentials: function(url, userName) {
+                  return 1;
+                },
+                certificateCheck: function() {
+                  return 1;
+                },
+                pushTransferProgress: function(a, b, c) {
+                  wasCalled = true;
+                }
+              }
+            };
 
-        return Remote.delete(repo, "test2");
-      });
+            var ref = "refs/heads/master";
+            var refs = [ref + ":" + ref];
+
+            return remote.push(refs, fetchOpts)
+            .then(function(res) {
+              assert.ok(wasCalled);
+            });
+          });
+        });
   });
 
   it("can monitor transfer progress while downloading", function() {
