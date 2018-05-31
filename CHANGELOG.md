@@ -1,5 +1,14 @@
 # Change Log
 
+## <a name="v0-22-1" href="#v0-22-1">v0.22.1</a> [(2018-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.22.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.0...v0.22.1)
+
+#### Summary of changes
+Bumped libgit2 to 0.27.1 to address security flaw with submodule name validation (CVE-2018-11235, reported by Etienne Stalmans).
+Details can be found here https://github.com/libgit2/libgit2/releases/tag/v0.27.1
+
+
 ## <a name="v0-22-0" href="#v0-22-0">v0.22.0</a> [(2018-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.22.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.2...v0.22.0)
