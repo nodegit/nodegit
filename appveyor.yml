@@ -35,6 +35,7 @@ matrix:
 
 # Get the latest stable version of Node 0.STABLE.latest
 install:
+  - git submodule update --init --recursive
   - ps: Install-Product node $env:nodejs_version $env:platform
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - npm install -g npm
