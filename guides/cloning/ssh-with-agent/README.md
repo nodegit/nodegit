@@ -137,7 +137,7 @@ a function to attempt opening in this case.
 
 ``` javascript
 var errorAndAttemptOpen = function() {
-  return NodeGit.Repository.open(local);
+  return NodeGit.Repository.open(localPath);
 };
 ```
 
