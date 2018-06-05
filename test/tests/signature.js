@@ -41,7 +41,7 @@ describe("Signature", function() {
     assert.equal(when.offset(), -now.getTimezoneOffset());
   });
 
-  it("can get a default signature when no user name is set", function(done) {
+  it("can get a default signature when no user name is set", function() {
     var savedUserName;
     var savedUserEmail;
 
@@ -75,11 +75,9 @@ describe("Signature", function() {
       assert.equal(sig.email(), "unknown@example.com");
     })
     .then(cleanUp)
-    .then(done)
     .catch(function(e) {
-      cleanUp()
+      return cleanUp()
       .then(function() {
-        done(e);
         return Promise.reject(e);
       });
     });
