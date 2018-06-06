@@ -774,6 +774,16 @@ describe("Commit", function() {
     assert.equal(1, this.commit.parentcount());
   });
 
+  it("can fetch a single parent", function() {
+    return this.commit.parent(0).then(function(parent) {
+      assert.strictEqual(parent.sha(),
+                         "ecfd36c80a3e9081f200dfda2391acadb56dac27");
+      // This used to crash due to a missing .repo property on the retrieved
+      // parent.
+      return parent.getTree().then(tree => assert(tree));
+    });
+  });
+
   it("can retrieve and walk a commit tree", function() {
     var commitTreeEntryCount = 0;
     var expectedCommitTreeEntryCount = 198;
