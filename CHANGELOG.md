@@ -1,5 +1,26 @@
 # Change Log
 
+## <a name="v0-22-2" href="#v0-22-2">v0.22.2</a> [(2018-07-10)](https://github.com/nodegit/nodegit/releases/tag/v0.22.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.1...v0.22.2)
+
+#### Summary of changes
+- Bumped libgit2 to 0.27.3 to incorporate security patch. Details can be found here https://github.com/libgit2/libgit2/releases/tag/v0.27.3
+- Also includes changes made in 0.27.2. Details can be found here https://github.com/libgit2/libgit2/releases/tag/v0.27.2
+- Ensure optional params are respected as optional in `NodeGit.Merge.trees`
+
+#### Merged PRs into NodeGit
+- [Fix argument handling in Git.Merge.trees #1507](https://github.com/nodegit/nodegit/pull/1507)
+
+#### Included non-merged libgit2 PRs:
+ - [Parallelize checkout_create_the_new for ntfs perf gains #4205](https://github.com/libgit2/libgit2/pull/4205)
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+
+#### Included merged libgit2 PRs:
+- [Bugfix release v0.27.2 #4632](https://github.com/libgit2/libgit2/pull/4632)
+- [Release v0.27.3 #4717](https://github.com/libgit2/libgit2/pull/4717)
+
+
 ## <a name="v0-22-1" href="#v0-22-1">v0.22.1</a> [(2018-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.22.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.0...v0.22.1)
