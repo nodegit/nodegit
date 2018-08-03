@@ -317,9 +317,40 @@
           "type": "int"
         },
         "group": "stash"
+      },
+      "git_libgit2_set_ssl_locations": {
+        "type": "function",
+        "args": [
+          {
+            "name": "key",
+            "type": "int"
+          },
+          {
+            "name": "ca_info",
+            "type": "char *"
+          },
+          {
+            "name": "ca_path",
+            "type": "char *"
+          }
+        ],
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        },
+        "isManual": true,
+        "cFile": "generate/templates/manual/libgit2/set_ssl_locations.cc",
+        "isAsync": true,
+        "group": "libgit2"
       }
     },
     "groups": [
+      [
+        "libgit2",
+        [
+          "git_libgit2_set_ssl_locations"
+        ]
+      ],
       [
         "annotated_commit",
         [

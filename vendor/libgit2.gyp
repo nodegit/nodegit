@@ -309,6 +309,7 @@
           ],
           "defines": [
             "GIT_CURL",
+            "GIT_OPENSSL",
             "GIT_SHA1_OPENSSL"
           ],
           "sources": [
