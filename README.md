@@ -33,6 +33,8 @@ NodeGit
 
 **Stable (libgit2@v0.27.0): 0.27.0**
 
+> Not compatible with node 10, at the moment. [We're working on it](https://github.com/nodegit/nodegit/issues/1490).
+
 ## Have a problem? Come chat with us! ##
 
 Visit [slack.libgit2.org](http://slack.libgit2.org/) to sign up, then join us in #nodegit.
