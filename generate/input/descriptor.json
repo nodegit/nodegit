@@ -1236,7 +1236,10 @@
               "isReturn": true
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
@@ -2860,7 +2863,10 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_tag_tagger": {
           "return": {
