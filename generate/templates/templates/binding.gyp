@@ -94,7 +94,7 @@
         [
           "OS=='linux' or OS=='mac'", {
             "libraries": [
-              "-lcurl"
+              "<!(curl-config --libs)"
             ]
           }
         ],
