@@ -10,16 +10,16 @@ Cocoa/Objective-C
   https://github.com/karelia/libssh2_sftp-Cocoa-wrapper
 
 Haskell
-  FFI bindings - http://hackage.haskell.org/package/libssh2
+  FFI bindings - https://hackage.haskell.org/package/libssh2
 
 Perl
-  Net::SSH2 - http://search.cpan.org/~rkitover/Net-SSH2-0.45/lib/Net/SSH2.pm
+  Net::SSH2 - https://metacpan.org/pod/Net::SSH2
 
 PHP
-  ssh2 - http://pecl.php.net/package/ssh2 
+  ssh2 - https://pecl.php.net/package/ssh2
 
 Python
-  pylibssh2 - http://www.wallix.org/pylibssh2-project/
+  pylibssh2 - https://pypi.python.org/pypi/pylibssh2
 
 Python-ctypes
 

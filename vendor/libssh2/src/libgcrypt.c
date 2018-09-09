@@ -409,6 +409,9 @@ _libssh2_rsa_sha1_sign(LIBSSH2_SESSION * session,
     }
 
     *signature = LIBSSH2_ALLOC(session, size);
+    if (!*signature) {
+        return -1;
+    }
     memcpy(*signature, tmp, size);
     *signature_len = size;
 

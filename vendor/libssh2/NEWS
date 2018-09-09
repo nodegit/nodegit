@@ -1,5 +1,208 @@
    Changelog for the libssh2 project. Generated with git2news.pl
 
+Version 1.8.0 (25 Oct 2016)
+
+Daniel Stenberg (25 Oct 2016)
+- RELEASE-NOTES: adjusted for 1.8.0
+
+Kamil Dudka (20 Oct 2016)
+- Revert "aes: the init function fails when OpenSSL has AES support"
+  
+  This partially reverts commit f4f2298ef3635acd031cc2ee0e71026cdcda5864
+  because it caused the compatibility code to call initialization routines
+  redundantly, leading to memory leakage with OpenSSL 1.1 and broken curl
+  test-suite in Fedora:
+  
+  88 bytes in 1 blocks are definitely lost in loss record 5 of 8
+     at 0x4C2DB8D: malloc (vg_replace_malloc.c:299)
+     by 0x72C607D: CRYPTO_zalloc (mem.c:100)
+     by 0x72A2480: EVP_CIPHER_meth_new (cmeth_lib.c:18)
+     by 0x4E5A550: make_ctr_evp.isra.0 (openssl.c:407)
+     by 0x4E5A8E8: _libssh2_init_aes_ctr (openssl.c:471)
+     by 0x4E5BB5A: libssh2_init (global.c:49)
+
+Daniel Stenberg (19 Oct 2016)
+- [Charles Collicutt brought this change]
+
+  libssh2_wait_socket: Fix comparison with api_timeout to use milliseconds (#134)
+  
+  Fixes #74
+
+- [Charles Collicutt brought this change]
+
+  Set err_msg on _libssh2_wait_socket errors (#135)
+
+- Revert "travis: Test mbedtls too"
+  
+  This reverts commit 3e6de50a24815e72ec5597947f1831f6083b7da8.
+  
+  Travis doesn't seem to support the mbedtls-dev package
+
+- maketgz: support "only" to only update version number locally
+  
+  and fix the date output locale
+
+- configure: make the --with-* options override the OpenSSL default
+  
+  ... previously it would default to OpenSSL even with the --with-[crypto]
+  options used unless you specificly disabled OpenSSL. Now, enabling another
+  backend will automatically disable OpenSSL if the other one is found.
+
+- [Keno Fischer brought this change]
+
+  docs: Add documentation on new cmake/configure options
+
+- [Keno Fischer brought this change]
+
+  configure: Add support for building with mbedtls
+
+- [wildart brought this change]
+
+  travis: Test mbedtls too
+
+- [wildart brought this change]
+
+  crypto: add support for the mbedTLS backend
+  
+  Closes #132
+
+- [wildart brought this change]
+
+  cmake: Add CLEAR_MEMORY option, analogously to that for autoconf
+
+- README.md: fix link typo
+
+- README: markdown version to look nicer on github
+
+Viktor Szakats (5 Sep 2016)
+- [Taylor Holberton brought this change]
+
+  openssl: add OpenSSL 1.1.0 compatibility
+
+Daniel Stenberg (4 Sep 2016)
+- [Antenore Gatta brought this change]
+
+  tests: HAVE_NETINET_IN_H was not defined correctly (#127)
+  
+  Fixes #125
+
+- SECURITY: fix web site typo
+
+- SECURITY: security process
+
+GitHub (14 Aug 2016)
+- [Alexander Lamaison brought this change]
+
+  Basic dockerised test suite.
+  
+  This introduces a test suite for libssh2. It runs OpenSSH in a Docker
+  container because that works well on Windows (via docker-machine) as
+  well as Linux. Presumably it works on Mac too with docker-machine, but
+  I've not tested that.
+  
+  Because the test suite is docker-machine aware, you can also run it
+  against a cloud provider, for more realistic network testing, by setting
+  your cloud provider as your active docker machine. The Appveyor CI setup
+  in this commit does that because Appveyor doesn't support docker
+  locally.
+
+Kamil Dudka (3 Aug 2016)
+- [Viktor Szakats brought this change]
+
+  misc.c: Delete unused static variables
+  
+  Closes #114
+
+Daniel Stenberg (9 Apr 2016)
+- [Will Cosgrove brought this change]
+
+  Merge pull request #103 from willco007/patch-2
+  
+  Fix for security issue CVE-2016-0787
+
+Alexander Lamaison (2 Apr 2016)
+- [Zenju brought this change]
+
+  Fix MSVC 14 compilation errors
+  
+  For _MSC_VER == 1900 these macros are not needed and create problems:
+  
+  
+  
+  1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1925): warning C4005: 'snprintf': macro redefinition (compiling source file libssh2-files\src\mac.c)
+  
+  1> \win32\libssh2_config.h(27): note: see previous definition of 'snprintf' (compiling source file libssh2-files\src\mac.c)
+  
+  1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1927): fatal error C1189: #error: Macro definition of snprintf conflicts with Standard Library function declaration (compiling source file libssh2-files\src\mac.c)
+
+Daniel Stenberg (26 Mar 2016)
+- [Brad Harder brought this change]
+
+  _libssh2_channel_open: speeling error fixed in channel error message
+
+Alexander Lamaison (15 Mar 2016)
+- Link with crypt32.lib on Windows.
+  
+  Makes linking with static OpenSSL work again.  Although it's not
+  required for dynamic OpenSSL, it does no harm.
+  
+  Fixes #98.
+
+- [Craig A. Berry brought this change]
+
+  Tweak VMS help file building.
+  
+  Primarily this is handling cases where top-level files moved into
+  the docs/ directory.  I also corrected a typo and removed the
+  claim that libssh2 is public domain.
+
+- [Craig A. Berry brought this change]
+
+  Build with standard stat structure on VMS.
+  
+  This gets us large file support, is available on any VMS release
+  in the last decade and more, and gives stat other modern features
+  such as 64-bit ino_t.
+
+- [Craig A. Berry brought this change]
+
+  Update vms/libssh2_config.h.
+  
+  VMS does have stdlib.h, gettimeofday(), and OpenSSL.  The latter
+  is appropriate to hard-wire in the configuration because it's
+  installed by default as part of the base operating system and
+  there is currently no libgcrypt port.
+
+- [Craig A. Berry brought this change]
+
+  VMS can't use %zd for off_t format.
+  
+  %z is a C99-ism that VMS doesn't currently have; even though the
+  compiler is C99-compliant, the library isn't quite.  The off_t used
+  for the st_size element of the stat can be 32-bit or 64-bit, so
+  detect what we've got and pick a format accordingly.
+
+- [Craig A. Berry brought this change]
+
+  Normalize line endings in libssh2_sftp_get_channel.3.
+  
+  Somehow it got Windows-style CRLF endings so convert to just LF,
+  for consistency as well as not to confuse tools that will regard
+  the \r as content (e.g. the OpenVMS help librarian).
+
+Dan Fandrich (29 Feb 2016)
+- libgcrypt: Fixed a NULL pointer dereference on OOM
+
+Daniel Stenberg (24 Feb 2016)
+- [Viktor Szakats brought this change]
+
+  url updates, HTTP => HTTPS
+  
+  Closes #87
+
+Dan Fandrich (23 Feb 2016)
+- RELEASE-NOTES: removed some duplicated names
+
 Version 1.7.0 (23 Feb 2016)
 
 Daniel Stenberg (23 Feb 2016)
@@ -807,7 +1010,7 @@ Alexander Lamaison (13 Mar 2015)
       - Without zlib
   
   Conflicts:
-  	README
+          README
 
 - Man man syntax tests fail gracefully if man version is not suitable.
 
@@ -882,18 +1085,18 @@ Guenter Knauf (8 Jan 2015)
 Marc Hoersken (29 Dec 2014)
 - knownhost.c: fix use of uninitialized argument variable wrote
   
-  Detected by clang scan in	line 1195, column 18.
+  Detected by clang scan in       line 1195, column 18.
 
 - examples/x11.c: fix result of operation is garbage or undefined
   
   Fix use of uninitialized structure w_size_bck.
-  Detected by clang scan in	line 386, column 28.
+  Detected by clang scan in       line 386, column 28.
 
 - examples/x11.c: remove dead assigments of some return values
   
   Detected by clang scan in line 212, column 9.
   Detected by clang scan in line 222, column 13.
-  Detected by clang scan in	line 410, column 13.
+  Detected by clang scan in       line 410, column 13.
 
 - examples/x11.c: fix possible memory leak if read fails
   
@@ -5286,145 +5489,3 @@ Simon Josefsson (16 Nov 2009)
   in <http://thread.gmane.org/gmane.network.ssh.libssh2.devel/2530>.
 
 - add copyright line
-
-- support arcfour128 cipher per RFC 4345
-
-Daniel Stenberg (21 Oct 2009)
-- [Cristian Rodríguez brought this change]
-
-  add support for GCC visibility features
-
-Simon Josefsson (19 Oct 2009)
-- less hard coding of cipher mode in libgcrypt backend
-
-Daniel Stenberg (18 Oct 2009)
-- [Juzna brought this change]
-
-  libssh2_channel_forward_accept() and listening fixes
-  
-  The forward accepting was not done right before, and the
-  packet_queue_listener function didn't assign a necessary
-  variable. All fixed by Juzna. I (Daniel) modified the
-  forward_accept() change somewhat.
-
-- added man page for libssh2_knownhost_free
-
-- more CVS => DEV conversions
-
-- remove references to "CVS"
-
-- we are on the 1.2.2 track nowadays
-
-Peter Stuge (17 Oct 2009)
-- Ensure that win32/libssh2.dsp will be generated with CRLF line endings
-  
-  First, win32/msvcproj.{head,foot} are now committed with CRLF line endings,
-  and .gitattributes specifies that these should not be changed on checkout or
-  commit. These are win32 files so it makes sense to store them with native
-  line endings.
-  
-  Second, the rules for generating libssh2.dsp and libssh2.vcproj are changed
-  so that the full file contents passes through awk, which strips all CR and
-  then prints each line with one CRLF line ending. Stripping CR is important
-  to avoid CRCRLF in case the input already comes with CRLF.
-
-Dan Fandrich (29 Sep 2009)
-- Make sure permissions on the private host key file is tight enough that
-  sshd doesn't complain. Quote $srcdir to try to cope with embedded spaces.
-
-Peter Stuge (30 Sep 2009)
-- Clarify the scp_write examples slightly and use an octal mask for the mode
-
-Version 1.2.1 (29 Sep 2009)
-
-Daniel Stenberg (29 Sep 2009)
-- 1.2.1 preparations
-
-- remove ChangeLog and win32/libssh2.dsp only at make distclean
-
-Simon Josefsson (23 Sep 2009)
-- Fix shell usage.
-
-Daniel Stenberg (22 Sep 2009)
-- clarify that the paths are the remote ones
-
-- let hpux systems build with _REENTRANT defined as well
-
-- updated to match reality
-  
-  I went over the commit log and added what I believe is all notable
-  changes and bugfixes since the 1.2 release
-
-Peter Stuge (20 Sep 2009)
-- Fix scp examples to loop correctly over libssh2_channel_write()
-
-- Fix transport layer bug causing invalid -39 (LIBSSH2_ERROR_BAD_USE) errors
-  
-  The channel layer sends packets using the transport layer, possibly
-  calling _libssh2_transport_write() many times for each packet.
-  
-  The transport layer uses the send_existing() helper to send out any
-  remaining parts of previous packets before a new packet is started.
-  
-  The bug made send_existing() consider the entire packet sent as soon as it
-  successfully sent the second part of a packet, even if the packet was not
-  completely done yet.
-
-Daniel Stenberg (19 Sep 2009)
-- [Neil Gierman brought this change]
-
-  Added gettimeofday() function for win32
-  
-  Neil Gierman's patch adds a gettimeofday() function for win32
-  for the libssh2_trace() functionality. The code originates from
-  cygwin and was put in the public domain by the author
-  Danny Smith <dannysmith@users.sourceforge.net>
-
-- libssh2_channel_read_ex() must return 0 when closed
-  
-  If the channel is already at EOF or even closed at the end of the
-  libssh2_channel_read_ex() function and there's no data to return,
-  we need to signal that back. We may have gotten that info while
-  draining the incoming transport layer until EAGAIN so we must not
-  be fooled by that return code.
-
-Dan Fandrich (16 Sep 2009)
-- Ignore tags file
-
-- Some platforms need sys/socket.h included before netinet/in.h.
-  Fixed an unused variable compiler warning.
-
-Daniel Stenberg (16 Sep 2009)
-- libssh2_channel_wait_closed() could hang
-  
-  libssh2_channel_wait_closed() had a bad loop waiting for the
-  channel to close, as it could easily miss the info and then if
-  the socket would be silent from that moment the funtion would
-  hang if in blocking-mode or just return EAGAIN wrongly to the
-  app. The drain-transport loop now correctly checks if the close
-  has arrived.
-
-- make libssh2_scp_send/recv do blocking mode correctly
-  
-  Somehow I had completely missed to make the libssh2_scp_send/recv
-  functions support the blocking mode the correct way so when I
-  cleaned up things the other day blocking mode broke for them...
-  Fixed now.
-
-Guenter Knauf (8 Sep 2009)
-- changed NetWare test makefile static link order
-
-- removed conditional sources from Makefile.inc
-  added ifdef blocks to libgcrypt.c, pem.c, openssl.c
-
-Simon Josefsson (7 Sep 2009)
-- Fix compilation errors.
-
-Guenter Knauf (6 Sep 2009)
-- some more NetWare build fixes.
-
-- some more NetWare makefile fixes.
-
-- added sys/select.h include to samples for fd_set on NetWare.
-
-- accept CFLAGS from environment.

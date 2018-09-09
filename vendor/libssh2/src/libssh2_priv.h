@@ -65,8 +65,8 @@
    consistent names of these fields.  While arguable the best would to
    change libssh2.h to use other names, that would break backwards
    compatibility.  For more information, see:
-   http://www.mail-archive.com/libssh2-devel%40lists.sourceforge.net/msg00003.html
-   http://www.mail-archive.com/libssh2-devel%40lists.sourceforge.net/msg00224.html
+   https://www.mail-archive.com/libssh2-devel%40lists.sourceforge.net/msg00003.html
+   https://www.mail-archive.com/libssh2-devel%40lists.sourceforge.net/msg00224.html
 */
 #ifdef HAVE_POLL
 # include <sys/poll.h>

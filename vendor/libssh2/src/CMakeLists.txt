@@ -48,7 +48,7 @@ set(CRYPTO_BACKEND
   ""
   CACHE
   STRING
-  "The backend to use for cryptography: OpenSSL, Libgcrypt or WinCNG,
+  "The backend to use for cryptography: OpenSSL, Libgcrypt or WinCNG, mbedTLS
 or empty to try any available")
 
 # If the crypto backend was given, rather than searching for the first
@@ -71,6 +71,11 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
     list(APPEND PC_REQUIRES_PRIVATE libssl libcrypto)
 
     if (WIN32)
+      # Statically linking to OpenSSL requires crypt32 for some Windows APIs.
+      # This should really be handled by FindOpenSSL.cmake.
+      list(APPEND LIBRARIES crypt32)
+      list(APPEND PC_LIBS -lcrypt32)
+
       find_file(DLL_LIBEAY32
 	NAMES libeay32.dll crypto.dll
         HINTS ${_OPENSSL_ROOT_HINTS} PATHS ${_OPENSSL_ROOT_PATHS}
@@ -146,6 +151,21 @@ if(CRYPTO_BACKEND STREQUAL "WinCNG" OR NOT CRYPTO_BACKEND)
   endif()
 endif()
 
+if(CRYPTO_BACKEND STREQUAL "mbedTLS" OR NOT CRYPTO_BACKEND)
+
+  find_package(mbedTLS ${SPECIFIC_CRYPTO_REQUIREMENT})
+
+  if(MBEDTLS_FOUND)
+    set(CRYPTO_BACKEND "mbedTLS")
+    set(CRYPTO_SOURCES mbedtls.c mbedtls.h)
+    list(APPEND PRIVATE_COMPILE_DEFINITIONS LIBSSH2_MBEDTLS)
+    list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${MBEDTLS_INCLUDE_DIR})
+    list(APPEND LIBRARIES ${MBEDTLS_LIBRARIES})
+    list(APPEND PC_LIBS -lmbedcrypto)
+    link_directories(${MBEDTLS_LIBRARY_DIR})
+  endif()
+endif()
+
 if(NOT CRYPTO_BACKEND)
   message(FATAL_ERROR "No suitable cryptography backend found.")
 endif()
@@ -203,6 +223,11 @@ target_include_directories(libssh2
     $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)
 
 ## Options
+
+option(CLEAR_MEMORY "Enable clearing of memory before being freed" ON)
+if(CLEAR_MEMORY)
+    add_definitions(-DLIBSSH2_CLEAR_MEMORY)
+endif(CLEAR_MEMORY)
 
 add_feature_info("Shared library" BUILD_SHARED_LIBS
   "creating libssh2 as a shared library (.so/.dll)")
