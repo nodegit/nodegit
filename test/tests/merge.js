@@ -1,10 +1,7 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
-
-fse.ensureDir = promisify(fse.ensureDir);
 
 describe("Merge", function() {
   var NodeGit = require("../../");

@@ -1,8 +1,7 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
 var _ = require("lodash");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 
 function getLinesFromDiff(diff) {

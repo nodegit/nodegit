@@ -1,6 +1,5 @@
 var nodegit = require("../");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var path = "/tmp/nodegit-github-2factor-demo";
 
 var token = "{Your GitHub user token}";

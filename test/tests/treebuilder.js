@@ -1,8 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var fs = require("fs");
-var promisify = require("promisify-node");
-var readDir = promisify(fs.readdir);
+var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 
 var leakTest = require("../utils/leak_test");
@@ -43,7 +41,7 @@ describe("TreeBuilder", function(){
       .then(function(treeBuilder){
         //check
         //count how many entries we should have
-        return readDir(reposPath)
+        return fse.readdir(reposPath)
         //treebuilder should have all entries in the clean working dir
         //(minus .git folder)
         .then(function(dirEntries) {

@@ -1,7 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 
 var exec = require("../../utils/execPromise");
 

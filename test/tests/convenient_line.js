@@ -1,7 +1,6 @@
 var assert = require("assert");
 var repoSetup = require("../utils/repository_setup");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
