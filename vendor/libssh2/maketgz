@@ -9,6 +9,11 @@ if [ -z "$version" ]; then
   exit
 fi
 
+if [ "xonly" = "x$2" ]; then
+    echo "Setup version number only!"
+    only=1
+fi
+
 libversion="$version"
 
 major=`echo $libversion |cut -d. -f1 | sed -e "s/[^0-9]//g"`
@@ -19,21 +24,35 @@ numeric=`perl -e 'printf("%02x%02x%02x\n", '"$major, $minor, $patch);"`
 
 HEADER=include/libssh2.h
 
-# requires a date command that knows -u for UTC time zone
-datestamp=`date -u`
+if test -z "$only"; then
+    ext=".dist"
+    # when not setting up version numbers locally
+    for a in $HEADER; do
+        cp $a "$a$ext"
+    done
+    HEADER="$HEADER$ext"
+fi
 
-# Replace version number in header file:
-sed -e 's/^#define LIBSSH2_VERSION .*/#define LIBSSH2_VERSION "'$libversion'"/g' \
+# requires a date command that knows -u for UTC time zone
+datestamp=`LC_TIME=C date -u`
+
+# Replace in-place version number in header file:
+sed -i -e 's/^#define LIBSSH2_VERSION .*/#define LIBSSH2_VERSION "'$libversion'"/g' \
     -e 's/^#define LIBSSH2_VERSION_NUM .*/#define LIBSSH2_VERSION_NUM 0x'$numeric'/g' \
     -e 's/^#define LIBSSH2_VERSION_MAJOR .*/#define LIBSSH2_VERSION_MAJOR '$major'/g' \
     -e 's/^#define LIBSSH2_VERSION_MINOR .*/#define LIBSSH2_VERSION_MINOR '$minor'/g' \
     -e 's/^#define LIBSSH2_VERSION_PATCH .*/#define LIBSSH2_VERSION_PATCH '$patch'/g' \
     -e "s/^#define LIBSSH2_TIMESTAMP .*/#define LIBSSH2_TIMESTAMP \"$datestamp\"/g" \
- $HEADER >$HEADER.dist
+ $HEADER
 
 echo "libssh2 version $libversion"
 echo "libssh2 numerical $numeric"
 echo "datestamp $datestamp"
+
+if test -n "$only"; then
+    # done!
+    exit;
+fi
 
 findprog()
 {

@@ -83,21 +83,32 @@ AC_C_BIGENDIAN
 dnl check for how to do large files
 AC_SYS_LARGEFILE
 
+found_crypto=none
+
 # Configure parameters
 AC_ARG_WITH(openssl,
   AC_HELP_STRING([--with-openssl],[Use OpenSSL for crypto]),
   use_openssl=$withval,use_openssl=auto)
 AC_ARG_WITH(libgcrypt,
   AC_HELP_STRING([--with-libgcrypt],[Use libgcrypt for crypto]),
-  use_libgcrypt=$withval,use_libgcrypt=auto)
+  [ use_libgcrypt=$withval
+    LIBSSH2_CHECKFOR_GCRYPT
+  ], use_libgcrypt=auto)
 AC_ARG_WITH(wincng,
   AC_HELP_STRING([--with-wincng],[Use Windows CNG for crypto]),
-  use_wincng=$withval,use_wincng=auto)
+  [ use_wincng=$withval
+    LIBSSH2_CHECKFOR_WINCNG
+  ] ,use_wincng=auto)
+AC_ARG_WITH([mbedtls],
+  AC_HELP_STRING([--with-mbedtls],[Use mbedTLS for crypto]),
+  [ use_mbedtls=$withval
+    LIBSSH2_CHECKFOR_MBEDTLS
+  ], use_mbedtls=auto
+)
 AC_ARG_WITH(libz,
   AC_HELP_STRING([--with-libz],[Use zlib for compression]),
   use_libz=$withval,use_libz=auto)
 
-found_crypto=none
 support_clear_memory=no
 
 # Look for OpenSSL
@@ -116,51 +127,11 @@ if test "$ac_cv_libssl" = "yes"; then
 
   found_crypto="OpenSSL (AES-CTR: ${ac_cv_func_EVP_aes_128_ctr:-N/A})"
 fi
+
 AM_CONDITIONAL(OPENSSL, test "$ac_cv_libssl" = "yes")
-
-# Look for libgcrypt
-if test "$found_crypto" = "none" && test "$use_libgcrypt" != "no"; then
-  AC_LIB_HAVE_LINKFLAGS([gcrypt], [], [#include <gcrypt.h>])
-fi
-if test "$ac_cv_libgcrypt" = "yes"; then
-  AC_DEFINE(LIBSSH2_LIBGCRYPT, 1, [Use libgcrypt])
-  LIBSREQUIRED= # libgcrypt doesn't provide a .pc file. sad face.
-  LIBS="$LIBS -lgcrypt"
-  found_crypto=libgcrypt
-fi
-AM_CONDITIONAL(LIBGCRYPT, test "$ac_cv_libgcrypt" = "yes")
-
-# Look for Windows Cryptography API: Next Generation
-if test "$found_crypto" = "none" && test "$use_wincng" != "no"; then
-  AC_LIB_HAVE_LINKFLAGS([bcrypt], [], [
-    #include <windows.h>
-    #include <bcrypt.h>
-  ])
-  AC_LIB_HAVE_LINKFLAGS([crypt32], [], [
-    #include <windows.h>
-    #include <wincrypt.h>
-  ])
-  AC_CHECK_HEADERS([ntdef.h ntstatus.h], [], [], [
-    #include <windows.h>
-  ])
-  AC_CHECK_DECLS([SecureZeroMemory], [], [], [
-    #include <windows.h>
-  ])
-fi
-if test "$ac_cv_libbcrypt" = "yes"; then
-  AC_DEFINE(LIBSSH2_WINCNG, 1, [Use Windows CNG])
-  LIBSREQUIRED= # wincng doesn't provide a .pc file. sad face.
-  LIBS="$LIBS -lbcrypt"
-  if test "$ac_cv_libcrypt32" = "yes"; then
-    LIBS="$LIBS -lcrypt32"
-  fi
-  found_crypto="Windows Cryptography API: Next Generation"
-  if test "$ac_cv_have_decl_SecureZeroMemory" = "yes"; then
-    support_clear_memory=yes
-  fi
-fi
 AM_CONDITIONAL(WINCNG, test "$ac_cv_libbcrypt" = "yes")
-
+AM_CONDITIONAL(LIBGCRYPT, test "$ac_cv_libgcrypt" = "yes")
+AM_CONDITIONAL(MBEDTLS, test "$ac_cv_libmbedtls" = "yes")
 AM_CONDITIONAL(OS400QC3, false)
 
 # Check if crypto library was found
@@ -168,6 +139,7 @@ if test "$found_crypto" = "none"; then
   AC_MSG_ERROR([No crypto library found!
 Try --with-libssl-prefix=PATH
  or --with-libgcrypt-prefix=PATH
+ or --with-libmbedtls-prefix=PATH
  or --with-wincng on Windows\
 ])
 fi

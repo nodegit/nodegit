@@ -66,33 +66,63 @@ _libssh2_rsa_new(libssh2_rsa_ctx ** rsa,
                  unsigned long e2len,
                  const unsigned char *coeffdata, unsigned long coefflen)
 {
-    *rsa = RSA_new();
+    BIGNUM * e;
+    BIGNUM * n;
+    BIGNUM * d = 0;
+    BIGNUM * p = 0;
+    BIGNUM * q = 0;
+    BIGNUM * dmp1 = 0;
+    BIGNUM * dmq1 = 0;
+    BIGNUM * iqmp = 0;
 
-    (*rsa)->e = BN_new();
-    BN_bin2bn(edata, elen, (*rsa)->e);
+    e = BN_new();
+    BN_bin2bn(edata, elen, e);
 
-    (*rsa)->n = BN_new();
-    BN_bin2bn(ndata, nlen, (*rsa)->n);
+    n = BN_new();
+    BN_bin2bn(ndata, nlen, n);
 
     if (ddata) {
-        (*rsa)->d = BN_new();
-        BN_bin2bn(ddata, dlen, (*rsa)->d);
+        d = BN_new();
+        BN_bin2bn(ddata, dlen, d);
 
-        (*rsa)->p = BN_new();
-        BN_bin2bn(pdata, plen, (*rsa)->p);
+        p = BN_new();
+        BN_bin2bn(pdata, plen, p);
 
-        (*rsa)->q = BN_new();
-        BN_bin2bn(qdata, qlen, (*rsa)->q);
+        q = BN_new();
+        BN_bin2bn(qdata, qlen, q);
 
-        (*rsa)->dmp1 = BN_new();
-        BN_bin2bn(e1data, e1len, (*rsa)->dmp1);
+        dmp1 = BN_new();
+        BN_bin2bn(e1data, e1len, dmp1);
 
-        (*rsa)->dmq1 = BN_new();
-        BN_bin2bn(e2data, e2len, (*rsa)->dmq1);
+        dmq1 = BN_new();
+        BN_bin2bn(e2data, e2len, dmq1);
 
-        (*rsa)->iqmp = BN_new();
-        BN_bin2bn(coeffdata, coefflen, (*rsa)->iqmp);
+        iqmp = BN_new();
+        BN_bin2bn(coeffdata, coefflen, iqmp);
     }
+
+    *rsa = RSA_new();
+#ifdef HAVE_OPAQUE_STRUCTS
+    RSA_set0_key(*rsa, n, e, d);
+#else
+    (*rsa)->e = e;
+    (*rsa)->n = n;
+#endif
+
+#ifdef HAVE_OPAQUE_STRUCTS
+    RSA_set0_factors(*rsa, p, q);
+#else
+    (*rsa)->p = p;
+    (*rsa)->q = q;
+#endif
+
+#ifdef HAVE_OPAQUE_STRUCTS
+    RSA_set0_crt_params(*rsa, dmp1, dmq1, iqmp);
+#else
+    (*rsa)->dmp1 = dmp1;
+    (*rsa)->dmq1 = dmq1;
+    (*rsa)->iqmp = iqmp;
+#endif
     return 0;
 }
 
@@ -125,25 +155,45 @@ _libssh2_dsa_new(libssh2_dsa_ctx ** dsactx,
                  unsigned long y_len,
                  const unsigned char *x, unsigned long x_len)
 {
-    *dsactx = DSA_new();
+    BIGNUM * p_bn;
+    BIGNUM * q_bn;
+    BIGNUM * g_bn;
+    BIGNUM * pub_key;
+    BIGNUM * priv_key = NULL;
 
-    (*dsactx)->p = BN_new();
-    BN_bin2bn(p, p_len, (*dsactx)->p);
+    p_bn = BN_new();
+    BN_bin2bn(p, p_len, p_bn);
 
-    (*dsactx)->q = BN_new();
-    BN_bin2bn(q, q_len, (*dsactx)->q);
+    q_bn = BN_new();
+    BN_bin2bn(q, q_len, q_bn);
 
-    (*dsactx)->g = BN_new();
-    BN_bin2bn(g, g_len, (*dsactx)->g);
+    g_bn = BN_new();
+    BN_bin2bn(g, g_len, g_bn);
 
-    (*dsactx)->pub_key = BN_new();
-    BN_bin2bn(y, y_len, (*dsactx)->pub_key);
+    pub_key = BN_new();
+    BN_bin2bn(y, y_len, pub_key);
 
     if (x_len) {
-        (*dsactx)->priv_key = BN_new();
-        BN_bin2bn(x, x_len, (*dsactx)->priv_key);
+        priv_key = BN_new();
+        BN_bin2bn(x, x_len, priv_key);
     }
 
+    *dsactx = DSA_new();
+
+#ifdef HAVE_OPAQUE_STRUCTS
+    DSA_set0_pqg(*dsactx, p_bn, q_bn, g_bn);
+#else
+    (*dsactx)->p = p_bn;
+    (*dsactx)->g = g_bn;
+    (*dsactx)->q = q_bn;
+#endif
+
+#ifdef HAVE_OPAQUE_STRUCTS
+    DSA_set0_key(*dsactx, pub_key, priv_key);
+#else
+    (*dsactx)->pub_key = pub_key;
+    (*dsactx)->priv_key = priv_key;
+#endif
     return 0;
 }
 
@@ -153,20 +203,28 @@ _libssh2_dsa_sha1_verify(libssh2_dsa_ctx * dsactx,
                          const unsigned char *m, unsigned long m_len)
 {
     unsigned char hash[SHA_DIGEST_LENGTH];
-    DSA_SIG dsasig;
+    DSA_SIG * dsasig;
+    BIGNUM * r;
+    BIGNUM * s;
     int ret = -1;
 
-    dsasig.r = BN_new();
-    BN_bin2bn(sig, 20, dsasig.r);
-    dsasig.s = BN_new();
-    BN_bin2bn(sig + 20, 20, dsasig.s);
+    r = BN_new();
+    BN_bin2bn(sig, 20, r);
+    s = BN_new();
+    BN_bin2bn(sig + 20, 20, s);
 
+    dsasig = DSA_SIG_new();
+#ifdef HAVE_OPAQUE_STRUCTS
+    DSA_SIG_set0(dsasig, r, s);
+#else
+    dsasig->r = r;
+    dsasig->s = s;
+#endif
     if (!_libssh2_sha1(m, m_len, hash))
         /* _libssh2_sha1() succeeded */
-        ret = DSA_do_verify(hash, SHA_DIGEST_LENGTH, &dsasig, dsactx);
+        ret = DSA_do_verify(hash, SHA_DIGEST_LENGTH, dsasig, dsactx);
 
-    BN_clear_free(dsasig.s);
-    BN_clear_free(dsasig.r);
+    DSA_SIG_free(dsasig);
 
     return (ret == 1) ? 0 : -1;
 }
@@ -207,7 +265,7 @@ _libssh2_cipher_crypt(_libssh2_cipher_ctx * ctx,
     return ret == 1 ? 0 : 1;
 }
 
-#if LIBSSH2_AES_CTR
+#if LIBSSH2_AES_CTR && !defined(HAVE_EVP_AES_128_CTR)
 
 #include <openssl/aes.h>
 #include <openssl/evp.h>
@@ -586,6 +644,8 @@ _libssh2_dsa_sha1_sign(libssh2_dsa_ctx * dsactx,
                        unsigned long hash_len, unsigned char *signature)
 {
     DSA_SIG *sig;
+    const BIGNUM * r;
+    const BIGNUM * s;
     int r_len, s_len;
     (void) hash_len;
 
@@ -594,12 +654,18 @@ _libssh2_dsa_sha1_sign(libssh2_dsa_ctx * dsactx,
         return -1;
     }
 
-    r_len = BN_num_bytes(sig->r);
+#ifdef HAVE_OPAQUE_STRUCTS
+    DSA_SIG_get0(sig, &r, &s);
+#else
+    r = sig->r;
+    s = sig->s;
+#endif
+    r_len = BN_num_bytes(r);
     if (r_len < 1 || r_len > 20) {
         DSA_SIG_free(sig);
         return -1;
     }
-    s_len = BN_num_bytes(sig->s);
+    s_len = BN_num_bytes(s);
     if (s_len < 1 || s_len > 20) {
         DSA_SIG_free(sig);
         return -1;
@@ -607,8 +673,8 @@ _libssh2_dsa_sha1_sign(libssh2_dsa_ctx * dsactx,
 
     memset(signature, 0, 40);
 
-    BN_bn2bin(sig->r, signature + (20 - r_len));
-    BN_bn2bin(sig->s, signature + 20 + (20 - s_len));
+    BN_bn2bin(r, signature + (20 - r_len));
+    BN_bn2bin(s, signature + 20 + (20 - s_len));
 
     DSA_SIG_free(sig);
 
@@ -768,9 +834,16 @@ gen_publickey_from_rsa(LIBSSH2_SESSION *session, RSA *rsa,
     unsigned long  len;
     unsigned char* key;
     unsigned char* p;
-
-    e_bytes = BN_num_bytes(rsa->e) + 1;
-    n_bytes = BN_num_bytes(rsa->n) + 1;
+    const BIGNUM * e;
+    const BIGNUM * n;
+#ifdef HAVE_OPAQUE_STRUCTS
+    RSA_get0_key(rsa, &n, &e, NULL);
+#else
+    e = rsa->e;
+    n = rsa->n;
+#endif
+    e_bytes = BN_num_bytes(e) + 1;
+    n_bytes = BN_num_bytes(n) + 1;
 
     /* Key form is "ssh-rsa" + e + n. */
     len = 4 + 7 + 4 + e_bytes + 4 + n_bytes;
@@ -788,8 +861,8 @@ gen_publickey_from_rsa(LIBSSH2_SESSION *session, RSA *rsa,
     memcpy(p, "ssh-rsa", 7);
     p += 7;
 
-    p = write_bn(p, rsa->e, e_bytes);
-    p = write_bn(p, rsa->n, n_bytes);
+    p = write_bn(p, e, e_bytes);
+    p = write_bn(p, n, n_bytes);
 
     *key_len = (size_t)(p - key);
     return key;
@@ -805,10 +878,27 @@ gen_publickey_from_dsa(LIBSSH2_SESSION* session, DSA *dsa,
     unsigned char* key;
     unsigned char* p;
 
-    p_bytes = BN_num_bytes(dsa->p) + 1;
-    q_bytes = BN_num_bytes(dsa->q) + 1;
-    g_bytes = BN_num_bytes(dsa->g) + 1;
-    k_bytes = BN_num_bytes(dsa->pub_key) + 1;
+    const BIGNUM * p_bn;
+    const BIGNUM * q;
+    const BIGNUM * g;
+    const BIGNUM * pub_key;
+#ifdef HAVE_OPAQUE_STRUCTS
+    DSA_get0_pqg(dsa, &p_bn, &q, &g);
+#else
+    p_bn = dsa->p;
+    q = dsa->q;
+    g = dsa->g;
+#endif
+
+#ifdef HAVE_OPAQUE_STRUCTS
+    DSA_get0_key(dsa, &pub_key, NULL);
+#else
+    pub_key = dsa->pub_key;
+#endif
+    p_bytes = BN_num_bytes(p_bn) + 1;
+    q_bytes = BN_num_bytes(q) + 1;
+    g_bytes = BN_num_bytes(g) + 1;
+    k_bytes = BN_num_bytes(pub_key) + 1;
 
     /* Key form is "ssh-dss" + p + q + g + pub_key. */
     len = 4 + 7 + 4 + p_bytes + 4 + q_bytes + 4 + g_bytes + 4 + k_bytes;
@@ -826,10 +916,10 @@ gen_publickey_from_dsa(LIBSSH2_SESSION* session, DSA *dsa,
     memcpy(p, "ssh-dss", 7);
     p += 7;
 
-    p = write_bn(p, dsa->p, p_bytes);
-    p = write_bn(p, dsa->q, q_bytes);
-    p = write_bn(p, dsa->g, g_bytes);
-    p = write_bn(p, dsa->pub_key, k_bytes);
+    p = write_bn(p, p_bn, p_bytes);
+    p = write_bn(p, q, q_bytes);
+    p = write_bn(p, g, g_bytes);
+    p = write_bn(p, pub_key, k_bytes);
 
     *key_len = (size_t)(p - key);
     return key;

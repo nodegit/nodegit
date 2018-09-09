@@ -1527,7 +1527,7 @@ static ssize_t sftp_read(LIBSSH2_SFTP_HANDLE * handle, char *buffer,
                 if (chunk->offset != filep->offset) {
                     /* This could happen if the server returns less bytes than
                        requested, which shouldn't happen for normal files. See:
-                       http://tools.ietf.org/html/draft-ietf-secsh-filexfer-02
+                       https://tools.ietf.org/html/draft-ietf-secsh-filexfer-02
                        #section-6.4
                     */
                     return _libssh2_error(session, LIBSSH2_ERROR_SFTP_PROTOCOL,

@@ -14,6 +14,9 @@ endif
 if OS400QC3
 include ../Makefile.os400qc3.inc
 endif
+if MBEDTLS
+include ../Makefile.mbedTLS.inc
+endif
 
 # Makefile.inc provides the CSOURCES and HHEADERS defines
 include ../Makefile.inc

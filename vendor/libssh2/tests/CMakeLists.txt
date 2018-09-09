@@ -1,4 +1,4 @@
-# Copyright (c) 2014, 2015 Alexander Lamaison <alexander.lamaison@gmail.com>
+# Copyright (c) 2014-2016 Alexander Lamaison <alexander.lamaison@gmail.com>
 #
 # Redistribution and use in source and binary forms,
 # with or without modification, are permitted provided
@@ -47,28 +47,52 @@ check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)
 check_include_files(arpa/inet.h HAVE_ARPA_INET_H)
 check_include_files(windows.h HAVE_WINDOWS_H)
 check_include_files(winsock2.h HAVE_WINSOCK2_H)
-
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/libssh2_config_cmake.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/libssh2_config.h)
-
-set(TESTS
-  simple
-  ssh2)
-
+  "${CMAKE_CURRENT_SOURCE_DIR}/libssh2_config_cmake.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/libssh2_config.h")
 append_needed_socket_libraries(LIBRARIES)
 
+set(TESTS
+  hostkey
+  hostkey_hash
+  password_auth_succeeds_with_correct_credentials
+  password_auth_fails_with_wrong_password
+  password_auth_fails_with_wrong_username
+  public_key_auth_fails_with_wrong_key
+  public_key_auth_succeeds_with_correct_rsa_key
+  public_key_auth_succeeds_with_correct_dsa_key
+  keyboard_interactive_auth_fails_with_wrong_response
+  keyboard_interactive_auth_succeeds_with_correct_response
+  )
+
+add_library(openssh_fixture STATIC openssh_fixture.h openssh_fixture.c)
+target_link_libraries(openssh_fixture ${LIBRARIES})
+target_include_directories(openssh_fixture PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+
+add_library(session_fixture STATIC session_fixture.h session_fixture.c)
+target_link_libraries(session_fixture ${LIBRARIES} openssh_fixture libssh2)
+target_include_directories(session_fixture PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+
+add_library(runner STATIC runner.c)
+target_link_libraries(runner session_fixture)
+target_include_directories(runner PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+
 foreach(test ${TESTS})
-  add_executable(test-${test} ${test}.c)
-  target_link_libraries(test-${test} libssh2 ${LIBRARIES})
-  target_include_directories(test-${test} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-  list(APPEND TEST_TARGETS test-${test})
+  add_executable(test_${test} test_${test}.c)
+  target_link_libraries(test_${test} libssh2 runner ${LIBRARIES})
+  target_include_directories(test_${test} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+  list(APPEND TEST_TARGETS test_${test})
+
+  add_test(
+    NAME test_${test} COMMAND $<TARGET_FILE:test_${test}>
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endforeach()
 
 add_target_to_copy_dependencies(
   TARGET copy_test_dependencies
   DEPENDENCIES ${RUNTIME_DEPENDENCIES}
   BEFORE_TARGETS ${TEST_TARGETS})
+
 
 # TODO convert mansyntax.sh into CMake script.
 # XXX Just because we can find all three programs, doesn't mean sh can
@@ -81,31 +105,4 @@ if(SH_EXECUTABLE AND MAN_EXECUTABLE AND GREP_EXECUTABLE)
   set(cmd "srcdir=${CMAKE_CURRENT_SOURCE_DIR}")
   set(cmd "${cmd} ${CMAKE_CURRENT_SOURCE_DIR}/mansyntax.sh")
   add_test(mansyntax ${SH_EXECUTABLE} -c "${cmd}")
-endif()
-
-add_test(simple test-simple)
-
-find_program(SSHD_EXECUTABLE sshd)
-find_program(CHMOD_EXECUTABLE chmod)
-find_program(KILL_EXECUTABLE kill)
-mark_as_advanced(SSHD_EXECUTABLE CHMOD_EXECUTABLE KILL_EXECUTABLE)
-if(SSHD_EXECUTABLE AND CHMOD_EXECUTABLE AND KILL_EXECUTABLE)
-  set(SSHD_TEST_CONFIG_DIR ${CMAKE_CURRENT_BINARY_DIR})
-  set(TEST_NAME ssh2)
-
-  add_custom_command(
-    TARGET test-${TEST_NAME}
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/etc
-    ${SSHD_TEST_CONFIG_DIR}/etc)
-
-  configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/sshd_fixture.sh.in
-    ${CMAKE_CURRENT_BINARY_DIR}/test-${TEST_NAME}_fixture.sh
-    @ONLY)
-
-  add_test(NAME ssh2 COMMAND ${SH_EXECUTABLE}
-    ${CMAKE_CURRENT_BINARY_DIR}/test-${TEST_NAME}_fixture.sh
-    $<TARGET_FILE:test-${TEST_NAME}>)
-
 endif()
