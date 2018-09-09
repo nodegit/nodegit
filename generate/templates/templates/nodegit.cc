@@ -70,7 +70,7 @@ void LockMasterSetStatus(const FunctionCallbackInfo<Value>& info) {
 
   // convert the first argument to Status
   if(info.Length() >= 0 && info[0]->IsNumber()) {
-    v8::Local<v8::Int32> value = info[0]->ToInt32();
+    v8::Local<v8::Int32> value = info[0]->ToInt32(v8::Isolate::GetCurrent());
     LockMaster::Status status = static_cast<LockMaster::Status>(value->Value());
     if(status >= LockMaster::Disabled && status <= LockMaster::Enabled) {
       LockMaster::SetStatus(status);
