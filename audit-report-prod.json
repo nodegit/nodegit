@@ -1,0 +1,520 @@
+{
+  "actions": [
+    {
+      "action": "install",
+      "module": "lcov-result-merger",
+      "target": "3.1.0",
+      "isMajor": true,
+      "resolves": [
+        {
+          "id": 118,
+          "path": "lcov-result-merger>vinyl-fs>glob-stream>glob>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 118,
+          "path": "lcov-result-merger>vinyl-fs>glob-stream>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 118,
+          "path": "lcov-result-merger>vinyl-fs>glob-watcher>gaze>globule>glob>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 118,
+          "path": "lcov-result-merger>vinyl-fs>glob-watcher>gaze>globule>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 577,
+          "path": "lcov-result-merger>vinyl-fs>glob-watcher>gaze>globule>lodash",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "install",
+      "module": "mocha",
+      "target": "5.2.0",
+      "isMajor": true,
+      "resolves": [
+        {
+          "id": 118,
+          "path": "mocha>glob>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 534,
+          "path": "mocha>debug",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 146,
+          "path": "mocha>growl",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "install",
+      "module": "jshint",
+      "target": "2.9.6",
+      "isMajor": false,
+      "resolves": [
+        {
+          "id": 118,
+          "path": "jshint>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 118,
+          "path": "jshint>cli>glob>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 577,
+          "path": "jshint>lodash",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 95,
+          "path": "jshint>cli",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "install",
+      "module": "coveralls",
+      "target": "3.0.2",
+      "isMajor": true,
+      "resolves": [
+        {
+          "id": 598,
+          "path": "coveralls>request>tunnel-agent",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 566,
+          "path": "coveralls>request>hawk>boom>hoek",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 566,
+          "path": "coveralls>request>hawk>cryptiles>boom>hoek",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 566,
+          "path": "coveralls>request>hawk>hoek",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 566,
+          "path": "coveralls>request>hawk>sntp>hoek",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "install",
+      "module": "istanbul",
+      "target": "0.4.5",
+      "isMajor": false,
+      "resolves": [
+        {
+          "id": 118,
+          "path": "istanbul>fileset>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 118,
+          "path": "istanbul>fileset>glob>minimatch",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    }
+  ],
+  "advisories": {
+    "95": {
+      "findings": [
+        {
+          "version": "0.6.6",
+          "paths": [
+            "jshint>cli"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "id": 95,
+      "created": "2016-03-28T21:24:14.000Z",
+      "updated": "2018-02-28T20:41:10.792Z",
+      "deleted": null,
+      "title": "Arbitrary File Write",
+      "found_by": {
+        "name": "Steve Kemp"
+      },
+      "reported_by": {
+        "name": "Steve Kemp"
+      },
+      "module_name": "cli",
+      "cves": [
+        "CVE-2016-10538"
+      ],
+      "vulnerable_versions": "<1.0.0",
+      "patched_versions": ">=1.0.0",
+      "overview": "Affected versions of `cli` use predictable temporary file names. If an attacker can create a symbolic link at the location of one of these temporarly file names, the attacker can arbitrarily write to any file that the user which owns the `cli` process has permission to write to.\n\n\n## Proof of Concept\n\nBy creating Symbolic Links at the following locations, the target of the link can be written to.\n```\nlock_file = '/tmp/' + cli.app + '.pid',\nlog_file = '/tmp/' + cli.app + '.log';\n```",
+      "recommendation": "Update to version 1.0.0 or later.",
+      "references": "[Debian Bugtracker #809252](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=809252)\n[Issue #81](https://github.com/node-js-libs/cli/issues/81)",
+      "access": "public",
+      "severity": "low",
+      "cwe": "CWE-22",
+      "metadata": {
+        "module_type": "CLI.Library",
+        "exploitability": 3,
+        "affected_components": ""
+      },
+      "url": "https://nodesecurity.io/advisories/95"
+    },
+    "118": {
+      "findings": [
+        {
+          "version": "2.0.10",
+          "paths": [
+            "istanbul>fileset>glob>minimatch",
+            "istanbul>fileset>minimatch",
+            "jshint>minimatch",
+            "lcov-result-merger>vinyl-fs>glob-stream>glob>minimatch",
+            "lcov-result-merger>vinyl-fs>glob-stream>minimatch"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "version": "0.3.0",
+          "paths": [
+            "jshint>cli>glob>minimatch"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "version": "0.2.14",
+          "paths": [
+            "lcov-result-merger>vinyl-fs>glob-watcher>gaze>globule>glob>minimatch",
+            "lcov-result-merger>vinyl-fs>glob-watcher>gaze>globule>minimatch",
+            "mocha>glob>minimatch"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "id": 118,
+      "created": "2016-05-25T16:37:20.000Z",
+      "updated": "2018-03-01T21:58:01.072Z",
+      "deleted": null,
+      "title": "Regular Expression Denial of Service",
+      "found_by": {
+        "name": "Nick Starke"
+      },
+      "reported_by": {
+        "name": "Nick Starke"
+      },
+      "module_name": "minimatch",
+      "cves": [
+        "CVE-2016-10540"
+      ],
+      "vulnerable_versions": "<=3.0.1",
+      "patched_versions": ">=3.0.2",
+      "overview": "Affected versions of `minimatch` are vulnerable to regular expression denial of service attacks when user input is passed into the `pattern` argument of `minimatch(path, pattern)`.\n\n\n## Proof of Concept\n```\nvar minimatch = require(“minimatch”);\n\n// utility function for generating long strings\nvar genstr = function (len, chr) {\n  var result = “”;\n  for (i=0; i<=len; i++) {\n    result = result + chr;\n  }\n  return result;\n}\n\nvar exploit = “[!” + genstr(1000000, “\\\\”) + “A”;\n\n// minimatch exploit.\nconsole.log(“starting minimatch”);\nminimatch(“foo”, exploit);\nconsole.log(“finishing minimatch”);\n```",
+      "recommendation": "Update to version 3.0.2 or later.",
+      "references": "",
+      "access": "public",
+      "severity": "high",
+      "cwe": "CWE-400",
+      "metadata": {
+        "module_type": "Multi.Library",
+        "exploitability": 4,
+        "affected_components": "Internal::Code::Function::minimatch({type:'args', key:0, vector:{type:'string'}})"
+      },
+      "url": "https://nodesecurity.io/advisories/118"
+    },
+    "146": {
+      "findings": [
+        {
+          "version": "1.8.1",
+          "paths": [
+            "mocha>growl"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "id": 146,
+      "created": "2016-09-06T12:49:40.000Z",
+      "updated": "2018-03-02T21:07:28.071Z",
+      "deleted": null,
+      "title": "Command Injection",
+      "found_by": {
+        "name": "Cristian-Alexandru Staicu"
+      },
+      "reported_by": {
+        "name": "Cristian-Alexandru Staicu"
+      },
+      "module_name": "growl",
+      "cves": [
+        "CVE-2017-16042"
+      ],
+      "vulnerable_versions": "<1.10.2",
+      "patched_versions": ">=1.10.2",
+      "overview": "Affected versions of `growl` do not properly sanitize input prior to passing it into a shell command, allowing for arbitrary command execution.",
+      "recommendation": "Update to version 1.10.2 or later.",
+      "references": "[Issue #60](https://github.com/tj/node-growl/issues/60)\n[PR #61](https://github.com/tj/node-growl/pull/61)",
+      "access": "public",
+      "severity": "critical",
+      "cwe": "CWE-94",
+      "metadata": {
+        "module_type": "CLI.Library",
+        "exploitability": 5,
+        "affected_components": ""
+      },
+      "url": "https://nodesecurity.io/advisories/146"
+    },
+    "534": {
+      "findings": [
+        {
+          "version": "2.2.0",
+          "paths": [
+            "mocha>debug"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "id": 534,
+      "created": "2017-09-25T18:55:55.956Z",
+      "updated": "2018-05-16T19:37:43.686Z",
+      "deleted": null,
+      "title": "Regular Expression Denial of Service",
+      "found_by": {
+        "name": "Cristian-Alexandru Staicu"
+      },
+      "reported_by": {
+        "name": "Cristian-Alexandru Staicu"
+      },
+      "module_name": "debug",
+      "cves": [
+        "CVE-2017-16137"
+      ],
+      "vulnerable_versions": "<= 2.6.8 || >= 3.0.0 <= 3.0.1",
+      "patched_versions": ">= 2.6.9 < 3.0.0 || >= 3.1.0",
+      "overview": "Affected versions of `debug` are vulnerable to regular expression denial of service when untrusted user input is passed into the `o` formatter. \n\nAs it takes 50,000 characters to block the event loop for 2 seconds, this issue is a low severity issue.",
+      "recommendation": "Version 2.x.x: Update to version 2.6.9 or later.\nVersion 3.x.x: Update to version 3.1.0 or later.\n",
+      "references": "- [Issue #501](https://github.com/visionmedia/debug/issues/501)\n- [PR #504](https://github.com/visionmedia/debug/pull/504)",
+      "access": "public",
+      "severity": "low",
+      "cwe": "CWE-400",
+      "metadata": {
+        "module_type": "",
+        "exploitability": 5,
+        "affected_components": ""
+      },
+      "url": "https://nodesecurity.io/advisories/534"
+    },
+    "566": {
+      "findings": [
+        {
+          "version": "2.16.3",
+          "paths": [
+            "coveralls>request>hawk>boom>hoek",
+            "coveralls>request>hawk>cryptiles>boom>hoek",
+            "coveralls>request>hawk>hoek",
+            "coveralls>request>hawk>sntp>hoek"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "id": 566,
+      "created": "2018-04-20T21:25:58.421Z",
+      "updated": "2018-04-20T21:25:58.421Z",
+      "deleted": null,
+      "title": "Prototype pollution",
+      "found_by": {
+        "name": "HoLyVieR"
+      },
+      "reported_by": {
+        "name": "HoLyVieR"
+      },
+      "module_name": "hoek",
+      "cves": [],
+      "vulnerable_versions": "<= 4.2.0 || >= 5.0.0 < 5.0.3",
+      "patched_versions": "> 4.2.0 < 5.0.0 || >= 5.0.3",
+      "overview": "Versions of `hoek` prior to 4.2.1 and 5.0.3 are vulnerable to prototype pollution.\n\nThe `merge` function, and the `applyToDefaults` and `applyToDefaultsWithShallow` functions which leverage `merge` behind the scenes, are vulnerable to a prototype pollution attack when provided an _unvalidated_ payload created from a JSON string containing the `__proto__` property.\n\nThis can be demonstrated like so:\n\n```javascript\nvar Hoek = require('hoek');\nvar malicious_payload = '{\"__proto__\":{\"oops\":\"It works !\"}}';\n\nvar a = {};\nconsole.log(\"Before : \" + a.oops);\nHoek.merge({}, JSON.parse(malicious_payload));\nconsole.log(\"After : \" + a.oops);\n```\n\nThis type of attack can be used to overwrite existing properties causing a potential denial of service.",
+      "recommendation": "Update to version 4.2.1, 5.0.3 or later.",
+      "references": "",
+      "access": "public",
+      "severity": "moderate",
+      "cwe": "CWE-471",
+      "metadata": {
+        "module_type": "",
+        "exploitability": 5,
+        "affected_components": ""
+      },
+      "url": "https://nodesecurity.io/advisories/566"
+    },
+    "577": {
+      "findings": [
+        {
+          "version": "3.7.0",
+          "paths": [
+            "jshint>lodash"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "version": "1.0.2",
+          "paths": [
+            "lcov-result-merger>vinyl-fs>glob-watcher>gaze>globule>lodash"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "id": 577,
+      "created": "2018-04-24T14:27:02.796Z",
+      "updated": "2018-04-24T14:27:13.049Z",
+      "deleted": null,
+      "title": "Prototype Pollution",
+      "found_by": {
+        "name": "Olivier Arteau (HoLyVieR)"
+      },
+      "reported_by": {
+        "name": "Olivier Arteau (HoLyVieR)"
+      },
+      "module_name": "lodash",
+      "cves": [
+        "CVE-2018-3721"
+      ],
+      "vulnerable_versions": "<4.17.5",
+      "patched_versions": ">=4.17.5",
+      "overview": "Versions of `lodash` before 4.17.5 are vulnerable to prototype pollution. \n\nThe vulnerable functions are 'defaultsDeep', 'merge', and 'mergeWith' which allow a malicious user to modify the prototype of `Object` via `__proto__` causing the addition or modification of an existing property that will exist on all objects.\n\n",
+      "recommendation": "Update to version 4.17.5 or later.",
+      "references": "- [HackerOne Report](https://hackerone.com/reports/310443)",
+      "access": "public",
+      "severity": "low",
+      "cwe": "CWE-471",
+      "metadata": {
+        "module_type": "",
+        "exploitability": 1,
+        "affected_components": ""
+      },
+      "url": "https://nodesecurity.io/advisories/577"
+    },
+    "598": {
+      "findings": [
+        {
+          "version": "0.4.3",
+          "paths": [
+            "coveralls>request>tunnel-agent"
+          ],
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "id": 598,
+      "created": "2018-04-24T20:30:16.099Z",
+      "updated": "2018-04-24T20:31:15.816Z",
+      "deleted": null,
+      "title": "Memory Exposure",
+      "found_by": {
+        "name": "Сковорода Никита Андреевич"
+      },
+      "reported_by": {
+        "name": "Сковорода Никита Андреевич"
+      },
+      "module_name": "tunnel-agent",
+      "cves": [],
+      "vulnerable_versions": "<0.6.0",
+      "patched_versions": ">=0.6.0",
+      "overview": "Versions of `tunnel-agent` before 0.6.0 are vulnerable to memory exposure.\n\nThis is exploitable if user supplied input is provided to the auth value and is a number.\n\nProof-of-concept:\n```js\nrequire('request')({\n  method: 'GET',\n  uri: 'http://www.example.com',\n  tunnel: true,\n  proxy:{\n    protocol: 'http:',\n    host:'127.0.0.1',\n    port:8080,\n    auth:USERSUPPLIEDINPUT // number\n  }\n});\n```",
+      "recommendation": "Update to version 0.6.0 or later.",
+      "references": "- [GitHub Commit #9ca95ec](https://github.com/request/tunnel-agent/commit/9ca95ec7219daface8a6fc2674000653de0922c0)\n- [Proof of Concept](https://gist.github.com/ChALkeR/fd6b2c445834244e7d440a043f9d2ff4)",
+      "access": "public",
+      "severity": "moderate",
+      "cwe": "CWE-20",
+      "metadata": {
+        "module_type": "",
+        "exploitability": 3,
+        "affected_components": ""
+      },
+      "url": "https://nodesecurity.io/advisories/598"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 4,
+      "moderate": 5,
+      "high": 9,
+      "critical": 1
+    },
+    "dependencies": 297,
+    "devDependencies": 3395,
+    "optionalDependencies": 1091,
+    "totalDependencies": 3699
+  },
+  "runId": "db801c8b-63b3-4927-9929-6f531e28ac11"
+}
