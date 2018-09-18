@@ -56,7 +56,7 @@
     "js-beautify": "~1.5.10",
     "jshint": "~2.8.0",
     "lcov-result-merger": "~1.0.2",
-    "mocha": "~2.3.4",
+    "mocha": "^5.2.0",
     "walk": "^2.3.9"
   },
   "vendorDependencies": {
