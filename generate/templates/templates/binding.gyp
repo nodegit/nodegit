@@ -35,7 +35,6 @@
       "include_dirs": [
         "vendor/libv8-convert",
         "vendor/libssh2/include",
-        "vendor/openssl/openssl/include",
         "<!(node -e \"require('nan')\")"
       ],
 

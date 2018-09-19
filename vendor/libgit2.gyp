@@ -25,7 +25,6 @@
       "dependencies": [
         "zlib",
         "http_parser/http_parser.gyp:http_parser",
-        "openssl/openssl.gyp:openssl",
         "libssh2"
       ],
       "sources": [
@@ -518,9 +517,6 @@
       "include_dirs": [
         ".",
         "libssh2/include",
-      ],
-      "dependencies": [
-        "openssl/openssl.gyp:openssl"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
