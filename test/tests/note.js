@@ -58,7 +58,7 @@ describe("Note", function() {
     var noteRef = "refs/notes/commits";
     var sig = Signature.create("John", "john@doe.com", Date.now(), 0);
 
-    return Note.create(this.repository, noteRef, sig, sig, sha, "Testing!", 1)
+    Note.create(this.repository, noteRef, sig, sig, sha, "Testing!", 1)
       .then((noteSha) => Note.remove(this.repository, noteRef, sig, sig, sha))
       .then(function() {
         return Note.read(test.repository, noteRef, sha).catch(function(ex) {

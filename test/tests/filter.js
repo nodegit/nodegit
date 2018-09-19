@@ -104,7 +104,7 @@ describe("Filter", function() {
     var secondFilter = "hellofilter";
 
     after(function(done) {
-      return Registry.unregister(secondFilter)
+      Registry.unregister(secondFilter)
         .then(function() {
           done();
         });
