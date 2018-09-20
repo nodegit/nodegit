@@ -328,6 +328,11 @@
             "GIT_USE_STAT_MTIM"
           ]
         }],
+        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+          "include_dirs": [
+            "/usr/local/opt/openssl@1.1/include"
+          ]
+        }],
         ["OS=='win'", {
           "defines": [
             "GIT_WINHTTP",
@@ -524,6 +529,11 @@
         ]
       },
       "conditions": [
+        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+          "include_dirs": [
+            "/usr/local/opt/openssl@1.1/include"
+          ]
+        }],
         ["OS=='win'", {
           "include_dirs": [
             "libssh2/src",

@@ -72,6 +72,13 @@
           }
         ],
         [
+          "OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+            "include_dirs": [
+              "/usr/local/opt/openssl@1.1/include"
+            ]
+          }
+        ],
+        [
           "OS=='win'", {
             "defines": [
               "_HAS_EXCEPTIONS=1"
@@ -101,6 +108,14 @@
           "OS=='linux' or OS.endswith('bsd')", {
             "cflags": [
               "-std=c++11"
+            ]
+          }
+        ],
+        [
+          "OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+            "libraries": [
+              "/usr/local/opt/openssl@1.1/lib/libcrypto.a",
+              "/usr/local/opt/openssl@1.1/lib/libssl.a"
             ]
           }
         ]
