@@ -135,6 +135,10 @@
         ],
         [
           "OS=='linux' or OS.endswith('bsd')", {
+            "libraries": [
+              "-lcrypto",
+              "-lssl"
+            ],
             "cflags": [
               "-std=c++11"
             ]
