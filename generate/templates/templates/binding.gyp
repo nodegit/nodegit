@@ -58,6 +58,17 @@
         ],
         [
           "OS=='mac'", {
+            "conditions": [
+              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+                "include_dirs": [
+                  "/usr/local/opt/openssl@1.1/include"
+                ],
+                "libraries": [
+                  "/usr/local/opt/openssl@1.1/lib/libcrypto.a",
+                  "/usr/local/opt/openssl@1.1/lib/libssl.a"
+                ]
+              }]
+            ],
             "xcode_settings": {
               "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
               "MACOSX_DEPLOYMENT_TARGET": "10.7",
@@ -72,14 +83,32 @@
           }
         ],
         [
-          "OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
-            "include_dirs": [
-              "/usr/local/opt/openssl@1.1/include"
-            ]
-          }
-        ],
-        [
           "OS=='win'", {
+            "conditions": [
+              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+                "conditions": [
+                  ["target_arch == 'x64'", {
+                    "include_dirs": ["vendor/win/openssl/include64"],
+                    "libraries": [
+                      "<(module_root_dir)/vendor/win/openssl/lib64/libcryptoMT.lib",
+                      "<(module_root_dir)/vendor/win/openssl/lib64/libsslMT.lib",
+                      "winhttp.lib",
+                      "crypt32.lib",
+                      "rpcrt4.lib"
+                    ]
+                  }, {
+                    "include_dirs": ["vendor/win/openssl/include"],
+                    "libraries": [
+                      "<(module_root_dir)/vendor/win/openssl/lib/libcryptoMT.lib",
+                      "<(module_root_dir)/vendor/win/openssl/lib/libsslMT.lib",
+                      "winhttp.lib",
+                      "crypt32.lib",
+                      "rpcrt4.lib"
+                    ]
+                  }]
+                ]
+              }]
+            ],
             "defines": [
               "_HAS_EXCEPTIONS=1"
             ],
@@ -108,14 +137,6 @@
           "OS=='linux' or OS.endswith('bsd')", {
             "cflags": [
               "-std=c++11"
-            ]
-          }
-        ],
-        [
-          "OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
-            "libraries": [
-              "/usr/local/opt/openssl@1.1/lib/libcrypto.a",
-              "/usr/local/opt/openssl@1.1/lib/libssl.a"
             ]
           }
         ]

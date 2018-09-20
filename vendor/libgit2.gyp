@@ -285,6 +285,13 @@
       ],
       "conditions": [
         ["OS=='mac'", {
+            "conditions": [
+              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+                "include_dirs": [
+                  "/usr/local/opt/openssl@1.1/include"
+                ]
+              }]
+            ],
             "defines": [
                 "GIT_SECURE_TRANSPORT",
                 "GIT_USE_STAT_MTIMESPEC"
@@ -328,11 +335,6 @@
             "GIT_USE_STAT_MTIM"
           ]
         }],
-        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
-          "include_dirs": [
-            "/usr/local/opt/openssl@1.1/include"
-          ]
-        }],
         ["OS=='win'", {
           "defines": [
             "GIT_WINHTTP",
@@ -360,6 +362,15 @@
                   ],
                 },
               }],
+              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+                "conditions": [
+                  ["target_arch=='x64'", {
+                    "include_dirs": ["win/openssl/include64"]
+                  }, {
+                    "include_dirs": ["win/openssl/include"]
+                  }]
+                ]
+              }]
             ],
           },
           "msvs_disabled_warnings": [
@@ -535,6 +546,17 @@
           ]
         }],
         ["OS=='win'", {
+          "conditions": [
+            ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              "conditions": [
+                ["target_arch=='x64'", {
+                  "include_dirs": ["win/openssl/include64"]
+                }, {
+                  "include_dirs": ["win/openssl/include"]
+                }]
+              ]
+            }]
+          ],
           "include_dirs": [
             "libssh2/src",
             "libssh2/win32",
