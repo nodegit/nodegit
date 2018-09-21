@@ -6,6 +6,13 @@ var rooted = function (dir) {
   return escapedPathForShell;
 };
 
+var isWin64 = function() {
+  return process.platform === "win32" && (
+    process.arch === "x64" ||
+      process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432")
+  );
+};
+
 module.exports = function retrieveExternalDependencies() {
   if (process.platform === "win32") {
     return Promise.resolve("");
@@ -13,18 +20,31 @@ module.exports = function retrieveExternalDependencies() {
 
   return new Promise(function(resolve, reject) {
     console.info("[nodegit] Configuring libssh2.");
-    var opensslDir = rooted("vendor/openssl/openssl");
+    var opensslDir;
+
+    if (process.platform === "darwin") {
+      opensslDir = "/usr/local/opt/openssl@1.1";
+    } else if (process.platform === "win32") {
+      opensslDir = path.join(process.cwd(), "vendor", "win", "openssl");
+    }
+
     var newEnv = {};
     Object.keys(process.env).forEach(function(key) {
       newEnv[key] = process.env[key];
     });
-    newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
-    newEnv.CPPFLAGS += " -I" + path.join(opensslDir, "include");
-    newEnv.CPPFLAGS = newEnv.CPPFLAGS.trim();
+
+    const includeDirName = isWin64() ? "include64" : "include";
+
+    var maybeLibsslPrefix = "";
+    if (opensslDir) {
+      newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
+      newEnv.CPPFLAGS += " -I" + path.join(opensslDir, includeDirName);
+      newEnv.CPPFLAGS = newEnv.CPPFLAGS.trim();
+      maybeLibsslPrefix = ` --with-libssl-prefix=${opensslDir}`;
+    }
 
     cp.exec(
-      rooted("vendor/libssh2/configure") +
-        " --with-libssl-prefix=" + opensslDir,
+      rooted("vendor/libssh2/configure") + maybeLibsslPrefix,
       {cwd: rooted("vendor/libssh2/"), env: newEnv},
       function(err, stdout, stderr) {
         if (err) {
