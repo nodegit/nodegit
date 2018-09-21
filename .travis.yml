@@ -61,6 +61,8 @@ before_install:
   - export CXX=clang++
   - export npm_config_clang=1
   - export JOBS=4
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update             ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install openssl@1.1; fi
 
   - if [ -z "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" == "true" ]; then
       export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
