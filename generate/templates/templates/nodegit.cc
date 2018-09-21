@@ -105,8 +105,8 @@ void OpenSSL_LockingCallback(int mode, int type, const char *, int) {
   }
 }
 
-unsigned long OpenSSL_IDCallback() {
-  return (unsigned long)uv_thread_self();
+void OpenSSL_IDCallback(CRYPTO_THREADID *id) {
+  CRYPTO_THREADID_set_numeric(id, (unsigned long)uv_thread_self());
 }
 
 void OpenSSL_ThreadSetup() {
@@ -117,7 +117,7 @@ void OpenSSL_ThreadSetup() {
   }
 
   CRYPTO_set_locking_callback(OpenSSL_LockingCallback);
-  CRYPTO_set_id_callback(OpenSSL_IDCallback);
+  CRYPTO_THREADID_set_callback(OpenSSL_IDCallback);
 }
 
 ThreadPool libgit2ThreadPool(10, uv_default_loop());
