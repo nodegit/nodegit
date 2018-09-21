@@ -91,19 +91,13 @@
                     "include_dirs": ["vendor/win/openssl/include64"],
                     "libraries": [
                       "<(module_root_dir)/vendor/win/openssl/lib64/libcryptoMT.lib",
-                      "<(module_root_dir)/vendor/win/openssl/lib64/libsslMT.lib",
-                      "winhttp.lib",
-                      "crypt32.lib",
-                      "rpcrt4.lib"
+                      "<(module_root_dir)/vendor/win/openssl/lib64/libsslMT.lib"
                     ]
                   }, {
                     "include_dirs": ["vendor/win/openssl/include"],
                     "libraries": [
                       "<(module_root_dir)/vendor/win/openssl/lib/libcryptoMT.lib",
-                      "<(module_root_dir)/vendor/win/openssl/lib/libsslMT.lib",
-                      "winhttp.lib",
-                      "crypt32.lib",
-                      "rpcrt4.lib"
+                      "<(module_root_dir)/vendor/win/openssl/lib/libsslMT.lib"
                     ]
                   }]
                 ]
@@ -123,7 +117,12 @@
                   "/FORCE:MULTIPLE"
                 ]
               }
-            }
+            },
+            "libraries": [
+              "winhttp.lib",
+              "crypt32.lib",
+              "rpcrt4.lib"
+            ]
           }
         ],
         [
