@@ -555,6 +555,11 @@
                   "include_dirs": ["win/openssl/include"]
                 }]
               ]
+            }, {
+              "defines": [
+                "OPENSSL_NO_RIPEMD",
+                "OPENSSL_NO_CAST"
+              ]
             }]
           ],
           "include_dirs": [
