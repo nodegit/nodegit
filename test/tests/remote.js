@@ -142,8 +142,7 @@ describe("Remote", function() {
       .then(function(remote) {
         var fetchOpts = {
           callbacks: {
-            pushTransferProgress: function(a, b, c) {
-              console.log("CALL", a, b, c);
+            pushTransferProgress: function() {
               wasCalled = true;
             }
           }
@@ -159,7 +158,7 @@ describe("Remote", function() {
       });
   });
 
-  it.only("can monitor transfer progress while pushing with throttling",
+  it("can monitor transfer progress while pushing with throttling",
     function() {
       var repo = this.repository;
       var wasCalled = false;
@@ -170,7 +169,7 @@ describe("Remote", function() {
             callbacks: {
               pushTransferProgress: {
                 throttle: 200,
-                callback: function(a, b, c) {
+                callback: function() {
                   wasCalled = true;
                 },
               }
