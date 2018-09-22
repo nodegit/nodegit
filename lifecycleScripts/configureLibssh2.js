@@ -9,7 +9,7 @@ var rooted = function (dir) {
 var isWin64 = function() {
   return process.platform === "win32" && (
     process.arch === "x64" ||
-      process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432")
+    process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432")
   );
 };
 
