@@ -120,9 +120,18 @@ const releasePairs = R.toPairs({
 
 const distributionPairs = [...debugPairs, ...releasePairs];
 
+const getDistributionConfigURLFromHash = itemHash =>
+  `https://bintray.com/conan-community/conan/download_file?file_path=conan%2FOpenSSL%2F1.1.0i%2Fstable%2Fpackage%2F${itemHash}%2Fconaninfo.txt`
+
+const getDistributionDownloadURLFromHash = itemHash =>
+  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/${itemHash}/conan_package.tgz`
+
+const getDistributionsRootURL = () =>
+  'https://bintray.com/package/files/conan-community/conan/OpenSSL%3Aconan?order=asc&sort=name&basePath=conan%2FOpenSSL%2F1.1.0i%2Fstable%2Fpackage&tab=files'
+
 const detectDistributionPairFromConfig = (itemHash, body) => R.reduce(
   (acc, [releaseName, predicate]) => R.cond([
-    [predicate, R.always([releaseName, itemHash])],
+    [predicate, R.always([releaseName, getDistributionDownloadURLFromHash(itemHash)])],
     [R.T, R.always(acc)]
   ])(body),
   undefined,
@@ -130,7 +139,7 @@ const detectDistributionPairFromConfig = (itemHash, body) => R.reduce(
 );
 
 const getDistributionConfig = (itemHash) =>
-  request.get(`https://bintray.com/conan-community/conan/download_file?file_path=conan%2FOpenSSL%2F1.1.0i%2Fstable%2Fpackage%2F${itemHash}%2Fconaninfo.txt`)
+  request.get(getDistributionConfigURLFromHash(itemHash))
     .then((body) => detectDistributionPairFromConfig(itemHash, body));
 
 const discoverDistributions = (treeHtml) => {
@@ -151,9 +160,10 @@ const discoverDistributions = (treeHtml) => {
   );
 }
 
-request('https://bintray.com/package/files/conan-community/conan/OpenSSL%3Aconan?order=asc&sort=name&basePath=conan%2FOpenSSL%2F1.1.0i%2Fstable%2Fpackage&tab=files')
+const outputPath = path.resolve('..', 'vendor', 'openssl_distributions.json');
+request(getDistributionsRootURL())
   .then(discoverDistributions)
   .then(R.filter(R.identity))
   .then(R.sortBy(R.prop(0)))
   .then(R.fromPairs)
-  .then(distributions => fse.writeFile('openssl_distributions.json', JSON.stringify(distributions, null, 2)));
+  .then(distributions => fse.writeFile(outputPath, JSON.stringify(distributions, null, 2)));
