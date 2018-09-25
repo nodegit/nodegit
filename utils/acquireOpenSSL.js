@@ -1,4 +1,3 @@
-const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
 const R = require('ramda');
@@ -7,7 +6,7 @@ const stream = require('stream');
 const tar = require('tar-fs');
 const zlib = require('zlib');
 
-const vendorPath = path.resolve('..', 'vendor');
+const vendorPath = path.resolve(__dirname, '..', 'vendor');
 const distrosFilePath = path.join(vendorPath, 'openssl_distributions.json');
 const extractPath = path.join(vendorPath, 'openssl');
 

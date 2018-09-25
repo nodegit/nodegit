@@ -1,7 +1,68 @@
 {
+  "conditions": [
+    ["(OS=='win' and node_root_dir.split('\\\\')[-1].startswith('iojs')) or (OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs'))", {
+      "conditions": [
+        ["OS=='win'", {
+          "variables": {
+            "is_electron%": "1",
+            "openssl_include_dir%": "<(module_root_dir)\\vendor\\openssl"
+          }
+        }, {
+          "variables": {
+            "is_electron%": "1",
+            "openssl_include_dir%": "<(module_root_dir)/vendor/openssl"
+          }
+        }]
+      ],
+    }, {
+      "conditions": [
+        ["OS=='win'", {
+          "variables": {
+            "is_electron%": "0",
+            "openssl_include_dir%": "<(node_root_dir)\\include\\node"
+          }
+        }, {
+          "variables": {
+            "is_electron%": "0",
+            "openssl_include_dir%": "<(node_root_dir)/include/node"
+          }
+        }]
+      ]
+    }]
+  ],
+
   "targets": [
     {
+      "target_name": "acquireOpenSSL",
+        "conditions": [
+        ["<(is_electron) == 1", {
+          "actions": [{
+            "action_name": "acquire",
+            "action": ["node", "utils/acquireOpenSSL.js"],
+            "inputs": ["vendor/openssl_distributions.json"],
+            "outputs": ["vendor/openssl"]
+          }]
+        }]
+      ]
+    },
+    {
+      "target_name": "configureLibssh2",
+      "actions": [{
+        "action_name": "configure",
+        "action": ["node", "utils/configureLibssh2.js", "<(openssl_include_dir)", "<(is_electron)"],
+        "inputs": [""],
+        "outputs": [""]
+      }],
+      "hard_dependencies": [
+        "acquireOpenSSL"
+      ]
+    },
+    {
       "target_name": "nodegit",
+
+      "hard_dependencies": [
+        "configureLibssh2"
+      ],
 
       "dependencies": [
         "vendor/libgit2.gyp:libgit2"
@@ -64,8 +125,8 @@
                   "vendor/openssl/include"
                 ],
                 "libraries": [
-                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.a",
-                  "<(module_root_dir)/vendor/openssl/lib/libssl.a"
+                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.dylib",
+                  "<(module_root_dir)/vendor/openssl/lib/libssl.dylib"
                 ]
               }]
             ],

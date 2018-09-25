@@ -13,22 +13,21 @@ module.exports = function retrieveExternalDependencies() {
 
   return new Promise(function(resolve, reject) {
     console.info("[nodegit] Configuring libssh2.");
-    var opensslDir;
-
-    if (process.platform === "darwin") {
-      opensslDir = "vendor/openssl";
-    }
+    var opensslDir = process.argv[2];
+    var isElectron = process.argv[3] === "1";
+    var opensslIncludes = isElectron ? path.join(opensslDir, "includes") : opensslDir;
 
     var newEnv = {};
     Object.keys(process.env).forEach(function(key) {
       newEnv[key] = process.env[key];
     });
 
+    newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
+    newEnv.CPPFLAGS += ` -I${opensslIncludes}`;
+    newEnv.CPPFLAGS = newEnv.CPPFLAGS.trim();
+
     var maybeLibsslPrefix = "";
-    if (opensslDir) {
-      newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
-      newEnv.CPPFLAGS += " -I" + path.join(opensslDir, "include");
-      newEnv.CPPFLAGS = newEnv.CPPFLAGS.trim();
+    if (isElectron) {
       maybeLibsslPrefix = ` --with-libssl-prefix=${opensslDir}`;
     }
 
@@ -55,6 +54,6 @@ if (require.main === module) {
     console.log("nothing to do");
   }
   else {
-    module.exports().done();
+    module.exports();
   }
 }
