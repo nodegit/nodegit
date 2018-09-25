@@ -2324,9 +2324,6 @@
         "push_negotiation": {
           "ignore": true
         },
-        "push_transfer_progress": {
-          "ignore": true
-        },
         "sideband_progress": {
           "ignore": true
         },

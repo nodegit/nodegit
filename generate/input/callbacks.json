@@ -798,6 +798,33 @@
       "throttle": 100
     }
   },
+  "git_push_transfer_progress": {
+    "args": [
+      {
+        "name": "current",
+        "type": "unsigned int"
+      },
+      {
+        "name": "total",
+        "type": "unsigned int"
+      },
+      {
+        "name": "bytes",
+        "type": "size_t"
+      },
+      {
+        "name": "payload",
+        "type": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": -1,
+      "throttle": 100
+    }
+  },
   "git_transport_cb": {
     "args": [
       {

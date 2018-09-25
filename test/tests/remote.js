@@ -5,6 +5,7 @@ var _ = require("lodash");
 var fp = require("lodash/fp");
 
 var garbageCollect = require("../utils/garbage_collect.js");
+var RepoUtils = require("../utils/repository_setup");
 
 describe("Remote", function() {
   var NodeGit = require("../../");
@@ -12,6 +13,7 @@ describe("Remote", function() {
   var Remote = NodeGit.Remote;
 
   var reposPath = local("../repos/workdir");
+  var bareReposPath = local("../repos/bare");
   var url = "https://github.com/nodegit/test";
   var url2 = "https://github.com/nodegit/test2";
   var privateUrl = "git@github.com:nodegit/private";
@@ -44,6 +46,9 @@ describe("Remote", function() {
         test.remote = remote;
 
         return removeNonOrigins(test.repository);
+      })
+      .then(function() {
+        return RepoUtils.createRepository(bareReposPath, 1);
       });
   });
 
@@ -128,6 +133,59 @@ describe("Remote", function() {
         });
       });
   });
+
+  it("can monitor transfer progress while pushing", function() {
+    var repo = this.repository;
+    var wasCalled = false;
+
+    return Remote.create(repo, "bare", bareReposPath)
+      .then(function(remote) {
+        var fetchOpts = {
+          callbacks: {
+            pushTransferProgress: function() {
+              wasCalled = true;
+            }
+          }
+        };
+
+        var ref = "refs/heads/master";
+        var refs = [ref + ":" + ref];
+
+        return remote.push(refs, fetchOpts)
+        .then(function(res) {
+          assert.ok(wasCalled);
+        });
+      });
+  });
+
+  it("can monitor transfer progress while pushing with throttling",
+    function() {
+      var repo = this.repository;
+      var wasCalled = false;
+
+      return Remote.create(repo, "bare", bareReposPath)
+        .then(function(remote) {
+          var fetchOpts = {
+            callbacks: {
+              pushTransferProgress: {
+                throttle: 200,
+                callback: function() {
+                  wasCalled = true;
+                },
+              }
+            }
+          };
+
+          var ref = "refs/heads/master";
+          var refs = [ref + ":" + ref];
+
+          return remote.push(refs, fetchOpts)
+          .then(function(res) {
+            assert.ok(wasCalled);
+          });
+        });
+      }
+    );
 
   it("can monitor transfer progress while downloading", function() {
     // Set a reasonable timeout here now that our repository has grown.
