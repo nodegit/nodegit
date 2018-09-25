@@ -21,18 +21,21 @@ const debugPairs = R.toPairs({
     ...windowsCommonConditions,
     R.test(/arch=x86$/gm),
     R.test(/build_type=Debug$/gm),
+    R.test(/compiler\.runtime=MTd$/gm),
     R.test(/compiler\.version=12$/gm)
   ]),
   'win32-vs14-static-debug': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86$/gm),
     R.test(/build_type=Debug$/gm),
+    R.test(/compiler\.runtime=MTd$/gm),
     R.test(/compiler\.version=14$/gm)
   ]),
   'win32-vs15-static-debug': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86$/gm),
     R.test(/build_type=Debug$/gm),
+    R.test(/compiler\.runtime=MTd$/gm),
     R.test(/compiler\.version=15$/gm)
   ]),
 
@@ -40,18 +43,21 @@ const debugPairs = R.toPairs({
     ...windowsCommonConditions,
     R.test(/arch=x86_64$/gm),
     R.test(/build_type=Debug$/gm),
+    R.test(/compiler\.runtime=MTd$/gm),
     R.test(/compiler\.version=12$/gm)
   ]),
   'win64-vs14-static-debug': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86_64$/gm),
     R.test(/build_type=Debug$/gm),
+    R.test(/compiler\.runtime=MTd$/gm),
     R.test(/compiler\.version=14$/gm)
   ]),
   'win64-vs15-static-debug': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86_64$/gm),
     R.test(/build_type=Debug$/gm),
+    R.test(/compiler\.runtime=MTd$/gm),
     R.test(/compiler\.version=15$/gm)
   ]),
   
@@ -72,18 +78,21 @@ const releasePairs = R.toPairs({
     ...windowsCommonConditions,
     R.test(/arch=x86$/gm),
     R.test(/build_type=Release$/gm),
+    R.test(/compiler\.runtime=MT$/gm),
     R.test(/compiler\.version=12$/gm)
   ]),
   'win32-vs14-static': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86$/gm),
     R.test(/build_type=Release$/gm),
+    R.test(/compiler\.runtime=MT$/gm),
     R.test(/compiler\.version=14$/gm)
   ]),
   'win32-vs15-static': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86$/gm),
     R.test(/build_type=Release$/gm),
+    R.test(/compiler\.runtime=MT$/gm),
     R.test(/compiler\.version=15$/gm)
   ]),
 
@@ -91,18 +100,21 @@ const releasePairs = R.toPairs({
     ...windowsCommonConditions,
     R.test(/arch=x86_64$/gm),
     R.test(/build_type=Release$/gm),
+    R.test(/compiler\.runtime=MT$/gm),
     R.test(/compiler\.version=12$/gm)
   ]),
   'win64-vs14-static': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86_64$/gm),
     R.test(/build_type=Release$/gm),
+    R.test(/compiler\.runtime=MT$/gm),
     R.test(/compiler\.version=14$/gm)
   ]),
   'win64-vs15-static': R.allPass([
     ...windowsCommonConditions,
     R.test(/arch=x86_64$/gm),
     R.test(/build_type=Release$/gm),
+    R.test(/compiler\.runtime=MT$/gm),
     R.test(/compiler\.version=15$/gm)
   ]),
 
