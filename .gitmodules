@@ -1,4 +1,6 @@
 [submodule "vendor/libgit2"]
 	path = vendor/libgit2
-[submodule "vendor/libgit2"]
 	url = https://github.com/nodegit/libgit2.git
+[submodule "vendor/http_parser"]
+	path = vendor/http_parser
+	url = https://github.com/nodejs/http-parser
