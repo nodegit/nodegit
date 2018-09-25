@@ -9,9 +9,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       return repo.createBranch(
         "new-branch",
         commit,
-        0,
-        repo.defaultSignature(),
-        "Created new-branch on HEAD");
+        0);
     });
   }).done(function() {
     console.log("All done!");
