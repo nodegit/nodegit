@@ -60,6 +60,7 @@
     "mocha": "^5.2.0",
     "ramda": "^0.25.0",
     "request-promise-native": "^1.0.5",
+    "tar-fs": "^1.16.3",
     "walk": "^2.3.9"
   },
   "vendorDependencies": {

@@ -6,13 +6,6 @@ var rooted = function (dir) {
   return escapedPathForShell;
 };
 
-var isWin64 = function() {
-  return process.platform === "win32" && (
-    process.arch === "x64" ||
-    process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432")
-  );
-};
-
 module.exports = function retrieveExternalDependencies() {
   if (process.platform === "win32") {
     return Promise.resolve("");
@@ -23,9 +16,7 @@ module.exports = function retrieveExternalDependencies() {
     var opensslDir;
 
     if (process.platform === "darwin") {
-      opensslDir = "/usr/local/opt/openssl@1.1";
-    } else if (process.platform === "win32") {
-      opensslDir = path.join(process.cwd(), "vendor", "win", "openssl");
+      opensslDir = "vendor/openssl";
     }
 
     var newEnv = {};
@@ -33,12 +24,10 @@ module.exports = function retrieveExternalDependencies() {
       newEnv[key] = process.env[key];
     });
 
-    const includeDirName = isWin64() ? "include64" : "include";
-
     var maybeLibsslPrefix = "";
     if (opensslDir) {
       newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
-      newEnv.CPPFLAGS += " -I" + path.join(opensslDir, includeDirName);
+      newEnv.CPPFLAGS += " -I" + path.join(opensslDir, "include");
       newEnv.CPPFLAGS = newEnv.CPPFLAGS.trim();
       maybeLibsslPrefix = ` --with-libssl-prefix=${opensslDir}`;
     }

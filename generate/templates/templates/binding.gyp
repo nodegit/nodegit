@@ -61,11 +61,11 @@
             "conditions": [
               ["node_root_dir.split('/')[-1].startswith('iojs')", {
                 "include_dirs": [
-                  "/usr/local/opt/openssl@1.1/include"
+                  "vendor/openssl/include"
                 ],
                 "libraries": [
-                  "/usr/local/opt/openssl@1.1/lib/libcrypto.a",
-                  "/usr/local/opt/openssl@1.1/lib/libssl.a"
+                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.a",
+                  "<(module_root_dir)/vendor/openssl/lib/libssl.a"
                 ]
               }]
             ],
@@ -86,20 +86,10 @@
           "OS=='win'", {
             "conditions": [
               ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
-                "conditions": [
-                  ["target_arch == 'x64'", {
-                    "include_dirs": ["vendor/win/openssl/include64"],
-                    "libraries": [
-                      "<(module_root_dir)/vendor/win/openssl/lib64/libcryptoMT.lib",
-                      "<(module_root_dir)/vendor/win/openssl/lib64/libsslMT.lib"
-                    ]
-                  }, {
-                    "include_dirs": ["vendor/win/openssl/include"],
-                    "libraries": [
-                      "<(module_root_dir)/vendor/win/openssl/lib/libcryptoMT.lib",
-                      "<(module_root_dir)/vendor/win/openssl/lib/libsslMT.lib"
-                    ]
-                  }]
+                "include_dirs": ["vendor/openssl/include"],
+                "libraries": [
+                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
+                  "<(module_root_dir)/vendor/openssl/lib/libssl.lib"
                 ]
               }]
             ],

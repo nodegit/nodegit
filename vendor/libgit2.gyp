@@ -363,13 +363,7 @@
                 },
               }],
               ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
-                "conditions": [
-                  ["target_arch=='x64'", {
-                    "include_dirs": ["win/openssl/include64"]
-                  }, {
-                    "include_dirs": ["win/openssl/include"]
-                  }]
-                ]
+                "include_dirs": ["openssl/include"]
               }]
             ],
           },
@@ -542,18 +536,14 @@
       "conditions": [
         ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
           "include_dirs": [
-            "/usr/local/opt/openssl@1.1/include"
+            "openssl/include"
           ]
         }],
         ["OS=='win'", {
           "conditions": [
             ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
-              "conditions": [
-                ["target_arch=='x64'", {
-                  "include_dirs": ["win/openssl/include64"]
-                }, {
-                  "include_dirs": ["win/openssl/include"]
-                }]
+              "include_dirs": [
+                "openssl/include"
               ]
             }, {
               "defines": [
