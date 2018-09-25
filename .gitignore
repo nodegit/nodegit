@@ -18,6 +18,7 @@
 /generate/missing-tests.json
 /binding.gyp
 
+/vendor/openssl/
 
 *.log
 .DS_STORE
