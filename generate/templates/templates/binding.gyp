@@ -125,8 +125,8 @@
                   "vendor/openssl/include"
                 ],
                 "libraries": [
-                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.dylib",
-                  "<(module_root_dir)/vendor/openssl/lib/libssl.dylib"
+                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.a",
+                  "<(module_root_dir)/vendor/openssl/lib/libssl.a"
                 ]
               }]
             ],

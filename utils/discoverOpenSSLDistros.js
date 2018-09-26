@@ -5,128 +5,128 @@ const R = require('ramda');
 const request = require('request-promise-native');
 
 const windowsCommonConditions = [
-  R.test(/os=Windows$/gm),
-  R.test(/shared=False$/gm)
+  R.test(/^\s*os=Windows$/gm),
+  R.test(/^\s*shared=False$/gm)
 ]
 
 const macCommonConditions = [
-  R.test(/arch=x86_64$/gm),
-  R.test(/os=Macos$/gm),
-  R.test(/compiler=apple-clang$/gm),
-  R.test(/shared=False$/gm)
+  R.test(/^\s*arch=x86_64$/gm),
+  R.test(/^\s*os=Macos$/gm),
+  R.test(/^\s*compiler=apple-clang$/gm),
+  R.test(/^\s*shared=False$/gm)
 ];
 
 const debugPairs = R.toPairs({
   'win32-vs12-static-debug': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86$/gm),
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.runtime=MTd$/gm),
-    R.test(/compiler\.version=12$/gm)
+    R.test(/^\s*arch=x86$/gm),
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.runtime=MTd$/gm),
+    R.test(/^\s*compiler\.version=12$/gm)
   ]),
   'win32-vs14-static-debug': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86$/gm),
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.runtime=MTd$/gm),
-    R.test(/compiler\.version=14$/gm)
+    R.test(/^\s*arch=x86$/gm),
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.runtime=MTd$/gm),
+    R.test(/^\s*compiler\.version=14$/gm)
   ]),
   'win32-vs15-static-debug': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86$/gm),
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.runtime=MTd$/gm),
-    R.test(/compiler\.version=15$/gm)
+    R.test(/^\s*arch=x86$/gm),
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.runtime=MTd$/gm),
+    R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
   'win64-vs12-static-debug': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86_64$/gm),
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.runtime=MTd$/gm),
-    R.test(/compiler\.version=12$/gm)
+    R.test(/^\s*arch=x86_64$/gm),
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.runtime=MTd$/gm),
+    R.test(/^\s*compiler\.version=12$/gm)
   ]),
   'win64-vs14-static-debug': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86_64$/gm),
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.runtime=MTd$/gm),
-    R.test(/compiler\.version=14$/gm)
+    R.test(/^\s*arch=x86_64$/gm),
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.runtime=MTd$/gm),
+    R.test(/^\s*compiler\.version=14$/gm)
   ]),
   'win64-vs15-static-debug': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86_64$/gm),
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.runtime=MTd$/gm),
-    R.test(/compiler\.version=15$/gm)
+    R.test(/^\s*arch=x86_64$/gm),
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.runtime=MTd$/gm),
+    R.test(/^\s*compiler\.version=15$/gm)
   ]),
   
   'macOS-clang-9-static-debug': R.allPass([
     ...macCommonConditions,
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.version=9.0$/gm)
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.version=9.0$/gm)
   ]),
   'macOS-clang-8.1-static-debug': R.allPass([
     ...macCommonConditions,
-    R.test(/build_type=Debug$/gm),
-    R.test(/compiler\.version=8\.1$/gm)
+    R.test(/^\s*build_type=Debug$/gm),
+    R.test(/^\s*compiler\.version=8\.1$/gm)
   ])
 })
 
 const releasePairs = R.toPairs({
   'win32-vs12-static': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86$/gm),
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.runtime=MT$/gm),
-    R.test(/compiler\.version=12$/gm)
+    R.test(/^\s*arch=x86$/gm),
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.runtime=MT$/gm),
+    R.test(/^\s*compiler\.version=12$/gm)
   ]),
   'win32-vs14-static': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86$/gm),
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.runtime=MT$/gm),
-    R.test(/compiler\.version=14$/gm)
+    R.test(/^\s*arch=x86$/gm),
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.runtime=MT$/gm),
+    R.test(/^\s*compiler\.version=14$/gm)
   ]),
   'win32-vs15-static': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86$/gm),
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.runtime=MT$/gm),
-    R.test(/compiler\.version=15$/gm)
+    R.test(/^\s*arch=x86$/gm),
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.runtime=MT$/gm),
+    R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
   'win64-vs12-static': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86_64$/gm),
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.runtime=MT$/gm),
-    R.test(/compiler\.version=12$/gm)
+    R.test(/^\s*arch=x86_64$/gm),
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.runtime=MT$/gm),
+    R.test(/^\s*compiler\.version=12$/gm)
   ]),
   'win64-vs14-static': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86_64$/gm),
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.runtime=MT$/gm),
-    R.test(/compiler\.version=14$/gm)
+    R.test(/^\s*arch=x86_64$/gm),
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.runtime=MT$/gm),
+    R.test(/^\s*compiler\.version=14$/gm)
   ]),
   'win64-vs15-static': R.allPass([
     ...windowsCommonConditions,
-    R.test(/arch=x86_64$/gm),
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.runtime=MT$/gm),
-    R.test(/compiler\.version=15$/gm)
+    R.test(/^\s*arch=x86_64$/gm),
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.runtime=MT$/gm),
+    R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
   'macOS-clang-9-static': R.allPass([
     ...macCommonConditions,
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.version=9.0$/gm)
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.version=9.0$/gm)
   ]),
   'macOS-clang-8.1-static': R.allPass([
     ...macCommonConditions,
-    R.test(/build_type=Release$/gm),
-    R.test(/compiler\.version=8\.1$/gm)
+    R.test(/^\s*build_type=Release$/gm),
+    R.test(/^\s*compiler\.version=8\.1$/gm)
   ])
 });
 
@@ -172,7 +172,7 @@ const discoverDistributions = (treeHtml) => {
   );
 }
 
-const outputPath = path.resolve('..', 'vendor', 'openssl_distributions.json');
+const outputPath = path.resolve(__dirname, '..', 'vendor', 'openssl_distributions.json');
 request(getDistributionsRootURL())
   .then(discoverDistributions)
   .then(R.filter(R.identity))

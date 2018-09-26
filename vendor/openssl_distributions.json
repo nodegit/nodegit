@@ -1,8 +1,8 @@
 {
-  "macOS-clang-8.1-static": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/4dc21962ebc63953d4b0879c71588b3b46212e03/conan_package.tgz",
-  "macOS-clang-8.1-static-debug": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/bb3dedf958bed17c8b7de4ab616b14d054cab175/conan_package.tgz",
-  "macOS-clang-9-static": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/5e9b4170b1252b259e07e6ebd53940386a1c30e6/conan_package.tgz",
-  "macOS-clang-9-static-debug": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/ab7e33d40e9aa675c552b4a9be0cc5bb204a4eb5/conan_package.tgz",
+  "macOS-clang-8.1-static": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/0197c20e330042c026560da838f5b4c4bf094b8a/conan_package.tgz",
+  "macOS-clang-8.1-static-debug": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/bd3cca94af79c6a2c35b664c43f643582a13a9f2/conan_package.tgz",
+  "macOS-clang-9-static": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/227fb0ea22f4797212e72ba94ea89c7b3fbc2a0c/conan_package.tgz",
+  "macOS-clang-9-static-debug": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/85d674b0f6705cafe6b2edb8689ffbe0f3c2e60b/conan_package.tgz",
   "win32-vs12-static": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/d16d8a16b4cef0046922b8d83d567689d36149d0/conan_package.tgz",
   "win32-vs12-static-debug": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/39d6fe009a278f733e97b59a4f9536bfc4e8f366/conan_package.tgz",
   "win32-vs14-static": "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/253958a6ce15f1c9325eeea33ffc0a5cfc29212a/conan_package.tgz",
