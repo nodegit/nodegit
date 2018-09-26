@@ -18,9 +18,11 @@ module.exports = function retrieveExternalDependencies() {
     var opensslIncludes = isElectron ? path.join(opensslDir, "includes") : opensslDir;
 
     var newEnv = {};
-    Object.keys(process.env).forEach(function(key) {
-      newEnv[key] = process.env[key];
-    });
+    if (process.platform !== "darwin") {
+      Object.keys(process.env).forEach(function(key) {
+        newEnv[key] = process.env[key];
+      });
+    }
 
     newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
     newEnv.CPPFLAGS += ` -I${opensslIncludes}`;
