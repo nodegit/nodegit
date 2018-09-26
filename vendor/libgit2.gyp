@@ -288,7 +288,7 @@
             "conditions": [
               ["node_root_dir.split('/')[-1].startswith('iojs')", {
                 "include_dirs": [
-                  "/usr/local/opt/openssl@1.1/include"
+                  "openssl/include"
                 ]
               }]
             ],
@@ -527,6 +527,9 @@
       "include_dirs": [
         ".",
         "libssh2/include",
+      ],
+      "hard_dependencies": [
+        "../binding.gyp:configureLibssh2"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
