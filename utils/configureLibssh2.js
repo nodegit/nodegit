@@ -18,6 +18,9 @@ module.exports = function retrieveExternalDependencies() {
     var opensslIncludes = isElectron ? path.join(opensslDir, "includes") : opensslDir;
 
     var newEnv = {};
+
+    // For some magic reason, MacOS fails to build if we copy over the current environment variables, but Linux
+    // builds fail if we DON'T copy over the current environment variables
     if (process.platform !== "darwin") {
       Object.keys(process.env).forEach(function(key) {
         newEnv[key] = process.env[key];

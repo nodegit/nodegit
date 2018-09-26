@@ -38,7 +38,7 @@ const getCompilerVersion = () => {
   }
 }
 
-const getIsDebug = () => true // TODO: Determine if we are GYPing in Debug
+const getIsDebug = () => false // TODO: Determine if we are GYPing in Debug
 
 const getMatchingDistributionName = () =>
   `${getOSName()}-${getCompilerVersion()}-static${getIsDebug() ? '-debug' : ''}`;
