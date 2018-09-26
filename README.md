@@ -102,6 +102,11 @@ In Ubuntu:
 sudo apt-get install libssl-dev
 ```
 
+Additionally, you need `curl-config` on your system. You need one of these packages:
+  * libcurl4-gnutls-dev
+  * libcurl4-nss-dev
+  * libcurl4-openssl-dev 
+
 If you are still encountering problems while installing, you should try the
 [Building from source](http://www.nodegit.org/guides/install/from-source/)
 instructions.
