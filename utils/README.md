@@ -14,7 +14,7 @@
   The discovered distributions are written into `vendor/openssl_distributions.json`. This script does not need to be run unless you are updating the version of OpenSSL to build against.
 
   ### acquireOpenSSL
-  Download the OpenSSL binaries and headers applicable to the current OS for the latest compiler version (clang-9/vs15). Uses links from `vendor/openssl_distributions.json`.
+  Download the OpenSSL binaries and headers applicable to the current OS for the latest compiler version (clang-9/vs14). Uses links from `vendor/openssl_distributions.json`.
   
   TODO:
   * Make the script pull the debug versions if node-gyp is building in debug mode

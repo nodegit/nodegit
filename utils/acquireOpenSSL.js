@@ -20,7 +20,7 @@ const getOSName = () => {
   } else if (process.platform === "darwin") {
     return "macOS";
   } else {
-    // We only discover distros for Mac and Windows. We don"t care about any other OS.
+    // We only discover distros for Mac and Windows. We don't care about any other OS.
     return "unknown";
   }
 };
@@ -29,11 +29,11 @@ const getCompilerVersion = () => {
   // TODO: Get actual compiler version. For now, just assume latest compiler for distros in openssl_distributions.js
   const osName = getOSName();
   if (osName === "win32" || osName === "win64") {
-    return "vs15";
+    return "vs14";
   } else if (osName === "macOS") {
     return "clang-9";
   } else {
-    // We only discover distros for Mac and Windows. We don"t care about any other OS.
+    // We only discover distros for Mac and Windows. We don't care about any other OS.
     return "unknown";
   }
 };
