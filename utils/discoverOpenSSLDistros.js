@@ -141,14 +141,12 @@ const getDistributionDownloadURLFromHash = itemHash =>
 const getDistributionsRootURL = () =>
   "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/";
 
-const detectDistributionPairFromConfig = (itemHash, body) => R.reduce(
-  (acc, [releaseName, predicate]) => R.cond([
-    [predicate, R.always([releaseName, getDistributionDownloadURLFromHash(itemHash)])],
-    [R.T, R.always(acc)]
-  ])(body),
-  undefined,
-  distributionPairs
-);
+const detectDistributionPairFromConfig = (itemHash, body) => R.pipe(
+  R.find(([_, predicate]) => predicate(body)),
+  (distributionPair) => distributionPair
+    ? [distributionPair[0], getDistributionDownloadURLFromHash(itemHash)]
+    : undefined
+)(distributionPairs);
 
 const getDistributionConfig = (itemHash) =>
   request.get(getDistributionConfigURLFromHash(itemHash))
