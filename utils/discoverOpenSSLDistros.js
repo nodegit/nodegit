@@ -1,13 +1,13 @@
-const cheerio = require('cheerio');
-const fse = require('fs-extra');
-const path = require('path');
-const R = require('ramda');
-const request = require('request-promise-native');
+const cheerio = require("cheerio");
+const fse = require("fs-extra");
+const path = require("path");
+const R = require("ramda");
+const request = require("request-promise-native");
 
 const windowsCommonConditions = [
   R.test(/^\s*os=Windows$/gm),
   R.test(/^\s*shared=False$/gm)
-]
+];
 
 const macCommonConditions = [
   R.test(/^\s*arch=x86_64$/gm),
@@ -17,21 +17,21 @@ const macCommonConditions = [
 ];
 
 const debugPairs = R.toPairs({
-  'win32-vs12-static-debug': R.allPass([
+  "win32-vs12-static-debug": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Debug$/gm),
     R.test(/^\s*compiler\.runtime=MTd$/gm),
     R.test(/^\s*compiler\.version=12$/gm)
   ]),
-  'win32-vs14-static-debug': R.allPass([
+  "win32-vs14-static-debug": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Debug$/gm),
     R.test(/^\s*compiler\.runtime=MTd$/gm),
     R.test(/^\s*compiler\.version=14$/gm)
   ]),
-  'win32-vs15-static-debug': R.allPass([
+  "win32-vs15-static-debug": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Debug$/gm),
@@ -39,21 +39,21 @@ const debugPairs = R.toPairs({
     R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
-  'win64-vs12-static-debug': R.allPass([
+  "win64-vs12-static-debug": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Debug$/gm),
     R.test(/^\s*compiler\.runtime=MTd$/gm),
     R.test(/^\s*compiler\.version=12$/gm)
   ]),
-  'win64-vs14-static-debug': R.allPass([
+  "win64-vs14-static-debug": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Debug$/gm),
     R.test(/^\s*compiler\.runtime=MTd$/gm),
     R.test(/^\s*compiler\.version=14$/gm)
   ]),
-  'win64-vs15-static-debug': R.allPass([
+  "win64-vs15-static-debug": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Debug$/gm),
@@ -61,34 +61,34 @@ const debugPairs = R.toPairs({
     R.test(/^\s*compiler\.version=15$/gm)
   ]),
   
-  'macOS-clang-9-static-debug': R.allPass([
+  "macOS-clang-9-static-debug": R.allPass([
     ...macCommonConditions,
     R.test(/^\s*build_type=Debug$/gm),
     R.test(/^\s*compiler\.version=9.0$/gm)
   ]),
-  'macOS-clang-8.1-static-debug': R.allPass([
+  "macOS-clang-8.1-static-debug": R.allPass([
     ...macCommonConditions,
     R.test(/^\s*build_type=Debug$/gm),
     R.test(/^\s*compiler\.version=8\.1$/gm)
   ])
-})
+});
 
 const releasePairs = R.toPairs({
-  'win32-vs12-static-release': R.allPass([
+  "win32-vs12-static-release": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=12$/gm)
   ]),
-  'win32-vs14-static-release': R.allPass([
+  "win32-vs14-static-release": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=14$/gm)
   ]),
-  'win32-vs15-static-release': R.allPass([
+  "win32-vs15-static-release": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Release$/gm),
@@ -96,21 +96,21 @@ const releasePairs = R.toPairs({
     R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
-  'win64-vs12-static-release': R.allPass([
+  "win64-vs12-static-release": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=12$/gm)
   ]),
-  'win64-vs14-static-release': R.allPass([
+  "win64-vs14-static-release": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=14$/gm)
   ]),
-  'win64-vs15-static-release': R.allPass([
+  "win64-vs15-static-release": R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Release$/gm),
@@ -118,12 +118,12 @@ const releasePairs = R.toPairs({
     R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
-  'macOS-clang-9-static-release': R.allPass([
+  "macOS-clang-9-static-release": R.allPass([
     ...macCommonConditions,
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.version=9.0$/gm)
   ]),
-  'macOS-clang-8.1-static-release': R.allPass([
+  "macOS-clang-8.1-static-release": R.allPass([
     ...macCommonConditions,
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.version=8\.1$/gm)
@@ -133,13 +133,13 @@ const releasePairs = R.toPairs({
 const distributionPairs = [...debugPairs, ...releasePairs];
 
 const getDistributionConfigURLFromHash = itemHash =>
-  `https://bintray.com/conan-community/conan/download_file?file_path=conan%2FOpenSSL%2F1.1.0i%2Fstable%2Fpackage%2F${itemHash}%2Fconaninfo.txt`
+  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/${itemHash}/conaninfo.txt`;
 
 const getDistributionDownloadURLFromHash = itemHash =>
-  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/${itemHash}/conan_package.tgz`
+  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/${itemHash}/conan_package.tgz`;
 
 const getDistributionsRootURL = () =>
-  'https://bintray.com/package/files/conan-community/conan/OpenSSL%3Aconan?order=asc&sort=name&basePath=conan%2FOpenSSL%2F1.1.0i%2Fstable%2Fpackage&tab=files'
+  "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/";
 
 const detectDistributionPairFromConfig = (itemHash, body) => R.reduce(
   (acc, [releaseName, predicate]) => R.cond([
@@ -158,12 +158,13 @@ const discoverDistributions = (treeHtml) => {
   const releaseHashes = [];
 
   const $ = cheerio.load(treeHtml);
-  const links = $('#treeBrowseTable > tbody > tr > td.nameCol > a');
-  links.each((_, link) => {
-    const releaseHash = link.children[0].data;
-    if (!releaseHash) {
+  $("a").each((_, link) => {
+    const linkText = link.children[0].data;
+    if (!linkText) {
       return;
     }
+    // Trim off the trailing '/'
+    const releaseHash = linkText.substring(0, linkText.length - 1);
     releaseHashes.push(releaseHash);
   });
 
@@ -172,7 +173,7 @@ const discoverDistributions = (treeHtml) => {
   );
 }
 
-const outputPath = path.resolve(__dirname, '..', 'vendor', 'openssl_distributions.json');
+const outputPath = path.resolve(__dirname, "..", "vendor", "openssl_distributions.json");
 request(getDistributionsRootURL())
   .then(discoverDistributions)
   .then(R.filter(R.identity))
