@@ -41,7 +41,7 @@ const getCompilerVersion = () => {
 const getIsDebug = () => false // TODO: Determine if we are GYPing in Debug
 
 const getMatchingDistributionName = () =>
-  `${getOSName()}-${getCompilerVersion()}-static${getIsDebug() ? '-debug' : ''}`;
+  `${getOSName()}-${getCompilerVersion()}-static${getIsDebug() ? '-debug' : '-release'}`;
 
 const getDistributionsConfig = () =>
   fse.readFile(distrosFilePath, 'utf8')

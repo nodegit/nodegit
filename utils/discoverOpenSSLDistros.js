@@ -74,21 +74,21 @@ const debugPairs = R.toPairs({
 })
 
 const releasePairs = R.toPairs({
-  'win32-vs12-static': R.allPass([
+  'win32-vs12-static-release': R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=12$/gm)
   ]),
-  'win32-vs14-static': R.allPass([
+  'win32-vs14-static-release': R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=14$/gm)
   ]),
-  'win32-vs15-static': R.allPass([
+  'win32-vs15-static-release': R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86$/gm),
     R.test(/^\s*build_type=Release$/gm),
@@ -96,21 +96,21 @@ const releasePairs = R.toPairs({
     R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
-  'win64-vs12-static': R.allPass([
+  'win64-vs12-static-release': R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=12$/gm)
   ]),
-  'win64-vs14-static': R.allPass([
+  'win64-vs14-static-release': R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.runtime=MT$/gm),
     R.test(/^\s*compiler\.version=14$/gm)
   ]),
-  'win64-vs15-static': R.allPass([
+  'win64-vs15-static-release': R.allPass([
     ...windowsCommonConditions,
     R.test(/^\s*arch=x86_64$/gm),
     R.test(/^\s*build_type=Release$/gm),
@@ -118,12 +118,12 @@ const releasePairs = R.toPairs({
     R.test(/^\s*compiler\.version=15$/gm)
   ]),
 
-  'macOS-clang-9-static': R.allPass([
+  'macOS-clang-9-static-release': R.allPass([
     ...macCommonConditions,
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.version=9.0$/gm)
   ]),
-  'macOS-clang-8.1-static': R.allPass([
+  'macOS-clang-8.1-static-release': R.allPass([
     ...macCommonConditions,
     R.test(/^\s*build_type=Release$/gm),
     R.test(/^\s*compiler\.version=8\.1$/gm)
