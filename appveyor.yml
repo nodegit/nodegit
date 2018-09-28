@@ -4,8 +4,8 @@
 image: Visual Studio 2015
 
 platform:
-  - x86
   - x64
+  - x86
 
 # build version format
 version: "{build}"
@@ -26,9 +26,9 @@ environment:
   GYP_MSVS_VERSION: 2015
   matrix:
     # Node.js
-    - nodejs_version: "9"
-    - nodejs_version: "8"
     - nodejs_version: "6"
+    - nodejs_version: "8"
+    - nodejs_version: "10"
 
 matrix:
   fast_finish: true

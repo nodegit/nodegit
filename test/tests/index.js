@@ -1,12 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
-
-var writeFile = promisify(function(filename, data, callback) {
-  return require("fs").writeFile(filename, data, {}, callback);
-});
+var fse = require("fs-extra");
 
 describe("Index", function() {
   var IndexUtils = require("../utils/index_setup");
@@ -52,9 +47,9 @@ describe("Index", function() {
     var addCallbacksCount = 0;
 
     return Promise.all(fileNames.map(function(fileName) {
-      return writeFile(
+      return fse.writeFile(
         path.join(repo.workdir(), fileName),
-        fileContent[fileName]);
+        fileContent[fileName], {});
     }))
     .then(function() {
       return index.addAll(undefined, undefined, function() {
@@ -97,9 +92,9 @@ describe("Index", function() {
     var removeCallbacksCount = 0;
 
     return Promise.all(fileNames.map(function(fileName) {
-      return writeFile(
+      return fse.writeFile(
         path.join(repo.workdir(), fileName),
-        fileContent[fileName]);
+        fileContent[fileName], {});
     }))
     .then(function() {
       return index.addAll();
@@ -147,9 +142,9 @@ describe("Index", function() {
     var updateCallbacksCount = 0;
 
     return Promise.all(fileNames.map(function(fileName) {
-      return writeFile(
+      return fse.writeFile(
         path.join(repo.workdir(), fileName),
-        fileContent[fileName]);
+        fileContent[fileName], {});
     }))
     .then(function() {
       return index.addAll();

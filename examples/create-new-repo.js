@@ -1,12 +1,9 @@
 var nodegit = require("../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var fileName = "newfile.txt";
 var fileContent = "hello world";
 var repoDir = "../../newRepo";
-
-fse.ensureDir = promisify(fse.ensureDir);
 
 var repository;
 var index;

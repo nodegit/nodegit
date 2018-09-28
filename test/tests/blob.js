@@ -1,8 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var promisify = require("promisify-node");
-var fse = promisify("fs-extra");
+var fse = require("fs-extra");
 var exec = require("../../utils/execPromise");
 
 describe("Blob", function() {
@@ -236,7 +235,7 @@ describe("Blob", function() {
 
       return fse.readFile(filePath)
         .then(function(content) {
-          test.content = content.toString(); 
+          test.content = content.toString();
           return Blob.createFromWorkdir(test.repository, fileName);
         })
         .then(function(oid) {
@@ -281,11 +280,11 @@ describe("Blob", function() {
 
     it("retrieves the filtered content", function() {
       var test = this;
-      
+
       return commitFile(
-        test.repository, 
-        attrFileName, 
-        filter, 
+        test.repository,
+        attrFileName,
+        filter,
         "added gitattributes")
         .then(function() {
           return commitFile(
@@ -309,10 +308,10 @@ describe("Blob", function() {
           test.lfBlob = lfBlob;
           var ending = test.lfBlob.toString().match(lineEndingRegex);
           assert.strictEqual(ending[0], "\n");
-        
+
           return Blob.filteredContent(
-            test.lfBlob, 
-            newFileName, 
+            test.lfBlob,
+            newFileName,
             0
           );
         })
@@ -325,11 +324,11 @@ describe("Blob", function() {
 
     it("returns non-binary filtered content when checking binary", function() {
       var test = this;
-      
+
       return commitFile(
-        test.repository, 
-        attrFileName, 
-        filter, 
+        test.repository,
+        attrFileName,
+        filter,
         "added gitattributes")
         .then(function() {
           return commitFile(
@@ -353,10 +352,10 @@ describe("Blob", function() {
           test.lfBlob = lfBlob;
           var ending = test.lfBlob.toString().match(lineEndingRegex);
           assert.strictEqual(ending[0], "\n");
-        
+
           return Blob.filteredContent(
-            test.lfBlob, 
-            newFileName, 
+            test.lfBlob,
+            newFileName,
             1
           );
         })
@@ -372,9 +371,9 @@ describe("Blob", function() {
       var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
 
       return commitFile(
-        test.repository, 
-        attrFileName, 
-        filter, 
+        test.repository,
+        attrFileName,
+        filter,
         "added gitattributes")
         .then(function() {
           return commitFile(
@@ -397,10 +396,10 @@ describe("Blob", function() {
         .then(function(binaryBlob) {
           test.binaryBlob = binaryBlob;
           assert.equal(true, binaryBlob.isBinary());
-        
+
           return Blob.filteredContent(
-            test.binaryBlob, 
-            newFileName, 
+            test.binaryBlob,
+            newFileName,
             1
           );
         })
@@ -414,9 +413,9 @@ describe("Blob", function() {
       var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
 
       return commitFile(
-        test.repository, 
-        attrFileName, 
-        filter, 
+        test.repository,
+        attrFileName,
+        filter,
         "added gitattributes")
         .then(function() {
           return commitFile(
@@ -439,10 +438,10 @@ describe("Blob", function() {
         .then(function(binaryBlob) {
           test.binaryBlob = binaryBlob;
           assert.equal(true, binaryBlob.isBinary());
-        
+
           return Blob.filteredContent(
-            test.binaryBlob, 
-            newFileName, 
+            test.binaryBlob,
+            newFileName,
             0
           );
         })
@@ -455,7 +454,7 @@ describe("Blob", function() {
       return Blob.filteredContent(null, "", 0)
         .catch(function(err) {
           assert.strictEqual(
-            err.message, 
+            err.message,
             "Blob blob is required."
           );
         });
@@ -474,7 +473,7 @@ describe("Blob", function() {
       return Blob.filteredContent(test.blob, "")
         .catch(function(err) {
           assert.strictEqual(
-            err.message, 
+            err.message,
             "Number check_for_binary_data is required."
           );
         });

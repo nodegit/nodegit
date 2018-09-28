@@ -1,8 +1,7 @@
 var assert = require("assert");
 var NodeGit = require("../../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 
 var RepositorySetup = {
 	addFileToIndex:

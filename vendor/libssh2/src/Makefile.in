@@ -137,14 +137,15 @@ libssh2_la_LIBADD =
 am__libssh2_la_SOURCES_DIST = channel.c comp.c crypt.c hostkey.c kex.c \
 	mac.c misc.c packet.c publickey.c scp.c session.c sftp.c \
 	userauth.c transport.c version.c knownhost.c agent.c \
-	libgcrypt.c openssl.c os400qc3.c wincng.c pem.c keepalive.c \
-	global.c libssh2_priv.h libgcrypt.h openssl.h os400qc3.h \
-	wincng.h transport.h channel.h comp.h mac.h misc.h packet.h \
-	userauth.h session.h sftp.h crypto.h
-@LIBGCRYPT_FALSE@@OPENSSL_FALSE@@OS400QC3_FALSE@@WINCNG_TRUE@am__objects_1 = wincng.lo
-@LIBGCRYPT_FALSE@@OPENSSL_FALSE@@OS400QC3_TRUE@am__objects_1 =  \
-@LIBGCRYPT_FALSE@@OPENSSL_FALSE@@OS400QC3_TRUE@	os400qc3.lo
-@LIBGCRYPT_FALSE@@OPENSSL_TRUE@am__objects_1 = openssl.lo
+	libgcrypt.c mbedtls.c openssl.c os400qc3.c wincng.c pem.c \
+	keepalive.c global.c libssh2_priv.h libgcrypt.h mbedtls.h \
+	openssl.h os400qc3.h wincng.h transport.h channel.h comp.h \
+	mac.h misc.h packet.h userauth.h session.h sftp.h crypto.h
+@LIBGCRYPT_FALSE@@MBEDTLS_FALSE@@OPENSSL_FALSE@@OS400QC3_FALSE@@WINCNG_TRUE@am__objects_1 = wincng.lo
+@LIBGCRYPT_FALSE@@MBEDTLS_FALSE@@OPENSSL_FALSE@@OS400QC3_TRUE@am__objects_1 = os400qc3.lo
+@LIBGCRYPT_FALSE@@MBEDTLS_FALSE@@OPENSSL_TRUE@am__objects_1 =  \
+@LIBGCRYPT_FALSE@@MBEDTLS_FALSE@@OPENSSL_TRUE@	openssl.lo
+@LIBGCRYPT_FALSE@@MBEDTLS_TRUE@am__objects_1 = mbedtls.lo
 @LIBGCRYPT_TRUE@am__objects_1 = libgcrypt.lo
 am__objects_2 = channel.lo comp.lo crypt.lo hostkey.lo kex.lo mac.lo \
 	misc.lo packet.lo publickey.lo scp.lo session.lo sftp.lo \
@@ -225,6 +226,7 @@ CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/../Makefile.OpenSSL.inc \
 	$(srcdir)/../Makefile.WinCNG.inc $(srcdir)/../Makefile.inc \
 	$(srcdir)/../Makefile.libgcrypt.inc \
+	$(srcdir)/../Makefile.mbedTLS.inc \
 	$(srcdir)/../Makefile.os400qc3.inc $(srcdir)/Makefile.in \
 	$(srcdir)/libssh2_config.h.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -259,6 +261,7 @@ GREP = @GREP@
 HAVE_LIBBCRYPT = @HAVE_LIBBCRYPT@
 HAVE_LIBCRYPT32 = @HAVE_LIBCRYPT32@
 HAVE_LIBGCRYPT = @HAVE_LIBGCRYPT@
+HAVE_LIBMBEDTLS = @HAVE_LIBMBEDTLS@
 HAVE_LIBSSL = @HAVE_LIBSSL@
 HAVE_LIBZ = @HAVE_LIBZ@
 INSTALL = @INSTALL@
@@ -274,6 +277,8 @@ LIBCRYPT32 = @LIBCRYPT32@
 LIBCRYPT32_PREFIX = @LIBCRYPT32_PREFIX@
 LIBGCRYPT = @LIBGCRYPT@
 LIBGCRYPT_PREFIX = @LIBGCRYPT_PREFIX@
+LIBMBEDTLS = @LIBMBEDTLS@
+LIBMBEDTLS_PREFIX = @LIBMBEDTLS_PREFIX@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBSREQUIRED = @LIBSREQUIRED@
@@ -288,9 +293,11 @@ LN_S = @LN_S@
 LTLIBBCRYPT = @LTLIBBCRYPT@
 LTLIBCRYPT32 = @LTLIBCRYPT32@
 LTLIBGCRYPT = @LTLIBGCRYPT@
+LTLIBMBEDTLS = @LTLIBMBEDTLS@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBSSL = @LTLIBSSL@
 LTLIBZ = @LTLIBZ@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -373,10 +380,12 @@ top_srcdir = @top_srcdir@
 # $Id: Makefile.am,v 1.21 2009/05/07 17:21:56 bagder Exp $
 AUTOMAKE_OPTIONS = foreign nostdinc
 @LIBGCRYPT_TRUE@CRYPTO_CSOURCES = libgcrypt.c
+@MBEDTLS_TRUE@CRYPTO_CSOURCES = mbedtls.c
 @OPENSSL_TRUE@CRYPTO_CSOURCES = openssl.c
 @OS400QC3_TRUE@CRYPTO_CSOURCES = os400qc3.c
 @WINCNG_TRUE@CRYPTO_CSOURCES = wincng.c
 @LIBGCRYPT_TRUE@CRYPTO_HHEADERS = libgcrypt.h
+@MBEDTLS_TRUE@CRYPTO_HHEADERS = mbedtls.h
 @OPENSSL_TRUE@CRYPTO_HHEADERS = openssl.h
 @OS400QC3_TRUE@CRYPTO_HHEADERS = os400qc3.h
 @WINCNG_TRUE@CRYPTO_HHEADERS = wincng.h
@@ -437,7 +446,7 @@ all: libssh2_config.h
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.OpenSSL.inc $(srcdir)/../Makefile.libgcrypt.inc $(srcdir)/../Makefile.WinCNG.inc $(srcdir)/../Makefile.os400qc3.inc $(srcdir)/../Makefile.inc $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.OpenSSL.inc $(srcdir)/../Makefile.libgcrypt.inc $(srcdir)/../Makefile.WinCNG.inc $(srcdir)/../Makefile.os400qc3.inc $(srcdir)/../Makefile.mbedTLS.inc $(srcdir)/../Makefile.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -457,7 +466,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/../Makefile.OpenSSL.inc $(srcdir)/../Makefile.libgcrypt.inc $(srcdir)/../Makefile.WinCNG.inc $(srcdir)/../Makefile.os400qc3.inc $(srcdir)/../Makefile.inc $(am__empty):
+$(srcdir)/../Makefile.OpenSSL.inc $(srcdir)/../Makefile.libgcrypt.inc $(srcdir)/../Makefile.WinCNG.inc $(srcdir)/../Makefile.os400qc3.inc $(srcdir)/../Makefile.mbedTLS.inc $(srcdir)/../Makefile.inc $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -538,6 +547,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/knownhost.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgcrypt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mac.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mbedtls.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/os400qc3.Plo@am__quote@

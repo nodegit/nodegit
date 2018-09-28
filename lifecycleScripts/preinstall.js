@@ -2,7 +2,6 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 
 var exec = require(local("../utils/execPromise"));
-var configure = require(local("configureLibssh2"));
 var buildFlags = require(local("../utils/buildFlags"));
 
 module.exports = function prepareForBuild() {
@@ -16,9 +15,6 @@ module.exports = function prepareForBuild() {
       }
 
       return Promise.resolve();
-    })
-    .then(function() {
-      return configure();
     })
     .then(function() {
       if (buildFlags.isGitRepo) {

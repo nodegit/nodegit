@@ -25,7 +25,6 @@
       "dependencies": [
         "zlib",
         "http_parser/http_parser.gyp:http_parser",
-        "openssl/openssl.gyp:openssl",
         "libssh2"
       ],
       "sources": [
@@ -286,6 +285,13 @@
       ],
       "conditions": [
         ["OS=='mac'", {
+            "conditions": [
+              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+                "include_dirs": [
+                  "openssl/include"
+                ]
+              }]
+            ],
             "defines": [
                 "GIT_SECURE_TRANSPORT",
                 "GIT_USE_STAT_MTIMESPEC"
@@ -356,6 +362,9 @@
                   ],
                 },
               }],
+              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+                "include_dirs": ["openssl/include"]
+              }]
             ],
           },
           "msvs_disabled_warnings": [
@@ -519,8 +528,8 @@
         ".",
         "libssh2/include",
       ],
-      "dependencies": [
-        "openssl/openssl.gyp:openssl"
+      "hard_dependencies": [
+        "../binding.gyp:configureLibssh2"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
@@ -528,7 +537,24 @@
         ]
       },
       "conditions": [
+        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+          "include_dirs": [
+            "openssl/include"
+          ]
+        }],
         ["OS=='win'", {
+          "conditions": [
+            ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              "include_dirs": [
+                "openssl/include"
+              ]
+            }, {
+              "defines": [
+                "OPENSSL_NO_RIPEMD",
+                "OPENSSL_NO_CAST"
+              ]
+            }]
+          ],
           "include_dirs": [
             "libssh2/src",
             "libssh2/win32",

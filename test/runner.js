@@ -1,5 +1,4 @@
-var promisify = require("promisify-node");
-var fse = promisify("fs-extra");
+var fse = require("fs-extra");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 var exec = require('../utils/execPromise');

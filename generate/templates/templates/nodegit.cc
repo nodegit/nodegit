@@ -70,7 +70,7 @@ void LockMasterSetStatus(const FunctionCallbackInfo<Value>& info) {
 
   // convert the first argument to Status
   if(info.Length() >= 0 && info[0]->IsNumber()) {
-    v8::Local<v8::Int32> value = info[0]->ToInt32();
+    v8::Local<v8::Int32> value = info[0]->ToInt32(v8::Isolate::GetCurrent());
     LockMaster::Status status = static_cast<LockMaster::Status>(value->Value());
     if(status >= LockMaster::Disabled && status <= LockMaster::Enabled) {
       LockMaster::SetStatus(status);
@@ -105,8 +105,8 @@ void OpenSSL_LockingCallback(int mode, int type, const char *, int) {
   }
 }
 
-unsigned long OpenSSL_IDCallback() {
-  return (unsigned long)uv_thread_self();
+void OpenSSL_IDCallback(CRYPTO_THREADID *id) {
+  CRYPTO_THREADID_set_numeric(id, (unsigned long)uv_thread_self());
 }
 
 void OpenSSL_ThreadSetup() {
@@ -117,7 +117,7 @@ void OpenSSL_ThreadSetup() {
   }
 
   CRYPTO_set_locking_callback(OpenSSL_LockingCallback);
-  CRYPTO_set_id_callback(OpenSSL_IDCallback);
+  CRYPTO_THREADID_set_callback(OpenSSL_IDCallback);
 }
 
 ThreadPool libgit2ThreadPool(10, uv_default_loop());

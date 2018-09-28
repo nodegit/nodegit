@@ -299,6 +299,10 @@ SOURCE=..\src\mac.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\mbedtls.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\misc.c
 # End Source File
 # Begin Source File
@@ -372,6 +376,10 @@ SOURCE=..\src\libssh2_priv.h
 # Begin Source File
 
 SOURCE=..\src\mac.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\mbedtls.h
 # End Source File
 # Begin Source File
 

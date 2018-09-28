@@ -1,8 +1,6 @@
 var nodegit = require("../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
-fse.ensureDir = promisify(fse.ensureDir);
+var fse = require("fs-extra");
 
 var ourFileName = "ourNewFile.txt";
 var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";

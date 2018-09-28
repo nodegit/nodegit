@@ -38,7 +38,7 @@ DEVLARC	= $(DEVLDIR).zip
 TARGET	= libssh2
 VERSION	= $(LIBSSH2_VERSION)
 CPRIGHT	= Copyright (c) $(LIBSSH2_COPYRIGHT_STR)
-WWWURL	= http://www.libssh2.org/
+WWWURL	= https://www.libssh2.org/
 DESCR	= libssh2 $(LIBSSH2_VERSION_STR) ($(LIBARCH)) - $(WWWURL)
 MTSAFE	= YES
 STACK	= 64000
@@ -223,7 +223,7 @@ include ../Makefile.inc
 OBJECTS := $(patsubst %.c,%.o,$(CSOURCES))
 ifeq ($(LIBARCH),CLIB)
 # CLIB lacks of snprint() function - here's a replacement:
-# http://www.ijs.si/software/snprintf/
+# https://www.ijs.si/software/snprintf/
 OBJECTS += snprintf.o
 vpath %.c $(SNPRINTF)
 endif
@@ -388,7 +388,7 @@ libssh2_config.h: GNUmakefile
 	@echo $(DL)** All your changes will be lost!!$(DL) >> $@
 	@echo $(DL)*/$(DL) >> $@
 	@echo $(DL)#define VERSION "$(LIBSSH2_VERSION_STR)"$(DL) >> $@
-	@echo $(DL)#define PACKAGE_BUGREPORT "http://sourceforge.net/projects/libssh2"$(DL) >> $@
+	@echo $(DL)#define PACKAGE_BUGREPORT "https://github.com/libssh2/libssh2/issues"$(DL) >> $@
 ifeq ($(LIBARCH),CLIB)
 	@echo $(DL)#define OS "i586-pc-clib-NetWare"$(DL) >> $@
 	@echo $(DL)#define NETDB_USE_INTERNET 1$(DL) >> $@
