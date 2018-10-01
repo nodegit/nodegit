@@ -9,8 +9,6 @@ Linux & macOS | Windows | Coverage | Dependencies
 
 **Stable (libgit2@v0.27.3): 0.27.3**
 
-> Not compatible with node 10, at the moment. [We're working on it](https://github.com/nodegit/nodegit/issues/1490).
-
 ## Have a problem? Come chat with us! ##
 
 Visit [slack.libgit2.org](http://slack.libgit2.org/) to sign up, then join us in #nodegit.
@@ -81,7 +79,7 @@ sudo apt-get install libssl-dev
 Additionally, you need `curl-config` on your system. You need one of these packages:
   * libcurl4-gnutls-dev
   * libcurl4-nss-dev
-  * libcurl4-openssl-dev 
+  * libcurl4-openssl-dev
 
 If you are still encountering problems while installing, you should try the
 [Building from source](http://www.nodegit.org/guides/install/from-source/)
