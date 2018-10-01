@@ -68,9 +68,13 @@ module.exports = function submodules() {
         .reduce(function(chainPromise, submoduleToUpdate) {
           return chainPromise
             .then(function() {
-              console.log("[nodegit] Initializing submodule", submoduleToUpdate.name);
+              console.log(
+                "[nodegit] Initializing submodule",
+                submoduleToUpdate.name
+              );
               return exec(
-                "git submodule update --init --recursive " + submoduleToUpdate.name
+                "git submodule update --init --recursive " +
+                submoduleToUpdate.name
               );
             });
         }, Promise.resolve());
