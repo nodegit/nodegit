@@ -1,4 +1,6 @@
 sudo: false
+# update to Xenial in April 2019; Trusty will be EOL, Xenial new minimum supported OS version
+dist: trusty
 
 branches:
   only:
@@ -34,10 +36,12 @@ jobs:
   include:
     - stage: "Extended testing"
       os: linux
+      dist: xenial
       node_js: "8"
       env: TARGET_ARCH="x64" EXTENDED_TESTING="false"
     - stage: "Deploy documentation"
       os: linux
+      dist: xenial
       node_js: "8"
       env: TARGET_ARCH="x64" DEPLOY_DOCUMENTATION="true"
 
@@ -74,6 +78,7 @@ before_install:
     fi
 
 install:
+  - set -e;
   - travis_retry npm install;
 
 # This is a random private key used purely for testing.
