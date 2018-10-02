@@ -547,6 +547,10 @@
             ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
               "include_dirs": [
                 "openssl/include"
+              ],
+              "libraries": [
+                "openssl/libssl.lib",
+                "openssl/libcrypto.lib"
               ]
             }, {
               "defines": [
