@@ -12,7 +12,7 @@ const extractPath = path.join(vendorPath, "openssl");
 
 const getOSName = () => {
   if (process.platform === "win32") {
-    if (process.arch === "x64" || process.env.hasOwnProperty("PROCESSOR_ARCHITEW6432")) {
+    if (process.arch === "x64") {
       return "win64";
     } else {
       return "win32";
