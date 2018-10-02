@@ -38,7 +38,7 @@ jobs:
       os: linux
       dist: xenial
       node_js: "8"
-      env: TARGET_ARCH="x64" EXTENDED_TESTING="false"
+      env: TARGET_ARCH="x64" EXTENDED_TESTING="true"
     - stage: "Deploy documentation"
       os: linux
       dist: xenial
