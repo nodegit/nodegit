@@ -61,17 +61,22 @@ module.exports = function submodules() {
         console.warn("\nThey will not be updated.");
       }
 
-      return Promise.all(statuses
+      return statuses
         .filter(function(status) {
           return !status.onNewCommit;
         })
-        .map(function(submoduleToUpdate) {
-          console.log("[nodegit] Initializing submodules");
-
-          return exec(
-            "git submodule update --init --recursive " + submoduleToUpdate.name
-          );
-        })
-      );
+        .reduce(function(chainPromise, submoduleToUpdate) {
+          return chainPromise
+            .then(function() {
+              console.log(
+                "[nodegit] Initializing submodule",
+                submoduleToUpdate.name
+              );
+              return exec(
+                "git submodule update --init --recursive " +
+                submoduleToUpdate.name
+              );
+            });
+        }, Promise.resolve());
     });
 };
