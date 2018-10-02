@@ -5,7 +5,7 @@ dist: trusty
 branches:
   only:
     - master
-    - /^v\d+\.\d+\.\d+(-alpha\.d+)?$/
+    - /^v\d+\.\d+\.\d+(-alpha\.\d+)?$/
 
 compiler: clang
 language: node_js
