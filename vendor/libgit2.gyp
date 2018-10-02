@@ -549,8 +549,8 @@
                 "openssl/include"
               ],
               "libraries": [
-                "openssl/libssl.lib",
-                "openssl/libcrypto.lib"
+                "<(module_root_dir)/openssl/lib/libssl.lib",
+                "<(module_root_dir)/openssl/lib/libcrypto.lib"
               ]
             }, {
               "defines": [
