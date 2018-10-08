@@ -4,10 +4,11 @@ module.exports = function(fn) {
     return currentValue + (arg.isReturn ? 1 : 0);
   }, 0);
 
-  if (!result
-      && fn.return
-      && !fn.return.isErrorCode
-      && fn.return.cType != "void") {
+  if (!result && 
+    fn.return && 
+    !fn.return.isErrorCode && 
+    fn.return.cType != "void"
+  ) {
     result = 1;
   }
 
