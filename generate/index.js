@@ -10,9 +10,9 @@ module.exports = function generate() {
     .then(function(statuses) {
       var dirtySubmodules = statuses
         .filter(function(status) {
-          return status.onNewCommit
-            || status.needsInitialization
-            || status.workDirDirty;
+          return status.onNewCommit ||
+            status.needsInitialization ||
+            status.workDirDirty;
         });
 
       if (dirtySubmodules.length) {
@@ -31,7 +31,7 @@ module.exports = function generate() {
       console.error("[nodegit] ERROR - Could not generate native code");
       console.error(e);
     });
-}
+};
 
 if (require.main === module) {
   module.exports();
