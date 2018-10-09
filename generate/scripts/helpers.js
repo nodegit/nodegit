@@ -11,8 +11,6 @@ var callbackDefs = require("../input/callbacks.json");
 var descriptor = require("../input/descriptor.json");
 var libgit2 = require("../input/libgit2-docs.json");
 
-var cTypes = libgit2.groups.map(function(group) { return group[0];});
-
 var cTypeMappings = {
   "char": "String",
   "short": "Number",
@@ -25,11 +23,11 @@ var cTypeMappings = {
   "uint32_t": "Number",
   "uint64_t": "Number",
   "double": "Number"
-}
+};
 
 var collisionMappings = {
   "new": "create"
-}
+};
 
 var Helpers = {
   normalizeCtype: function(cType) {
@@ -53,33 +51,37 @@ var Helpers = {
   },
 
   cTypeToJsName: function(cType, ownerType) {
-    var output = utils.camelCase(Helpers.cTypeToCppName(cType, ownerType).replace(/^Git/, ""));
+    var output = utils.camelCase(
+      Helpers.cTypeToCppName(cType, ownerType).replace(/^Git/, "")
+    );
     var mergedPrefixes = ["from", "by"];
 
     mergedPrefixes.forEach(function(prefix) {
-      var reg = new RegExp("(^" + prefix + "|" + utils.titleCase(prefix) + ")([a-z]+)$");
+      var reg = new RegExp(
+        "(^" + prefix + "|" + utils.titleCase(prefix) + ")([a-z]+)$"
+      );
       output = output.replace(reg, function(all, prefixMatch, otherWord) {
         return prefixMatch + utils.titleCase(otherWord);
       });
     });
 
-    output = output.replace(/([a-z])Str$/, "$1String")
+    output = output.replace(/([a-z])Str$/, "$1String");
     return output;
   },
 
   isConstructorFunction: function(cType, fnName) {
-    var initFnName = cType.split('_');
+    var initFnName = cType.split("_");
 
     initFnName.splice(-1, 0, "init");
-    initFnName = initFnName.join('_');
+    initFnName = initFnName.join("_");
 
     return initFnName === fnName;
   },
 
   hasConstructor: function(type, normalizedType) {
-    return type.used
-      && type.used.needs
-      && type.used.needs.some(function (fnName) {
+    return type.used &&
+      type.used.needs &&
+      type.used.needs.some(function (fnName) {
         return Helpers.isConstructorFunction(normalizedType, fnName);
       });
   },
@@ -89,9 +91,9 @@ var Helpers = {
   },
 
   isPayloadFor: function(cbField, payloadName) {
-    return payloadName && ~payloadName.indexOf("_payload")
-      && Helpers.isCallbackFunction(cbField.cType)
-      && ~cbField.name.indexOf(payloadName.replace("_payload", ""));
+    return payloadName && ~payloadName.indexOf("_payload") &&
+      Helpers.isCallbackFunction(cbField.cType) &&
+      ~cbField.name.indexOf(payloadName.replace("_payload", ""));
   },
 
   isSelfReferential: function(cType){
@@ -158,17 +160,22 @@ var Helpers = {
       type.isEnum = libgitType.type === "enum";
       type.hasConstructor = Helpers.hasConstructor(type, normalizedType);
 
-      // there are no enums at the struct level currently, but we still need to override function args
+      // there are no enums at the struct level currently, 
+      // but we still need to override function args
       if (type.isEnum) {
         type.cppClassName = "Number";
         type.jsClassName = "Number";
         if (enums[type.cType]) {
-          type.isMask = enums[type.cType].isMask || false
+          type.isMask = enums[type.cType].isMask || false;
         }
       }
 
       // we don't want to overwrite the c type of the passed in type
-      _.merge(type, descriptor.types[normalizedType.replace("git_", "")] || {}, { cType: type.cType });
+      _.merge(
+        type, 
+        descriptor.types[normalizedType.replace("git_", "")] || {}, 
+        { cType: type.cType }
+      );
     }
 
     return libgitType;
@@ -179,8 +186,11 @@ var Helpers = {
     var partialOverrides = _.omit(typeDefOverrides, ["fields", "functions"]);
 
     typeDef.cType = typeDef.cType || null;
-    typeDef.cppClassName = Helpers.cTypeToCppName(typeDef.cType || "git_" + typeDef.typeName);
-    typeDef.jsClassName = utils.titleCase(Helpers.cTypeToJsName(typeDef.cType || "git_" + typeDef.typeName));
+    typeDef.cppClassName = 
+      Helpers.cTypeToCppName(typeDef.cType || "git_" + typeDef.typeName);
+    typeDef.jsClassName = utils.titleCase(
+      Helpers.cTypeToJsName(typeDef.cType || "git_" + typeDef.typeName)
+    );
     typeDef.filename = typeDef.typeName;
     typeDef.isLibgitType = true;
     typeDef.dependencies = [];
@@ -188,14 +198,16 @@ var Helpers = {
 
     if (typeDefOverrides.freeFunctionName) {
       typeDef.freeFunctionName = typeDefOverrides.freeFunctionName;
-    } else if (typeDef.type === 'struct') {
-      typeDef.freeFunctionName = 'free';
+    } else if (typeDef.type === "struct") {
+      typeDef.freeFunctionName = "free";
     }
 
     typeDef.fields = typeDef.fields || [];
     typeDef.fields.forEach(function (field, index, allFields) {
       var fieldOverrides = typeDefOverrides.fields || {};
-      Helpers.decorateField(field, allFields, fieldOverrides[field.name] || {}, enums);
+      Helpers.decorateField(
+        field, allFields, fieldOverrides[field.name] || {}, enums
+      );
     });
 
     typeDef.needsForwardDeclaration = typeDef.decl === typeDef.cType;
@@ -209,18 +221,17 @@ var Helpers = {
       return fnDef;
     });
 
-    var typeDefOverrides = descriptor.types[typeDef.typeName] || {};
     var functionOverrides = typeDefOverrides.functions || {};
     typeDef.functions.forEach(function(fnDef) {
-      Helpers.decorateFunction(fnDef, typeDef, functionOverrides[fnDef.cFunctionName] || {}, enums);
+      Helpers.decorateFunction(
+        fnDef, typeDef, functionOverrides[fnDef.cFunctionName] || {}, enums
+      );
     });
 
     _.merge(typeDef, partialOverrides);
   },
 
   decorateField: function(field, allFields, fieldOverrides, enums) {
-    var normalizeType = Helpers.normalizeCtype(field.type);
-
     field.cType = field.type;
     field.cppFunctionName = utils.titleCase(field.name);
     field.jsFunctionName = utils.camelCase(field.name);
@@ -234,7 +245,14 @@ var Helpers = {
       var argOverrides = fieldOverrides.args || {};
       field.args = field.args || [];
       field.args.forEach(function (arg) {
-        Helpers.decorateArg(arg, field.args, null, null, argOverrides[arg.name] || {}, enums);
+        Helpers.decorateArg(
+          arg, 
+          field.args, 
+          null, 
+          null, 
+          argOverrides[arg.name] || {}, 
+          enums
+        );
       });
     }
     else {
@@ -266,7 +284,14 @@ var Helpers = {
       var callBackArgOverrides = argOverrides.args || {};
       arg.args = arg.args || [];
       arg.args.forEach(function (argForCallback) {
-        Helpers.decorateArg(argForCallback, arg.args, null, null, callBackArgOverrides[argForCallback.name] || {}, enums);
+        Helpers.decorateArg(
+          argForCallback, 
+          arg.args, 
+          null, 
+          null, 
+          callBackArgOverrides[argForCallback.name] || {}, 
+          enums
+        );
       });
     }
     else if (typeDef && fnDef) {
@@ -278,8 +303,9 @@ var Helpers = {
       // Mark all of the args that are either returns or are the object
       // itself and determine if this function goes on the prototype
       // or is a constructor method.
-      arg.isReturn = arg.name === "out" || (utils.isDoublePointer(arg.type) && normalizedType == typeDef.cType);
-      if (typeof arg.isSelf == 'undefined') {
+      arg.isReturn = arg.name === "out" || 
+        (utils.isDoublePointer(arg.type) && normalizedType == typeDef.cType);
+      if (typeof arg.isSelf == "undefined") {
         arg.isSelf = utils.isPointer(arg.type) &&
           normalizedType == typeDef.cType &&
           arg.cppClassName !== "Array" &&
@@ -313,8 +339,10 @@ var Helpers = {
       typeDef.freeFunctionName = key;
     }
 
-    fnDef.cppFunctionName = Helpers.cTypeToCppName(key, "git_" + typeDef.typeName);
-    fnDef.jsFunctionName = Helpers.cTypeToJsName(key, "git_" + typeDef.typeName);
+    fnDef.cppFunctionName = 
+      Helpers.cTypeToCppName(key, "git_" + typeDef.typeName);
+    fnDef.jsFunctionName = 
+      Helpers.cTypeToJsName(key, "git_" + typeDef.typeName);
     fnDef.jsClassName = typeDef.jsClassName;
 
     if (fnDef.cppFunctionName == typeDef.cppClassName) {
@@ -323,7 +351,14 @@ var Helpers = {
 
     var argOverrides = fnOverrides.args || {};
     fnDef.args.forEach(function(arg) {
-      Helpers.decorateArg(arg, fnDef.args, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
+      Helpers.decorateArg(
+        arg, 
+        fnDef.args, 
+        typeDef, 
+        fnDef, 
+        argOverrides[arg.name] || {}, 
+        enums
+      );
 
       // if a function has any callbacks then it MUST be async
       if (arg.isCallbackFunction) {
@@ -332,11 +367,18 @@ var Helpers = {
     });
 
     if (fnDef.cFile) {
-      fnDef.implementation = fs.readFileSync(path.resolve(fnDef.cFile), 'utf8');
+      fnDef.implementation = fs.readFileSync(path.resolve(fnDef.cFile), "utf8");
     }
 
     if (fnDef.return) {
-      Helpers.decorateArg(fnDef.return, fnDef.args, typeDef, fnDef, fnOverrides.return || {}, enums);
+      Helpers.decorateArg(
+        fnDef.return, 
+        fnDef.args, 
+        typeDef, 
+        fnDef, 
+        fnOverrides.return || {}, 
+        enums
+      );
     }
 
     _(collisionMappings).forEach(function(newName, collidingName) {

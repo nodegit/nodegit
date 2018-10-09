@@ -1,6 +1,6 @@
 const fse = require("fs-extra");
 const walk = require("walk");
-const _ = require('lodash');
+const _ = require("lodash");
 
 const fs = require("fs");
 const path = require("path");
@@ -32,11 +32,11 @@ var util = {
   writeFile: function(filePath, content, header) {
     try {
       if (typeof content == "object") {
-        content = JSON.stringify(content, null, 2)
+        content = JSON.stringify(content, null, 2);
       }
 
       if (header) {
-        var commentPrefix = ~header.indexOf('.gyp') ? '#' : '//'
+        var commentPrefix = ~header.indexOf(".gyp") ? "#" : "//";
         content = commentPrefix +
           " This is a generated file, modify: generate/templates/templates/" +
           header +
@@ -73,16 +73,16 @@ var util = {
     }
 
     return new Promise(function(resolve, reject) {
-      walker.on('file', function(root, stat, next) {
+      walker.on("file", function(root, stat, next) {
         files.push(path.relative(dir, path.join(root, stat.name)));
         next();
       });
 
-      walker.on('end', function() {
+      walker.on("end", function() {
         resolve(files);
       });
 
-      walker.on('errors', function() {
+      walker.on("errors", function() {
         reject();
       });
     });
@@ -137,7 +137,10 @@ var util = {
       fromFilePaths.forEach(function(filePath) {
         const toFilePath = path.join(toDir, filePath);
         const fromFilePath = path.join(fromDir, filePath);
-        if (!util.isFile(toFilePath) || util.readFile(toFilePath) !== util.readFile(fromFilePath)) {
+        if (
+          !util.isFile(toFilePath) || 
+          util.readFile(toFilePath) !== util.readFile(fromFilePath)
+        ) {
           fse.copy(fromFilePath, toFilePath);
         }
       });

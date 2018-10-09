@@ -17,26 +17,27 @@ module.exports = function generateMissingTests() {
         var fieldsResult = [];
         var functionsResult = [];
         var fieldIgnores = (missingFileIgnores[idef.filename] || {}).fields;
-        var functionIgnores = (missingFileIgnores[idef.filename] || {}).functions;
+        var functionIgnores = (missingFileIgnores[idef.filename] || {})
+          .functions;
 
         fieldIgnores = fieldIgnores || [];
         functionIgnores = functionIgnores || [];
         file = file || "";
 
         idef.fields.forEach(function(field) {
-          if (file.indexOf(field.jsFunctionName) < 0
-            && fieldIgnores.indexOf(field.jsFunctionName < 0)) {
-                fieldsResult.push(field.jsFunctionName);
-              }
+          if (file.indexOf(field.jsFunctionName) < 0 &&
+            fieldIgnores.indexOf(field.jsFunctionName < 0)) {
+              fieldsResult.push(field.jsFunctionName);
+            }
         });
 
         result.fields = fieldsResult;
 
         idef.functions.forEach(function(fn) {
-          if (file.indexOf(fn.jsFunctionName) < 0
-            && functionIgnores.indexOf(fn.jsFunctionName) < 0) {
-                functionsResult.push(fn.jsFunctionName);
-              }
+          if (file.indexOf(fn.jsFunctionName) < 0 &&
+            functionIgnores.indexOf(fn.jsFunctionName) < 0) {
+              functionsResult.push(fn.jsFunctionName);
+            }
         });
 
         result.functions = functionsResult;
@@ -49,7 +50,7 @@ module.exports = function generateMissingTests() {
       output[idef.filename] = result;
       resolve();
     });
-  };
+  }
 
   const idefs = require("../output/idefs");
   var promises = idefs.map(function(idef) {

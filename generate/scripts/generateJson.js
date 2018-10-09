@@ -76,13 +76,13 @@ module.exports = function generateJson() {
   enums = _(enums).sortBy("name").reduce(function(enumMemo, enumerable) {
     if (previous == enumerable.typeName) {
       if (process.env.BUILD_ONLY) {
-        console.warn('Duplicate definition for enum ' + enumerable.typeName +
+        console.warn("Duplicate definition for enum " + enumerable.typeName +
           ". skipped.");
       }
     }
     else if (!enumerable.fields) {
       if (process.env.BUILD_ONLY) {
-        console.warn('Incomplete definition for enum ' + enumerable.typeName +
+        console.warn("Incomplete definition for enum " + enumerable.typeName +
           ". skipped.");
       }
     }
@@ -96,7 +96,7 @@ module.exports = function generateJson() {
           return {
             name: field.name,
             value: field.value
-          }
+          };
         })
       };
     }
@@ -123,7 +123,8 @@ module.exports = function generateJson() {
     output.push(typeDef);
   });
 
-  // Loop over the groups in case we missed anything (eg the types are missing in the docs);
+  // Loop over the groups in case we missed anything 
+  // (eg the types are missing in the docs);
   for (var groupName in groups) {
     var groupDef = groups[groupName];
     if (groupDef === false) {
@@ -135,7 +136,8 @@ module.exports = function generateJson() {
     };
 
     groupDef.type = "class";
-    groupDef.cType = (descriptor.types[groupName] || {}).cType || groupDef.cType;
+    groupDef.cType = (descriptor.types[groupName] || {}).cType || 
+      groupDef.cType;
 
     groupDef.typeName = groupName;
     dependencyLookup[groupName] = groupName;
@@ -155,7 +157,9 @@ module.exports = function generateJson() {
         return;
       }
 
-      var type = helpers.normalizeCtype(prop.type || prop.cType).replace("git_", "");
+      var type = helpers
+        .normalizeCtype(prop.type || prop.cType)
+        .replace("git_", "");
       var dependencyFilename = dependencyLookup[type];
 
       if (dependencyFilename && dependencyFilename !== def.filename) {

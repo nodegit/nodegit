@@ -1,7 +1,7 @@
 const path = require("path");
 const fse = require("fs-extra");
-const os = require('os');
-const exec = require('../../utils/execPromise');
+const os = require("os");
+const exec = require("../../utils/execPromise");
 const utils = require("./utils");
 
 module.exports = function generateNativeCode() {
@@ -25,20 +25,24 @@ module.exports = function generateNativeCode() {
 
   var partials = {
     asyncFunction: utils.readLocalFile("templates/partials/async_function.cc"),
-    callbackHelpers: utils.readLocalFile("templates/partials/callback_helpers.cc"),
+    callbackHelpers: 
+      utils.readLocalFile("templates/partials/callback_helpers.cc"),
     convertFromV8: utils.readLocalFile("templates/partials/convert_from_v8.cc"),
     convertToV8: utils.readLocalFile("templates/partials/convert_to_v8.cc"),
     doc: utils.readLocalFile("templates/partials/doc.cc"),
     fields: utils.readLocalFile("templates/partials/fields.cc"),
-    guardArguments: utils.readLocalFile("templates/partials/guard_arguments.cc"),
+    guardArguments: 
+      utils.readLocalFile("templates/partials/guard_arguments.cc"),
     syncFunction: utils.readLocalFile("templates/partials/sync_function.cc"),
-    fieldAccessors: utils.readLocalFile("templates/partials/field_accessors.cc"),
+    fieldAccessors: 
+      utils.readLocalFile("templates/partials/field_accessors.cc"),
     traits: utils.readLocalFile("templates/partials/traits.h")
   };
 
   var templates = {
     class_content: utils.readLocalFile("templates/templates/class_content.cc"),
-    struct_content: utils.readLocalFile("templates/templates/struct_content.cc"),
+    struct_content: 
+      utils.readLocalFile("templates/templates/struct_content.cc"),
     class_header: utils.readLocalFile("templates/templates/class_header.h"),
     struct_header: utils.readLocalFile("templates/templates/struct_header.h"),
     binding: utils.readLocalFile("templates/templates/binding.gyp"),
@@ -69,7 +73,7 @@ module.exports = function generateNativeCode() {
     returnsInfo: require("../templates/filters/returns_info"),
     subtract: require("../templates/filters/subtract"),
     titleCase: require("../templates/filters/title_case"),
-    toBool: require('../templates/filters/to_bool'),
+    toBool: require("../templates/filters/to_bool"),
     unPointer: require("../templates/filters/un_pointer"),
     setUnsigned: require("../templates/filters/unsigned"),
     upper: require("../templates/filters/upper")
@@ -88,9 +92,12 @@ module.exports = function generateNativeCode() {
   // Attach all partials to select templates.
   Object.keys(partials).forEach(function(partial) {
     templates.class_header.registerPartial(partial, combyne(partials[partial]));
-    templates.class_content.registerPartial(partial, combyne(partials[partial]));
-    templates.struct_header.registerPartial(partial, combyne(partials[partial]));
-    templates.struct_content.registerPartial(partial, combyne(partials[partial]));
+    templates.class_content
+      .registerPartial(partial, combyne(partials[partial]));
+    templates.struct_header
+      .registerPartial(partial, combyne(partials[partial]));
+    templates.struct_content
+      .registerPartial(partial, combyne(partials[partial]));
   });
 
 
@@ -101,22 +108,41 @@ module.exports = function generateNativeCode() {
     return !idef.ignore;
   });
 
-  const tempDirPath = path.join(os.tmpdir(), 'nodegit_build');
+  const tempDirPath = path.join(os.tmpdir(), "nodegit_build");
   const tempSrcDirPath = path.join(tempDirPath, "src");
   const tempIncludeDirPath = path.join(tempDirPath, "include");
 
-  const finalSrcDirPath = path.join(__dirname, '../../src');
-  const finalIncludeDirPath = path.join(__dirname, '../../include');
+  const finalSrcDirPath = path.join(__dirname, "../../src");
+  const finalIncludeDirPath = path.join(__dirname, "../../include");
 
-  fse.remove(tempDirPath).then(function() {
-    return fse.copy(path.resolve(__dirname, "../templates/manual/include"), tempIncludeDirPath);
-  }).then(function() {
-    return fse.copy(path.resolve(__dirname, "../templates/manual/src"), tempSrcDirPath);
+  fse.remove(tempDirPath)
+    .then(function() {
+      return fse.copy(
+        path.resolve(__dirname, "../templates/manual/include"), 
+        tempIncludeDirPath
+      );
+    }).then(function() {
+      return fse.copy(
+        path.resolve(__dirname, "../templates/manual/src"), 
+        tempSrcDirPath
+      );
   }).then(function() {
     // Write out single purpose templates.
-    utils.writeLocalFile("../binding.gyp", beautify(templates.binding.render(enabled)), "binding.gyp");
-    utils.writeFile(path.join(tempSrcDirPath, "nodegit.cc"), templates.nodegitCC.render(enabled), "nodegit.cc");
-    utils.writeLocalFile("../lib/nodegit.js", beautify(templates.nodegitJS.render(enabled)), "nodegit.js");
+    utils.writeLocalFile(
+      "../binding.gyp", 
+      beautify(templates.binding.render(enabled)), 
+      "binding.gyp"
+    );
+    utils.writeFile(
+      path.join(tempSrcDirPath, "nodegit.cc"), 
+      templates.nodegitCC.render(enabled), 
+      "nodegit.cc"
+    );
+    utils.writeLocalFile(
+      "../lib/nodegit.js", 
+      beautify(templates.nodegitJS.render(enabled)), 
+      "nodegit.js"
+    );
     // Write out all the classes.
     enabled.forEach(function(idef) {
       if (idef.type && idef.type != "enum") {
@@ -134,7 +160,11 @@ module.exports = function generateNativeCode() {
       }
     });
 
-    utils.writeLocalFile("../lib/enums.js", beautify(templates.enums.render(enabled)), "enums.js");
+    utils.writeLocalFile(
+      "../lib/enums.js", 
+      beautify(templates.enums.render(enabled)), 
+      "enums.js"
+    );
   }).then(function() {
     return exec("command -v astyle").then(function(astyle) {
       if (astyle) {
@@ -159,7 +189,6 @@ module.exports = function generateNativeCode() {
   }).then(function() {
     return fse.remove(tempDirPath);
   }).catch(console.log);
-
 };
 
 if (require.main === module) {
