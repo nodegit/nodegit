@@ -34,7 +34,7 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     return_info.returnNameOrName = return_info.returnName || return_info.name;
     return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;
     return_info.isOutParam = true;
-    return_info.hasOwner = return_info.ownedBy || return_info.ownedByThis;
+    return_info.hasOwner = !!(return_info.ownedBy || return_info.ownedByThis);
     return_info.ownedByIndex = -1;
 
     // Here we convert ownedBy, which is the name of the parameter
@@ -57,6 +57,8 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     return_info.__proto__ = fn.return;
 
     return_info.isAsync = isAsync;
+    return_info.hasOwner = !!return_info.ownedByThis;
+    return_info.ownedByIndex = -1;
     return_info.parsedName = return_info.name && isAsync ? "baton->" + return_info.name : "result";
     return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
     return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
