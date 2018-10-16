@@ -7,7 +7,7 @@ const tar = require("tar-fs");
 const zlib = require("zlib");
 
 const vendorPath = path.resolve(__dirname, "..", "vendor");
-const distrosFilePath = path.join(vendorPath, "openssl_distributions.json");
+const distrosFilePath = path.join(vendorPath, "static_config", "openssl_distributions.json");
 const extractPath = path.join(vendorPath, "openssl");
 
 const getOSName = () => {

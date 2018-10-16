@@ -7,6 +7,7 @@ var rooted = function (dir) {
 };
 
 module.exports = function retrieveExternalDependencies() {
+  // Do not configure on Windows
   if (process.platform === "win32") {
     return Promise.resolve("");
   }

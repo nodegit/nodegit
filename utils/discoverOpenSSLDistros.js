@@ -171,7 +171,7 @@ const discoverDistributions = (treeHtml) => {
   );
 }
 
-const outputPath = path.resolve(__dirname, "..", "vendor", "openssl_distributions.json");
+const outputPath = path.resolve(__dirname, "..", "vendor", "static_config", "openssl_distributions.json");
 request(getDistributionsRootURL())
   .then(discoverDistributions)
   .then(R.filter(R.identity))
