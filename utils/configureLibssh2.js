@@ -60,10 +60,5 @@ module.exports = function retrieveExternalDependencies() {
 
 // Called on the command line
 if (require.main === module) {
-  if (process.platform === "win32") {
-    console.log("nothing to do");
-  }
-  else {
-    module.exports();
-  }
+  module.exports();
 }
