@@ -171,10 +171,14 @@ const discoverDistributions = (treeHtml) => {
   );
 }
 
+const writeFile = (distributions) =>
+  fse.ensureDir(path.dirname(outputPath))
+    .then(fse.writeFile(outputPath, JSON.stringify(distributions, null, 2)));
+
 const outputPath = path.resolve(__dirname, "..", "vendor", "static_config", "openssl_distributions.json");
 request(getDistributionsRootURL())
   .then(discoverDistributions)
   .then(R.filter(R.identity))
   .then(R.sortBy(R.prop(0)))
   .then(R.fromPairs)
-  .then(distributions => fse.writeFile(outputPath, JSON.stringify(distributions, null, 2)));
+  .then(writeFile);
