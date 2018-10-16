@@ -1,32 +1,33 @@
 var cp = require("child_process");
+var fse = require('fs-extra');
 var path = require("path");
-var rooted = function (dir) {
-  var fullPath = path.join(__dirname, "..", dir);
-  var escapedPathForShell = fullPath.replace(/ /g, "\\ ");
-  return escapedPathForShell;
-};
+
+const libssh2VendorDirectory = path.resolve(__dirname, "..", "vendor", "libssh2");
+const libssh2ConfigureScript = path.join(libssh2VendorDirectory, "configure");
+const libssh2StaticConfigDirectory  = path.resolve(__dirname, "..", "vendor", "static_config", "libssh2");
 
 module.exports = function retrieveExternalDependencies() {
-  // Do not configure on Windows
-  if (process.platform === "win32") {
-    return Promise.resolve("");
+  console.info("[nodegit] Configuring libssh2.");
+
+  // Copy Windows / Mac preconfigured files
+  if (process.platform === "win32" || process.platform === "darwin") {
+    return fse.copy(
+      path.join(libssh2StaticConfigDirectory, process.platform),
+      path.join(libssh2VendorDirectory, process.platform)
+    );
   }
 
+  // Run the `configure` script on Linux
   return new Promise(function(resolve, reject) {
-    console.info("[nodegit] Configuring libssh2.");
+
     var opensslDir = process.argv[2];
     var isElectron = process.argv[3] === "1";
     var opensslIncludes = isElectron ? path.join(opensslDir, "includes") : opensslDir;
 
     var newEnv = {};
-
-    // For some magic reason, MacOS fails to build if we copy over the current environment variables, but Linux
-    // builds fail if we DON'T copy over the current environment variables
-    if (process.platform !== "darwin") {
-      Object.keys(process.env).forEach(function(key) {
-        newEnv[key] = process.env[key];
-      });
-    }
+    Object.keys(process.env).forEach(function(key) {
+      newEnv[key] = process.env[key];
+    });
 
     newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
     newEnv.CPPFLAGS += ` -I${opensslIncludes}`;
@@ -38,8 +39,11 @@ module.exports = function retrieveExternalDependencies() {
     }
 
     cp.exec(
-      rooted("vendor/libssh2/configure") + maybeLibsslPrefix,
-      {cwd: rooted("vendor/libssh2/"), env: newEnv},
+      libssh2ConfigureScript + maybeLibsslPrefix,
+      {
+        cwd: libssh2VendorDirectory,
+        env: newEnv
+      },
       function(err, stdout, stderr) {
         if (err) {
           console.error(err);

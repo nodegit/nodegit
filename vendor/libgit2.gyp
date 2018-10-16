@@ -537,9 +537,16 @@
         ]
       },
       "conditions": [
-        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+        ["OS=='mac'", {
           "include_dirs": [
-            "openssl/include"
+            "libssh2/darwin"
+          ],
+          "conditions": [
+            ["node_root_dir.split('/')[-1].startswith('iojs')", {
+              "include_dirs": [
+                "openssl/include",
+              ]
+            }]
           ]
         }],
         ["OS=='win'", {
