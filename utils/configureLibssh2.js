@@ -13,7 +13,7 @@ module.exports = function retrieveExternalDependencies() {
   if (process.platform === "win32" || process.platform === "darwin") {
     return fse.copy(
       path.join(libssh2StaticConfigDirectory, process.platform),
-      path.join(libssh2VendorDirectory, process.platform)
+      path.join(libssh2VendorDirectory, "src")
     );
   }
 

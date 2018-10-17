@@ -537,16 +537,9 @@
         ]
       },
       "conditions": [
-        ["OS=='mac'", {
+        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
           "include_dirs": [
-            "libssh2/darwin"
-          ],
-          "conditions": [
-            ["node_root_dir.split('/')[-1].startswith('iojs')", {
-              "include_dirs": [
-                "openssl/include",
-              ]
-            }]
+            "openssl/include",
           ]
         }],
         ["OS=='win'", {
@@ -568,7 +561,6 @@
           ],
           "include_dirs": [
             "libssh2/src",
-            "libssh2/win32",
             "libssh2/include"
           ],
           "defines!": [
@@ -577,7 +569,6 @@
           "direct_dependent_settings": {
             "include_dirs": [
               "libssh2/src",
-              "libssh2/win32",
               "libssh2/include"
             ]
           }
