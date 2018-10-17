@@ -30,7 +30,6 @@
 /vendor/libssh2/libssh2.pc
 /vendor/libssh2/libtool
 /vendor/libssh2/darwin/
-/vendor/libssh2/win32/
 /vendor/libssh2/src/.deps/
 /vendor/libssh2/src/Makefile
 /vendor/libssh2/src/libssh2_config.h
