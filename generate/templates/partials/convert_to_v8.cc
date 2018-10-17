@@ -70,10 +70,15 @@
         {{ selfFreeing|toBool }}
         {% if hasOwner %}
           ,
-          {% if ownedByThis %}
-            info.This()
+          {% if ownerFn | toBool %}
+            {{= ownerFn.singletonCppClassName =}}::New(
+              {{= ownerFn.name =}}({{= parsedName =}}),
+              true
+            )->ToObject()
           {% elsif isAsync %}
-            this->GetFromPersistent("{{= ownedBy =}}")
+            this->GetFromPersistent("{{= ownedBy =}}")->ToObject()
+          {% elsif ownedByThis %}
+            info.This()
           {% else %}
             info[{{= ownedByIndex =}}]->ToObject()
           {% endif %}

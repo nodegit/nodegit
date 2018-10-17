@@ -1,17 +1,26 @@
 template<typename Traits>
 NodeGitWrapper<Traits>::NodeGitWrapper(typename Traits::cType *raw, bool selfFreeing, v8::Local<v8::Object> owner) {
-  if (!owner.IsEmpty()) {
-    // if we have an owner, there are two options - either we duplicate the raw object
-    // (so we own the duplicate, and can self-free it)
-    // or we keep a handle on the owner so it doesn't get garbage collected
-    // while this wrapper is accessible
-    if(Traits::isDuplicable) {
+  if (Traits::isSingleton) {
+    ReferenceCounter::incrementCountForPointer((void *)raw);
+    this->raw = raw;
+  } else if (!owner.IsEmpty()) {
+    // if we have an owner, it could mean 2 things:
+    //  1. We are borrowed memory from another struct and should not be freed. We will keep a handle to the owner
+    //     so that the owner isn't gc'd while we are using its memory.
+    //  2. We are borrowed memory from another struct and can be duplicated, so we should duplicate
+    //     and become selfFreeing.
+    //  3. We are cached memory, potentially on the repo or config.
+    //     Even though we have a handle in another objects cache, we are expected to call free,
+    //     otherwise we are leaking memory. Cached objects are reference counted in libgit2, but will be leaked
+    //     even if the cache is cleared if we haven't freed them. We will keep a handle on the owner, even though it
+    //     is probably safe as we're reference counted. This should at worst just ensure that the cache owner is the
+    //     last thing to be freed, and that is more safety than anything else.
+    if (Traits::isDuplicable) {
       Traits::duplicate(&this->raw, raw);
       selfFreeing = true;
     } else {
       this->owner.Reset(owner);
       this->raw = raw;
-      selfFreeing = false;
     }
   } else {
     this->raw = raw;
@@ -34,7 +43,7 @@ NodeGitWrapper<Traits>::NodeGitWrapper(const char *error) {
 
 template<typename Traits>
 NodeGitWrapper<Traits>::~NodeGitWrapper() {
-  if(Traits::isFreeable && selfFreeing) {
+  if (Traits::isFreeable && selfFreeing) {
     Traits::free(raw);
     SelfFreeingInstanceCount--;
     raw = NULL;

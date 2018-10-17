@@ -12,8 +12,12 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
   // any sort of string to argument index
   // in the template.
   var nameToArgIndex = {};
+  var thisArgName = '';
   args.forEach(function (arg, index) {
     nameToArgIndex[arg.name] = index;
+    if (arg.isSelf) {
+      thisArgName = arg.name;
+    }
   });
 
   args.forEach(function (arg) {
@@ -34,8 +38,12 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     return_info.returnNameOrName = return_info.returnName || return_info.name;
     return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;
     return_info.isOutParam = true;
-    return_info.hasOwner = !!(return_info.ownedBy || return_info.ownedByThis);
+    return_info.hasOwner = !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
     return_info.ownedByIndex = -1;
+
+    if (return_info.ownedByThis) {
+      return_info.ownedBy = thisArgName;
+    }
 
     // Here we convert ownedBy, which is the name of the parameter
     // that owns this result to the argument index.
@@ -57,7 +65,10 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     return_info.__proto__ = fn.return;
 
     return_info.isAsync = isAsync;
-    return_info.hasOwner = !!return_info.ownedByThis;
+    return_info.hasOwner = !!(return_info.ownedByThis || return_info.ownerFn);
+    if (return_info.ownedByThis) {
+      return_info.ownedBy = thisArgName;
+    }
     return_info.ownedByIndex = -1;
     return_info.parsedName = return_info.name && isAsync ? "baton->" + return_info.name : "result";
     return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);

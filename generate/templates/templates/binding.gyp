@@ -75,6 +75,7 @@
       "sources": [
         "src/async_baton.cc",
         "src/lock_master.cc",
+        "src/reference_counter.cc",
         "src/nodegit.cc",
         "src/init_ssh2.cc",
         "src/promise_completion.cc",

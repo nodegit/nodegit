@@ -17,10 +17,17 @@ struct {{ cppClassName }}Traits {
   {% endif %}
   }
 
+  static const bool isSingleton = {{ isSingleton | toBool }};
   static const bool isFreeable = {{ freeFunctionName | toBool}};
   static void free({{ cType }} *raw) {
   {% if freeFunctionName %}
-    ::{{ freeFunctionName }}(raw); // :: to avoid calling this free recursively
+    unsigned long referenceCount = 0;
+    {% if isSingleton %}
+    referenceCount = ReferenceCounter::decrementCountForPointer((void *)raw);
+    {% endif %}
+    if (referenceCount == 0) {
+      ::{{ freeFunctionName }}(raw); // :: to avoid calling this free recursively
+    }
   {% else %}
     Nan::ThrowError("free called on {{ cppClassName }} which cannot be freed");
   {% endif %}
