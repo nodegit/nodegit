@@ -110,6 +110,13 @@
         },
         "group": "branch"
       },
+      "git_clone": {
+        "isManual": true,
+        "cFile": "generate/templates/manual/clone/clone.cc",
+        "isAsync": true,
+        "isPrototypeMethod": false,
+        "group": "clone"
+      },
       "git_commit_extract_signature": {
         "args": [
           {

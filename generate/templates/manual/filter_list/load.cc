@@ -1,3 +1,15 @@
+// NOTE you may need to occasionally rebuild this method by calling the generators
+// if major changes are made to the templates / generator.
+
+// git_filter_list_load has a more complex ownership pattern than is currently available
+// in the generator. This is because it not only has to get the repo as an owner,
+// but it also needs to discover which custom filters, a git_filter, it is bound to, if any.
+// We must enforce that the custom filters are not freed before a git_filter_list is freed,
+// but a git_filter_list also has pointers to the repo in it.
+
+// TODO In the future, it would be awesome if we could instead of writing a manual method like this, provide
+// custom ownership methods that can be injected into the HandleOKCallback.
+
 /*
  * @param Repository repo
  * @param Blob blob
