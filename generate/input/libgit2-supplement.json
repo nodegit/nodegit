@@ -144,6 +144,13 @@
           "isErrorCode": true
         }
       },
+      "git_filter_list_load": {
+        "isManual": true,
+        "cFile": "generate/templates/manual/filter_list/load.cc",
+        "isAsync": true,
+        "isPrototypeMethod": false,
+        "group": "filter_list"
+      },
       "git_patch_convenient_from_diff": {
         "args": [
           {
