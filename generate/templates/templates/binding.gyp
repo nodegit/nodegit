@@ -134,7 +134,9 @@
             ],
             "xcode_settings": {
               "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
-              "MACOSX_DEPLOYMENT_TARGET": "10.7",
+              "MACOSX_DEPLOYMENT_TARGET": "10.9",
+              'CLANG_CXX_LIBRARY': 'libc++',
+              'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
 
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
