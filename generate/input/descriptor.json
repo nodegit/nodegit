@@ -234,9 +234,6 @@
         "git_blob_create_fromstream_commit": {
           "ignore": true
         },
-        "git_blob_dup": {
-          "ignore": true
-        },
         "git_blob_filtered_content": {
           "isAsync": true,
           "isPrototypeMethod": false,
@@ -637,9 +634,6 @@
           "ignore": true
         },
         "git_commit_create_from_v": {
-          "ignore": true
-        },
-        "git_commit_dup": {
           "ignore": true
         },
         "git_commit_extract_signature": {
@@ -1910,9 +1904,6 @@
         "singletonCppClassName": "GitRepository"
       },
       "functions": {
-        "git_object_dup": {
-          "ignore": true
-        },
         "git_object_free": {
           "ignore": true
         },
@@ -2528,9 +2519,6 @@
         "git_reference__alloc_symbolic": {
           "ignore": true
         },
-        "git_reference_dup": {
-          "ignore": true
-        },
         "git_reference_foreach": {
           "ignore": true
         },
@@ -2739,9 +2727,6 @@
           "return": {
             "isErrorCode": true
           }
-        },
-        "git_remote_dup": {
-          "ignore": true
         },
         "git_remote_fetch": {
           "args": {
@@ -3448,9 +3433,6 @@
           },
           "isAsync": true
         },
-        "git_tag_dup": {
-          "ignore": true
-        },
         "git_tag_foreach": {
           "ignore": true
         },
@@ -3615,9 +3597,6 @@
         "singletonCppClassName": "GitRepository"
       },
       "functions": {
-        "git_tree_dup": {
-          "ignore": true
-        },
         "git_tree_entry_byid": {
           "return": {
             "ownedByThis": true
