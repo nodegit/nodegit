@@ -277,6 +277,7 @@
         },
         "git_blob_rawcontent": {
           "return": {
+            "ownedByThis": true,
             "cppClassName": "Wrapper",
             "jsClassName": "Buffer"
           }
@@ -2067,6 +2068,7 @@
       "functions": {
         "git_odb_object_data": {
           "return": {
+            "ownedByThis": true,
             "cppClassName": "Wrapper",
             "jsClassName": "Buffer"
           }
