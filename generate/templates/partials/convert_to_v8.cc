@@ -2,11 +2,11 @@
 {% if cppClassName == 'String' %}
   if ({{= parsedName =}}){
     {% if size %}
-      to = Nan::New<String>({{= parsedName =}}, {{ size }}).ToLocalChecked();
+      to = Nan::New<v8::String>({{= parsedName =}}, {{ size }}).ToLocalChecked();
     {% elsif cType == 'char **' %}
-      to = Nan::New<String>(*{{= parsedName =}}).ToLocalChecked();
+      to = Nan::New<v8::String>(*{{= parsedName =}}).ToLocalChecked();
     {% else %}
-      to = Nan::New<String>({{= parsedName =}}).ToLocalChecked();
+      to = Nan::New<v8::String>({{= parsedName =}}).ToLocalChecked();
     {% endif %}
   }
   else {
@@ -35,7 +35,7 @@
   {% if size %}
     v8::Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}}->{{ size }});
     for (unsigned int i = 0; i < {{= parsedName =}}->{{ size }}; i++) {
-      Nan::Set(tmpArray, Nan::New<Number>(i), Nan::New<String>({{= parsedName =}}->{{ key }}[i]).ToLocalChecked());
+      Nan::Set(tmpArray, Nan::New<Number>(i), Nan::New<v8::String>({{= parsedName =}}->{{ key }}[i]).ToLocalChecked());
     }
   {% else %}
     v8::Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}});
@@ -47,7 +47,7 @@
   to = Nan::Null();
   {% else %}
   if ({{= parsedName =}}) {
-    to = Nan::New<String>({{= parsedName =}}->ptr, {{= parsedName = }}->size).ToLocalChecked();
+    to = Nan::New<v8::String>({{= parsedName =}}->ptr, {{= parsedName = }}->size).ToLocalChecked();
   }
   else {
     to = Nan::Null();
@@ -61,6 +61,34 @@
   {% endif %}
 
   if ({{= parsedName =}} != NULL) {
+    {% if hasOwner %}
+      v8::Local<v8::Array> owners = Nan::New<Array>(0);
+      {% if ownedBy %}
+        {% if isAsync %}
+          {% each ownedBy as owner %}
+            Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), this->GetFromPersistent("{{= owner =}}")->ToObject());
+          {% endeach %}
+        {% else %}
+          {% each ownedByIndices as ownedByIndex %}
+            Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), info[{{= ownedByIndex =}}]->ToObject());
+          {% endeach %}
+        {% endif %}
+      {% endif %}
+      {%if isAsync %}
+      {% elsif ownedByThis %}
+        Nan::Set(owners, owners->Length(), info.This());
+      {% endif %}
+      {% if ownerFn | toBool %}
+        Nan::Set(
+          owners,
+          Nan::New<v8::Number>(owners->Length()),
+          {{= ownerFn.singletonCppClassName =}}::New(
+            {{= ownerFn.name =}}({{= parsedName =}}),
+            true
+          )->ToObject()
+        );
+      {% endif %}
+    {% endif %}
     // {{= cppClassName }} {{= parsedName }}
     {% if cppClassName == 'Wrapper' %}
       to = {{ cppClassName }}::New({{= parsedName =}});
@@ -69,19 +97,7 @@
         {{= parsedName =}},
         {{ selfFreeing|toBool }}
         {% if hasOwner %}
-          ,
-          {% if ownerFn | toBool %}
-            {{= ownerFn.singletonCppClassName =}}::New(
-              {{= ownerFn.name =}}({{= parsedName =}}),
-              true
-            )->ToObject()
-          {% elsif isAsync %}
-            this->GetFromPersistent("{{= ownedBy =}}")->ToObject()
-          {% elsif ownedByThis %}
-            info.This()
-          {% else %}
-            info[{{= ownedByIndex =}}]->ToObject()
-          {% endif %}
+          , owners
         {% endif %}
       );
     {% endif %}

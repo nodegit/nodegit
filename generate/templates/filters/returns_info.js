@@ -38,18 +38,22 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     return_info.returnNameOrName = return_info.returnName || return_info.name;
     return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;
     return_info.isOutParam = true;
-    return_info.hasOwner = !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
-    return_info.ownedByIndex = -1;
+    return_info.hasOwner = !return_info.selfOwned &&
+      !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
+    return_info.ownedByIndices = [];
 
-    if (return_info.ownedByThis) {
-      return_info.ownedBy = thisArgName;
+    if (isAsync && return_info.ownedByThis) {
+      return_info.ownedBy = return_info.ownedBy || [];
+      return_info.ownedBy.unshift(thisArgName);
     }
 
-    // Here we convert ownedBy, which is the name of the parameter
-    // that owns this result to the argument index.
+    // Here we convert ownedBy, which is the list of parameter names
+    // that own this result to the argument index.
     // sync functions will need to know this.
     if (!isAsync && return_info.ownedBy) {
-      return_info.ownedByIndex = nameToArgIndex[return_info.ownedBy];
+      return_info.ownedBy.forEach(function (argName) {
+        return_info.ownedByIndices.push(nameToArgIndex[return_info.ownedBy]);
+      })
     }
 
     result.push(return_info);
@@ -65,11 +69,21 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     return_info.__proto__ = fn.return;
 
     return_info.isAsync = isAsync;
-    return_info.hasOwner = !!(return_info.ownedByThis || return_info.ownerFn);
-    if (return_info.ownedByThis) {
-      return_info.ownedBy = thisArgName;
+    return_info.hasOwner = !return_info.selfOwned &&
+      !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
+    return_info.ownedByIndices = [];
+    return_info.ownedBy = return_info.ownedBy || [];
+
+    if (return_info.ownedByThis && isAsync) {
+      return_info.ownedBy.push(thisArgName);
     }
-    return_info.ownedByIndex = -1;
+
+    if (!isAsync) {
+      return_info.ownedByIndices = return_info.ownedBy.map(function (ownerName) {
+        return nameToArgIndex[ownerName];
+      });
+    }
+
     return_info.parsedName = return_info.name && isAsync ? "baton->" + return_info.name : "result";
     return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
     return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
