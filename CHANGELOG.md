@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-23-0-alpha.2" href="#v0-23-0-alpha.2">v0.23.0-alpha.2</a> [(2018-10-19)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0-alpha.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0-alpha.1...v0.23.0-alpha.2)
+
+#### Summary of changes
+On Mac OS Mojave, libssh2 configure failed to configure, because libssh2 always tries to configure against system libraries. The configure process uses links to determine that a OpenSSL is present. Since OSX and Windows no longer link against the system lib, we've prebuilt the configure steps for both environments. This should be stable when building NodeGit on Mojave.
+
+#### Merged PRs into NodeGit
+- [Use static `libssh2_config.h` on MacOS builds #1569](https://github.com/nodegit/nodegit/pull/1569)
+
+
 ## <a name="v0-23-0-alpha.1" href="#v0-23-0-alpha.1">v0.23.0-alpha.1</a> [(2018-10-01)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0-alpha.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.2...v0.23.0-alpha.1)
