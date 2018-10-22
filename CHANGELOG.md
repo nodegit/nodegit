@@ -1,5 +1,35 @@
 # Change Log
 
+## <a name="v0-23-0" href="#v0-23-0">v0.23.0</a> [(2018-10-22)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.2...v0.23.0)
+
+#### Summary of changes
+- Added Node 10 support.
+- We no longer compile OpenSSL. Instead, we prefer the OpenSSL shipped with Node. In electron builds, we prefer the system openssl on linux, and we get prebuilt static libs from Conan.
+- Cleaned up some compiler warnings
+- Our http_parser dependency is now a submodule.
+- Updated some dependencies in npm to get rid of security vulnerabilities and warnings.
+- Exposed transfer progress callback for pushing.
+- Libssh2 is now preconfigured for both Mac OS and Windows
+
+#### Merged PRs into NodeGit
+- [warn about node v10 incompatibility in readme #1534](https://github.com/nodegit/nodegit/pull/1534)
+- [Define error codes to fix compiler warnings about unused variables #1486](https://github.com/nodegit/nodegit/pull/1486)
+- [Include http_parser via submodule #1551](https://github.com/nodegit/nodegit/pull/1551)
+- [Update dependencies to get rid of security vulnerabilities #1547](https://github.com/nodegit/nodegit/pull/1547)
+- [add github issue template #1548](https://github.com/nodegit/nodegit/pull/1548)
+- [Enable git_push_transfer_progress - Help wanted #1500](https://github.com/nodegit/nodegit/pull/1500)
+- [Fixed createBranch API params #1552](https://github.com/nodegit/nodegit/pull/1552)
+- [Use curl-config to find curl #1555](https://github.com/nodegit/nodegit/pull/1555)
+- [Update readme #1554](https://github.com/nodegit/nodegit/pull/1554)
+- [Node 10 support #1545](https://github.com/nodegit/nodegit/pull/1545)
+- [Update dependencies #1519](https://github.com/nodegit/nodegit/pull/1519)
+- [Run submodule updates in sequence rather than parallel #1558](https://github.com/nodegit/nodegit/pull/1558)
+- [Fix Electron builds on win32 #1560](https://github.com/nodegit/nodegit/pull/1560)
+- [Use static `libssh2_config.h` on MacOS builds #1569](https://github.com/nodegit/nodegit/pull/1569)
+
+
 ## <a name="v0-23-0-alpha.2" href="#v0-23-0-alpha.2">v0.23.0-alpha.2</a> [(2018-10-19)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0-alpha.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0-alpha.1...v0.23.0-alpha.2)

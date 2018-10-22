@@ -38,7 +38,7 @@ jobs:
       os: linux
       dist: xenial
       node_js: "8"
-      env: TARGET_ARCH="x64" EXTENDED_TESTING="false"
+      env: TARGET_ARCH="x64" EXTENDED_TESTING="false" SKIP_DEPLOY="true"
     - stage: "Deploy documentation"
       os: linux
       dist: xenial
@@ -100,7 +100,7 @@ script:
     fi
 
 after_success:
-  - if [ -n "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" != "true" ] && [ "$DEPLOY_DOCUMENTATION" != "true" ]; then
+  - if [ -n "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" != "true" ] && [ "$DEPLOY_DOCUMENTATION" != "true" ] && [ "$SKIP_DEPLOY" != "true" ]; then
       npm install -g node-pre-gyp;
       npm install -g aws-sdk;
       node lifecycleScripts/clean;
