@@ -260,6 +260,28 @@
           "isErrorCode": true
         }
       },
+      "git_repository_get_remotes": {
+        "args": [
+          {
+            "name": "out",
+            "type": "std::vector<git_remote *> *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/repository/get_remotes.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "repository",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_reset": {
         "type": "function",
         "file": "reset.h",
@@ -528,6 +550,12 @@
         "remote",
         [
           "git_remote_reference_list"
+        ]
+      ],
+      [
+        "repository",
+        [
+          "git_repository_get_remotes"
         ]
       ],
       [

@@ -95,7 +95,7 @@ describe("Repository", function() {
   });
 
   it("can list remotes", function() {
-    return this.repository.getRemotes()
+    return this.repository.getRemoteNames()
       .then(function(remotes) {
         assert.equal(remotes.length, 1);
         assert.equal(remotes[0], "origin");

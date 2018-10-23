@@ -1504,6 +1504,7 @@
         }
       },
       "dependencies": [
+        "../include/git_buf_converter.h",
         "../include/filter_registry.h"
       ]
     },
@@ -3241,7 +3242,9 @@
       "selfFreeing": true,
       "isSingleton": true,
       "dependencies": [
-        "git2/sys/repository.h"
+        "git2/sys/repository.h",
+        "../include/submodule.h",
+        "../include/remote.h"
       ],
       "functions": {
         "git_repository_config": {
@@ -4220,7 +4223,10 @@
         "git_worktree_prune_init_options": {
           "ignore": true
         }
-      }
+      },
+      "dependencies": [
+        "../include/git_buf_converter.h"
+      ]
     },
     "writestream": {
       "cType": "git_writestream",
