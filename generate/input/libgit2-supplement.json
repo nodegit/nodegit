@@ -352,6 +352,32 @@
         },
         "group": "reset"
       },
+      "git_revwalk_commit_walk": {
+        "args": [
+          {
+            "name": "max_count",
+            "type": "int"
+          },
+          {
+            "name": "out",
+            "type": "std::vector<git_commit *> *"
+          },
+          {
+            "name": "walk",
+            "type": "git_revwalk *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/revwalk/commit_walk.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "revwalk",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_revwalk_fast_walk": {
         "args": [
           {
@@ -607,6 +633,7 @@
       [
         "revwalk",
         [
+          "git_revwalk_commit_walk",
           "git_revwalk_fast_walk",
           "git_revwalk_file_history_walk"
         ]
