@@ -326,9 +326,4 @@ describe("Repository", function() {
         assert.equal(numMergeHeads, 1);
       });
   });
-
-  it("can GC", function() {
-    global.gc();
-    assert.equal(true, true);
-  });
 });
