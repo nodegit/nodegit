@@ -2,6 +2,7 @@
 #define NODEGIT_WRAPPER_H
 
 #include <nan.h>
+#include <unordered_map>
 
 // the Traits template parameter supplies:
 //  typename cppClass - the C++ type of the NodeGit wrapper (e.g. GitRepository)

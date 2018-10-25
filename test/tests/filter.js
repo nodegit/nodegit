@@ -990,7 +990,6 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
-          list.free();
         });
     });
 
@@ -1036,7 +1035,6 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
-          list.free();
         });
     });
 
@@ -1093,7 +1091,6 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
-          list.free();
         });
     });
   });

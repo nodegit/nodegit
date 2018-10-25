@@ -110,6 +110,13 @@
         },
         "group": "branch"
       },
+      "git_clone": {
+        "isManual": true,
+        "cFile": "generate/templates/manual/clone/clone.cc",
+        "isAsync": true,
+        "isPrototypeMethod": false,
+        "group": "clone"
+      },
       "git_commit_extract_signature": {
         "args": [
           {
@@ -143,6 +150,13 @@
           "type": "int",
           "isErrorCode": true
         }
+      },
+      "git_filter_list_load": {
+        "isManual": true,
+        "cFile": "generate/templates/manual/filter_list/load.cc",
+        "isAsync": true,
+        "isPrototypeMethod": false,
+        "group": "filter_list"
       },
       "git_patch_convenient_from_diff": {
         "args": [
@@ -332,6 +346,16 @@
         ]
       ],
       [
+        "diff_stats",
+        [
+          "git_diff_stats_files_changed",
+          "git_diff_stats_insertions",
+          "git_diff_stats_deletions",
+          "git_diff_stats_to_buf",
+          "git_diff_stats_free"
+        ]
+      ],
+      [
         "filter_list",
         [
           "git_filter_list_apply_to_blob",
@@ -353,6 +377,12 @@
         ]
       ],
       [
+        "merge_file_result",
+        [
+          "git_merge_file_result_free"
+        ]
+      ],
+      [
         "odb_object",
         [
           "git_odb_object_data",
@@ -364,9 +394,37 @@
         ]
       ],
       [
+        "odb_stream",
+        [
+          "git_odb_stream_finalize_write",
+          "git_odb_stream_free",
+          "git_odb_stream_read",
+          "git_odb_stream_write"
+        ]
+      ],
+      [
+        "oid_shorten",
+        [
+          "git_oid_shorten_add",
+          "git_oid_shorten_free",
+          "git_oid_shorten_new"
+        ]
+      ],
+      [
         "patch",
         [
           "git_patch_convenient_from_diff"
+        ]
+      ],
+      [
+        "pathspec_match_list",
+        [
+          "git_pathspec_match_list_diff_entry",
+          "git_pathspec_match_list_entry",
+          "git_pathspec_match_list_entrycount",
+          "git_pathspec_match_list_failed_entry",
+          "git_pathspec_match_list_failed_entrycount",
+          "git_pathspec_match_list_free"
         ]
       ],
       [
@@ -484,6 +542,72 @@
               "ignore": true
             }
           ]
+        }
+      ],
+      [
+        "git_describe_format_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "unsigned int",
+              "name": "abbreviated_size"
+            },
+            {
+              "type": "int",
+              "name": "always_use_long_format"
+            },
+            {
+              "type": "const char *",
+              "name": "dirty_suffix"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_describe_init_format_options"
+            ]
+          }
+        }
+      ],
+      [
+        "git_describe_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "unsigned int",
+              "name": "max_candidates_tags"
+            },
+            {
+              "type": "unsigned int",
+              "name": "describe_strategy"
+            },
+            {
+              "type": "const char *",
+              "name": "pattern"
+            },
+            {
+              "type": "int",
+              "name": "only_follow_first_parent"
+            },
+            {
+              "type": "int",
+              "name": "show_commit_oid_as_fallback"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_describe_init_options"
+            ]
+          }
         }
       ],
       [
@@ -902,23 +1026,25 @@
         "git_annotated_commit_lookup"
       ]
     },
-    "filter": {
+    "diff": {
       "functions": [
-        "git_filter_list_new",
-        "git_filter_list_push",
-        "git_filter_list_stream_blob",
-        "git_filter_list_stream_data",
-        "git_filter_list_stream_file",
-        "git_filter_source_filemode",
-        "git_filter_source_flags",
-        "git_filter_source_id",
-        "git_filter_source_mode",
-        "git_filter_source_path",
-        "git_filter_source_repo"
+        "git_diff_stats_files_changed",
+        "git_diff_stats_insertions",
+        "git_diff_stats_deletions",
+        "git_diff_stats_to_buf",
+        "git_diff_stats_free"
       ]
     },
     "merge": {
       "functions": [
+        "git_merge_driver_lookup",
+        "git_merge_driver_register",
+        "git_merge_driver_source_ancestor",
+        "git_merge_driver_source_ours",
+        "git_merge_driver_source_repo",
+        "git_merge_driver_source_theirs",
+        "git_merge_driver_unregister",
+        "git_merge_file_result_free",
         "git_merge_head_free",
         "git_merge_head_from_fetchhead",
         "git_merge_head_from_id",
@@ -938,7 +1064,28 @@
         "git_odb_object_free",
         "git_odb_object_id",
         "git_odb_object_size",
-        "git_odb_object_type"
+        "git_odb_object_type",
+        "git_odb_stream_finalize_write",
+        "git_odb_stream_free",
+        "git_odb_stream_read",
+        "git_odb_stream_write"
+      ]
+    },
+    "oid": {
+      "functions": [
+        "git_oid_shorten_add",
+        "git_oid_shorten_free",
+        "git_oid_shorten_new"
+      ]
+    },
+    "pathspec": {
+      "functions": [
+        "git_pathspec_match_list_diff_entry",
+        "git_pathspec_match_list_entry",
+        "git_pathspec_match_list_entrycount",
+        "git_pathspec_match_list_failed_entry",
+        "git_pathspec_match_list_failed_entrycount",
+        "git_pathspec_match_list_free"
       ]
     },
     "reflog": {
@@ -959,6 +1106,7 @@
     },
     "tree": {
       "functions": [
+        "git_tree_entry_dup",
         "git_tree_entry_filemode",
         "git_tree_entry_filemode_raw",
         "git_tree_entry_free",

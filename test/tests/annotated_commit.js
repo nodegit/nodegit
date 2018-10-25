@@ -32,25 +32,6 @@ describe("AnnotatedCommit", function() {
       });
   });
 
-  it("can free an AnnotatedCommit after creating it", function() {
-    var test = this;
-
-    return Branch.lookup(test.repository, branchName, Branch.BRANCH.LOCAL)
-      .then(function(ref) {
-        return AnnotatedCommit.fromRef(test.repository, ref);
-      })
-      .then(function(annotatedCommit) {
-        // Annotated commit should exist
-        assert(annotatedCommit.id());
-
-        // Free the annotated commit
-        annotatedCommit.free();
-
-        // Getting the id should now throw because the commit was freed
-        assert.throws(annotatedCommit.id);
-      });
-  });
-
   it("can lookup an AnnotatedCommit after creating it", function() {
     var test = this;
     var id;

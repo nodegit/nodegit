@@ -4,9 +4,11 @@
 #include <string>
 #include <queue>
 #include <utility>
+#include <unordered_map>
 
 #include "async_baton.h"
 #include "callback_wrapper.h"
+#include "reference_counter.h"
 #include "nodegit_wrapper.h"
 
 extern "C" {
