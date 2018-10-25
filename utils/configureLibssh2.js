@@ -1,5 +1,5 @@
 var cp = require("child_process");
-var fse = require('fs-extra');
+var fse = require("fs-extra");
 var path = require("path");
 
 const libssh2VendorDirectory = path.resolve(__dirname, "..", "vendor", "libssh2");
@@ -19,27 +19,13 @@ module.exports = function retrieveExternalDependencies() {
 
   // Run the `configure` script on Linux
   return new Promise(function(resolve, reject) {
-
-    var opensslDir = process.argv[2];
-    var isElectron = process.argv[3] === "1";
-    var opensslIncludes = isElectron ? path.join(opensslDir, "includes") : opensslDir;
-
     var newEnv = {};
     Object.keys(process.env).forEach(function(key) {
       newEnv[key] = process.env[key];
     });
 
-    newEnv.CPPFLAGS = newEnv.CPPFLAGS || "";
-    newEnv.CPPFLAGS += ` -I${opensslIncludes}`;
-    newEnv.CPPFLAGS = newEnv.CPPFLAGS.trim();
-
-    var maybeLibsslPrefix = "";
-    if (isElectron) {
-      maybeLibsslPrefix = ` --with-libssl-prefix=${opensslDir}`;
-    }
-
     cp.exec(
-      libssh2ConfigureScript + maybeLibsslPrefix,
+      libssh2ConfigureScript,
       {
         cwd: libssh2VendorDirectory,
         env: newEnv
