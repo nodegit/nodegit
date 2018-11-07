@@ -104,8 +104,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
 
       const git_diff_delta *delta = git_patch_get_delta(nextPatch);
-      bool isEqualOldFile = !strcmp(delta->old_file.path, baton->file_path);
-      bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
+      bool isEqualOldFile = !strncmp(delta->old_file.path, baton->file_path, strlen(baton->file_path));
+      bool isEqualNewFile = !strncmp(delta->new_file.path, baton->file_path, strlen(baton->file_path));
 
       if (isEqualNewFile) {
         if (delta->status == GIT_DELTA_ADDED || delta->status == GIT_DELTA_DELETED) {
@@ -173,8 +173,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
         }
 
         const git_diff_delta *delta = git_patch_get_delta(nextPatch);
-        bool isEqualOldFile = !strcmp(delta->old_file.path, baton->file_path);
-        bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
+        bool isEqualOldFile = !strncmp(delta->old_file.path, baton->file_path, strlen(baton->file_path));
+        bool isEqualNewFile = !strncmp(delta->new_file.path, baton->file_path, strlen(baton->file_path));
         int oldLen = strlen(delta->old_file.path);
         int newLen = strlen(delta->new_file.path);
         char *outPair = new char[oldLen + newLen + 2];
