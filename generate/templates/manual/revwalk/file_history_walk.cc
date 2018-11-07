@@ -185,7 +185,7 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
 
         if (isEqualNewFile) {
           std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
-          if (!isEqualOldFile) {
+          if (!isEqualOldFile || delta ->status == GIT_DELTA_RENAMED) {
             historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
               nextCommit,
               std::pair<char *, git_delta_t>(strdup(outPair), delta->status)
