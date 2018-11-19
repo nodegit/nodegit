@@ -1,7 +1,7 @@
 ## System information
   - node version:
   - npm or yarn version:
-  - OS/version/architechture:
+  - OS/version/architecture:
   - Applicable nodegit version:
 
 ```
