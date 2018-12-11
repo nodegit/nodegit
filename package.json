@@ -72,8 +72,7 @@
   "binary": {
     "module_name": "nodegit",
     "module_path": "./build/Release/",
-    "host": "https://github.com/elastic/nodegit/releases/download/",
-    "remote_path": "{version}"
+    "host": "https://download.elasticsearch.org/code/nodegit/"
   },
   "scripts": {
     "babel": "babel --presets es2015 -d ./dist ./lib",
