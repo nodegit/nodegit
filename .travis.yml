@@ -1,5 +1,6 @@
 sudo: false
-dist: xenial
+# update to Xenial in April 2019; Trusty will be EOL, Xenial new minimum supported OS version
+dist: trusty
 
 branches:
   only:
@@ -22,6 +23,7 @@ env:
 node_js:
   - "10"
   - "8"
+  - "6"
 
 os:
   - linux
@@ -35,14 +37,8 @@ jobs:
     - stage: "Extended testing"
       os: linux
       dist: xenial
-      node_js: "8"
+      node_js: "10"
       env: TARGET_ARCH="x64" EXTENDED_TESTING="false" SKIP_DEPLOY="true"
-    - stage: "Deploy documentation"
-      os: linux
-      dist: xenial
-      node_js: "8"
-      env: TARGET_ARCH="x64" DEPLOY_DOCUMENTATION="true"
-
 
 git:
   depth: 5
@@ -53,24 +49,44 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - build-essential
+      - clang
       - libssl-dev
       - gcc-4.9-multilib
       - g++-4.9-multilib
       - lcov
 
+
 before_install:
-  - export CC=clang
+  - export CC="clang -fPIC"
   - export CXX=clang++
   - export npm_config_clang=1
   - export JOBS=4
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      cd $HOME;
+      wget https://www.openssl.org/source/openssl-1.0.2o.tar.gz;
+      tar xfz openssl-1.0.2o.tar.gz;
+      cd openssl-1.0.2o;
+      CFLAGS="-fPIC -Wno-deprecated-declarations -Wno-missing-field-initializers" ./config;
+      CFLAGS="-fPIC -Wno-deprecated-declarations -Wno-missing-field-initializers" TARGET_ARCH="" make;
+      sudo make install;
+    fi
 
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      cd $HOME;
+      wget https://curl.haxx.se/download/curl-7.63.0.tar.gz;
+      tar xfz curl-7.63.0.tar.gz;
+      cd curl-7.63.0;
+      CFLAGS="-fPIC -Wno-deprecated-declarations -Wno-missing-field-initializers" LIBS="-ldl -lpthread" ./configure --disable-shared --with-ssl=/usr/local/ssl/;
+      CFLAGS="-fPIC -Wno-deprecated-declarations -Wno-missing-field-initializers" make;
+      sudo make install;
+    fi
+
+  - cd $TRAVIS_BUILD_DIR
   - if [ -z "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" == "true" ]; then
       export GYP_DEFINES="coverage=1 use_obsolete_asm=true";
-      export CC=/usr/bin/gcc-4.9;
-      export CXX=/usr/bin/g++-4.9;
       export npm_config_clang=0;
       wget http://downloads.sourceforge.net/ltp/lcov-1.10.tar.gz;
-      tar xvfz lcov-1.10.tar.gz;
+      tar xfz lcov-1.10.tar.gz;
     else
       export GYP_DEFINES="use_obsolete_asm=true";
     fi
@@ -99,6 +115,7 @@ script:
 
 after_success:
   - if [ -n "$TRAVIS_TAG" ] && [ "$EXTENDED_TESTING" != "true" ] && [ "$DEPLOY_DOCUMENTATION" != "true" ] && [ "$SKIP_DEPLOY" != "true" ]; then
+      cd $TRAVIS_BUILD_DIR
       npm install -g node-pre-gyp;
       npm install -g aws-sdk;
       node lifecycleScripts/clean;
@@ -106,17 +123,3 @@ after_success:
       node-pre-gyp publish --target_arch=$TARGET_ARCH;
     fi
 
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ -n "$TRAVIS_TAG" ] && [ "$DEPLOY_DOCUMENTATION" == "true" ]; then
-      .travis/deploy-docs.sh;
-    fi
-
-notifications:
-  slack:
-    secure: KglNSqZiid9YudCwkPFDh+sZfW5BwFlM70y67E4peHwwlbbV1sSBPHcs74ZHP/lqgEZ4hMv4N2NI58oYFD5/1a+tKIQP1TkdIMuq4j2LXheuirA2HDcydOVrsC8kRx5XFGKdVRg/uyX2dlRHcOWFhxrS6yc6IxtxYWlRTD2SmEc=
-
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/cbafdb27ad32ba746a73
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: false     # default: false
