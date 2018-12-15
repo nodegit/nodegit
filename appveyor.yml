@@ -27,8 +27,7 @@ environment:
   matrix:
     # Node.js
     - nodejs_version: "10"
-    - nodejs_version: "8"
-    - nodejs_version: "6"
+
 
 matrix:
   fast_finish: true
@@ -55,8 +54,3 @@ on_success:
   - IF %APPVEYOR_REPO_TAG%==true node-pre-gyp publish
 
 build: off
-
-branches:
-  only:
-    - master
-    - v0.3

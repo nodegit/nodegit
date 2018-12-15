@@ -34,7 +34,7 @@
   "targets": [
     {
       "target_name": "acquireOpenSSL",
-        "conditions": [
+      "conditions": [
         ["<(is_electron) == 1", {
           "actions": [{
             "action_name": "acquire",
@@ -89,9 +89,9 @@
         "src/str_array_converter.cc",
         "src/thread_pool.cc",
         {% each %}
-          {% if type != "enum" %}
-            "src/{{ name }}.cc",
-          {% endif %}
+        {% if type != "enum" %}
+        "src/{{ name }}.cc",
+        {% endif %}
         {% endeach %}
       ],
 
@@ -102,101 +102,115 @@
       ],
 
       "cflags": [
-        "-Wall"
+        "-Wno-deprecated-declarations",
+        "-Wno-missing-field-initializers",
+        "-fPIC"
       ],
 
       "conditions": [
         [
           "coverage==1", {
-            "cflags": [
-              "-ftest-coverage",
-              "-fprofile-arcs"
-            ],
-            "link_settings": {
-              "libraries": [
-                "-lgcov"
-              ]
-            },
-          }
+          "cflags": [
+            "-ftest-coverage",
+            "-fprofile-arcs"
+          ],
+          "link_settings": {
+            "libraries": [
+              "-lgcov"
+            ]
+          },
+        }
         ],
         [
           "OS=='mac'", {
-            "conditions": [
-              ["node_root_dir.split('/')[-1].startswith('iojs')", {
-                "include_dirs": [
-                  "vendor/openssl/include"
-                ],
-                "libraries": [
-                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.a",
-                  "<(module_root_dir)/vendor/openssl/lib/libssl.a"
-                ]
-              }]
-            ],
-            "xcode_settings": {
-              "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
-              "MACOSX_DEPLOYMENT_TARGET": "10.9",
-              'CLANG_CXX_LIBRARY': 'libc++',
-              'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
-
-              "WARNING_CFLAGS": [
-                "-Wno-unused-variable",
-                "-Wint-conversions",
-                "-Wmissing-field-initializers",
-                "-Wno-c++11-extensions"
+          "conditions": [
+            ["node_root_dir.split('/')[-1].startswith('iojs')", {
+              "include_dirs": [
+                "vendor/openssl/include"
+              ],
+              "libraries": [
+                "<(module_root_dir)/vendor/openssl/lib/libcrypto.a",
+                "<(module_root_dir)/vendor/openssl/lib/libssl.a"
               ]
-            }
+            }]
+          ],
+          "xcode_settings": {
+            "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+            "MACOSX_DEPLOYMENT_TARGET": "10.9",
+            'CLANG_CXX_LIBRARY': 'libc++',
+            'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+
+            "WARNING_CFLAGS": [
+              "-Wno-unused-variable",
+              "-Wint-conversions",
+              "-Wmissing-field-initializers",
+              "-Wno-c++11-extensions"
+            ]
           }
+        }
         ],
         [
           "OS=='win'", {
-            "conditions": [
-              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
-                "include_dirs": ["vendor/openssl/include"],
-                "libraries": [
-                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
-                  "<(module_root_dir)/vendor/openssl/lib/libssl.lib"
-                ]
-              }]
-            ],
-            "defines": [
-              "_HAS_EXCEPTIONS=1"
-            ],
-            "msvs_settings": {
-              "VCCLCompilerTool": {
-                "AdditionalOptions": [
-                  "/EHsc"
-                ]
-              },
-              "VCLinkerTool": {
-                "AdditionalOptions": [
-                  "/FORCE:MULTIPLE"
-                ]
-              }
+          "conditions": [
+            ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              "include_dirs": ["vendor/openssl/include"],
+              "libraries": [
+                "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
+                "<(module_root_dir)/vendor/openssl/lib/libssl.lib"
+              ]
+            }]
+          ],
+          "defines": [
+            "_HAS_EXCEPTIONS=1"
+          ],
+          "msvs_settings": {
+            "VCCLCompilerTool": {
+              "AdditionalOptions": [
+                "/EHsc"
+              ]
             },
-            "libraries": [
-              "winhttp.lib",
-              "crypt32.lib",
-              "rpcrt4.lib"
-            ]
-          }
+            "VCLinkerTool": {
+              "AdditionalOptions": [
+                "/FORCE:MULTIPLE"
+              ]
+            }
+          },
+          "libraries": [
+            "winhttp.lib",
+            "crypt32.lib",
+            "rpcrt4.lib"
+          ]
+        }
         ],
         [
-          "OS=='linux' or OS=='mac' or OS.endswith('bsd')", {
-            "libraries": [
-              "<!(curl-config --libs)"
-            ]
-          }
+          "OS=='linux'", {
+          "libraries": [
+            "/usr/local/lib/libcurl.a",
+            "/usr/local/ssl/lib/libssl.a",
+            "/usr/local/ssl/lib/libcrypto.a"
+          ],
+          "ldflags": [
+            "-static-libstdc++"
+          ]
+        }
         ],
         [
-          "OS=='linux' or OS.endswith('bsd')", {
-            "libraries": [
-              "-lcrypto",
-              "-lssl"
-            ],
-            "cflags": [
-              "-std=c++11"
-            ]
-          }
+          "OS=='mac' or OS.endswith('bsd')", {
+          "libraries": [
+            "<!(curl-config --libs)"
+          ]
+        }
+        ],
+        [
+          "OS=='mac' or OS.endswith('bsd')", {
+          "libraries": [
+            "-lcrypto",
+            "-lssl"
+          ],
+          "cflags": [
+            "-std=c++11"
+          ]
+        }
         ]
       ]
     }
