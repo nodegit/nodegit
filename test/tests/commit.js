@@ -819,7 +819,7 @@ describe("Commit", function() {
       }
 
       var test = this;
-      var expectedCommitId = "53bb69297148decb1d75e015f66a7e5f4e0476c9";
+      var expectedCommitId = "ccb99bb20716ef7c37e92c7b8db029a7af7f747b";
       var fileName = "newfile.txt";
       var fileContent = "hello world";
 
