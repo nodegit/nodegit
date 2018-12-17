@@ -109,6 +109,16 @@ describe("Repository", function() {
       });
   });
 
+  it("can get a reference commit", function() {
+    return this.repository.getReferenceCommit("master")
+      .then(function(commit) {
+        assert.equal(
+          "32789a79e71fbc9e04d3eff7425e1771eb595150",
+          commit.toString()
+        );
+      });
+  });
+
   it("can get the default signature", function() {
     var sig = this.repository.defaultSignature();
 
