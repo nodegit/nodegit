@@ -26,7 +26,7 @@ environment:
   GYP_MSVS_VERSION: 2015
   matrix:
     # Node.js
-    - nodejs_version: "10"
+    - nodejs_version: "10.14.1"
 
 
 matrix:
