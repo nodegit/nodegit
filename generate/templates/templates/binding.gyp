@@ -189,13 +189,17 @@
         ],
         [
           "OS=='linux' or OS.endswith('bsd')", {
+            "cflags": [
+              "-std=c++11"
+            ]
+          }
+        ],
+        [
+          "OS.endswith('bsd') or (node_root_dir.split('/')[-1].startswith('iojs') and OS=='linux')", {
             "libraries": [
               "-lcrypto",
               "-lssl"
             ],
-            "cflags": [
-              "-std=c++11"
-            ]
           }
         ]
       ]
