@@ -326,6 +326,28 @@
           "isErrorCode": true
         }
       },
+      "git_repository_refresh_references": {
+        "args": [
+          {
+            "name": "out",
+            "type": "void *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/repository/refresh_references.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "repository",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_reset": {
         "type": "function",
         "file": "reset.h",
@@ -627,7 +649,8 @@
         [
           "git_repository_get_references",
           "git_repository_get_submodules",
-          "git_repository_get_remotes"
+          "git_repository_get_remotes",
+          "git_repository_refresh_references"
         ]
       ],
       [
