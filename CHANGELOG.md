@@ -1,5 +1,239 @@
 # Change Log
 
+## <a name="v0-24-0-alpha.1" href="#v0-24-0-alpha.1">v0.24.0-alpha.1</a> [(2018-10-25)](https://github.com/nodegit/nodegit/releases/tag/v0.24.0-alpha.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0...v0.24.0-alpha.1)
+
+#### Summary of changes
+- Garbage collect most of the library.
+- All free functions have been removed. The expectation is that they will be collected by the GC.
+- All init options methods have been removed. They were never supposed to be exposed in the first place.
+
+##### Removed methods
+Mostly due to missing support anyway, please report anything you were using as an issue.
+  - NodeGit.Blob.createFromStreamCommit
+  - NodeGit.Branch.Iterator.prototype.new
+  - NodeGit.Config.initBackend
+  - NodeGit.Config.prototype.snapshot
+  - NodeGit.Config.prototype.setBool
+  - NodeGit.Config.prototype.setInt32
+  - NodeGit.Config.prototype.setInt64
+  - NodeGit.Index.prototype.owner
+  - NodeGit.Note.iteratorNew
+  - NodeGit.Note.next
+  - NodeGit.Odb.prototype.addDiskAlternate
+  - NodeGit.Repository.prototype.configSnapshot
+  - NodeGit.Signature.prototype.dup
+  - NodeGit.Tag.foreach
+  - NodeGit.Transport.init
+  - NodeGit.Transport.sshWithPaths
+  - NodeGit.Transport.unregister
+
+##### Newly exposed methods:
+  - NodeGit.Config.prototype.getEntry
+  - NodeGit.Config.prototype.snapshot
+  - NodeGit.Config.prototype.refresh
+  - NodeGit.Config.prototype.setBool
+  - NodeGit.Config.prototype.setInt32
+  - NodeGit.Config.prototype.setInt64
+  - NodeGit.Diff.prototype.isSortedIcase
+  - NodeGit.DiffStats.prototype.deletions
+  - NodeGit.DiffStats.prototype.filesChanged
+  - NodeGit.DiffStats.prototype.insertions
+  - NodeGit.DiffStats.prototype.toBuf
+  - NodeGit.Odb.hashfile
+  - NodeGit.Odb.prototype.readPrefix
+  - NodeGit.OidShorten.prototype.add
+  - NodeGit.OidShorten.create
+  - NodeGit.PathspecMatchList.prototype.diffEntry
+  - NodeGit.PathspecMatchList.prototype.entry
+  - NodeGit.PathspecMatchList.prototype.entrycount
+  - NodeGit.PathspecMatchList.prototype.failedEntry
+  - NodeGit.PathspecMatchList.prototype.failedEntryCount
+
+##### Newly exposed types
+  - NodeGit.DescribeFormatOptions
+  - NodeGit.DiffStats
+  - NodeGit.OidShorten
+  - NodeGit.PathspecMatchList
+
+#### Merged PRs into NodeGit
+- [Garbage collection: Free mostly everything automatically #1570](https://github.com/nodegit/nodegit/pull/1570)
+
+
+## <a name="v0-23-0" href="#v0-23-0">v0.23.0</a> [(2018-10-22)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.2...v0.23.0)
+
+#### Summary of changes
+- Added Node 10 support.
+- We no longer compile OpenSSL. Instead, we prefer the OpenSSL shipped with Node. In electron builds, we prefer the system openssl on linux, and we get prebuilt static libs from Conan.
+- Cleaned up some compiler warnings
+- Our http_parser dependency is now a submodule.
+- Updated some dependencies in npm to get rid of security vulnerabilities and warnings.
+- Exposed transfer progress callback for pushing.
+- Libssh2 is now preconfigured for both Mac OS and Windows
+
+#### Merged PRs into NodeGit
+- [warn about node v10 incompatibility in readme #1534](https://github.com/nodegit/nodegit/pull/1534)
+- [Define error codes to fix compiler warnings about unused variables #1486](https://github.com/nodegit/nodegit/pull/1486)
+- [Include http_parser via submodule #1551](https://github.com/nodegit/nodegit/pull/1551)
+- [Update dependencies to get rid of security vulnerabilities #1547](https://github.com/nodegit/nodegit/pull/1547)
+- [add github issue template #1548](https://github.com/nodegit/nodegit/pull/1548)
+- [Enable git_push_transfer_progress - Help wanted #1500](https://github.com/nodegit/nodegit/pull/1500)
+- [Fixed createBranch API params #1552](https://github.com/nodegit/nodegit/pull/1552)
+- [Use curl-config to find curl #1555](https://github.com/nodegit/nodegit/pull/1555)
+- [Update readme #1554](https://github.com/nodegit/nodegit/pull/1554)
+- [Node 10 support #1545](https://github.com/nodegit/nodegit/pull/1545)
+- [Update dependencies #1519](https://github.com/nodegit/nodegit/pull/1519)
+- [Run submodule updates in sequence rather than parallel #1558](https://github.com/nodegit/nodegit/pull/1558)
+- [Fix Electron builds on win32 #1560](https://github.com/nodegit/nodegit/pull/1560)
+- [Use static `libssh2_config.h` on MacOS builds #1569](https://github.com/nodegit/nodegit/pull/1569)
+
+
+## <a name="v0-23-0-alpha.2" href="#v0-23-0-alpha.2">v0.23.0-alpha.2</a> [(2018-10-19)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0-alpha.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0-alpha.1...v0.23.0-alpha.2)
+
+#### Summary of changes
+On Mac OS Mojave, libssh2 configure failed to configure, because libssh2 always tries to configure against system libraries. The configure process uses links to determine that a OpenSSL is present. Since OSX and Windows no longer link against the system lib, we've prebuilt the configure steps for both environments. This should be stable when building NodeGit on Mojave.
+
+#### Merged PRs into NodeGit
+- [Use static `libssh2_config.h` on MacOS builds #1569](https://github.com/nodegit/nodegit/pull/1569)
+
+
+## <a name="v0-23-0-alpha.1" href="#v0-23-0-alpha.1">v0.23.0-alpha.1</a> [(2018-10-01)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0-alpha.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.2...v0.23.0-alpha.1)
+
+#### Summary of changes
+- Added Node 10 support.
+- We no longer compile OpenSSL. Instead, we prefer the OpenSSL shipped with Node. In electron builds, we prefer the system openssl on linux, and we get prebuilt static libs from Conan.
+- Cleaned up some compiler warnings
+- Our http_parser dependency is now a submodule.
+- Updated some dependencies in npm to get rid of security vulnerabilities and warnings.
+- Exposed transfer progress callback for pushing.
+
+#### Merged PRs into NodeGit
+- [warn about node v10 incompatibility in readme #1534](https://github.com/nodegit/nodegit/pull/1534)
+- [Define error codes to fix compiler warnings about unused variables #1486](https://github.com/nodegit/nodegit/pull/1486)
+- [Include http_parser via submodule #1551](https://github.com/nodegit/nodegit/pull/1551)
+- [Update dependencies to get rid of security vulnerabilities #1547](https://github.com/nodegit/nodegit/pull/1547)
+- [add github issue template #1548](https://github.com/nodegit/nodegit/pull/1548)
+- [Enable git_push_transfer_progress - Help wanted #1500](https://github.com/nodegit/nodegit/pull/1500)
+- [Fixed createBranch API params #1552](https://github.com/nodegit/nodegit/pull/1552)
+- [Use curl-config to find curl #1555](https://github.com/nodegit/nodegit/pull/1555)
+- [Update readme #1554](https://github.com/nodegit/nodegit/pull/1554)
+- [Node 10 support #1545](https://github.com/nodegit/nodegit/pull/1545)
+- [Update dependencies #1519](https://github.com/nodegit/nodegit/pull/1519)
+- [Run submodule updates in sequence rather than parallel #1558](https://github.com/nodegit/nodegit/pull/1558)
+- [Fix Electron builds on win32 #1560](https://github.com/nodegit/nodegit/pull/1560)
+
+
+## <a name="v0-22-2" href="#v0-22-2">v0.22.2</a> [(2018-07-10)](https://github.com/nodegit/nodegit/releases/tag/v0.22.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.1...v0.22.2)
+
+#### Summary of changes
+- Bumped libgit2 to 0.27.3 to incorporate security patch. Details can be found here https://github.com/libgit2/libgit2/releases/tag/v0.27.3
+- Also includes changes made in 0.27.2. Details can be found here https://github.com/libgit2/libgit2/releases/tag/v0.27.2
+- Ensure optional params are respected as optional in `NodeGit.Merge.trees`
+
+#### Merged PRs into NodeGit
+- [Fix argument handling in Git.Merge.trees #1507](https://github.com/nodegit/nodegit/pull/1507)
+
+#### Included non-merged libgit2 PRs:
+ - [Parallelize checkout_create_the_new for ntfs perf gains #4205](https://github.com/libgit2/libgit2/pull/4205)
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+
+#### Included merged libgit2 PRs:
+- [Bugfix release v0.27.2 #4632](https://github.com/libgit2/libgit2/pull/4632)
+- [Release v0.27.3 #4717](https://github.com/libgit2/libgit2/pull/4717)
+
+
+## <a name="v0-22-1" href="#v0-22-1">v0.22.1</a> [(2018-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.22.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.0...v0.22.1)
+
+#### Summary of changes
+Bumped libgit2 to 0.27.1 to address security flaw with submodule name validation (CVE-2018-11235, reported by Etienne Stalmans).
+Details can be found here https://github.com/libgit2/libgit2/releases/tag/v0.27.1
+
+
+## <a name="v0-22-0" href="#v0-22-0">v0.22.0</a> [(2018-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.22.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.2...v0.22.0)
+
+#### Summary of changes
+- Expose [Tag.listMatch](https://libgit2.github.com/libgit2/#v0.26.3/group/tag/git_tag_list_match)
+- Expose [Repo.prototype.createCommitBuffer](https://libgit2.github.com/libgit2/#v0.26.3/group/commit/git_commit_create_buffer)
+- Bump Libgt2 to 0.27.0. For more information about what was in this release. [Check upstream](https://github.com/libgit2/libgit2/releases/tag/v0.27.0).
+- Errors are now properly thrown from
+  - `Attr.prototype.get`
+  - `Blob.createFrombuffer`
+  - `Blob.createFromworkdir`
+  - `Reference.list`
+  - `Remote.prototype.getFetchRefspecs`
+  - `Remote.prototype.getPushRefspecs`
+  - `Status.file`
+- WorkTree is now exposed
+  - Static methods
+    - `add`
+    - `list`
+    - `lookup`
+    - `openFromRepository`
+  - Instance methods
+    - `isLocked`
+    - `isPrunable`
+    - `lock`
+    - `prune`
+    - `unlock`
+    - `validate`
+- **BREAKING** Functions that are now async
+  - `Attr.prototype.getMany`
+  - `Tag.prototype.target`
+  - `Treebuilder.prototype.Write`
+- **BREAKING** Diffs generated from `Diff.treeToIndex` and `Diff.treeToWorkdirWithIndex` conditionally support `Diff.OPTION.IGNORE_CASE`. Only on repositories where the index is case insensitive will the flag be set on the output diff. The flag itself is ignored when passed to `DiffOptions`.
+
+#### Merged PRs into NodeGit
+- [Add JavaScript Tag.listMatch function for git_tag_list_match #1470](https://github.com/nodegit/nodegit/pull/1470)
+- [Expose error code in Status.file #1468](https://github.com/nodegit/nodegit/pull/1468)
+- [Travis documentation deploy fixes #1466](https://github.com/nodegit/nodegit/pull/1466)
+- [Bump to libgit2 v0.27.0 #1477](https://github.com/nodegit/nodegit/pull/1477)
+- [Add repo.createCommitBuffer #1481](https://github.com/nodegit/nodegit/pull/1481)
+
+#### Included non-merged libgit2 PRs:
+ - [Parallelize checkout_create_the_new for ntfs perf gains #4205](https://github.com/libgit2/libgit2/pull/4205)
+ - [negotiate always fails via libcurl #4126](https://github.com/libgit2/libgit2/pull/4126)
+
+
+## <a name="v0-21-2" href="#v0-21-2">v0.21.2</a> [(2018-03-19)](https://github.com/nodegit/nodegit/releases/tag/v0.21.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.1...v0.21.2)
+
+#### Summary of changes
+- Drop support for node 7
+- Fixed an issue where fast-forward rebase would throw an error unexepctedly.
+- Expose git_commit_extract_signature
+- TreeEntry.prototype.path() should always return posix style separators
+- Expose git_config_open_ondisk
+- Expose git_config_find_global
+- Expose git_config_find_system
+- Expose git_config_find_xdg
+- Expose git_config_get_path
+
+#### Merged PRs into NodeGit
+ - [Fix typo in CHANGELOG.md #1455](https://github.com/nodegit/nodegit/pull/1455)
+ - [Add two tests for Tag #1452](https://github.com/nodegit/nodegit/pull/1452)
+ - [Handle fast-forward merges properly in repository.performRebase #1457](https://github.com/nodegit/nodegit/pull/1457)
+ - [Enable git_commit_extract_signature #1458](https://github.com/nodegit/nodegit/pull/1458)
+ - [removes 'only' from test #1460](https://github.com/nodegit/nodegit/pull/1460)
+ - [Deploy documentation and make extended tests visible #1447](https://github.com/nodegit/nodegit/pull/1447)
+ - [resolves #1433 TreeEntry#path should return posix path #1434](https://github.com/nodegit/nodegit/pull/1434)
+ - [Exposed git_config_open_ondisk #1459](https://github.com/nodegit/nodegit/pull/1459)
+ - [Expose git_config functions #1463](https://github.com/nodegit/nodegit/pull/1463)
+
+
 ## <a name="v0-21-1" href="#v0-21-1">v0.21.1</a> [(2018-03-05)](https://github.com/nodegit/nodegit/releases/tag/v0.21.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.21.0...v0.21.1)
@@ -14,7 +248,7 @@
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.20.3...v0.21.0)
 
-### Summary of changes to NodeGit:
+#### Summary of changes to NodeGit:
  - [Generate default options for Revert.revert to prevent an exception #1404](https://github.com/nodegit/nodegit/pull/1404)
  - [fix issue with re-require()'ing native modules #1354](https://github.com/nodegit/nodegit/pull/1354)
  - [Expose JavaScript function name in a rejected promise #1393](https://github.com/nodegit/nodegit/pull/1393)

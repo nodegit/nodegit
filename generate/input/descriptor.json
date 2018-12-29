@@ -76,10 +76,34 @@
   "types":
   {
     "annotated_commit": {
+      "selfFreeing": true,
       "functions": {
+        "git_annotated_commit_free": {
+          "ignore": true
+        },
         "git_annotated_commit_id": {
           "return": {
             "ownedByThis": true
+          }
+        },
+        "git_annotated_commit_from_ref": {
+          "return": {
+            "ownedBy": ["repo"]
+          }
+        },
+        "git_annotated_commit_from_fetchhead": {
+          "return": {
+            "ownedBy": ["repo"]
+          }
+        },
+        "git_annotated_commit_lookup": {
+          "return": {
+            "ownedBy": ["repo"]
+          }
+        },
+        "git_annotated_commit_from_revspec": {
+          "return": {
+            "ownedBy": ["repo"]
           }
         }
       }
@@ -95,27 +119,61 @@
             "value_out": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_attr_get_many": {
+          "isAsync": true,
           "args": {
             "values_out": {
               "isReturn": true,
               "jsClassName": "Array"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         }
       }
     },
     "blame": {
+      "selfFreeing": true,
       "cType": "git_blame",
       "functions": {
+        "git_blame_buffer": {
+          "args": {
+            "out": {
+              "ownedBy": ["reference"]
+            }
+          }
+        },
         "git_blame_file": {
           "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            },
             "options": {
               "isOptional": true
             }
           }
+        },
+        "git_blame_free": {
+          "ignore": true
+        },
+        "git_blame_get_hunk_byindex": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_blame_get_hunk_byline": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_blame_init_options": {
+          "ignore": true
         }
       }
     },
@@ -128,6 +186,10 @@
     },
     "blob": {
       "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_blob_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_blob_create_frombuffer": {
           "isAsync": true,
@@ -139,6 +201,9 @@
               "cppClassName": "Buffer",
               "jsClassName": "Buffer"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_blob_create_fromworkdir": {
@@ -163,7 +228,10 @@
             "isErrorCode": true
           }
         },
-        "git_blob_create_fromchunks": {
+        "git_blob_create_fromstream": {
+          "ignore": true
+        },
+        "git_blob_create_fromstream_commit": {
           "ignore": true
         },
         "git_blob_filtered_content": {
@@ -196,6 +264,9 @@
             "isErrorCode": true
           }
         },
+        "git_blob_free": {
+          "ignore": true
+        },
         "git_blob_id": {
           "return": {
             "ownedByThis": true
@@ -203,6 +274,7 @@
         },
         "git_blob_rawcontent": {
           "return": {
+            "ownedByThis": true,
             "cppClassName": "Wrapper",
             "jsClassName": "Buffer"
           }
@@ -215,9 +287,6 @@
     },
     "branch": {
       "functions": {
-        "git_branch_iterator_free": {
-          "ignore": true
-        },
         "git_branch_create": {
           "args": {
             "force": {
@@ -247,6 +316,12 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_branch_iterator_free": {
+          "ignore": true
+        },
+        "git_branch_iterator_new": {
+          "ignore": true
         },
         "git_branch_next": {
           "ignore": true
@@ -304,6 +379,9 @@
     },
     "buf": {
       "functions": {
+        "git_buf_free": {
+          "ignore": true
+        },
         "git_buf_grow": {
           "cppFunctionName": "Grow",
           "jsFunctionName": "grow",
@@ -395,6 +473,9 @@
             "isErrorCode": true
           }
         },
+        "git_checkout_init_options": {
+          "ignore": true
+        },
         "git_checkout_tree": {
           "args": {
             "treeish": {
@@ -418,6 +499,9 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_cherrypick_init_options": {
+          "ignore": true
         }
       }
     },
@@ -429,6 +513,9 @@
               "isOptional": true
             }
           }
+        },
+        "git_clone_init_options": {
+          "ignore": true
         }
       }
     },
@@ -450,6 +537,10 @@
     },
     "commit": {
       "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_commit_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_commit_amend": {
           "isAsync": true,
@@ -475,6 +566,9 @@
             "update_ref": {
               "isOptional": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_commit_author": {
@@ -511,7 +605,27 @@
           }
         },
         "git_commit_create_buffer": {
-          "ignore": true
+          "args": {
+            "out": {
+              "isReturn": true,
+              "cppClassName": "GitBuf",
+              "jsClassName": "Buffer",
+              "shouldAlloc": true
+            },
+            "message_encoding": {
+              "isOptional": true
+            },
+            "parents": {
+              "cType": "const git_commit **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitCommit"
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_commit_create_from_callback": {
           "ignore": true
@@ -524,6 +638,9 @@
         },
         "git_commit_extract_signature": {
           "isAsync": true
+        },
+        "git_commit_free": {
+          "ignore": true
         },
         "git_commit_id": {
           "return": {
@@ -563,6 +680,7 @@
       }
     },
     "config": {
+      "selfFreeing": true,
       "functions": {
         "git_config_add_backend": {
           "ignore": true
@@ -592,6 +710,19 @@
           },
           "return": {
             "isErrorCode": true
+          }
+        },
+        "git_config_find_programdata": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          },
+          "args": {
+            "out": {
+              "isReturn": true,
+              "isSelf": false,
+              "shouldAlloc": true
+            }
           }
         },
         "git_config_find_system": {
@@ -631,7 +762,12 @@
           "ignore": true
         },
         "git_config_get_entry": {
-          "ignore": true
+          "args": {
+            "out": {
+              "isReturn": true,
+              "ownedByThis": true
+            }
+          }
         },
         "git_config_get_int32": {
           "ignore": true
@@ -672,6 +808,9 @@
             "isErrorCode": true
           }
         },
+        "git_config_init_backend": {
+          "ignore": true
+        },
         "git_config_iterator_free": {
           "ignore": true
         },
@@ -681,8 +820,14 @@
         "git_config_iterator_new": {
           "ignore": true
         },
-        "git_config_init_backend": {
-          "ignore": true
+        "git_config_lock": {
+          "isAsync": true,
+          "args": {
+            "tx": {
+              "isReturn": true,
+              "ownedByThis": true
+            }
+          }
         },
         "git_config_lookup_map_value": {
           "ignore": true
@@ -731,14 +876,23 @@
         "git_config_parse_path": {
           "ignore": true
         },
-        "git_config_refresh": {
-          "ignore": true
-        },
         "git_config_set_bool": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_set_int32": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_config_set_int64": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_set_string": {
           "isAsync": true,
@@ -746,18 +900,8 @@
             "isErrorCode": true
           }
         },
-        "git_config_find_programdata": {
-          "isAsync": true,
-          "return": {
-            "isErrorCode": true
-          },
-          "args": {
-            "out": {
-              "isReturn": true,
-              "isSelf": false,
-              "shouldAlloc": true
-            }
-          }
+        "git_config_snapshot": {
+          "ignore": true
         }
       },
       "dependencies": [
@@ -767,14 +911,21 @@
     "config_backend": {
       "ignore": true
     },
+    "config_entry": {
+      "selfFreeing": true
+    },
     "config_iterator": {
       "ignore": true
     },
     "cred": {
+      "selfFreeing": true,
       "cType": "git_cred",
       "functions": {
         "git_cred_default_new": {
           "isAsync": false
+        },
+        "git_cred_free": {
+          "ignore": true
         },
         "git_cred_ssh_custom_new": {
           "ignore": true
@@ -796,6 +947,9 @@
         }
       }
     },
+    "cred_default": {
+      "ignore": true
+    },
     "cred_ssh_custom": {
       "ignore": true
     },
@@ -806,17 +960,10 @@
       "ignore": true
     },
     "cred_username": {
-      "fields": {
-        "username": {
-          "cppClassName": "String",
-          "cType": "char *"
-        }
-      }
+      "ignore": true
     },
     "cred_userpass_payload": {
-      "cDependencies": [
-        "git2/cred_helpers.h"
-      ]
+      "ignore": true
     },
     "cred_userpass_plaintext": {
       "ignore": true
@@ -824,7 +971,11 @@
     "describe": {
       "ignore": true
     },
+    "describe_format_options": {
+      "hasConstructor": true
+    },
     "diff": {
+      "selfFreeing": true,
       "cDependencies": [
         "git2/sys/diff.h"
       ],
@@ -907,11 +1058,48 @@
         "git_diff_free": {
           "ignore": true
         },
+        "git_diff_get_perfdata": {
+          "isAsync": false,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            },
+            "diff": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_diff_get_stats": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "ownedByThis": true
+            },
+            "diff": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_diff_index_to_index": {
+          "args": {
+            "diff": {
+              "ownedBy": ["repo"]
+            }
+          }
         },
         "git_diff_index_to_workdir": {
           "args": {
+            "diff": {
+              "ownedBy": ["repo"]
+            },
             "index": {
               "isOptional": true
             },
@@ -923,12 +1111,12 @@
         "git_diff_init_options": {
           "ignore": true
         },
-        "git_diff_is_sorted_icase": {
-          "ignore": true
-        },
         "git_diff_merge": {
           "isAsync": true,
           "args": {
+            "from": {
+              "ownedByThis": true
+            },
             "onto": {
               "isSelf": true
             }
@@ -940,6 +1128,9 @@
         "git_diff_num_deltas_of_type": {
           "ignore": true
         },
+        "git_diff_patchid_init_options": {
+          "ignore": true
+        },
         "git_diff_print": {
           "ignore": true
         },
@@ -947,21 +1138,6 @@
           "ignore": true
         },
         "git_diff_print_callback__to_file_handle": {
-          "ignore": true
-        },
-        "git_diff_stats_deletions": {
-          "ignore": true
-        },
-        "git_diff_stats_files_changed": {
-          "ignore": true
-        },
-        "git_diff_stats_free": {
-          "ignore": true
-        },
-        "git_diff_stats_insertions": {
-          "ignore": true
-        },
-        "git_diff_stats_to_buf": {
           "ignore": true
         },
         "git_diff_status_char": {
@@ -982,6 +1158,9 @@
         },
         "git_diff_tree_to_index": {
           "args": {
+            "diff": {
+              "ownedBy": ["repo"]
+            },
             "old_tree": {
               "isOptional": true
             },
@@ -995,6 +1174,9 @@
         },
         "git_diff_tree_to_tree": {
           "args": {
+            "diff": {
+              "ownedBy": ["repo"]
+            },
             "old_tree": {
               "isOptional": true
             },
@@ -1008,6 +1190,9 @@
         },
         "git_diff_tree_to_workdir": {
           "args": {
+            "diff": {
+              "ownedBy": ["repo"]
+            },
             "old_tree": {
               "isOptional": true
             },
@@ -1018,6 +1203,9 @@
         },
         "git_diff_tree_to_workdir_with_index": {
           "args": {
+            "diff": {
+              "ownedBy": ["repo"]
+            },
             "old_tree": {
               "isOptional": true
             },
@@ -1040,12 +1228,51 @@
       "ignore": true
     },
     "diff_perfdata": {
+      "selfFreeing": true,
       "cDependencies": [
         "git2/sys/diff.h"
       ]
     },
     "diff_similarity_metric": {
       "ignore": true
+    },
+    "diff_stats": {
+      "selfFreeing": true,
+      "functions": {
+        "git_diff_stats_deletions": {
+          "args": {
+            "stats": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_diff_stats_files_changed": {
+          "args": {
+            "stats": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_diff_stats_free": {
+          "ignore": true
+        },
+        "git_diff_stats_insertions": {
+          "args": {
+            "stats": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_diff_stats_to_buf": {
+          "cppFunctionName": "DiffStatsToBuf",
+          "isAsync": true,
+          "args": {
+            "stats": {
+              "isSelf": true
+            }
+          }
+        }
+      }
     },
     "error_code": {
       "values": {
@@ -1054,107 +1281,16 @@
         }
       }
     },
+    "fetch": {
+      "functions": {
+        "git_fetch_init_options": {
+          "ignore": true
+        }
+      }
+    },
     "filter": {
       "selfFreeing": false,
       "hasConstructor": true,
-      "functions": {
-        "git_filter_list_apply_to_blob": {
-          "async": true,
-          "return": {
-            "isErrorCode": true
-          },
-          "args": {
-            "out": {
-              "isReturn": true,
-              "shouldAlloc": true
-            },
-            "filters": {
-              "isSelf": true
-            }
-          }
-        },
-        "git_filter_list_apply_to_data": {
-          "async": true,
-          "return": {
-            "isErrorCode": true
-          },
-          "args": {
-            "out": {
-              "isReturn": true,
-              "shouldAlloc": true
-            },
-            "filters": {
-              "isSelf": true
-            }
-          }
-        },
-        "git_filter_list_apply_to_file": {
-          "async": true,
-          "return": {
-            "isErrorCode": true
-          },
-          "args": {
-            "out": {
-              "isReturn": true,
-              "shouldAlloc": true
-            },
-            "filters": {
-              "isSelf": true
-            }
-          }
-        },
-        "git_filter_list_free": {
-          "async": true,
-          "args": {
-            "filters": {
-              "isSelf": true
-            }
-          }
-        },
-        "git_filter_list_load": {
-          "async": true,
-          "return": {
-            "isErrorCode": true
-          },
-          "args": {
-            "filters": {
-              "isReturn": true,
-              "cType": "git_filter_list **"
-            },
-            "repo": {
-              "cType": "git_repository *"
-            },
-            "blob": {
-              "isOptional": true,
-              "cType": "git_blob *"
-            }
-          }
-        },
-        "git_filter_list_push": {
-          "ignore": true
-        },
-        "git_filter_source_filemode": {
-          "ignore": true
-        },
-        "git_filter_source_flags": {
-          "ignore": true
-        },
-        "git_filter_source_id": {
-          "ignore": true
-        },
-        "git_filter_source_mode": {
-          "ignore": true
-        },
-        "git_filter_source_options": {
-          "ignore": true
-        },
-        "git_filter_source_path": {
-          "ignore": true
-        },
-        "git_filter_source_repo": {
-          "ignore": true
-        }
-      },
       "cDependencies": [
         "git2/sys/filter.h"
       ],
@@ -1165,9 +1301,111 @@
       }
     },
     "filter_source": {
-      "ignore": false,
+      "functions": {
+        "git_filter_source_filemode": {
+          "isPrototypeMethod": true,
+          "args": {
+            "src": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_filter_source_flags": {
+          "isPrototypeMethod": true,
+          "args": {
+            "src": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_filter_source_id": {
+          "isPrototypeMethod": true,
+          "args": {
+            "src": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_filter_source_mode": {
+          "isPrototypeMethod": true,
+          "args": {
+            "src": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_filter_source_path": {
+          "isPrototypeMethod": true,
+          "args": {
+            "src": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_filter_source_repo": {
+          "isPrototypeMethod": true,
+          "args": {
+            "src": {
+              "isSelf": true
+            }
+          }
+        }
+      },
       "cDependencies": [
         "git2/sys/filter.h"
+      ]
+    },
+    "filter_list": {
+      "selfFreeing": true,
+      "functions": {
+        "git_filter_list_apply_to_blob": {
+          "isPrototypeMethod": true,
+          "args": {
+            "filters": {
+              "isSelf": true
+            },
+            "out": {
+              "shouldAlloc": true
+            }
+          }
+        },
+        "git_filter_list_apply_to_data": {
+          "isPrototypeMethod": true,
+          "args": {
+            "filters": {
+              "isSelf": true
+            },
+            "out": {
+              "shouldAlloc": true
+            }
+          }
+        },
+        "git_filter_list_apply_to_file": {
+          "isPrototypeMethod": true,
+          "args": {
+            "filters": {
+              "isSelf": true
+            },
+            "out": {
+              "shouldAlloc": true
+            }
+          }
+        },
+        "git_filter_list_free": {
+          "ignore": true
+        },
+        "git_filter_list_new": {
+          "ignore": true
+        },
+        "git_filter_list_push": {
+          "ignore": true
+        }
+      },
+      "dependencies": [
+        "../include/filter_registry.h"
       ]
     },
     "graph": {
@@ -1197,6 +1435,12 @@
       }
     },
     "hashsig": {
+      "selfFreeing": true,
+      "functions": {
+        "git_hashsig_free": {
+          "ignore": true
+        }
+      },
       "cDependencies": [
         "git2/sys/hashsig.h"
       ]
@@ -1210,11 +1454,19 @@
               "isReturn": true
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
     "index": {
+      "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_index_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_index_add": {
           "isAsync": true,
@@ -1288,13 +1540,16 @@
         "git_index_conflict_get": {
           "args": {
             "ancestor_out": {
-              "isReturn": true
+              "isReturn": true,
+              "ownedBy": ["index"]
             },
             "our_out": {
-              "isReturn": true
+              "isReturn": true,
+              "ownedBy": ["index"]
             },
             "their_out": {
-              "isReturn": true
+              "isReturn": true,
+              "ownedBy": ["index"]
             }
           },
           "isAsync": true,
@@ -1360,8 +1615,12 @@
         "git_index_open": {
           "isAsync": true,
           "return": {
+            "selfOwned": true,
             "isErrorCode": true
           }
+        },
+        "git_index_owner": {
+          "ignore": true
         },
         "git_index_read": {
           "args": {
@@ -1415,6 +1674,12 @@
             "isErrorCode": true
           }
         },
+        "git_index_reuc_get_byindex": {
+          "ignore": true
+        },
+        "git_index_reuc_get_bypath": {
+          "ignore": true
+        },
         "git_index_update_all": {
           "args": {
             "pathspec": {
@@ -1465,30 +1730,10 @@
       "ignoreInit": true
     },
     "indexer": {
-      "cType": "git_indexer",
-      "functions": {
-        "git_indexer_append": {
-          "ignore": true
-        },
-        "git_indexer_hash": {
-          "return": {
-            "ownedByThis": true
-          }
-        },
-        "git_indexer_new": {
-          "ignore": true
-        }
-      }
+      "ignore": true
     },
     "mempack": {
-      "functions": {
-        "git_mempack_new": {
-          "ignore": true
-        },
-        "git_mempack_reset": {
-          "ignore": true
-        }
-      }
+      "ignore": true
     },
     "merge": {
       "functions": {
@@ -1552,25 +1797,74 @@
         "git_merge_file_init_options": {
           "ignore": true
         },
-        "git_merge_file_result_free": {
+        "git_merge_init_options": {
           "ignore": true
+        },
+        "git_merge_trees": {
+          "args": {
+            "ancestor_tree": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          }
         }
       }
     },
     "merge_driver": {
       "ignore": true
     },
+    "merge_driver_source": {
+      "ignore": true
+    },
+    "merge_file_result": {
+      "ignore": true
+    },
+    "merge_result": {
+      "ignore": true
+    },
     "message": {
-      "functions": {
-        "git_message_prettify": {
-          "ignore": true
-        }
-      }
+      "ignore": true
+    },
+    "message_trailer": {
+      "ignore": true
+    },
+    "message_trailer_array": {
+      "ignore": true
     },
     "note": {
+      "selfFreeing": true,
       "functions": {
-        "git_note_iterator_free": {
-          "ignore": true
+        "git_note_author": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_note_commit_create": {
+          "args": {
+            "notes_commit_out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            },
+            "notes_blob_out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            }
+          }
+        },
+        "git_note_commit_remove": {
+          "isAsync": true,
+          "args": {
+            "notes_commit_out": {
+              "isReturn": true
+            }
+          }
+        },
+        "git_note_comitter": {
+          "return": {
+            "ownedByThis": true
+          }
         },
         "git_note_create": {
           "args": {
@@ -1579,18 +1873,30 @@
             }
           }
         },
-        "git_note_id": {
-          "return": {
-            "ownedByThis": true
-          }
-        },
-        "git_note_remove": {
+        "git_note_foreach": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
           }
         },
-        "git_note_foreach": {
+        "git_note_free": {
+          "ignore": true
+        },
+        "git_note_id": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_note_iterator_free": {
+          "ignore": true
+        },
+        "git_note_iterator_new": {
+          "ignore": true
+        },
+        "git_note_next": {
+          "ignore": true
+        },
+        "git_note_remove": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -1599,7 +1905,15 @@
       }
     },
     "object": {
+      "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_object_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
+        "git_object_free": {
+          "ignore": true
+        },
         "git_object_id": {
           "return": {
             "ownedByThis": true
@@ -1615,11 +1929,15 @@
       }
     },
     "odb": {
+      "selfFreeing": true,
       "functions": {
         "git_odb_add_alternate": {
           "ignore": true
         },
         "git_odb_add_backend": {
+          "ignore": true
+        },
+        "git_odb_add_disk_alternate": {
           "ignore": true
         },
         "git_odb_backend_loose": {
@@ -1632,12 +1950,35 @@
           "ignore": true
         },
         "git_odb_exists": {
-          "ignore": true
+          "ignore": true,
+          "isAsync": true,
+          "args": {
+            "db": {
+              "isSelf": true
+            }
+          }
         },
         "git_odb_exists_prefix": {
+          "isAsync": true,
+          "args": {
+            "db": {
+              "isSelf": true
+            },
+            "out": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_odb_expand_ids": {
           "ignore": true
         },
         "git_odb_foreach": {
+          "ignore": true
+        },
+        "git_odb_free": {
           "ignore": true
         },
         "git_odb_get_backend": {
@@ -1647,7 +1988,15 @@
           "ignore": true
         },
         "git_odb_hashfile": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_odb_init_backend": {
           "ignore": true
@@ -1664,25 +2013,25 @@
         "git_odb_open_wstream": {
           "ignore": true
         },
+        "git_odb_read": {
+          "cppFunctionName": "OdbRead",
+          "args": {
+            "out": {
+              "ownedByThis": true
+            }
+          }
+        },
         "git_odb_read_header": {
           "ignore": true
         },
         "git_odb_read_prefix": {
-          "ignore": true
+          "args": {
+            "out": {
+              "ownedByThis": true
+            }
+          }
         },
         "git_odb_refresh": {
-          "ignore": true
-        },
-        "git_odb_stream_finalize_write": {
-          "ignore": true
-        },
-        "git_odb_stream_free": {
-          "ignore": true
-        },
-        "git_odb_stream_read": {
-          "ignore": true
-        },
-        "git_odb_stream_write": {
           "ignore": true
         },
         "git_odb_write": {
@@ -1709,13 +2058,24 @@
       },
       "ignore": true
     },
+    "odb_expand_id": {
+      "ignore": true
+    },
     "odb_object": {
+      "selfFreeing": true,
       "functions": {
         "git_odb_object_data": {
           "return": {
+            "ownedByThis": true,
             "cppClassName": "Wrapper",
             "jsClassName": "Buffer"
           }
+        },
+        "git_odb_object_dup": {
+          "ignore": true
+        },
+        "git_odb_object_free": {
+          "ignore": true
         },
         "git_odb_object_id": {
           "return": {
@@ -1768,15 +2128,6 @@
         "git_oid_pathfmt": {
           "ignore": true
         },
-        "git_oid_shorten_add": {
-          "ignore": true
-        },
-        "git_oid_shorten_free": {
-          "ignore": true
-        },
-        "git_oid_shorten_new": {
-          "ignore": true
-        },
         "git_oid_tostr": {
           "ignore": true
         }
@@ -1787,19 +2138,73 @@
         }
       }
     },
+    "oid_shorten": {
+      "selfFreeing": true,
+      "functions": {
+        "git_oid_shorten_new": {
+          "isPrototypeMethod": false
+        },
+        "git_oid_shorten_add": {
+          "args": {
+            "os": {
+              "isSelf": true
+            }
+          }
+        },
+        "git_oid_shorten_free": {
+          "ignore": true
+        }
+      }
+    },
+    "oidarray": {
+      "selfFreeing": true,
+      "functions": {
+        "git_oidarray_free": {
+          "ignore": true
+        }
+      }
+    },
     "openssl": {
       "cDependencies": [
         "git2/sys/openssl.h"
       ]
     },
     "packbuilder": {
+      "selfFreeing": true,
       "functions": {
         "git_packbuilder_foreach": {
+          "ignore": true
+        },
+        "git_packbuilder_free": {
           "ignore": true
         },
         "git_packbuilder_hash": {
           "return": {
             "ownedByThis": true
+          }
+        },
+        "git_packbuilder_insert": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_packbuilder_insert_commit": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_packbuilder_insert_recur": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_packbuilder_insert_walk": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_packbuilder_new": {
@@ -1810,15 +2215,22 @@
         },
         "git_packbuilder_write": {
           "ignore": true
+        },
+        "git_packbuilder_write_buf": {
+          "ignore": true
         }
       }
     },
     "patch": {
+      "selfFreeing": true,
       "dependencies": [
         "../include/convenient_patch.h"
       ],
       "functions": {
         "git_patch_free": {
+          "ignore": true
+        },
+        "git_patch_from_blob_and_buffer": {
           "ignore": true
         },
         "git_patch_from_buffers": {
@@ -1827,13 +2239,19 @@
         "git_patch_from_diff": {
           "isAsync": true,
           "return": {
-            "isErrorCode": true
+            "ownedBy": ["diff"]
+          }
+        },
+        "git_patch_get_delta": {
+          "return": {
+            "ownedByThis": true
           }
         },
         "git_patch_get_hunk": {
           "args": {
             "out": {
-              "returnName": "hunk"
+              "returnName": "hunk",
+              "ownedByThis": true
             },
             "lines_in_hunk": {
               "shouldAlloc": true,
@@ -1848,6 +2266,11 @@
         },
         "git_patch_get_line_in_hunk": {
           "isAsync": true,
+          "args": {
+            "out": {
+              "ownedByThis": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
@@ -1877,37 +2300,97 @@
       }
     },
     "pathspec": {
+      "selfFreeing": true,
       "dependencies": [
         "../include/str_array_converter.h"
       ],
       "functions": {
-        "git_pathspec_match_list_free": {
+        "git_pathspec_free": {
           "ignore": true
+        },
+        "git_pathspec_match_diff": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "ownedBy": ["diff"],
+              "ownedByThis": true
+            }
+          }
+        },
+        "git_pathspec_match_index": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "ownedBy": ["index"],
+              "ownedByThis": true
+            }
+          }
         },
         "git_pathspec_new": {
           "isAsync": false
+        },
+        "git_pathspec_match_tree": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "ownedBy": ["tree"],
+              "ownedByThis": true
+            }
+          }
+        },
+        "git_pathspec_match_workdir": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "ownedBy": ["repo"],
+              "ownedByThis": true
+            }
+          }
+        }
+      }
+    },
+    "pathspec_match_list": {
+      "selfFreeing": true,
+      "functions": {
+        "git_pathspec_match_list_diff_entry": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_pathspec_match_list_free": {
+          "ignore": true
+        }
+      }
+    },
+    "proxy": {
+      "functions": {
+        "git_proxy_init_options": {
+          "ignore": true
         }
       }
     },
     "push": {
-      "cType": "git_push",
+      "ignore": true
+    },
+    "rebase": {
+      "selfFreeing": true,
       "functions": {
-        "git_push_finish": {
+        "git_rebase_abort": {
           "isAsync": true,
+          "args": {
+            "rebase": {
+              "cType": "git_rebase *",
+              "cppClassName": "GitRebase",
+              "jsClassName": "Rebase",
+              "isOptional": false,
+              "isSelf": true,
+              "isReturn": false
+            }
+          },
           "return": {
             "isErrorCode": true
           }
         },
-        "git_push_set_callbacks": {
-          "ignore": true
-        },
-        "git_push_status_foreach": {
-          "ignore": true
-        }
-      }
-    },
-    "rebase": {
-      "functions": {
         "git_rebase_commit": {
           "isAsync": true,
           "args": {
@@ -1944,6 +2427,9 @@
         },
         "git_rebase_init": {
           "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            },
             "upstream": {
               "isOptional": true
             },
@@ -1958,27 +2444,51 @@
             }
           }
         },
-        "git_rebase_abort": {
-          "isAsync": true,
+        "git_rebase_init_options": {
+          "ignore": true
+        },
+        "git_rebase_inmemory_index": {
           "args": {
-            "rebase": {
-              "cType": "git_rebase *",
-              "cppClassName": "GitRebase",
-              "jsClassName": "Rebase",
-              "isOptional": false,
-              "isSelf": true,
-              "isReturn": false
+            "out": {
+              "ownedByThis": true
             }
-          },
+          }
+        },
+        "git_rebase_next": {
+          "args": {
+            "operation": {
+              "isReturn": true,
+              "ownedByThis": true
+            }
+          }
+        },
+        "git_rebase_open": {
+          "args": {
+            "out": {
+              "isSelf": true,
+              "ownedBy": ["repo"]
+            }
+          }
+        },
+        "git_rebase_operation_byindex": {
           "return": {
-            "isErrorCode": true
+            "ownedByThis": true
+          }
+        },
+        "git_rebase_operation_current": {
+          "return": {
+            "ownedByThis": true
           }
         }
       }
     },
     "refdb": {
+      "selfFreeing": true,
       "functions": {
         "git_refdb_backend_fs": {
+          "ignore": true
+        },
+        "git_refdb_free": {
           "ignore": true
         },
         "git_refdb_init_backend": {
@@ -1989,6 +2499,13 @@
         },
         "git_refdb_new": {
           "ignore": true
+        },
+        "git_refdb_open": {
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
+          }
         }
       }
     },
@@ -1998,6 +2515,10 @@
     "reference": {
       "cppClassName": "GitRefs",
       "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_reference_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_reference__alloc": {
           "ignore": true
@@ -2037,7 +2558,10 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_reference_next": {
           "ignore": true
@@ -2072,7 +2596,23 @@
       "ignore": true
     },
     "reflog": {
+      "selfFreeing": true,
       "functions": {
+        "git_reflog_entry_byindex": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
+        "git_reflog_free": {
+          "ignore": true
+        },
+        "git_reflog_read": {
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
+          }
+        },
         "git_reflog_write": {
           "isAsync": true,
           "isSelf": true,
@@ -2084,6 +2624,11 @@
     },
     "reflog_entry": {
       "functions": {
+        "git_reflog_entry_committer": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_reflog_entry_id_new": {
           "return": {
             "ownedByThis": true
@@ -2097,12 +2642,24 @@
       }
     },
     "refspec": {
+      "selfFreeing": true,
       "cType": "git_refspec",
       "functions": {
-        "git_refspec_rtransform": {
+        "git_refspec_free": {
           "ignore": true
         },
-        "git_refspec_string": {
+        "git_refspec_parse": {
+          "isAsync": true,
+          "args": {
+            "refspec": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_refspec_rtransform": {
           "ignore": true
         },
         "git_refspec_transform": {
@@ -2117,11 +2674,23 @@
       ],
       "cType": "git_remote",
       "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_remote_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_remote_create": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
+          }
+        },
+        "git_remote_create_detached": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "selfOwned": true
+            }
           }
         },
         "git_remote_connect": {
@@ -2180,6 +2749,9 @@
             "isErrorCode": true
           }
         },
+        "git_remote_free": {
+          "ignore": true
+        },
         "git_remote_get_fetch_refspecs": {
           "args": {
             "array": {
@@ -2191,7 +2763,10 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_get_push_refspecs": {
           "args": {
@@ -2204,12 +2779,18 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_get_refspec": {
           "return": {
             "ownedByThis": true
           }
+        },
+        "git_remote_init_callbacks": {
+          "ignore": true
         },
         "git_remote_list": {
           "args": {
@@ -2267,9 +2848,6 @@
         "push_negotiation": {
           "ignore": true
         },
-        "push_transfer_progress": {
-          "ignore": true
-        },
         "sideband_progress": {
           "ignore": true
         },
@@ -2286,10 +2864,22 @@
       "selfFreeing": true
     },
     "repository": {
+      "selfFreeing": true,
+      "isSingleton": true,
       "dependencies": [
         "git2/sys/repository.h"
       ],
       "functions": {
+        "git_repository_config": {
+          "args": {
+            "out": {
+              "ownedByThis": true
+            }
+          }
+        },
+        "git_repository_config_snapshot": {
+          "ignore": true
+        },
         "git_repository_discover": {
           "isAsync": true,
           "return": {
@@ -2303,19 +2893,22 @@
             }
           }
         },
-        "git_repository_init_init_options": {
-          "ignore": true
-        },
         "git_repository_fetchhead_foreach": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
           }
         },
+        "git_repository_free": {
+          "ignore": true
+        },
         "git_repository_hashfile": {
           "ignore": true
         },
         "git_repository_ident": {
+          "ignore": true
+        },
+        "git_repository_init_init_options": {
           "ignore": true
         },
         "git_repository_mergehead_foreach": {
@@ -2329,6 +2922,34 @@
         },
         "git_repository_new": {
           "ignore": true
+        },
+        "git_repository_odb": {
+          "isAsync": true,
+          "args": {
+            "odb": {
+              "ownedByThis": true
+            },
+            "repo": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_repository_refdb": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "ownedByThis": true
+            },
+            "repo": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_repository_reinit_filesystem": {
           "ignore": true
@@ -2444,6 +3065,10 @@
     },
     "revwalk": {
       "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_revwalk_repository",
+        "singletonCppClassName": "GitRepository"
+      },
       "dependencies": [
         "../include/commit.h",
         "../include/functions/copy.h"
@@ -2452,16 +3077,26 @@
         "git_revwalk_add_hide_cb": {
           "ignore": true
         },
+        "git_revwalk_free": {
+          "ignore": true
+        },
         "git_revwalk_new": {
           "isAsync": false
         }
       }
     },
 	  "signature": {
+      "selfFreeing": true,
       "dupFunction": "git_signature_dup",
 	    "functions": {
         "git_signature_default": {
           "isAsync": false
+        },
+        "git_signature_dup": {
+          "ignore": true
+        },
+        "git_signature_free": {
+          "ignore": true
         },
 	      "git_signature_new": {
 	        "isAsync": false
@@ -2507,6 +3142,9 @@
             "isErrorCode": true
           }
         },
+        "git_stash_apply_init_options": {
+          "ignore": true
+        },
         "git_stash_pop": {
           "isAsync": true,
           "return": {
@@ -2532,7 +3170,10 @@
       ],
       "functions": {
         "git_status_byindex": {
-          "isAsync": false
+          "isAsync": false,
+          "return": {
+            "ownedBy": ["statuslist"]
+          }
         },
         "git_status_file": {
           "isAsync": true,
@@ -2540,10 +3181,10 @@
             "status_flags": {
               "isReturn": true,
               "shouldAlloc": true
-            },
-            "return": {
-              "isErrorCode": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_status_foreach": {
@@ -2564,10 +3205,17 @@
       }
     },
     "status_list": {
+      "selfFreeing": true,
       "functions": {
+        "git_status_list_free": {
+          "ignore": true
+        },
         "git_status_list_new": {
           "isAsync": true,
           "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            },
             "opts": {
               "isOptional": true
             }
@@ -2579,6 +3227,12 @@
       }
     },
     "strarray": {
+      "selfFreeing": true,
+      "functions": {
+        "git_strarray_free": {
+          "ignore": true
+        }
+      },
       "dependencies": [
         "../include/str_array_converter.h"
       ]
@@ -2590,6 +3244,11 @@
       ]
     },
     "submodule": {
+      "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_submodule_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_submodule_add_to_index": {
           "isAsync": true,
@@ -2627,6 +3286,9 @@
             "isErrorCode": true,
             "type": "int"
           }
+        },
+        "git_submodule_free": {
+          "ignore": true
         },
         "git_submodule_index_id": {
           "return": {
@@ -2726,6 +3388,9 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_submodule_update_init_options": {
+          "ignore": true
         }
       }
     },
@@ -2734,9 +3399,21 @@
         "../include/str_array_converter.h"
       ],
       "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_tag_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
-        "git_tag_foreach": {
-          "ignore": true
+        "git_tag_annotation_create": {
+          "args": {
+            "oid": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
         },
         "git_tag_create": {
           "args": {
@@ -2752,11 +3429,6 @@
         "git_tag_create_frombuffer": {
           "ignore": true
         },
-        "git_tag_id": {
-          "return": {
-            "ownedByThis": true
-          }
-        },
         "git_tag_create_lightweight": {
           "args": {
             "oid": {
@@ -2768,16 +3440,16 @@
           },
           "isAsync": true
         },
-        "git_tag_annotation_create": {
-          "args": {
-            "oid": {
-              "isReturn": true
-            }
-          },
+        "git_tag_foreach": {
+          "ignore": true
+        },
+        "git_tag_free": {
+          "ignore": true
+        },
+        "git_tag_id": {
           "return": {
-            "isErrorCode": true
-          },
-          "isAsync": true
+            "ownedByThis": true
+          }
         },
         "git_tag_list": {
           "args": {
@@ -2790,7 +3462,26 @@
               "key": "strings"
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_tag_list_match": {
+          "args": {
+            "tag_names": {
+              "isReturn": true,
+              "shouldAlloc": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "size": "count",
+              "key": "strings"
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_tag_tagger": {
           "return": {
@@ -2798,10 +3489,14 @@
           }
         },
         "git_tag_target": {
+          "isAsync": true,
           "args": {
             "target_out": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_tag_target_id": {
@@ -2821,7 +3516,10 @@
               "isReturn": true
             }
           },
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
@@ -2829,13 +3527,37 @@
       "dupFunction": "git_time_dup",
       "dependencies": [
         "git2/sys/time.h"
-      ]
-
+      ],
+      "fields": {
+        "sign": {
+          "ignore": true
+        }
+      },
+      "functions": {
+        "git_time_sign": {
+          "ignore": true
+        }
+      }
     },
     "trace": {
       "functions": {
         "git_trace_set": {
           "ignore": true
+        }
+      }
+    },
+    "transaction": {
+      "selfFreeing": true,
+      "functions": {
+        "git_transaction_free": {
+          "ignore": true
+        },
+        "git_transaction_new": {
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
+          }
         }
       }
     },
@@ -2849,6 +3571,9 @@
         "git_transport_dummy": {
           "ignore": true
         },
+        "git_transport_init": {
+          "ignore": true
+        },
         "git_transport_local": {
           "ignore": true
         },
@@ -2860,6 +3585,12 @@
         },
         "git_transport_smart": {
           "ignore": true
+        },
+        "git_transport_ssh_with_paths": {
+          "ignore": true
+        },
+        "git_transport_unregister": {
+          "ignore": true
         }
       },
       "cDependencies": [
@@ -2868,29 +3599,47 @@
     },
     "tree": {
       "selfFreeing": true,
+      "ownerFn": {
+        "name": "git_tree_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_tree_entry_byid": {
           "return": {
-            "ownedByThis": true,
-            "selfFreeing": false
+            "ownedByThis": true
           }
         },
         "git_tree_entry_byindex": {
           "jsFunctionName": "_entryByIndex",
           "return": {
-            "ownedByThis": true,
-            "selfFreeing": false
+            "ownedByThis": true
           }
         },
         "git_tree_entry_byname": {
           "jsFunctionName": "_entryByName",
           "return": {
-            "ownedByThis": true,
-            "selfFreeing": false
+            "ownedByThis": true
+          }
+        },
+        "git_tree_entry_bypath": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "ownedByThis": true
+            },
+            "root": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_tree_entrycount": {
           "jsFunctionName": "entryCount"
+        },
+        "git_tree_free": {
+          "ignore": true
         },
         "git_tree_id": {
           "return": {
@@ -2903,13 +3652,16 @@
       }
     },
     "treebuilder": {
+      "selfFreeing": true,
       "functions": {
         "git_treebuilder_filter": {
           "ignore": true
         },
+        "git_treebuilder_free": {
+          "ignore": true
+        },
         "git_treebuilder_get": {
           "return": {
-            "selfFreeing": false,
             "ownedByThis": true
           }
         },
@@ -2923,10 +3675,14 @@
           }
         },
         "git_treebuilder_write": {
+          "isAsync": true,
           "args": {
             "id": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_treebuilder_write_with_buffer": {
@@ -2934,6 +3690,9 @@
         },
         "git_treebuilder_new": {
           "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            },
             "source": {
               "isOptional": true
             }
@@ -2946,6 +3705,12 @@
       "dupFunction": "git_tree_entry_dup",
       "freeFunctionName": "git_tree_entry_free",
       "functions": {
+        "git_tree_entry_dup": {
+          "ignore": true
+        },
+        "git_tree_entry_free": {
+          "ignore": true
+        },
         "git_tree_entry_id": {
           "return": {
             "ownedByThis": true
@@ -2961,6 +3726,43 @@
             "isErrorCode": true
           },
           "isAsync": true
+        }
+      }
+    },
+    "worktree": {
+      "selfFreeing": true,
+      "cType": "git_worktree",
+      "freeFunctionName": "git_worktree_free",
+      "functions": {
+        "git_worktree_add": {
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
+          }
+        },
+        "git_worktree_add_init_options": {
+          "ignore": true
+        },
+        "git_worktree_free": {
+          "ignore": true
+        },
+        "git_worktree_lookup": {
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
+          }
+        },
+        "git_worktree_open_from_repository": {
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
+          }
+        },
+        "git_worktree_prune_init_options": {
+          "ignore": true
         }
       }
     },

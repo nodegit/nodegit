@@ -1,7 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 var IndexUtils = require("../utils/index_setup");
 var RepoUtils = require("../utils/repository_setup");
@@ -107,6 +106,16 @@ describe("Repository", function() {
     return this.repository.getCurrentBranch()
       .then(function(branch) {
         assert.equal(branch.shorthand(), "master");
+      });
+  });
+
+  it("can get a reference commit", function() {
+    return this.repository.getReferenceCommit("master")
+      .then(function(commit) {
+        assert.equal(
+          "32789a79e71fbc9e04d3eff7425e1771eb595150",
+          commit.toString()
+        );
       });
   });
 

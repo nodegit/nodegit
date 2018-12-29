@@ -25,7 +25,6 @@
       "dependencies": [
         "zlib",
         "http_parser/http_parser.gyp:http_parser",
-        "openssl/openssl.gyp:openssl",
         "libssh2"
       ],
       "sources": [
@@ -74,11 +73,13 @@
         "libgit2/src/config_cache.c",
         "libgit2/src/config_file.c",
         "libgit2/src/config_file.h",
+        "libgit2/src/config_parse.c",
+        "libgit2/src/config_parse.h",
         "libgit2/src/config.c",
         "libgit2/src/config.h",
         "libgit2/src/crlf.c",
-        "libgit2/src/curl_stream.c",
-        "libgit2/src/curl_stream.h",
+        "libgit2/src/streams/curl.c",
+        "libgit2/src/streams/curl.h",
         "libgit2/src/date.c",
         "libgit2/src/delta.c",
         "libgit2/src/delta.h",
@@ -162,12 +163,14 @@
         "libgit2/src/oidarray.h",
         "libgit2/src/oidmap.c",
         "libgit2/src/oidmap.h",
-        "libgit2/src/openssl_stream.c",
-        "libgit2/src/openssl_stream.h",
+        "libgit2/src/streams/openssl.c",
+        "libgit2/src/streams/openssl.h",
         "libgit2/src/pack-objects.c",
         "libgit2/src/pack-objects.h",
         "libgit2/src/pack.c",
         "libgit2/src/pack.h",
+        "libgit2/src/parse.c",
+        "libgit2/src/parse.h",
         "libgit2/src/patch_generate.c",
         "libgit2/src/patch_generate.h",
         "libgit2/src/patch_parse.c",
@@ -213,8 +216,8 @@
         "libgit2/src/sha1_lookup.h",
         "libgit2/src/signature.c",
         "libgit2/src/signature.h",
-        "libgit2/src/socket_stream.c",
-        "libgit2/src/socket_stream.h",
+        "libgit2/src/streams/socket.c",
+        "libgit2/src/streams/socket.h",
         "libgit2/src/sortedcache.c",
         "libgit2/src/sortedcache.h",
         "libgit2/src/stash.c",
@@ -233,6 +236,7 @@
         "libgit2/src/thread-utils.h",
         "libgit2/src/trace.c",
         "libgit2/src/trace.h",
+        "libgit2/src/trailer.c",
         "libgit2/src/transaction.c",
         "libgit2/src/transport.c",
         "libgit2/src/transports/auth.c",
@@ -281,13 +285,20 @@
       ],
       "conditions": [
         ["OS=='mac'", {
+            "conditions": [
+              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+                "include_dirs": [
+                  "openssl/include"
+                ]
+              }]
+            ],
             "defines": [
                 "GIT_SECURE_TRANSPORT",
                 "GIT_USE_STAT_MTIMESPEC"
             ],
             "sources": [
-                "libgit2/src/stransport_stream.c",
-                "libgit2/src/stransport_stream.h"
+                "libgit2/src/streams/stransport.c",
+                "libgit2/src/streams/stransport.h"
             ],
             "link_settings": {
                 "xcode_settings": {
@@ -300,7 +311,8 @@
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd')", {
           "cflags": [
-            "-DGIT_CURL"
+            "-DGIT_CURL",
+            "<!(curl-config --cflags)"
           ],
           "defines": [
             "GIT_CURL",
@@ -308,8 +320,8 @@
           ],
           "sources": [
             "libgit2/src/hash/hash_openssl.h",
-            "libgit2/src/tls_stream.c",
-            "libgit2/src/tls_stream.h"
+            "libgit2/src/streams/tls.c",
+            "libgit2/src/streams/tls.h"
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd')" , {
@@ -350,6 +362,9 @@
                   ],
                 },
               }],
+              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+                "include_dirs": ["openssl/include"]
+              }]
             ],
           },
           "msvs_disabled_warnings": [
@@ -513,8 +528,8 @@
         ".",
         "libssh2/include",
       ],
-      "dependencies": [
-        "openssl/openssl.gyp:openssl"
+      "hard_dependencies": [
+        "../binding.gyp:configureLibssh2"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
@@ -522,10 +537,30 @@
         ]
       },
       "conditions": [
+        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+          "include_dirs": [
+            "openssl/include",
+          ]
+        }],
         ["OS=='win'", {
+          "conditions": [
+            ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              "include_dirs": [
+                "openssl/include"
+              ],
+              "libraries": [
+                "<(module_root_dir)/vendor/openssl/lib/libssl.lib",
+                "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib"
+              ]
+            }, {
+              "defines": [
+                "OPENSSL_NO_RIPEMD",
+                "OPENSSL_NO_CAST"
+              ]
+            }]
+          ],
           "include_dirs": [
             "libssh2/src",
-            "libssh2/win32",
             "libssh2/include"
           ],
           "defines!": [
@@ -534,7 +569,6 @@
           "direct_dependent_settings": {
             "include_dirs": [
               "libssh2/src",
-              "libssh2/win32",
               "libssh2/include"
             ]
           }

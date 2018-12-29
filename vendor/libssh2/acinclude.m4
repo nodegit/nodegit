@@ -382,3 +382,86 @@ AC_DEFUN([CURL_CONFIGURE_REENTRANT], [
   #
 ])
 
+AC_DEFUN([LIBSSH2_CHECKFOR_MBEDTLS], [
+
+  old_LDFLAGS=$LDFLAGS
+  old_CFLAGS=$CFLAGS
+  if test -n "$use_mbedtls" && test "$use_mbedtls" != "no"; then
+    LDFLAGS="$LDFLAGS -L$use_mbedtls/lib"
+    CFLAGS="$CFLAGS -I$use_mbedtls/include"
+  fi
+
+  AC_LIB_HAVE_LINKFLAGS([mbedtls], [], [
+    #include <mbedtls/version.h>
+  ])
+
+  if test "$ac_cv_libmbedtls" = "yes"; then
+    AC_DEFINE(LIBSSH2_MBEDTLS, 1, [Use mbedtls])
+    LIBSREQUIRED= # mbedtls doesn't provide a .pc file
+    LIBS="$LIBS -lmbedtls -lmbedcrypto"
+    found_crypto=libmbedtls
+    support_clear_memory=yes
+  else
+    # restore
+    LDFLAGS=$old_LDFLAGS
+    CFLAGS=$old_CFLAGS
+  fi
+])
+
+AC_DEFUN([LIBSSH2_CHECKFOR_GCRYPT], [
+
+  old_LDFLAGS=$LDFLAGS
+  old_CFLAGS=$CFLAGS
+  if test -n "$use_libgcrypt" && test "$use_libgcrypt" != "no"; then
+    LDFLAGS="$LDFLAGS -L$use_libgcrypt/lib"
+    CFLAGS="$CFLAGS -I$use_libgcrypt/include"
+  fi
+  AC_LIB_HAVE_LINKFLAGS([gcrypt], [], [
+    #include <gcrypt.h>
+  ])
+
+  if test "$ac_cv_libgcrypt" = "yes"; then
+    AC_DEFINE(LIBSSH2_LIBGCRYPT, 1, [Use libgcrypt])
+    LIBSREQUIRED= # libgcrypt doesn't provide a .pc file. sad face.
+    LIBS="$LIBS -lgcrypt"
+    found_crypto=libgcrypt
+  else
+    # restore
+    LDFLAGS=$old_LDFLAGS
+    CFLAGS=$old_CFLAGS
+  fi
+])
+
+
+AC_DEFUN([LIBSSH2_CHECKFOR_WINCNG], [
+
+  # Look for Windows Cryptography API: Next Generation
+
+  AC_LIB_HAVE_LINKFLAGS([bcrypt], [], [
+    #include <windows.h>
+    #include <bcrypt.h>
+  ])
+  AC_LIB_HAVE_LINKFLAGS([crypt32], [], [
+    #include <windows.h>
+    #include <wincrypt.h>
+  ])
+  AC_CHECK_HEADERS([ntdef.h ntstatus.h], [], [], [
+    #include <windows.h>
+  ])
+  AC_CHECK_DECLS([SecureZeroMemory], [], [], [
+    #include <windows.h>
+  ])
+
+  if test "$ac_cv_libbcrypt" = "yes"; then
+    AC_DEFINE(LIBSSH2_WINCNG, 1, [Use Windows CNG])
+    LIBSREQUIRED= # wincng doesn't provide a .pc file. sad face.
+    LIBS="$LIBS -lbcrypt"
+    if test "$ac_cv_libcrypt32" = "yes"; then
+      LIBS="$LIBS -lcrypt32"
+    fi
+    found_crypto="Windows Cryptography API: Next Generation"
+    if test "$ac_cv_have_decl_SecureZeroMemory" = "yes"; then
+      support_clear_memory=yes
+    fi
+  fi
+])

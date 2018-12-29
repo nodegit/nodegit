@@ -1,6 +1,5 @@
 const path = require("path");
-const promisify = require("promisify-node");
-const fse = promisify(require("fs-extra"));
+const fse = require("fs-extra");
 const os = require('os');
 const exec = require('../../utils/execPromise');
 const utils = require("./utils");

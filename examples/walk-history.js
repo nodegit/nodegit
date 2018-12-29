@@ -10,7 +10,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
   })
   .then(function(firstCommitOnMaster){
     // History returns an event.
-    var history = firstCommitOnMaster.history(nodegit.Revwalk.SORT.Time);
+    var history = firstCommitOnMaster.history(nodegit.Revwalk.SORT.TIME);
 
     // History emits "commit" event for each commit in the branch's history
     history.on("commit", function(commit) {

@@ -12,6 +12,7 @@ following cryptography libraries:
 * OpenSSL
 * Libgcrypt
 * WinCNG
+* mbedTLS
 
 Getting started
 ---------------
@@ -47,9 +48,9 @@ The following options are available:
  * `CRYPTO_BACKEND=`
 
     Chooses a specific cryptography library to use for cryptographic
-    operations.  Can be `OpenSSL` (http://www.openssl.org),
-    `Libgcrypt` (http://www.gnupg.org/), `WinCNG` (Windows Vista+) or
-    blank to use any library available.
+    operations.  Can be `OpenSSL` (https://www.openssl.org),
+    `Libgcrypt` (https://www.gnupg.org/), `WinCNG` (Windows Vista+),
+    `mbedTLS` (https://tls.mbed.org/) or blank to use any library available.
 
     CMake will attempt to locate the libraries automatically.  See [2]
     for more information.
@@ -96,6 +97,10 @@ The following options are available:
  * `ENABLE_DEBUG_LOGGING=ON` in Debug, `=OFF` in Release
 
     Will enable the libssh2_trace() function for showing debug traces.
+
+ * `CLEAR_MEMORY=ON`
+
+    Securely zero memory before freeing it (if the backend supports this).
 
 Build tools
 -----------
@@ -161,14 +166,14 @@ builds your project:
         Libssh2
         URL <libssh2 download location>
         URL_HASH SHA1=<libssh2 archive SHA1>
-	INSTALL_COMMAND "")
+        INSTALL_COMMAND "")
 
     ExternalProject_Add(
         MyProject DEPENDS Libssh2
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
         INSTALL_COMMAND "")
 
-[1] http://www.cmake.org/cmake/resources/software.html
-[2] http://www.cmake.org/cmake/help/v3.0/manual/cmake-packages.7.html
-[3] http://www.cmake.org/cmake/help/v3.0/manual/cmake-packages.7.html#package-registry
+[1] https://www.cmake.org/cmake/resources/software.html
+[2] https://www.cmake.org/cmake/help/v3.0/manual/cmake-packages.7.html
+[3] https://www.cmake.org/cmake/help/v3.0/manual/cmake-packages.7.html#package-registry
 [4] http://www.kitware.com/media/html/BuildingExternalProjectsWithCMake2.8.html

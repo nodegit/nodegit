@@ -61,6 +61,4 @@ describe("Patch", function() {
       });
 
   });
-
-
 });

@@ -1,7 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 
 var garbageCollect = require("../utils/garbage_collect.js");
 var leakTest = require("../utils/leak_test");
@@ -199,6 +198,78 @@ describe("Commit", function() {
     });
   });
 
+  it("can create a commit as a buffer", function() {
+    var test = this;
+    var fileName = "newfile.txt";
+    var fileContent = "hello world";
+
+    const expectedCommitContent =
+      "tree 11c8685af551550e73e5ab89fa554576bd92ef3f\n" +
+      "parent 32789a79e71fbc9e04d3eff7425e1771eb595150\n" +
+      "author Foo Bar <foo@bar.com> 123456789 +0100\n" +
+      "committer Foo A Bar <foo@bar.com> 987654321 +0130\n\n" +
+      "message";
+
+    var repo;
+    var index;
+    var treeOid;
+    var parent;
+
+    return NodeGit.Repository.open(reposPath)
+    .then(function(repoResult) {
+      repo = repoResult;
+      return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
+    })
+    .then(function() {
+      return repo.refreshIndex();
+    })
+    .then(function(indexResult) {
+      index = indexResult;
+    })
+    .then(function() {
+      return index.addByPath(fileName);
+    })
+    .then(function() {
+      return index.write();
+    })
+    .then(function() {
+      return index.writeTree();
+    })
+    .then(function(oidResult) {
+      treeOid = oidResult;
+      return NodeGit.Reference.nameToId(repo, "HEAD");
+    })
+    .then(function(head) {
+      return repo.getCommit(head);
+    })
+    .then(function(parentResult) {
+      parent = parentResult;
+      return Promise.all([
+        NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
+        NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
+      ]);
+    })
+    .then(function(signatures) {
+      var author = signatures[0];
+      var committer = signatures[1];
+
+      return repo.createCommitBuffer(
+        author,
+        committer,
+        "message",
+        treeOid,
+        [parent]);
+    })
+    .then(function(commitContent) {
+      assert.equal(expectedCommitContent, commitContent);
+      return reinitialize(test);
+    }, function(reason) {
+      return reinitialize(test)
+        .then(function() {
+          return Promise.reject(reason);
+        });
+    });
+  });
 
   it("can amend commit", function(){
     var commitToAmendId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";

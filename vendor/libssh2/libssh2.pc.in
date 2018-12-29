@@ -8,7 +8,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libssh2
-URL: http://www.libssh2.org/
+URL: https://www.libssh2.org/
 Description: Library for SSH-based communication
 Version: @LIBSSH2VER@
 Requires.private: @LIBSREQUIRED@

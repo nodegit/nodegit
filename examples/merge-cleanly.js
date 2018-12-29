@@ -1,8 +1,6 @@
 var nodegit = require("../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
-fse.ensureDir = promisify(fse.ensureDir);
+var fse = require("fs-extra");
 
 var ourFileName = "ourNewFile.txt";
 var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
@@ -20,10 +18,10 @@ var theirCommit;
 var ourBranch;
 var theirBranch;
 
-var ourSignature = nodegit.Signature.create("Ron Paul",
-  "RonPaul@TollRoadsRBest.info", 123456789, 60);
-var theirSignature = nodegit.Signature.create("Greg Abbott",
-  "Gregggg@IllTollYourFace.us", 123456789, 60);
+var ourSignature = nodegit.Signature.now("Ron Paul",
+  "RonPaul@TollRoadsRBest.info");
+var theirSignature = nodegit.Signature.now("Greg Abbott",
+  "Gregggg@IllTollYourFace.us");
 
 // Create a new repository in a clean directory, and add our first file
 fse.remove(path.resolve(__dirname, repoDir))

@@ -1,7 +1,6 @@
 var NodeGit = require("../../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var RepoUtils = require("../utils/repository_setup");
 
 var IndexSetup = {

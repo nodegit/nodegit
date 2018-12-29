@@ -18,7 +18,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   baton->error = NULL;
   String::Utf8Value from_js_file_path(info[0]->ToString());
   baton->file_path = strdup(*from_js_file_path);
-  baton->max_count = (unsigned int)info[1]->ToNumber()->Value();
+  baton->max_count = Nan::To<unsigned int>(info[1]).FromJust();
   baton->out = new std::vector< std::pair<git_commit *, std::pair<char *, git_delta_t> > *>;
   baton->out->reserve(baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
@@ -104,8 +104,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
 
       const git_diff_delta *delta = git_patch_get_delta(nextPatch);
-      bool isEqualOldFile = !strcmp(delta->old_file.path, baton->file_path);
-      bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
+      bool isEqualOldFile = !strncmp(delta->old_file.path, baton->file_path, strlen(baton->file_path));
+      bool isEqualNewFile = !strncmp(delta->new_file.path, baton->file_path, strlen(baton->file_path));
 
       if (isEqualNewFile) {
         if (delta->status == GIT_DELTA_ADDED || delta->status == GIT_DELTA_DELETED) {
@@ -173,8 +173,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
         }
 
         const git_diff_delta *delta = git_patch_get_delta(nextPatch);
-        bool isEqualOldFile = !strcmp(delta->old_file.path, baton->file_path);
-        bool isEqualNewFile = !strcmp(delta->new_file.path, baton->file_path);
+        bool isEqualOldFile = !strncmp(delta->old_file.path, baton->file_path, strlen(baton->file_path));
+        bool isEqualNewFile = !strncmp(delta->new_file.path, baton->file_path, strlen(baton->file_path));
         int oldLen = strlen(delta->old_file.path);
         int newLen = strlen(delta->new_file.path);
         char *outPair = new char[oldLen + newLen + 2];
@@ -185,7 +185,7 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
 
         if (isEqualNewFile) {
           std::pair<git_commit *, std::pair<char *, git_delta_t> > *historyEntry;
-          if (!isEqualOldFile) {
+          if (!isEqualOldFile || delta->status == GIT_DELTA_RENAMED) {
             historyEntry = new std::pair<git_commit *, std::pair<char *, git_delta_t> >(
               nextCommit,
               std::pair<char *, git_delta_t>(strdup(outPair), delta->status)
@@ -282,7 +282,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
       Nan::Null(),
       result
     };
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
 
     delete baton->out;
     return;
@@ -300,7 +300,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     Local<v8::Value> argv[1] = {
       err
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
     if (baton->error->message)
     {
       free((void *)baton->error->message);
@@ -317,9 +317,9 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     Local<v8::Value> argv[1] = {
       err
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
     return;
   }
 
-  callback->Call(0, NULL);
+  callback->Call(0, NULL, async_resource);
 }

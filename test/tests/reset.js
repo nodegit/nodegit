@@ -1,8 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 
 describe("Reset", function() {
   var NodeGit = require("../../");
@@ -268,6 +267,45 @@ describe("Reset", function() {
       assert(fileContents == previousCommitContents);
 
       return Reset.reset(test.repo, test.currentCommit, Reset.TYPE.HARD);
+    });
+  });
+
+  it("reset fails if parameter is not a Commit object", function() {
+    var test = this;
+    var commit = test.repo.getReferenceCommit("master");
+    try {
+      Reset.reset(test.repo, commit, Reset.TYPE.HARD);
+      assert.fail(
+        "Should not be able to pass a Promise (Commit) into the function"
+      );
+    } catch (err) {
+      // ok
+      assert.equal(
+        "Repository and target commit's repository does not match",
+        err.message
+      );
+    }
+  });
+
+  it("reset fails if originating repository is not the same", function() {
+    var test = this;
+    var testCommit = null;
+    return test.repo.getReferenceCommit("master")
+    .then(function(commit) {
+      testCommit = commit;
+      return Repository.open(reposPath);
+    })
+    .then(function(repo) {
+      return Reset.reset(repo, testCommit, Reset.TYPE.HARD);
+    })
+    .then(function() {
+      assert.fail("Different source repository instance should fail");
+    })
+    .catch(function(err) {
+      assert.equal(
+        "Repository and target commit's repository does not match",
+        err.message
+      );
     });
   });
 });

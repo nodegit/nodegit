@@ -63,7 +63,7 @@ NAN_METHOD(Wrapper::ToBuffer) {
     return Nan::ThrowError("Number is required.");
   }
 
-  int len = info[0]->ToNumber()->Value();
+  int len = Nan::To<int>(info[0]).FromJust();
 
   Local<Function> bufferConstructor = Local<Function>::Cast(
     Nan::Get(Nan::GetCurrentContext()->Global(), Nan::New("Buffer").ToLocalChecked()).ToLocalChecked());

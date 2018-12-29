@@ -1,6 +1,5 @@
 var assert = require("assert");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
@@ -104,7 +103,7 @@ describe("Filter", function() {
     var secondFilter = "hellofilter";
 
     after(function(done) {
-      return Registry.unregister(secondFilter)
+      Registry.unregister(secondFilter)
         .then(function() {
           done();
         });
@@ -991,7 +990,6 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
-          list.free();
         });
     });
 
@@ -1037,7 +1035,6 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
-          list.free();
         });
     });
 
@@ -1094,7 +1091,6 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
-          list.free();
         });
     });
   });

@@ -1,8 +1,6 @@
 var nodegit = require("../");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
-fse.ensureDir = promisify(fse.ensureDir);
+var fse = require("fs-extra");
 
 var repoDir = "../../newRepo";
 var fileName = "newFile.txt";
@@ -12,12 +10,12 @@ var ourFileContent = "Big Bobs are best, IMHO.\n";
 var theirFileContent = "Nobody expects the small Bobquisition!\n";
 var finalFileContent = "Big Bobs are beautiful and the small are unexpected!\n";
 
-var baseSignature = nodegit.Signature.create("Peaceful Bob",
-  "justchill@bob.net", 123456789, 60);
-var ourSignature = nodegit.Signature.create("Big Bob",
-  "impressive@bob.net", 123456789, 60);
-var theirSignature = nodegit.Signature.create("Small Bob",
-  "underestimated@bob.net", 123456789, 60);
+var baseSignature = nodegit.Signature.now("Peaceful Bob",
+  "justchill@bob.net");
+var ourSignature = nodegit.Signature.now("Big Bob",
+  "impressive@bob.net");
+var theirSignature = nodegit.Signature.now("Small Bob",
+  "underestimated@bob.net");
 
 var ourBranchName = "ours";
 var theirBranchName = "theirs";

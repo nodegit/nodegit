@@ -284,8 +284,8 @@ Some ./configure options deserve additional comments:
  * --with-libgcrypt-prefix=DIR
 
 	libssh2 can use the Libgcrypt library
-	(http://www.gnupg.org/) for cryptographic operations.
-	Either Libgcrypt or OpenSSL is required.
+	(https://www.gnupg.org/) for cryptographic operations.
+        One of the cryptographic libraries is required.
 
 	Configure will attempt to locate Libgcrypt
 	automatically.
@@ -298,14 +298,28 @@ Some ./configure options deserve additional comments:
  * --with-libssl-prefix=[DIR]
 
 	libssh2 can use the OpenSSL library
-	(http://www.openssl.org) for cryptographic operations.
-	Either Libgcrypt or OpenSSL is required.
+	(https://www.openssl.org) for cryptographic operations.
+        One of the cryptographic libraries is required.
 
 	Configure will attempt to locate OpenSSL in the
 	default location.
 
 	If your installation of OpenSSL is in another
 	location, specify it using --with-libssl-prefix.
+
+ * --with-mbedtls
+ * --without-mbedtls
+ * --with-libmbedtls-prefix=[DIR]
+
+        libssh2 can use the mbedTLS library
+        (https://tls.mbed.org) for cryptographic operations.
+        One of the cryptographic libraries is required.
+
+        Configure will attempt to locate mbedTLS in the
+        default location.
+
+        If your installation of mbedTLS is in another
+        location, specify it using --with-libmbedtls-prefix.
 
  * --with-libz
  * --without-libz

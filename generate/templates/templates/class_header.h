@@ -4,10 +4,12 @@
 #include <string>
 #include <queue>
 #include <utility>
+#include <unordered_map>
 
 #include "async_baton.h"
 #include "nodegit_wrapper.h"
 #include "promise_completion.h"
+#include "reference_counter.h"
 
 extern "C" {
 #include <git2.h>

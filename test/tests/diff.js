@@ -1,8 +1,7 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
 var _ = require("lodash");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 
 function getLinesFromDiff(diff) {
@@ -31,6 +30,7 @@ describe("Diff", function() {
   var Repository = NodeGit.Repository;
   var Diff = NodeGit.Diff;
   var Blob = NodeGit.Blob;
+  var Index = NodeGit.Index;
 
   var reposPath = local("../repos/workdir");
   var oid = "fce88902e66c72b5b93e75bdb5ae717038b221f6";
@@ -388,13 +388,9 @@ describe("Diff", function() {
       });
   });
 
-  describe(
-    "merge between commit diff and workdir and index diff", function() {
+  describe("merge between commit diff and workdir and index diff", function() {
     beforeEach(function() {
       var test = this;
-      var diffOptions = new NodeGit.DiffOptions();
-      var IGNORE_CASE_FLAG = 1 << 10;
-      diffOptions.flags = diffOptions.flags |= IGNORE_CASE_FLAG;
       return fse.writeFile(
         path.join(test.repository.workdir(), "newFile.txt"), "some line\n"
       )
@@ -411,9 +407,17 @@ describe("Diff", function() {
           return test.repository.getHeadCommit();
         })
         .then(function(headCommit) {
-          return headCommit.tree();
+          return Promise.all([
+            headCommit.tree(),
+            test.repository.index()
+          ]);
         })
-        .then(function(headTree) {
+        .then(function([headTree, index]) {
+          const diffOptions = new NodeGit.DiffOptions();
+          if (index.caps() & Index.CAP.IGNORE_CASE !== 0) {
+            diffOptions.flags |= Diff.OPTION.IGNORE_CASE;
+          }
+
           return Promise.all([
             Diff.treeToWorkdirWithIndex(test.repository, headTree, diffOptions),
             test.commit.getDiffWithOptions(diffOptions)

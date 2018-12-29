@@ -13,6 +13,7 @@ describe("Tag", function() {
 
   var reposPath = local("../repos/workdir");
   var tagName = "annotated-tag";
+  var tagPattern = "annotated*";
   var tagFullName = "refs/tags/" + tagName;
   var tagOid = "dc800017566123ff3c746b37284a24a66546667e";
   var commitPointedTo = "32789a79e71fbc9e04d3eff7425e1771eb595150";
@@ -24,10 +25,11 @@ describe("Tag", function() {
     assert.equal(tag.targetType(), Obj.TYPE.COMMIT);
     assert.equal(tag.message(), tagMessage);
 
-    var target = tag.target();
-
-    assert.ok(target.isCommit());
-    assert.equal(target.id().toString(), commitPointedTo);
+    return tag.target()
+      .then(function(target) {
+        assert.ok(target.isCommit());
+        assert.equal(target.id().toString(), commitPointedTo);
+      });
   }
 
   beforeEach(function() {
@@ -42,21 +44,21 @@ describe("Tag", function() {
   it("can get a tag from a repo via the tag name", function() {
     return this.repository.getTagByName(tagName)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
   it("can get a tag from a repo via the long tag name", function() {
     return this.repository.getTagByName(tagFullName)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
   it("can get a tag from a repo via the tag's OID as a string", function() {
     return this.repository.getTag(tagOid)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
@@ -65,7 +67,7 @@ describe("Tag", function() {
 
     return this.repository.getTag(oid)
       .then(function(tag) {
-        testTag(tag);
+        return testTag(tag);
       });
   });
 
@@ -80,6 +82,13 @@ describe("Tag", function() {
       });
   });
 
+  it("can list tags of a pattern in a repo", function() {
+    return Tag.listMatch(tagPattern, this.repository)
+      .then(function(tagNames) {
+        assert.equal(tagNames.length, 1);
+      });
+  });
+
   it("can create a new annotated tag in a repo and delete it", function() {
     var oid = Oid.fromString(commitPointedTo);
     var name = "created-annotated-tag";
@@ -87,7 +96,7 @@ describe("Tag", function() {
 
     return repository.createTag(oid, name, tagMessage)
       .then(function(tag) {
-        testTag(tag, name);
+        return testTag(tag, name);
       })
       .then(function() {
         return repository.createTag(oid, name, tagMessage);
@@ -167,8 +176,8 @@ describe("Tag", function() {
         return repository.getTag(oid);
       })
       .then(function(tag) {
-        testTag(tag, name);
         assert(tag.tagger(), signature);
+        return testTag(tag, name);
       })
       .then(function() {
         // overwriting is okay

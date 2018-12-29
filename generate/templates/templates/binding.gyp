@@ -1,7 +1,69 @@
 {
+  "conditions": [
+    ["(OS=='win' and node_root_dir.split('\\\\')[-1].startswith('iojs')) or (OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs'))", {
+      "conditions": [
+        ["OS=='win'", {
+          "variables": {
+            "is_electron%": "1",
+            "openssl_include_dir%": "<(module_root_dir)\\vendor\\openssl"
+          }
+        }, {
+          "variables": {
+            "is_electron%": "1",
+            "openssl_include_dir%": "<(module_root_dir)/vendor/openssl"
+          }
+        }]
+      ],
+    }, {
+      "conditions": [
+        ["OS=='win'", {
+          "variables": {
+            "is_electron%": "0",
+            "openssl_include_dir%": "<(node_root_dir)\\include\\node"
+          }
+        }, {
+          "variables": {
+            "is_electron%": "0",
+            "openssl_include_dir%": "<(node_root_dir)/include/node"
+          }
+        }]
+      ]
+    }]
+  ],
+
   "targets": [
     {
+      "target_name": "acquireOpenSSL",
+        "conditions": [
+        ["<(is_electron) == 1", {
+          "actions": [{
+            "action_name": "acquire",
+            "action": ["node", "utils/acquireOpenSSL.js"],
+            "inputs": ["vendor/static_config/openssl_distributions.json"],
+            "outputs": ["vendor/openssl"],
+            "message": "Acquiring OpensSL binaries and headers"
+          }]
+        }]
+      ]
+    },
+    {
+      "target_name": "configureLibssh2",
+      "actions": [{
+        "action_name": "configure",
+        "action": ["node", "utils/configureLibssh2.js", "<(openssl_include_dir)", "<(is_electron)"],
+        "inputs": [""],
+        "outputs": [""]
+      }],
+      "hard_dependencies": [
+        "acquireOpenSSL"
+      ]
+    },
+    {
       "target_name": "nodegit",
+
+      "hard_dependencies": [
+        "configureLibssh2"
+      ],
 
       "dependencies": [
         "vendor/libgit2.gyp:libgit2"
@@ -13,6 +75,7 @@
       "sources": [
         "src/async_baton.cc",
         "src/lock_master.cc",
+        "src/reference_counter.cc",
         "src/nodegit.cc",
         "src/init_ssh2.cc",
         "src/promise_completion.cc",
@@ -35,7 +98,6 @@
       "include_dirs": [
         "vendor/libv8-convert",
         "vendor/libssh2/include",
-        "vendor/openssl/openssl/include",
         "<!(node -e \"require('nan')\")"
       ],
 
@@ -59,9 +121,22 @@
         ],
         [
           "OS=='mac'", {
+            "conditions": [
+              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+                "include_dirs": [
+                  "vendor/openssl/include"
+                ],
+                "libraries": [
+                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.a",
+                  "<(module_root_dir)/vendor/openssl/lib/libssl.a"
+                ]
+              }]
+            ],
             "xcode_settings": {
               "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
-              "MACOSX_DEPLOYMENT_TARGET": "10.7",
+              "MACOSX_DEPLOYMENT_TARGET": "10.9",
+              'CLANG_CXX_LIBRARY': 'libc++',
+              'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
 
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
@@ -74,6 +149,15 @@
         ],
         [
           "OS=='win'", {
+            "conditions": [
+              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+                "include_dirs": ["vendor/openssl/include"],
+                "libraries": [
+                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
+                  "<(module_root_dir)/vendor/openssl/lib/libssl.lib"
+                ]
+              }]
+            ],
             "defines": [
               "_HAS_EXCEPTIONS=1"
             ],
@@ -88,13 +172,18 @@
                   "/FORCE:MULTIPLE"
                 ]
               }
-            }
+            },
+            "libraries": [
+              "winhttp.lib",
+              "crypt32.lib",
+              "rpcrt4.lib"
+            ]
           }
         ],
         [
-          "OS=='linux' or OS=='mac'", {
+          "OS=='linux' or OS=='mac' or OS.endswith('bsd')", {
             "libraries": [
-              "-lcurl"
+              "<!(curl-config --libs)"
             ]
           }
         ],
@@ -103,6 +192,14 @@
             "cflags": [
               "-std=c++11"
             ]
+          }
+        ],
+        [
+          "OS.endswith('bsd') or (node_root_dir.split('/')[-1].startswith('iojs') and OS=='linux')", {
+            "libraries": [
+              "-lcrypto",
+              "-lssl"
+            ],
           }
         ]
       ]

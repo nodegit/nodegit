@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
         goto shutdown;
     }
 
-    /* NETCONF: http://tools.ietf.org/html/draft-ietf-netconf-ssh-06 */
+    /* NETCONF: https://tools.ietf.org/html/draft-ietf-netconf-ssh-06 */
 
     fprintf(stderr, "Sending NETCONF client <hello>\n");
     snprintf(buf, sizeof(buf),

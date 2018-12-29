@@ -138,10 +138,10 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
 
     // nodegit provides a couple of methods to create commit objects easily as
     // well.
-    var author = nodegit.Signature.create("Scott Chacon",
-      "schacon@gmail.com", 123456789, 60);
-    var committer = nodegit.Signature.create("Scott A Chacon",
-      "scott@github.com", 987654321, 90);
+    var author = nodegit.Signature.now("Scott Chacon",
+      "schacon@gmail.com");
+    var committer = nodegit.Signature.now("Scott A Chacon",
+      "scott@github.com");
 
     // Commit objects need a tree to point to and optionally one or more
     // parents. Here we're creating oid objects to create the commit with,

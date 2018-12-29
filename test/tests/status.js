@@ -1,7 +1,6 @@
 var assert = require("assert");
 var path = require("path");
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
+var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 var exec = require("../../utils/execPromise");
 
@@ -102,7 +101,27 @@ describe("Status", function() {
           .then(function() {
             return Promise.reject(e);
           });
+      });
+  });
 
+  it("gets status on non-existent file results in error", function() {
+    var fileName = "non-existent-Status.file-test.txt";
+    var repo = this.repository;
+    var filePath = path.join(repo.workdir(), fileName);
+    return exec("git clean -xdf", {cwd: reposPath})
+      .then(function() {
+        assert.equal(false, fse.existsSync(filePath));
+        return Status.file(repo, filePath)
+        .then(function() {
+          assert.fail("Non-existent file should throw error on Status.file");
+        }, function(err) {
+          assert.equal(NodeGit.Error.CODE.ENOTFOUND, err.errno);
+          assert.equal("Status.file", err.errorFunction);
+          assert.equal(
+            "attempt to get status of nonexistent file '" + filePath + "'",
+            err.message
+          );
+        });
       });
   });
 });

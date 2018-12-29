@@ -1,11 +1,11 @@
 # appveyor file
-# http://www.appveyor.com/docs/appveyor-yml
+# https://www.appveyor.com/docs/appveyor-yml/
 
 image: Visual Studio 2015
 
 platform:
-  - x86
   - x64
+  - x86
 
 # build version format
 version: "{build}"
@@ -13,7 +13,7 @@ version: "{build}"
 # Set a known clone folder
 clone_folder: c:\projects\nodegit
 
-# fix lineendings in Windows
+# fix line endings in Windows
 init:
   - git config --global core.autocrlf input
   - git config --global user.name "John Doe"
@@ -26,7 +26,7 @@ environment:
   GYP_MSVS_VERSION: 2015
   matrix:
     # Node.js
-    - nodejs_version: "9"
+    - nodejs_version: "10"
     - nodejs_version: "8"
     - nodejs_version: "6"
 
@@ -35,10 +35,11 @@ matrix:
 
 # Get the latest stable version of Node 0.STABLE.latest
 install:
+  - git submodule update --init --recursive
   - ps: Install-Product node $env:nodejs_version $env:platform
   - ps: Start-Process c:\projects\nodegit\vendor\pageant.exe c:\projects\nodegit\vendor\private.ppk
   - npm install -g npm
-  - cmd: npm install -g node-gyp
+  - npm install -g node-gyp
   - appveyor-retry call npm install
 
 test_script:
