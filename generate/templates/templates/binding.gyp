@@ -1,29 +1,13 @@
 {
   "conditions": [
     ["(OS=='win' and node_root_dir.split('\\\\')[-1].startswith('iojs')) or (OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs'))", {
-      "conditions": [
-        ["OS=='win'", {
-          "variables": {
-            "is_electron%": "1",
-          }
-        }, {
-          "variables": {
-            "is_electron%": "1",
-          }
-        }]
-      ],
+      "variables": {
+        "is_electron%": "1",
+      }
     }, {
-      "conditions": [
-        ["OS=='win'", {
-          "variables": {
-            "is_electron%": "0",
-          }
-        }, {
-          "variables": {
-            "is_electron%": "0",
-          }
-        }]
-      ]
+      "variables": {
+        "is_electron%": "0",
+      }
     }]
   ],
 
