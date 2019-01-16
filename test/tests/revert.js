@@ -74,4 +74,11 @@ describe("Revert", function() {
         throw error;
       });
   });
+
+  it("RevertOptions without MergeOptions should not segfault", function() {
+    return Revert.revert(test.repository, test.firstCommit, {})
+      .catch(function(error) {
+        throw error;
+      });
+  });
 });
