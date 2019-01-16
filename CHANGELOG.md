@@ -1,5 +1,78 @@
 # Change Log
 
+## <a name="v0-24-0" href="#v0-24-0">v0.24.0</a> [(2019-01-16)](https://github.com/nodegit/nodegit/releases/tag/v0.24.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0...v0.24.0)
+
+#### Summary of changes
+- Garbage collect most of the library.
+- All free functions have been removed. The expectation is that they will be collected by the GC.
+- All init options methods have been removed. They were never supposed to be exposed in the first place.
+- Added support for performing history walks on directories.
+- Fix various bugs that led to segfaults or incorrect behavior.
+- Removed ssl and crypto dependency from non-electron builds.
+
+##### Removed methods
+Mostly due to missing support anyway, please report anything you were using as an issue.
+  - NodeGit.Blob.createFromStreamCommit
+  - NodeGit.Branch.Iterator.prototype.new
+  - NodeGit.Config.initBackend
+  - NodeGit.Config.prototype.snapshot
+  - NodeGit.Config.prototype.setBool
+  - NodeGit.Config.prototype.setInt32
+  - NodeGit.Config.prototype.setInt64
+  - NodeGit.Index.prototype.owner
+  - NodeGit.Note.iteratorNew
+  - NodeGit.Note.next
+  - NodeGit.Odb.prototype.addDiskAlternate
+  - NodeGit.Repository.prototype.configSnapshot
+  - NodeGit.Signature.prototype.dup
+  - NodeGit.Tag.foreach
+  - NodeGit.Transport.init
+  - NodeGit.Transport.sshWithPaths
+  - NodeGit.Transport.unregister
+
+##### Newly exposed methods:
+  - NodeGit.Config.prototype.getEntry
+  - NodeGit.Config.prototype.snapshot
+  - NodeGit.Config.prototype.refresh
+  - NodeGit.Config.prototype.setBool
+  - NodeGit.Config.prototype.setInt32
+  - NodeGit.Config.prototype.setInt64
+  - NodeGit.Diff.prototype.isSortedIcase
+  - NodeGit.DiffStats.prototype.deletions
+  - NodeGit.DiffStats.prototype.filesChanged
+  - NodeGit.DiffStats.prototype.insertions
+  - NodeGit.DiffStats.prototype.toBuf
+  - NodeGit.Odb.hashfile
+  - NodeGit.Odb.prototype.readPrefix
+  - NodeGit.OidShorten.prototype.add
+  - NodeGit.OidShorten.create
+  - NodeGit.PathspecMatchList.prototype.diffEntry
+  - NodeGit.PathspecMatchList.prototype.entry
+  - NodeGit.PathspecMatchList.prototype.entrycount
+  - NodeGit.PathspecMatchList.prototype.failedEntry
+  - NodeGit.PathspecMatchList.prototype.failedEntryCount
+
+##### Newly exposed types
+  - NodeGit.DescribeFormatOptions
+  - NodeGit.DiffStats
+  - NodeGit.OidShorten
+  - NodeGit.PathspecMatchList
+
+#### Merged PRs into NodeGit
+- [Garbage collection: Free mostly everything automatically #1570](https://github.com/nodegit/nodegit/pull/1570)
+- [Fix typo in GitHub issue template #1586](https://github.com/nodegit/nodegit/pull/1586)
+- [More suitable example about Signature #1582](https://github.com/nodegit/nodegit/pull/1582)
+- [Add support for directories when using `fileHistoryWalk` #1583](https://github.com/nodegit/nodegit/pull/1583)
+- [Add a test for Repository's getReferenceCommit #1601](https://github.com/nodegit/nodegit/pull/1601)
+- [Check parameters before performing reset #1603](https://github.com/nodegit/nodegit/pull/1603)
+- [Remove ssl and crypto dependency on non-electron builds #1600](https://github.com/nodegit/nodegit/pull/1600)
+- [Clean up libssh2 configure step #1574](https://github.com/nodegit/nodegit/pull/1574)
+- [Fix checkout bug in our fork of libgit2 #1609](https://github.com/nodegit/nodegit/pull/1609)
+- [Fix segfault in NodeGit.Revert.revert #1605](https://github.com/nodegit/nodegit/pull/1605)
+
+
 ## <a name="v0-24-0-alpha.1" href="#v0-24-0-alpha.1">v0.24.0-alpha.1</a> [(2018-10-25)](https://github.com/nodegit/nodegit/releases/tag/v0.24.0-alpha.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0...v0.24.0-alpha.1)
