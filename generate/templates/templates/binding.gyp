@@ -1,33 +1,13 @@
 {
   "conditions": [
     ["(OS=='win' and node_root_dir.split('\\\\')[-1].startswith('iojs')) or (OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs'))", {
-      "conditions": [
-        ["OS=='win'", {
-          "variables": {
-            "is_electron%": "1",
-            "openssl_include_dir%": "<(module_root_dir)\\vendor\\openssl"
-          }
-        }, {
-          "variables": {
-            "is_electron%": "1",
-            "openssl_include_dir%": "<(module_root_dir)/vendor/openssl"
-          }
-        }]
-      ],
+      "variables": {
+        "is_electron%": "1",
+      }
     }, {
-      "conditions": [
-        ["OS=='win'", {
-          "variables": {
-            "is_electron%": "0",
-            "openssl_include_dir%": "<(node_root_dir)\\include\\node"
-          }
-        }, {
-          "variables": {
-            "is_electron%": "0",
-            "openssl_include_dir%": "<(node_root_dir)/include/node"
-          }
-        }]
-      ]
+      "variables": {
+        "is_electron%": "0",
+      }
     }]
   ],
 
@@ -50,7 +30,7 @@
       "target_name": "configureLibssh2",
       "actions": [{
         "action_name": "configure",
-        "action": ["node", "utils/configureLibssh2.js", "<(openssl_include_dir)", "<(is_electron)"],
+        "action": ["node", "utils/configureLibssh2.js"],
         "inputs": [""],
         "outputs": [""]
       }],
