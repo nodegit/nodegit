@@ -867,6 +867,7 @@ describe("Commit", function() {
         var committer = signatures[1];
 
         return repo.createCommitWithSignature(
+          null,
           author,
           committer,
           "message",
@@ -884,7 +885,112 @@ describe("Commit", function() {
       })
       .then(function(signatureInfo) {
         assert.equal(signature, signatureInfo.signature);
+        return reinitialize(test);
+      }, function(reason) {
+        return reinitialize(test)
+          .then(function() {
+            return Promise.reject(reason);
+          });
+      });
+    });
 
+    it("Can create a signed commit in a repo and update refs", function() {
+
+      var signature = "-----BEGIN PGP SIGNATURE-----\n" +
+        "Version: GnuPG v1.4.12 (Darwin)\n" +
+        "\n" +
+        "iQIcBAABAgAGBQJQ+FMIAAoJEH+LfPdZDSs1e3EQAJMjhqjWF+WkGLHju7pTw2al\n" +
+        "o6IoMAhv0Z/LHlWhzBd9e7JeCnanRt12bAU7yvYp9+Z+z+dbwqLwDoFp8LVuigl8\n" +
+        "JGLcnwiUW3rSvhjdCp9irdb4+bhKUnKUzSdsR2CK4/hC0N2i/HOvMYX+BRsvqweq\n" +
+        "AsAkA6dAWh+gAfedrBUkCTGhlNYoetjdakWqlGL1TiKAefEZrtA1TpPkGn92vbLq\n" +
+        "SphFRUY9hVn1ZBWrT3hEpvAIcZag3rTOiRVT1X1flj8B2vGCEr3RrcwOIZikpdaW\n" +
+        "who/X3xh/DGbI2RbuxmmJpxxP/8dsVchRJJzBwG+yhwU/iN3MlV2c5D69tls/Dok\n" +
+        "6VbyU4lm/ae0y3yR83D9dUlkycOnmmlBAHKIZ9qUts9X7mWJf0+yy2QxJVpjaTGG\n" +
+        "cmnQKKPeNIhGJk2ENnnnzjEve7L7YJQF6itbx5VCOcsGh3Ocb3YR7DMdWjt7f8pu\n" +
+        "c6j+q1rP7EpE2afUN/geSlp5i3x8aXZPDj67jImbVCE/Q1X9voCtyzGJH7MXR0N9\n" +
+        "ZpRF8yzveRfMH8bwAJjSOGAFF5XkcR/RNY95o+J+QcgBLdX48h+ZdNmUf6jqlu3J\n" +
+        "7KmTXXQcOVpN6dD3CmRFsbjq+x6RHwa8u1iGn+oIkX908r97ckfB/kHKH7ZdXIJc\n" +
+        "cpxtDQQMGYFpXK/71stq\n" +
+        "=ozeK\n" +
+        "-----END PGP SIGNATURE-----";
+
+      function onSignature(dataToSign) {
+        return new Promise(function (resolve) {
+          return resolve(signature);
+        });
+      }
+
+      var test = this;
+      var expectedCommitId = "ccb99bb20716ef7c37e92c7b8db029a7af7f747b";
+      var fileName = "newfile.txt";
+      var fileContent = "hello world";
+
+      var repo;
+      var index;
+      var treeOid;
+      var parent;
+
+      return NodeGit.Repository.open(reposPath)
+      .then(function(repoResult) {
+        repo = repoResult;
+        return fse.writeFile(path.join(repo.workdir(), fileName), fileContent);
+      })
+      .then(function() {
+        return repo.refreshIndex();
+      })
+      .then(function(indexResult) {
+        index = indexResult;
+      })
+      .then(function() {
+        return index.addByPath(fileName);
+      })
+      .then(function() {
+        return index.write();
+      })
+      .then(function() {
+        return index.writeTree();
+      })
+      .then(function(oidResult) {
+        treeOid = oidResult;
+        return NodeGit.Reference.nameToId(repo, "HEAD");
+      })
+      .then(function(head) {
+        return repo.getCommit(head);
+      })
+      .then(function(parentResult) {
+        parent = parentResult;
+        return Promise.all([
+          NodeGit.Signature.create("Foo Bar", "foo@bar.com", 123456789, 60),
+          NodeGit.Signature.create("Foo A Bar", "foo@bar.com", 987654321, 90)
+        ]);
+      })
+      .then(function(signatures) {
+        var author = signatures[0];
+        var committer = signatures[1];
+
+        return repo.createCommitWithSignature(
+          "HEAD",
+          author,
+          committer,
+          "message",
+          treeOid,
+          [parent],
+          "gpgsig",
+          onSignature);
+      })
+      .then(function(commitId) {
+        assert.equal(expectedCommitId, commitId);
+        return NodeGit.Commit.lookup(repo, commitId);
+      })
+      .then(function(commit) {
+        return commit.getSignature("gpgsig");
+      })
+      .then(function(signatureInfo) {
+        assert.equal(signature, signatureInfo.signature);
+        return repo.getHeadCommit();
+      })
+      .then(function(headCommit) {
+        assert.equal(expectedCommitId, headCommit.id());
         return undoCommit()
         .then(function(){
           return reinitialize(test);
