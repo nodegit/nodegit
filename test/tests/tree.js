@@ -32,7 +32,7 @@ describe("Tree", function() {
 
   it("gets an entry by name",
   function(done) {
-    this.commit.getTree().then(function(tree) {
+    this.commit.tree().then(function(tree) {
       var entry = tree.entryByName("README.md");
         assert(entry);
     }).done(done);
@@ -52,7 +52,7 @@ describe("Tree", function() {
         return RepoUtils.commitFileToRepo(repo, file2, "", commit);
       })
       .then(function(commit) {
-        return commit.getTree();
+        return commit.tree();
       })
       .then(function(tree) {
         assert(tree);

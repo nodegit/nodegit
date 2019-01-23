@@ -85,7 +85,7 @@ describe("Stage", function() {
             return test.repository.getBranchCommit("master");
           })
           .then(function(masterCommit) {
-            var treePromise = masterCommit.getTree();
+            var treePromise = masterCommit.tree();
             var indexPromise = test.repository.refreshIndex();
 
             return Promise.all([treePromise, indexPromise]);
@@ -246,7 +246,7 @@ describe("Stage", function() {
     //fileModeDifference - expected (newfilemode) - (oldfilemode)
     return test.repository.getHeadCommit()
       .then(function(commit) {
-        return commit.getTree();
+        return commit.tree();
       })
       .then(function(tree) {
         if (vsWorkdir) {

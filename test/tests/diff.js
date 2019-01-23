@@ -57,7 +57,7 @@ describe("Diff", function() {
       return test.repository.getBranchCommit("master");
     })
     .then(function(masterCommit) {
-      return masterCommit.getTree();
+      return masterCommit.tree();
     })
     .then(function(tree) {
       test.masterCommitTree = tree;
@@ -408,7 +408,7 @@ describe("Diff", function() {
         })
         .then(function(headCommit) {
           return Promise.all([
-            headCommit.getTree(),
+            headCommit.tree(),
             test.repository.index()
           ]);
         })

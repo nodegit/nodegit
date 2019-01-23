@@ -81,7 +81,7 @@ describe("TreeEntry", function() {
       return Promise.all(testPromises);
     };
 
-    return this.commit.getTree()
+    return this.commit.tree()
       .then(testTree)
       .done(function() {
         done();
@@ -182,7 +182,7 @@ describe("TreeEntry", function() {
     var test = this;
 
     return leakTest(NodeGit.TreeEntry, function() {
-      return test.commit.getTree()
+      return test.commit.tree()
         .then(function(tree) {
           return tree.entryByPath("example");
         });
