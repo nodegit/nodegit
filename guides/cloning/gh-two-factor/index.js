@@ -22,7 +22,7 @@ var cloneOptions = {};
 // with libgit2 being able to verify certificates from GitHub.
 cloneOptions.fetchOpts = {
   callbacks: {
-    certificateCheck: function() { return 1; },
+    certificateCheck: function() { return 0; },
     credentials: function() {
       return NodeGit.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
     }

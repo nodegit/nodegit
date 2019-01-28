@@ -20,7 +20,7 @@ var opts = {
         return nodegit.Cred.userpassPlaintextNew(token, "x-oauth-basic");
       },
       certificateCheck: function() {
-        return 1;
+        return 0;
       }
     }
   }

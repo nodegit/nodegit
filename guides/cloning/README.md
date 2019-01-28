@@ -85,7 +85,7 @@ to passthrough the certificate check.
 ``` javascript
 cloneOptions.fetchOpts = {
   callbacks: {
-    certificateCheck: function() { return 1; }
+    certificateCheck: function() { return 0; }
   }
 };
 ```

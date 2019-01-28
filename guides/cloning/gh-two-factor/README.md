@@ -101,7 +101,7 @@ to passthrough the certificate check.
 ``` javascript
 cloneOptions.fetchOpts = {
   callbacks: {
-    certificateCheck: function() { return 1; }
+    certificateCheck: function() { return 0; }
   }
 };
 ```
@@ -119,7 +119,7 @@ The `fetchOpts` object now looks like this:
 ``` javascript
 cloneOptions.fetchOpts = {
   callbacks: {
-    certificateCheck: function() { return 1; },
+    certificateCheck: function() { return 0; },
     credentials: function() {
       return NodeGit.Cred.userpassPlaintextNew(GITHUB_TOKEN, "x-oauth-basic");
     }

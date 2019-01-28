@@ -43,9 +43,7 @@ describe("Clone", function() {
     var opts = {
         fetchOpts: {
           callbacks: {
-            certificateCheck: function() {
-              return 1;
-          }
+            certificateCheck: () => 0
         }
       }
     };
@@ -202,9 +200,7 @@ describe("Clone", function() {
     var opts = {
       fetchOpts: {
         callbacks: {
-          certificateCheck: function() {
-            return 1;
-          }
+          certificateCheck: () => 0
         }
       }
     };
@@ -221,9 +217,7 @@ describe("Clone", function() {
     var opts = {
       fetchOpts: {
         callbacks: {
-          certificateCheck: function() {
-            return 1;
-          },
+          certificateCheck: () => 0,
           credentials: function(url, userName) {
             return NodeGit.Cred.sshKeyFromAgent(userName);
           }
@@ -243,9 +237,7 @@ describe("Clone", function() {
     var opts = {
       fetchOpts: {
         callbacks: {
-          certificateCheck: function() {
-            return 1;
-          },
+          certificateCheck: () => 0,
           credentials: function(url, userName) {
             return NodeGit.Cred.sshKeyNew(
               userName,
@@ -269,9 +261,7 @@ describe("Clone", function() {
     var opts = {
       fetchOpts: {
         callbacks: {
-          certificateCheck: function() {
-            return 1;
-          },
+          certificateCheck: () => 0,
           credentials: function(url, userName) {
             return NodeGit.Cred.sshKeyNew(
               userName,
@@ -296,9 +286,7 @@ describe("Clone", function() {
     var opts = {
       fetchOpts: {
         callbacks: {
-          certificateCheck: function() {
-            return 1;
-          }
+          certificateCheck: () => 0
         }
       }
     };
@@ -328,9 +316,7 @@ describe("Clone", function() {
     return Clone(url, clonePath, {
       fetchOpts: {
         callbacks: {
-          certificateCheck: function() {
-            return 1;
-          },
+          certificateCheck: () => 0,
           credentials: function() {
             if (firstPass) {
               firstPass = false;
