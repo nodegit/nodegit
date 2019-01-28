@@ -777,6 +777,14 @@
             {
               "type": "git_merge_options",
               "name": "merge_options"
+            },
+            {
+              "type": "git_commit_signing_cb",
+              "name": "signing_cb"
+            },
+            {
+              "type": "void *",
+              "name": "payload"
             }
           ],
           "used": {
