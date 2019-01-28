@@ -954,7 +954,7 @@ describe("Commit", function() {
         assert.equal(signature, signatureInfo.signature);
         return reinitialize(test);
       }, function(reason) {
-        return reinitialize(test);
+        return reinitialize(test)
           .then(function() {
             return Promise.reject(reason);
           });
