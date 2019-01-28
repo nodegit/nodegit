@@ -450,6 +450,73 @@ describe("Commit", function() {
     });
   });
 
+
+  it("can amend commit with signature", function() {
+    const signature = "-----BEGIN PGP SIGNATURE-----\n" +
+    "\n" +
+    "iQJHBAEBCAAxFiEEKdxGpJ93wnkLaBKfURjJKedOfEMFAlxPKUYTHHN0ZXZla0Bh\n" +
+    "eG9zb2Z0LmNvbQAKCRBRGMkp5058Q3vcD/0Uf6P68g98Kbvsgjg/aidM1ujruXaw\n" +
+    "X5WSsCAw+wWGICOj0n+KBnmQruI4HSFz3zykEshuOpcBv1X/+huwDeB/hBqonCU8\n" +
+    "QdexCdWR70YbT1bufesUwV9v1qwE4WOmFxWXgwh55K0wDRkc0u2aLcwrJkIEEVfs\n" +
+    "HqZyFzU4kwbGekY/m7d1DsBhWyKEGW9/25WMYmjWOWOiaFjeBaHLlxiEM8KGnMLH\n" +
+    "wx37NuFuaABgi23AAcBGdeWy04TEuU4S51+bHM3RotrZ2cryW2lEbkkXodhIJcq0\n" +
+    "RgrStCbvR0ehnOPdYSiRbxK8JNLZuNjHlK2g7wVi+C83vwMQuhU4H6OlYHGVr664\n" +
+    "4YzL83FdIo7wiMOFd2OOMLlCfHgTun60FvjCs4WHjrwH1fQl287FRPLa/4olBSQP\n" +
+    "yUXJaZdxm4cB4L/1pmbb/J/XUiOio3MpaN3GFm2hZloUlag1uPDBtCxTl5odvj4a\n" +
+    "GOmTBWznXxF/zrKnQVSvv+EccNxYFc0VVjAxGgNqPzIxDAKtw1lE5pbBkFpFpNHz\n" +
+    "StmwZkP9QIJY4hJYQfM+pzHLe8xjexL+Kh/TrYXgY1m/4vJe0HJSsnRnaR8Yfqhh\n" +
+    "LReqo94VHRYXR0rZQv4py0D9TrWaI8xHLve6ewhLPNRzyaI9fNrinbcPYZZOWnRi\n" +
+    "ekgUBx+BX6nJOw==\n" +
+    "=4Hy5\n" +
+    "-----END PGP SIGNATURE-----";
+
+    function onSignature(dataToSign) {
+      return new Promise(function (resolve) {
+        return resolve(signature);
+      });
+    }
+
+    var repo;
+    var oid;
+    var commit;
+    var message;
+    var parents;
+
+    return NodeGit.Repository.open(reposPath)
+      .then(function(repoResult) {
+        repo = repoResult;
+        return repo.getHeadCommit();
+      })
+      .then(function(headCommit) {
+        message = headCommit.message().trim();
+        parents = headCommit.parents();
+
+        return headCommit.amendWithSignature(
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "gpgsig",
+          onSignature
+        );
+      })
+      .then(function(oidResult) {
+        oid = oidResult;
+        return NodeGit.Commit.lookup(repo, oid);
+      })
+      .then(function(commitResult) {
+        commit = commitResult;
+        return commit.getSignature("gpgsig");
+      })
+      .then(function(signatureInfo) {
+        assert.equal(signatureInfo.signature, signature);
+        assert.equal(commit.message().trim(), message);
+        assert.deepEqual(commit.parents(), parents);
+      });
+  });
+
   it("has an owner", function() {
     var owner = this.commit.owner();
     assert.ok(owner instanceof Repository);
@@ -887,7 +954,7 @@ describe("Commit", function() {
         assert.equal(signature, signatureInfo.signature);
         return reinitialize(test);
       }, function(reason) {
-        return reinitialize(test)
+        return reinitialize(test);
           .then(function() {
             return Promise.reject(reason);
           });
