@@ -161,13 +161,6 @@
           }
         ],
         [
-          "OS=='linux' or OS=='mac' or OS.endswith('bsd')", {
-            "libraries": [
-              "<!(curl-config --libs)"
-            ]
-          }
-        ],
-        [
           "OS=='linux' or OS.endswith('bsd')", {
             "cflags": [
               "-std=c++11"

@@ -18,8 +18,19 @@
   {% endif %}
 
 {% elsif cppClassName|isV8Value %}
-
-  {% if isCppClassIntType %}
+  {% if cType|isArrayType %}
+    v8::Local<Array> tmpArray = Nan::New<Array>({{ cType|toSizeOfArray }});
+    for (unsigned int i = 0; i < {{ cType|toSizeOfArray }}; i++) {
+      v8::Local<v8::Value> element;
+      {% if isCppClassIntType %}
+        element = Nan::New<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}}[i]);
+      {% else %}
+      element = Nan::New<{{ cppClassName }}>({% if needsDereference %}*{% endif %}{{= parsedName =}}[i]);
+      {% endif %}
+      Nan::Set(tmpArray, Nan::New<Number>(i), element);
+    }
+    to = tmpArray;
+  {% elsif isCppClassIntType %}
     to = Nan::New<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}});
   {% else %}
     to = Nan::New<{{ cppClassName }}>({% if needsDereference %}*{% endif %}{{= parsedName =}});
@@ -53,6 +64,66 @@
     to = Nan::Null();
   }
   {% endif %}
+{% elsif cType|isArrayType %}
+  v8::Local<Array> tmpArray = Nan::New<Array>({{ cType|toSizeOfArray }});
+  for (unsigned int i = 0; i < {{ cType|toSizeOfArray }}; i++) {
+    v8::Local<v8::Value> element;
+    {{ cType|arrayTypeToPlainType }} *rawElement = &{{= parsedName =}}[i];
+
+    {% if copy %}
+      if (rawElement != NULL) {
+        rawElement = {{ copy }}(rawElement);
+      }
+    {% endif %}
+
+    if (rawElement != NULL) {
+      {% if hasOwner %}
+        v8::Local<v8::Array> owners = Nan::New<Array>(0);
+        {% if ownedBy %}
+          {% if isAsync %}
+            {% each ownedBy as owner %}
+              Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), this->GetFromPersistent("{{= owner =}}")->ToObject());
+            {% endeach %}
+          {% else %}
+            {% each ownedByIndices as ownedByIndex %}
+              Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), info[{{= ownedByIndex =}}]->ToObject());
+            {% endeach %}
+          {% endif %}
+        {% endif %}
+        {%if isAsync %}
+        {% elsif ownedByThis %}
+          Nan::Set(owners, owners->Length(), info.This());
+        {% endif %}
+        {% if ownerFn | toBool %}
+          Nan::Set(
+            owners,
+            Nan::New<v8::Number>(owners->Length()),
+            {{= ownerFn.singletonCppClassName =}}::New(
+              {{= ownerFn.name =}}(rawElement),
+              true
+            )->ToObject()
+          );
+        {% endif %}
+      {% endif %}
+      {% if cppClassName == 'Wrapper' %}
+        element = {{ cppClassName }}::New(rawElement);
+      {% else %}
+        element = {{ cppClassName }}::New(
+          rawElement,
+          {{ selfFreeing|toBool }}
+          {% if hasOwner %}
+            , owners
+          {% endif %}
+        );
+      {% endif %}
+    }
+    else {
+      element = Nan::Null();
+    }
+
+    Nan::Set(tmpArray, Nan::New<Number>(i), element);
+  }
+  to = tmpArray;
 {% else %}
   {% if copy %}
     if ({{= parsedName =}} != NULL) {
@@ -89,7 +160,6 @@
         );
       {% endif %}
     {% endif %}
-    // {{= cppClassName }} {{= parsedName }}
     {% if cppClassName == 'Wrapper' %}
       to = {{ cppClassName }}::New({{= parsedName =}});
     {% else %}

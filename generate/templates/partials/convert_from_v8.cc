@@ -75,8 +75,8 @@
     if (git_oid_fromstr(oidOut, (const char *) strdup(*oidString)) != GIT_OK) {
       free(oidOut);
 
-      if (giterr_last()) {
-        return Nan::ThrowError(giterr_last()->message);
+      if (git_error_last()) {
+        return Nan::ThrowError(git_error_last()->message);
       } else {
         return Nan::ThrowError("Unknown Error");
       }

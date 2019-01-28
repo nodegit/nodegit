@@ -91,7 +91,7 @@ NAN_METHOD(GitClone::Clone) {
 }
 
 void GitClone::CloneWorker::Execute() {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(
@@ -113,8 +113,8 @@ void GitClone::CloneWorker::Execute() {
 
     baton->error_code = result;
 
-    if (result != GIT_OK && giterr_last() != NULL) {
-      baton->error = git_error_dup(giterr_last());
+    if (result != GIT_OK && git_error_last() != NULL) {
+      baton->error = git_error_dup(git_error_last());
     }
   }
 }

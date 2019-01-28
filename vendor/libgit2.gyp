@@ -32,6 +32,8 @@
         "libgit2/include/git2/sys/merge.h",
         "libgit2/include/git2/sys/time.h",
         "libgit2/include/git2/worktree.h",
+        "libgit2/src/alloc.c",
+        "libgit2/src/alloc.h",
         "libgit2/src/annotated_commit.c",
         "libgit2/src/annotated_commit.h",
         "libgit2/src/apply.c",
@@ -70,16 +72,17 @@
         "libgit2/src/commit.c",
         "libgit2/src/commit.h",
         "libgit2/src/common.h",
+        "libgit2/src/config_backend.h",
         "libgit2/src/config_cache.c",
+        "libgit2/src/config_entries.c",
+        "libgit2/src/config_entries.h",
         "libgit2/src/config_file.c",
-        "libgit2/src/config_file.h",
+        "libgit2/src/config_mem.c",
         "libgit2/src/config_parse.c",
         "libgit2/src/config_parse.h",
         "libgit2/src/config.c",
         "libgit2/src/config.h",
         "libgit2/src/crlf.c",
-        "libgit2/src/streams/curl.c",
-        "libgit2/src/streams/curl.h",
         "libgit2/src/date.c",
         "libgit2/src/delta.c",
         "libgit2/src/delta.h",
@@ -133,6 +136,8 @@
         "libgit2/src/iterator.c",
         "libgit2/src/iterator.h",
         "libgit2/src/khash.h",
+        "libgit2/src/mailmap.c",
+        "libgit2/src/mailmap.h",
         "libgit2/src/map.h",
         "libgit2/src/merge_driver.c",
         "libgit2/src/merge_file.c",
@@ -163,8 +168,12 @@
         "libgit2/src/oidarray.h",
         "libgit2/src/oidmap.c",
         "libgit2/src/oidmap.h",
+        "libgit2/src/streams/mbedtls.c",
+        "libgit2/src/streams/mbedtls.h",
         "libgit2/src/streams/openssl.c",
         "libgit2/src/streams/openssl.h",
+        "libgit2/src/streams/registry.c",
+        "libgit2/src/streams/registry.h",
         "libgit2/src/pack-objects.c",
         "libgit2/src/pack-objects.h",
         "libgit2/src/pack.c",
@@ -190,6 +199,8 @@
         "libgit2/src/proxy.c",
         "libgit2/src/push.c",
         "libgit2/src/push.h",
+        "libgit2/src/reader.c",
+        "libgit2/src/reader.h",
         "libgit2/src/rebase.c",
         "libgit2/src/refdb_fs.c",
         "libgit2/src/refdb_fs.h",
@@ -223,6 +234,8 @@
         "libgit2/src/stash.c",
         "libgit2/src/status.c",
         "libgit2/src/status.h",
+        "libgit2/src/stdalloc.c",
+        "libgit2/src/stdalloc.h",
         "libgit2/src/strmap.c",
         "libgit2/src/strmap.h",
         "libgit2/src/strnlen.h",
@@ -310,12 +323,7 @@
             }
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd')", {
-          "cflags": [
-            "-DGIT_CURL",
-            "<!(curl-config --cflags)"
-          ],
           "defines": [
-            "GIT_CURL",
             "GIT_SHA1_OPENSSL"
           ],
           "sources": [
@@ -446,7 +454,7 @@
       ],
       "direct_dependent_settings": {
         "include_dirs": [
-          "libgit2/include",
+          "libgit2/include"
         ],
       },
     },

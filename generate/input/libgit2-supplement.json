@@ -86,30 +86,6 @@
   },
   "new" : {
     "functions": {
-      "git_branch_remote_name": {
-        "type": "function",
-        "file": "branch.h",
-        "args": [
-          {
-            "name": "out",
-            "type": "git_buf *"
-          },
-          {
-            "name": "repo",
-            "type": "git_repository *"
-          },
-          {
-            "name": "canonical_branch_name",
-            "type": "const char *"
-          }
-        ],
-        "isAsync": true,
-        "return": {
-          "type": "int",
-          "isErrorCode": true
-        },
-        "group": "branch"
-      },
       "git_clone": {
         "isManual": true,
         "cFile": "generate/templates/manual/clone/clone.cc",
@@ -374,6 +350,27 @@
           "git_filter_source_id",
           "git_filter_source_mode",
           "git_filter_source_flags"
+        ]
+      ],
+      [
+        "index_name_entry",
+        [
+          "git_index_name_add",
+          "git_index_name_clear",
+          "git_index_name_entrycount",
+          "git_index_name_get_byindex"
+        ]
+      ],
+      [
+        "index_reuc_entry",
+        [
+          "git_index_reuc_add",
+          "git_index_reuc_clear",
+          "git_index_reuc_entrycount",
+          "git_index_reuc_find",
+          "git_index_reuc_get_byindex",
+          "git_index_reuc_get_bypath",
+          "git_index_reuc_remove"
         ]
       ],
       [
@@ -1035,11 +1032,27 @@
         "git_diff_stats_free"
       ]
     },
+    "index": {
+      "functions": [
+        "git_index_name_add",
+        "git_index_name_clear",
+        "git_index_name_entrycount",
+        "git_index_name_get_byindex",
+        "git_index_reuc_add",
+        "git_index_reuc_clear",
+        "git_index_reuc_entrycount",
+        "git_index_reuc_find",
+        "git_index_reuc_get_byindex",
+        "git_index_reuc_get_bypath",
+        "git_index_reuc_remove"
+      ]
+    },
     "merge": {
       "functions": [
         "git_merge_driver_lookup",
         "git_merge_driver_register",
         "git_merge_driver_source_ancestor",
+        "git_merge_driver_source_file_options",
         "git_merge_driver_source_ours",
         "git_merge_driver_source_repo",
         "git_merge_driver_source_theirs",
@@ -1059,6 +1072,10 @@
     },
     "odb": {
       "functions": [
+        "git_odb_backend_loose",
+        "git_odb_backend_malloc",
+        "git_odb_backend_one_pack",
+        "git_odb_backend_pack",
         "git_odb_object_data",
         "git_odb_object_dup",
         "git_odb_object_free",
@@ -1090,6 +1107,8 @@
     },
     "reflog": {
       "functions": [
+        "git_reflog_entry__alloc",
+        "git_reflog_entry__free",
         "git_reflog_entry_committer",
         "git_reflog_entry_id_new",
         "git_reflog_entry_id_old",
@@ -1117,12 +1136,5 @@
       ]
     }
   },
-  "groups": {
-    "branch": [
-      "git_branch_remote_name"
-    ],
-    "stash": [
-      "git_stash_save"
-    ]
-  }
+  "groups": {}
 }

@@ -50,11 +50,13 @@ module.exports = function generateNativeCode() {
   var filters = {
     and: require("../templates/filters/and"),
     argsInfo: require("../templates/filters/args_info"),
+    arrayTypeToPlainType: require("../templates/filters/array_type_to_plain_type"),
     cppToV8: require("../templates/filters/cpp_to_v8"),
     defaultValue: require("../templates/filters/default_value"),
     fieldsInfo: require("../templates/filters/fields_info"),
     hasReturnType: require("../templates/filters/has_return_type"),
     hasReturnValue: require("../templates/filters/has_return_value"),
+    isArrayType: require("../templates/filters/is_array_type"),
     isDoublePointer: require("../templates/filters/is_double_pointer"),
     isFixedLengthString: require("../templates/filters/is_fixed_length_string"),
     isOid: require("../templates/filters/is_oid"),
@@ -70,6 +72,7 @@ module.exports = function generateNativeCode() {
     subtract: require("../templates/filters/subtract"),
     titleCase: require("../templates/filters/title_case"),
     toBool: require('../templates/filters/to_bool'),
+    toSizeOfArray: require("../templates/filters/to_size_of_array"),
     unPointer: require("../templates/filters/un_pointer"),
     setUnsigned: require("../templates/filters/unsigned"),
     upper: require("../templates/filters/upper")

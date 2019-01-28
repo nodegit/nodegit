@@ -79,7 +79,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(
@@ -107,15 +107,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 
     {%if return.isResultOrError %}
       baton->error_code = result;
-      if (result < GIT_OK && giterr_last() != NULL) {
-        baton->error = git_error_dup(giterr_last());
+      if (result < GIT_OK && git_error_last() != NULL) {
+        baton->error = git_error_dup(git_error_last());
       }
 
     {%elsif return.isErrorCode %}
       baton->error_code = result;
 
-      if (result != GIT_OK && giterr_last() != NULL) {
-        baton->error = git_error_dup(giterr_last());
+      if (result != GIT_OK && git_error_last() != NULL) {
+        baton->error = git_error_dup(git_error_last());
       }
 
     {%elsif not return.cType == 'void' %}
@@ -283,7 +283,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     {%if arg.cppClassName == "GitBuf" %}
       {%if cppFunctionName == "Set" %}
       {%else%}
-        git_buf_free(baton->{{ arg.name }});
+        git_buf_dispose(baton->{{ arg.name }});
         free((void *)baton->{{ arg.name }});
       {%endif%}
     {%endif%}

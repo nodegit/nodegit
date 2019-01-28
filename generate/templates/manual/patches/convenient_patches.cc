@@ -26,7 +26,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
 }
 
 void GitPatch::ConvenientFromDiffWorker::Execute() {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(true, baton->diff);
@@ -50,8 +50,8 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
 
         baton->error_code = result;
 
-        if (giterr_last() != NULL) {
-          baton->error = git_error_dup(giterr_last());
+        if (git_error_last() != NULL) {
+          baton->error = git_error_dup(git_error_last());
         }
 
         delete baton->out;
