@@ -401,7 +401,7 @@
             "jsClassName": "Number",
             "isErrorCode": true
           },
-          "isAsync": true
+          "isAsync": false
         },
         "git_buf_set": {
           "cppFunctionName": "Set",
@@ -422,7 +422,7 @@
             "jsClassName": "Number",
             "isErrorCode": true
           },
-          "isAsync": true
+          "isAsync": false
         }
       },
       "dependencies": [
