@@ -37,8 +37,8 @@ NAN_METHOD(GitCommit::ExtractSignature)
     if (git_oid_fromstr(baton->commit_id, (const char *)strdup(*oidString)) != GIT_OK) {
       free(baton->commit_id);
 
-      if (giterr_last()) {
-        return Nan::ThrowError(giterr_last()->message);
+      if (git_error_last()) {
+        return Nan::ThrowError(git_error_last()->message);
       } else {
         return Nan::ThrowError("Unknown Error");
       }
@@ -73,7 +73,7 @@ NAN_METHOD(GitCommit::ExtractSignature)
 
 void GitCommit::ExtractSignatureWorker::Execute()
 {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(
@@ -89,8 +89,8 @@ void GitCommit::ExtractSignatureWorker::Execute()
       (const char *)baton->field
     );
 
-    if (baton->error_code != GIT_OK && giterr_last() != NULL) {
-      baton->error = git_error_dup(giterr_last());
+    if (baton->error_code != GIT_OK && git_error_last() != NULL) {
+      baton->error = git_error_dup(git_error_last());
     }
   }
 }
@@ -145,8 +145,8 @@ void GitCommit::ExtractSignatureWorker::HandleOKCallback()
     callback->Call(0, NULL, async_resource);
   }
 
-  git_buf_free(&baton->signature);
-  git_buf_free(&baton->signed_data);
+  git_buf_dispose(&baton->signature);
+  git_buf_dispose(&baton->signed_data);
 
   if (baton->field != NULL) {
     free((void *)baton->field);

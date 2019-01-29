@@ -9,6 +9,7 @@ const path = require("path");
 var local = path.join.bind(null, __dirname, "../");
 
 var util = {
+  arrayTypeRegex: /\s\[\d+\]\s*/,
   pointerRegex: /\s*\*\s*/,
   doublePointerRegex: /\s*\*\*\s*/,
 

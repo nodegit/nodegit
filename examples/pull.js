@@ -16,7 +16,7 @@ nodegit.Repository.open(path.resolve(__dirname, repoDir))
           return nodegit.Cred.sshKeyFromAgent(userName);
         },
         certificateCheck: function() {
-          return 1;
+          return 0;
         }
       }
     });

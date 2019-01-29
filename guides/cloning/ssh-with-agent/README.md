@@ -83,7 +83,7 @@ to passthrough the certificate check.
 ``` javascript
 cloneOptions.fetchOpts = {
   callbacks: {
-    certificateCheck: function() { return 1; }
+    certificateCheck: function() { return 0; }
   }
 };
 ```
@@ -102,7 +102,7 @@ The `fetchOpts` object now looks like this:
 ``` javascript
 cloneOptions.fetchOpts = {
   callbacks: {
-    certificateCheck: function() { return 1; },
+    certificateCheck: function() { return 0; },
     credentials: function(url, userName) {
       return NodeGit.Cred.sshKeyFromAgent(userName);
     }

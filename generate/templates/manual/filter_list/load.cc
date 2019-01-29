@@ -108,7 +108,7 @@ NAN_METHOD(GitFilterList::Load) {
 }
 
 void GitFilterList::LoadWorker::Execute() {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(
@@ -119,8 +119,8 @@ void GitFilterList::LoadWorker::Execute() {
 
     baton->error_code = result;
 
-    if (result != GIT_OK && giterr_last() != NULL) {
-      baton->error = git_error_dup(giterr_last());
+    if (result != GIT_OK && git_error_last() != NULL) {
+      baton->error = git_error_dup(git_error_last());
     }
   }
 }

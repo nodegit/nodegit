@@ -476,10 +476,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.PASSTHROUGH;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.PASSTHROUGH;
         },
         check: function() {
           return NodeGit.Error.CODE.OK;
@@ -522,10 +520,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.OK;
         },
         check: function(src, attr) {
           return NodeGit.Error.CODE.OK;
@@ -568,10 +564,8 @@ describe("Filter", function() {
 
         return Registry.register(filterName, {
           apply: function(to, from, source) {
-            return to.set(largeBuffer, largeBufferSize)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+            to.set(largeBuffer, largeBufferSize);
+            return NodeGit.Error.CODE.OK;
           },
           check: function(src, attr) {
             return NodeGit.Error.CODE.OK;
@@ -626,10 +620,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.OK;
         },
         check: function(src, attr) {
           return NodeGit.Error.CODE.OK;
@@ -668,10 +660,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.OK;
         },
         check: function(src, attr) {
           return src.path() === "README.md" ?
@@ -725,10 +715,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.OK;
         },
         check: function(src, attr) {
           return src.path() === "README.md" ?
@@ -956,10 +944,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.OK;
         },
         check: function(src, attr) {
           return NodeGit.Error.CODE.OK;
@@ -999,10 +985,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.OK;
         },
         check: function(src, attr) {
           return NodeGit.Error.CODE.OK;
@@ -1044,10 +1028,8 @@ describe("Filter", function() {
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
-          return to.set(tempBuffer, length)
-            .then(function() {
-              return NodeGit.Error.CODE.OK;
-            });
+          to.set(tempBuffer, length);
+          return NodeGit.Error.CODE.OK;
         },
         check: function(src, attr) {
           return NodeGit.Error.CODE.OK;

@@ -30,7 +30,7 @@ void GitRevwalk::FastWalkWorker::Execute()
   for (int i = 0; i < baton->max_count; i++)
   {
     git_oid *nextCommit = (git_oid *)malloc(sizeof(git_oid));
-    giterr_clear();
+    git_error_clear();
     baton->error_code = git_revwalk_next(nextCommit, baton->walk);
 
     if (baton->error_code != GIT_OK)
@@ -40,7 +40,7 @@ void GitRevwalk::FastWalkWorker::Execute()
       free(nextCommit);
 
       if (baton->error_code != GIT_ITEROVER) {
-        baton->error = git_error_dup(giterr_last());
+        baton->error = git_error_dup(git_error_last());
 
         while(!baton->out->empty())
         {

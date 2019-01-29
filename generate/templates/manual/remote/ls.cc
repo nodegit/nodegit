@@ -20,7 +20,7 @@ NAN_METHOD(GitRemote::ReferenceList)
 
 void GitRemote::ReferenceListWorker::Execute()
 {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(
@@ -37,7 +37,7 @@ void GitRemote::ReferenceListWorker::Execute()
     );
 
     if (baton->error_code != GIT_OK) {
-      baton->error = git_error_dup(giterr_last());
+      baton->error = git_error_dup(git_error_last());
       delete baton->out;
       baton->out = NULL;
       return;

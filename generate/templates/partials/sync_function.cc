@@ -31,7 +31,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL) {
   {%endif%}
 
-  giterr_clear();
+  git_error_clear();
 
   { // lock master scope start
     LockMaster lockMaster(
@@ -79,8 +79,8 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%endif%}
       {%endeach%}
 
-        if (giterr_last()) {
-          return Nan::ThrowError(giterr_last()->message);
+        if (git_error_last()) {
+          return Nan::ThrowError(git_error_last()->message);
         } else {
           return Nan::ThrowError("Unknown Error");
         }

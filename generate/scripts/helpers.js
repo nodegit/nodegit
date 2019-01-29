@@ -40,6 +40,7 @@ var Helpers = {
     .replace("struct", "")
     .replace(utils.doublePointerRegex, "")
     .replace(utils.pointerRegex, "")
+    .replace(utils.arrayTypeRegex, "")
     .trim();
   },
 

@@ -35,7 +35,7 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
 {
   git_repository *repo = git_revwalk_repository(baton->walk);
   git_oid *nextOid = (git_oid *)malloc(sizeof(git_oid));
-  giterr_clear();
+  git_error_clear();
   for (
     unsigned int i = 0;
     i < baton->max_count && (baton->error_code = git_revwalk_next(nextOid, baton->walk)) == GIT_OK;
@@ -233,7 +233,7 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
 
   if (baton->error_code != GIT_OK) {
     if (baton->error_code != GIT_ITEROVER) {
-      baton->error = git_error_dup(giterr_last());
+      baton->error = git_error_dup(git_error_last());
 
       while(!baton->out->empty())
       {

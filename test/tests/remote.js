@@ -120,9 +120,7 @@ describe("Remote", function() {
     return repo.getRemote("origin")
       .then(function(remote) {
         remoteCallbacks = {
-          certificateCheck: function() {
-            return 1;
-          }
+          certificateCheck: () => 0
         };
 
         return remote.connect(NodeGit.Enums.DIRECTION.FETCH, remoteCallbacks)
@@ -201,9 +199,7 @@ describe("Remote", function() {
             credentials: function(url, userName) {
               return NodeGit.Cred.sshKeyFromAgent(userName);
             },
-            certificateCheck: function() {
-              return 1;
-            },
+            certificateCheck: () => 0,
 
             transferProgress: function() {
               wasCalled = true;
@@ -222,9 +218,7 @@ describe("Remote", function() {
 
   it("can get the default branch of a remote", function() {
     var remoteCallbacks = {
-      certificateCheck: function() {
-        return 1;
-      }
+      certificateCheck: () => 0
     };
 
     var remote = this.remote;
@@ -242,9 +236,7 @@ describe("Remote", function() {
         credentials: function(url, userName) {
           return NodeGit.Cred.sshKeyFromAgent(userName);
         },
-        certificateCheck: function() {
-          return 1;
-        }
+        certificateCheck: () => 0
       }
     });
   });
@@ -261,9 +253,7 @@ describe("Remote", function() {
             ""
           );
         },
-        certificateCheck: function() {
-          return 1;
-        }
+        certificateCheck: () => 0
       }
     };
 
@@ -288,9 +278,7 @@ describe("Remote", function() {
               return NodeGit.Cred.sshKeyFromAgent(userName);
             }
           },
-          certificateCheck: function() {
-            return 1;
-          }
+          certificateCheck: () => 0
         }
       };
 
@@ -323,9 +311,7 @@ describe("Remote", function() {
             credentials: function(url, userName) {
               return NodeGit.Cred.sshKeyFromAgent(userName);
             },
-            certificateCheck: function() {
-              return 1;
-            }
+            certificateCheck: () => 0
           }
         });
       });
@@ -350,9 +336,7 @@ describe("Remote", function() {
                 });
               return test;
             },
-            certificateCheck: function() {
-              return 1;
-            }
+            certificateCheck: () => 0
           }
         };
         return remote.push(refs, options);
@@ -384,9 +368,7 @@ describe("Remote", function() {
                 .then(Promise.reject.bind(Promise));
               return test;
             },
-            certificateCheck: function() {
-              return 1;
-            }
+            certificateCheck: () => 0
           }
         };
         return remote.push(refs, options);
@@ -426,9 +408,7 @@ describe("Remote", function() {
                 return Promise.reject();
               }
             },
-            certificateCheck: function() {
-              return 1;
-            }
+            certificateCheck: () => 0
           }
         };
         return remote.push(refs, options);

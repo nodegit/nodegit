@@ -185,9 +185,7 @@ describe("Repository", function() {
       credentials: function(url, userName) {
         return NodeGit.Cred.sshKeyFromAgent(userName);
       },
-      certificateCheck: function() {
-        return 1;
-      }
+      certificateCheck: () => 0
     })
     .then(function() {
       return repo.fetchheadForeach(function(refname, remoteUrl, oid, isMerge) {

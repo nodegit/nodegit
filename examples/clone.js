@@ -14,7 +14,7 @@ fse.remove(path).then(function() {
           certificateCheck: function() {
             // github will fail cert check on some OSX machines
             // this overrides that check
-            return 1;
+            return 0;
           }
         }
       }

@@ -77,15 +77,15 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
 }
 
 void GitFilterRegistry::RegisterWorker::Execute() {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(/*asyncAction: */true, baton->filter_name, baton->filter);
     int result = git_filter_register(baton->filter_name, baton->filter, baton->filter_priority);
     baton->error_code = result;
 
-    if (result != GIT_OK && giterr_last() != NULL) {
-      baton->error = git_error_dup(giterr_last());
+    if (result != GIT_OK && git_error_last() != NULL) {
+      baton->error = git_error_dup(git_error_last());
     }
   }
 }
@@ -163,15 +163,15 @@ NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
 }
 
 void GitFilterRegistry::UnregisterWorker::Execute() {
-  giterr_clear();
+  git_error_clear();
 
   {
     LockMaster lockMaster(/*asyncAction: */true, baton->filter_name);
     int result = git_filter_unregister(baton->filter_name);
     baton->error_code = result;
 
-    if (result != GIT_OK && giterr_last() != NULL) {
-      baton->error = git_error_dup(giterr_last());
+    if (result != GIT_OK && git_error_last() != NULL) {
+      baton->error = git_error_dup(git_error_last());
     }
   }
 }
