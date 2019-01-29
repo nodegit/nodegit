@@ -57,7 +57,10 @@ describe("Stash", function() {
       .then(function() {
         assert.equal(stashes.length, 1);
         assert.equal(stashes[0].index, 0);
-        assert.equal(stashes[0].message, "On master: " + stashMessage);
+        const expectedMessage = !stashMessage ?
+          "WIP on master: 32789a7 Fixes EJS not being installed via NPM" :
+          "On master: " + stashMessage;
+        assert.equal(stashes[0].message, expectedMessage);
         assert.equal(stashes[0].oid.toString(), stashOid.toString());
 
         return Stash.drop(repo, 0);
@@ -82,11 +85,11 @@ describe("Stash", function() {
   }
 
   it("can save and drop a stash", function() {
-    saveDropStash(this.repository, "stash test");
+    return saveDropStash(this.repository, "stash test");
   });
 
   it("can save a stash with no message and drop it", function() {
-    saveDropStash(this.repository, null);
+    return saveDropStash(this.repository, null);
   });
 
   it("can save and pop a stash", function() {
@@ -198,8 +201,8 @@ describe("Stash", function() {
           return Stash.drop(repo, 0);
         })
         .catch(function(reason) {
-          if (reason.message !== "Reference 'refs/stash' not found") {
-            Promise.reject();
+          if (reason.message !== "reference 'refs/stash' not found") {
+            throw reason;
           }
         });
   });
