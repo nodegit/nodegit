@@ -64,76 +64,12 @@
     to = Nan::Null();
   }
   {% endif %}
-{% elsif cType|isArrayType %}
-  v8::Local<Array> tmpArray = Nan::New<Array>({{ cType|toSizeOfArray }});
-  for (unsigned int i = 0; i < {{ cType|toSizeOfArray }}; i++) {
-    v8::Local<v8::Value> element;
-    {{ cType|arrayTypeToPlainType }} *rawElement = &{{= parsedName =}}[i];
-
-    {% if copy %}
-      if (rawElement != NULL) {
-        rawElement = {{ copy }}(rawElement);
-      }
-    {% endif %}
-
-    if (rawElement != NULL) {
-      {% if hasOwner %}
-        v8::Local<v8::Array> owners = Nan::New<Array>(0);
-        {% if ownedBy %}
-          {% if isAsync %}
-            {% each ownedBy as owner %}
-              {%-- If the owner of this object is "this" in an async method, it will be stored in the persistent handle by name. --%}
-              Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), this->GetFromPersistent("{{= owner =}}")->ToObject());
-            {% endeach %}
-          {% else %}
-            {% each ownedByIndices as ownedByIndex %}
-              Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), info[{{= ownedByIndex =}}]->ToObject());
-            {% endeach %}
-          {% endif %}
-        {% endif %}
-        {%if isAsync %}
-        {% elsif ownedByThis %}
-          {%-- If the owner of this object is "this", it will be retrievable from the info object in a sync method. --%}
-          Nan::Set(owners, owners->Length(), info.This());
-        {% endif %}
-        {% if ownerFn | toBool %}
-          Nan::Set(
-            owners,
-            Nan::New<v8::Number>(owners->Length()),
-            {{= ownerFn.singletonCppClassName =}}::New(
-              {{= ownerFn.name =}}(rawElement),
-              true
-            )->ToObject()
-          );
-        {% endif %}
-      {% endif %}
-      {% if cppClassName == 'Wrapper' %}
-        element = {{ cppClassName }}::New(rawElement);
-      {% else %}
-        element = {{ cppClassName }}::New(
-          rawElement,
-          {{ selfFreeing|toBool }}
-          {% if hasOwner %}
-            , owners
-          {% endif %}
-        );
-      {% endif %}
-    }
-    else {
-      element = Nan::Null();
-    }
-
-    Nan::Set(tmpArray, Nan::New<Number>(i), element);
-  }
-  to = tmpArray;
 {% else %}
-  {% if copy %}
-    if ({{= parsedName =}} != NULL) {
-      {{= parsedName =}} = ({{ cType|replace '**' '*' }} {% if not cType|isPointer %}*{% endif %}){{ copy }}({{= parsedName =}});
-    }
+  {% if cType|isArrayType %}
+    v8::Local<Array> tmpArray = Nan::New<Array>({{ cType|toSizeOfArray }});
+    for (unsigned int i = 0; i < {{ cType|toSizeOfArray }}; i++) {
   {% endif %}
-
-  if ({{= parsedName =}} != NULL) {
+  if ({{ cType|asElementPointer parsedName }} != NULL) {
     {% if hasOwner %}
       v8::Local<v8::Array> owners = Nan::New<Array>(0);
       {% if ownedBy %}
@@ -158,17 +94,17 @@
           owners,
           Nan::New<v8::Number>(owners->Length()),
           {{= ownerFn.singletonCppClassName =}}::New(
-            {{= ownerFn.name =}}({{= parsedName =}}),
+            {{= ownerFn.name =}}({{ cType|asElementPointer parsedName }}),
             true
           )->ToObject()
         );
       {% endif %}
     {% endif %}
     {% if cppClassName == 'Wrapper' %}
-      to = {{ cppClassName }}::New({{= parsedName =}});
+      to = {{ cppClassName }}::New({{ cType|asElementPointer parsedName }});
     {% else %}
       to = {{ cppClassName }}::New(
-        {{= parsedName =}},
+        {{ cType|asElementPointer parsedName }},
         {{ selfFreeing|toBool }}
         {% if hasOwner %}
           , owners
@@ -179,6 +115,10 @@
   else {
     to = Nan::Null();
   }
-
+  {% if cType|isArrayType %}
+      Nan::Set(tmpArray, Nan::New<Number>(i), to);
+    }
+    to = tmpArray;
+  {% endif %}
 {% endif %}
 // end convert_to_v8 block

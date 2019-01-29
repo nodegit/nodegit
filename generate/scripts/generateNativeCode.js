@@ -51,6 +51,7 @@ module.exports = function generateNativeCode() {
     and: require("../templates/filters/and"),
     argsInfo: require("../templates/filters/args_info"),
     arrayTypeToPlainType: require("../templates/filters/array_type_to_plain_type"),
+    asElementPointer: require("../templates/filters/as_element_pointer"),
     cppToV8: require("../templates/filters/cpp_to_v8"),
     defaultValue: require("../templates/filters/default_value"),
     fieldsInfo: require("../templates/filters/fields_info"),
