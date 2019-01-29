@@ -82,6 +82,7 @@
         {% if ownedBy %}
           {% if isAsync %}
             {% each ownedBy as owner %}
+              {%-- If the owner of this object is "this" in an async method, it will be stored in the persistent handle by name. --%}
               Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), this->GetFromPersistent("{{= owner =}}")->ToObject());
             {% endeach %}
           {% else %}
@@ -92,6 +93,7 @@
         {% endif %}
         {%if isAsync %}
         {% elsif ownedByThis %}
+          {%-- If the owner of this object is "this", it will be retrievable from the info object in a sync method. --%}
           Nan::Set(owners, owners->Length(), info.This());
         {% endif %}
         {% if ownerFn | toBool %}
@@ -137,6 +139,7 @@
       {% if ownedBy %}
         {% if isAsync %}
           {% each ownedBy as owner %}
+            {%-- If the owner of this object is "this" in an async method, it will be stored in the persistent handle by name. --%}
             Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), this->GetFromPersistent("{{= owner =}}")->ToObject());
           {% endeach %}
         {% else %}
@@ -147,6 +150,7 @@
       {% endif %}
       {%if isAsync %}
       {% elsif ownedByThis %}
+        {%-- If the owner of this object is "this", it will be retrievable from the info object in a sync method. --%}
         Nan::Set(owners, owners->Length(), info.This());
       {% endif %}
       {% if ownerFn | toBool %}
