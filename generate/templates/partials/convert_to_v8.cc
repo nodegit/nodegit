@@ -5,6 +5,9 @@
       to = Nan::New<v8::String>({{= parsedName =}}, {{ size }}).ToLocalChecked();
     {% elsif cType == 'char **' %}
       to = Nan::New<v8::String>(*{{= parsedName =}}).ToLocalChecked();
+    {% elsif cType == 'char' %}
+      char convertToNullTerminated[2] = { {{= parsedName =}}, '\0' };
+      to = Nan::New<v8::String>(convertToNullTerminated).ToLocalChecked();
     {% else %}
       to = Nan::New<v8::String>({{= parsedName =}}).ToLocalChecked();
     {% endif %}
