@@ -3597,7 +3597,16 @@
           "isAsync": true
         },
         "git_tag_create_frombuffer": {
-          "ignore": true
+          "jsFunctionName": "createFromBuffer",
+          "args": {
+            "oid": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
         },
         "git_tag_create_lightweight": {
           "args": {
