@@ -7,48 +7,49 @@ var buildFlags = require(local("../utils/buildFlags"));
 module.exports = function prepareForBuild() {
   console.log("[nodegit] Running pre-install script");
 
-  try {
-    return exec("npm -v")
-      .then(function(npmVersion) {
-        if (npmVersion.split(".")[0] < 3) {
-          console.log("[nodegit] npm@2 installed, pre-loading required packages");
-          return exec("npm install --ignore-scripts");
-        }
+  return exec("npm -v")
+    .then(function(npmVersion) {
+    if (npmVersion.split(".")[0] < 3) {
+      console.log("[nodegit] npm@2 installed,\
+    pre-loading required packages");
+      return exec("npm install --ignore-scripts");
+    }
 
-        return Promise.resolve();
-      })
-      .then(function() {
-        if (buildFlags.isGitRepo) {
-          var submodules = require(local("submodules"));
-          var generate = require(local("../generate"));
-          return submodules()
-            .then(function() {
-              return generate();
-            });
-        }
-      });
-  } catch(err) {
-    console.log("npm install failed, change to yarn install");
-    return exec("yarn --version")
-      .then(function(yarnVersion) {
-        if (yarnVersion.split(".")[0] < 1) {
-          console.log("[nodegit] yarn installed, pre-loading required packages");
-          return exec("yarn install --ignore-scripts");
-        }
+    return Promise.resolve();
+    })
+    .then(function() {
+    if (buildFlags.isGitRepo) {
+      var submodules = require(local("submodules"));
+      var generate = require(local("../generate"));
+      return submodules()
+        .then(function() {
+          return generate();
+        });
+    }
+    })
+    .catch(function(err) {
+      console.log("npm install failed, change to yarn install");
+      return exec("yarn --version")
+        .then(function(yarnVersion) {
+          if (yarnVersion.split(".")[0] < 1) {
+            console.log("[nodegit] yarn installed,\
+      pre-loading required packages");
+            return exec("yarn install --ignore-scripts");
+          }
 
-        return Promise.resolve();
-      })
-      .then(function() {
-        if (buildFlags.isGitRepo) {
-          var submodules = require(local("submodules"));
-          var generate = require(local("../generate"));
-          return submodules()
-            .then(function() {
-              return generate();
-            });
-        }
-      });
-  }
+          return Promise.resolve();
+        })
+        .then(function() {
+          if (buildFlags.isGitRepo) {
+            var submodules = require(local("submodules"));
+            var generate = require(local("../generate"));
+            return submodules()
+              .then(function() {
+                return generate();
+              });
+          }
+        });
+    });
 };
 
 // Called on the command line
