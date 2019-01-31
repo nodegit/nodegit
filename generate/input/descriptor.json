@@ -3597,7 +3597,16 @@
           "isAsync": true
         },
         "git_tag_create_frombuffer": {
-          "ignore": true
+          "jsFunctionName": "createFromBuffer",
+          "args": {
+            "oid": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          },
+          "isAsync": true
         },
         "git_tag_create_lightweight": {
           "args": {
@@ -3698,11 +3707,6 @@
       "dependencies": [
         "git2/sys/time.h"
       ],
-      "fields": {
-        "sign": {
-          "ignore": true
-        }
-      },
       "functions": {
         "git_time_sign": {
           "ignore": true
