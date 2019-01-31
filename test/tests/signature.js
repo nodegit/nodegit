@@ -104,4 +104,29 @@ describe("Signature", function() {
     // the self-freeing time should get freed
     assert.equal(startSelfFreeingCount, endSelfFreeingCount);
   });
+
+  it("toString does not provide a timestamp by default", function () {
+    const signature = Signature.create(
+      "Shaggy Rogers",
+      "shaggy@mystery.com",
+      987654321,
+      90
+    );
+
+    assert.equal(signature.toString(), "Shaggy Rogers <shaggy@mystery.com>");
+  });
+
+  it("toString provides the correct timestamp when requested", function() {
+    const signature = Signature.create(
+      "Shaggy Rogers",
+      "shaggy@mystery.com",
+      987654321,
+      90
+    );
+
+    assert.equal(
+      signature.toString(true),
+      "Shaggy Rogers <shaggy@mystery.com> 987654321 +0130"
+    );
+  });
 });
