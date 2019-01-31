@@ -1,5 +1,32 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-1" href="#v0-25-0-alpha-1">v0.25.0-alpha.1</a> [(2019-01-30)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.24.0...v0.25.0-alpha.1)
+
+#### Summary of changes
+- Bump Libgit2 to preview of v0.28.0
+- Add signing support for commits and annotated tags
+- Updated Signature.prototype.toString to optionally include timestamps
+- [BREAKING] Converted Buf.prototype.set and Buf.prototype.grow from async to sync
+- Added complete support for libgit2 types:
+  - git_index_name_entry
+  - git_index_reuc_entry
+  - git_mailmap
+- Exposed git_path_is_gitfile
+- Exposed git_tag_create_frombuffer
+
+#### Merged PRs into NodeGit
+- [adds support for gpg commit signing (fixes #1018) #1448](https://github.com/nodegit/nodegit/pull/1448)
+- [Add `updateRef` parameter to Repository#createCommitWithSignature #1610](https://github.com/nodegit/nodegit/pull/1610)
+- [Documentation fixes. #1611](https://github.com/nodegit/nodegit/pull/1611)
+- [Add Commit#amendWithSignature #1616](https://github.com/nodegit/nodegit/pull/1616)
+- [Bump libgit2 to a preview of v0.28 #1615](https://github.com/nodegit/nodegit/pull/1615)
+- [Fix issues with Commit#amendWithSignature #1617](https://github.com/nodegit/nodegit/pull/1617)
+- [Marked Repository.createBlobFromBuffer as async #1614](https://github.com/nodegit/nodegit/pull/1614)
+- [Add functionality for creating Tags with signatures and extracting signatures from Tags #1618](https://github.com/nodegit/nodegit/pull/1618)
+
+
 ## <a name="v0-24-0" href="#v0-24-0">v0.24.0</a> [(2019-01-16)](https://github.com/nodegit/nodegit/releases/tag/v0.24.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0...v0.24.0)
