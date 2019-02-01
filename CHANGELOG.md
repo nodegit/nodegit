@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-2" href="#v0-25-0-alpha-2">v0.25.0-alpha.2</a> [(2019-02-01)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.1...v0.25.0-alpha.2)
+
+#### Summary of changes
+- Added RebaseOptions to repository.prototype.rebaseContinue
+
+#### Merged PRs into NodeGit
+- [Breaking: Repository.prototype.continueRebase enhancements #1619](https://github.com/nodegit/nodegit/pull/1619)
+
+
 ## <a name="v0-25-0-alpha-1" href="#v0-25-0-alpha-1">v0.25.0-alpha.1</a> [(2019-01-30)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.24.0...v0.25.0-alpha.1)
