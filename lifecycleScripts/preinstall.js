@@ -10,8 +10,8 @@ module.exports = function prepareForBuild() {
   return exec("npm -v")
     .then(function(npmVersion) {
     if (npmVersion.split(".")[0] < 3) {
-      console.log("[nodegit] npm@2 installed,\
-    pre-loading required packages");
+      console.log("[nodegit] npm@2 installed, " + 
+                  "pre-loading required packages");
       return exec("npm install --ignore-scripts");
     }
 
@@ -32,8 +32,8 @@ module.exports = function prepareForBuild() {
       return exec("yarn --version")
         .then(function(yarnVersion) {
           if (yarnVersion.split(".")[0] < 1) {
-            console.log("[nodegit] yarn installed,\
-      pre-loading required packages");
+            console.log("[nodegit] yarn installed, " +
+                        "pre-loading required packages");
             return exec("yarn install --ignore-scripts");
           }
 
