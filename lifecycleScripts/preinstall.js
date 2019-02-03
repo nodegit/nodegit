@@ -28,7 +28,7 @@ module.exports = function prepareForBuild() {
           }
 
           return Promise.resolve();
-        })
+        });
     })
     .then(function() {
       if (buildFlags.isGitRepo) {
