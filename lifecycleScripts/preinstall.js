@@ -17,16 +17,6 @@ module.exports = function prepareForBuild() {
 
     return Promise.resolve();
     })
-    .then(function() {
-    if (buildFlags.isGitRepo) {
-      var submodules = require(local("submodules"));
-      var generate = require(local("../generate"));
-      return submodules()
-        .then(function() {
-          return generate();
-        });
-    }
-    })
     .catch(function(err) {
       console.log("npm install failed, change to yarn install");
       return exec("yarn --version")
@@ -39,16 +29,16 @@ module.exports = function prepareForBuild() {
 
           return Promise.resolve();
         })
-        .then(function() {
-          if (buildFlags.isGitRepo) {
-            var submodules = require(local("submodules"));
-            var generate = require(local("../generate"));
-            return submodules()
-              .then(function() {
-                return generate();
-              });
-          }
-        });
+    })
+    .then(function() {
+      if (buildFlags.isGitRepo) {
+        var submodules = require(local("submodules"));
+        var generate = require(local("../generate"));
+        return submodules()
+          .then(function() {
+            return generate();
+          });
+      }
     });
 };
 
