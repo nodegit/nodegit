@@ -1,5 +1,21 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-3" href="#v0-25-0-alpha-3">v0.25.0-alpha.3</a> [(2019-02-05)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.3)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.2...v0.25.0-alpha.3)
+
+#### Summary of changes
+- Enforced consistent use of signing callbacks within the application. Any object that implements the signingCallback
+  pattern for signing commits or tags should use the exact same callback type and with the same meaning.
+  `type SigningCallback = (content: string) => {| code: number, field?: string, signedData?: string |};`
+  If the code is `NodeGit.Error.CODE.OK` or 0, the operation will succeed and _at least_ signedData is expected to be filled out.
+  If the code is a negative number, except for `NodeGit.Error.CODE.PASSTHROUGH`, the signing operation will fail.
+  If the code is `NodeGit.Error.CODE.PASSTHROUGH`, the operation will continue without signing the object.
+
+#### Merged PRs into NodeGit
+- [Use same API for signingCb in all places that can be crypto signed #1621](https://github.com/nodegit/nodegit/pull/1621)
+
+
 ## <a name="v0-25-0-alpha-2" href="#v0-25-0-alpha-2">v0.25.0-alpha.2</a> [(2019-02-01)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.1...v0.25.0-alpha.2)
