@@ -2070,7 +2070,7 @@ describe("Rebase", function() {
       .then(function() {
         assert.fail("rebase.commit should have failed");
       }, function(error) {
-        if (error && error.errno === -1) {
+        if (error && error.errno === NodeGit.Error.CODE.ERROR) {
           return;
         }
         throw error;
