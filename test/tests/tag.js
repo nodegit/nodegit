@@ -314,44 +314,150 @@ describe("Tag", function() {
       });
   });
 
-  it("can create a tag with a signature and extract the signature", function() {
-    const targetOid = Oid.fromString(commitPointedTo);
-    const otherTargetOid = Oid.fromString(commitPointedTo2);
-    const name = "created-signed-tag-annotationCreate";
-    const repository = this.repository;
-    const signature = Signature.create(
-      "Shaggy Rogers",
-      "shaggy@mystery.com",
-      987654321,
-      90
+  describe("createWithSignature and extractSignature", function() {
+    it(
+      "can create a tag with a signature and extract the signature",
+      function() {
+        const targetOid = Oid.fromString(commitPointedTo);
+        const otherTargetOid = Oid.fromString(commitPointedTo2);
+        const name = "created-signed-tag-annotationCreate";
+        const repository = this.repository;
+        const signature = Signature.create(
+          "Shaggy Rogers",
+          "shaggy@mystery.com",
+          987654321,
+          90
+        );
+        const signatureLines = [
+          "-----BEGIN PGP SIGNATURE-----",
+          "iQIzBAABCAAdFiEEKdxGpJ93wnkLaBKfURjJKedOfEMFAlxR4JUACgkQURjJKedO",
+          "fEN+8A//cXmkRmhzQMdTEdrxty7tVKQ7lVhL7r7e+cB84hO7WrDn8549c7/Puflu",
+          "idanWfyoAEMSNWDgY84lx/t3I3YYKXsLDPT93HiMhCXmPVZcfLxlARRL1rrNZV4q",
+          "L9hhqb9bFrRNBn6YebhygeLXLHlDKEZzx8W9jnDLU8Px8UTkwdQIDnPDfT7UOPPU",
+          "MYDgP3OwWwoG8dUlZXaHjtFz29wPlJo177MwdLYwn4zpEIysoY1ev5IKWD+LPW4g",
+          "vdQnaK1x3dozmG8YLUZw5iW7ap9DpahbAGQgdy1z1ypiNUjNuhaP8zkG1ci6X88N",
+          "6MIoQ+YqfowRJJTIr1lzssxsRI1syjfS6smnI4ZNE6S+6mIKN96ES2OZF+rn4xnD",
+          "PofR9Qh2gPq++ULriPE/cX7ZkZ0/ZDZGDfIGvricB8JEJhISZn/VMX/KScJs+rFq",
+          "KWN5Au6Uc2pEqeq5OP4y2k0QUmKQT9sh9OepnPmfqF8hG6wI8nM67jT/FEOcpr0v",
+          "qoN2NRXrcq3iZAp07AGq9IdpYhBcEW7MFmOcNt+Zb8SbTMp6DawnREg9xzz1SIkZ",
+          "Cdp1XoJ6mkVvzBB4T/Esp7j1VztinTX2PpX7C1CE5LC76UfCiEjEWOmWrVuPuA5a",
+          "oRrJvgPJg8gpVj04r2m8nvUK1gwhxg9ZB+SK+nd3OAd0dnbJwTE=",
+          "=dW3g",
+          "-----END PGP SIGNATURE-----"
+        ];
+        const message = "I'm a teapot";
+        const signingCallback = (message) => ({
+          code: NodeGit.Error.CODE.OK,
+          signedData: signatureLines.join("\n")
+        });
+
+        let odb;
+        let oid;
+        let object;
+
+        return repository.odb()
+        .then((odbResult) => {
+          odb = odbResult;
+
+          return Tag.createWithSignature(
+            repository,
+            name,
+            targetOid,
+            signature,
+            message,
+            1,
+            signingCallback
+          );
+        })
+        .then((oidResult) => {
+          oid = oidResult;
+          return odb.read(oid);
+        })
+        .then((objectResult) => {
+          object = objectResult;
+          const lines = object.toString().split("\n");
+          assert(object.type(), Obj.TYPE.TAG);
+          assert.equal(signatureLines.length + 7, lines.length);
+          assert.equal(lines[0], `object ${commitPointedTo}`);
+          assert.equal(lines[1], "type commit");
+          assert.equal(lines[2], `tag ${name}`);
+          assert.equal(
+            lines[3],
+            "tagger Shaggy Rogers <shaggy@mystery.com> 987654321 +0130"
+          );
+          assert.equal(lines[4], "");
+          assert.equal(lines[5], message);
+          for (let i = 6; i < 6 + signatureLines.length; i++) {
+            assert.equal(lines[i], signatureLines[i - 6]);
+          }
+          assert.equal(lines[6 + signatureLines.length], "");
+
+          return Tag.lookup(repository, oid);
+        })
+        .then((tag) => {
+          return tag.extractSignature();
+        })
+        .then((tagSignature) => {
+          assert.equal(tagSignature, signatureLines.join("\n"));
+        })
+        .then(() => {
+          // overwriting is okay
+          return Tag.createWithSignature(
+            repository,
+            name,
+            targetOid,
+            signature,
+            message,
+            1,
+            signingCallback
+          );
+        })
+        .then(() => {
+          // overwriting is not okay
+          return Tag.createWithSignature(
+            repository,
+            name,
+            otherTargetOid,
+            signature,
+            message,
+            0,
+            signingCallback
+          );
+        })
+        .then(() => {
+          return Promise.reject(
+            new Error(
+              "should not be able to create the '" + name + "' tag twice"
+            )
+          );
+        },
+        () => {
+          return Promise.resolve();
+        });
+      }
     );
-    const signatureLines = [
-      "-----BEGIN PGP SIGNATURE-----",
-      "iQIzBAABCAAdFiEEKdxGpJ93wnkLaBKfURjJKedOfEMFAlxR4JUACgkQURjJKedO",
-      "fEN+8A//cXmkRmhzQMdTEdrxty7tVKQ7lVhL7r7e+cB84hO7WrDn8549c7/Puflu",
-      "idanWfyoAEMSNWDgY84lx/t3I3YYKXsLDPT93HiMhCXmPVZcfLxlARRL1rrNZV4q",
-      "L9hhqb9bFrRNBn6YebhygeLXLHlDKEZzx8W9jnDLU8Px8UTkwdQIDnPDfT7UOPPU",
-      "MYDgP3OwWwoG8dUlZXaHjtFz29wPlJo177MwdLYwn4zpEIysoY1ev5IKWD+LPW4g",
-      "vdQnaK1x3dozmG8YLUZw5iW7ap9DpahbAGQgdy1z1ypiNUjNuhaP8zkG1ci6X88N",
-      "6MIoQ+YqfowRJJTIr1lzssxsRI1syjfS6smnI4ZNE6S+6mIKN96ES2OZF+rn4xnD",
-      "PofR9Qh2gPq++ULriPE/cX7ZkZ0/ZDZGDfIGvricB8JEJhISZn/VMX/KScJs+rFq",
-      "KWN5Au6Uc2pEqeq5OP4y2k0QUmKQT9sh9OepnPmfqF8hG6wI8nM67jT/FEOcpr0v",
-      "qoN2NRXrcq3iZAp07AGq9IdpYhBcEW7MFmOcNt+Zb8SbTMp6DawnREg9xzz1SIkZ",
-      "Cdp1XoJ6mkVvzBB4T/Esp7j1VztinTX2PpX7C1CE5LC76UfCiEjEWOmWrVuPuA5a",
-      "oRrJvgPJg8gpVj04r2m8nvUK1gwhxg9ZB+SK+nd3OAd0dnbJwTE=",
-      "=dW3g",
-      "-----END PGP SIGNATURE-----"
-    ];
-    const message = "I'm a teapot";
-    const signingCallback = (message) => {
-      return signatureLines.join("\n");
-    };
 
-    let odb;
-    let oid;
-    let object;
+    it("can optionally skip the signing process", function() {
+      const targetOid = Oid.fromString(commitPointedTo);
+      const otherTargetOid = Oid.fromString(commitPointedTo2);
+      const name = "created-signed-tag-annotationCreate";
+      const repository = this.repository;
+      const signature = Signature.create(
+        "Shaggy Rogers",
+        "shaggy@mystery.com",
+        987654321,
+        90
+      );
+      const message = "I'm a teapot";
+      const signingCallback = () => ({
+        code: NodeGit.Error.CODE.PASSTHROUGH
+      });
 
-    return repository.odb()
+      let odb;
+      let oid;
+      let object;
+
+      return repository.odb()
       .then((odbResult) => {
         odb = odbResult;
 
@@ -373,7 +479,7 @@ describe("Tag", function() {
         object = objectResult;
         const lines = object.toString().split("\n");
         assert(object.type(), Obj.TYPE.TAG);
-        assert.equal(signatureLines.length + 7, lines.length);
+        assert.equal(7, lines.length);
         assert.equal(lines[0], `object ${commitPointedTo}`);
         assert.equal(lines[1], "type commit");
         assert.equal(lines[2], `tag ${name}`);
@@ -383,18 +489,21 @@ describe("Tag", function() {
         );
         assert.equal(lines[4], "");
         assert.equal(lines[5], message);
-        for (let i = 6; i < 6 + signatureLines.length; i++) {
-          assert.equal(lines[i], signatureLines[i - 6]);
-        }
-        assert.equal(lines[6 + signatureLines.length], "");
+        assert.equal(lines[6], "");
 
         return Tag.lookup(repository, oid);
       })
       .then((tag) => {
         return tag.extractSignature();
       })
-      .then((tagSignature) => {
-        assert.equal(tagSignature, signatureLines.join("\n"));
+      .then(function() {
+        assert.fail("Tag should not have been signed.");
+      }, function(error) {
+        if (error && error.message === "this tag is not signed") {
+          return;
+        }
+
+        throw error;
       })
       .then(() => {
         // overwriting is okay
@@ -428,7 +537,44 @@ describe("Tag", function() {
       () => {
         return Promise.resolve();
       });
+    });
+
+    it("will throw if signing callback returns an error code", function() {
+      const targetOid = Oid.fromString(commitPointedTo);
+      const name = "created-signed-tag-annotationCreate";
+      const repository = this.repository;
+      const signature = Signature.create(
+        "Shaggy Rogers",
+        "shaggy@mystery.com",
+        987654321,
+        90
+      );
+      const message = "I'm a teapot";
+      const signingCallback = () => ({
+        code: NodeGit.Error.CODE.ERROR
+      });
+
+
+      return Tag.createWithSignature(
+        repository,
+        name,
+        targetOid,
+        signature,
+        message,
+        1,
+        signingCallback
+      )
+        .then(function() {
+          assert.fail("Should not have been able to create tag");
+        }, function(error) {
+          if (error && error.errno === NodeGit.Error.CODE.ERROR) {
+            return;
+          }
+          throw error;
+        });
+    });
   });
+
 
   it("can create a new signed tag with Tag.annotationCreate", function() {
     var oid = Oid.fromString(commitPointedTo);
