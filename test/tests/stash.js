@@ -31,22 +31,23 @@ describe("Stash", function() {
   });
 
   function saveDropStash(repo, stashMessage) {
-    var fileName = "README.md";
-    var fileContent = "Cha-cha-cha-chaaaaaangessssss";
-    var filePath = path.join(repo.workdir(), fileName);
-    var oldContent;
-    var stashes = [];
-    var stashOid;
+    const fileName = "README.md";
+    const fileContent = "Cha-cha-cha-chaaaaaangessssss";
+    const filePath = path.join(repo.workdir(), fileName);
+    let oldContent;
+    let stashes = [];
+    let stashOid;
 
     return fse.readFile(filePath)
-      .then(function(content) {
+      .then((content) => {
         oldContent = content;
         return fse.writeFile(filePath, fileContent);
       })
-      .then(function() {
-        return Stash.save(repo, repo.defaultSignature(), stashMessage, 0);
+      .then(() => repo.defaultSignature())
+      .then((signature) => {
+        return Stash.save(repo, signature, stashMessage, 0);
       })
-      .then(function(oid) {
+      .then((oid) => {
         stashOid = oid;
         var stashCb = function(index, message, oid) {
           stashes.push({index: index, message: message, oid: oid});
@@ -54,7 +55,7 @@ describe("Stash", function() {
 
         return Stash.foreach(repo, stashCb);
       })
-      .then(function() {
+      .then(() => {
         assert.equal(stashes.length, 1);
         assert.equal(stashes[0].index, 0);
         const expectedMessage = !stashMessage ?
@@ -65,20 +66,20 @@ describe("Stash", function() {
 
         return Stash.drop(repo, 0);
       })
-      .then(function () {
+      .then(() => {
         stashes = [];
-        var stashCb = function(index, message, oid) {
+        var stashCb = (index, message, oid) => {
           stashes.push({index: index, message: message, oid: oid});
         };
 
         return Stash.foreach(repo, stashCb);
       })
-      .then(function() {
+      .then(() => {
         assert.equal(stashes.length, 0);
       })
-      .catch(function(e) {
+      .catch((e) => {
         return fse.writeFile(filePath, oldContent)
-          .then(function() {
+          .then(() => {
             return Promise.reject(e);
           });
       });
@@ -93,78 +94,80 @@ describe("Stash", function() {
   });
 
   it("can save and pop a stash", function() {
-    var fileNameA = "README.md";
-    var fileNameB = "install.js";
-    var oldContentA;
-    var oldContentB;
-    var fileContent = "Cha-cha-cha-chaaaaaangessssss";
-    var repo = this.repository;
-    var filePathA = path.join(repo.workdir(), fileNameA);
-    var filePathB = path.join(repo.workdir(), fileNameB);
-    var stashMessage = "stash test";
+    const fileNameA = "README.md";
+    const fileNameB = "install.js";
+    let oldContentA;
+    let oldContentB;
+    const fileContent = "Cha-cha-cha-chaaaaaangessssss";
+    const repo = this.repository;
+    const filePathA = path.join(repo.workdir(), fileNameA);
+    const filePathB = path.join(repo.workdir(), fileNameB);
+    const stashMessage = "stash test";
 
     return fse.readFile(filePathA, "utf-8")
-      .then(function(content) {
+      .then((content) => {
         oldContentA = content;
         return fse.writeFile(filePathA, fileContent);
       })
-      .then(function() {
+      .then(() => {
         return fse.readFile(filePathB, "utf-8");
       })
-      .then(function(content) {
+      .then((content) => {
         oldContentB = content;
         return fse.writeFile(filePathB, fileContent);
       })
-      .then(function() {
-        return Stash.save(repo, repo.defaultSignature(), stashMessage, 0);
+      .then(() => repo.defaultSignature())
+      .then((signature) => {
+        return Stash.save(repo, signature, stashMessage, 0);
       })
-      .then(function() {
+      .then(() => {
         return fse.readFile(filePathA, "utf-8");
       })
-      .then(function(content) {
+      .then((content) => {
         assert.equal(oldContentA, content);
         return fse.readFile(filePathB, "utf-8");
       })
-      .then(function(content) {
+      .then((content) => {
         assert.equal(oldContentB, content);
         return Stash.pop(repo, 0);
       })
-      .then(function() {
+      .then(() => {
         return fse.readFile(filePathA, "utf-8");
       })
-      .then(function(content) {
+      .then((content) => {
         assert.equal(fileContent, content);
         return fse.readFile(filePathB, "utf-8");
       })
-      .then(function(content) {
+      .then((content) => {
         assert.equal(fileContent, content);
       });
   });
 
   it("can save a stash, change files, and fail to pop stash", function() {
-      var fileName = "README.md";
-      var fileContent = "Cha-cha-cha-chaaaaaangessssss";
-      var fileContent2 = "Somewhere over the repo, changes were made.";
-      var repo = this.repository;
-      var filePath = path.join(repo.workdir(), fileName);
-      var oldContent;
-      var stashMessage = "stash test";
+      const fileName = "README.md";
+      const fileContent = "Cha-cha-cha-chaaaaaangessssss";
+      const fileContent2 = "Somewhere over the repo, changes were made.";
+      const repo = this.repository;
+      const filePath = path.join(repo.workdir(), fileName);
+      let oldContent;
+      const stashMessage = "stash test";
 
       return fse.readFile(filePath)
-        .then(function(content) {
+        .then((content) => {
           oldContent = content;
           return fse.writeFile(filePath, fileContent);
         })
-        .then(function() {
-          return Stash.save(repo, repo.defaultSignature(), stashMessage, 0);
+        .then(() => repo.defaultSignature())
+        .then((signature) => {
+          return Stash.save(repo, signature, stashMessage, 0);
         })
-        .then(function() {
+        .then(() => {
           return fse.writeFile(filePath, fileContent2);
         })
-        .then(function() {
+        .then(() => {
           return Stash.pop(repo, 0);
         })
-        .catch(function(reason) {
+        .catch((reason) => {
           if (reason.message !== "1 conflict prevents checkout") {
             throw reason;
           } else {
@@ -174,33 +177,34 @@ describe("Stash", function() {
   });
 
   it("can save, apply, then drop the stash", function() {
-      var fileName = "README.md";
-      var fileContent = "Cha-cha-cha-chaaaaaangessssss";
-      var repo = this.repository;
-      var filePath = path.join(repo.workdir(), fileName);
-      var oldContent;
-      var stashMessage = "stash test";
+      const fileName = "README.md";
+      const fileContent = "Cha-cha-cha-chaaaaaangessssss";
+      const repo = this.repository;
+      const filePath = path.join(repo.workdir(), fileName);
+      let oldContent;
+      const stashMessage = "stash test";
 
       return fse.readFile(filePath)
-        .then(function(content) {
+        .then((content) => {
           oldContent = content;
           return fse.writeFile(filePath, fileContent);
         })
-        .then(function() {
-          return Stash.save(repo, repo.defaultSignature(), stashMessage, 0);
+        .then(() => repo.defaultSignature())
+        .then((signature) => {
+          return Stash.save(repo, signature, stashMessage, 0);
         })
-        .then(function() {
+        .then(() => {
           return Stash.apply(repo, 0);
         })
-        .then(function() {
+        .then(() => {
           return Stash.drop(repo, 0);
-        }, function() {
+        }, () => {
           throw new Error("Unable to drop stash after apply.");
         })
-        .then(function() {
+        .then(() => {
           return Stash.drop(repo, 0);
         })
-        .catch(function(reason) {
+        .catch((reason) => {
           if (reason.message !== "reference 'refs/stash' not found") {
             throw reason;
           }
@@ -208,46 +212,48 @@ describe("Stash", function() {
   });
 
   it("can save multiple stashes and pop an arbitrary stash", function() {
-    var fileName = "README.md";
-    var fileContentA = "Hi. It's me. I'm the dog. My name is the dog.";
-    var fileContentB = "Everyone likes me. I'm cute.";
-    var fileContentC = "I think I will bark at nothing now. Ba. Ba. Baba Baba.";
-    var repo = this.repository;
-    var filePath = path.join(repo.workdir(), fileName);
-    var oldContent;
-    var stashMessageA = "stash test A";
-    var stashMessageB = "stash test B";
-    var stashMessageC = "stash test C";
+    const fileName = "README.md";
+    const fileContentA = "Hi. It's me. I'm the dog. My name is the dog.";
+    const fileContentB = "Everyone likes me. I'm cute.";
+    const fileContentC =
+      "I think I will bark at nothing now. Ba. Ba. Baba Baba.";
+    const repo = this.repository;
+    const filePath = path.join(repo.workdir(), fileName);
+    let oldContent;
+    const stashMessageA = "stash test A";
+    const stashMessageB = "stash test B";
+    const stashMessageC = "stash test C";
 
-    function writeAndStash(path, content, message) {
+    const writeAndStash = (path, content, message) => {
       return fse.writeFile(path, content)
-        .then(function() {
-          return Stash.save(repo, repo.defaultSignature(), message, 0);
+        .then(() => repo.defaultSignature())
+        .then((signature) => {
+          return Stash.save(repo, signature, message, 0);
         });
-    }
+    };
 
     return fse.readFile(filePath, "utf-8")
-      .then(function (content) {
+      .then((content) => {
         oldContent = content;
         return writeAndStash(filePath, fileContentA, stashMessageA);
       })
-      .then(function() {
+      .then(() => {
         return writeAndStash(filePath, fileContentB, stashMessageB);
       })
-      .then(function() {
+      .then(() => {
         return writeAndStash(filePath, fileContentC, stashMessageC);
       })
-      .then(function() {
+      .then(() => {
         return fse.readFile(filePath, "utf-8");
       })
-      .then(function(content) {
+      .then((content) => {
         assert.equal(oldContent, content);
         return Stash.pop(repo, 1);
       })
-      .then(function() {
+      .then(() => {
         return fse.readFile(filePath, "utf-8");
       })
-      .then(function(content) {
+      .then((content) => {
         assert.equal(fileContentB, content);
       });
   });

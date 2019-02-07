@@ -45,37 +45,39 @@ describe("Signature", function() {
     var savedUserName;
     var savedUserEmail;
 
-    var cleanUp = function() {
+    var cleanUp = () => {
       return exec("git config --global user.name \"" + savedUserName + "\"")
-      .then(function() {
+      .then(() => {
         exec("git config --global user.email \"" + savedUserEmail + "\"");
       });
     };
 
     return exec("git config --global user.name")
-    .then(function(userName) {
+    .then((userName) => {
       savedUserName = userName.trim();
 
       return exec("git config --global user.email");
     })
-    .then(function(userEmail) {
+    .then((userEmail) => {
       savedUserEmail = userEmail.trim();
 
       return exec("git config --global --unset user.name");
     })
-    .then(function() {
+    .then(() => {
       return exec("git config --global --unset user.email");
     })
-    .then(function() {
+    .then(() => {
       return Repository.open(reposPath);
     })
-    .then(function(repo) {
-      var sig = repo.defaultSignature();
+    .then((repo) => {
+      return repo.defaultSignature();
+    })
+    .then((sig) => {
       assert.equal(sig.name(), "unknown");
       assert.equal(sig.email(), "unknown@example.com");
     })
     .then(cleanUp)
-    .catch(function(e) {
+    .catch((e) => {
       return cleanUp()
       .then(function() {
         return Promise.reject(e);

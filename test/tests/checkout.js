@@ -109,60 +109,63 @@ describe("Checkout", function() {
   });
 
   it("can checkout an index with conflicts", function() {
-    var test = this;
+    const test = this;
 
-    var testBranchName = "test";
-    var ourCommit;
+    const testBranchName = "test";
+    let ourCommit;
+    let signature;
 
-    return test.repository.getBranchCommit(checkoutBranchName)
-    .then(function(commit) {
+    return test.repository.defaultSignature()
+    .then((signatureResult) => {
+      signature = signatureResult;
+      return test.repository.getBranchCommit(checkoutBranchName);
+    })
+    .then((commit) => {
       ourCommit = commit;
 
       return test.repository.createBranch(testBranchName, commit.id());
     })
-    .then(function() {
+    .then(() => {
       return test.repository.checkoutBranch(testBranchName);
     })
-    .then(function(branch) {
+    .then((branch) => {
       fse.writeFileSync(packageJsonPath, "\n");
 
       return test.repository.refreshIndex()
-        .then(function(index) {
+        .then((index) => {
           return index.addByPath(packageJsonName)
-            .then(function() {
+            .then(() => {
               return index.write();
             })
-            .then(function() {
+            .then(() => {
               return index.writeTree();
             });
         });
     })
-    .then(function(oid) {
+    .then((oid) => {
       assert.equal(oid.toString(),
         "85135ab398976a4d5be6a8704297a45f2b1e7ab2");
-
-      var signature = test.repository.defaultSignature();
 
       return test.repository.createCommit("refs/heads/" + testBranchName,
         signature, signature, "we made breaking changes", oid, [ourCommit]);
     })
-    .then(function(commit) {
+    .then((commit) => {
       return Promise.all([
         test.repository.getBranchCommit(testBranchName),
         test.repository.getBranchCommit("master")
       ]);
     })
-    .then(function(commits) {
+    .then((commits) => {
       return NodeGit.Merge.commits(test.repository, commits[0], commits[1],
         null);
     })
-    .then(function(index) {
+    .then((index) => {
       assert.ok(index);
       assert.ok(index.hasConflicts && index.hasConflicts());
 
       return NodeGit.Checkout.index(test.repository, index);
     })
-    .then(function() {
+    .then(() => {
       // Verify that the conflict has been written to disk
       var conflictedContent = fse.readFileSync(packageJsonPath, "utf-8");
 
@@ -178,7 +181,7 @@ describe("Checkout", function() {
 
       return Checkout.head(test.repository, opts);
     })
-    .then(function() {
+    .then(() => {
       var finalContent = fse.readFileSync(packageJsonPath, "utf-8");
       assert.equal(finalContent, "\n");
     });

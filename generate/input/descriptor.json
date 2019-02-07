@@ -2269,13 +2269,14 @@
           "ignore": true
         },
         "git_oid_fromstr": {
-          "isAsync": false
+          "ignore": true
         },
         "git_oid_fromstrn": {
           "ignore": true
         },
         "git_oid_fromstrp": {
-          "ignore": true
+          "isAsync": false,
+          "jsFunctionName": "fromString"
         },
         "git_oid_nfmt": {
           "ignore": true
@@ -3251,7 +3252,10 @@
       "dupFunction": "git_signature_dup",
 	    "functions": {
         "git_signature_default": {
-          "isAsync": false
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_signature_dup": {
           "ignore": true
@@ -3263,7 +3267,15 @@
 	        "isAsync": false
 	      },
         "git_signature_now": {
-          "isAsync": false
+          "isAsync": false,
+          "args": {
+            "sig_out": {
+              "isReturn": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         }
 	    }
 	  },
