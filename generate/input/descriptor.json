@@ -3068,7 +3068,15 @@
           "ignore": true
         },
         "git_repository_ident": {
-          "ignore": true
+          "args": {
+            "name": {
+              "isReturn": true
+            },
+            "email": {
+              "isReturn": true
+            }
+          },
+          "isAsync": false
         },
         "git_repository_init_init_options": {
           "ignore": true
