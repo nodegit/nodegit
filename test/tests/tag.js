@@ -159,11 +159,15 @@ describe("Tag", function() {
   it("can create a new signed tag with Tag.create and delete it", function() {
     var name = "created-signed-tag-create";
     var repository = this.repository;
-    var signature = Signature.default(repository);
+    var signature = null;
     var commit = null;
     var commit2 = null;
 
-    return repository.getCommit(commitPointedTo)
+    return Signature.default(repository)
+      .then(function(signatureResult) {
+        signature = signatureResult;
+        return repository.getCommit(commitPointedTo);
+      })
       .then(function(theCommit) {
         commit = theCommit;
         return repository.getCommit(commitPointedTo2);
@@ -580,10 +584,14 @@ describe("Tag", function() {
     var oid = Oid.fromString(commitPointedTo);
     var name = "created-signed-tag-annotationCreate";
     var repository = this.repository;
-    var signature = Signature.default(repository);
+    var signature = null;
     var odb = null;
 
-    return repository.odb()
+    return Signature.default(repository)
+      .then(function(signatureResult) {
+        signature = signatureResult;
+        return repository.odb();
+      })
       .then(function(theOdb) {
         odb = theOdb;
       })

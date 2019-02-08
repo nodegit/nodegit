@@ -50,7 +50,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%endeach%}
     );
 
-    {%if .|hasReturnValue %} {{ return.cType }} result = {%endif%}
+    {%if .|hasReturnType %} {{ return.cType }} result = {%endif%}
     {{ cFunctionName }}(
       {%each args|argsInfo as arg %}
         {%if arg.isReturn %}
@@ -67,15 +67,15 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%endeach%}
     );
 
-    {%if .|hasReturnValue |and return.isErrorCode %}
+    {%if .|hasReturnType |and return.isErrorCode %}
       if (result != GIT_OK) {
       {%each args|argsInfo as arg %}
-        {%if arg.shouldAlloc %}
-          free({{ arg.name }});
-        {%elsif arg | isOid %}
+        {%if arg | isOid %}
           if (info[{{ arg.jsArg }}]->IsString()) {
-            free({{ arg.name }});
+            free((void *)from_{{ arg.name }});
           }
+        {%elsif arg.shouldAlloc %}
+          free({{ arg.name }});
         {%endif%}
       {%endeach%}
 
