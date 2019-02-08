@@ -1,5 +1,23 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-4" href="#v0-25-0-alpha-4">v0.25.0-alpha.4</a> [(2019-02-08)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.4)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.3...v0.25.0-alpha.4)
+
+#### Summary of changes
+- Fixed bug where signing the init commit failed due to being unable to update the `HEAD` ref.
+- Changed `NodeGit.Signature.default` to async, because it actually ends up reading the config.
+- Fixed bug where templates were not reporting errors for synchronous methods. It's a bit of a wide net, but in general,
+  it is now possible certain sync methods in NodeGit will begin failin that did not fail before. This is the correct
+  behavior.
+- Switched `NodeGit.Oid.fromString`'s internal implementation from `git_oid_fromstr` to `git_oid_fromstrp`
+- Fixed builds for Electron 4
+- Added `NodeGit.Reference.updateTerminal`
+
+#### Merged PRs into NodeGit
+- [Fix non-existent / dangling refs cause Repository.prototype.createCommitWithSignature to fail #1624](https://github.com/nodegit/nodegit/pull/1624)
+- [Handle new gyp information for electron builds #1623](https://github.com/nodegit/nodegit/pull/1623)
+
 ## <a name="v0-25-0-alpha-3" href="#v0-25-0-alpha-3">v0.25.0-alpha.3</a> [(2019-02-05)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.2...v0.25.0-alpha.3)
