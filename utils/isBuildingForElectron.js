@@ -28,5 +28,4 @@ if (!isElectron) {
   } catch (e) {}
 }
 
-fs.writeFileSync("was_electron", isElectron ? "1" : "0");
 process.stdout.write(isElectron ? "1" : "0");
