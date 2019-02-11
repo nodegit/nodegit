@@ -1,21 +1,13 @@
 {
-  "conditions": [
-    ["(OS=='win' and node_root_dir.split('\\\\')[-1].startswith('iojs')) or (OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs'))", {
-      "variables": {
-        "is_electron%": "1",
-      }
-    }, {
-      "variables": {
-        "is_electron%": "0",
-      }
-    }]
-  ],
+  "variables": {
+    "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))"
+  },
 
   "targets": [
     {
       "target_name": "acquireOpenSSL",
         "conditions": [
-        ["<(is_electron) == 1", {
+        ["<(is_electron) == 1 and OS != 'linux'", {
           "actions": [{
             "action_name": "acquire",
             "action": ["node", "utils/acquireOpenSSL.js"],
@@ -102,7 +94,7 @@
         [
           "OS=='mac'", {
             "conditions": [
-              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": [
                   "vendor/openssl/include"
                 ],
@@ -130,7 +122,7 @@
         [
           "OS=='win'", {
             "conditions": [
-              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": ["vendor/openssl/include"],
                 "libraries": [
                   "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
@@ -175,7 +167,7 @@
           }
         ],
         [
-          "OS.endswith('bsd') or (node_root_dir.split('/')[-1].startswith('iojs') and OS=='linux')", {
+          "OS.endswith('bsd') or (<(is_electron) == 1 and OS=='linux')", {
             "libraries": [
               "-lcrypto",
               "-lssl"
