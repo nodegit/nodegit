@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-5" href="#v0-25-0-alpha-5">v0.25.0-alpha.5</a> [(2019-02-11)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.5)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.4...v0.25.0-alpha.5)
+
+#### Summary of changes
+- Fixed builds for Electron 4 for real this time
+
+#### Merged PRs into NodeGit
+- [Fix macOS and Windows Electron 4 builds #1626](https://github.com/nodegit/nodegit/pull/1626)
+
 ## <a name="v0-25-0-alpha-4" href="#v0-25-0-alpha-4">v0.25.0-alpha.4</a> [(2019-02-08)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.4)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.3...v0.25.0-alpha.4)
