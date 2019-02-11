@@ -7,10 +7,9 @@ if (process.argv.length < 3) {
 }
 
 const last = arr => arr[arr.length - 1];
-const sep = process.platform === "win32" ? "\\\\" : "/";
 const [, , nodeRootDir] = process.argv;
 
-let isElectron = last(nodeRootDir.split(sep)).startsWith("iojs");
+let isElectron = last(nodeRootDir.split(path.sep)).startsWith("iojs");
 
 if (!isElectron) {
   try {
