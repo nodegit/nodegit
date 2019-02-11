@@ -94,7 +94,7 @@
         [
           "OS=='mac'", {
             "conditions": [
-              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": [
                   "vendor/openssl/include"
                 ],
@@ -122,7 +122,7 @@
         [
           "OS=='win'", {
             "conditions": [
-              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": ["vendor/openssl/include"],
                 "libraries": [
                   "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
