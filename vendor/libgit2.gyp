@@ -7,6 +7,7 @@
     "library%": "static_library",
     "openssl_enable_asm%": 0, # only supported with the Visual Studio 2012 (VC11) toolchain.
     "gcc_version%": 0,
+    "is_electron%": "<!(node ../utils/isBuildingForElectron.js <(node_root_dir))",
     "is_clang%": 0
   },
   "targets": [
@@ -286,7 +287,7 @@
       "conditions": [
         ["OS=='mac'", {
             "conditions": [
-              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": [
                   "openssl/include"
                 ]
@@ -362,7 +363,7 @@
                   ],
                 },
               }],
-              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": ["openssl/include"]
               }]
             ],
@@ -537,14 +538,14 @@
         ]
       },
       "conditions": [
-        ["OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs')", {
+        ["OS=='mac' and <(is_electron) == 1", {
           "include_dirs": [
             "openssl/include",
           ]
         }],
         ["OS=='win'", {
           "conditions": [
-            ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+            ["<(is_electron) == 1", {
               "include_dirs": [
                 "openssl/include"
               ],

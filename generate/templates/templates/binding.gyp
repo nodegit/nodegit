@@ -1,15 +1,17 @@
 {
+  "variables": {
+    "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))"
+  },
+
   "conditions": [
-    ["(OS=='win' and node_root_dir.split('\\\\')[-1].startswith('iojs')) or (OS=='mac' and node_root_dir.split('/')[-1].startswith('iojs'))", {
+    ["(OS=='win' or OS=='mac') and <(is_electron) == 1", {
       "conditions": [
         ["OS=='win'", {
           "variables": {
-            "is_electron%": "1",
             "openssl_include_dir%": "<(module_root_dir)\\vendor\\openssl"
           }
         }, {
           "variables": {
-            "is_electron%": "1",
             "openssl_include_dir%": "<(module_root_dir)/vendor/openssl"
           }
         }]
@@ -18,12 +20,10 @@
       "conditions": [
         ["OS=='win'", {
           "variables": {
-            "is_electron%": "0",
             "openssl_include_dir%": "<(node_root_dir)\\include\\node"
           }
         }, {
           "variables": {
-            "is_electron%": "0",
             "openssl_include_dir%": "<(node_root_dir)/include/node"
           }
         }]
@@ -35,7 +35,7 @@
     {
       "target_name": "acquireOpenSSL",
         "conditions": [
-        ["<(is_electron) == 1", {
+        ["<(is_electron) == 1 and OS != 'linux'", {
           "actions": [{
             "action_name": "acquire",
             "action": ["node", "utils/acquireOpenSSL.js"],
@@ -121,7 +121,7 @@
         [
           "OS=='mac'", {
             "conditions": [
-              ["node_root_dir.split('/')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": [
                   "vendor/openssl/include"
                 ],
@@ -147,7 +147,7 @@
         [
           "OS=='win'", {
             "conditions": [
-              ["node_root_dir.split('\\\\')[-1].startswith('iojs')", {
+              ["<(is_electron) == 1", {
                 "include_dirs": ["vendor/openssl/include"],
                 "libraries": [
                   "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
@@ -185,7 +185,7 @@
           }
         ],
         [
-          "OS=='linux' or OS.endswith('bsd')", {
+          "OS.endswith('bsd') or (<(is_electron) == 1 and OS=='linux')", {
             "libraries": [
               "-lcrypto",
               "-lssl"
