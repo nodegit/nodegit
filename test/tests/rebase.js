@@ -2076,4 +2076,158 @@ describe("Rebase", function() {
         throw error;
       });
     });
+
+    it("will not throw on patch already applied errors", function() {
+      var baseFileName = "baseNewFile.txt";
+      var theirFileName = "myFile.txt";
+
+      var baseFileContent = "How do you feel about Toll Roads?";
+      var theirFileContent = "Hello there";
+
+      var ourSignature = NodeGit.Signature.create
+            ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+      var theirSignature = NodeGit.Signature.create
+            ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
+
+      var repository = this.repository;
+      var initialCommit;
+      var ourBranch;
+      var theirBranch;
+      var rebase;
+
+      return fse.writeFile(path.join(repository.workdir(), baseFileName),
+        baseFileContent)
+        // Load up the repository index and make our initial commit to HEAD
+        .then(function() {
+          return RepoUtils.addFileToIndex(repository, baseFileName);
+        })
+        .then(function(oid) {
+          assert.equal(oid.toString(),
+            "b5cdc109d437c4541a13fb7509116b5f03d5039a");
+
+          return repository.createCommit("HEAD", ourSignature,
+            ourSignature, "initial commit", oid, []);
+        })
+        .then(function(commitOid) {
+          assert.equal(commitOid.toString(),
+            "be03abdf0353d05924c53bebeb0e5bb129cda44a");
+
+          return repository.getCommit(commitOid).then(function(commit) {
+            initialCommit = commit;
+          }).then(function() {
+            return repository.createBranch(ourBranchName, commitOid)
+              .then(function(branch) {
+                ourBranch = branch;
+                return repository.createBranch(theirBranchName, commitOid);
+              });
+          });
+        })
+        .then(function(branch) {
+          theirBranch = branch;
+          return fse.writeFile(
+            path.join(repository.workdir(), theirFileName),
+            theirFileContent
+          );
+        })
+        .then(function() {
+          return RepoUtils.addFileToIndex(repository, theirFileName);
+        })
+        .then(function(oid) {
+          assert.equal(oid.toString(),
+            "6f14d06b24fa8ea26f511dd8a94a003fd37eadc5");
+
+          return repository.createCommit(theirBranch.name(), theirSignature,
+            theirSignature, "they made a commit", oid, [initialCommit])
+              .then(function(commitOid) {
+                assert.equal(commitOid.toString(),
+                  "c4cc225184b9c9682cb48294358d9d65f8ec42c7");
+                return repository.createCommit(ourBranch.name(), ourSignature,
+                  ourSignature, "we made a commit", oid, [initialCommit]);
+              });
+        })
+        .then(function(commitOid) {
+          assert.equal(commitOid.toString(),
+            "5814ffa17b8a677191d89d5372f1e46d50d976ae");
+
+          return removeFileFromIndex(repository, theirFileName);
+        })
+        .then(function() {
+          return fse.remove(path.join(repository.workdir(), theirFileName));
+        })
+        .then(function() {
+          return repository.checkoutBranch(ourBranchName);
+        })
+        .then(function() {
+          return Promise.all([
+            repository.getReference(ourBranchName),
+            repository.getReference(theirBranchName)
+          ]);
+        })
+        .then(function(refs) {
+          assert.equal(refs.length, 2);
+
+          return Promise.all([
+            NodeGit.AnnotatedCommit.fromRef(repository, refs[0]),
+            NodeGit.AnnotatedCommit.fromRef(repository, refs[1])
+          ]);
+        })
+        .then(function(annotatedCommits) {
+          assert.equal(annotatedCommits.length, 2);
+
+          var ourAnnotatedCommit = annotatedCommits[0];
+          var theirAnnotatedCommit = annotatedCommits[1];
+
+          assert.equal(ourAnnotatedCommit.id().toString(),
+            "5814ffa17b8a677191d89d5372f1e46d50d976ae");
+          assert.equal(theirAnnotatedCommit.id().toString(),
+            "c4cc225184b9c9682cb48294358d9d65f8ec42c7");
+
+          return NodeGit.Rebase.init(
+            repository,
+            ourAnnotatedCommit,
+            theirAnnotatedCommit
+          );
+        })
+        .then(function(newRebase) {
+          rebase = newRebase;
+
+          // there should only be 1 rebase operation to perform
+          assert.equal(rebase.operationEntrycount(), 1);
+
+          return rebase.next();
+        })
+        .catch(function(error) {
+          assert.fail(error);
+
+          throw error;
+        })
+        .then(function(rebaseOperation) {
+          assert.equal(rebaseOperation.type(),
+            NodeGit.RebaseOperation.REBASE_OPERATION.PICK);
+          assert.equal(rebaseOperation.id().toString(),
+            "5814ffa17b8a677191d89d5372f1e46d50d976ae");
+
+          return rebase.commit(null, ourSignature);
+        })
+        .then(function() {
+          assert.fail("Rebase should have failed.");
+        }, function (error) {
+          if (error && error.errno === NodeGit.Error.CODE.EAPPLIED) {
+            return;
+          }
+
+          assert.fail(error);
+
+          throw error;
+        })
+        .then(function() {
+          return repository.continueRebase();
+        })
+        .then(function() {
+          return rebase.next();
+        })
+        .catch(function(error) {
+          assert.equal(error.errno, NodeGit.Error.CODE.ITEROVER);
+        });
+      });
 });
