@@ -58,5 +58,6 @@ build: off
 
 branches:
   only:
+    - /backport\/.*/
     - master
     - v0.3
