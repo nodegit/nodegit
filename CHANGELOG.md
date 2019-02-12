@@ -1,5 +1,12 @@
 # Change Log
 
+## <a name="v0-24-1" href="#v0-24-1">v0.24.1</a> [(2019-02-11)](https://github.com/nodegit/nodegit/releases/tag/v0.24.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.24.0...v0.24.1)
+
+#### Summary of changes
+- Fix Electron 4 builds
+
 ## <a name="v0-24-0" href="#v0-24-0">v0.24.0</a> [(2019-01-16)](https://github.com/nodegit/nodegit/releases/tag/v0.24.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0...v0.24.0)
