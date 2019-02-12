@@ -1,5 +1,13 @@
 # Change Log
 
+## <a name="v0-23-1" href="#v0-23-1">v0.23.1</a> [(2019-02-11)](https://github.com/nodegit/nodegit/releases/tag/v0.23.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.23.0...v0.23.1)
+
+#### Summary of changes
+- Fix Electron 4 builds
+
+
 ## <a name="v0-23-0" href="#v0-23-0">v0.23.0</a> [(2018-10-22)](https://github.com/nodegit/nodegit/releases/tag/v0.23.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.22.2...v0.23.0)
