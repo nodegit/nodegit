@@ -67,6 +67,8 @@ using namespace std;
               this->raw->{{ fields|payloadFor field.name }} = NULL;
             {% endif %}
           }
+        {% elsif field.hasConstructor |or field.isLibgitType %}
+          this->{{ field.name }}.Reset();
         {% endif %}
       {% endif %}
     {% endif %}
