@@ -1,4 +1,40 @@
 {
+  "git_apply_delta_cb": {
+    "args": [
+      {
+        "name": "delta",
+        "cType": "const git_diff_delta *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_apply_hunk_cb": {
+    "args": [
+      {
+        "name": "hunk",
+        "cType": "const git_diff_hunk *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
   "git_attr_foreach_cb": {
     "args": [
       {

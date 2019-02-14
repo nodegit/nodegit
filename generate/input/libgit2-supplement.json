@@ -86,6 +86,20 @@
   },
   "new" : {
     "functions": {
+      "git_blame_get_hunk_count": {
+        "type": "function",
+        "file": "blame.h",
+        "args": [
+          {
+            "name": "blame",
+            "type": "git_blame *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "blame"
+      },
       "git_clone": {
         "isManual": true,
         "cFile": "generate/templates/manual/clone/clone.cc",
@@ -133,6 +147,34 @@
         "isAsync": true,
         "isPrototypeMethod": false,
         "group": "filter_list"
+      },
+      "git_filter_source_filemode": {
+        "type": "function",
+        "file": "filter.h",
+        "args": [
+          {
+            "name": "src",
+            "type": "const git_filter_source *"
+          }
+        ],
+        "return": {
+          "type": "uint16_t"
+        },
+        "group": "filter_source"
+      },
+      "git_filter_source_flags": {
+        "type": "function",
+        "file": "filter.h",
+        "args": [
+          {
+            "name": "src",
+            "type": "const git_filter_source *"
+          }
+        ],
+        "return": {
+          "type": "uint32_t"
+        },
+        "group": "filter_source"
       },
       "git_patch_convenient_from_diff": {
         "args": [
@@ -318,7 +360,8 @@
           "git_annotated_commit_from_ref",
           "git_annotated_commit_from_revspec",
           "git_annotated_commit_id",
-          "git_annotated_commit_lookup"
+          "git_annotated_commit_lookup",
+          "git_annotated_commit_ref"
         ]
       ],
       [
@@ -350,6 +393,22 @@
           "git_filter_source_id",
           "git_filter_source_mode",
           "git_filter_source_flags"
+        ]
+      ],
+      [
+        "index_conflict_iterator",
+        [
+          "git_index_conflict_iterator_free",
+          "git_index_conflict_iterator_new",
+          "git_index_conflict_next"
+        ]
+      ],
+      [
+        "index_iterator",
+        [
+          "git_index_iterator_free",
+          "git_index_iterator_new",
+          "git_index_iterator_next"
         ]
       ],
       [
@@ -470,51 +529,32 @@
     ],
     "types": [
       [
-        "git_stash_apply_progress_t",
+        "git_apply_options",
         {
-          "type": "enum",
+          "type": "sctruct",
           "fields": [
             {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_NONE",
-              "value": 0
+              "type": "unsigned int",
+              "name": "version"
             },
             {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_LOADING_STASH",
-              "value": 1
+              "type": "git_apply_delta_cb",
+              "name": "delta_cb"
             },
             {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_INDEX",
-              "value": 2
+              "type": "git_apply_hunk_cb",
+              "name": "hunk_cb"
             },
             {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_MODIFIED",
-              "value": 3
-            },
-            {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_UNTRACKED",
-              "value": 4
-            },
-            {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_UNTRACKED",
-              "value": 5
-            },
-            {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_MODIFIED",
-              "value": 6
-            },
-            {
-              "type": "int",
-              "name": "GIT_STASH_APPLY_PROGRESS_DONE",
-              "value": 7
+              "type": "void *",
+              "name": "payload"
             }
-          ]
+          ],
+          "used": {
+            "needs": [
+              "git_apply_init_options"
+            ]
+          }
         }
       ],
       [
@@ -854,6 +894,39 @@
         }
       ],
       [
+        "git_remote_create_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "type": "unsigned int",
+              "name": "version"
+            },
+            {
+              "type": "git_repository *",
+              "name": "repository"
+            },
+            {
+              "type": "const char *",
+              "name": "name"
+            },
+            {
+              "type": "const char *",
+              "name": "fetchspec"
+            },
+            {
+              "type": "unsigned int",
+              "name": "flags"
+            }
+          ],
+          "used": {
+            "needs": [
+              "git_remote_create_init_options"
+            ]
+          }
+        }
+      ],
+      [
         "git_remote_head",
         {
           "types": "struct",
@@ -887,15 +960,51 @@
         }
       ],
       [
-        "git_time_t",
+        "git_stash_apply_progress_t",
         {
-          "type": "enum"
-        }
-      ],
-      [
-        "git_trace_level_t",
-        {
-          "type": "enum"
+          "type": "enum",
+          "fields": [
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_NONE",
+              "value": 0
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_LOADING_STASH",
+              "value": 1
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_INDEX",
+              "value": 2
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_MODIFIED",
+              "value": 3
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_ANALYZE_UNTRACKED",
+              "value": 4
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_UNTRACKED",
+              "value": 5
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_CHECKOUT_MODIFIED",
+              "value": 6
+            },
+            {
+              "type": "int",
+              "name": "GIT_STASH_APPLY_PROGRESS_DONE",
+              "value": 7
+            }
+          ]
         }
       ],
       [
@@ -964,6 +1073,18 @@
         }
       ],
       [
+        "git_time_t",
+        {
+          "type": "enum"
+        }
+      ],
+      [
+        "git_trace_level_t",
+        {
+          "type": "enum"
+        }
+      ],
+      [
         "git_worktree_add_options",
         {
           "type": "struct",
@@ -1028,7 +1149,8 @@
         "git_annotated_commit_from_ref",
         "git_annotated_commit_from_revspec",
         "git_annotated_commit_id",
-        "git_annotated_commit_lookup"
+        "git_annotated_commit_lookup",
+        "git_annotated_commit_ref"
       ]
     },
     "diff": {
@@ -1042,6 +1164,12 @@
     },
     "index": {
       "functions": [
+        "git_index_conflict_iterator_free",
+        "git_index_conflict_iterator_new",
+        "git_index_conflict_next",
+        "git_index_iterator_free",
+        "git_index_iterator_new",
+        "git_index_iterator_next",
         "git_index_name_add",
         "git_index_name_clear",
         "git_index_name_entrycount",
