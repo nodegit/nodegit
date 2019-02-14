@@ -1,5 +1,20 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-6" href="#v0-25-0-alpha-6">v0.25.0-alpha.6</a> [(2019-02-14)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.6)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.5...v0.25.0-alpha.6)
+
+#### Summary of changes
+- Bumped LibGit2 to v0.28.0.
+- Fixed problem with continue rebase preventing users from skipping commits
+- Fixed leak where struct/option types were leaking libgit2 pointers
+
+#### Merged PRs into NodeGit
+- [We should clear the persistent cell in structs when they are destroyed #1629](https://github.com/nodegit/nodegit/pull/1629)
+- [Fix "errorno" typo #1628](https://github.com/nodegit/nodegit/pull/1628)
+- [Bump Libgit2 fork to v0.28.0 #1627](https://github.com/nodegit/nodegit/pull/1627)
+
+
 ## <a name="v0-25-0-alpha-5" href="#v0-25-0-alpha-5">v0.25.0-alpha.5</a> [(2019-02-11)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.5)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.4...v0.25.0-alpha.5)
@@ -9,6 +24,7 @@
 
 #### Merged PRs into NodeGit
 - [Fix macOS and Windows Electron 4 builds #1626](https://github.com/nodegit/nodegit/pull/1626)
+
 
 ## <a name="v0-25-0-alpha-4" href="#v0-25-0-alpha-4">v0.25.0-alpha.4</a> [(2019-02-08)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.4)
 
@@ -27,6 +43,7 @@
 #### Merged PRs into NodeGit
 - [Fix non-existent / dangling refs cause Repository.prototype.createCommitWithSignature to fail #1624](https://github.com/nodegit/nodegit/pull/1624)
 - [Handle new gyp information for electron builds #1623](https://github.com/nodegit/nodegit/pull/1623)
+
 
 ## <a name="v0-25-0-alpha-3" href="#v0-25-0-alpha-3">v0.25.0-alpha.3</a> [(2019-02-05)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.3)
 
