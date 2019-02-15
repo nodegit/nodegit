@@ -414,7 +414,7 @@ describe("Diff", function() {
         })
         .then(function([headTree, index]) {
           const diffOptions = new NodeGit.DiffOptions();
-          if (index.caps() & Index.CAP.IGNORE_CASE !== 0) {
+          if (index.caps() & Index.CAPABILITY.IGNORE_CASE !== 0) {
             diffOptions.flags |= Diff.OPTION.IGNORE_CASE;
           }
 

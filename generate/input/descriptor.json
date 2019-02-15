@@ -48,7 +48,7 @@
     "repository_init_flag": {
       "removeString": "INIT_"
     },
-    "otype": {
+    "object": {
       "JsName": "TYPE",
       "owner": "Object",
       "removeString": "OBJ_"
@@ -57,7 +57,7 @@
       "JsName": "PROXY",
       "isMask": false
     },
-    "ref": {
+    "reference": {
       "owner": "Reference",
       "JsName": "TYPE"
     },
@@ -71,6 +71,9 @@
     "status": {
       "JsName": "STATUS",
       "isMask": false
+    },
+    "stream": {
+      "ignore": true
     }
   },
   "types":
@@ -110,6 +113,9 @@
           }
         }
       }
+    },
+    "apply_options": {
+      "hasConstructor": true
     },
     "attr": {
       "functions": {
@@ -1734,9 +1740,68 @@
         "../include/str_array_converter.h"
       ]
     },
+    "index_conflict_iterator": {
+      "selfFreeing": true,
+      "freeFunctionName": "git_index_conflict_iterator_free",
+      "functions": {
+        "git_index_conflict_iterator_free": {
+          "ignore": true
+        },
+        "git_index_conflict_iterator_new": {
+          "args": {
+            "iterator_out": {
+              "ownedBy": ["index"]
+            }
+          }
+        },
+        "git_index_conflict_next": {
+          "isAsync": false,
+          "jsFunctionName": "next",
+          "cppFunctionName": "Next",
+          "args": {
+            "ancestor_out": {
+              "isReturn": true,
+              "ownedByThis": true
+            },
+            "our_out": {
+              "isReturn": true,
+              "ownedByThis": true
+            },
+            "their_out": {
+              "isReturn": true,
+              "ownedByThis": true
+            }
+          }
+        }
+      }
+    },
     "index_entry": {
       "hasConstructor": true,
       "ignoreInit": true
+    },
+    "index_iterator": {
+      "selfFreeing": true,
+      "freeFunctionName": "git_index_iterator_free",
+      "functions": {
+        "git_index_iterator_free": {
+          "ignore": true
+        },
+        "git_index_iterator_new": {
+          "args": {
+            "iterator_out": {
+              "ownedBy": ["index"]
+            }
+          }
+        },
+        "git_index_iterator_next": {
+          "isAsync": false,
+          "args": {
+            "out": {
+              "ownedByThis": true
+            }
+          }
+        }
+      }
     },
     "index_name_entry": {
       "functions": {
@@ -1768,6 +1833,11 @@
       ]
     },
     "index_reuc_entry": {
+      "fields": {
+        "mode": {
+          "cType": "uint32_t [3]"
+        }
+      },
       "functions": {
         "git_index_reuc_add": {
           "cppFunctionName": "Add",
@@ -1934,7 +2004,51 @@
           }
         },
         "git_merge_analysis": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "analysis_out": {
+              "isReturn": true
+            },
+            "preference_out": {
+              "isReturn": true
+            },
+            "their_heads": {
+              "cType": "const git_annotated_commit **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitAnnotatedCommit"
+            },
+            "their_heads_len": {
+              "cType": "size_t",
+              "cppClassName": "Number",
+              "jsClassName": "Number"
+            }
+          }
+        },
+        "git_merge_analysis_for_ref": {
+          "isAsync": true,
+          "args": {
+            "analysis_out": {
+              "isReturn": true
+            },
+            "preference_out": {
+              "isReturn": true
+            },
+            "their_heads": {
+              "cType": "const git_annotated_commit **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitAnnotatedCommit"
+            },
+            "their_heads_len": {
+              "cType": "size_t",
+              "cppClassName": "Number",
+              "jsClassName": "Number"
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_merge_base_many": {
           "ignore": true
@@ -2854,6 +2968,13 @@
             }
           }
         },
+        "git_remote_create_with_opts": {
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          }
+        },
         "git_remote_connect": {
           "isAsync": true,
           "return": {
@@ -3432,6 +3553,9 @@
       "cDependencies": [
         "git2/sys/stream.h"
       ]
+    },
+    "stream_registration": {
+      "ignore": true
     },
     "submodule": {
       "selfFreeing": true,
