@@ -8,7 +8,8 @@
     "openssl_enable_asm%": 0, # only supported with the Visual Studio 2012 (VC11) toolchain.
     "gcc_version%": 0,
     "is_electron%": "<!(node ../utils/isBuildingForElectron.js <(node_root_dir))",
-    "is_clang%": 0
+    "is_clang%": 0,
+    "is_IBMi%": "<!(node ../utils/isBuildingForIBMi.js)"
   },
   "targets": [
     {
@@ -323,7 +324,7 @@
                 }
             }
         }],
-        ["OS=='mac' or OS=='linux' or OS.endswith('bsd')", {
+        ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
           "defines": [
             "GIT_SHA1_OPENSSL"
           ],
@@ -333,7 +334,7 @@
             "libgit2/src/streams/tls.h"
           ]
         }],
-        ["OS=='linux' or OS.endswith('bsd')" , {
+        ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
           "cflags": [
             "-DGIT_SSH",
             "-DGIT_SSL",
@@ -342,6 +343,11 @@
           "defines": [
             "GIT_OPENSSL",
             "GIT_USE_STAT_MTIM"
+          ]
+        }],
+        ["<(is_IBMi) == 1", {
+          "include_dirs": [
+            "/QOpenSys/pkgs/include",
           ]
         }],
         ["OS=='win'", {
@@ -581,6 +587,11 @@
               "libssh2/include"
             ]
           }
+        }],
+        ["<(is_IBMi) == 1", {
+          "include_dirs": [
+            "/QOpenSys/pkgs/include"
+          ]
         }],
       ]
     }
