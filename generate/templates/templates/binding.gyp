@@ -1,6 +1,7 @@
 {
   "variables": {
-    "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))"
+    "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))",
+    "is_IBMi%": "<!(node ./utils/isBuildingForIBMi.js)"
   },
 
   "targets": [
@@ -153,18 +154,28 @@
           }
         ],
         [
-          "OS=='linux' or OS.endswith('bsd')", {
+          "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
             "cflags": [
               "-std=c++11"
             ]
           }
         ],
         [
-          "OS.endswith('bsd') or (<(is_electron) == 1 and OS=='linux')", {
+          "OS.endswith('bsd') or (<(is_electron) == 1 and OS=='linux') or <(is_IBMi) == 1", {
             "libraries": [
               "-lcrypto",
               "-lssl"
             ],
+          }
+        ],
+        [
+          "<(is_IBMi) == 1", {
+            "include_dirs": [
+              "/QOpenSys/pkgs/include"
+            ],
+            "libraries": [
+              "-L/QOpenSys/pkgs/lib"
+            ]
           }
         ]
       ]
