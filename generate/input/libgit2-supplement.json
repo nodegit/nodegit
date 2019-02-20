@@ -365,6 +365,16 @@
         ]
       ],
       [
+        "config_iterator",
+        [
+          "git_config_iterator_free",
+          "git_config_iterator_new",
+          "git_config_iterator_glob_new",
+          "git_config_multivar_iterator_new",
+          "git_config_next"
+        ]
+      ],
+      [
         "diff_stats",
         [
           "git_diff_stats_files_changed",
@@ -1151,6 +1161,15 @@
         "git_annotated_commit_id",
         "git_annotated_commit_lookup",
         "git_annotated_commit_ref"
+      ]
+    },
+    "config": {
+      "functions": [
+        "git_config_iterator_free",
+        "git_config_iterator_new",
+        "git_config_iterator_glob_new",
+        "git_config_multivar_iterator_new",
+        "git_config_next"
       ]
     },
     "diff": {

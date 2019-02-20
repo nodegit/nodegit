@@ -695,10 +695,14 @@
           "ignore": true
         },
         "git_config_delete_entry": {
-          "ignore": true
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_delete_multivar": {
-          "ignore": true
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_entry_free": {
           "ignore": true
@@ -762,7 +766,14 @@
           "ignore": true
         },
         "git_config_get_bool": {
-          "ignore": true
+          "args": {
+            "out": {
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_get_entry": {
           "args": {
@@ -773,10 +784,26 @@
           }
         },
         "git_config_get_int32": {
-          "ignore": true
+          "args": {
+            "out": {
+              "cType": "int32_t *",
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_get_int64": {
-          "ignore": true
+          "args": {
+            "out": {
+              "cType": "int64_t *",
+              "shouldAlloc": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_config_get_mapped": {
           "ignore": true
@@ -814,15 +841,6 @@
         "git_config_init_backend": {
           "ignore": true
         },
-        "git_config_iterator_free": {
-          "ignore": true
-        },
-        "git_config_iterator_glob_new": {
-          "ignore": true
-        },
-        "git_config_iterator_new": {
-          "ignore": true
-        },
         "git_config_lock": {
           "isAsync": true,
           "args": {
@@ -838,13 +856,7 @@
         "git_config_lookup_map_value": {
           "ignore": true
         },
-        "git_config_multivar_iterator_new": {
-          "ignore": true
-        },
         "git_config_new": {
-          "ignore": true
-        },
-        "git_config_next": {
           "ignore": true
         },
         "git_config_open_default": {
@@ -900,6 +912,12 @@
             "isErrorCode": true
           }
         },
+        "git_config_set_multivar": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_config_set_string": {
           "isAsync": true,
           "return": {
@@ -907,7 +925,14 @@
           }
         },
         "git_config_snapshot": {
-          "ignore": true
+          "args": {
+            "out": {
+              "ownedByThis": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         }
       },
       "dependencies": [
@@ -921,7 +946,69 @@
       "selfFreeing": true
     },
     "config_iterator": {
-      "ignore": true
+      "selfFreeing": true,
+      "fields": {
+        "backend": {
+          "ignore": true
+        },
+        "flags": {
+          "ignore": true
+        },
+        "free": {
+          "ignore": true
+        },
+        "next": {
+          "ignore": true
+        }
+      },
+      "functions": {
+        "git_config_iterator_free": {
+          "ignore": true
+        },
+        "git_config_iterator_new": {
+          "args": {
+            "out": {
+              "ownedBy": ["cfg"]
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_config_iterator_glob_new": {
+          "jsFunctionName": "createGlob",
+          "args": {
+            "out": {
+              "ownedBy": ["cfg"]
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_config_multivar_iterator_new": {
+          "jsFunctionName": "createMultivar",
+          "args": {
+            "out": {
+              "ownedBy": ["cfg"]
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_config_next": {
+          "jsFunctionName": "next",
+          "args": {
+            "entry": {
+              "ownedByThis": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
     },
     "cred": {
       "needsForwardDeclaration": false,
