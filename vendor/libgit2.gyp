@@ -9,7 +9,7 @@
     "gcc_version%": 0,
     "is_electron%": "<!(node ../utils/isBuildingForElectron.js <(node_root_dir))",
     "is_clang%": 0,
-    "is_IBMi%": "<!(node ../utils/isBuildingForIBMi.js)"
+    "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")"
   },
   "targets": [
     {
