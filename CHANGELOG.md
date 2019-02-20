@@ -1,5 +1,47 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-7" href="#v0-25-0-alpha-7">v0.25.0-alpha.7</a> [(2019-02-20)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.7)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.6...v0.25.0-alpha.7)
+
+#### Summary of changes
+- Fixed bug where repeated uses of extractSignature would fail because of the use of regex.prototype.match
+- Added support for building on IBM i (PASE) machines
+- Fixed bug where signingCb in rebases would not return error codes to LibGit2 if the signingCb threw or rejected
+- Expoed AnnotatedCommit methods:
+  - AnnotatedCommit.prototype.ref
+- Exposed Apply methods:
+  - Apply.apply applies a diff to the repository
+  - Apply.toTree applies a diff to a tree
+- Exposed Config methods:
+  - Config.prototype.deleteEntry
+  - Config.prototype.deleteMultivar
+  - Config.prototype.getBool
+  - Config.prototype.getInt32
+  - Config.prototype.getInt64
+  - Config.prototype.setMultivar
+  - Config.prototype.snapshot
+- Exposed ConfigIterator with methods:
+  - ConfigIterator.create
+  - ConfigIterator.createGlob
+  - ConfigIterator.createMultivar
+  - ConfigIterator.prototype.next
+- Exposed Merge methods:
+  - Merge.analysis
+  - Merge.analysisForRef
+- Expose Remote methods:
+  - Remote.createWithOpts
+
+#### Merged PRs into NodeGit
+- [Fix regex state causing subsequent runs of Tag.extractSignature to fail #1630](https://github.com/nodegit/nodegit/pull/1630)
+- [Update LibGit2 docs to v0.28.0 #1631](https://github.com/nodegit/nodegit/pull/1631)
+- [Add support for building on IBM i (PASE) #1634](https://github.com/nodegit/nodegit/pull/1634)
+- [Expose more config methods #1635](https://github.com/nodegit/nodegit/pull/1635)
+- [Catch errors and pass them to libgit2 as error codes in rebase signingcb #1636](https://github.com/nodegit/nodegit/pull/1636)
+- [Simplify check for IBM i operating system #1637](https://github.com/nodegit/nodegit/pull/1637)
+- [Bump LibGit2 to fork of v0.28.1 #1638](https://github.com/nodegit/nodegit/pull/1638)
+
+
 ## <a name="v0-25-0-alpha-6" href="#v0-25-0-alpha-6">v0.25.0-alpha.6</a> [(2019-02-14)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.6)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.5...v0.25.0-alpha.6)
