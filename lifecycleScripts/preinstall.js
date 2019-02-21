@@ -8,14 +8,22 @@ module.exports = function prepareForBuild() {
   console.log("[nodegit] Running pre-install script");
 
   return exec("npm -v")
-    .then(function(npmVersion) {
-      if (npmVersion.split(".")[0] < 3) {
-        console.log("[nodegit] npm@2 installed, pre-loading required packages");
-        return exec("npm install --ignore-scripts");
-      }
+    .then(
+      function(npmVersion) {
+        if (npmVersion.split(".")[0] < 3) {
+          console.log(
+            "[nodegit] npm@2 installed, pre-loading required packages"
+          );
+          return exec("npm install --ignore-scripts");
+        }
 
-      return Promise.resolve();
-    })
+        return Promise.resolve();
+      },
+      function() {
+        // We're installing via yarn, so don't
+        // care about compability with npm@2
+      }
+    )
     .then(function() {
       if (buildFlags.isGitRepo) {
         var submodules = require(local("submodules"));
