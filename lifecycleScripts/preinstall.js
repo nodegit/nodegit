@@ -9,13 +9,13 @@ module.exports = function prepareForBuild() {
 
   return exec("npm -v")
     .then(function(npmVersion) {
-    if (npmVersion.split(".")[0] < 3) {
-      console.log("[nodegit] npm@2 installed, " + 
-                  "pre-loading required packages");
-      return exec("npm install --ignore-scripts");
-    }
+      if (npmVersion.split(".")[0] < 3) {
+        console.log("[nodegit] npm@2 installed, " + 
+                    "pre-loading required packages");
+        return exec("npm install --ignore-scripts");
+      }
 
-    return Promise.resolve();
+      return Promise.resolve();
     })
     .catch(function(err) {
       console.log("npm install failed, change to yarn install");
