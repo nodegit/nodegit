@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-8" href="#v0-25-0-alpha-8">v0.25.0-alpha.8</a> [(2019-02-27)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.8)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.7...v0.25.0-alpha.8)
+
+#### Summary of changes
+- Fixed segfault in NodeGit.Merge.analysis and NodeGit.Merge.analysisForRef
+
+#### Merged PRs into NodeGit
+- [Add missing `shouldAlloc` declarations for git_merge_analysis* functions #1641](https://github.com/nodegit/nodegit/pull/1641)
+
+
 ## <a name="v0-25-0-alpha-7" href="#v0-25-0-alpha-7">v0.25.0-alpha.7</a> [(2019-02-20)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.7)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.6...v0.25.0-alpha.7)
