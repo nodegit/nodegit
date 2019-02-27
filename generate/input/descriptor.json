@@ -2094,10 +2094,12 @@
           "isAsync": true,
           "args": {
             "analysis_out": {
-              "isReturn": true
+              "isReturn": true,
+              "shouldAlloc": true
             },
             "preference_out": {
-              "isReturn": true
+              "isReturn": true,
+              "shouldAlloc": true
             },
             "their_heads": {
               "cType": "const git_annotated_commit **",
@@ -2116,10 +2118,12 @@
           "isAsync": true,
           "args": {
             "analysis_out": {
-              "isReturn": true
+              "isReturn": true,
+              "shouldAlloc": true
             },
             "preference_out": {
-              "isReturn": true
+              "isReturn": true,
+              "shouldAlloc": true
             },
             "their_heads": {
               "cType": "const git_annotated_commit **",
