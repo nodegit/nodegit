@@ -1,5 +1,23 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-9" href="#v0-25-0-alpha-9">v0.25.0-alpha.9</a> [(2019-03-04)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.9)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.8...v0.25.0-alpha.9)
+
+#### Summary of changes
+- Removed access to the diff_so_far param in git_diff_notify_cb and git_diff_progress_cb
+- Changed FilterSource.prototype.repo to async to prevent segfaults on filters that run during Submodule.status
+- Clean up deprecation messages to inform users of what was deprecated, not just what users should switch to
+- When installing on a machine that has yarn and does not have npm, the preinstall script should succeed now
+- ceiling_dirs is now an optional parameter to Repository.discover
+
+#### Merged PRs into NodeGit
+- [Clean up some dangerous memory accesses in callbacks #1642](https://github.com/nodegit/nodegit/pull/1642)
+- [Output the item that was deprecated when giving deprecation notice #1643](https://github.com/nodegit/nodegit/pull/1643)
+- [Don't fail yarn installs when we can't find npm #1644](https://github.com/nodegit/nodegit/pull/1644)
+- [`ceiling_dirs` parameter in `Repository.discover` is optional #1245](https://github.com/nodegit/nodegit/pull/1245)
+
+
 ## <a name="v0-25-0-alpha-8" href="#v0-25-0-alpha-8">v0.25.0-alpha.8</a> [(2019-02-27)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.8)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.7...v0.25.0-alpha.8)
