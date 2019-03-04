@@ -57,24 +57,6 @@
       "error": -1
     }
   },
-  "git_blob_chunk_cb": {
-    "args": [
-      {
-        "name": "entry",
-        "cType": "const git_config_entry *"
-      },
-      {
-        "name": "payload",
-        "cType": "void *"
-      }
-    ],
-    "return": {
-      "type": "int",
-      "noResults": 1,
-      "success": 0,
-      "error": -1
-    }
-  },
   "git_checkout_notify_cb": {
     "args": [
       {
@@ -326,7 +308,8 @@
     "args": [
       {
         "name": "diff_so_far",
-        "cType": "const git_diff *"
+        "cType": "const git_diff *",
+        "ignore": true
       },
       {
         "name": "delta_to_add",
@@ -347,11 +330,13 @@
       "success": 0,
       "error": -1
     }
-  },"git_diff_progress_cb": {
+  },
+  "git_diff_progress_cb": {
     "args": [
       {
         "name": "diff_so_far",
-        "cType": "const git_diff *"
+        "cType": "const git_diff *",
+        "ignore": true
       },
       {
         "name": "old_path",
@@ -551,7 +536,7 @@
     "args": [
       {
         "name": "out",
-        "cType": "git_repository **",
+        "cType": "git_remote **",
         "isReturn": true
       },
       {
