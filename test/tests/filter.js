@@ -2,6 +2,7 @@ var assert = require("assert");
 var fse = require("fs-extra");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
+var garbageCollect = require("../utils/garbage_collect.js");
 
 describe("Filter", function() {
   var NodeGit = require("../../");
@@ -216,7 +217,7 @@ describe("Filter", function() {
       }, 0)
       .then(function(result) {
         assert.strictEqual(result, NodeGit.Error.CODE.OK);
-        global.gc();
+        garbageCollect();
 
         return fse.writeFile(
           packageJsonPath,
@@ -338,7 +339,8 @@ describe("Filter", function() {
           return Checkout.head(test.repository, opts);
         })
         .then(function() {
-          global.gc();
+          garbageCollect();
+
           return Registry.unregister(filterName);
         })
         .then(function(result) {
@@ -637,7 +639,7 @@ describe("Filter", function() {
           );
           assert.notStrictEqual(readmeContent, message);
           fse.writeFileSync(readmePath, "whoa", "utf8");
-          global.gc();
+          garbageCollect();
 
           var opts = {
             checkoutStrategy: Checkout.STRATEGY.FORCE,
@@ -725,7 +727,7 @@ describe("Filter", function() {
         cleanup: function() {}
       }, 0)
         .then(function(result) {
-          global.gc();
+          garbageCollect();
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
         })
         .then(function() {
@@ -742,7 +744,7 @@ describe("Filter", function() {
           );
         })
         .then(function(oid) {
-          global.gc();
+          garbageCollect();
           return test.repository.getHeadCommit();
         })
         .then(function(commit) {
@@ -755,7 +757,7 @@ describe("Filter", function() {
             postInitializeReadmeContents, "testing commit contents"
           );
           assert.strictEqual(commit.message(), "test commit");
-          global.gc();
+          garbageCollect();
 
           return commit.getEntry("README.md");
         })
@@ -842,7 +844,7 @@ describe("Filter", function() {
         );
         assert.notEqual(packageContent, "");
 
-        global.gc();
+        garbageCollect();
         return fse.writeFile(
           packageJsonPath,
           "Changing content to trigger checkout",
@@ -1073,6 +1075,67 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
+        });
+    });
+  });
+
+  describe("FilterSource", function() {
+    var message = "some new fancy filter";
+
+    before(function() {
+      var test = this;
+      return fse.readFile(readmePath, "utf8")
+        .then((function(content) {
+          test.originalReadmeContent = content;
+        }));
+    });
+
+    afterEach(function() {
+      this.timeout(15000);
+      return fse.writeFile(readmePath, this.originalReadmeContent);
+    });
+
+    it("a FilterSource has an async repo getter", function() {
+      var test = this;
+
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {
+          return source.repo()
+            .then(function() {
+              return NodeGit.Error.CODE.PASSTHROUGH;
+            });
+        },
+        check: function(source) {
+          return source.repo()
+            .then(function() {
+              return NodeGit.Error.CODE.OK;
+            });
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
+        })
+        .then(function() {
+          var readmeContent = fse.readFileSync(
+            packageJsonPath,
+            "utf-8"
+          );
+          assert.notStrictEqual(readmeContent, message);
+
+          return fse.writeFile(
+            packageJsonPath,
+            "Changing content to trigger checkout"
+          );
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          garbageCollect();
         });
     });
   });

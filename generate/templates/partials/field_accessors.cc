@@ -179,92 +179,34 @@
           return;
         }
 
-        {% each field.args|argsInfo as arg %}
-          {% if arg.name == "payload" %}
-            {%-- Do nothing --%}
-          {% elsif arg.isJsArg %}
-            {% if arg.cType == "const char *" %}
-              if (baton->{{ arg.name }} == NULL) {
-                  baton->{{ arg.name }} = "";
-              }
-            {% elsif arg.cppClassName == "String" %}
-              v8::Local<v8::Value> src;
-              if (baton->{{ arg.name }} == NULL) {
-                  src = Nan::Null();
-              }
-              else {
-                src = Nan::New<String>(*baton->{{ arg.name }}).ToLocalChecked();
-              }
-            {% endif %}
-          {% endif %}
-        {% endeach %}
-
-        {% if field.isSelfReferential %}
-          {% if field.args|jsArgsCount|subtract 2| setUnsigned == 0 %}
-            v8::Local<Value> *argv = NULL;
-          {% else %}
-            v8::Local<Value> argv[{{ field.args|jsArgsCount|subtract 2| setUnsigned }}] = {
-          {% endif %}
+        {% if field.args|callbackArgsCount == 0 %}
+          v8::Local<Value> *argv = NULL;
         {% else %}
-          v8::Local<Value> argv[{{ field.args|jsArgsCount }}] = {
-        {% endif %}
-        {% each field.args|argsInfo as arg %}
-          {% if field.isSelfReferential %}
-            {% if not arg.firstArg %}
-              {% if field.args|jsArgsCount|subtract 1|or 0 %}
-                {% if arg.cppClassName == "String" %}
-                  {%-- src is always the last arg --%}
-                  src
-                {% elsif arg.isJsArg %}
-                  {% if arg.isEnum %}
-                    Nan::New((int)baton->{{ arg.name }}),
-                  {% elsif arg.isLibgitType %}
-                    {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false),
-                  {% elsif arg.cType == "size_t" %}
-                    Nan::New((unsigned int)baton->{{ arg.name }}),
-                  {% elsif arg.name == "payload" %}
-                    {%-- skip, filters should not have a payload --%}
-                  {% else %}
-                    Nan::New(baton->{{ arg.name }}),
-                  {% endif %}
-                {% endif %}
-              {% endif %}
+          v8::Local<Value> argv[{{ field.args|callbackArgsCount }}] = {
+            {% each field.args|callbackArgsInfo as arg %}
+            {% if not arg.firstArg %},{% endif %}
+            {% if arg.isEnum %}
+              Nan::New((int)baton->{{ arg.name }})
+            {% elsif arg.isLibgitType %}
+              {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false)
+            {% elsif arg.cType == "size_t" %}
+              // HACK: NAN should really have an overload for Nan::New to support size_t
+              Nan::New((unsigned int)baton->{{ arg.name }})
+            {% elsif arg.cppClassName == "String" %}
+              baton->{{ arg.name }} == NULL
+                ? Nan::EmptyString()
+                : Nan::New({%if arg.cType | isDoublePointer %}*{% endif %}baton->{{ arg.name }}).ToLocalChecked()
+            {% else %}
+              Nan::New(baton->{{ arg.name }})
             {% endif %}
-          {% else %}
-            {% if arg.name == "payload" %}
-              {%-- payload is always the last arg --%}
-              Nan::New(instance->{{ fields|payloadFor field.name }})
-            {% elsif arg.isJsArg %}
-              {% if arg.isEnum %}
-                Nan::New((int)baton->{{ arg.name }}),
-              {% elsif arg.isLibgitType %}
-                {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false),
-              {% elsif arg.cType == "size_t" %}
-                // HACK: NAN should really have an overload for Nan::New to support size_t
-                Nan::New((unsigned int)baton->{{ arg.name }}),
-              {% elsif arg.cppClassName == "String" %}
-                Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
-              {% else %}
-                Nan::New(baton->{{ arg.name }}),
-              {% endif %}
-            {% endif %}
-          {% endif %}
-        {% endeach %}
-        {% if not field.isSelfReferential %}
-          };
-        {% elsif field.args|jsArgsCount|subtract 2| setUnsigned > 0  %}
+            {% endeach %}
           };
         {% endif %}
 
         Nan::TryCatch tryCatch;
 
         // TODO This should take an async_resource, but we will need to figure out how to pipe the correct context into this
-        {% if field.isSelfReferential %}
-          Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*(instance->{{ field.name }}.GetCallback()), {{ field.args|jsArgsCount|subtract 2| setUnsigned }}, argv);
-        {% else  %}
-          Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*(instance->{{ field.name }}.GetCallback()), {{ field.args|jsArgsCount }}, argv);
-        {% endif %}
-
+        Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*(instance->{{ field.name }}.GetCallback()), {{ field.args|callbackArgsCount }}, argv);
         v8::Local<v8::Value> result;
         if (!maybeResult.IsEmpty()) {
           result = maybeResult.ToLocalChecked();

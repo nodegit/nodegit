@@ -30,32 +30,27 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
     {% endif %}
   {% endeach %}
 
-  v8::Local<Value> argv[{{ cbFunction.args|jsArgsCount }}] = {
-    {% each cbFunction.args|argsInfo as arg %}
-      {% if arg | isPayload %}
-        {%-- payload is always the last arg --%}
-        // payload is null because we can use closure scope in javascript
-        Nan::Undefined()
-      {% elsif arg.isJsArg %}
-        {% if arg.isEnum %}
-          Nan::New((int)baton->{{ arg.name }}),
-        {% elsif arg.isLibgitType %}
-          {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false),
-        {% elsif arg.cType == "size_t" %}
-          // HACK: NAN should really have an overload for Nan::New to support size_t
-          Nan::New((unsigned int)baton->{{ arg.name }}),
-        {% elsif arg.cppClassName == 'String' %}
-          Nan::New(baton->{{ arg.name }}).ToLocalChecked(),
-        {% else %}
-          Nan::New(baton->{{ arg.name }}),
-        {% endif %}
+  v8::Local<Value> argv[{{ cbFunction.args|callbackArgsCount }}] = {
+    {% each cbFunction.args|callbackArgsInfo as arg %}
+      {% if not arg.firstArg %}, {% endif %}
+      {% if arg.isEnum %}
+        Nan::New((int)baton->{{ arg.name }})
+      {% elsif arg.isLibgitType %}
+        {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false)
+      {% elsif arg.cType == "size_t" %}
+        // HACK: NAN should really have an overload for Nan::New to support size_t
+        Nan::New((unsigned int)baton->{{ arg.name }})
+      {% elsif arg.cppClassName == 'String' %}
+        Nan::New(baton->{{ arg.name }}).ToLocalChecked()
+      {% else %}
+        Nan::New(baton->{{ arg.name }})
       {% endif %}
     {% endeach %}
   };
 
   Nan::TryCatch tryCatch;
   // TODO This should take an async_resource, but we will need to figure out how to pipe the correct context into this
-  Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*callback, {{ cbFunction.args|jsArgsCount }}, argv);
+  Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*callback, {{ cbFunction.args|callbackArgsCount }}, argv);
   v8::Local<v8::Value> result;
   if (!maybeResult.IsEmpty()) {
     result = maybeResult.ToLocalChecked();
