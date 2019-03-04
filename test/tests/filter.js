@@ -1076,4 +1076,62 @@ describe("Filter", function() {
         });
     });
   });
+
+  describe("FilterSource", function() {
+    var message = "some new fancy filter";
+
+    before(function() {
+      var test = this;
+      return fse.readFile(readmePath, "utf8")
+        .then((function(content) {
+          test.originalReadmeContent = content;
+        }));
+    });
+
+    afterEach(function() {
+      this.timeout(15000);
+      return fse.writeFile(readmePath, this.originalReadmeContent);
+    });
+
+    it("a FilterSource has an async repo getter", function() {
+      var test = this;
+
+      return Registry.register(filterName, {
+        apply: function(to, from, source) {
+          return source.repo()
+            .then(function() {
+              return NodeGit.Error.CODE.PASSTHROUGH;
+            });
+        },
+        check: function(source) {
+          return source.repo()
+            .then(function() {
+              return NodeGit.Error.CODE.OK;
+            });
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
+        })
+        .then(function() {
+          var readmeContent = fse.readFileSync(
+            packageJsonPath,
+            "utf-8"
+          );
+          assert.notStrictEqual(readmeContent, message);
+
+          return fse.writeFile(
+            packageJsonPath,
+            "Changing content to trigger checkout"
+          );
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        });
+    });
+  });
 });

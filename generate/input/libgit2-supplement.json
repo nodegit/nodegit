@@ -176,6 +176,28 @@
         },
         "group": "filter_source"
       },
+      "git_filter_source_repo": {
+        "args": [
+          {
+            "name": "out",
+            "type": "git_repository **"
+          },
+          {
+            "name": "src",
+            "type": "const git_filter_source *"
+          }
+        ],
+        "isManual": true,
+        "cFile": "generate/templates/manual/filter_source/repo.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "type": "function",
+        "group": "filter_source",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_patch_convenient_from_diff": {
         "args": [
           {
