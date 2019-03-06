@@ -1,5 +1,5 @@
 {
-  "name": "nodegit",
+  "name": "@elastic/nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
   "version": "0.25.0-alpha.9",
   "homepage": "http://nodegit.org",
@@ -10,25 +10,10 @@
     "native"
   ],
   "license": "MIT",
-  "author": "Tim Branyen (@tbranyen)",
-  "contributors": [
-    {
-      "name": "John Haley",
-      "email": "john@haley.io"
-    },
-    {
-      "name": "Max Korp",
-      "email": "maxkorp@8bytealchemy.com"
-    },
-    {
-      "name": "Tyler Ang-Wanek",
-      "email": "tylerw@axosoft.com"
-    }
-  ],
   "main": "dist/nodegit.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/nodegit/nodegit.git"
+    "url": "git://github.com/elastic/nodegit.git"
   },
   "directories": {
     "build": "./build",
@@ -89,7 +74,7 @@
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "mocha": "mocha --expose-gc test/runner test/tests --timeout 15000",
     "mochaDebug": "mocha --expose-gc --debug-brk test/runner test/tests --timeout 15000",
-    "postinstall": "node lifecycleScripts/postinstall && node generate && npm run babel",
+    "postinstall": "node lifecycleScripts/postinstall",
     "prepublish": "npm run babel",
     "rebuild": "node generate && npm run babel && node-gyp configure build",
     "rebuildDebug": "node generate && npm run babel && node-gyp configure --debug build",
