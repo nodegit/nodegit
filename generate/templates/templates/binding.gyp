@@ -154,6 +154,13 @@
           }
         ],
         [
+          "OS=='linux' or OS=='mac' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+            "libraries": [
+              "<!(curl-config --libs)"
+            ]
+          }
+        ],
+        [
           "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
             "cflags": [
               "-std=c++11"
