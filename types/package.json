@@ -1,0 +1,30 @@
+{
+    "name": "@types/nodegit",
+    "version": "0.22.7",
+    "description": "TypeScript definitions for nodegit",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Dolan Miu",
+            "url": "https://github.com/dolanmiu",
+            "githubUsername": "dolanmiu"
+        },
+        {
+            "name": "Tobias Nießen",
+            "url": "https://github.com/tniessen",
+            "githubUsername": "tniessen"
+        }
+    ],
+    "main": "",
+    "types": "index",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/node": "*"
+    },
+    "typesPublisherContentHash": "d5b49b23427bb03b48c43f48ad51949ac62772598e7bb1bf3311b84d200b412e",
+    "typeScriptVersion": "2.0"
+}
