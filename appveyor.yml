@@ -58,6 +58,7 @@ build: off
 
 branches:
   only:
+    - /gitkraken\/.*/
     - /backport\/.*/
     - master
     - v0.3
