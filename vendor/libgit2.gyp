@@ -325,7 +325,12 @@
             }
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "cflags": [
+            "-DGIT_CURL",
+            "<!(curl-config --cflags)"
+          ],
           "defines": [
+            "GIT_CURL",
             "GIT_SHA1_OPENSSL"
           ],
           "sources": [
