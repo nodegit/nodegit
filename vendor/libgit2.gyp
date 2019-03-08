@@ -325,13 +325,20 @@
             }
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "dependencies": [
+            "ntlmclient"
+          ],
+          "include_dirs": ["libgit2/deps/ntlmclient"],
           "defines": [
-            "GIT_SHA1_OPENSSL"
+            "GIT_SHA1_OPENSSL",
+            "GIT_NTLM"
           ],
           "sources": [
             "libgit2/src/hash/hash_openssl.h",
             "libgit2/src/streams/tls.c",
-            "libgit2/src/streams/tls.h"
+            "libgit2/src/streams/tls.h",
+            "libgit2/src/transports/auth_ntlm.c",
+            "libgit2/src/transports/auth_ntlm.h"
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
@@ -463,7 +470,35 @@
         "include_dirs": [
           "libgit2/include"
         ],
-      },
+      }
+    },
+    {
+      "target_name": "ntlmclient",
+      "type": "static_library",
+      "conditions": [
+        ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "sources": [
+            "libgit2/deps/ntlmclient/compat.h",
+            "libgit2/deps/ntlmclient/crypt.h",
+            "libgit2/deps/ntlmclient/crypt_openssl.c",
+            "libgit2/deps/ntlmclient/crypt_openssl.h",
+            "libgit2/deps/ntlmclient/ntlm.c",
+            "libgit2/deps/ntlmclient/ntlm.h",
+            "libgit2/deps/ntlmclient/ntlmclient.h",
+            "libgit2/deps/ntlmclient/unicode.h",
+            "libgit2/deps/ntlmclient/unicode_builtin.c",
+            "libgit2/deps/ntlmclient/utf8.h",
+            "libgit2/deps/ntlmclient/util.c",
+            "libgit2/deps/ntlmclient/util.h"
+          ],
+        }],
+        ["<(is_electron) == 1", {
+          "include_dirs": ["openssl/include"]
+        }]
+      ],
+      "defines": [
+        "CRYPT_OPENSSL"
+      ]
     },
     {
       "target_name": "zlib",
