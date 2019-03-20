@@ -1,6 +1,5 @@
 sudo: false
-# update to Xenial in April 2019; Trusty will be EOL, Xenial new minimum supported OS version
-dist: trusty
+dist: xenial
 
 branches:
   only:
@@ -23,7 +22,6 @@ env:
 node_js:
   - "10"
   - "8"
-  - "6"
 
 os:
   - linux
