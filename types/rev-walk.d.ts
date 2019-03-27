@@ -34,7 +34,7 @@ export class Revwalk {
      */
     sorting(sort: number): void;
     fastWalk(maxCount: number): Promise<any>;
-    fileHistoryWalk(filePath: string, maxCount: number): Promise<any[]>;
+    fileHistoryWalk(filePath: string, maxResult: number, maxCount: number): Promise<any[]>;
     /**
      * Walk the history from the given oid. The callback is invoked for each commit; When the walk is over, the callback is invoked with (null, null).
      */

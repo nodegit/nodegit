@@ -169,7 +169,8 @@ describe("Revwalk", function() {
       "1273fff13b3c28cfdb13ba7f575d696d2a8902e1"
     ];
 
-    return test.walker.fileHistoryWalk("include/functions/copy.h", 1000)
+    return test.walker
+      .fileHistoryWalk("include/functions/copy.h", magicShas.length, 1000)
       .then(function(results) {
         var shas = results.map(function(result) {
           return result.commit.sha();
@@ -199,7 +200,8 @@ describe("Revwalk", function() {
       "01d469416b26340ee4922d5171ef8dbe46c879f4"
     ];
 
-    return test.walker.fileHistoryWalk("include/functions", 1000)
+    return test.walker
+      .fileHistoryWalk("include/functions", magicShas.length, 1000)
       .then(function(results) {
         var shas = results.map(function(result) {
           return result.commit.sha();
@@ -223,7 +225,7 @@ describe("Revwalk", function() {
     walker.sorting(NodeGit.Revwalk.SORT.TIME);
     walker.push("115d114e2c4d5028c7a78428f16a4528c51be7dd");
 
-    return walker.fileHistoryWalk("README.md", 15)
+    return walker.fileHistoryWalk("README.md", magicShas.length, 15)
       .then(function(results) {
         shas = results.map(function(result) {
           return result.commit.sha();
@@ -244,7 +246,7 @@ describe("Revwalk", function() {
         walker.sorting(NodeGit.Revwalk.SORT.TIME);
         walker.push("d46f7da82969ca6620864d79a55b951be0540bda");
 
-        return walker.fileHistoryWalk("README.md", 50);
+        return walker.fileHistoryWalk("README.md", magicShas.length, 50);
       })
       .then(function(results) {
         shas = results.map(function(result) {
@@ -317,7 +319,7 @@ describe("Revwalk", function() {
         var walker = repo.createRevWalk();
         walker.sorting(NodeGit.Revwalk.SORT.TIME);
         walker.push(commitOid.tostrS());
-        return walker.fileHistoryWalk(fileNameB, 5);
+        return walker.fileHistoryWalk(fileNameB, -1,5);
       })
       .then(function(results) {
         assert.equal(results[0].status, NodeGit.Diff.DELTA.RENAMED);
@@ -328,7 +330,7 @@ describe("Revwalk", function() {
         var walker = repo.createRevWalk();
         walker.sorting(NodeGit.Revwalk.SORT.TIME);
         walker.push(headCommit);
-        return walker.fileHistoryWalk(fileNameA, 5);
+        return walker.fileHistoryWalk(fileNameA, -1, 5);
       })
       .then(function(results) {
         assert.equal(results[0].status, NodeGit.Diff.DELTA.RENAMED);

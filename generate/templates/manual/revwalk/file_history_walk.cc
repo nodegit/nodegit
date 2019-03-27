@@ -5,10 +5,14 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   }
 
   if (info.Length() == 1 || !info[1]->IsNumber()) {
-    return Nan::ThrowError("Max count is required and must be a number.");
+    return Nan::ThrowError("Max result is required and must be a number.");
   }
 
-  if (info.Length() == 2 || !info[2]->IsFunction()) {
+  if (info.Length() == 2 || !info[2]->IsNumber()) {
+      return Nan::ThrowError("Max count is required and must be a number.");
+  }
+
+  if (info.Length() == 3 || !info[3]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -18,12 +22,13 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   baton->error = NULL;
   String::Utf8Value from_js_file_path(info[0]->ToString());
   baton->file_path = strdup(*from_js_file_path);
-  baton->max_count = Nan::To<unsigned int>(info[1]).FromJust();
+  baton->max_result = Nan::To<unsigned int>(info[1]).FromJust();
+  baton->max_count = Nan::To<unsigned int>(info[2]).FromJust();
   baton->out = new std::vector< std::pair<git_commit *, std::pair<char *, git_delta_t> > *>;
-  baton->out->reserve(baton->max_count);
+  baton->out->reserve(baton->max_result > 0 ? baton->max_result : baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[2]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
   FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback);
   worker->SaveToPersistent("fileHistoryWalk", info.This());
 
@@ -225,6 +230,10 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
     }
 
     if (baton->error_code != GIT_OK) {
+      break;
+    }
+
+    if (baton->max_result >=0 && baton->out->size() >= baton->max_result) {
       break;
     }
   }
