@@ -646,9 +646,11 @@ describe("Merge", function() {
           ourSignature,
           NodeGit.Merge.PREFERENCE.NO_FASTFORWARD,
           null,
-          function(message) {
-            assert(message === "Merge branch 'theirs' into ours");
-            return "We manipulated the message, HAH.";
+          {
+            processMergeMessageCallback: function(message) {
+              assert(message === "Merge branch 'theirs' into ours");
+              return "We manipulated the message, HAH.";
+            }
           }
         );
       })
@@ -803,9 +805,11 @@ describe("Merge", function() {
           ourSignature,
           NodeGit.Merge.PREFERENCE.NO_FASTFORWARD,
           null,
-          function(message) {
-            assert(message === "Merge branch 'theirs' into ours");
-            return Promise.resolve("We manipulated the message, HAH.");
+          {
+            processMergeMessageCallback: function(message) {
+              assert(message === "Merge branch 'theirs' into ours");
+              return Promise.resolve("We manipulated the message, HAH.");
+            }
           }
         );
       })
