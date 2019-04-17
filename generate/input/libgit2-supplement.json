@@ -282,6 +282,28 @@
           "isErrorCode": true
         }
       },
+      "git_repository_get_submodules": {
+        "args": [
+          {
+            "name": "out",
+            "type": "std::vector<git_submodule *> *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/repository/get_submodules.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "repository",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_repository_get_remotes": {
         "args": [
           {
@@ -578,6 +600,7 @@
         "repository",
         [
           "git_repository_get_references",
+          "git_repository_get_submodules",
           "git_repository_get_remotes"
         ]
       ],
