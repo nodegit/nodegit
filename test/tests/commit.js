@@ -128,6 +128,18 @@ describe("Commit", function() {
     assert.equal(this.commit.timeOffset(), 780);
   });
 
+  it("can call getTree on a parent commit", function() {
+    return this.commit.parent(0)
+    .then(function(parent) {
+      return parent.getTree();
+    })
+    .then(function(tree) {
+      assert.equal(
+        tree.id().toString(), "327ff68e59f94f0c25d2c62fb0938efa01e8a107"
+      );
+    });
+  });
+
   it("can create a commit", function() {
     var test = this;
     var expectedCommitId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
