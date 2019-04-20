@@ -65,6 +65,8 @@ public:
     message(NULL),
     sha(new char[GIT_OID_HEXSZ + 1]),
     shorthand(strdup(git_reference_shorthand(ref))),
+    tagOdbBuffer(NULL),
+    tagOdbBufferLength(0),
     type(NULL)
   {
     if (git_reference_is_branch(ref)) {
@@ -76,33 +78,89 @@ public:
     }
   }
 
-  static int fromReference(RefreshedRefModel **out, git_reference *ref) {
+  static int fromReference(RefreshedRefModel **out, git_reference *ref, git_odb *odb) {
     RefreshedRefModel *refModel = new RefreshedRefModel(ref);
-    git_oid referencedTargetOid;
+    const git_oid *referencedTargetOid = git_reference_target(ref);
 
-    int result = getOidOfReferenceCommit(&referencedTargetOid, ref);
-    if (result != GIT_OK) {
-      delete refModel;
-      return result;
+    if (!git_reference_is_tag(ref)) {
+      git_oid_tostr(refModel->sha, GIT_OID_HEXSZ + 1, referencedTargetOid);
+
+      *out = refModel;
+      return GIT_OK;
     }
+    git_repository *repo = git_reference_owner(ref);
 
-    if (git_reference_is_tag(ref)) {
-      git_repository *repo = git_reference_owner(ref);
+    git_tag *referencedTag;
+    if (git_tag_lookup(&referencedTag, repo, referencedTargetOid) == GIT_OK) {
+      refModel->message = strdup(git_tag_message(referencedTag));
 
-      git_tag *referencedTag;
-      if (git_tag_lookup(&referencedTag, repo, &referencedTargetOid) == GIT_OK) {
-        refModel->message = strdup(git_tag_message(referencedTag));
-        git_tag_free(referencedTag);
+      git_odb_object *tagOdbObject;
+      if (git_odb_read(&tagOdbObject, odb, git_tag_id(referencedTag)) == GIT_OK) {
+        refModel->tagOdbBufferLength = git_odb_object_size(tagOdbObject);
+        refModel->tagOdbBuffer = new char[refModel->tagOdbBufferLength];
+        std::memcpy(refModel->tagOdbBuffer, git_odb_object_data(tagOdbObject), refModel->tagOdbBufferLength);
+        git_odb_object_free(tagOdbObject);
       }
+
+      git_tag_free(referencedTag);
     }
 
-    git_oid_tostr(refModel->sha, GIT_OID_HEXSZ + 1, &referencedTargetOid);
+    git_oid peeledReferencedTargetOid;
+    int error = getOidOfReferenceCommit(&peeledReferencedTargetOid, ref);
+    if (error != GIT_OK) {
+      delete refModel;
+      return error;
+    }
+
+    git_oid_tostr(refModel->sha, GIT_OID_HEXSZ + 1, &peeledReferencedTargetOid);
 
     *out = refModel;
     return GIT_OK;
   }
 
-  v8::Local<v8::Object> toJavascript() {
+  static void ensureSignatureRegexes() {
+    if (!signatureRegexesBySignatureType.IsEmpty()) {
+      return;
+    }
+
+    v8::Local<v8::Array> gpgsigArray = Nan::New<v8::Array>(2),
+      x509Array = Nan::New<v8::Array>(1);
+
+    Nan::Set(
+      gpgsigArray,
+      Nan::New<Number>(0),
+      Nan::New<v8::RegExp>(
+        Nan::New("-----BEGIN PGP SIGNATURE-----[\\s\\S]+?-----END PGP SIGNATURE-----").ToLocalChecked(),
+        static_cast<v8::RegExp::Flags>(v8::RegExp::Flags::kGlobal | v8::RegExp::Flags::kMultiline)
+      ).ToLocalChecked()
+    );
+
+    Nan::Set(
+      gpgsigArray,
+      Nan::New<Number>(1),
+      Nan::New<v8::RegExp>(
+        Nan::New("-----BEGIN PGP MESSAGE-----[\\s\\S]+?-----END PGP MESSAGE-----").ToLocalChecked(),
+        static_cast<v8::RegExp::Flags>(v8::RegExp::Flags::kGlobal | v8::RegExp::Flags::kMultiline)
+      ).ToLocalChecked()
+    );
+
+    Nan::Set(
+      x509Array,
+      Nan::New<Number>(0),
+      Nan::New<v8::RegExp>(
+        Nan::New("-----BEGIN SIGNED MESSAGE-----[\s\S]+?-----END SIGNED MESSAGE-----").ToLocalChecked(),
+        static_cast<v8::RegExp::Flags>(v8::RegExp::Flags::kGlobal | v8::RegExp::Flags::kMultiline)
+      ).ToLocalChecked()
+    );
+
+    v8::Local<v8::Object> result = Nan::New<Object>();
+    Nan::Set(result, Nan::New("gpgsig").ToLocalChecked(), gpgsigArray);
+    Nan::Set(result, Nan::New("x509").ToLocalChecked(), x509Array);
+
+    signatureRegexesBySignatureType.Reset(result);
+  }
+
+  v8::Local<v8::Object> toJavascript(v8::Local<v8::String> signatureType) {
     v8::Local<v8::Object> result = Nan::New<Object>();
 
     v8::Local<v8::Value> jsFullName;
@@ -135,6 +193,34 @@ public:
     }
     Nan::Set(result, Nan::New("shorthand").ToLocalChecked(), jsShorthand);
 
+    v8::Local<v8::Value> jsTagSignature = Nan::Null();
+    if (tagOdbBuffer != NULL && tagOdbBufferLength != 0) {
+      // tagOdbBuffer is already a copy, so we'd like to use NewBuffer instead,
+      // but we were getting segfaults and couldn't easily figure out why. :(
+      // We tried passing the tagOdbBuffer directly to NewBuffer and then nullifying tagOdbBuffer so that
+      // the destructor didn't double free, but that still segfaulted internally in Node.
+      v8::Local<v8::Object> buffer = Nan::CopyBuffer(tagOdbBuffer, tagOdbBufferLength).ToLocalChecked();
+      v8::Local<v8::Value> toStringProp = Nan::Get(buffer, Nan::New("toString").ToLocalChecked()).ToLocalChecked();
+      v8::Local<v8::Object> jsTagOdbObjectString = Nan::CallAsFunction(toStringProp->ToObject(), buffer, 0, NULL).ToLocalChecked()->ToObject();
+
+      v8::Local<v8::Object> _signatureRegexesBySignatureType = Nan::New(signatureRegexesBySignatureType);
+      v8::Local<v8::Array> signatureRegexes = v8::Local<v8::Array>::Cast(Nan::Get(_signatureRegexesBySignatureType, signatureType).ToLocalChecked());
+
+      for (uint32_t i = 0; i < signatureRegexes->Length(); ++i) {
+        v8::Local<v8::Value> argv[] = {
+          Nan::Get(signatureRegexes, Nan::New(i)).ToLocalChecked()
+        };
+
+        v8::Local<v8::Value> matchProp = Nan::Get(jsTagOdbObjectString, Nan::New("match").ToLocalChecked()).ToLocalChecked();
+        v8::Local<v8::Value> match = Nan::CallAsFunction(matchProp->ToObject(), jsTagOdbObjectString, 1, argv).ToLocalChecked();
+        if (match->IsArray()) {
+          jsTagSignature = Nan::Get(match->ToObject(), 0).ToLocalChecked();
+          break;
+        }
+      }
+    }
+    Nan::Set(result, Nan::New("tagSignature").ToLocalChecked(), jsTagSignature);
+
     v8::Local<v8::Value> jsType;
     if (type == NULL) {
       jsType = Nan::Null();
@@ -151,11 +237,16 @@ public:
     if (message != NULL) { delete[] message; }
     delete[] sha;
     if (shorthand != NULL) { delete[] shorthand; }
+    if (tagOdbBuffer != NULL) { delete[] tagOdbBuffer; }
   }
 
-  char *fullName, *message, *sha, *shorthand;
+  char *fullName, *message, *sha, *shorthand, *tagOdbBuffer;
+  size_t tagOdbBufferLength;
   const char *type;
+  static Nan::Persistent<v8::Object> signatureRegexesBySignatureType;
 };
+
+Nan::Persistent<v8::Object> RefreshedRefModel::signatureRegexesBySignatureType;
 
 class UpstreamModel {
 public:
@@ -277,7 +368,25 @@ public:
 
 NAN_METHOD(GitRepository::RefreshReferences)
 {
-  if (info.Length() == 0 || !info[0]->IsFunction()) {
+  v8::Local<v8::String> signatureType;
+  if (info.Length() == 2) {
+    if (!info[0]->IsString()) {
+      return Nan::ThrowError("Signature type must be \"gpgsig\" or \"x509\".");
+    }
+
+    v8::Local<v8::String> signatureTypeParam = info[0]->ToString();
+    if (
+      Nan::Equals(signatureTypeParam, Nan::New("gpgsig").ToLocalChecked()) != Nan::Just(true)
+      && Nan::Equals(signatureTypeParam, Nan::New("x509").ToLocalChecked()) != Nan::Just(true)
+    ) {
+      return Nan::ThrowError("Signature type must be \"gpgsig\" or \"x509\".");
+    }
+    signatureType = signatureTypeParam;
+  } else {
+    signatureType = Nan::New("gpgsig").ToLocalChecked();
+  }
+
+  if (info.Length() == 0 || (info.Length() == 1 && !info[0]->IsFunction()) || (info.Length() == 2 && !info[1]->IsFunction())) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -291,6 +400,7 @@ NAN_METHOD(GitRepository::RefreshReferences)
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback);
   worker->SaveToPersistent("repo", info.This());
+  worker->SaveToPersistent("signatureType", signatureType);
   Nan::AsyncQueueWorker(worker);
   return;
 }
@@ -302,6 +412,18 @@ void GitRepository::RefreshReferencesWorker::Execute()
   LockMaster lockMaster(true, baton->repo);
   git_repository *repo = baton->repo;
   RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
+  git_odb *odb;
+
+  baton->error_code = git_repository_odb(&odb, repo);
+  if (baton->error_code != GIT_OK) {
+    if (giterr_last() != NULL) {
+      baton->error = git_error_dup(giterr_last());
+    }
+    git_odb_free(odb);
+    delete refreshData;
+    baton->out = NULL;
+    return;
+  }
 
   // START Refresh HEAD
   git_reference *headRef = NULL;
@@ -311,17 +433,19 @@ void GitRepository::RefreshReferencesWorker::Execute()
     if (giterr_last() != NULL) {
       baton->error = git_error_dup(giterr_last());
     }
+    git_odb_free(odb);
     delete refreshData;
     baton->out = NULL;
     return;
   }
 
   RefreshedRefModel *headModel;
-  baton->error_code = RefreshedRefModel::fromReference(&headModel, headRef);
+  baton->error_code = RefreshedRefModel::fromReference(&headModel, headRef, odb);
   if (baton->error_code != GIT_OK) {
     if (giterr_last() != NULL) {
       baton->error = git_error_dup(giterr_last());
     }
+    git_odb_free(odb);
     git_reference_free(headRef);
     delete refreshData;
     baton->out = NULL;
@@ -336,7 +460,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
   // START Refresh CHERRY_PICK_HEAD
   git_reference *cherrypickRef = NULL;
   if (lookupDirectReferenceByShorthand(&cherrypickRef, repo, "CHERRY_PICK_HEAD") == GIT_OK) {
-    baton->error_code = RefreshedRefModel::fromReference(&refreshData->cherrypick, cherrypickRef);
+    baton->error_code = RefreshedRefModel::fromReference(&refreshData->cherrypick, cherrypickRef, odb);
     git_reference_free(cherrypickRef);
   } else {
     cherrypickRef = NULL;
@@ -347,7 +471,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
   git_reference *mergeRef = NULL;
   // fall through if cherry pick failed
   if (baton->error_code == GIT_OK && lookupDirectReferenceByShorthand(&mergeRef, repo, "MERGE_HEAD") == GIT_OK) {
-    baton->error_code = RefreshedRefModel::fromReference(&refreshData->merge, mergeRef);
+    baton->error_code = RefreshedRefModel::fromReference(&refreshData->merge, mergeRef, odb);
     git_reference_free(mergeRef);
   } else {
     mergeRef = NULL;
@@ -358,6 +482,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
     if (giterr_last() != NULL) {
       baton->error = git_error_dup(giterr_last());
     }
+    git_odb_free(odb);
     delete refreshData;
     baton->out = NULL;
     return;
@@ -371,6 +496,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
     if (giterr_last() != NULL) {
       baton->error = git_error_dup(giterr_last());
     }
+    git_odb_free(odb);
     delete refreshData;
     baton->out = NULL;
     return;
@@ -383,6 +509,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
     if (giterr_last() != NULL) {
       baton->error = git_error_dup(giterr_last());
     }
+    git_odb_free(odb);
     git_strarray_free(&referenceNames);
     delete refreshData;
     baton->out = NULL;
@@ -424,7 +551,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
     }
 
     RefreshedRefModel *refreshedRefModel;
-    baton->error_code = RefreshedRefModel::fromReference(&refreshedRefModel, reference);
+    baton->error_code = RefreshedRefModel::fromReference(&refreshedRefModel, reference, odb);
     git_reference_free(reference);
 
     if (baton->error_code == GIT_OK) {
@@ -432,6 +559,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
     }
   }
 
+  git_odb_free(odb);
   git_strarray_free(&remoteNames);
   git_strarray_free(&referenceNames);
 
@@ -449,6 +577,7 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
 {
   if (baton->out != NULL)
   {
+    RefreshedRefModel::ensureSignatureRegexes();
     RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
     v8::Local<v8::Object> result = Nan::New<Object>();
 
@@ -458,19 +587,21 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
       Nan::New<String>(refreshData->headRefFullName).ToLocalChecked()
     );
 
+    v8::Local<v8::String> signatureType = GetFromPersistent("signatureType")->ToString();
+
     unsigned int numRefs = refreshData->refs.size();
-    v8::Local<v8::Array> refs = Nan::New<Array>(numRefs);
+    v8::Local<v8::Array> refs = Nan::New<v8::Array>(numRefs);
     for (unsigned int i = 0; i < numRefs; ++i) {
       RefreshedRefModel *refreshedRefModel = refreshData->refs[i];
-      Nan::Set(refs, Nan::New<Number>(i), refreshedRefModel->toJavascript());
+      Nan::Set(refs, Nan::New(i), refreshedRefModel->toJavascript(signatureType));
     }
     Nan::Set(result, Nan::New("refs").ToLocalChecked(), refs);
 
     unsigned int numUpstreamInfo = refreshData->upstreamInfo.size();
-    v8::Local<v8::Array> upstreamInfo = Nan::New<Array>(numUpstreamInfo);
+    v8::Local<v8::Array> upstreamInfo = Nan::New<v8::Array>(numUpstreamInfo);
     for (unsigned int i = 0; i < numUpstreamInfo; ++i) {
       UpstreamModel *upstreamModel = refreshData->upstreamInfo[i];
-      Nan::Set(upstreamInfo, Nan::New<Number>(i), upstreamModel->toJavascript());
+      Nan::Set(upstreamInfo, Nan::New(i), upstreamModel->toJavascript());
     }
     Nan::Set(result, Nan::New("upstreamInfo").ToLocalChecked(), upstreamInfo);
 
@@ -478,7 +609,7 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
       Nan::Set(
         result,
         Nan::New("cherrypick").ToLocalChecked(),
-        refreshData->cherrypick->toJavascript()
+        refreshData->cherrypick->toJavascript(signatureType)
       );
     } else {
       Nan::Set(result, Nan::New("cherrypick").ToLocalChecked(), Nan::Null());
@@ -488,7 +619,7 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
       Nan::Set(
         result,
         Nan::New("merge").ToLocalChecked(),
-        refreshData->merge->toJavascript()
+        refreshData->merge->toJavascript(signatureType)
       );
     } else {
       Nan::Set(result, Nan::New("merge").ToLocalChecked(), Nan::Null());
