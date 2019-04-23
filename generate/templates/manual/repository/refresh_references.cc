@@ -148,7 +148,7 @@ public:
       x509Array,
       Nan::New<Number>(0),
       Nan::New<v8::RegExp>(
-        Nan::New("-----BEGIN SIGNED MESSAGE-----[\s\S]+?-----END SIGNED MESSAGE-----").ToLocalChecked(),
+        Nan::New("-----BEGIN SIGNED MESSAGE-----[\\s\\S]+?-----END SIGNED MESSAGE-----").ToLocalChecked(),
         static_cast<v8::RegExp::Flags>(v8::RegExp::Flags::kGlobal | v8::RegExp::Flags::kMultiline)
       ).ToLocalChecked()
     );
@@ -556,6 +556,8 @@ void GitRepository::RefreshReferencesWorker::Execute()
 
     if (baton->error_code == GIT_OK) {
       refreshData->refs.push_back(refreshedRefModel);
+    } else {
+      baton->error_code = GIT_OK;
     }
   }
 
