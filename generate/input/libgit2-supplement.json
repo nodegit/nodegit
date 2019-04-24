@@ -107,6 +107,13 @@
         "isPrototypeMethod": false,
         "group": "clone"
       },
+      "git_worktree_add": {
+        "isManual": true,
+        "cFile": "generate/templates/manual/worktree/worktree_add.cc",
+        "isAsync": true,
+        "isPrototypeMethod": false,
+        "group": "worktree"
+      },
       "git_commit_extract_signature": {
         "args": [
           {
