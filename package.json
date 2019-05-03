@@ -42,7 +42,7 @@
     "json5": "^2.1.0",
     "lodash": "^4.17.11",
     "nan": "^2.11.1",
-    "node-gyp": "^3.8.0",
+    "node-gyp": "^4.0.0",
     "node-pre-gyp": "^0.11.0",
     "promisify-node": "~0.3.0",
     "ramda": "^0.25.0",
