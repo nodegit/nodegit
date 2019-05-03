@@ -1,5 +1,33 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-10" href="#v0-25-0-alpha-10">v0.25.0-alpha.10</a> [(2019-05-03)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.10)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.9...v0.25.0-alpha.10)
+
+#### Summary of changes
+- Drops support for Ubuntu 14 after EOL
+- Fixes openssl prebuilt downloads for electron builds
+- Fixes commits retrieved from Commit.prototype.parent
+- *DEPRECATION* Support signing commits in Repository.prototype.mergeBranches. The last parameter `processMergeMessageCallback` is now deprecated, but will continue to work. Use the options object instead, which will contain the `processMergeMessageCallback`, as well as the `signingCb`.
+- Bump Node-Gyp to 4.0.0 to fix tar security vulnerability
+- *BREAKING* `getRemotes` no longer returns remote names, it now returns remote objects directly. Use `getRemoteNames` to get a list of remote names.
+- Optimized a set of routines in NodeGit. These methods as written in Javascript require hundreds or thousands of requests to async workers to retrieve data. We've batched these requests and performed them on a single async worker. There are now native implementations of the following:
+  - Repository.prototype.getReferences: Retrieves all references on async worker.
+  - Repository.prototype.getRemotes: Retrieves all remotes on async worker.
+  - Repository.prototype.getSubmodules: Retrieves all submodules on async worker.
+  - Repository.prototype.refreshReferences: Open sourced function from GitKraken. Grabs a lot of information about references on an async worker.
+  - Revwalk.prototype.commitWalk: Retrieves up to N commits from a revwalk on an async worker.
+
+#### Merged PRs into NodeGit
+- [EOL for Node 6 and Ubuntu 14.04 #1649](https://github.com/nodegit/nodegit/pull/1649)
+- [Ensures that commits from parent(*) has a repository #1658](https://github.com/nodegit/nodegit/pull/1658)
+- [Update openssl conan distributions #1663](https://github.com/nodegit/nodegit/pull/1663)
+- [Support signing in Repository#mergeBranches #1664](https://github.com/nodegit/nodegit/pull/1664)
+- [Dependency upgrade node-gyp upgraded to 4.0.0 #1672](https://github.com/nodegit/nodegit/pull/1672)
+- [Add additional getters to streamline information gathering (breaking change) #1671](https://github.com/nodegit/nodegit/pull/1671)
+
+
+
 ## <a name="v0-25-0-alpha-9" href="#v0-25-0-alpha-9">v0.25.0-alpha.9</a> [(2019-03-04)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.9)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.8...v0.25.0-alpha.9)
