@@ -19,7 +19,7 @@ describe("Remote", function() {
   var privateUrl = "git@github.com:nodegit/private";
 
   function removeNonOrigins(repo) {
-    return repo.getRemotes()
+    return repo.getRemoteNames()
       .then(function(remotes) {
         return remotes.reduce(function(promise, remote) {
           if (remote !== "origin") {
