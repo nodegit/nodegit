@@ -44,9 +44,10 @@ public:
     Nan::Set(historyEntry, Nan::New("status").ToLocalChecked(), Nan::New<Number>(type));
     Nan::Set(historyEntry, Nan::New("isMergeCommit").ToLocalChecked(), Nan::New(isMergeCommit));
     if (type == GIT_DELTA_RENAMED) {
-      if (existsInCurrentTree) {
+      if (from != NULL) {
         Nan::Set(historyEntry, Nan::New("oldName").ToLocalChecked(), Nan::New(from).ToLocalChecked());
-      } else {
+      }
+      if (to != NULL) {
         Nan::Set(historyEntry, Nan::New("newName").ToLocalChecked(), Nan::New(to).ToLocalChecked());
       }
     }
@@ -100,7 +101,7 @@ public:
               false,
               currentCommit,
               delta->old_file.path,
-              NULL
+              delta->new_file.path
             );
             git_diff_free(diff);
             git_tree_entry_free(currentEntry);
@@ -139,7 +140,7 @@ public:
               false,
               false,
               currentCommit,
-              NULL,
+              delta->old_file.path,
               delta->new_file.path
             );
             git_diff_free(diff);
