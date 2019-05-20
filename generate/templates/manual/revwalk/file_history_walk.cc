@@ -352,10 +352,10 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
       }
 
       delete fileHistoryEvent;
+      git_commit_free(parentCommit);
+      git_tree_free(parentTree);
 
-      if (firstMatchingParentIndex.first) {
-        git_commit_free(parentCommit);
-        git_tree_free(parentTree);
+     if (firstMatchingParentIndex.first) {
         break;
       }
     }
@@ -414,6 +414,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
     baton->out = NULL;
     baton->error = git_error_dup(git_error_last());
   }
+  free((void *)baton->file_path);
+  baton->file_path = NULL;
 }
 
 void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
