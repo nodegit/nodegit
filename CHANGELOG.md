@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-11" href="#v0-25-0-alpha-11">v0.25.0-alpha.11</a> [(2019-05-20)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.11)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.10...v0.25.0-alpha.11)
+
+#### Summary of changes
+- Improve speed and correctness of fileHistoryWalk. The API should not have changed; however, when the end of the walk has been reached, `reachedEndOfHistory` will be specified on the resulting array.
+
+#### Merged PRs into NodeGit
+- [Implement faster file history walk #1676](https://github.com/nodegit/nodegit/pull/1676)
+
+
 ## <a name="v0-25-0-alpha-10" href="#v0-25-0-alpha-10">v0.25.0-alpha.10</a> [(2019-05-03)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.10)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.9...v0.25.0-alpha.10)

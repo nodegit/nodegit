@@ -434,11 +434,11 @@
           },
           {
             "name": "max_count",
-            "type": "int"
+            "type": "unsigned int"
           },
           {
             "name": "out",
-            "type": "std::vector< std::pair<git_commit *, std::pair<char *, git_delta_t> > *> *"
+            "type": "std::vector<void *> *"
           },
           {
             "name": "walk",

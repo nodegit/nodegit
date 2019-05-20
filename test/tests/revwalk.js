@@ -234,6 +234,7 @@ describe("Revwalk", function() {
         });
 
         magicShas = [
+          "be6905d459f1b236e44b2445df25aff1783993e9",
           "4a34168b80fe706f52417106821c9cbfec630e47",
           "f80e085e3118bbd6aad49dad7c53bdc37088bf9b",
           "694b2d703a02501f288269bea7d1a5d643a83cc8",
