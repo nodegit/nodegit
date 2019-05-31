@@ -79,7 +79,11 @@ using namespace node;
   void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
     Nan::HandleScope scope;
 
-    v8::Local<Object> object = Nan::New<Object>();
+    {% if functions|hasFunctionOnRootProto %}
+      v8::Local<FunctionTemplate> object = Nan::New<FunctionTemplate>({{ functions|getCPPFunctionForRootProto }});
+    {% else %}
+      v8::Local<Object> object = Nan::New<Object>();
+    {% endif %}
 
     {% each functions as function %}
       {% if not function.ignore %}
@@ -87,7 +91,15 @@ using namespace node;
       {% endif %}
     {% endeach %}
 
-    Nan::Set(target, Nan::New<String>("{{ jsClassName }}").ToLocalChecked(), object);
+    Nan::Set(
+      target,
+      Nan::New("{{ jsClassName }}").ToLocalChecked(),
+      {% if functions|hasFunctionOnRootProto %}
+        Nan::GetFunction(object).ToLocalChecked()
+      {% else %}
+        object
+      {% endif %}
+    );
   }
 
 {% endif %}

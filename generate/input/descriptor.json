@@ -3408,6 +3408,7 @@
       ],
       "functions": {
         "git_reset": {
+          "isCollectionRoot": true,
           "args": {
             "checkout_opts": {
               "isOptional": true
