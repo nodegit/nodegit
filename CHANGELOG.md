@@ -1,5 +1,20 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-12" href="#v0-25-0-alpha-12">v0.25.0-alpha.12</a> [(2019-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.12)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.11...v0.25.0-alpha.12)
+
+#### Summary of changes
+- Fix bug in Repository.prototype.refreshReferences where new remote references from a new remote added/fetched on a separte repo instance do not show up in the result.
+- Fixed a prototype problem with cherrypick, merge, and other collections that have a function at their root. call, apply, and bind should now be on NodeGit.Cherrypick.
+- Bumped libssh2 to resolve security notice.
+
+#### Merged PRs into NodeGit
+- [Bump libssh2 to 1.8.2 and fix some npm audit warnings #1678](https://github.com/nodegit/nodegit/pull/1678)
+- [Root functions should keep their function prototypes correctly #1681](https://github.com/nodegit/nodegit/pull/1681)
+- [refresh_references.cc: bust LibGit2 remote list cache by reading config #1685](https://github.com/nodegit/nodegit/pull/1685)
+
+
 ## <a name="v0-25-0-alpha-11" href="#v0-25-0-alpha-11">v0.25.0-alpha.11</a> [(2019-05-20)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.11)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.10...v0.25.0-alpha.11)
