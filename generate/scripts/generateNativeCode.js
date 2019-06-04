@@ -57,6 +57,8 @@ module.exports = function generateNativeCode() {
     cppToV8: require("../templates/filters/cpp_to_v8"),
     defaultValue: require("../templates/filters/default_value"),
     fieldsInfo: require("../templates/filters/fields_info"),
+    getCPPFunctionForRootProto: require("../templates/filters/get_cpp_function_for_root_proto"),
+    hasFunctionOnRootProto: require("../templates/filters/has_function_on_root_proto"),
     hasReturnType: require("../templates/filters/has_return_type"),
     hasReturnValue: require("../templates/filters/has_return_value"),
     isArrayType: require("../templates/filters/is_array_type"),
