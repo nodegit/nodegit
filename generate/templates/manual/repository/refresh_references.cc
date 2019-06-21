@@ -16,7 +16,12 @@ int asDirectReference(git_reference **out, git_reference *ref) {
     return git_reference_dup(out, ref);
   }
 
-  return git_reference_resolve(out, ref);
+  int error = git_reference_resolve(out, ref);
+  if (error != GIT_OK) {
+    *out = NULL;
+  }
+
+  return GIT_OK;
 }
 
 int lookupDirectReferenceByShorthand(git_reference **out, git_repository *repo, const char *shorthand) {
@@ -442,7 +447,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
   git_reference *headRef = NULL;
   baton->error_code = lookupDirectReferenceByShorthand(&headRef, repo, "HEAD");
 
-  if (baton->error_code != GIT_OK) {
+  if (baton->error_code != GIT_OK || headRef == NULL) {
     if (giterr_last() != NULL) {
       baton->error = git_error_dup(giterr_last());
     }
@@ -472,7 +477,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
 
   // START Refresh CHERRY_PICK_HEAD
   git_reference *cherrypickRef = NULL;
-  if (lookupDirectReferenceByShorthand(&cherrypickRef, repo, "CHERRY_PICK_HEAD") == GIT_OK) {
+  if (lookupDirectReferenceByShorthand(&cherrypickRef, repo, "CHERRY_PICK_HEAD") == GIT_OK && cherrypickRef != NULL) {
     baton->error_code = RefreshedRefModel::fromReference(&refreshData->cherrypick, cherrypickRef, odb);
     git_reference_free(cherrypickRef);
   } else {
@@ -483,7 +488,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
   // START Refresh MERGE_HEAD
   git_reference *mergeRef = NULL;
   // fall through if cherry pick failed
-  if (baton->error_code == GIT_OK && lookupDirectReferenceByShorthand(&mergeRef, repo, "MERGE_HEAD") == GIT_OK) {
+  if (baton->error_code == GIT_OK && lookupDirectReferenceByShorthand(&mergeRef, repo, "MERGE_HEAD") == GIT_OK && mergeRef != NULL) {
     baton->error_code = RefreshedRefModel::fromReference(&refreshData->merge, mergeRef, odb);
     git_reference_free(mergeRef);
   } else {
@@ -536,6 +541,10 @@ void GitRepository::RefreshReferencesWorker::Execute()
     if (baton->error_code != GIT_OK) {
       break;
     }
+    if (reference == NULL) {
+      // lookup found the reference but failed to resolve it directly
+      continue;
+    } 
 
     UpstreamModel *upstreamModel;
     if (UpstreamModel::fromReference(&upstreamModel, reference)) {
