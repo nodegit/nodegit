@@ -1539,7 +1539,20 @@
     },
     "hashsig": {
       "selfFreeing": true,
+      "freeFunctionName": "git_hashsig_free",
       "functions": {
+        "git_hashsig_create": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_hashsig_create_fromfile": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_hashsig_free": {
           "ignore": true
         }
@@ -2527,9 +2540,7 @@
       }
     },
     "openssl": {
-      "cDependencies": [
-        "git2/sys/openssl.h"
-      ]
+      "ignore": true
     },
     "packbuilder": {
       "selfFreeing": true,
@@ -3247,6 +3258,9 @@
         "../include/remote.h"
       ],
       "functions": {
+        "git_repository__cleanup": {
+          "isAsync": true
+        },
         "git_repository_config": {
           "args": {
             "out": {
@@ -3366,6 +3380,16 @@
         },
         "git_repository_set_refdb": {
           "ignore": true
+        },
+        "git_repository_submodule_cache_all": {
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_repository_submodule_cache_clear": {
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
@@ -3618,6 +3642,21 @@
       "functions": {
         "git_status_list_free": {
           "ignore": true
+        },
+        "git_status_list_get_perfdata": {
+          "isAsync": false,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "shouldAlloc": true
+            },
+            "status": {
+              "isSelf": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_status_list_new": {
           "isAsync": true,
