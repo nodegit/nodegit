@@ -86,20 +86,6 @@
   },
   "new" : {
     "functions": {
-      "git_blame_get_hunk_count": {
-        "type": "function",
-        "file": "blame.h",
-        "args": [
-          {
-            "name": "blame",
-            "type": "git_blame *"
-          }
-        ],
-        "return": {
-          "type": "int"
-        },
-        "group": "blame"
-      },
       "git_clone": {
         "isManual": true,
         "cFile": "generate/templates/manual/clone/clone.cc",
@@ -589,24 +575,6 @@
         },
         "group": "path"
       },
-      "git_rebase_next": {
-        "type": "function",
-        "file": "rebase.h",
-        "args": [
-          {
-            "name": "out",
-            "type": "git_rebase_operation **"
-          },
-          {
-            "name": "rebase",
-            "type": "git_rebase *"
-          }
-        ],
-        "return": {
-          "type": "int"
-        },
-        "group": "rebase"
-      },
       "git_remote_reference_list": {
         "args": [
           {
@@ -777,32 +745,6 @@
         },
         "group": "repository"
       },
-      "git_reset": {
-        "type": "function",
-        "file": "reset.h",
-        "args": [
-          {
-            "name": "repo",
-            "type": "git_repository *"
-          },
-          {
-            "name": "target",
-            "type": "git_object *"
-          },
-          {
-            "name": "reset_type",
-            "type": "git_reset_t"
-          },
-          {
-            "name": "checkout_opts",
-            "type": "git_checkout_options *"
-          }
-        ],
-        "return": {
-          "type": "int"
-        },
-        "group": "reset"
-      },
       "git_revwalk_commit_walk": {
         "args": [
           {
@@ -884,36 +826,6 @@
           "type": "int",
           "isErrorCode": true
         }
-      },
-      "git_stash_save": {
-        "type": "function",
-        "file": "stash.h",
-        "args": [
-          {
-            "name": "out",
-            "type": "git_oid *"
-          },
-          {
-            "name": "repo",
-            "type": "git_repository *"
-          },
-          {
-            "name": "stasher",
-            "type": "const git_signature *"
-          },
-          {
-            "name": "message",
-            "type": "const char *"
-          },
-          {
-            "name": "flags",
-            "type": "unsigned int"
-          }
-        ],
-        "return": {
-          "type": "int"
-        },
-        "group": "stash"
       },
       "git_status_list_get_perfdata": {
         "file": "sys/diff.h",
