@@ -433,7 +433,7 @@
           }
         ],
         "return": {
-          "type": "const git_index_reuc_entry *"
+          "type": "void"
         },
         "group": "index_reuc_entry"
       },
@@ -523,7 +523,7 @@
           }
         ],
         "return": {
-          "type": "const git_index_reuc_entry *"
+          "type": "int"
         },
         "group": "index_reuc_entry"
       },
@@ -869,6 +869,12 @@
         ]
       ],
       [
+        "diff",
+        [
+          "git_diff_get_perfdata"
+        ]
+      ],
+      [
         "diff_stats",
         [
           "git_diff_stats_files_changed",
@@ -897,6 +903,14 @@
           "git_filter_source_id",
           "git_filter_source_mode",
           "git_filter_source_flags"
+        ]
+      ],
+      [
+        "hashsig",
+        [
+          "git_hashsig_compare",
+          "git_hashsig_create",
+          "git_hashsig_create_fromfile"
         ]
       ],
       [
@@ -977,6 +991,12 @@
         ]
       ],
       [
+        "path",
+        [
+          "git_path_is_gitfile"
+        ]
+      ],
+      [
         "pathspec_match_list",
         [
           "git_pathspec_match_list_diff_entry",
@@ -1005,10 +1025,14 @@
       [
         "repository",
         [
+          "git_repository__cleanup",
           "git_repository_get_references",
           "git_repository_get_submodules",
           "git_repository_get_remotes",
-          "git_repository_refresh_references"
+          "git_repository_refresh_references",
+          "git_repository_set_index",
+          "git_repository_submodule_cache_all",
+          "git_repository_submodule_cache_clear"
         ]
       ],
       [
@@ -1284,6 +1308,13 @@
         }
       ],
       [
+        "git_hashsig",
+        {
+          "type": "struct",
+          "fields": []
+        }
+      ],
+      [
         "git_index_name_entry",
         {
           "type": "struct",
@@ -1400,11 +1431,11 @@
               "name": "certificate_check"
             },
             {
-              "type": "git_transfer_progress_cb",
+              "type": "git_indexer_progress_cb",
               "name": "transfer_progress"
             },
             {
-              "type": "git_push_transfer_progress",
+              "type": "git_push_transfer_progress_cb",
               "name": "push_transfer_progress",
               "isCallback": true
             },
@@ -1420,6 +1451,10 @@
             {
               "type": "void *",
               "name": "payload"
+            },
+            {
+              "type": "git_url_resolve_cb",
+              "name": "resolve_url"
             }
           ],
           "used": {

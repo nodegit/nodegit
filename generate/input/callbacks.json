@@ -476,6 +476,25 @@
       "error": -1
     }
   },
+  "git_indexer_progress_cb": {
+    "args": [
+      {
+        "name": "stats",
+        "cType": "const git_indexer_progress *"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": -1,
+      "throttle": 100
+    }
+  },
   "git_note_foreach_cb": {
     "args": [
       {
@@ -522,6 +541,28 @@
       },
       {
         "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 1,
+      "success": 0,
+      "error": -1
+    }
+  },
+  "git_push_update_reference_cb": {
+    "args": [
+      {
+        "name": "refname",
+        "cType": "const char *"
+      },
+      {
+        "name": "status",
+        "cType": "const char *"
+      },
+      {
+        "name": "data",
         "cType": "void *"
       }
     ],
@@ -692,29 +733,6 @@
       "error": -1
     }
   },
-  "git_smart_subtransport_cb": {
-    "args": [
-      {
-        "name": "out",
-        "cType": "git_smart_subtransport **",
-        "isReturn": true
-      },
-      {
-        "name": "owner",
-        "cType": "git_transport*"
-      },
-      {
-        "name": "param",
-        "cType": "void *"
-      }
-    ],
-    "return": {
-      "type": "int",
-      "noResults": 0,
-      "success": 0,
-      "error": -1
-    }
-  },
   "git_stash_apply_progress_cb": {
     "args": [
       {
@@ -826,26 +844,7 @@
       "error": -1
     }
   },
-  "git_transfer_progress_cb": {
-    "args": [
-      {
-        "name": "stats",
-        "cType": "const git_transfer_progress *"
-      },
-      {
-        "name": "payload",
-        "cType": "void *"
-      }
-    ],
-    "return": {
-      "type": "int",
-      "noResults": 0,
-      "success": 0,
-      "error": -1,
-      "throttle": 100
-    }
-  },
-  "git_push_transfer_progress": {
+  "git_push_transfer_progress_cb": {
     "args": [
       {
         "name": "current",
@@ -983,24 +982,28 @@
       "error": -1
     }
   },
-  "git_push_update_reference_cb": {
+  "git_url_resolve_cb": {
     "args": [
       {
-        "name": "refname",
+        "name": "url_resolved",
+        "cType": "git_buf *"
+      },
+      {
+        "name": "url",
         "cType": "const char *"
       },
       {
-        "name": "status",
-        "cType": "const char *"
+        "name": "direction",
+        "cType": "int"
       },
       {
-        "name": "data",
+        "name": "payload",
         "cType": "void *"
       }
     ],
     "return": {
       "type": "int",
-      "noResults": 1,
+      "noResults": -30,
       "success": 0,
       "error": -1
     }
