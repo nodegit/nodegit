@@ -348,7 +348,6 @@
           ],
           "include_dirs": ["libgit2/deps/ntlmclient"],
           "defines": [
-            "GIT_USE_FUTIMENS",
             "GIT_NTLM",
             "GIT_GSSAPI"
           ],
@@ -380,8 +379,9 @@
           ],
           "defines": [
             "GIT_OPENSSL",
-            "GIT_USE_STAT_MTIM",
-            "GIT_REGEX_PCRE"
+            "GIT_REGEX_PCRE",
+            "GIT_USE_FUTIMENS",
+            "GIT_USE_STAT_MTIM"
           ]
         }],
         ["<(is_IBMi) == 1", {
