@@ -94,6 +94,9 @@
         ],
         [
           "OS=='mac'", {
+            "libraries": [
+              "-liconv",
+            ],
             "conditions": [
               ["<(is_electron) == 1", {
                 "include_dirs": [
@@ -153,8 +156,16 @@
             ]
           }
         ],
+        ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "libraries": [
+            "<!(krb5-config gssapi --libs)"
+          ]
+        }],
         [
           "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+            "libraries": [
+              "<!(pcre-config --libs-posix)"
+            ],
             "cflags": [
               "-std=c++11"
             ]

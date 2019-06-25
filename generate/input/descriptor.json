@@ -1417,6 +1417,11 @@
         }
       }
     },
+    "fetch_options": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ]
+    },
     "filter": {
       "selfFreeing": false,
       "hasConstructor": true,
@@ -1650,6 +1655,9 @@
           }
         },
         "git_index_add_frombuffer": {
+          "ignore": true
+        },
+        "git_index_add_from_buffer": {
           "ignore": true
         },
         "git_index_checksum": {
@@ -2797,6 +2805,11 @@
     "push": {
       "ignore": true
     },
+    "push_options": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ]
+    },
     "rebase": {
       "hasConstructor": false,
       "selfFreeing": true,
@@ -2881,11 +2894,15 @@
           }
         },
         "git_rebase_next": {
+          "isAsync": true,
           "args": {
             "operation": {
               "isReturn": true,
               "ownedByThis": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_rebase_open": {
@@ -4058,9 +4075,6 @@
     },
     "time": {
       "dupFunction": "git_time_dup",
-      "dependencies": [
-        "git2/sys/time.h"
-      ],
       "functions": {
         "git_time_sign": {
           "ignore": true
