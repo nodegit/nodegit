@@ -178,6 +178,8 @@
         "libgit2/src/oidmap.h",
         "libgit2/src/streams/mbedtls.c",
         "libgit2/src/streams/mbedtls.h",
+        "libgit2/src/streams/openssl.c",
+        "libgit2/src/streams/openssl.h",
         "libgit2/src/streams/registry.c",
         "libgit2/src/streams/registry.h",
         "libgit2/src/pack-objects.c",
@@ -380,10 +382,6 @@
             "GIT_OPENSSL",
             "GIT_USE_STAT_MTIM",
             "GIT_REGEX_PCRE"
-          ],
-          "sources": [
-            "libgit2/src/streams/openssl.c",
-            "libgit2/src/streams/openssl.h"
           ]
         }],
         ["<(is_IBMi) == 1", {
