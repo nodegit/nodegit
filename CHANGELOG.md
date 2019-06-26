@@ -91,7 +91,7 @@
 - Fixed bug where repeated uses of extractSignature would fail because of the use of regex.prototype.match
 - Added support for building on IBM i (PASE) machines
 - Fixed bug where signingCb in rebases would not return error codes to LibGit2 if the signingCb threw or rejected
-- Expoed AnnotatedCommit methods:
+- Exposed AnnotatedCommit methods:
   - AnnotatedCommit.prototype.ref
 - Exposed Apply methods:
   - Apply.apply applies a diff to the repository
