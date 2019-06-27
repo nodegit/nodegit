@@ -76,10 +76,17 @@ In Ubuntu:
 sudo apt-get install libssl-dev
 ```
 
-Additionally, you need `curl-config` on your system. You need one of these packages:
-  * libcurl4-gnutls-dev
-  * libcurl4-nss-dev
-  * libcurl4-openssl-dev
+You will need the following libraries installed on your linux machine:
+  - libpcre
+  - libpcreposix
+  - libkrb5
+  - libk5crypto
+  - libcom_err
+
+When building locally, you will also need development packages for kerberos and pcre, so both of these utilities must be present on your machine:
+  - pcre-config
+  - krb5-config
+
 
 If you are still encountering problems while installing, you should try the
 [Building from source](http://www.nodegit.org/guides/install/from-source/)
