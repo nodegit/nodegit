@@ -20,9 +20,12 @@
         "GIT_SSH",
         "GIT_SSH_MEMORY_CREDENTIALS",
         "LIBGIT2_NO_FEATURES_H",
+        "GIT_SHA1_COLLISIONDETECT",
+        "GIT_USE_NSEC",
+        "GIT_HTTPS",
         # Node's util.h may be accidentally included so use this to guard
         # against compilation error.
-        "SRC_UTIL_H_",
+        "SRC_UTIL_H_"
       ],
       "dependencies": [
         "zlib",
@@ -32,8 +35,11 @@
       "sources": [
         "libgit2/include/git2/sys/hashsig.h",
         "libgit2/include/git2/sys/merge.h",
-        "libgit2/include/git2/sys/time.h",
         "libgit2/include/git2/worktree.h",
+        "libgit2/src/allocators/stdalloc.c",
+        "libgit2/src/allocators/stdalloc.h",
+        "libgit2/src/commit.c",
+        "libgit2/src/commit.h",
         "libgit2/src/alloc.c",
         "libgit2/src/alloc.h",
         "libgit2/src/annotated_commit.c",
@@ -71,8 +77,6 @@
         "libgit2/src/clone.h",
         "libgit2/src/commit_list.c",
         "libgit2/src/commit_list.h",
-        "libgit2/src/commit.c",
-        "libgit2/src/commit.h",
         "libgit2/src/common.h",
         "libgit2/src/config_backend.h",
         "libgit2/src/config_cache.c",
@@ -105,6 +109,7 @@
         "libgit2/src/diff.c",
         "libgit2/src/diff.h",
         "libgit2/src/errors.c",
+        "libgit2/src/errors.h",
         "libgit2/src/fetch.c",
         "libgit2/src/fetch.h",
         "libgit2/src/fetchhead.c",
@@ -115,8 +120,6 @@
         "libgit2/src/fileops.h",
         "libgit2/src/filter.c",
         "libgit2/src/filter.h",
-        "libgit2/src/fnmatch.c",
-        "libgit2/src/fnmatch.h",
         "libgit2/src/global.c",
         "libgit2/src/global.h",
         "libgit2/src/graph.c",
@@ -126,6 +129,7 @@
         "libgit2/src/hash/sha1dc/sha1.h",
         "libgit2/src/hash/sha1dc/ubc_check.c",
         "libgit2/src/hash/sha1dc/ubc_check.h",
+        "libgit2/src/hash/hash_collisiondetect.h",
         "libgit2/src/hashsig.c",
         "libgit2/src/ident.c",
         "libgit2/src/idxmap.c",
@@ -150,6 +154,8 @@
         "libgit2/src/message.h",
         "libgit2/src/mwindow.c",
         "libgit2/src/mwindow.h",
+        "libgit2/src/net.c",
+        "libgit2/src/net.h",
         "libgit2/src/netops.c",
         "libgit2/src/netops.h",
         "libgit2/src/notes.c",
@@ -196,6 +202,7 @@
         "libgit2/src/pool.h",
         "libgit2/src/posix.c",
         "libgit2/src/posix.h",
+        "libgit2/src/posix_regex.h",
         "libgit2/src/pqueue.c",
         "libgit2/src/pqueue.h",
         "libgit2/src/proxy.c",
@@ -236,8 +243,6 @@
         "libgit2/src/stash.c",
         "libgit2/src/status.c",
         "libgit2/src/status.h",
-        "libgit2/src/stdalloc.c",
-        "libgit2/src/stdalloc.h",
         "libgit2/src/strmap.c",
         "libgit2/src/strmap.h",
         "libgit2/src/strnlen.h",
@@ -254,12 +259,9 @@
         "libgit2/src/trailer.c",
         "libgit2/src/transaction.c",
         "libgit2/src/transport.c",
-        "libgit2/src/transports/auth.c",
-        "libgit2/src/transports/auth.h",
         "libgit2/src/transports/cred_helpers.c",
         "libgit2/src/transports/cred.c",
         "libgit2/src/transports/git.c",
-        "libgit2/src/transports/http.c",
         "libgit2/src/transports/local.c",
         "libgit2/src/transports/smart_pkt.c",
         "libgit2/src/transports/smart_protocol.c",
@@ -278,6 +280,8 @@
         "libgit2/src/varint.h",
         "libgit2/src/vector.c",
         "libgit2/src/vector.h",
+        "libgit2/src/wildmatch.c",
+        "libgit2/src/wildmatch.h",
         "libgit2/src/worktree.c",
         "libgit2/src/worktree.h",
         "libgit2/src/xdiff/xdiff.h",
@@ -299,6 +303,15 @@
         "libgit2/src/zstream.h"
       ],
       "conditions": [
+        ["target_arch=='x64'", {
+          "defines": [
+            "GIT_ARCH_64"
+          ]
+        }, {
+          "defines": [
+            "GIT_ARCH_32"
+          ]
+        }],
         ["OS=='mac'", {
             "conditions": [
               ["<(is_electron) == 1", {
@@ -309,11 +322,16 @@
             ],
             "defines": [
                 "GIT_SECURE_TRANSPORT",
-                "GIT_USE_STAT_MTIMESPEC"
+                "GIT_USE_STAT_MTIMESPEC",
+                "GIT_REGEX_REGCOMP_L",
+                "GIT_USE_ICONV"
             ],
             "sources": [
                 "libgit2/src/streams/stransport.c",
                 "libgit2/src/streams/stransport.h"
+            ],
+            "libraries": [
+              "-liconv",
             ],
             "link_settings": {
                 "xcode_settings": {
@@ -325,23 +343,44 @@
             }
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "dependencies": [
+            "ntlmclient"
+          ],
+          "include_dirs": ["libgit2/deps/ntlmclient"],
           "defines": [
-            "GIT_SHA1_OPENSSL"
+            "GIT_NTLM",
+            "GIT_GSSAPI"
           ],
           "sources": [
-            "libgit2/src/hash/hash_openssl.h",
+            "libgit2/src/transports/http.c",
+            "libgit2/src/transports/http.h",
+            "libgit2/src/transports/auth.h",
+            "libgit2/src/transports/auth.c",
+            "libgit2/src/transports/auth_negotiate.c",
+            "libgit2/src/transports/auth_negotiate.h",
+            "libgit2/src/transports/auth_ntlm.c",
+            "libgit2/src/transports/auth_ntlm.h",
             "libgit2/src/streams/tls.c",
             "libgit2/src/streams/tls.h"
+          ],
+          "cflags": [
+            "<!(krb5-config gssapi --cflags)"
+          ],
+          "libraries": [
+            "<!(krb5-config gssapi --libs)"
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
           "cflags": [
-            "-DGIT_SSH",
-            "-DGIT_SSL",
-            "-w",
+            "<!(pcre-config --cflags-posix)"
+          ],
+          "libraries": [
+            "<!(pcre-config --libs-posix)"
           ],
           "defines": [
             "GIT_OPENSSL",
+            "GIT_REGEX_PCRE",
+            "GIT_USE_FUTIMENS",
             "GIT_USE_STAT_MTIM"
           ]
         }],
@@ -351,9 +390,13 @@
           ]
         }],
         ["OS=='win'", {
+          "dependencies": [
+            "pcre"
+          ],
+          "include_dirs": ["libgit2/deps/pcre"],
           "defines": [
             "GIT_WINHTTP",
-            "GIT_SHA1_WIN32"
+            "GIT_REGEX_BUILTIN"
           ],
           "msvs_settings": {
             "VCLinkerTool": {
@@ -394,13 +437,7 @@
             # 'InterlockedDecrement' undefined; assuming extern returning int.
             4013,
           ],
-          "include_dirs": [
-            "libgit2/deps/regex"
-          ],
           "sources": [
-            "libgit2/deps/regex/regex.c",
-            "libgit2/src/hash/hash_win32.c",
-            "libgit2/src/hash/hash_win32.h",
             "libgit2/src/transports/winhttp.c",
             "libgit2/src/win32/dir.c",
             "libgit2/src/win32/dir.h",
@@ -426,6 +463,7 @@
             "libgit2/src/win32/version.h",
             "libgit2/src/win32/w32_buffer.c",
             "libgit2/src/win32/w32_buffer.h",
+            "libgit2/src/win32/w32_common.h",
             "libgit2/src/win32/w32_util.c",
             "libgit2/src/win32/w32_util.h",
           ],
@@ -593,6 +631,102 @@
             "/QOpenSys/pkgs/include"
           ]
         }],
+      ]
+    },
+    {
+      "target_name": "ntlmclient",
+      "type": "static_library",
+      "sources": [
+        "libgit2/deps/ntlmclient/compat.h",
+        "libgit2/deps/ntlmclient/crypt.h",
+        "libgit2/deps/ntlmclient/ntlm.c",
+        "libgit2/deps/ntlmclient/ntlm.h",
+        "libgit2/deps/ntlmclient/ntlmclient.h",
+        "libgit2/deps/ntlmclient/unicode.h",
+        "libgit2/deps/ntlmclient/unicode_builtin.c",
+        "libgit2/deps/ntlmclient/utf8.h",
+        "libgit2/deps/ntlmclient/util.c",
+        "libgit2/deps/ntlmclient/util.h"
+      ],
+      "conditions": [
+        ["OS=='mac' and <(is_electron) == 1", {
+          "include_dirs": ["openssl/include"]
+        }],
+        ["OS=='mac'", {
+          "sources": [
+            "libgit2/deps/ntlmclient/crypt_commoncrypto.c",
+            "libgit2/deps/ntlmclient/crypt_commoncrypto.h"
+          ],
+          "defines": [
+            "CRYPT_COMMONCRYPTO"
+          ]
+        }],
+        ["OS=='linux'", {
+          "sources": [
+            "libgit2/deps/ntlmclient/crypt_openssl.c",
+            "libgit2/deps/ntlmclient/crypt_openssl.h"
+          ],
+          "defines": [
+            "CRYPT_OPENSSL"
+          ]
+        }]
+      ]
+    },
+    {
+      "target_name": "pcre",
+      "type": "static_library",
+      "sources": [
+        "libgit2/deps/pcre/pcre_byte_order.c",
+        "libgit2/deps/pcre/pcre_chartables.c",
+        "libgit2/deps/pcre/pcre_compile.c",
+        "libgit2/deps/pcre/pcre_config.c",
+        "libgit2/deps/pcre/pcre_dfa_exec.c",
+        "libgit2/deps/pcre/pcre_exec.c",
+        "libgit2/deps/pcre/pcre_fullinfo.c",
+        "libgit2/deps/pcre/pcre_get.c",
+        "libgit2/deps/pcre/pcre_globals.c",
+        "libgit2/deps/pcre/pcre.h",
+        "libgit2/deps/pcre/pcre_internal.h",
+        "libgit2/deps/pcre/pcre_jit_compile.c",
+        "libgit2/deps/pcre/pcre_maketables.c",
+        "libgit2/deps/pcre/pcre_newline.c",
+        "libgit2/deps/pcre/pcre_ord2utf8.c",
+        "libgit2/deps/pcre/pcreposix.c",
+        "libgit2/deps/pcre/pcreposix.h",
+        "libgit2/deps/pcre/pcre_printint.c",
+        "libgit2/deps/pcre/pcre_refcount.c",
+        "libgit2/deps/pcre/pcre_string_utils.c",
+        "libgit2/deps/pcre/pcre_study.c",
+        "libgit2/deps/pcre/pcre_tables.c",
+        "libgit2/deps/pcre/pcre_ucd.c",
+        "libgit2/deps/pcre/pcre_valid_utf8.c",
+        "libgit2/deps/pcre/pcre_version.c",
+        "libgit2/deps/pcre/pcre_xclass.c",
+        "libgit2/deps/pcre/ucp.h"
+      ],
+      "defines": [
+        "HAVE_SYS_STAT_H",
+        "HAVE_SYS_TYPES_H",
+        "HAVE_WINDOWS_H",
+        "HAVE_STDINT_H",
+        "HAVE_INTTYPES_H",
+        "HAVE_MEMMOVE",
+        "HAVE_STRERROR",
+        "HAVE_STRTOLL",
+        "HAVE__STRTOI64",
+        "SUPPORT_PCRE8",
+        "NO_RECURSE",
+        "HAVE_LONG_LONG",
+        "HAVE_UNSIGNED_LONG_LONG",
+        "NEWLINE=10",
+        "POSIX_MALLOC_THRESHOLD=10",
+        "LINK_SIZE=2",
+        "PARENS_NEST_LIMIT=250",
+        "MATCH_LIMIT=10000000",
+        "MATCH_LIMIT_RECURSION=10000000",
+        "PCREGREP_BUFSIZE",
+        "MAX_NAME_SIZE=32",
+        "MAX_NAME_COUNT=10000"
       ]
     }
   ]

@@ -69,12 +69,13 @@ var Helpers = {
   },
 
   isConstructorFunction: function(cType, fnName) {
-    var initFnName = cType.split('_');
+    var deprecatedInitFnName = cType.split("_");
+    deprecatedInitFnName.splice(-1, 0, "init");
+    deprecatedInitFnName = deprecatedInitFnName.join("_");
 
-    initFnName.splice(-1, 0, "init");
-    initFnName = initFnName.join('_');
+    var initFnName = cType + "_init";
 
-    return initFnName === fnName;
+    return initFnName === fnName || deprecatedInitFnName === fnName;
   },
 
   hasConstructor: function(type, normalizedType) {
