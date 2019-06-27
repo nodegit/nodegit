@@ -1,5 +1,109 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-13" href="#v0-25-0-alpha-13">v0.25.0-alpha.13</a> [(2019-06-26)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.13)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.12...v0.25.0-alpha.13)
+
+#### Summary of changes
+- Turn on GIT_USE_NSEC on all platforms
+- Use Iconv on OSX for better internationalization support.
+- Bump libgit2 to bring in:
+  - NTLM proxy support
+  - Negotiate/Kerberos proxy support
+  - Various git config fixes
+  - Various git ignore fixes
+  - Various libgit2 performance improvements
+  - Windows/Linux now use PCRE for regex, OSX uses regcomp_l, this should address collation issues in diffing
+- Fixed bug with Repository.prototype.refreshReferences dying on corrupted reference. We now ignore corrupted references
+
+#### Merged PRs into NodeGit
+- [refresh_references.cc: skip refs that can't be directly resolved #1689](https://github.com/nodegit/nodegit/pull/1689)
+- [Bump libgit2 to fork of latest master #1690](https://github.com/nodegit/nodegit/pull/1690)
+
+#### Merged PRs into LibGit2
+- [errors: use lowercase](https://github.com/libgit2/libgit2/pull/5137)
+- [largefile tests: only write 2GB on 32-bit platforms](https://github.com/libgit2/libgit2/pull/5136)
+- [Fix broken link in README](https://github.com/libgit2/libgit2/pull/5129)
+- [net: remove unused `git_headlist_cb`](https://github.com/libgit2/libgit2/pull/5122)
+- [cmake: default NTLM client to off if no HTTPS support](https://github.com/libgit2/libgit2/pull/5124)
+- [attr: rename constants and macros for consistency](https://github.com/libgit2/libgit2/pull/5119)
+- [Change API instances of `fromnoun` to `from_noun` (with an underscore)](https://github.com/libgit2/libgit2/pull/5117)
+- [object: rename git_object__size to git_object_size](https://github.com/libgit2/libgit2/pull/5118)
+- [Replace fnmatch with wildmatch](https://github.com/libgit2/libgit2/pull/5110)
+- [Documentation fixes](https://github.com/libgit2/libgit2/pull/5111)
+- [Removal of `p_fallocate`](https://github.com/libgit2/libgit2/pull/5114)
+- [Modularize our TLS & hash detection](https://github.com/libgit2/libgit2/pull/5055)
+- [tests: merge::analysis: use test variants to avoid duplicated test suites](https://github.com/libgit2/libgit2/pull/5109)
+- [Rename options initialization functions](https://github.com/libgit2/libgit2/pull/5101)
+- [deps: ntlmclient: disable implicit fallthrough warnings](https://github.com/libgit2/libgit2/pull/5112)
+- [gitignore with escapes](https://github.com/libgit2/libgit2/pull/5097)
+- [Handle URLs with a colon after host but no port](https://github.com/libgit2/libgit2/pull/5108)
+- [Merge analysis support for bare repos](https://github.com/libgit2/libgit2/pull/5022)
+- [Add memleak check docs](https://github.com/libgit2/libgit2/pull/5104)
+- [Data-driven tests](https://github.com/libgit2/libgit2/pull/5098)
+- [sha1dc: update to fix endianess issues on AIX/HP-UX](https://github.com/libgit2/libgit2/pull/5107)
+- [Add NTLM support for HTTP(s) servers and proxies](https://github.com/libgit2/libgit2/pull/5052)
+- [Callback type names should be suffixed with `_cb`](https://github.com/libgit2/libgit2/pull/5102)
+- [tests: checkout: fix symlink.git being created outside of sandbox](https://github.com/libgit2/libgit2/pull/5099)
+- [ignore: handle escaped trailing whitespace](https://github.com/libgit2/libgit2/pull/5095)
+- [Ignore: only treat one leading slash as a root identifier](https://github.com/libgit2/libgit2/pull/5074)
+- [online tests: use gitlab for auth failures](https://github.com/libgit2/libgit2/pull/5094)
+- [Ignore files: don't ignore whitespace](https://github.com/libgit2/libgit2/pull/5076)
+- [cache: fix cache eviction using deallocated key](https://github.com/libgit2/libgit2/pull/5088)
+- [SECURITY.md: split out security-relevant bits from readme](https://github.com/libgit2/libgit2/pull/5085)
+- [Restore NetBSD support](https://github.com/libgit2/libgit2/pull/5086)
+- [repository: fix garbage return value](https://github.com/libgit2/libgit2/pull/5084)
+- [cmake: disable fallthrough warnings for PCRE](https://github.com/libgit2/libgit2/pull/5083)
+- [Configuration parsing: validate section headers with quotes](https://github.com/libgit2/libgit2/pull/5073)
+- [Loosen restriction on wildcard "*" refspecs](https://github.com/libgit2/libgit2/pull/5060)
+- [Use PCRE for our fallback regex engine when regcomp_l is unavailable](https://github.com/libgit2/libgit2/pull/4935)
+- [Remote URL last-chance resolution](https://github.com/libgit2/libgit2/pull/5062)
+- [Skip UTF8 BOM in ignore files](https://github.com/libgit2/libgit2/pull/5075)
+- [We've already added `ZLIB_LIBRARIES` to `LIBGIT2_LIBS` so don't also add the `z` library](https://github.com/libgit2/libgit2/pull/5080)
+- [Define SYMBOLIC_LINK_FLAG_DIRECTORY if required](https://github.com/libgit2/libgit2/pull/5077)
+- [Support symlinks for directories in win32](https://github.com/libgit2/libgit2/pull/5065)
+- [rebase: orig_head and onto accessors](https://github.com/libgit2/libgit2/pull/5057)
+- [cmake: correctly detect if system provides `regcomp`](https://github.com/libgit2/libgit2/pull/5063)
+- [Correctly write to missing locked global config](https://github.com/libgit2/libgit2/pull/5023)
+- [[RFC] util: introduce GIT_DOWNCAST macro](https://github.com/libgit2/libgit2/pull/4561)
+- [examples: implement SSH authentication](https://github.com/libgit2/libgit2/pull/5051)
+- [git_repository_init: stop traversing at windows root](https://github.com/libgit2/libgit2/pull/5050)
+- [config_file: check result of git_array_alloc](https://github.com/libgit2/libgit2/pull/5053)
+- [patch_parse.c: Handle CRLF in parse_header_start](https://github.com/libgit2/libgit2/pull/5027)
+- [fix typo](https://github.com/libgit2/libgit2/pull/5045)
+- [sha1: don't inline `git_hash_global_init` for win32](https://github.com/libgit2/libgit2/pull/5039)
+- [ignore: treat paths with trailing "/" as directories](https://github.com/libgit2/libgit2/pull/5040)
+- [Test that largefiles can be read through the tree API](https://github.com/libgit2/libgit2/pull/4874)
+- [Tests for symlinked user config](https://github.com/libgit2/libgit2/pull/5034)
+- [patch_parse: fix parsing addition/deletion of file with space](https://github.com/libgit2/libgit2/pull/5035)
+- [Optimize string comparisons](https://github.com/libgit2/libgit2/pull/5018)
+- [Negation of subdir ignore causes other subdirs to be unignored](https://github.com/libgit2/libgit2/pull/5020)
+- [xdiff: fix typo](https://github.com/libgit2/libgit2/pull/5024)
+- [docs: clarify relation of safe and forced checkout strategy](https://github.com/libgit2/libgit2/pull/5032)
+- [Each hash implementation should define `git_hash_global_init`](https://github.com/libgit2/libgit2/pull/5026)
+- [[Doc] Update URL to git2-rs](https://github.com/libgit2/libgit2/pull/5012)
+- [remote: Rename git_remote_completion_type to _t](https://github.com/libgit2/libgit2/pull/5008)
+- [odb: provide a free function for custom backends](https://github.com/libgit2/libgit2/pull/5005)
+- [Have git_branch_lookup accept GIT_BRANCH_ALL](https://github.com/libgit2/libgit2/pull/5000)
+- [Rename git_transfer_progress to git_indexer_progress](https://github.com/libgit2/libgit2/pull/4997)
+- [High-level map APIs](https://github.com/libgit2/libgit2/pull/4901)
+- [refdb_fs: fix loose/packed refs lookup racing with repacks](https://github.com/libgit2/libgit2/pull/4984)
+- [Allocator restructuring](https://github.com/libgit2/libgit2/pull/4998)
+- [cache: fix misnaming of `git_cache_free`](https://github.com/libgit2/libgit2/pull/4992)
+- [examples: produce single cgit2 binary](https://github.com/libgit2/libgit2/pull/4956)
+- [Remove public 'inttypes.h' header](https://github.com/libgit2/libgit2/pull/4991)
+- [Prevent reading out of bounds memory](https://github.com/libgit2/libgit2/pull/4996)
+- [Fix a memory leak in odb_otype_fast()](https://github.com/libgit2/libgit2/pull/4987)
+- [Make stdalloc__reallocarray call stdalloc__realloc](https://github.com/libgit2/libgit2/pull/4986)
+- [Remove `git_time_monotonic`](https://github.com/libgit2/libgit2/pull/4990)
+- [Fix a _very_ improbable memory leak in git_odb_new()](https://github.com/libgit2/libgit2/pull/4988)
+- [ci: publish documentation on merge](https://github.com/libgit2/libgit2/pull/4989)
+- [Enable creation of worktree from bare repo's default branch](https://github.com/libgit2/libgit2/pull/4982)
+- [Allow bypassing check for '.keep' file](https://github.com/libgit2/libgit2/pull/4965)
+- [Release v0.28.1](https://github.com/libgit2/libgit2/pull/4983)
+
+
+
 ## <a name="v0-25-0-alpha-12" href="#v0-25-0-alpha-12">v0.25.0-alpha.12</a> [(2019-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.12)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.11...v0.25.0-alpha.12)
