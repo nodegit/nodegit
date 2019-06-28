@@ -370,16 +370,18 @@
             "<!(krb5-config gssapi --libs)"
           ]
         }],
+        ["OS=='win' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "dependencies": [
+            "pcre"
+          ],
+          "include_dirs": ["libgit2/deps/pcre"],
+          "defines": [
+            "GIT_REGEX_BUILTIN"
+          ]
+        }],
         ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
-          "cflags": [
-            "<!(pcre-config --cflags-posix)"
-          ],
-          "libraries": [
-            "<!(pcre-config --libs-posix)"
-          ],
           "defines": [
             "GIT_OPENSSL",
-            "GIT_REGEX_PCRE",
             "GIT_USE_FUTIMENS",
             "GIT_USE_STAT_MTIM"
           ]
@@ -390,13 +392,8 @@
           ]
         }],
         ["OS=='win'", {
-          "dependencies": [
-            "pcre"
-          ],
-          "include_dirs": ["libgit2/deps/pcre"],
           "defines": [
-            "GIT_WINHTTP",
-            "GIT_REGEX_BUILTIN"
+            "GIT_WINHTTP"
           ],
           "msvs_settings": {
             "VCLinkerTool": {
@@ -704,29 +701,61 @@
         "libgit2/deps/pcre/pcre_xclass.c",
         "libgit2/deps/pcre/ucp.h"
       ],
-      "defines": [
-        "HAVE_SYS_STAT_H",
-        "HAVE_SYS_TYPES_H",
-        "HAVE_WINDOWS_H",
-        "HAVE_STDINT_H",
-        "HAVE_INTTYPES_H",
-        "HAVE_MEMMOVE",
-        "HAVE_STRERROR",
-        "HAVE_STRTOLL",
-        "HAVE__STRTOI64",
-        "SUPPORT_PCRE8",
-        "NO_RECURSE",
-        "HAVE_LONG_LONG",
-        "HAVE_UNSIGNED_LONG_LONG",
-        "NEWLINE=10",
-        "POSIX_MALLOC_THRESHOLD=10",
-        "LINK_SIZE=2",
-        "PARENS_NEST_LIMIT=250",
-        "MATCH_LIMIT=10000000",
-        "MATCH_LIMIT_RECURSION=10000000",
-        "PCREGREP_BUFSIZE",
-        "MAX_NAME_SIZE=32",
-        "MAX_NAME_COUNT=10000"
+      "conditions": [
+        ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "defines": [
+            "HAVE_DIRENT_H",
+            "HAVE_SYS_STAT_H",
+            "HAVE_SYS_TYPES_H",
+            "HAVE_UNISTD_H",
+            "HAVE_STDINT_H",
+            "HAVE_INTTYPES_H",
+            "HAVE_BCOPY",
+            "HAVE_MEMMOVE",
+            "HAVE_STRERROR",
+            "HAVE_STRTOLL",
+            "HAVE_STRTOQ",
+            "SUPPORT_PCRE8",
+            "NO_RECURSE",
+            "HAVE_LONG_LONG",
+            "HAVE_UNSIGNED_LONG_LONG",
+            "NEWLINE=10",
+            "POSIX_MALLOC_THRESHOLD=10",
+            "LINK_SIZE=2",
+            "PARENS_NEST_LIMIT=250",
+            "MATCH_LIMIT=10000000",
+            "MATCH_LIMIT_RECURSION=10000000",
+            "PCREGREP_BUFSIZE",
+            "MAX_NAME_SIZE=32",
+            "MAX_NAME_COUNT=10000"
+          ]
+        }],
+        ["OS=='win'", {
+          "defines": [
+            "HAVE_SYS_STAT_H",
+            "HAVE_SYS_TYPES_H",
+            "HAVE_WINDOWS_H",
+            "HAVE_STDINT_H",
+            "HAVE_INTTYPES_H",
+            "HAVE_MEMMOVE",
+            "HAVE_STRERROR",
+            "HAVE_STRTOLL",
+            "HAVE__STRTOI64",
+            "SUPPORT_PCRE8",
+            "NO_RECURSE",
+            "HAVE_LONG_LONG",
+            "HAVE_UNSIGNED_LONG_LONG",
+            "NEWLINE=10",
+            "POSIX_MALLOC_THRESHOLD=10",
+            "LINK_SIZE=2",
+            "PARENS_NEST_LIMIT=250",
+            "MATCH_LIMIT=10000000",
+            "MATCH_LIMIT_RECURSION=10000000",
+            "PCREGREP_BUFSIZE",
+            "MAX_NAME_SIZE=32",
+            "MAX_NAME_COUNT=10000"
+          ]
+        }]
       ]
     }
   ]
