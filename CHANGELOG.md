@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-14" href="#v0-25-0-alpha-14">v0.25.0-alpha.14</a> [(2019-07-01)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.14)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.13...v0.25.0-alpha.14)
+
+#### Summary of changes
+- Always use builtin regex for linux for portability
+
+#### Merged PRs into NodeGit
+- [Use builtin regex library for linux for better portability #1693](https://github.com/nodegit/nodegit/pull/1693)
+- [Remove pcre-config from binding.gyp #1694](https://github.com/nodegit/nodegit/pull/1694)
+
 ## <a name="v0-25-0-alpha-13" href="#v0-25-0-alpha-13">v0.25.0-alpha.13</a> [(2019-06-26)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.13)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.12...v0.25.0-alpha.13)
