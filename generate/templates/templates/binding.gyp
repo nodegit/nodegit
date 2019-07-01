@@ -163,9 +163,6 @@
         }],
         [
           "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
-            "libraries": [
-              "<!(pcre-config --libs-posix)"
-            ],
             "cflags": [
               "-std=c++11"
             ]
