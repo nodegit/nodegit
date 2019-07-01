@@ -2373,7 +2373,10 @@
           "ignore": true
         },
         "git_odb_add_disk_alternate": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_odb_exists": {
           "ignore": true,
