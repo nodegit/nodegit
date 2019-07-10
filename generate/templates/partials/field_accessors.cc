@@ -72,7 +72,7 @@
               Nan::MaybeLocal<Value> maybeObjectWaitForResult = Nan::Get(object, Nan::New("waitForResult").ToLocalChecked());
               if(!maybeObjectWaitForResult.IsEmpty()) {
                 Local<Value> objectWaitForResult = maybeObjectWaitForResult.ToLocalChecked();
-                waitForResult = (bool)objectWaitForResult->BooleanValue();
+                waitForResult = Nan::To<bool>(objectWaitForResult).FromJust();
               }
             }
           }

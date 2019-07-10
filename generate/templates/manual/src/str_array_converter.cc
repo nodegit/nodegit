@@ -10,7 +10,7 @@ using namespace v8;
 using namespace node;
 
 git_strarray *StrArrayConverter::Convert(Local<v8::Value> val) {
-  if (!val->BooleanValue()) {
+  if (!Nan::To<bool>(val).FromJust()) {
     return NULL;
   }
   else if (val->IsArray()) {
