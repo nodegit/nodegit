@@ -78,7 +78,7 @@ v8::Local<v8::Value> PromiseCompletion::Bind(Nan::Persistent<v8::Function> &func
 
   v8::Local<v8::Value> argv[1] = { object };
 
-  return scope.Escape(Nan::Call(bind, Nan::To<v8::Object>(Nan::New(function)).ToLocalChecked(), 1, argv));
+  return scope.Escape(Nan::Call(bind, Nan::To<v8::Object>(Nan::New(function)).ToLocalChecked(), 1, argv).ToLocalChecked());
 }
 
 // calls the callback stored in the PromiseCompletion, passing the baton that
