@@ -66,7 +66,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
     }
     else if (!result->IsNull() && !result->IsUndefined()) {
       {% if _return.isOutParam %}
-      {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
+      {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
       wrapper->selfFreeing = false;
 
       *baton->{{ _return.name }} = wrapper->GetValue();
@@ -100,7 +100,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseComp
       }
       else if (!result->IsNull() && !result->IsUndefined()) {
         {% if _return.isOutParam %}
-        {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
+        {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
         wrapper->selfFreeing = false;
 
         *baton->{{ _return.name }} = wrapper->GetValue();

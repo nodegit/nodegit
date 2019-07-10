@@ -67,7 +67,7 @@ NAN_METHOD(NodeGitWrapper<Traits>::JSNewFunction) {
     instance = new cppClass(static_cast<cType *>(
       Local<External>::Cast(info[0])->Value()),
       Nan::To<bool>(info[1]).FromJust(),
-      info.Length() >= 3 && !info[2].IsEmpty() && info[2]->IsObject() ? info[2]->ToObject() : Local<v8::Object>()
+      info.Length() >= 3 && !Nan::To<v8::Object>(info[2].IsEmpty() && info[2]->IsObject() ? info[2]).ToLocalChecked() : Local<v8::Object>()
     );
   }
 

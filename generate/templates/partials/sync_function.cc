@@ -17,7 +17,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%if not arg.isReturn %}
         {%partial convertFromV8 arg %}
         {%if arg.saveArg %}
-          v8::Local<Object> {{ arg.name }}(info[{{ arg.jsArg }}]->ToObject());
+          v8::Local<Object> {{ arg.name }}(Nan::To<v8::Object>(info[{{ arg.jsArg }}]).ToLocalChecked());
           {{ cppClassName }} *thisObj = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
 
           thisObj->{{ cppFunctionName }}_{{ arg.name }}.Reset({{ arg.name }});

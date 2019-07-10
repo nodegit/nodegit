@@ -90,9 +90,9 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
     {
       Local<v8::Object> err;
       if (baton->error->message) {
-        err = Nan::Error(baton->error->message)->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
       } else {
-        err = Nan::Error("Method fastWalk has thrown an error.")->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error("Method fastWalk has thrown an error.")).ToLocalChecked();
       }
       err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
       err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
@@ -131,13 +131,13 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
           continue;
         }
 
-        Local<v8::Object> nodeObj = node->ToObject();
+        Local<v8::Object> nodeObj = Nan::To<v8::Object>(node).ToLocalChecked();
         Local<v8::Value> checkValue = GetPrivate(nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
 
         if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined())
         {
           Local<v8::Value> argv[1] = {
-            checkValue->ToObject()
+            Nan::To<v8::Object>(checkValue).ToLocalChecked()
           };
           callback->Call(1, argv, async_resource);
           callbackFired = true;
@@ -147,7 +147,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
         Local<v8::Array> properties = nodeObj->GetPropertyNames();
         for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex)
         {
-          Local<v8::String> propName = properties->Get(propIndex)->ToString();
+          Local<v8::String> propName = Nan::To<v8::String>(properties->Get(propIndex)).ToLocalChecked();
           Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
           if (!nodeToQueue->IsUndefined())
           {
@@ -158,7 +158,7 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
 
       if (!callbackFired)
       {
-        Local<v8::Object> err = Nan::Error("Method next has thrown an error.")->ToObject();
+        Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method next has thrown an error.")).ToLocalChecked();
         err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
         err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
         Local<v8::Value> argv[1] = {

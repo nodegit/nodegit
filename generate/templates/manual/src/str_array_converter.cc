@@ -17,7 +17,7 @@ git_strarray *StrArrayConverter::Convert(Local<v8::Value> val) {
     return ConvertArray(Array::Cast(*val));
   }
   else if (val->IsString() || val->IsStringObject()) {
-    return ConvertString(val->ToString());
+    return ConvertString(Nan::To<v8::String>(val).ToLocalChecked());
   }
   else {
     return NULL;

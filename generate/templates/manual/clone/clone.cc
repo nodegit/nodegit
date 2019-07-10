@@ -33,7 +33,7 @@ NAN_METHOD(GitClone::Clone) {
   // start convert_from_v8 block
   const char *from_url = NULL;
 
-  String::Utf8Value url(info[0]->ToString());
+ Nan::Utf8String url(Nan::To<v8::String>(info[0]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character
   // C-strings expect:
   from_url = (const char *)malloc(url.length() + 1);
@@ -50,7 +50,7 @@ NAN_METHOD(GitClone::Clone) {
   // start convert_from_v8 block
   const char *from_local_path = NULL;
 
-  String::Utf8Value local_path(info[1]->ToString());
+ Nan::Utf8String local_path(Nan::To<v8::String>(info[1]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character
   // C-strings expect:
   from_local_path = (const char *)malloc(local_path.length() + 1);
@@ -67,7 +67,7 @@ NAN_METHOD(GitClone::Clone) {
   // start convert_from_v8 block
   const git_clone_options *from_options = NULL;
   if (info[2]->IsObject()) {
-    from_options = Nan::ObjectWrap::Unwrap<GitCloneOptions>(info[2]->ToObject())
+    from_options = Nan::ObjectWrap::Unwrap<GitCloneOptions>(Nan::To<v8::Object>(info[2]).ToLocalChecked())
                        ->GetValue();
   } else {
     from_options = 0;
@@ -80,11 +80,11 @@ NAN_METHOD(GitClone::Clone) {
   CloneWorker *worker = new CloneWorker(baton, callback);
 
   if (!info[0]->IsUndefined() && !info[0]->IsNull())
-    worker->SaveToPersistent("url", info[0]->ToObject());
+    worker->SaveToPersistent("url", Nan::To<v8::Object>(info[0]).ToLocalChecked());
   if (!info[1]->IsUndefined() && !info[1]->IsNull())
-    worker->SaveToPersistent("local_path", info[1]->ToObject());
+    worker->SaveToPersistent("local_path", Nan::To<v8::Object>(info[1]).ToLocalChecked());
   if (!info[2]->IsUndefined() && !info[2]->IsNull())
-    worker->SaveToPersistent("options", info[2]->ToObject());
+    worker->SaveToPersistent("options", Nan::To<v8::Object>(info[2]).ToLocalChecked());
 
   AsyncLibgit2QueueWorker(worker);
   return;
@@ -140,9 +140,9 @@ void GitClone::CloneWorker::HandleOKCallback() {
     if (baton->error) {
       v8::Local<v8::Object> err;
       if (baton->error->message) {
-        err = Nan::Error(baton->error->message)->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
       } else {
-        err = Nan::Error("Method clone has thrown an error.")->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error("Method clone has thrown an error.")).ToLocalChecked();
       }
       err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
       err->Set(Nan::New("errorFunction").ToLocalChecked(),
@@ -168,13 +168,13 @@ void GitClone::CloneWorker::HandleOKCallback() {
           continue;
         }
 
-        v8::Local<v8::Object> nodeObj = node->ToObject();
+        v8::Local<v8::Object> nodeObj = Nan::To<v8::Object>(node).ToLocalChecked();
         v8::Local<v8::Value> checkValue = GetPrivate(
             nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
 
         if (!checkValue.IsEmpty() && !checkValue->IsNull() &&
             !checkValue->IsUndefined()) {
-          v8::Local<v8::Value> argv[1] = {checkValue->ToObject()};
+          v8::Local<v8::Value> argv[1] = {Nan::To<v8::Object>(checkValue).ToLocalChecked()};
           callback->Call(1, argv, async_resource);
           callbackFired = true;
           break;
@@ -184,7 +184,7 @@ void GitClone::CloneWorker::HandleOKCallback() {
         for (unsigned int propIndex = 0; propIndex < properties->Length();
              ++propIndex) {
           v8::Local<v8::String> propName =
-              properties->Get(propIndex)->ToString();
+              Nan::To<v8::String>(properties->Get(propIndex)).ToLocalChecked();
           v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
           if (!nodeToQueue->IsUndefined()) {
             workerArguments.push(nodeToQueue);
@@ -194,7 +194,7 @@ void GitClone::CloneWorker::HandleOKCallback() {
 
       if (!callbackFired) {
         v8::Local<v8::Object> err =
-            Nan::Error("Method clone has thrown an error.")->ToObject();
+            Nan::To<v8::Object>(Nan::Error("Method clone has thrown an error.")).ToLocalChecked();
         err->Set(Nan::New("errno").ToLocalChecked(),
                  Nan::New(baton->error_code));
         err->Set(Nan::New("errorFunction").ToLocalChecked(),

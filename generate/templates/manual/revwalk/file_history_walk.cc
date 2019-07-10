@@ -34,10 +34,10 @@ public:
     Nan::Set(
       owners,
       Nan::New<v8::Number>(owners->Length()),
-      GitRepository::New(
+      Nan::To<v8::Object>(GitRepository::New(
         git_commit_owner(commit),
         true
-      )->ToObject()
+      )).ToLocalChecked()
     );
     Nan::Set(historyEntry, Nan::New("commit").ToLocalChecked(), GitCommit::New(commit, true, owners));
     commit = NULL;
@@ -196,7 +196,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  String::Utf8Value from_js_file_path(info[0]->ToString());
+ Nan::Utf8String from_js_file_path(Nan::To<v8::String>(info[0]).ToLocalChecked());
   baton->file_path = strdup(*from_js_file_path);
   baton->max_count = Nan::To<unsigned int>(info[1]).FromJust();
   baton->out = new std::vector<void *>;
@@ -444,9 +444,9 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
   if (baton->error) {
     v8::Local<v8::Object> err;
     if (baton->error->message) {
-      err = Nan::Error(baton->error->message)->ToObject();
+      err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
     } else {
-      err = Nan::Error("Method fileHistoryWalk has thrown an error.")->ToObject();
+      err = Nan::To<v8::Object>(Nan::Error("Method fileHistoryWalk has thrown an error.")).ToLocalChecked();
     }
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
     err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fileHistoryWalk").ToLocalChecked());
@@ -464,7 +464,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
   }
 
   if (baton->error_code < 0) {
-    v8::Local<v8::Object> err = Nan::Error("Method next has thrown an error.")->ToObject();
+    v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method next has thrown an error.")).ToLocalChecked();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
     err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fileHistoryWalk").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {

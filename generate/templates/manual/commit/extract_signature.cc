@@ -28,11 +28,11 @@ NAN_METHOD(GitCommit::ExtractSignature)
   baton->error = NULL;
   baton->signature = GIT_BUF_INIT_CONST(NULL, 0);
   baton->signed_data = GIT_BUF_INIT_CONST(NULL, 0);
-  baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info[0]->ToObject())->GetValue();
+  baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(Nan::To<v8::Object>(info[0]).ToLocalChecked())->GetValue();
 
   // baton->commit_id
   if (info[1]->IsString()) {
-    String::Utf8Value oidString(info[1]->ToString());
+   Nan::Utf8String oidString(Nan::To<v8::String>(info[1]).ToLocalChecked());
     baton->commit_id = (git_oid *)malloc(sizeof(git_oid));
     if (git_oid_fromstr(baton->commit_id, (const char *)strdup(*oidString)) != GIT_OK) {
       free(baton->commit_id);
@@ -44,12 +44,12 @@ NAN_METHOD(GitCommit::ExtractSignature)
       }
     }
   } else {
-    baton->commit_id = Nan::ObjectWrap::Unwrap<GitOid>(info[1]->ToObject())->GetValue();
+    baton->commit_id = Nan::ObjectWrap::Unwrap<GitOid>(Nan::To<v8::Object>(info[1]).ToLocalChecked())->GetValue();
   }
 
   // baton->field
   if (info[2]->IsString()) {
-    String::Utf8Value field(info[2]->ToString());
+   Nan::Utf8String field(Nan::To<v8::String>(info[2]).ToLocalChecked());
     baton->field = (char *)malloc(field.length() + 1);
     memcpy((void *)baton->field, *field, field.length());
     baton->field[field.length()] = 0;
@@ -65,8 +65,8 @@ NAN_METHOD(GitCommit::ExtractSignature)
   }
 
   ExtractSignatureWorker *worker = new ExtractSignatureWorker(baton, callback);
-  worker->SaveToPersistent("repo", info[0]->ToObject());
-  worker->SaveToPersistent("commit_id", info[1]->ToObject());
+  worker->SaveToPersistent("repo", Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  worker->SaveToPersistent("commit_id", Nan::To<v8::Object>(info[1]).ToLocalChecked());
   Nan::AsyncQueueWorker(worker);
   return;
 }
@@ -132,7 +132,7 @@ void GitCommit::ExtractSignatureWorker::HandleOKCallback()
   }
   else if (baton->error_code < 0)
   {
-    Local<v8::Object> err = Nan::Error("Extract Signature has thrown an error.")->ToObject();
+    Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Extract Signature has thrown an error.")).ToLocalChecked();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
     err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Commit.extractSignature").ToLocalChecked());
     Local<v8::Value> argv[1] = {

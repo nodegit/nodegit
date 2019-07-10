@@ -60,9 +60,9 @@ void GitFilterSource::RepoWorker::HandleOKCallback() {
     if (baton->error) {
       v8::Local<v8::Object> err;
       if (baton->error->message) {
-        err = Nan::Error(baton->error->message)->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
       } else {
-        err = Nan::Error("Method repo has thrown an error.")->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error("Method repo has thrown an error.")).ToLocalChecked();
       }
       err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
       err->Set(Nan::New("errorFunction").ToLocalChecked(),
@@ -74,7 +74,7 @@ void GitFilterSource::RepoWorker::HandleOKCallback() {
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
       v8::Local<v8::Object> err =
-          Nan::Error("Method repo has thrown an error.")->ToObject();
+          Nan::To<v8::Object>(Nan::Error("Method repo has thrown an error.")).ToLocalChecked();
       err->Set(Nan::New("errno").ToLocalChecked(),
                Nan::New(baton->error_code));
       err->Set(Nan::New("errorFunction").ToLocalChecked(),

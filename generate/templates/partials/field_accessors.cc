@@ -39,11 +39,11 @@
         }
 
       {% elsif field.isLibgitType %}
-        v8::Local<Object> {{ field.name }}(value->ToObject());
+        v8::Local<Object> {{ field.name }}(Nan::To<v8::Object>(value).ToLocalChecked());
 
         wrapper->{{ field.name }}.Reset({{ field.name }});
 
-        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert({{ field.name }}->ToObject()){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }}->ToObject())->GetValue(){% endif %};
+        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked())){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked())->GetValue(){% endif %};
 
       {% elsif field.isCallbackFunction %}
         Nan::Callback *callback = NULL;
@@ -92,7 +92,7 @@
         if (wrapper->GetValue()->{{ field.name }}) {
         }
 
-        String::Utf8Value str(value);
+       Nan::Utf8String str(value);
         wrapper->GetValue()->{{ field.name }} = strdup(*str);
 
       {% elsif field.isCppClassIntType %}
@@ -225,7 +225,7 @@
             }
             else if (!result->IsNull() && !result->IsUndefined()) {
               {% if _return.isOutParam %}
-              {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
+              {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
               wrapper->selfFreeing = false;
 
               *baton->{{ _return.name }} = wrapper->GetValue();
@@ -261,7 +261,7 @@
               }
               else if (!result->IsNull() && !result->IsUndefined()) {
                 {% if _return.isOutParam %}
-                {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(result->ToObject());
+                {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
                 wrapper->selfFreeing = false;
 
                 *baton->{{ _return.name }} = wrapper->GetValue();

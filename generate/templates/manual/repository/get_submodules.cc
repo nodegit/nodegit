@@ -72,7 +72,7 @@ void GitRepository::GetSubmodulesWorker::HandleOKCallback()
         GitSubmodule::New(
           submodule,
           true,
-          GitRepository::New(git_submodule_owner(submodule), true)->ToObject()
+          Nan::To<v8::Object>(GitRepository::New(git_submodule_owner(submodule), true)).ToLocalChecked()
         )
       );
     }
@@ -100,7 +100,7 @@ void GitRepository::GetSubmodulesWorker::HandleOKCallback()
   }
   else if (baton->error_code < 0)
   {
-    Local<v8::Object> err = Nan::Error("Repository getSubmodules has thrown an error.")->ToObject();
+    Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Repository getSubmodules has thrown an error.")).ToLocalChecked();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
     err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Repository.getSubmodules").ToLocalChecked());
     Local<v8::Value> argv[1] = {

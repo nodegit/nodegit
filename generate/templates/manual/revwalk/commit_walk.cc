@@ -87,7 +87,7 @@ void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
         GitCommit::New(
           commit,
           true,
-          GitRepository::New(git_commit_owner(commit), true)->ToObject()
+          Nan::To<v8::Object>(GitRepository::New(git_commit_owner(commit), true)).ToLocalChecked()
         )
       );
     }
@@ -110,7 +110,7 @@ void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
 
     free((void *)baton->error);
   } else if (baton->error_code < 0) {
-    Local<v8::Object> err = Nan::Error("Revwalk commitWalk has thrown an error.")->ToObject();
+    Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Revwalk commitWalk has thrown an error.")).ToLocalChecked();
     err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
     err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.commitWalk").ToLocalChecked());
     Local<v8::Value> argv[1] = {
