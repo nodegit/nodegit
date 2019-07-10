@@ -217,7 +217,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
           break;
         }
 
-        v8::Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        v8::Local<v8::Array> properties = Nan::GetPropertyNames(nodeObj).ToLocalChecked();
         for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
           v8::Local<v8::String> propName = Nan::To<v8::String>(properties->Get(propIndex)).ToLocalChecked();
           v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);

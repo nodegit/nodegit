@@ -134,7 +134,7 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       // GitFilterList baton->filters
       v8::Local<v8::Array> owners = Nan::New<Array>(0);
       v8::Local<v8::Object> filterRegistry = Nan::New(GitFilterRegistry::persistentHandle);
-      v8::Local<v8::Array> propertyNames = filterRegistry->GetPropertyNames();
+      v8::Local<v8::Array> propertyNames = Nan::GetPropertyNames(filterRegistry).ToLocalChecked();
 
       Nan::Set(
         owners,
@@ -214,7 +214,7 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
           break;
         }
 
-        v8::Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        v8::Local<v8::Array> properties = Nan::GetPropertyNames(nodeObj).ToLocalChecked();
         for (unsigned int propIndex = 0; propIndex < properties->Length();
              ++propIndex) {
           v8::Local<v8::String> propName =
