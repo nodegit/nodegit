@@ -63,7 +63,7 @@ NAN_METHOD(GitFilterList::Load) {
   // start convert_from_v8 block
   const char *from_path = NULL;
 
- Nan::Utf8String path(Nan::To<v8::String>(info[2]).ToLocalChecked());
+  Nan::Utf8String path(Nan::To<v8::String>(info[2]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character
   // C-strings expect:
   from_path = (const char *)malloc(path.length() + 1);
@@ -144,7 +144,7 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
 
       for (uint32_t index = 0; index < propertyNames->Length(); ++index) {
         v8::Local<v8::String> propertyName = Nan::To<v8::String>(propertyNames->Get(index)).ToLocalChecked();
-       Nan::Utf8String propertyNameAsUtf8Value(propertyName);
+        Nan::Utf8String propertyNameAsUtf8Value(propertyName);
         const char *propertyNameAsCString = *propertyNameAsUtf8Value;
 
         bool isNotMethodOnRegistry = strcmp("register", propertyNameAsCString)

@@ -32,7 +32,7 @@ NAN_METHOD(GitCommit::ExtractSignature)
 
   // baton->commit_id
   if (info[1]->IsString()) {
-   Nan::Utf8String oidString(Nan::To<v8::String>(info[1]).ToLocalChecked());
+    Nan::Utf8String oidString(Nan::To<v8::String>(info[1]).ToLocalChecked());
     baton->commit_id = (git_oid *)malloc(sizeof(git_oid));
     if (git_oid_fromstr(baton->commit_id, (const char *)strdup(*oidString)) != GIT_OK) {
       free(baton->commit_id);
@@ -49,7 +49,7 @@ NAN_METHOD(GitCommit::ExtractSignature)
 
   // baton->field
   if (info[2]->IsString()) {
-   Nan::Utf8String field(Nan::To<v8::String>(info[2]).ToLocalChecked());
+    Nan::Utf8String field(Nan::To<v8::String>(info[2]).ToLocalChecked());
     baton->field = (char *)malloc(field.length() + 1);
     memcpy((void *)baton->field, *field, field.length());
     baton->field[field.length()] = 0;

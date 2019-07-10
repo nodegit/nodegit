@@ -19,7 +19,7 @@
     {%endif%}
   {%if cppClassName == 'String'%}
 
- Nan::Utf8String {{ name }}(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
+  Nan::Utf8String {{ name }}(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character C-strings expect:
   from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
   // copy the characters from the nodejs string into our C-string (used instead of strdup or strcpy because nulls in
@@ -36,7 +36,7 @@
   from_{{ name }} = GitBufConverter::Convert(info[{{ jsArg }}]);
   {%elsif cppClassName == 'Wrapper'%}
 
- Nan::Utf8String {{ name }}(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
+  Nan::Utf8String {{ name }}(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character C-strings expect:
   from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
   // copy the characters from the nodejs string into our C-string (used instead of strdup or strcpy because nulls in
@@ -69,7 +69,7 @@
   {%elsif cppClassName == 'GitOid'%}
   if (info[{{ jsArg }}]->IsString()) {
     // Try and parse in a string to a git_oid
-   Nan::Utf8String oidString(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
+    Nan::Utf8String oidString(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
     git_oid *oidOut = (git_oid *)malloc(sizeof(git_oid));
 
     if (git_oid_fromstr(oidOut, (const char *) strdup(*oidString)) != GIT_OK) {

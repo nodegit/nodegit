@@ -196,7 +196,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
- Nan::Utf8String from_js_file_path(Nan::To<v8::String>(info[0]).ToLocalChecked());
+  Nan::Utf8String from_js_file_path(Nan::To<v8::String>(info[0]).ToLocalChecked());
   baton->file_path = strdup(*from_js_file_path);
   baton->max_count = Nan::To<unsigned int>(info[1]).FromJust();
   baton->out = new std::vector<void *>;

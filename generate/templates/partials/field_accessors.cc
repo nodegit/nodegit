@@ -92,7 +92,7 @@
         if (wrapper->GetValue()->{{ field.name }}) {
         }
 
-       Nan::Utf8String str(value);
+        Nan::Utf8String str(value);
         wrapper->GetValue()->{{ field.name }} = strdup(*str);
 
       {% elsif field.isCppClassIntType %}

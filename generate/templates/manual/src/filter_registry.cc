@@ -55,7 +55,7 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
   FilterRegisterBaton *baton = new FilterRegisterBaton;
 
   baton->filter = Nan::ObjectWrap::Unwrap<GitFilter>(Nan::To<v8::Object>(info[1]).ToLocalChecked())->GetValue();
- Nan::Utf8String name(Nan::To<v8::String>(info[0]).ToLocalChecked());
+  Nan::Utf8String name(Nan::To<v8::String>(info[0]).ToLocalChecked());
 
   baton->filter_name = (char *)malloc(name.length() + 1);
   memcpy((void *)baton->filter_name, *name, name.length());
@@ -144,7 +144,7 @@ NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
   }
 
   FilterUnregisterBaton *baton = new FilterUnregisterBaton;
- Nan::Utf8String name(Nan::To<v8::String>(info[0]).ToLocalChecked());
+  Nan::Utf8String name(Nan::To<v8::String>(info[0]).ToLocalChecked());
 
   baton->filter_name = (char *)malloc(name.length() + 1);
   memcpy((void *)baton->filter_name, *name, name.length());

@@ -33,7 +33,7 @@ NAN_METHOD(GitClone::Clone) {
   // start convert_from_v8 block
   const char *from_url = NULL;
 
- Nan::Utf8String url(Nan::To<v8::String>(info[0]).ToLocalChecked());
+  Nan::Utf8String url(Nan::To<v8::String>(info[0]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character
   // C-strings expect:
   from_url = (const char *)malloc(url.length() + 1);
@@ -50,7 +50,7 @@ NAN_METHOD(GitClone::Clone) {
   // start convert_from_v8 block
   const char *from_local_path = NULL;
 
- Nan::Utf8String local_path(Nan::To<v8::String>(info[1]).ToLocalChecked());
+  Nan::Utf8String local_path(Nan::To<v8::String>(info[1]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character
   // C-strings expect:
   from_local_path = (const char *)malloc(local_path.length() + 1);
