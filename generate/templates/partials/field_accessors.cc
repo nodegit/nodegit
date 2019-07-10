@@ -43,7 +43,7 @@
 
         wrapper->{{ field.name }}.Reset({{ field.name }});
 
-        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked())){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked())->GetValue(){% endif %};
+        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked()){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked())->GetValue(){% endif %};
 
       {% elsif field.isCallbackFunction %}
         Nan::Callback *callback = NULL;

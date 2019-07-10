@@ -64,7 +64,7 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
   baton->error_code = GIT_OK;
   baton->filter_priority = Nan::To<int>(info[2]).FromJust();
 
-  Nan::New(GitFilterRegistry::persistentHandle)->Set(Nan::To<v8::Object>(Nan::To<v8::String>(info[0]).ToLocalChecked(), info[1]).ToLocalChecked());
+  Nan::New(GitFilterRegistry::persistentHandle)->Set(Nan::To<v8::String>(info[0]).ToLocalChecked(), Nan::To<v8::Object>(info[1]).ToLocalChecked());
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
   RegisterWorker *worker = new RegisterWorker(baton, callback);
