@@ -20,6 +20,7 @@ env:
   - TARGET_ARCH="ia32"
 
 node_js:
+  - "12"
   - "10"
   - "8"
 
