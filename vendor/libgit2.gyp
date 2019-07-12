@@ -21,7 +21,11 @@
         "GIT_SSH_MEMORY_CREDENTIALS",
         "LIBGIT2_NO_FEATURES_H",
         "GIT_SHA1_COLLISIONDETECT",
-        "GIT_USE_NSEC",
+        # "GIT_USE_NSEC", We've been shipping without NSEC for awhile
+        # Turning NSEC on should be left up to application maintainer
+        # There may be negative performance impacts using nodegit with
+        # NSEC turned on in a repository that was cloned with nodegit
+        # with NSEC turned off
         "GIT_HTTPS",
         # Node's util.h may be accidentally included so use this to guard
         # against compilation error.
