@@ -64,7 +64,7 @@ void PromiseCompletion::Setup(v8::Local<v8::Function> thenFn, v8::Local<v8::Valu
   };
 
   // call the promise's .then method with resolve and reject callbacks
-  Nan::Callback(thenFn).Call(promise, 2, argv);
+  Nan::Call(Nan::Callback(thenFn), promise, 2, argv);
 }
 
 // binds an object to be the context of the function.

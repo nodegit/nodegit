@@ -143,7 +143,7 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       );
 
       for (uint32_t index = 0; index < propertyNames->Length(); ++index) {
-        v8::Local<v8::String> propertyName = Nan::To<v8::String>(propertyNames->Get(index)).ToLocalChecked();
+        v8::Local<v8::String> propertyName = Nan::To<v8::String>(Nan::Get(propertyNames, index).ToLocalChecked()).ToLocalChecked();
         Nan::Utf8String propertyNameAsUtf8Value(propertyName);
         const char *propertyNameAsCString = *propertyNameAsUtf8Value;
 
@@ -153,7 +153,7 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
           Nan::Set(
             owners,
             Nan::New<Number>(owners->Length()),
-            filterRegistry->Get(propertyName)
+            Nan::Get(filterRegistry, propertyName).ToLocalChecked()
           );
         }
       }
@@ -176,8 +176,8 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       } else {
         err = Nan::To<v8::Object>(Nan::Error("Method load has thrown an error.")).ToLocalChecked();
       }
-      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      err->Set(Nan::New("errorFunction").ToLocalChecked(),
+      Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(),
                Nan::New("FilterList.load").ToLocalChecked());
       v8::Local<v8::Value> argv[1] = {err};
       callback->Call(1, argv, async_resource);
@@ -218,8 +218,8 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
         for (unsigned int propIndex = 0; propIndex < properties->Length();
              ++propIndex) {
           v8::Local<v8::String> propName =
-              Nan::To<v8::String>(properties->Get(propIndex)).ToLocalChecked();
-          v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+              Nan::To<v8::String>(Nan::Get(properties, propIndex).ToLocalChecked()).ToLocalChecked();
+          v8::Local<v8::Value> nodeToQueue = Nan::Get(nodeObj, propName).ToLocalChecked();
           if (!nodeToQueue->IsUndefined()) {
             workerArguments.push(nodeToQueue);
           }
@@ -229,9 +229,9 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       if (!callbackFired) {
         v8::Local<v8::Object> err =
             Nan::To<v8::Object>(Nan::Error("Method load has thrown an error.")).ToLocalChecked();
-        err->Set(Nan::New("errno").ToLocalChecked(),
+        Nan::Set(err,Nan::New("errno").ToLocalChecked(),
                  Nan::New(baton->error_code));
-        err->Set(Nan::New("errorFunction").ToLocalChecked(),
+        Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(),
                  Nan::New("FilterList.load").ToLocalChecked());
         v8::Local<v8::Value> argv[1] = {err};
         callback->Call(1, argv, async_resource);

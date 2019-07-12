@@ -9,12 +9,12 @@
 using namespace v8;
 using namespace node;
 
-git_strarray *StrArrayConverter::Convert(Local<v8::Value> val) {
+git_strarray *StrArrayConverter::Convert(v8::Local<v8::Value> val) {
   if (!Nan::To<bool>(val).FromJust()) {
     return NULL;
   }
   else if (val->IsArray()) {
-    return ConvertArray(Array::Cast(*val));
+    return ConvertArray(v8::Local<v8::Array>::Cast(val));
   }
   else if (val->IsString() || val->IsStringObject()) {
     return ConvertString(Nan::To<v8::String>(val).ToLocalChecked());
@@ -33,18 +33,18 @@ git_strarray * StrArrayConverter::AllocStrArray(const size_t count) {
   return result;
 }
 
-git_strarray *StrArrayConverter::ConvertArray(Array *val) {
+git_strarray *StrArrayConverter::ConvertArray(v8::Local<v8::Array> val) {
   git_strarray *result = AllocStrArray(val->Length());
 
   for(size_t i = 0; i < result->count; i++) {
-    Nan::Utf8String entry(val->Get(i));
+    Nan::Utf8String entry(Nan::Get(val, i).ToLocalChecked());
     result->strings[i] = strdup(*entry);
   }
 
   return result;
 }
 
-git_strarray* StrArrayConverter::ConvertString(Local<String> val) {
+git_strarray* StrArrayConverter::ConvertString(v8::Local<v8::String> val) {
   char *strings[1];
   Nan::Utf8String utf8String(val);
 

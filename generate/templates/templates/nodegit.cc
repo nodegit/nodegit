@@ -26,14 +26,11 @@
 #if (NODE_MODULE_VERSION > 48)
   v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
                                       v8::Local<v8::String> key) {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Local<v8::Private> privateKey = v8::Private::ForApi(isolate, key);
     v8::Local<v8::Value> value;
-    v8::Maybe<bool> result = object->HasPrivate(context, privateKey);
+    Nan::Maybe<bool> result = Nan::HasPrivate(object, key);
     if (!(result.IsJust() && result.FromJust()))
       return v8::Local<v8::Value>();
-    if (object->GetPrivate(context, privateKey).ToLocal(&value))
+    if (Nan::GetPrivate(object, key).ToLocal(&value))
       return value;
     return v8::Local<v8::Value>();
   }
@@ -43,10 +40,7 @@
                       v8::Local<v8::Value> value) {
     if (value.IsEmpty())
       return;
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Local<v8::Private> privateKey = v8::Private::ForApi(isolate, key);
-    object->SetPrivate(context, privateKey, value);
+    Nan::SetPrivate(object, key, value);
   }
 #else
   v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
@@ -70,7 +64,7 @@ void LockMasterSetStatus(const FunctionCallbackInfo<Value>& info) {
 
   // convert the first argument to Status
   if(info.Length() >= 0 && info[0]->IsNumber()) {
-    v8::Local<v8::Int32> value = info[0]->ToInt32(v8::Isolate::GetCurrent());
+    v8::Local<v8::Int32> value = Nan::To<v8::Int32>(info[0]).ToLocalChecked();
     LockMaster::Status status = static_cast<LockMaster::Status>(value->Value());
     if(status >= LockMaster::Disabled && status <= LockMaster::Enabled) {
       LockMaster::SetStatus(status);
@@ -91,7 +85,7 @@ void LockMasterGetDiagnostics(const FunctionCallbackInfo<Value>& info) {
 
   // return a plain JS object with properties
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
-  result->Set(Nan::New("storedMutexesCount").ToLocalChecked(), Nan::New(diagnostics.storedMutexesCount));
+  Nan::Set(result,Nan::New("storedMutexesCount").ToLocalChecked(), Nan::New(diagnostics.storedMutexesCount));
   info.GetReturnValue().Set(result);
 }
 
@@ -149,11 +143,11 @@ extern "C" void init(v8::Local<v8::Object> target) {
   NODE_SET_METHOD(target, "getThreadSafetyDiagnostics", LockMasterGetDiagnostics);
 
   v8::Local<v8::Object> threadSafety = Nan::New<v8::Object>();
-  threadSafety->Set(Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
-  threadSafety->Set(Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
-  threadSafety->Set(Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));
+  Nan::Set(threadSafety,Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
+  Nan::Set(threadSafety,Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
+  Nan::Set(threadSafety,Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));
 
-  target->Set(Nan::New("THREAD_SAFETY").ToLocalChecked(), threadSafety);
+  Nan::Set(target,Nan::New("THREAD_SAFETY").ToLocalChecked(), threadSafety);
 
   LockMaster::Initialize();
 }

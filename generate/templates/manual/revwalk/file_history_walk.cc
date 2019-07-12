@@ -448,8 +448,8 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     } else {
       err = Nan::To<v8::Object>(Nan::Error("Method fileHistoryWalk has thrown an error.")).ToLocalChecked();
     }
-    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fileHistoryWalk").ToLocalChecked());
+    Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fileHistoryWalk").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
@@ -465,8 +465,8 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
 
   if (baton->error_code < 0) {
     v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method next has thrown an error.")).ToLocalChecked();
-    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fileHistoryWalk").ToLocalChecked());
+    Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fileHistoryWalk").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };

@@ -64,7 +64,7 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
   baton->error_code = GIT_OK;
   baton->filter_priority = Nan::To<int>(info[2]).FromJust();
 
-  Nan::New(GitFilterRegistry::persistentHandle)->Set(Nan::To<v8::String>(info[0]).ToLocalChecked(), Nan::To<v8::Object>(info[1]).ToLocalChecked());
+  Nan::Set(Nan::New(GitFilterRegistry::persistentHandle), Nan::To<v8::String>(info[0]).ToLocalChecked(), Nan::To<v8::Object>(info[1]).ToLocalChecked());
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
   RegisterWorker *worker = new RegisterWorker(baton, callback);
@@ -106,8 +106,8 @@ void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
     } else {
       err = Nan::To<v8::Object>(Nan::Error("Method register has thrown an error.")).ToLocalChecked();
     }
-    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.register").ToLocalChecked());
+    Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.register").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
@@ -118,8 +118,8 @@ void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
   }
   else if (baton->error_code < 0) {
     v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method register has thrown an error.")).ToLocalChecked();
-    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.register").ToLocalChecked());
+    Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.register").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
@@ -192,8 +192,8 @@ void GitFilterRegistry::UnregisterWorker::HandleOKCallback() {
     } else {
       err = Nan::To<v8::Object>(Nan::Error("Method register has thrown an error.")).ToLocalChecked();
     }
-    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.unregister").ToLocalChecked());
+    Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.unregister").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };
@@ -204,8 +204,8 @@ void GitFilterRegistry::UnregisterWorker::HandleOKCallback() {
   }
   else if (baton->error_code < 0) {
     v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method unregister has thrown an error.")).ToLocalChecked();
-    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.unregister").ToLocalChecked());
+    Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("FilterRegistry.unregister").ToLocalChecked());
     v8::Local<v8::Value> argv[1] = {
       err
     };

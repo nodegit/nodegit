@@ -167,8 +167,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
       } else {
         err = Nan::To<v8::Object>(Nan::Error("Method {{ jsFunctionName }} has thrown an error.")).ToLocalChecked();
       }
-      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
+      Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
       v8::Local<v8::Value> argv[1] = {
         err
       };
@@ -219,8 +219,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
 
         v8::Local<v8::Array> properties = Nan::GetPropertyNames(nodeObj).ToLocalChecked();
         for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex) {
-          v8::Local<v8::String> propName = Nan::To<v8::String>(properties->Get(propIndex)).ToLocalChecked();
-          v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+          v8::Local<v8::String> propName = Nan::To<v8::String>(Nan::Get(properties, propIndex).ToLocalChecked()).ToLocalChecked();
+          v8::Local<v8::Value> nodeToQueue = Nan::Get(nodeObj, propName).ToLocalChecked();
           if (!nodeToQueue->IsUndefined()) {
             workerArguments.push(nodeToQueue);
           }
@@ -229,8 +229,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
 
       if (!callbackFired) {
         v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method {{ jsFunctionName }} has thrown an error.")).ToLocalChecked();
-        err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-        err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
+        Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
         v8::Local<v8::Value> argv[1] = {
           err
         };

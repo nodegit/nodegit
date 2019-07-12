@@ -94,8 +94,8 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       } else {
         err = Nan::To<v8::Object>(Nan::Error("Method fastWalk has thrown an error.")).ToLocalChecked();
       }
-      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
+      Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
       Local<v8::Value> argv[1] = {
         err
       };
@@ -147,8 +147,8 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
         Local<v8::Array> properties = Nan::GetPropertyNames(nodeObj).ToLocalChecked();
         for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex)
         {
-          Local<v8::String> propName = Nan::To<v8::String>(properties->Get(propIndex)).ToLocalChecked();
-          Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+          Local<v8::String> propName = Nan::To<v8::String>(Nan::Get(properties, propIndex).ToLocalChecked()).ToLocalChecked();
+          Local<v8::Value> nodeToQueue = Nan::Get(nodeObj, propName).ToLocalChecked();
           if (!nodeToQueue->IsUndefined())
           {
             workerArguments.push(nodeToQueue);
@@ -159,8 +159,8 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       if (!callbackFired)
       {
         Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method next has thrown an error.")).ToLocalChecked();
-        err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-        err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
+        Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
         Local<v8::Value> argv[1] = {
           err
         };

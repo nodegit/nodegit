@@ -47,13 +47,13 @@
   memset((void *)(((char *)from_{{ name }}) + {{ name }}.length()), 0, 1);
   {%elsif cppClassName == 'Array'%}
 
-  Array *tmp_{{ name }} = Array::Cast(*info[{{ jsArg }}]);
+  v8::Local<v8::Array> tmp_{{ name }} = v8::Local<v8::Array>::Cast(info[{{ jsArg }}]);
   from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|replace '**' '*' }}));
       for (unsigned int i = 0; i < tmp_{{ name }}->Length(); i++) {
     {%--
       // FIXME: should recursively call convertFromv8.
     --%}
-      from_{{ name }}[i] = Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(Nan::To<v8::Object>(tmp_{{ name }}->Get(Nan::New(static_cast<double>(i)))).ToLocalChecked())->GetValue();
+      from_{{ name }}[i] = Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(Nan::To<v8::Object>(Nan::Get(tmp_{{ name }}, Nan::New(static_cast<double>(i))).ToLocalChecked()).ToLocalChecked())->GetValue();
       }
   {%elsif cppClassName == 'Function'%}
   {%elsif cppClassName == 'Buffer'%}
