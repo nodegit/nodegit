@@ -129,5 +129,5 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
     return;
   }
 
-  Nan::Call(callback, 0, NULL);
+  Nan::Call(*callback, 0, NULL);
 }
