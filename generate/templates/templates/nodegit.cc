@@ -85,7 +85,7 @@ void LockMasterGetDiagnostics(const FunctionCallbackInfo<Value>& info) {
 
   // return a plain JS object with properties
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
-  Nan::Set(result,Nan::New("storedMutexesCount").ToLocalChecked(), Nan::New(diagnostics.storedMutexesCount));
+  Nan::Set(result, Nan::New("storedMutexesCount").ToLocalChecked(), Nan::New(diagnostics.storedMutexesCount));
   info.GetReturnValue().Set(result);
 }
 
@@ -143,11 +143,11 @@ extern "C" void init(v8::Local<v8::Object> target) {
   NODE_SET_METHOD(target, "getThreadSafetyDiagnostics", LockMasterGetDiagnostics);
 
   v8::Local<v8::Object> threadSafety = Nan::New<v8::Object>();
-  Nan::Set(threadSafety,Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
-  Nan::Set(threadSafety,Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
-  Nan::Set(threadSafety,Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));
+  Nan::Set(threadSafety, Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
+  Nan::Set(threadSafety, Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
+  Nan::Set(threadSafety, Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));
 
-  Nan::Set(target,Nan::New("THREAD_SAFETY").ToLocalChecked(), threadSafety);
+  Nan::Set(target, Nan::New("THREAD_SAFETY").ToLocalChecked(), threadSafety);
 
   LockMaster::Initialize();
 }

@@ -673,8 +673,8 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
   else if (baton->error_code < 0)
   {
     Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Repository refreshReferences has thrown an error.")).ToLocalChecked();
-    Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("Repository.refreshReferences").ToLocalChecked());
+    Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Repository.refreshReferences").ToLocalChecked());
     Local<v8::Value> argv[1] = {
       err
     };

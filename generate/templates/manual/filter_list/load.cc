@@ -176,8 +176,8 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       } else {
         err = Nan::To<v8::Object>(Nan::Error("Method load has thrown an error.")).ToLocalChecked();
       }
-      Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(),
+      Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(),
                Nan::New("FilterList.load").ToLocalChecked());
       v8::Local<v8::Value> argv[1] = {err};
       callback->Call(1, argv, async_resource);
@@ -229,9 +229,9 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       if (!callbackFired) {
         v8::Local<v8::Object> err =
             Nan::To<v8::Object>(Nan::Error("Method load has thrown an error.")).ToLocalChecked();
-        Nan::Set(err,Nan::New("errno").ToLocalChecked(),
+        Nan::Set(err, Nan::New("errno").ToLocalChecked(),
                  Nan::New(baton->error_code));
-        Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(),
+        Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(),
                  Nan::New("FilterList.load").ToLocalChecked());
         v8::Local<v8::Value> argv[1] = {err};
         callback->Call(1, argv, async_resource);

@@ -94,8 +94,8 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       } else {
         err = Nan::To<v8::Object>(Nan::Error("Method fastWalk has thrown an error.")).ToLocalChecked();
       }
-      Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
+      Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
       Local<v8::Value> argv[1] = {
         err
       };
@@ -159,8 +159,8 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       if (!callbackFired)
       {
         Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method next has thrown an error.")).ToLocalChecked();
-        Nan::Set(err,Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-        Nan::Set(err,Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
+        Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+        Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
         Local<v8::Value> argv[1] = {
           err
         };
