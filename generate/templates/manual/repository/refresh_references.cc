@@ -206,7 +206,7 @@ public:
       // the destructor didn't double free, but that still segfaulted internally in Node.
       v8::Local<v8::Object> buffer = Nan::CopyBuffer(tagOdbBuffer, tagOdbBufferLength).ToLocalChecked();
       v8::Local<v8::Value> toStringProp = Nan::Get(buffer, Nan::New("toString").ToLocalChecked()).ToLocalChecked();
-      v8::Local<v8::Object> jsTagOdbObjectString = Nan::CallAsFunction(toStringProp->ToObject(), buffer, 0, NULL).ToLocalChecked()->ToObject();
+      v8::Local<v8::Object> jsTagOdbObjectString = Nan::To<v8::Object>(Nan::CallAsFunction(Nan::To<v8::Object>(toStringProp).ToLocalChecked(), buffer, 0, NULL).ToLocalChecked()).ToLocalChecked();
 
       v8::Local<v8::Object> _signatureRegexesBySignatureType = Nan::New(signatureRegexesBySignatureType);
       v8::Local<v8::Array> signatureRegexes = v8::Local<v8::Array>::Cast(Nan::Get(_signatureRegexesBySignatureType, signatureType).ToLocalChecked());
@@ -217,9 +217,9 @@ public:
         };
 
         v8::Local<v8::Value> matchProp = Nan::Get(jsTagOdbObjectString, Nan::New("match").ToLocalChecked()).ToLocalChecked();
-        v8::Local<v8::Value> match = Nan::CallAsFunction(matchProp->ToObject(), jsTagOdbObjectString, 1, argv).ToLocalChecked();
+        v8::Local<v8::Value> match = Nan::CallAsFunction(Nan::To<v8::Object>(matchProp).ToLocalChecked(), jsTagOdbObjectString, 1, argv).ToLocalChecked();
         if (match->IsArray()) {
-          jsTagSignature = Nan::Get(match->ToObject(), 0).ToLocalChecked();
+          jsTagSignature = Nan::Get(Nan::To<v8::Object>(match).ToLocalChecked(), 0).ToLocalChecked();
           break;
         }
       }
@@ -379,7 +379,7 @@ NAN_METHOD(GitRepository::RefreshReferences)
       return Nan::ThrowError("Signature type must be \"gpgsig\" or \"x509\".");
     }
 
-    v8::Local<v8::String> signatureTypeParam = info[0]->ToString();
+    v8::Local<v8::String> signatureTypeParam = Nan::To<v8::String>(info[0]).ToLocalChecked();
     if (
       Nan::Equals(signatureTypeParam, Nan::New("gpgsig").ToLocalChecked()) != Nan::Just(true)
       && Nan::Equals(signatureTypeParam, Nan::New("x509").ToLocalChecked()) != Nan::Just(true)
@@ -611,7 +611,7 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
       Nan::New<String>(refreshData->headRefFullName).ToLocalChecked()
     );
 
-    v8::Local<v8::String> signatureType = GetFromPersistent("signatureType")->ToString();
+    v8::Local<v8::String> signatureType = Nan::To<v8::String>(GetFromPersistent("signatureType")).ToLocalChecked();
 
     unsigned int numRefs = refreshData->refs.size();
     v8::Local<v8::Array> refs = Nan::New<v8::Array>(numRefs);
@@ -672,9 +672,9 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
   }
   else if (baton->error_code < 0)
   {
-    Local<v8::Object> err = Nan::Error("Repository refreshReferences has thrown an error.")->ToObject();
-    err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    err->Set(Nan::New("errorFunction").ToLocalChecked(), Nan::New("Repository.refreshReferences").ToLocalChecked());
+    Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Repository refreshReferences has thrown an error.")).ToLocalChecked();
+    Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Repository.refreshReferences").ToLocalChecked());
     Local<v8::Value> argv[1] = {
       err
     };

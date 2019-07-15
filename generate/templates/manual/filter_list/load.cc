@@ -47,14 +47,14 @@ NAN_METHOD(GitFilterList::Load) {
   // start convert_from_v8 block
   git_repository *from_repo = NULL;
   from_repo =
-      Nan::ObjectWrap::Unwrap<GitRepository>(info[0]->ToObject())->GetValue();
+      Nan::ObjectWrap::Unwrap<GitRepository>(Nan::To<v8::Object>(info[0]).ToLocalChecked())->GetValue();
   // end convert_from_v8 block
   baton->repo = from_repo;
   // start convert_from_v8 block
   git_blob *from_blob = NULL;
   if (info[1]->IsObject()) {
     from_blob =
-        Nan::ObjectWrap::Unwrap<GitBlob>(info[1]->ToObject())->GetValue();
+        Nan::ObjectWrap::Unwrap<GitBlob>(Nan::To<v8::Object>(info[1]).ToLocalChecked())->GetValue();
   } else {
     from_blob = 0;
   }
@@ -63,7 +63,7 @@ NAN_METHOD(GitFilterList::Load) {
   // start convert_from_v8 block
   const char *from_path = NULL;
 
-  String::Utf8Value path(info[2]->ToString());
+  Nan::Utf8String path(Nan::To<v8::String>(info[2]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character
   // C-strings expect:
   from_path = (const char *)malloc(path.length() + 1);
@@ -93,15 +93,15 @@ NAN_METHOD(GitFilterList::Load) {
   LoadWorker *worker = new LoadWorker(baton, callback);
 
   if (!info[0]->IsUndefined() && !info[0]->IsNull())
-    worker->SaveToPersistent("repo", info[0]->ToObject());
+    worker->SaveToPersistent("repo", Nan::To<v8::Object>(info[0]).ToLocalChecked());
   if (!info[1]->IsUndefined() && !info[1]->IsNull())
-    worker->SaveToPersistent("blob", info[1]->ToObject());
+    worker->SaveToPersistent("blob", Nan::To<v8::Object>(info[1]).ToLocalChecked());
   if (!info[2]->IsUndefined() && !info[2]->IsNull())
-    worker->SaveToPersistent("path", info[2]->ToObject());
+    worker->SaveToPersistent("path", Nan::To<v8::Object>(info[2]).ToLocalChecked());
   if (!info[3]->IsUndefined() && !info[3]->IsNull())
-    worker->SaveToPersistent("mode", info[3]->ToObject());
+    worker->SaveToPersistent("mode", Nan::To<v8::Object>(info[3]).ToLocalChecked());
   if (!info[4]->IsUndefined() && !info[4]->IsNull())
-    worker->SaveToPersistent("flags", info[4]->ToObject());
+    worker->SaveToPersistent("flags", Nan::To<v8::Object>(info[4]).ToLocalChecked());
 
   AsyncLibgit2QueueWorker(worker);
   return;
@@ -134,17 +134,17 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       // GitFilterList baton->filters
       v8::Local<v8::Array> owners = Nan::New<Array>(0);
       v8::Local<v8::Object> filterRegistry = Nan::New(GitFilterRegistry::persistentHandle);
-      v8::Local<v8::Array> propertyNames = filterRegistry->GetPropertyNames();
+      v8::Local<v8::Array> propertyNames = Nan::GetPropertyNames(filterRegistry).ToLocalChecked();
 
       Nan::Set(
         owners,
         Nan::New<Number>(0),
-        this->GetFromPersistent("repo")->ToObject()
+        Nan::To<v8::Object>(this->GetFromPersistent("repo")).ToLocalChecked()
       );
 
       for (uint32_t index = 0; index < propertyNames->Length(); ++index) {
-        v8::Local<v8::String> propertyName = propertyNames->Get(index)->ToString();
-        String::Utf8Value propertyNameAsUtf8Value(propertyName);
+        v8::Local<v8::String> propertyName = Nan::To<v8::String>(Nan::Get(propertyNames, index).ToLocalChecked()).ToLocalChecked();
+        Nan::Utf8String propertyNameAsUtf8Value(propertyName);
         const char *propertyNameAsCString = *propertyNameAsUtf8Value;
 
         bool isNotMethodOnRegistry = strcmp("register", propertyNameAsCString)
@@ -153,12 +153,12 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
           Nan::Set(
             owners,
             Nan::New<Number>(owners->Length()),
-            filterRegistry->Get(propertyName)
+            Nan::Get(filterRegistry, propertyName).ToLocalChecked()
           );
         }
       }
 
-      to = GitFilterList::New(baton->filters, true, owners->ToObject());
+      to = GitFilterList::New(baton->filters, true, Nan::To<v8::Object>(owners).ToLocalChecked());
     } else {
       to = Nan::Null();
     }
@@ -172,12 +172,12 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
     if (baton->error) {
       v8::Local<v8::Object> err;
       if (baton->error->message) {
-        err = Nan::Error(baton->error->message)->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
       } else {
-        err = Nan::Error("Method load has thrown an error.")->ToObject();
+        err = Nan::To<v8::Object>(Nan::Error("Method load has thrown an error.")).ToLocalChecked();
       }
-      err->Set(Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      err->Set(Nan::New("errorFunction").ToLocalChecked(),
+      Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
+      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(),
                Nan::New("FilterList.load").ToLocalChecked());
       v8::Local<v8::Value> argv[1] = {err};
       callback->Call(1, argv, async_resource);
@@ -202,24 +202,24 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
           continue;
         }
 
-        v8::Local<v8::Object> nodeObj = node->ToObject();
+        v8::Local<v8::Object> nodeObj = Nan::To<v8::Object>(node).ToLocalChecked();
         v8::Local<v8::Value> checkValue = GetPrivate(
             nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
 
         if (!checkValue.IsEmpty() && !checkValue->IsNull() &&
             !checkValue->IsUndefined()) {
-          v8::Local<v8::Value> argv[1] = {checkValue->ToObject()};
+          v8::Local<v8::Value> argv[1] = {Nan::To<v8::Object>(checkValue).ToLocalChecked()};
           callback->Call(1, argv, async_resource);
           callbackFired = true;
           break;
         }
 
-        v8::Local<v8::Array> properties = nodeObj->GetPropertyNames();
+        v8::Local<v8::Array> properties = Nan::GetPropertyNames(nodeObj).ToLocalChecked();
         for (unsigned int propIndex = 0; propIndex < properties->Length();
              ++propIndex) {
           v8::Local<v8::String> propName =
-              properties->Get(propIndex)->ToString();
-          v8::Local<v8::Value> nodeToQueue = nodeObj->Get(propName);
+              Nan::To<v8::String>(Nan::Get(properties, propIndex).ToLocalChecked()).ToLocalChecked();
+          v8::Local<v8::Value> nodeToQueue = Nan::Get(nodeObj, propName).ToLocalChecked();
           if (!nodeToQueue->IsUndefined()) {
             workerArguments.push(nodeToQueue);
           }
@@ -228,10 +228,10 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
 
       if (!callbackFired) {
         v8::Local<v8::Object> err =
-            Nan::Error("Method load has thrown an error.")->ToObject();
-        err->Set(Nan::New("errno").ToLocalChecked(),
+            Nan::To<v8::Object>(Nan::Error("Method load has thrown an error.")).ToLocalChecked();
+        Nan::Set(err, Nan::New("errno").ToLocalChecked(),
                  Nan::New(baton->error_code));
-        err->Set(Nan::New("errorFunction").ToLocalChecked(),
+        Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(),
                  Nan::New("FilterList.load").ToLocalChecked());
         v8::Local<v8::Value> argv[1] = {err};
         callback->Call(1, argv, async_resource);

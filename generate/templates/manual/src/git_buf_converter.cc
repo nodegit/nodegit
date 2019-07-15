@@ -10,7 +10,7 @@ using namespace node;
 
 git_buf *GitBufConverter::Convert(Local<v8::Value> val) {
   if (val->IsString() || val->IsStringObject()) {
-    v8::String::Utf8Value param1(val->ToString());
+    Nan::Utf8String param1(Nan::To<v8::String>(val).ToLocalChecked());
     std::string v8String = std::string(*param1);
 
     const size_t size = sizeof(git_buf);

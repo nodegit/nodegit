@@ -79,11 +79,11 @@
         {% if isAsync %}
           {% each ownedBy as owner %}
             {%-- If the owner of this object is "this" in an async method, it will be stored in the persistent handle by name. --%}
-            Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), this->GetFromPersistent("{{= owner =}}")->ToObject());
+            Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), Nan::To<v8::Object>(this->GetFromPersistent("{{= owner =}}")).ToLocalChecked());
           {% endeach %}
         {% else %}
           {% each ownedByIndices as ownedByIndex %}
-            Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), info[{{= ownedByIndex =}}]->ToObject());
+            Nan::Set(owners, Nan::New<v8::Number>(owners->Length()), Nan::To<v8::Object>(info[{{= ownedByIndex =}}]).ToLocalChecked());
           {% endeach %}
         {% endif %}
       {% endif %}
@@ -96,10 +96,10 @@
         Nan::Set(
           owners,
           Nan::New<v8::Number>(owners->Length()),
-          {{= ownerFn.singletonCppClassName =}}::New(
+          Nan::To<v8::Object>({{= ownerFn.singletonCppClassName =}}::New(
             {{= ownerFn.name =}}({{ cType|asElementPointer parsedName }}),
             true
-          )->ToObject()
+          )).ToLocalChecked()
         );
       {% endif %}
     {% endif %}

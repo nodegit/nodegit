@@ -9,10 +9,10 @@ Nan::Persistent<v8::Function> PromiseCompletion::promiseRejected;
 void PromiseCompletion::InitializeComponent() {
   v8::Local<v8::FunctionTemplate> newTemplate = Nan::New<v8::FunctionTemplate>(New);
   newTemplate->InstanceTemplate()->SetInternalFieldCount(1);
-  newFn.Reset(newTemplate->GetFunction());
+  newFn.Reset(Nan::GetFunction(newTemplate).ToLocalChecked());
 
-  promiseFulfilled.Reset(Nan::New<v8::FunctionTemplate>(PromiseFulfilled)->GetFunction());
-  promiseRejected.Reset(Nan::New<v8::FunctionTemplate>(PromiseRejected)->GetFunction());
+  promiseFulfilled.Reset(Nan::GetFunction(Nan::New<v8::FunctionTemplate>(PromiseFulfilled)).ToLocalChecked());
+  promiseRejected.Reset(Nan::GetFunction(Nan::New<v8::FunctionTemplate>(PromiseRejected)).ToLocalChecked());
 }
 
 bool PromiseCompletion::ForwardIfPromise(v8::Local<v8::Value> result, AsyncBaton *baton, Callback callback)
@@ -21,7 +21,7 @@ bool PromiseCompletion::ForwardIfPromise(v8::Local<v8::Value> result, AsyncBaton
 
   // check if the result is a promise
   if (!result.IsEmpty() && result->IsObject()) {
-    Nan::MaybeLocal<v8::Value> maybeThenProp = Nan::Get(result->ToObject(), Nan::New("then").ToLocalChecked());
+    Nan::MaybeLocal<v8::Value> maybeThenProp = Nan::Get(Nan::To<v8::Object>(result).ToLocalChecked(), Nan::New("then").ToLocalChecked());
     if (!maybeThenProp.IsEmpty()) {
       v8::Local<v8::Value> thenProp = maybeThenProp.ToLocalChecked();
       if(thenProp->IsFunction()) {
@@ -54,7 +54,7 @@ void PromiseCompletion::Setup(v8::Local<v8::Function> thenFn, v8::Local<v8::Valu
   this->callback = callback;
   this->baton = baton;
 
-  v8::Local<v8::Object> promise = result->ToObject();
+  v8::Local<v8::Object> promise = Nan::To<v8::Object>(result).ToLocalChecked();
 
   v8::Local<v8::Object> thisHandle = handle();
 
@@ -64,7 +64,7 @@ void PromiseCompletion::Setup(v8::Local<v8::Function> thenFn, v8::Local<v8::Valu
   };
 
   // call the promise's .then method with resolve and reject callbacks
-  Nan::Callback(thenFn).Call(promise, 2, argv);
+  Nan::Call(Nan::Callback(thenFn), promise, 2, argv);
 }
 
 // binds an object to be the context of the function.
@@ -78,7 +78,7 @@ v8::Local<v8::Value> PromiseCompletion::Bind(Nan::Persistent<v8::Function> &func
 
   v8::Local<v8::Value> argv[1] = { object };
 
-  return scope.Escape(bind->Call(Nan::New(function), 1, argv));
+  return scope.Escape(Nan::Call(bind, Nan::To<v8::Object>(Nan::New(function)).ToLocalChecked(), 1, argv).ToLocalChecked());
 }
 
 // calls the callback stored in the PromiseCompletion, passing the baton that
@@ -90,7 +90,7 @@ void PromiseCompletion::CallCallback(bool isFulfilled, const Nan::FunctionCallba
     resultOfPromise = info[0];
   }
 
-  PromiseCompletion *promiseCompletion = ObjectWrap::Unwrap<PromiseCompletion>(info.This()->ToObject());
+  PromiseCompletion *promiseCompletion = ObjectWrap::Unwrap<PromiseCompletion>(Nan::To<v8::Object>(info.This()).ToLocalChecked());
 
   (*promiseCompletion->callback)(isFulfilled, promiseCompletion->baton, resultOfPromise);
 }

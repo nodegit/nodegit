@@ -19,7 +19,7 @@
     {%endif%}
   {%if cppClassName == 'String'%}
 
-  String::Utf8Value {{ name }}(info[{{ jsArg }}]->ToString());
+  Nan::Utf8String {{ name }}(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character C-strings expect:
   from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
   // copy the characters from the nodejs string into our C-string (used instead of strdup or strcpy because nulls in
@@ -36,7 +36,7 @@
   from_{{ name }} = GitBufConverter::Convert(info[{{ jsArg }}]);
   {%elsif cppClassName == 'Wrapper'%}
 
-  String::Utf8Value {{ name }}(info[{{ jsArg }}]->ToString());
+  Nan::Utf8String {{ name }}(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
   // malloc with one extra byte so we can add the terminating null character C-strings expect:
   from_{{ name }} = ({{ cType }}) malloc({{ name }}.length() + 1);
   // copy the characters from the nodejs string into our C-string (used instead of strdup or strcpy because nulls in
@@ -47,18 +47,18 @@
   memset((void *)(((char *)from_{{ name }}) + {{ name }}.length()), 0, 1);
   {%elsif cppClassName == 'Array'%}
 
-  Array *tmp_{{ name }} = Array::Cast(*info[{{ jsArg }}]);
+  v8::Local<v8::Array> tmp_{{ name }} = v8::Local<v8::Array>::Cast(info[{{ jsArg }}]);
   from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|replace '**' '*' }}));
       for (unsigned int i = 0; i < tmp_{{ name }}->Length(); i++) {
     {%--
       // FIXME: should recursively call convertFromv8.
     --%}
-      from_{{ name }}[i] = Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(tmp_{{ name }}->Get(Nan::New(static_cast<double>(i)))->ToObject())->GetValue();
+      from_{{ name }}[i] = Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(Nan::To<v8::Object>(Nan::Get(tmp_{{ name }}, Nan::New(static_cast<double>(i))).ToLocalChecked()).ToLocalChecked())->GetValue();
       }
   {%elsif cppClassName == 'Function'%}
   {%elsif cppClassName == 'Buffer'%}
 
-  from_{{ name }} = Buffer::Data(info[{{ jsArg }}]->ToObject());
+  from_{{ name }} = Buffer::Data(Nan::To<v8::Object>(info[{{ jsArg }}]).ToLocalChecked());
   {%elsif cppClassName|isV8Value %}
 
     {%if cType|isPointer %}
@@ -69,7 +69,7 @@
   {%elsif cppClassName == 'GitOid'%}
   if (info[{{ jsArg }}]->IsString()) {
     // Try and parse in a string to a git_oid
-    String::Utf8Value oidString(info[{{ jsArg }}]->ToString());
+    Nan::Utf8String oidString(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
     git_oid *oidOut = (git_oid *)malloc(sizeof(git_oid));
 
     if (git_oid_fromstr(oidOut, (const char *) strdup(*oidString)) != GIT_OK) {
@@ -89,10 +89,10 @@
     {%endif%}
   }
   else {
-    {%if cType|isDoublePointer %}*{%endif%}from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetValue();
+    {%if cType|isDoublePointer %}*{%endif%}from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(Nan::To<v8::Object>(info[{{ jsArg }}]).ToLocalChecked())->GetValue();
   }
   {%else%}
-    {%if cType|isDoublePointer %}*{%endif%}from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info[{{ jsArg }}]->ToObject())->GetValue();
+    {%if cType|isDoublePointer %}*{%endif%}from_{{ name }} = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(Nan::To<v8::Object>(info[{{ jsArg }}]).ToLocalChecked())->GetValue();
   {%endif%}
 
   {%if isBoolean %}

@@ -80,10 +80,10 @@ void {{ cppClassName }}::ConstructFields() {
     {% if not field.ignore %}
       {% if not field.isEnum %}
         {% if field.hasConstructor |or field.isLibgitType %}
-          v8::Local<Object> {{ field.name }}Temp = {{ field.cppClassName }}::New(
+          v8::Local<Object> {{ field.name }}Temp = Nan::To<v8::Object>({{ field.cppClassName }}::New(
             {%if not field.cType|isPointer %}&{%endif%}this->raw->{{ field.name }},
             false
-          )->ToObject();
+          )).ToLocalChecked();
           this->{{ field.name }}.Reset({{ field.name }}Temp);
 
         {% elsif field.isCallbackFunction %}
