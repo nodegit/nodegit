@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-15" href="#v0-25-0-alpha-15">v0.25.0-alpha.15</a> [(2019-07-15)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.15)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.14...v0.25.0-alpha.15)
+
+#### Summary of changes
+- Removed NSEC optimization due to performance regressions in repositories that did not use NSEC optimization cloned via NodeGit.
+
+#### Merged PRs into NodeGit
+- [Remove NSEC #1699](https://github.com/nodegit/nodegit/pull/1699)
+
+
 ## <a name="v0-25-0-alpha-14" href="#v0-25-0-alpha-14">v0.25.0-alpha.14</a> [(2019-07-01)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.14)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.13...v0.25.0-alpha.14)
