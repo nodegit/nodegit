@@ -23,7 +23,7 @@
         "git_apply"
       ],
       "meta": {},
-      "lines": 128
+      "lines": 133
     },
     {
       "file": "git2/attr.h",
@@ -108,7 +108,7 @@
         "git_buf_contains_nul"
       ],
       "meta": {},
-      "lines": 122
+      "lines": 128
     },
     {
       "file": "git2/checkout.h",
@@ -122,7 +122,7 @@
         "git_checkout_tree"
       ],
       "meta": {},
-      "lines": 375
+      "lines": 394
     },
     {
       "file": "git2/cherrypick.h",
@@ -266,7 +266,7 @@
         "git_blame_init_options"
       ],
       "meta": {},
-      "lines": 423
+      "lines": 437
     },
     {
       "file": "git2/describe.h",
@@ -879,7 +879,7 @@
         "git_remote_default_branch"
       ],
       "meta": {},
-      "lines": 948
+      "lines": 949
     },
     {
       "file": "git2/repository.h",
@@ -932,7 +932,7 @@
         "git_repository_set_ident"
       ],
       "meta": {},
-      "lines": 898
+      "lines": 899
     },
     {
       "file": "git2/reset.h",
@@ -1032,7 +1032,7 @@
         "git_status_should_ignore"
       ],
       "meta": {},
-      "lines": 374
+      "lines": 383
     },
     {
       "file": "git2/strarray.h",
@@ -1189,7 +1189,7 @@
         "git_cred_acquire_cb"
       ],
       "meta": {},
-      "lines": 367
+      "lines": 381
     },
     {
       "file": "git2/tree.h",
@@ -1493,8 +1493,8 @@
     "git_apply_to_tree": {
       "type": "function",
       "file": "git2/apply.h",
-      "line": 87,
-      "lineto": 92,
+      "line": 92,
+      "lineto": 97,
       "args": [
         {
           "name": "out",
@@ -1535,8 +1535,8 @@
     "git_apply": {
       "type": "function",
       "file": "git2/apply.h",
-      "line": 124,
-      "lineto": 128,
+      "line": 129,
+      "lineto": 133,
       "args": [
         {
           "name": "repo",
@@ -2949,8 +2949,8 @@
     "git_buf_dispose": {
       "type": "function",
       "file": "git2/buffer.h",
-      "line": 72,
-      "lineto": 72,
+      "line": 78,
+      "lineto": 78,
       "args": [
         {
           "name": "buffer",
@@ -2979,8 +2979,8 @@
     "git_buf_grow": {
       "type": "function",
       "file": "git2/buffer.h",
-      "line": 95,
-      "lineto": 95,
+      "line": 101,
+      "lineto": 101,
       "args": [
         {
           "name": "buffer",
@@ -3006,8 +3006,8 @@
     "git_buf_set": {
       "type": "function",
       "file": "git2/buffer.h",
-      "line": 105,
-      "lineto": 106,
+      "line": 111,
+      "lineto": 112,
       "args": [
         {
           "name": "buffer",
@@ -3038,8 +3038,8 @@
     "git_buf_is_binary": {
       "type": "function",
       "file": "git2/buffer.h",
-      "line": 114,
-      "lineto": 114,
+      "line": 120,
+      "lineto": 120,
       "args": [
         {
           "name": "buf",
@@ -3060,8 +3060,8 @@
     "git_buf_contains_nul": {
       "type": "function",
       "file": "git2/buffer.h",
-      "line": 122,
-      "lineto": 122,
+      "line": 128,
+      "lineto": 128,
       "args": [
         {
           "name": "buf",
@@ -3082,8 +3082,8 @@
     "git_checkout_options_init": {
       "type": "function",
       "file": "git2/checkout.h",
-      "line": 322,
-      "lineto": 324,
+      "line": 341,
+      "lineto": 343,
       "args": [
         {
           "name": "opts",
@@ -3109,8 +3109,8 @@
     "git_checkout_head": {
       "type": "function",
       "file": "git2/checkout.h",
-      "line": 343,
-      "lineto": 345,
+      "line": 362,
+      "lineto": 364,
       "args": [
         {
           "name": "repo",
@@ -3136,8 +3136,8 @@
     "git_checkout_index": {
       "type": "function",
       "file": "git2/checkout.h",
-      "line": 356,
-      "lineto": 359,
+      "line": 375,
+      "lineto": 378,
       "args": [
         {
           "name": "repo",
@@ -3168,8 +3168,8 @@
     "git_checkout_tree": {
       "type": "function",
       "file": "git2/checkout.h",
-      "line": 372,
-      "lineto": 375,
+      "line": 391,
+      "lineto": 394,
       "args": [
         {
           "name": "repo",
@@ -5651,8 +5651,8 @@
         },
         {
           "name": "maps",
-          "type": "const git_cvar_map *",
-          "comment": "array of `git_cvar_map` objects specifying the possible mappings"
+          "type": "const git_configmap *",
+          "comment": "array of `git_configmap` objects specifying the possible mappings"
         },
         {
           "name": "map_n",
@@ -5660,14 +5660,14 @@
           "comment": "number of mapping objects in `maps`"
         }
       ],
-      "argline": "int *out, const git_config *cfg, const char *name, const git_cvar_map *maps, size_t map_n",
-      "sig": "int *::const git_config *::const char *::const git_cvar_map *::size_t",
+      "argline": "int *out, const git_config *cfg, const char *name, const git_configmap *maps, size_t map_n",
+      "sig": "int *::const git_config *::const char *::const git_configmap *::size_t",
       "return": {
         "type": "int",
         "comment": " 0 on success, error code otherwise"
       },
       "description": "<p>Query the value of a config variable and return it mapped to\n an integer constant.</p>\n",
-      "comments": "<p>This is a helper method to easily map different possible values to a variable to integer constants that easily identify them.</p>\n\n<p>A mapping array looks as follows:</p>\n\n<pre><code>git_cvar_map autocrlf_mapping[] = {     {GIT_CVAR_FALSE, NULL, GIT_AUTO_CRLF_FALSE},        {GIT_CVAR_TRUE, NULL, GIT_AUTO_CRLF_TRUE},      {GIT_CVAR_STRING, &quot;input&quot;, GIT_AUTO_CRLF_INPUT},        {GIT_CVAR_STRING, &quot;default&quot;, GIT_AUTO_CRLF_DEFAULT}};\n</code></pre>\n\n<p>On any &quot;false&quot; value for the variable (e.g. &quot;false&quot;, &quot;FALSE&quot;, &quot;no&quot;), the mapping will store <code>GIT_AUTO_CRLF_FALSE</code> in the <code>out</code> parameter.</p>\n\n<p>The same thing applies for any &quot;true&quot; value such as &quot;true&quot;, &quot;yes&quot; or &quot;1&quot;, storing the <code>GIT_AUTO_CRLF_TRUE</code> variable.</p>\n\n<p>Otherwise, if the value matches the string &quot;input&quot; (with case insensitive comparison), the given constant will be stored in <code>out</code>, and likewise for &quot;default&quot;.</p>\n\n<p>If not a single match can be made to store in <code>out</code>, an error code will be returned.</p>\n",
+      "comments": "<p>This is a helper method to easily map different possible values to a variable to integer constants that easily identify them.</p>\n\n<p>A mapping array looks as follows:</p>\n\n<pre><code>git_configmap autocrlf_mapping[] = {        {GIT_CVAR_FALSE, NULL, GIT_AUTO_CRLF_FALSE},        {GIT_CVAR_TRUE, NULL, GIT_AUTO_CRLF_TRUE},      {GIT_CVAR_STRING, &quot;input&quot;, GIT_AUTO_CRLF_INPUT},        {GIT_CVAR_STRING, &quot;default&quot;, GIT_AUTO_CRLF_DEFAULT}};\n</code></pre>\n\n<p>On any &quot;false&quot; value for the variable (e.g. &quot;false&quot;, &quot;FALSE&quot;, &quot;no&quot;), the mapping will store <code>GIT_AUTO_CRLF_FALSE</code> in the <code>out</code> parameter.</p>\n\n<p>The same thing applies for any &quot;true&quot; value such as &quot;true&quot;, &quot;yes&quot; or &quot;1&quot;, storing the <code>GIT_AUTO_CRLF_TRUE</code> variable.</p>\n\n<p>Otherwise, if the value matches the string &quot;input&quot; (with case insensitive comparison), the given constant will be stored in <code>out</code>, and likewise for &quot;default&quot;.</p>\n\n<p>If not a single match can be made to store in <code>out</code>, an error code will be returned.</p>\n",
       "group": "config"
     },
     "git_config_lookup_map_value": {
@@ -5683,8 +5683,8 @@
         },
         {
           "name": "maps",
-          "type": "const git_cvar_map *",
-          "comment": "array of `git_cvar_map` objects specifying the possible mappings"
+          "type": "const git_configmap *",
+          "comment": "array of `git_configmap` objects specifying the possible mappings"
         },
         {
           "name": "map_n",
@@ -5697,8 +5697,8 @@
           "comment": "value to parse"
         }
       ],
-      "argline": "int *out, const git_cvar_map *maps, size_t map_n, const char *value",
-      "sig": "int *::const git_cvar_map *::size_t::const char *",
+      "argline": "int *out, const git_configmap *maps, size_t map_n, const char *value",
+      "sig": "int *::const git_configmap *::size_t::const char *",
       "return": {
         "type": "int",
         "comment": null
@@ -5924,8 +5924,8 @@
     "git_blob_create_fromworkdir": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 80,
-      "lineto": 80,
+      "line": 81,
+      "lineto": 81,
       "args": [
         {
           "name": "id",
@@ -5956,8 +5956,8 @@
     "git_buf_free": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 115,
-      "lineto": 115,
+      "line": 116,
+      "lineto": 116,
       "args": [
         {
           "name": "buffer",
@@ -5978,8 +5978,8 @@
     "giterr_last": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 176,
-      "lineto": 176,
+      "line": 190,
+      "lineto": 190,
       "args": [],
       "argline": "",
       "sig": "",
@@ -5994,8 +5994,8 @@
     "giterr_clear": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 188,
-      "lineto": 188,
+      "line": 202,
+      "lineto": 202,
       "args": [],
       "argline": "",
       "sig": "",
@@ -6010,8 +6010,8 @@
     "giterr_set_str": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 200,
-      "lineto": 200,
+      "line": 214,
+      "lineto": 214,
       "args": [
         {
           "name": "error_class",
@@ -6037,8 +6037,8 @@
     "giterr_set_oom": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 212,
-      "lineto": 212,
+      "line": 226,
+      "lineto": 226,
       "args": [],
       "argline": "",
       "sig": "",
@@ -6053,8 +6053,8 @@
     "git_oid_iszero": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 364,
-      "lineto": 364,
+      "line": 378,
+      "lineto": 378,
       "args": [
         {
           "name": "id",
@@ -6075,8 +6075,8 @@
     "git_blame_init_options": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 423,
-      "lineto": 423,
+      "line": 437,
+      "lineto": 437,
       "args": [
         {
           "name": "opts",
@@ -17837,8 +17837,8 @@
     "git_remote_init_callbacks": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 598,
-      "lineto": 600,
+      "line": 599,
+      "lineto": 601,
       "args": [
         {
           "name": "opts",
@@ -17864,8 +17864,8 @@
     "git_fetch_options_init": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 704,
-      "lineto": 706,
+      "line": 705,
+      "lineto": 707,
       "args": [
         {
           "name": "opts",
@@ -17891,8 +17891,8 @@
     "git_push_options_init": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 754,
-      "lineto": 756,
+      "line": 755,
+      "lineto": 757,
       "args": [
         {
           "name": "opts",
@@ -17918,8 +17918,8 @@
     "git_remote_download": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 774,
-      "lineto": 774,
+      "line": 775,
+      "lineto": 775,
       "args": [
         {
           "name": "remote",
@@ -17950,8 +17950,8 @@
     "git_remote_upload": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 788,
-      "lineto": 788,
+      "line": 789,
+      "lineto": 789,
       "args": [
         {
           "name": "remote",
@@ -17982,8 +17982,8 @@
     "git_remote_update_tips": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 804,
-      "lineto": 809,
+      "line": 805,
+      "lineto": 810,
       "args": [
         {
           "name": "remote",
@@ -18024,8 +18024,8 @@
     "git_remote_fetch": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 825,
-      "lineto": 829,
+      "line": 826,
+      "lineto": 830,
       "args": [
         {
           "name": "remote",
@@ -18066,8 +18066,8 @@
     "git_remote_prune": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 838,
-      "lineto": 838,
+      "line": 839,
+      "lineto": 839,
       "args": [
         {
           "name": "remote",
@@ -18093,8 +18093,8 @@
     "git_remote_push": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 850,
-      "lineto": 852,
+      "line": 851,
+      "lineto": 853,
       "args": [
         {
           "name": "remote",
@@ -18125,8 +18125,8 @@
     "git_remote_stats": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 857,
-      "lineto": 857,
+      "line": 858,
+      "lineto": 858,
       "args": [
         {
           "name": "remote",
@@ -18152,8 +18152,8 @@
     "git_remote_autotag": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 865,
-      "lineto": 865,
+      "line": 866,
+      "lineto": 866,
       "args": [
         {
           "name": "remote",
@@ -18174,8 +18174,8 @@
     "git_remote_set_autotag": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 877,
-      "lineto": 877,
+      "line": 878,
+      "lineto": 878,
       "args": [
         {
           "name": "repo",
@@ -18206,8 +18206,8 @@
     "git_remote_prune_refs": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 884,
-      "lineto": 884,
+      "line": 885,
+      "lineto": 885,
       "args": [
         {
           "name": "remote",
@@ -18228,8 +18228,8 @@
     "git_remote_rename": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 906,
-      "lineto": 910,
+      "line": 907,
+      "lineto": 911,
       "args": [
         {
           "name": "problems",
@@ -18270,8 +18270,8 @@
     "git_remote_is_valid_name": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 918,
-      "lineto": 918,
+      "line": 919,
+      "lineto": 919,
       "args": [
         {
           "name": "remote_name",
@@ -18292,8 +18292,8 @@
     "git_remote_delete": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 930,
-      "lineto": 930,
+      "line": 931,
+      "lineto": 931,
       "args": [
         {
           "name": "repo",
@@ -18324,8 +18324,8 @@
     "git_remote_default_branch": {
       "type": "function",
       "file": "git2/remote.h",
-      "line": 948,
-      "lineto": 948,
+      "line": 949,
+      "lineto": 949,
       "args": [
         {
           "name": "out",
@@ -18835,8 +18835,8 @@
     "git_repository_item_path": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 458,
-      "lineto": 458,
+      "line": 459,
+      "lineto": 459,
       "args": [
         {
           "name": "out",
@@ -18867,8 +18867,8 @@
     "git_repository_path": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 469,
-      "lineto": 469,
+      "line": 470,
+      "lineto": 470,
       "args": [
         {
           "name": "repo",
@@ -18897,8 +18897,8 @@
     "git_repository_workdir": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 480,
-      "lineto": 480,
+      "line": 481,
+      "lineto": 481,
       "args": [
         {
           "name": "repo",
@@ -18924,8 +18924,8 @@
     "git_repository_commondir": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 491,
-      "lineto": 491,
+      "line": 492,
+      "lineto": 492,
       "args": [
         {
           "name": "repo",
@@ -18946,8 +18946,8 @@
     "git_repository_set_workdir": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 510,
-      "lineto": 511,
+      "line": 511,
+      "lineto": 512,
       "args": [
         {
           "name": "repo",
@@ -18978,8 +18978,8 @@
     "git_repository_is_bare": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 519,
-      "lineto": 519,
+      "line": 520,
+      "lineto": 520,
       "args": [
         {
           "name": "repo",
@@ -19005,8 +19005,8 @@
     "git_repository_is_worktree": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 527,
-      "lineto": 527,
+      "line": 528,
+      "lineto": 528,
       "args": [
         {
           "name": "repo",
@@ -19027,8 +19027,8 @@
     "git_repository_config": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 543,
-      "lineto": 543,
+      "line": 544,
+      "lineto": 544,
       "args": [
         {
           "name": "out",
@@ -19054,8 +19054,8 @@
     "git_repository_config_snapshot": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 559,
-      "lineto": 559,
+      "line": 560,
+      "lineto": 560,
       "args": [
         {
           "name": "out",
@@ -19087,8 +19087,8 @@
     "git_repository_odb": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 575,
-      "lineto": 575,
+      "line": 576,
+      "lineto": 576,
       "args": [
         {
           "name": "out",
@@ -19122,8 +19122,8 @@
     "git_repository_refdb": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 591,
-      "lineto": 591,
+      "line": 592,
+      "lineto": 592,
       "args": [
         {
           "name": "out",
@@ -19149,8 +19149,8 @@
     "git_repository_index": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 607,
-      "lineto": 607,
+      "line": 608,
+      "lineto": 608,
       "args": [
         {
           "name": "out",
@@ -19193,8 +19193,8 @@
     "git_repository_message": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 625,
-      "lineto": 625,
+      "line": 626,
+      "lineto": 626,
       "args": [
         {
           "name": "out",
@@ -19220,8 +19220,8 @@
     "git_repository_message_remove": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 632,
-      "lineto": 632,
+      "line": 633,
+      "lineto": 633,
       "args": [
         {
           "name": "repo",
@@ -19242,8 +19242,8 @@
     "git_repository_state_cleanup": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 641,
-      "lineto": 641,
+      "line": 642,
+      "lineto": 642,
       "args": [
         {
           "name": "repo",
@@ -19269,8 +19269,8 @@
     "git_repository_fetchhead_foreach": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 672,
-      "lineto": 675,
+      "line": 673,
+      "lineto": 676,
       "args": [
         {
           "name": "repo",
@@ -19301,8 +19301,8 @@
     "git_repository_mergehead_foreach": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 701,
-      "lineto": 704,
+      "line": 702,
+      "lineto": 705,
       "args": [
         {
           "name": "repo",
@@ -19333,8 +19333,8 @@
     "git_repository_hashfile": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 729,
-      "lineto": 734,
+      "line": 730,
+      "lineto": 735,
       "args": [
         {
           "name": "out",
@@ -19375,8 +19375,8 @@
     "git_repository_set_head": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 754,
-      "lineto": 756,
+      "line": 755,
+      "lineto": 757,
       "args": [
         {
           "name": "repo",
@@ -19407,8 +19407,8 @@
     "git_repository_set_head_detached": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 774,
-      "lineto": 776,
+      "line": 775,
+      "lineto": 777,
       "args": [
         {
           "name": "repo",
@@ -19434,8 +19434,8 @@
     "git_repository_set_head_detached_from_annotated": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 790,
-      "lineto": 792,
+      "line": 791,
+      "lineto": 793,
       "args": [
         {
           "name": "repo",
@@ -19466,8 +19466,8 @@
     "git_repository_detach_head": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 811,
-      "lineto": 812,
+      "line": 812,
+      "lineto": 813,
       "args": [
         {
           "name": "repo",
@@ -19488,8 +19488,8 @@
     "git_repository_state": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 842,
-      "lineto": 842,
+      "line": 843,
+      "lineto": 843,
       "args": [
         {
           "name": "repo",
@@ -19518,8 +19518,8 @@
     "git_repository_set_namespace": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 856,
-      "lineto": 856,
+      "line": 857,
+      "lineto": 857,
       "args": [
         {
           "name": "repo",
@@ -19545,8 +19545,8 @@
     "git_repository_get_namespace": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 864,
-      "lineto": 864,
+      "line": 865,
+      "lineto": 865,
       "args": [
         {
           "name": "repo",
@@ -19567,8 +19567,8 @@
     "git_repository_is_shallow": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 873,
-      "lineto": 873,
+      "line": 874,
+      "lineto": 874,
       "args": [
         {
           "name": "repo",
@@ -19589,8 +19589,8 @@
     "git_repository_ident": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 885,
-      "lineto": 885,
+      "line": 886,
+      "lineto": 886,
       "args": [
         {
           "name": "name",
@@ -19621,8 +19621,8 @@
     "git_repository_set_ident": {
       "type": "function",
       "file": "git2/repository.h",
-      "line": 898,
-      "lineto": 898,
+      "line": 899,
+      "lineto": 899,
       "args": [
         {
           "name": "repo",
@@ -20884,8 +20884,8 @@
     "git_status_options_init": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 203,
-      "lineto": 205,
+      "line": 212,
+      "lineto": 214,
       "args": [
         {
           "name": "opts",
@@ -20911,8 +20911,8 @@
     "git_status_foreach": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 243,
-      "lineto": 246,
+      "line": 252,
+      "lineto": 255,
       "args": [
         {
           "name": "repo",
@@ -20948,8 +20948,8 @@
     "git_status_foreach_ext": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 267,
-      "lineto": 271,
+      "line": 276,
+      "lineto": 280,
       "args": [
         {
           "name": "repo",
@@ -20990,8 +20990,8 @@
     "git_status_file": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 299,
-      "lineto": 302,
+      "line": 308,
+      "lineto": 311,
       "args": [
         {
           "name": "status_flags",
@@ -21027,8 +21027,8 @@
     "git_status_list_new": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 317,
-      "lineto": 320,
+      "line": 326,
+      "lineto": 329,
       "args": [
         {
           "name": "out",
@@ -21065,8 +21065,8 @@
     "git_status_list_entrycount": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 331,
-      "lineto": 332,
+      "line": 340,
+      "lineto": 341,
       "args": [
         {
           "name": "statuslist",
@@ -21093,8 +21093,8 @@
     "git_status_byindex": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 343,
-      "lineto": 345,
+      "line": 352,
+      "lineto": 354,
       "args": [
         {
           "name": "statuslist",
@@ -21130,8 +21130,8 @@
     "git_status_list_free": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 352,
-      "lineto": 353,
+      "line": 361,
+      "lineto": 362,
       "args": [
         {
           "name": "statuslist",
@@ -21157,8 +21157,8 @@
     "git_status_should_ignore": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 371,
-      "lineto": 374,
+      "line": 380,
+      "lineto": 383,
       "args": [
         {
           "name": "ignored",
@@ -23105,8 +23105,8 @@
     "git_cred_has_username": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 219,
-      "lineto": 219,
+      "line": 233,
+      "lineto": 233,
       "args": [
         {
           "name": "cred",
@@ -23127,8 +23127,8 @@
     "git_cred_userpass_plaintext_new": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 230,
-      "lineto": 233,
+      "line": 244,
+      "lineto": 247,
       "args": [
         {
           "name": "out",
@@ -23159,8 +23159,8 @@
     "git_cred_ssh_key_new": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 246,
-      "lineto": 251,
+      "line": 260,
+      "lineto": 265,
       "args": [
         {
           "name": "out",
@@ -23201,8 +23201,8 @@
     "git_cred_ssh_interactive_new": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 262,
-      "lineto": 266,
+      "line": 276,
+      "lineto": 280,
       "args": [
         {
           "name": "out",
@@ -23238,8 +23238,8 @@
     "git_cred_ssh_key_from_agent": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 276,
-      "lineto": 278,
+      "line": 290,
+      "lineto": 292,
       "args": [
         {
           "name": "out",
@@ -23265,8 +23265,8 @@
     "git_cred_ssh_custom_new": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 298,
-      "lineto": 304,
+      "line": 312,
+      "lineto": 318,
       "args": [
         {
           "name": "out",
@@ -23312,8 +23312,8 @@
     "git_cred_default_new": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 312,
-      "lineto": 312,
+      "line": 326,
+      "lineto": 326,
       "args": [
         {
           "name": "out",
@@ -23334,8 +23334,8 @@
     "git_cred_username_new": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 320,
-      "lineto": 320,
+      "line": 334,
+      "lineto": 334,
       "args": [
         {
           "name": "cred",
@@ -23361,8 +23361,8 @@
     "git_cred_ssh_key_memory_new": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 332,
-      "lineto": 337,
+      "line": 346,
+      "lineto": 351,
       "args": [
         {
           "name": "out",
@@ -23403,8 +23403,8 @@
     "git_cred_free": {
       "type": "function",
       "file": "git2/transport.h",
-      "line": 348,
-      "lineto": 348,
+      "line": 362,
+      "lineto": 362,
       "args": [
         {
           "name": "cred",
@@ -24061,7 +24061,7 @@
       "argline": "git_treebuilder *bld",
       "sig": "git_treebuilder *",
       "return": {
-        "type": "unsigned int",
+        "type": "size_t",
         "comment": " the number of entries in the treebuilder"
       },
       "description": "<p>Get the number of entries listed in a treebuilder</p>\n",
@@ -25082,8 +25082,8 @@
     "git_headlist_cb": {
       "type": "callback",
       "file": "git2/deprecated.h",
-      "line": 409,
-      "lineto": 409,
+      "line": 423,
+      "lineto": 423,
       "args": [
         {
           "name": "rhead",
@@ -25676,8 +25676,8 @@
     "git_repository_fetchhead_foreach_cb": {
       "type": "callback",
       "file": "git2/repository.h",
-      "line": 655,
-      "lineto": 659,
+      "line": 656,
+      "lineto": 660,
       "args": [
         {
           "name": "ref_name",
@@ -25717,8 +25717,8 @@
     "git_repository_mergehead_foreach_cb": {
       "type": "callback",
       "file": "git2/repository.h",
-      "line": 686,
-      "lineto": 687,
+      "line": 687,
+      "lineto": 688,
       "args": [
         {
           "name": "oid",
@@ -25981,8 +25981,8 @@
     "git_cred_acquire_cb": {
       "type": "callback",
       "file": "git2/transport.h",
-      "line": 362,
-      "lineto": 367,
+      "line": 376,
+      "lineto": 381,
       "args": [
         {
           "name": "cred",
@@ -26189,8 +26189,8 @@
         ],
         "type": "enum",
         "file": "git2/apply.h",
-        "line": 95,
-        "lineto": 113,
+        "line": 100,
+        "lineto": 118,
         "block": "GIT_APPLY_LOCATION_WORKDIR\nGIT_APPLY_LOCATION_INDEX\nGIT_APPLY_LOCATION_BOTH",
         "tdef": "typedef",
         "description": " Possible application locations for git_apply ",
@@ -26236,7 +26236,7 @@
         "value": "git_apply_options",
         "file": "git2/apply.h",
         "line": 64,
-        "lineto": 70,
+        "lineto": 75,
         "block": "unsigned int version\ngit_apply_delta_cb delta_cb\ngit_apply_hunk_cb hunk_cb\nvoid * payload",
         "tdef": "typedef",
         "description": " Apply options structure",
@@ -26245,22 +26245,22 @@
           {
             "type": "unsigned int",
             "name": "version",
-            "comments": ""
+            "comments": " The version "
           },
           {
             "type": "git_apply_delta_cb",
             "name": "delta_cb",
-            "comments": ""
+            "comments": " When applying a patch, callback that will be made per delta (file). "
           },
           {
             "type": "git_apply_hunk_cb",
             "name": "hunk_cb",
-            "comments": ""
+            "comments": " When applying a patch, callback that will be made per hunk. "
           },
           {
             "type": "void *",
             "name": "payload",
-            "comments": ""
+            "comments": " Payload passed to both delta_cb \n&\n hunk_cb. "
           }
         ],
         "used": {
@@ -26685,27 +26685,27 @@
         "type": "struct",
         "value": "git_buf",
         "file": "git2/buffer.h",
-        "line": 52,
-        "lineto": 55,
+        "line": 39,
+        "lineto": 61,
         "block": "char * ptr\nsize_t asize\nsize_t size",
         "tdef": "typedef",
         "description": " A data buffer for exporting data from libgit2",
-        "comments": "<p>Sometimes libgit2 wants to return an allocated data buffer to the caller and have the caller take responsibility for freeing that memory. This can be awkward if the caller does not have easy access to the same allocation functions that libgit2 is using.  In those cases, libgit2 will fill in a <code>git_buf</code> and the caller can use <code>git_buf_dispose()</code> to release it when they are done.</p>\n\n<p>A <code>git_buf</code> may also be used for the caller to pass in a reference to a block of memory they hold.  In this case, libgit2 will not resize or free the memory, but will read from it as needed.</p>\n\n<p>A <code>git_buf</code> is a public structure with three fields:</p>\n\n<ul>\n<li><p><code>ptr</code> points to the start of the allocated memory.  If it is NULL,   then the <code>git_buf</code> is considered empty and libgit2 will feel free   to overwrite it with new data.</p></li>\n<li><p><code>size</code> holds the size (in bytes) of the data that is actually used.</p></li>\n<li><p><code>asize</code> holds the known total amount of allocated memory if the <code>ptr</code>    was allocated by libgit2.  It may be larger than <code>size</code>.  If <code>ptr</code>    was not allocated by libgit2 and should not be resized and/or freed,    then <code>asize</code> will be set to zero.</p></li>\n</ul>\n\n<p>Some APIs may occasionally do something slightly unusual with a buffer, such as setting <code>ptr</code> to a value that was passed in by the user.  In those cases, the behavior will be clearly documented by the API.</p>\n",
+        "comments": "<p>Sometimes libgit2 wants to return an allocated data buffer to the caller and have the caller take responsibility for freeing that memory. This can be awkward if the caller does not have easy access to the same allocation functions that libgit2 is using.  In those cases, libgit2 will fill in a <code>git_buf</code> and the caller can use <code>git_buf_dispose()</code> to release it when they are done.</p>\n\n<p>A <code>git_buf</code> may also be used for the caller to pass in a reference to a block of memory they hold.  In this case, libgit2 will not resize or free the memory, but will read from it as needed.</p>\n\n<p>Some APIs may occasionally do something slightly unusual with a buffer, such as setting <code>ptr</code> to a value that was passed in by the user.  In those cases, the behavior will be clearly documented by the API.</p>\n",
         "fields": [
           {
             "type": "char *",
             "name": "ptr",
-            "comments": ""
+            "comments": " The buffer contents.\n\n `ptr` points to the start of the allocated memory.  If it is NULL,\n then the `git_buf` is considered empty and libgit2 will feel free\n to overwrite it with new data."
           },
           {
             "type": "size_t",
             "name": "asize",
-            "comments": ""
+            "comments": " `asize` holds the known total amount of allocated memory if the `ptr`\n  was allocated by libgit2.  It may be larger than `size`.  If `ptr`\n  was not allocated by libgit2 and should not be resized and/or freed,\n  then `asize` will be set to zero."
           },
           {
             "type": "size_t",
             "name": "size",
-            "comments": ""
+            "comments": " `size` holds the size (in bytes) of the data that is actually used."
           }
         ],
         "used": {
@@ -26811,7 +26811,7 @@
           {
             "type": "git_cert",
             "name": "parent",
-            "comments": ""
+            "comments": " The parent cert "
           },
           {
             "type": "git_cert_ssh_t",
@@ -26931,7 +26931,7 @@
         "value": "git_cert_x509",
         "file": "git2/transport.h",
         "line": 64,
-        "lineto": 74,
+        "lineto": 76,
         "block": "git_cert parent\nvoid * data\nsize_t len",
         "tdef": "typedef",
         "description": " X.509 certificate information",
@@ -26940,7 +26940,7 @@
           {
             "type": "git_cert",
             "name": "parent",
-            "comments": ""
+            "comments": " The parent cert "
           },
           {
             "type": "void *",
@@ -27060,7 +27060,7 @@
         "value": "git_checkout_options",
         "file": "git2/checkout.h",
         "line": 263,
-        "lineto": 307,
+        "lineto": 326,
         "block": "unsigned int version\nunsigned int checkout_strategy\nint disable_filters\nunsigned int dir_mode\nunsigned int file_mode\nint file_open_flags\nunsigned int notify_flags\ngit_checkout_notify_cb notify_cb\nvoid * notify_payload\ngit_checkout_progress_cb progress_cb\nvoid * progress_payload\ngit_strarray paths\ngit_tree * baseline\ngit_index * baseline_index\nconst char * target_directory\nconst char * ancestor_label\nconst char * our_label\nconst char * their_label\ngit_checkout_perfdata_cb perfdata_cb\nvoid * perfdata_payload",
         "tdef": "typedef",
         "description": " Checkout options structure",
@@ -27069,7 +27069,7 @@
           {
             "type": "unsigned int",
             "name": "version",
-            "comments": ""
+            "comments": " The version "
           },
           {
             "type": "unsigned int",
@@ -27104,12 +27104,12 @@
           {
             "type": "git_checkout_notify_cb",
             "name": "notify_cb",
-            "comments": ""
+            "comments": " Optional callback to get notifications on specific file states.\n "
           },
           {
             "type": "void *",
             "name": "notify_payload",
-            "comments": ""
+            "comments": " Payload passed to notify_cb "
           },
           {
             "type": "git_checkout_progress_cb",
@@ -27119,22 +27119,22 @@
           {
             "type": "void *",
             "name": "progress_payload",
-            "comments": ""
+            "comments": " Payload passed to progress_cb "
           },
           {
             "type": "git_strarray",
             "name": "paths",
-            "comments": " When not zeroed out, array of fnmatch patterns specifying which\n  paths should be taken into account, otherwise all files.  Use\n  GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH to treat as simple list."
+            "comments": " A list of wildmatch patterns or paths.\n\n By default, all paths are processed. If you pass an array of wildmatch\n patterns, those will be used to filter which paths should be taken into\n account.\n\n Use GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH to treat as a simple list."
           },
           {
             "type": "git_tree *",
             "name": "baseline",
-            "comments": " The expected content of the working directory; defaults to HEAD.\n  If the working directory does not match this baseline information,\n  that will produce a checkout conflict."
+            "comments": " The expected content of the working directory; defaults to HEAD.\n\n If the working directory does not match this baseline information,\n that will produce a checkout conflict."
           },
           {
             "type": "git_index *",
             "name": "baseline_index",
-            "comments": " expected content of workdir, expressed as an index. "
+            "comments": " Like `baseline` above, though expressed as an index.  This\n option overrides `baseline`."
           },
           {
             "type": "const char *",
@@ -27164,7 +27164,7 @@
           {
             "type": "void *",
             "name": "perfdata_payload",
-            "comments": ""
+            "comments": " Payload passed to perfdata_cb "
           }
         ],
         "used": {
@@ -27676,6 +27676,7 @@
             "git_config_iterator_glob_new",
             "git_config_iterator_new",
             "git_config_lock",
+            "git_config_lookup_map_value",
             "git_config_multivar_iterator_new",
             "git_config_new",
             "git_config_next",
@@ -27876,6 +27877,98 @@
       }
     ],
     [
+      "git_configmap",
+      {
+        "decl": [
+          "git_configmap_t type",
+          "const char * str_match",
+          "int map_value"
+        ],
+        "type": "struct",
+        "value": "git_configmap",
+        "file": "git2/config.h",
+        "line": 104,
+        "lineto": 108,
+        "tdef": "typedef",
+        "description": " Mapping from config variables to values.",
+        "comments": "",
+        "fields": [
+          {
+            "type": "git_configmap_t",
+            "name": "type",
+            "comments": ""
+          },
+          {
+            "type": "const char *",
+            "name": "str_match",
+            "comments": ""
+          },
+          {
+            "type": "int",
+            "name": "map_value",
+            "comments": ""
+          }
+        ],
+        "block": "git_configmap_t type\nconst char * str_match\nint map_value",
+        "used": {
+          "returns": [],
+          "needs": [
+            "git_config_get_mapped",
+            "git_config_lookup_map_value"
+          ]
+        }
+      }
+    ],
+    [
+      "git_configmap_t",
+      {
+        "decl": [
+          "GIT_CONFIGMAP_FALSE",
+          "GIT_CONFIGMAP_TRUE",
+          "GIT_CONFIGMAP_INT32",
+          "GIT_CONFIGMAP_STRING"
+        ],
+        "type": "enum",
+        "file": "git2/config.h",
+        "line": 94,
+        "lineto": 99,
+        "tdef": "typedef",
+        "description": " Config var type",
+        "comments": "",
+        "used": {
+          "returns": [],
+          "needs": []
+        },
+        "block": "GIT_CONFIGMAP_FALSE\nGIT_CONFIGMAP_TRUE\nGIT_CONFIGMAP_INT32\nGIT_CONFIGMAP_STRING",
+        "fields": [
+          {
+            "type": "int",
+            "name": "GIT_CONFIGMAP_FALSE",
+            "comments": "",
+            "value": 0
+          },
+          {
+            "type": "int",
+            "name": "GIT_CONFIGMAP_TRUE",
+            "comments": "",
+            "value": 1
+          },
+          {
+            "type": "int",
+            "name": "GIT_CONFIGMAP_INT32",
+            "comments": "",
+            "value": 2
+          },
+          {
+            "type": "int",
+            "name": "GIT_CONFIGMAP_STRING",
+            "comments": "",
+            "value": 3
+          }
+        ]
+      }
+    ],
+    [
       "git_cred",
       {
         "decl": [
@@ -27885,8 +27978,9 @@
         "type": "struct",
         "value": "git_cred",
         "file": "git2/transport.h",
-        "line": 145,
-        "lineto": 148,
+        "line": 147,
+        "lineto": 152,
+        "block": "git_credtype_t credtype\nvoid (*)(git_cred *) free",
         "tdef": null,
         "description": " The base structure for all credential types",
         "comments": "",
@@ -27902,7 +27996,6 @@
             "comments": ""
           }
         ],
-        "block": "git_credtype_t credtype\nvoid (*)(git_cred *) free",
         "used": {
           "returns": [],
           "needs": [
@@ -27929,8 +28022,8 @@
         "type": "struct",
         "value": "git_cred_default",
         "file": "git2/transport.h",
-        "line": 205,
-        "lineto": 205,
+        "line": 219,
+        "lineto": 219,
         "tdef": "typedef",
         "description": " A key for NTLM/Kerberos \"default\" credentials ",
         "comments": "",
@@ -27954,8 +28047,8 @@
         "type": "struct",
         "value": "git_cred_ssh_custom",
         "file": "git2/transport.h",
-        "line": 195,
-        "lineto": 202,
+        "line": 204,
+        "lineto": 216,
         "block": "git_cred parent\nchar * username\nchar * publickey\nsize_t publickey_len\ngit_cred_sign_cb sign_callback\nvoid * payload",
         "tdef": "typedef",
         "description": " A key with a custom signature function",
@@ -27964,32 +28057,32 @@
           {
             "type": "git_cred",
             "name": "parent",
-            "comments": ""
+            "comments": " The parent cred "
           },
           {
             "type": "char *",
             "name": "username",
-            "comments": ""
+            "comments": " The username to authenticate as "
           },
           {
             "type": "char *",
             "name": "publickey",
-            "comments": ""
+            "comments": " The public key data "
           },
           {
             "type": "size_t",
             "name": "publickey_len",
-            "comments": ""
+            "comments": " Length of the public key "
           },
           {
             "type": "git_cred_sign_cb",
             "name": "sign_callback",
-            "comments": ""
+            "comments": " Callback used to sign the data."
           },
           {
             "type": "void *",
             "name": "payload",
-            "comments": ""
+            "comments": " Payload passed to prompt_callback "
           }
         ],
         "used": {
@@ -28010,8 +28103,8 @@
         "type": "struct",
         "value": "git_cred_ssh_interactive",
         "file": "git2/transport.h",
-        "line": 185,
-        "lineto": 190,
+        "line": 189,
+        "lineto": 199,
         "block": "git_cred parent\nchar * username\ngit_cred_ssh_interactive_cb prompt_callback\nvoid * payload",
         "tdef": "typedef",
         "description": " Keyboard-interactive based ssh authentication",
@@ -28020,22 +28113,22 @@
           {
             "type": "git_cred",
             "name": "parent",
-            "comments": ""
+            "comments": " The parent cred "
           },
           {
             "type": "char *",
             "name": "username",
-            "comments": ""
+            "comments": " The username to authenticate as "
           },
           {
             "type": "git_cred_ssh_interactive_cb",
             "name": "prompt_callback",
-            "comments": ""
+            "comments": " Callback used for authentication."
           },
           {
             "type": "void *",
             "name": "payload",
-            "comments": ""
+            "comments": " Payload passed to prompt_callback "
           }
         ],
         "used": {
@@ -28059,8 +28152,8 @@
         "type": "struct",
         "value": "git_cred_ssh_key",
         "file": "git2/transport.h",
-        "line": 174,
-        "lineto": 180,
+        "line": 178,
+        "lineto": 184,
         "block": "git_cred parent\nchar * username\nchar * publickey\nchar * privatekey\nchar * passphrase",
         "tdef": "typedef",
         "description": " A ssh key from disk",
@@ -28069,27 +28162,27 @@
           {
             "type": "git_cred",
             "name": "parent",
-            "comments": ""
+            "comments": " The parent cred "
           },
           {
             "type": "char *",
             "name": "username",
-            "comments": ""
+            "comments": " The username to authenticate as "
           },
           {
             "type": "char *",
             "name": "publickey",
-            "comments": ""
+            "comments": " The path to a public key "
           },
           {
             "type": "char *",
             "name": "privatekey",
-            "comments": ""
+            "comments": " The path to a private key "
           },
           {
             "type": "char *",
             "name": "passphrase",
-            "comments": ""
+            "comments": " Passphrase used to decrypt the private key "
           }
         ],
         "used": {
@@ -28108,8 +28201,8 @@
         "type": "struct",
         "value": "git_cred_username",
         "file": "git2/transport.h",
-        "line": 208,
-        "lineto": 211,
+        "line": 222,
+        "lineto": 225,
         "block": "git_cred parent\nchar [1] username",
         "tdef": "typedef",
         "description": " Username-only credential information ",
@@ -28118,12 +28211,12 @@
           {
             "type": "git_cred",
             "name": "parent",
-            "comments": ""
+            "comments": " The parent cred "
           },
           {
             "type": "char [1]",
             "name": "username",
-            "comments": ""
+            "comments": " The username to authenticate as "
           }
         ],
         "used": {
@@ -28140,7 +28233,6 @@
           "const char * password"
         ],
         "type": "struct",
-        "value": "git_cred_userpass_payload",
         "file": "git2/cred_helpers.h",
         "line": 24,
         "lineto": 27,
@@ -28163,7 +28255,8 @@
         "used": {
           "returns": [],
           "needs": []
-        }
+        },
+        "value": "git_cred_userpass_payload"
       }
     ],
     [
@@ -28177,8 +28270,8 @@
         "type": "struct",
         "value": "git_cred_userpass_plaintext",
         "file": "git2/transport.h",
-        "line": 151,
-        "lineto": 155,
+        "line": 155,
+        "lineto": 159,
         "block": "git_cred parent\nchar * username\nchar * password",
         "tdef": "typedef",
         "description": " A plaintext username and password ",
@@ -28187,17 +28280,17 @@
           {
             "type": "git_cred",
             "name": "parent",
-            "comments": ""
+            "comments": " The parent cred "
           },
           {
             "type": "char *",
             "name": "username",
-            "comments": ""
+            "comments": " The username to authenticate as "
           },
           {
             "type": "char *",
             "name": "password",
-            "comments": ""
+            "comments": " The password to use "
           }
         ],
         "used": {
@@ -28220,8 +28313,8 @@
         ],
         "type": "enum",
         "file": "git2/transport.h",
-        "line": 86,
-        "lineto": 138,
+        "line": 88,
+        "lineto": 140,
         "block": "GIT_CREDTYPE_USERPASS_PLAINTEXT\nGIT_CREDTYPE_SSH_KEY\nGIT_CREDTYPE_SSH_CUSTOM\nGIT_CREDTYPE_DEFAULT\nGIT_CREDTYPE_SSH_INTERACTIVE\nGIT_CREDTYPE_USERNAME\nGIT_CREDTYPE_SSH_MEMORY",
         "tdef": "typedef",
         "description": " Supported credential types",
@@ -28268,98 +28361,6 @@
             "name": "GIT_CREDTYPE_SSH_MEMORY",
             "comments": "<p>An SSH key-based authentication request</p>\n\n<p>Allows credentials to be read from memory instead of files.\n Note that because of differences in crypto backend support, it might\n not be functional.</p>\n",
             "value": 64
-          }
-        ],
-        "used": {
-          "returns": [],
-          "needs": []
-        }
-      }
-    ],
-    [
-      "git_cvar_map",
-      {
-        "decl": [
-          "git_cvar_t cvar_type",
-          "const char * str_match",
-          "int map_value"
-        ],
-        "type": "struct",
-        "value": "git_cvar_map",
-        "file": "git2/config.h",
-        "line": 104,
-        "lineto": 108,
-        "block": "git_cvar_t cvar_type\nconst char * str_match\nint map_value",
-        "tdef": "typedef",
-        "description": " Mapping from config variables to values.",
-        "comments": "",
-        "fields": [
-          {
-            "type": "git_cvar_t",
-            "name": "cvar_type",
-            "comments": ""
-          },
-          {
-            "type": "const char *",
-            "name": "str_match",
-            "comments": ""
-          },
-          {
-            "type": "int",
-            "name": "map_value",
-            "comments": ""
-          }
-        ],
-        "used": {
-          "returns": [],
-          "needs": [
-            "git_config_get_mapped",
-            "git_config_lookup_map_value"
-          ]
-        }
-      }
-    ],
-    [
-      "git_cvar_t",
-      {
-        "decl": [
-          "GIT_CVAR_FALSE",
-          "GIT_CVAR_TRUE",
-          "GIT_CVAR_INT32",
-          "GIT_CVAR_STRING"
-        ],
-        "type": "enum",
-        "file": "git2/config.h",
-        "line": 94,
-        "lineto": 99,
-        "block": "GIT_CVAR_FALSE\nGIT_CVAR_TRUE\nGIT_CVAR_INT32\nGIT_CVAR_STRING",
-        "tdef": "typedef",
-        "description": " Config var type",
-        "comments": "",
-        "fields": [
-          {
-            "type": "int",
-            "name": "GIT_CVAR_FALSE",
-            "comments": "",
-            "value": 0
-          },
-          {
-            "type": "int",
-            "name": "GIT_CVAR_TRUE",
-            "comments": "",
-            "value": 1
-          },
-          {
-            "type": "int",
-            "name": "GIT_CVAR_INT32",
-            "comments": "",
-            "value": 2
-          },
-          {
-            "type": "int",
-            "name": "GIT_CVAR_STRING",
-            "comments": "",
-            "value": 3
           }
         ],
         "used": {
@@ -30777,8 +30778,8 @@
         "type": "struct",
         "value": "git_fetch_options",
         "file": "git2/remote.h",
-        "line": 651,
-        "lineto": 688,
+        "line": 652,
+        "lineto": 689,
         "block": "int version\ngit_remote_callbacks callbacks\ngit_fetch_prune_t prune\nint update_fetchhead\ngit_remote_autotag_option_t download_tags\ngit_proxy_options proxy_opts\ngit_strarray custom_headers",
         "tdef": "typedef",
         "description": " Fetch options structure.",
@@ -30840,8 +30841,8 @@
         ],
         "type": "enum",
         "file": "git2/remote.h",
-        "line": 603,
-        "lineto": 616,
+        "line": 604,
+        "lineto": 617,
         "block": "GIT_FETCH_PRUNE_UNSPECIFIED\nGIT_FETCH_PRUNE\nGIT_FETCH_NO_PRUNE",
         "tdef": "typedef",
         "description": " Acceptable prune settings when fetching ",
@@ -33852,8 +33853,8 @@
         "type": "struct",
         "value": "git_push_options",
         "file": "git2/remote.h",
-        "line": 712,
-        "lineto": 739,
+        "line": 713,
+        "lineto": 740,
         "block": "unsigned int version\nunsigned int pb_parallelism\ngit_remote_callbacks callbacks\ngit_proxy_options proxy_opts\ngit_strarray custom_headers",
         "tdef": "typedef",
         "description": " Controls the behavior of a git_push object.",
@@ -34546,8 +34547,8 @@
         ],
         "type": "enum",
         "file": "git2/remote.h",
-        "line": 623,
-        "lineto": 641,
+        "line": 624,
+        "lineto": 642,
         "block": "GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED\nGIT_REMOTE_DOWNLOAD_TAGS_AUTO\nGIT_REMOTE_DOWNLOAD_TAGS_NONE\nGIT_REMOTE_DOWNLOAD_TAGS_ALL",
         "tdef": "typedef",
         "description": " Automatic tag following option",
@@ -34612,7 +34613,7 @@
         "value": "git_remote_callbacks",
         "file": "git2/remote.h",
         "line": 497,
-        "lineto": 585,
+        "lineto": 586,
         "block": "unsigned int version\ngit_transport_message_cb sideband_progress\nint (*)(git_remote_completion_t, void *) completion\ngit_cred_acquire_cb credentials\ngit_transport_certificate_check_cb certificate_check\ngit_indexer_progress_cb transfer_progress\nint (*)(const char *, const git_oid *, const git_oid *, void *) update_tips\ngit_packbuilder_progress pack_progress\ngit_push_transfer_progress_cb push_transfer_progress\ngit_push_update_reference_cb push_update_reference\ngit_push_negotiation push_negotiation\ngit_transport_cb transport\nvoid * payload\ngit_url_resolve_cb resolve_url",
         "tdef": null,
         "description": " The callback settings structure",
@@ -34621,7 +34622,7 @@
           {
             "type": "unsigned int",
             "name": "version",
-            "comments": ""
+            "comments": " The version "
           },
           {
             "type": "git_transport_message_cb",
@@ -35333,13 +35334,14 @@
           "GIT_REPOSITORY_ITEM_HOOKS",
           "GIT_REPOSITORY_ITEM_LOGS",
           "GIT_REPOSITORY_ITEM_MODULES",
-          "GIT_REPOSITORY_ITEM_WORKTREES"
+          "GIT_REPOSITORY_ITEM_WORKTREES",
+          "GIT_REPOSITORY_ITEM__LAST"
         ],
         "type": "enum",
         "file": "git2/repository.h",
         "line": 427,
-        "lineto": 442,
-        "block": "GIT_REPOSITORY_ITEM_GITDIR\nGIT_REPOSITORY_ITEM_WORKDIR\nGIT_REPOSITORY_ITEM_COMMONDIR\nGIT_REPOSITORY_ITEM_INDEX\nGIT_REPOSITORY_ITEM_OBJECTS\nGIT_REPOSITORY_ITEM_REFS\nGIT_REPOSITORY_ITEM_PACKED_REFS\nGIT_REPOSITORY_ITEM_REMOTES\nGIT_REPOSITORY_ITEM_CONFIG\nGIT_REPOSITORY_ITEM_INFO\nGIT_REPOSITORY_ITEM_HOOKS\nGIT_REPOSITORY_ITEM_LOGS\nGIT_REPOSITORY_ITEM_MODULES\nGIT_REPOSITORY_ITEM_WORKTREES",
+        "lineto": 443,
+        "block": "GIT_REPOSITORY_ITEM_GITDIR\nGIT_REPOSITORY_ITEM_WORKDIR\nGIT_REPOSITORY_ITEM_COMMONDIR\nGIT_REPOSITORY_ITEM_INDEX\nGIT_REPOSITORY_ITEM_OBJECTS\nGIT_REPOSITORY_ITEM_REFS\nGIT_REPOSITORY_ITEM_PACKED_REFS\nGIT_REPOSITORY_ITEM_REMOTES\nGIT_REPOSITORY_ITEM_CONFIG\nGIT_REPOSITORY_ITEM_INFO\nGIT_REPOSITORY_ITEM_HOOKS\nGIT_REPOSITORY_ITEM_LOGS\nGIT_REPOSITORY_ITEM_MODULES\nGIT_REPOSITORY_ITEM_WORKTREES\nGIT_REPOSITORY_ITEM__LAST",
         "tdef": "typedef",
         "description": " List of items which belong to the git repository layout",
         "comments": "",
@@ -35427,6 +35429,12 @@
             "name": "GIT_REPOSITORY_ITEM_WORKTREES",
             "comments": "",
             "value": 13
+          },
+          {
+            "type": "int",
+            "name": "GIT_REPOSITORY_ITEM__LAST",
+            "comments": "",
+            "value": 14
           }
         ],
         "used": {
@@ -35512,8 +35520,8 @@
         ],
         "type": "enum",
         "file": "git2/repository.h",
-        "line": 820,
-        "lineto": 833,
+        "line": 821,
+        "lineto": 834,
         "block": "GIT_REPOSITORY_STATE_NONE\nGIT_REPOSITORY_STATE_MERGE\nGIT_REPOSITORY_STATE_REVERT\nGIT_REPOSITORY_STATE_REVERT_SEQUENCE\nGIT_REPOSITORY_STATE_CHERRYPICK\nGIT_REPOSITORY_STATE_CHERRYPICK_SEQUENCE\nGIT_REPOSITORY_STATE_BISECT\nGIT_REPOSITORY_STATE_REBASE\nGIT_REPOSITORY_STATE_REBASE_INTERACTIVE\nGIT_REPOSITORY_STATE_REBASE_MERGE\nGIT_REPOSITORY_STATE_APPLY_MAILBOX\nGIT_REPOSITORY_STATE_APPLY_MAILBOX_OR_REBASE",
         "tdef": "typedef",
         "description": " Repository state",
@@ -36214,8 +36222,8 @@
         "type": "struct",
         "value": "git_status_entry",
         "file": "git2/status.h",
-        "line": 221,
-        "lineto": 225,
+        "line": 230,
+        "lineto": 234,
         "block": "git_status_t status\ngit_diff_delta * head_to_index\ngit_diff_delta * index_to_workdir",
         "tdef": "typedef",
         "description": " A status entry, providing the differences between the file as it exists\n in HEAD and the index, and providing the differences between the index\n and the working directory.",
@@ -36414,37 +36422,37 @@
         "type": "struct",
         "value": "git_status_options",
         "file": "git2/status.h",
-        "line": 182,
-        "lineto": 188,
+        "line": 170,
+        "lineto": 197,
         "block": "unsigned int version\ngit_status_show_t show\nunsigned int flags\ngit_strarray pathspec\ngit_tree * baseline",
         "tdef": "typedef",
         "description": " Options to control how `git_status_foreach_ext()` will issue callbacks.",
-        "comments": "<p>This structure is set so that zeroing it out will give you relatively sane defaults.</p>\n\n<p>The <code>show</code> value is one of the <code>git_status_show_t</code> constants that control which files to scan and in what order.</p>\n\n<p>The <code>flags</code> value is an OR&#39;ed combination of the <code>git_status_opt_t</code> values above.</p>\n\n<p>The <code>pathspec</code> is an array of path patterns to match (using fnmatch-style matching), or just an array of paths to match exactly if <code>GIT_STATUS_OPT_DISABLE_PATHSPEC_MATCH</code> is specified in the flags.</p>\n\n<p>The <code>baseline</code> is the tree to be used for comparison to the working directory and index; defaults to HEAD.</p>\n",
+        "comments": "<p>Initialize with <code>GIT_STATUS_OPTIONS_INIT</code>. Alternatively, you can use <code>git_status_options_init</code>.</p>\n",
         "fields": [
           {
             "type": "unsigned int",
             "name": "version",
-            "comments": ""
+            "comments": " The version "
           },
           {
             "type": "git_status_show_t",
             "name": "show",
-            "comments": ""
+            "comments": " The `show` value is one of the `git_status_show_t` constants that\n control which files to scan and in what order."
           },
           {
             "type": "unsigned int",
             "name": "flags",
-            "comments": ""
+            "comments": " The `flags` value is an OR'ed combination of the `git_status_opt_t`\n values above."
           },
           {
             "type": "git_strarray",
             "name": "pathspec",
-            "comments": ""
+            "comments": " The `pathspec` is an array of path patterns to match (using\n fnmatch-style matching), or just an array of paths to match exactly if\n `GIT_STATUS_OPT_DISABLE_PATHSPEC_MATCH` is specified in the flags."
           },
           {
             "type": "git_tree *",
             "name": "baseline",
-            "comments": ""
+            "comments": " The `baseline` is the tree to be used for comparison to the working directory\n and index; defaults to HEAD."
           }
         ],
         "used": {
@@ -38835,6 +38843,10 @@
     [
       "common.c",
       "ex/HEAD/common.html"
+    ],
+    [
+      "config.c",
+      "ex/HEAD/config.html"
     ],
     [
       "describe.c",
