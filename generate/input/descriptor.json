@@ -4187,6 +4187,16 @@
         "singletonCppClassName": "GitRepository"
       },
       "functions": {
+        "git_tree_create_updated": {
+          "args": {
+            "updates": {
+              "cType": "git_tree_update *",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitTreeUpdate"
+            }
+          }
+        },
         "git_tree_entry_byid": {
           "return": {
             "ownedByThis": true
@@ -4360,6 +4370,10 @@
       "dependencies": [
         "../include/git_buf_converter.h"
       ]
+    },
+    "tree_update": {
+      "hasConstructor": true,
+      "ignoreInit": true
     },
     "writestream": {
       "cType": "git_writestream",
