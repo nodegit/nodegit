@@ -5,6 +5,8 @@ var fse = require("fs-extra");
 
 var garbageCollect = require("../utils/garbage_collect.js");
 
+const isNode8 = process.versions.node.split(".")[0] === "8";
+
 describe("Rebase", function() {
   var NodeGit = require("../../");
   var Checkout = NodeGit.Checkout;
@@ -1537,27 +1539,28 @@ describe("Rebase", function() {
       });
   });
 
-  it("can sign commits during the rebase", function() {
-    var baseFileName = "baseNewFile.txt";
-    var ourFileName = "ourNewFile.txt";
-    var theirFileName = "theirNewFile.txt";
+  if (!isNode8) {
+    it("can sign commits during the rebase", function() {
+      var baseFileName = "baseNewFile.txt";
+      var ourFileName = "ourNewFile.txt";
+      var theirFileName = "theirNewFile.txt";
 
-    var baseFileContent = "How do you feel about Toll Roads?";
-    var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
-    var theirFileContent = "I'm skeptical about Toll Roads";
+      var baseFileContent = "How do you feel about Toll Roads?";
+      var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
+      var theirFileContent = "I'm skeptical about Toll Roads";
 
-    var ourSignature = NodeGit.Signature.create
-          ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
-    var theirSignature = NodeGit.Signature.create
-          ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
+      var ourSignature = NodeGit.Signature.create
+      ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+      var theirSignature = NodeGit.Signature.create
+      ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
-    var repository = this.repository;
-    var ourCommit;
-    var ourBranch;
-    var theirBranch;
-    var rebase;
+      var repository = this.repository;
+      var ourCommit;
+      var ourBranch;
+      var theirBranch;
+      var rebase;
 
-    return fse.writeFile(path.join(repository.workdir(), baseFileName),
+      return fse.writeFile(path.join(repository.workdir(), baseFileName),
       baseFileContent)
       // Load up the repository index and make our initial commit to HEAD
       .then(function() {
@@ -1565,43 +1568,43 @@ describe("Rebase", function() {
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
-          "b5cdc109d437c4541a13fb7509116b5f03d5039a");
+        "b5cdc109d437c4541a13fb7509116b5f03d5039a");
 
         return repository.createCommit("HEAD", ourSignature,
-          ourSignature, "initial commit", oid, []);
+        ourSignature, "initial commit", oid, []);
       })
       .then(function(commitOid) {
         assert.equal(commitOid.toString(),
-          "be03abdf0353d05924c53bebeb0e5bb129cda44a");
+        "be03abdf0353d05924c53bebeb0e5bb129cda44a");
 
         return repository.getCommit(commitOid).then(function(commit) {
           ourCommit = commit;
         }).then(function() {
           return repository.createBranch(ourBranchName, commitOid)
-            .then(function(branch) {
-              ourBranch = branch;
-              return repository.createBranch(theirBranchName, commitOid);
-            });
+          .then(function(branch) {
+            ourBranch = branch;
+            return repository.createBranch(theirBranchName, commitOid);
+          });
         });
       })
       .then(function(branch) {
         theirBranch = branch;
         return fse.writeFile(path.join(repository.workdir(), theirFileName),
-          theirFileContent);
+        theirFileContent);
       })
       .then(function() {
         return RepoUtils.addFileToIndex(repository, theirFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
-          "be5f0fd38a39a67135ad68921c93cd5c17fefb3d");
+        "be5f0fd38a39a67135ad68921c93cd5c17fefb3d");
 
         return repository.createCommit(theirBranch.name(), theirSignature,
-          theirSignature, "they made a commit", oid, [ourCommit]);
+        theirSignature, "they made a commit", oid, [ourCommit]);
       })
       .then(function(commitOid) {
         assert.equal(commitOid.toString(),
-          "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
+        "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
         return removeFileFromIndex(repository, theirFileName);
       })
@@ -1610,21 +1613,21 @@ describe("Rebase", function() {
       })
       .then(function() {
         return fse.writeFile(path.join(repository.workdir(), ourFileName),
-          ourFileContent);
+        ourFileContent);
       })
       .then(function() {
         return RepoUtils.addFileToIndex(repository, ourFileName);
       })
       .then(function(oid) {
         assert.equal(oid.toString(),
-          "77867fc0bfeb3f80ab18a78c8d53aa3a06207047");
+        "77867fc0bfeb3f80ab18a78c8d53aa3a06207047");
 
-          return repository.createCommit(ourBranch.name(), ourSignature,
-            ourSignature, "we made a commit", oid, [ourCommit]);
+        return repository.createCommit(ourBranch.name(), ourSignature,
+        ourSignature, "we made a commit", oid, [ourCommit]);
       })
       .then(function(commitOid) {
         assert.equal(commitOid.toString(),
-          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+        "e7f37ee070837052937e24ad8ba66f6d83ae7941");
 
         return removeFileFromIndex(repository, ourFileName);
       })
@@ -1655,9 +1658,9 @@ describe("Rebase", function() {
         var theirAnnotatedCommit = annotatedCommits[1];
 
         assert.equal(ourAnnotatedCommit.id().toString(),
-          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+        "e7f37ee070837052937e24ad8ba66f6d83ae7941");
         assert.equal(theirAnnotatedCommit.id().toString(),
-          "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
+        "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
         return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
           theirAnnotatedCommit, null, {
@@ -1667,415 +1670,416 @@ describe("Rebase", function() {
               signedData: "A moose was here."
             })
           });
-      })
-      .then(function(newRebase) {
-        rebase = newRebase;
+        })
+        .then(function(newRebase) {
+          rebase = newRebase;
 
-        // there should only be 1 rebase operation to perform
-        assert.equal(rebase.operationEntrycount(), 1);
+          // there should only be 1 rebase operation to perform
+          assert.equal(rebase.operationEntrycount(), 1);
 
-        return rebase.next();
-      })
-      .then(function(rebaseOperation) {
-        assert.equal(rebaseOperation.type(),
+          return rebase.next();
+        })
+        .then(function(rebaseOperation) {
+          assert.equal(rebaseOperation.type(),
           NodeGit.RebaseOperation.REBASE_OPERATION.PICK);
-        assert.equal(rebaseOperation.id().toString(),
+          assert.equal(rebaseOperation.id().toString(),
           "e7f37ee070837052937e24ad8ba66f6d83ae7941");
 
-        // Make sure we don't crash calling the signature CB
-        // after collecting garbage.
-        garbageCollect();
+          // Make sure we don't crash calling the signature CB
+          // after collecting garbage.
+          garbageCollect();
 
-        return rebase.commit(null, ourSignature);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
+          return rebase.commit(null, ourSignature);
+        })
+        .then(function(commitOid) {
+          assert.equal(commitOid.toString(),
           "24250fe6bd8a782ec1aaca8b2c9a2456a90517ed");
 
-        // git_rebase_operation_current returns the index of the rebase
-        // operation that was last applied, so after the first operation, it
-        // should be 0.
-        assert.equal(rebase.operationCurrent(), 0);
+          // git_rebase_operation_current returns the index of the rebase
+          // operation that was last applied, so after the first operation, it
+          // should be 0.
+          assert.equal(rebase.operationCurrent(), 0);
 
-        return rebase.finish(ourSignature, {});
-      })
-      .then(function(result) {
-        assert.equal(result, 0);
+          return rebase.finish(ourSignature, {});
+        })
+        .then(function(result) {
+          assert.equal(result, 0);
 
-        return repository.getBranchCommit(ourBranchName);
-      })
-      .then(function(commit) {
-        // verify that the "ours" branch has moved to the correct place
-        assert.equal(commit.id().toString(),
+          return repository.getBranchCommit(ourBranchName);
+        })
+        .then(function(commit) {
+          // verify that the "ours" branch has moved to the correct place
+          assert.equal(commit.id().toString(),
           "24250fe6bd8a782ec1aaca8b2c9a2456a90517ed");
 
-        return Promise.all([
-          commit.parent(0),
-          NodeGit.Commit.extractSignature(
-            repository,
-            "24250fe6bd8a782ec1aaca8b2c9a2456a90517ed",
-            "moose-sig"
-          )
-        ]);
-      })
-      .then(function([parent, { signature }]) {
-        // verify that we are on top of "their commit"
-        assert.equal(parent.id().toString(),
+          return Promise.all([
+            commit.parent(0),
+            NodeGit.Commit.extractSignature(
+              repository,
+              "24250fe6bd8a782ec1aaca8b2c9a2456a90517ed",
+              "moose-sig"
+            )
+          ]);
+        })
+        .then(function([parent, { signature }]) {
+          // verify that we are on top of "their commit"
+          assert.equal(parent.id().toString(),
           "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
-        assert.equal(signature, "A moose was here.");
+          assert.equal(signature, "A moose was here.");
+        });
       });
-  });
 
-  it("can optionally skip signing commits", function() {
-    var baseFileName = "baseNewFile.txt";
-    var ourFileName = "ourNewFile.txt";
-    var theirFileName = "theirNewFile.txt";
+      it("can optionally skip signing commits", function() {
+        var baseFileName = "baseNewFile.txt";
+        var ourFileName = "ourNewFile.txt";
+        var theirFileName = "theirNewFile.txt";
 
-    var baseFileContent = "How do you feel about Toll Roads?";
-    var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
-    var theirFileContent = "I'm skeptical about Toll Roads";
+        var baseFileContent = "How do you feel about Toll Roads?";
+        var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
+        var theirFileContent = "I'm skeptical about Toll Roads";
 
-    var ourSignature = NodeGit.Signature.create
-          ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
-    var theirSignature = NodeGit.Signature.create
-          ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
+        var ourSignature = NodeGit.Signature.create
+        ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+        var theirSignature = NodeGit.Signature.create
+        ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
-    var repository = this.repository;
-    var ourCommit;
-    var ourBranch;
-    var theirBranch;
-    var rebase;
+        var repository = this.repository;
+        var ourCommit;
+        var ourBranch;
+        var theirBranch;
+        var rebase;
 
-    return fse.writeFile(path.join(repository.workdir(), baseFileName),
-      baseFileContent)
-      // Load up the repository index and make our initial commit to HEAD
-      .then(function() {
-        return RepoUtils.addFileToIndex(repository, baseFileName);
-      })
-      .then(function(oid) {
-        assert.equal(oid.toString(),
+        return fse.writeFile(path.join(repository.workdir(), baseFileName),
+        baseFileContent)
+        // Load up the repository index and make our initial commit to HEAD
+        .then(function() {
+          return RepoUtils.addFileToIndex(repository, baseFileName);
+        })
+        .then(function(oid) {
+          assert.equal(oid.toString(),
           "b5cdc109d437c4541a13fb7509116b5f03d5039a");
 
-        return repository.createCommit("HEAD", ourSignature,
+          return repository.createCommit("HEAD", ourSignature,
           ourSignature, "initial commit", oid, []);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
+        })
+        .then(function(commitOid) {
+          assert.equal(commitOid.toString(),
           "be03abdf0353d05924c53bebeb0e5bb129cda44a");
 
-        return repository.getCommit(commitOid).then(function(commit) {
-          ourCommit = commit;
-        }).then(function() {
-          return repository.createBranch(ourBranchName, commitOid)
+          return repository.getCommit(commitOid).then(function(commit) {
+            ourCommit = commit;
+          }).then(function() {
+            return repository.createBranch(ourBranchName, commitOid)
             .then(function(branch) {
               ourBranch = branch;
               return repository.createBranch(theirBranchName, commitOid);
             });
-        });
-      })
-      .then(function(branch) {
-        theirBranch = branch;
-        return fse.writeFile(path.join(repository.workdir(), theirFileName),
+          });
+        })
+        .then(function(branch) {
+          theirBranch = branch;
+          return fse.writeFile(path.join(repository.workdir(), theirFileName),
           theirFileContent);
-      })
-      .then(function() {
-        return RepoUtils.addFileToIndex(repository, theirFileName);
-      })
-      .then(function(oid) {
-        assert.equal(oid.toString(),
+        })
+        .then(function() {
+          return RepoUtils.addFileToIndex(repository, theirFileName);
+        })
+        .then(function(oid) {
+          assert.equal(oid.toString(),
           "be5f0fd38a39a67135ad68921c93cd5c17fefb3d");
 
-        return repository.createCommit(theirBranch.name(), theirSignature,
+          return repository.createCommit(theirBranch.name(), theirSignature,
           theirSignature, "they made a commit", oid, [ourCommit]);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
+        })
+        .then(function(commitOid) {
+          assert.equal(commitOid.toString(),
           "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
-        return removeFileFromIndex(repository, theirFileName);
-      })
-      .then(function() {
-        return fse.remove(path.join(repository.workdir(), theirFileName));
-      })
-      .then(function() {
-        return fse.writeFile(path.join(repository.workdir(), ourFileName),
+          return removeFileFromIndex(repository, theirFileName);
+        })
+        .then(function() {
+          return fse.remove(path.join(repository.workdir(), theirFileName));
+        })
+        .then(function() {
+          return fse.writeFile(path.join(repository.workdir(), ourFileName),
           ourFileContent);
-      })
-      .then(function() {
-        return RepoUtils.addFileToIndex(repository, ourFileName);
-      })
-      .then(function(oid) {
-        assert.equal(oid.toString(),
+        })
+        .then(function() {
+          return RepoUtils.addFileToIndex(repository, ourFileName);
+        })
+        .then(function(oid) {
+          assert.equal(oid.toString(),
           "77867fc0bfeb3f80ab18a78c8d53aa3a06207047");
 
           return repository.createCommit(ourBranch.name(), ourSignature,
-            ourSignature, "we made a commit", oid, [ourCommit]);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
+          ourSignature, "we made a commit", oid, [ourCommit]);
+        })
+        .then(function(commitOid) {
+          assert.equal(commitOid.toString(),
           "e7f37ee070837052937e24ad8ba66f6d83ae7941");
 
-        return removeFileFromIndex(repository, ourFileName);
-      })
-      .then(function() {
-        return fse.remove(path.join(repository.workdir(), ourFileName));
-      })
-      .then(function() {
-        return repository.checkoutBranch(ourBranchName);
-      })
-      .then(function() {
-        return Promise.all([
-          repository.getReference(ourBranchName),
-          repository.getReference(theirBranchName)
-        ]);
-      })
-      .then(function(refs) {
-        assert.equal(refs.length, 2);
+          return removeFileFromIndex(repository, ourFileName);
+        })
+        .then(function() {
+          return fse.remove(path.join(repository.workdir(), ourFileName));
+        })
+        .then(function() {
+          return repository.checkoutBranch(ourBranchName);
+        })
+        .then(function() {
+          return Promise.all([
+            repository.getReference(ourBranchName),
+            repository.getReference(theirBranchName)
+          ]);
+        })
+        .then(function(refs) {
+          assert.equal(refs.length, 2);
 
-        return Promise.all([
-          NodeGit.AnnotatedCommit.fromRef(repository, refs[0]),
-          NodeGit.AnnotatedCommit.fromRef(repository, refs[1])
-        ]);
-      })
-      .then(function(annotatedCommits) {
-        assert.equal(annotatedCommits.length, 2);
+          return Promise.all([
+            NodeGit.AnnotatedCommit.fromRef(repository, refs[0]),
+            NodeGit.AnnotatedCommit.fromRef(repository, refs[1])
+          ]);
+        })
+        .then(function(annotatedCommits) {
+          assert.equal(annotatedCommits.length, 2);
 
-        var ourAnnotatedCommit = annotatedCommits[0];
-        var theirAnnotatedCommit = annotatedCommits[1];
+          var ourAnnotatedCommit = annotatedCommits[0];
+          var theirAnnotatedCommit = annotatedCommits[1];
 
-        assert.equal(ourAnnotatedCommit.id().toString(),
+          assert.equal(ourAnnotatedCommit.id().toString(),
           "e7f37ee070837052937e24ad8ba66f6d83ae7941");
-        assert.equal(theirAnnotatedCommit.id().toString(),
+          assert.equal(theirAnnotatedCommit.id().toString(),
           "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
-        return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
-          theirAnnotatedCommit, null, {
-            signingCb: () => ({
-              code: NodeGit.Error.CODE.PASSTHROUGH
-            })
+          return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
+            theirAnnotatedCommit, null, {
+              signingCb: () => ({
+                code: NodeGit.Error.CODE.PASSTHROUGH
+              })
+            });
+          })
+          .then(function(newRebase) {
+            rebase = newRebase;
+
+            // there should only be 1 rebase operation to perform
+            assert.equal(rebase.operationEntrycount(), 1);
+
+            return rebase.next();
+          })
+          .then(function(rebaseOperation) {
+            assert.equal(rebaseOperation.type(),
+            NodeGit.RebaseOperation.REBASE_OPERATION.PICK);
+            assert.equal(rebaseOperation.id().toString(),
+            "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+
+            // Make sure we don't crash calling the signature CB
+            // after collecting garbage.
+            garbageCollect();
+
+            return rebase.commit(null, ourSignature);
+          })
+          .then(function(commitOid) {
+            assert.equal(commitOid.toString(),
+            "b937100ee0ea17ef20525306763505a7fe2be29e");
+
+            // git_rebase_operation_current returns the index of the rebase
+            // operation that was last applied, so after the first operation, it
+            // should be 0.
+            assert.equal(rebase.operationCurrent(), 0);
+
+            return rebase.finish(ourSignature, {});
+          })
+          .then(function(result) {
+            assert.equal(result, 0);
+
+            return repository.getBranchCommit(ourBranchName);
+          })
+          .then(function(commit) {
+            // verify that the "ours" branch has moved to the correct place
+            assert.equal(commit.id().toString(),
+            "b937100ee0ea17ef20525306763505a7fe2be29e");
+
+            return commit.parent(0);
+          })
+          .then(function(parent) {
+            // verify that we are on top of "their commit"
+            assert.equal(parent.id().toString(),
+            "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
+            return NodeGit.Commit.extractSignature(
+              repository,
+              "b937100ee0ea17ef20525306763505a7fe2be29e",
+              "moose-sig"
+            )
+            .then(function() {
+              assert.fail("This commit should not be signed.");
+            }, function (error) {
+              if (error && error.message === "this commit is not signed") {
+                return;
+              }
+              throw error;
+            });
           });
-      })
-      .then(function(newRebase) {
-        rebase = newRebase;
+        });
 
-        // there should only be 1 rebase operation to perform
-        assert.equal(rebase.operationEntrycount(), 1);
+        it("will throw if commit signing cb returns an error code", function() {
+          var baseFileName = "baseNewFile.txt";
+          var ourFileName = "ourNewFile.txt";
+          var theirFileName = "theirNewFile.txt";
 
-        return rebase.next();
-      })
-      .then(function(rebaseOperation) {
-        assert.equal(rebaseOperation.type(),
-          NodeGit.RebaseOperation.REBASE_OPERATION.PICK);
-        assert.equal(rebaseOperation.id().toString(),
-          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+          var baseFileContent = "How do you feel about Toll Roads?";
+          var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
+          var theirFileContent = "I'm skeptical about Toll Roads";
 
-        // Make sure we don't crash calling the signature CB
-        // after collecting garbage.
-        garbageCollect();
+          var ourSignature = NodeGit.Signature.create
+          ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+          var theirSignature = NodeGit.Signature.create
+          ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
-        return rebase.commit(null, ourSignature);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
-          "b937100ee0ea17ef20525306763505a7fe2be29e");
+          var repository = this.repository;
+          var ourCommit;
+          var ourBranch;
+          var theirBranch;
+          var rebase;
 
-        // git_rebase_operation_current returns the index of the rebase
-        // operation that was last applied, so after the first operation, it
-        // should be 0.
-        assert.equal(rebase.operationCurrent(), 0);
-
-        return rebase.finish(ourSignature, {});
-      })
-      .then(function(result) {
-        assert.equal(result, 0);
-
-        return repository.getBranchCommit(ourBranchName);
-      })
-      .then(function(commit) {
-        // verify that the "ours" branch has moved to the correct place
-        assert.equal(commit.id().toString(),
-          "b937100ee0ea17ef20525306763505a7fe2be29e");
-
-        return commit.parent(0);
-      })
-      .then(function(parent) {
-        // verify that we are on top of "their commit"
-        assert.equal(parent.id().toString(),
-          "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
-        return NodeGit.Commit.extractSignature(
-          repository,
-          "b937100ee0ea17ef20525306763505a7fe2be29e",
-          "moose-sig"
-        )
+          return fse.writeFile(path.join(repository.workdir(), baseFileName),
+          baseFileContent)
+          // Load up the repository index and make our initial commit to HEAD
           .then(function() {
-            assert.fail("This commit should not be signed.");
-          }, function (error) {
-            if (error && error.message === "this commit is not signed") {
-              return;
-            }
-            throw error;
-          });
-      });
-  });
+            return RepoUtils.addFileToIndex(repository, baseFileName);
+          })
+          .then(function(oid) {
+            assert.equal(oid.toString(),
+            "b5cdc109d437c4541a13fb7509116b5f03d5039a");
 
-  it("will throw if commit signing cb returns an error code", function() {
-    var baseFileName = "baseNewFile.txt";
-    var ourFileName = "ourNewFile.txt";
-    var theirFileName = "theirNewFile.txt";
+            return repository.createCommit("HEAD", ourSignature,
+            ourSignature, "initial commit", oid, []);
+          })
+          .then(function(commitOid) {
+            assert.equal(commitOid.toString(),
+            "be03abdf0353d05924c53bebeb0e5bb129cda44a");
 
-    var baseFileContent = "How do you feel about Toll Roads?";
-    var ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
-    var theirFileContent = "I'm skeptical about Toll Roads";
-
-    var ourSignature = NodeGit.Signature.create
-          ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
-    var theirSignature = NodeGit.Signature.create
-          ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
-
-    var repository = this.repository;
-    var ourCommit;
-    var ourBranch;
-    var theirBranch;
-    var rebase;
-
-    return fse.writeFile(path.join(repository.workdir(), baseFileName),
-      baseFileContent)
-      // Load up the repository index and make our initial commit to HEAD
-      .then(function() {
-        return RepoUtils.addFileToIndex(repository, baseFileName);
-      })
-      .then(function(oid) {
-        assert.equal(oid.toString(),
-          "b5cdc109d437c4541a13fb7509116b5f03d5039a");
-
-        return repository.createCommit("HEAD", ourSignature,
-          ourSignature, "initial commit", oid, []);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
-          "be03abdf0353d05924c53bebeb0e5bb129cda44a");
-
-        return repository.getCommit(commitOid).then(function(commit) {
-          ourCommit = commit;
-        }).then(function() {
-          return repository.createBranch(ourBranchName, commitOid)
-            .then(function(branch) {
-              ourBranch = branch;
-              return repository.createBranch(theirBranchName, commitOid);
+            return repository.getCommit(commitOid).then(function(commit) {
+              ourCommit = commit;
+            }).then(function() {
+              return repository.createBranch(ourBranchName, commitOid)
+              .then(function(branch) {
+                ourBranch = branch;
+                return repository.createBranch(theirBranchName, commitOid);
+              });
             });
-        });
-      })
-      .then(function(branch) {
-        theirBranch = branch;
-        return fse.writeFile(path.join(repository.workdir(), theirFileName),
-          theirFileContent);
-      })
-      .then(function() {
-        return RepoUtils.addFileToIndex(repository, theirFileName);
-      })
-      .then(function(oid) {
-        assert.equal(oid.toString(),
-          "be5f0fd38a39a67135ad68921c93cd5c17fefb3d");
+          })
+          .then(function(branch) {
+            theirBranch = branch;
+            return fse.writeFile(path.join(repository.workdir(), theirFileName),
+            theirFileContent);
+          })
+          .then(function() {
+            return RepoUtils.addFileToIndex(repository, theirFileName);
+          })
+          .then(function(oid) {
+            assert.equal(oid.toString(),
+            "be5f0fd38a39a67135ad68921c93cd5c17fefb3d");
 
-        return repository.createCommit(theirBranch.name(), theirSignature,
-          theirSignature, "they made a commit", oid, [ourCommit]);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
-          "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
+            return repository.createCommit(theirBranch.name(), theirSignature,
+            theirSignature, "they made a commit", oid, [ourCommit]);
+          })
+          .then(function(commitOid) {
+            assert.equal(commitOid.toString(),
+            "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
-        return removeFileFromIndex(repository, theirFileName);
-      })
-      .then(function() {
-        return fse.remove(path.join(repository.workdir(), theirFileName));
-      })
-      .then(function() {
-        return fse.writeFile(path.join(repository.workdir(), ourFileName),
-          ourFileContent);
-      })
-      .then(function() {
-        return RepoUtils.addFileToIndex(repository, ourFileName);
-      })
-      .then(function(oid) {
-        assert.equal(oid.toString(),
-          "77867fc0bfeb3f80ab18a78c8d53aa3a06207047");
+            return removeFileFromIndex(repository, theirFileName);
+          })
+          .then(function() {
+            return fse.remove(path.join(repository.workdir(), theirFileName));
+          })
+          .then(function() {
+            return fse.writeFile(path.join(repository.workdir(), ourFileName),
+            ourFileContent);
+          })
+          .then(function() {
+            return RepoUtils.addFileToIndex(repository, ourFileName);
+          })
+          .then(function(oid) {
+            assert.equal(oid.toString(),
+            "77867fc0bfeb3f80ab18a78c8d53aa3a06207047");
 
-          return repository.createCommit(ourBranch.name(), ourSignature,
+            return repository.createCommit(ourBranch.name(), ourSignature,
             ourSignature, "we made a commit", oid, [ourCommit]);
-      })
-      .then(function(commitOid) {
-        assert.equal(commitOid.toString(),
-          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+          })
+          .then(function(commitOid) {
+            assert.equal(commitOid.toString(),
+            "e7f37ee070837052937e24ad8ba66f6d83ae7941");
 
-        return removeFileFromIndex(repository, ourFileName);
-      })
-      .then(function() {
-        return fse.remove(path.join(repository.workdir(), ourFileName));
-      })
-      .then(function() {
-        return repository.checkoutBranch(ourBranchName);
-      })
-      .then(function() {
-        return Promise.all([
-          repository.getReference(ourBranchName),
-          repository.getReference(theirBranchName)
-        ]);
-      })
-      .then(function(refs) {
-        assert.equal(refs.length, 2);
+            return removeFileFromIndex(repository, ourFileName);
+          })
+          .then(function() {
+            return fse.remove(path.join(repository.workdir(), ourFileName));
+          })
+          .then(function() {
+            return repository.checkoutBranch(ourBranchName);
+          })
+          .then(function() {
+            return Promise.all([
+              repository.getReference(ourBranchName),
+              repository.getReference(theirBranchName)
+            ]);
+          })
+          .then(function(refs) {
+            assert.equal(refs.length, 2);
 
-        return Promise.all([
-          NodeGit.AnnotatedCommit.fromRef(repository, refs[0]),
-          NodeGit.AnnotatedCommit.fromRef(repository, refs[1])
-        ]);
-      })
-      .then(function(annotatedCommits) {
-        assert.equal(annotatedCommits.length, 2);
+            return Promise.all([
+              NodeGit.AnnotatedCommit.fromRef(repository, refs[0]),
+              NodeGit.AnnotatedCommit.fromRef(repository, refs[1])
+            ]);
+          })
+          .then(function(annotatedCommits) {
+            assert.equal(annotatedCommits.length, 2);
 
-        var ourAnnotatedCommit = annotatedCommits[0];
-        var theirAnnotatedCommit = annotatedCommits[1];
+            var ourAnnotatedCommit = annotatedCommits[0];
+            var theirAnnotatedCommit = annotatedCommits[1];
 
-        assert.equal(ourAnnotatedCommit.id().toString(),
-          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
-        assert.equal(theirAnnotatedCommit.id().toString(),
-          "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
+            assert.equal(ourAnnotatedCommit.id().toString(),
+            "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+            assert.equal(theirAnnotatedCommit.id().toString(),
+            "e9ebd92f2f4778baf6fa8e92f0c68642f931a554");
 
-        return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
-          theirAnnotatedCommit, null, {
-            signingCb: () => ({
-              code: NodeGit.Error.CODE.ERROR
+            return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
+              theirAnnotatedCommit, null, {
+                signingCb: () => ({
+                  code: NodeGit.Error.CODE.ERROR
+                })
+              });
             })
+            .then(function(newRebase) {
+              rebase = newRebase;
+
+              // there should only be 1 rebase operation to perform
+              assert.equal(rebase.operationEntrycount(), 1);
+
+              return rebase.next();
+            })
+            .then(function(rebaseOperation) {
+              assert.equal(rebaseOperation.type(),
+              NodeGit.RebaseOperation.REBASE_OPERATION.PICK);
+              assert.equal(rebaseOperation.id().toString(),
+              "e7f37ee070837052937e24ad8ba66f6d83ae7941");
+
+              // Make sure we don't crash calling the signature CB
+              // after collecting garbage.
+              garbageCollect();
+
+              return rebase.commit(null, ourSignature);
+            })
+            .then(function() {
+              assert.fail("rebase.commit should have failed");
+            }, function(error) {
+              if (error && error.errno === NodeGit.Error.CODE.ERROR) {
+                return;
+              }
+              throw error;
+            });
           });
-      })
-      .then(function(newRebase) {
-        rebase = newRebase;
-
-        // there should only be 1 rebase operation to perform
-        assert.equal(rebase.operationEntrycount(), 1);
-
-        return rebase.next();
-      })
-      .then(function(rebaseOperation) {
-        assert.equal(rebaseOperation.type(),
-          NodeGit.RebaseOperation.REBASE_OPERATION.PICK);
-        assert.equal(rebaseOperation.id().toString(),
-          "e7f37ee070837052937e24ad8ba66f6d83ae7941");
-
-        // Make sure we don't crash calling the signature CB
-        // after collecting garbage.
-        garbageCollect();
-
-        return rebase.commit(null, ourSignature);
-      })
-      .then(function() {
-        assert.fail("rebase.commit should have failed");
-      }, function(error) {
-        if (error && error.errno === NodeGit.Error.CODE.ERROR) {
-          return;
-        }
-        throw error;
-      });
-    });
+  }
 
     it("will not throw on patch already applied errors", function() {
       var baseFileName = "baseNewFile.txt";
