@@ -7,6 +7,8 @@ var fp = require("lodash/fp");
 var garbageCollect = require("../utils/garbage_collect.js");
 var RepoUtils = require("../utils/repository_setup");
 
+const isNode8 = process.versions.node.split(".")[0] === "8";
+
 describe("Remote", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
@@ -317,10 +319,11 @@ describe("Remote", function() {
       });
   });
 
-  it("will reject if credentials promise rejects", function() {
-    var repo = this.repository;
-    var branch = "should-not-exist";
-    return Remote.lookup(repo, "origin")
+  if (!isNode8) {
+    it("will reject if credentials promise rejects", function() {
+      var repo = this.repository;
+      var branch = "should-not-exist";
+      return Remote.lookup(repo, "origin")
       .then(function(remote) {
         var ref = "refs/heads/" + branch;
         var refs = [ref + ":" + ref];
@@ -328,12 +331,12 @@ describe("Remote", function() {
           callbacks: {
             credentials: function(url, userName) {
               var test = Promise.resolve("test")
-                .then(function() { return; })
-                .then(function() { return; })
-                .then(function() { return; })
-                .then(function() {
-                  return Promise.reject(new Error("failure case"));
-                });
+              .then(function() { return; })
+              .then(function() { return; })
+              .then(function() { return; })
+              .then(function() {
+                return Promise.reject(new Error("failure case"));
+              });
               return test;
             },
             certificateCheck: () => 0
@@ -344,101 +347,106 @@ describe("Remote", function() {
       .then(function() {
         return Promise.reject(
           new Error("should not be able to push to the repository"));
-      }, function(err) {
-        if (err.message === "failure case")
-        {
-          return Promise.resolve();
-        } else {
-          throw err;
-        }
-      })
-      .then(function() {
-        return Remote.lookup(repo, "origin");
-      })
-      .then(function(remote) {
-        var ref = "refs/heads/" + branch;
-        var refs = [ref + ":" + ref];
-        var options = {
-          callbacks: {
-            credentials: function(url, userName) {
-              var test = Promise.resolve()
+        }, function(err) {
+          if (err.message === "failure case")
+          {
+            return Promise.resolve();
+          } else {
+            throw err;
+          }
+        })
+        .then(function() {
+          return Remote.lookup(repo, "origin");
+        })
+        .then(function(remote) {
+          var ref = "refs/heads/" + branch;
+          var refs = [ref + ":" + ref];
+          var options = {
+            callbacks: {
+              credentials: function(url, userName) {
+                var test = Promise.resolve()
                 .then(Promise.resolve.bind(Promise))
                 .then(Promise.resolve.bind(Promise))
                 .then(Promise.resolve.bind(Promise))
                 .then(Promise.reject.bind(Promise));
-              return test;
-            },
-            certificateCheck: () => 0
-          }
-        };
-        return remote.push(refs, options);
-      })
-      .then(function() {
-        return Promise.reject(
-          new Error("should not be able to push to the repository"));
-      }, function(err) {
-        if (err.message === "Method push has thrown an error.")
-        {
-          return Promise.resolve();
-        } else {
-          throw err;
-        }
-      });
-  });
+                return test;
+              },
+              certificateCheck: () => 0
+            }
+          };
+          return remote.push(refs, options);
+        })
+        .then(function() {
+          return Promise.reject(
+            new Error("should not be able to push to the repository"));
+          }, function(err) {
+            if (err.message === "Method push has thrown an error.")
+            {
+              return Promise.resolve();
+            } else {
+              throw err;
+            }
+          });
+        });
 
-  it("cannot push to a repository with invalid credentials", function() {
-    var repo = this.repository;
-    var branch = "should-not-exist";
-    return Remote.lookup(repo, "origin")
-      .then(function(remote) {
-        var ref = "refs/heads/" + branch;
-        var refs = [ref + ":" + ref];
-        var firstPass = true;
-        var options = {
-          callbacks: {
-            credentials: function(url, userName) {
-              if (firstPass) {
-                firstPass = false;
-                if (url.indexOf("https") === -1) {
-                  return NodeGit.Cred.sshKeyFromAgent(userName);
-                } else {
-                  return NodeGit.Cred.userpassPlaintextNew(userName, "");
-                }
-              } else {
-                return Promise.reject();
+        it("cannot push to a repository with invalid credentials", function() {
+          var repo = this.repository;
+          var branch = "should-not-exist";
+          return Remote.lookup(repo, "origin")
+          .then(function(remote) {
+            var ref = "refs/heads/" + branch;
+            var refs = [ref + ":" + ref];
+            var firstPass = true;
+            var options = {
+              callbacks: {
+                credentials: function(url, userName) {
+                  if (firstPass) {
+                    firstPass = false;
+                    if (url.indexOf("https") === -1) {
+                      return NodeGit.Cred.sshKeyFromAgent(userName);
+                    } else {
+                      return NodeGit.Cred.userpassPlaintextNew(userName, "");
+                    }
+                  } else {
+                    return Promise.reject();
+                  }
+                },
+                certificateCheck: () => 0
               }
-            },
-            certificateCheck: () => 0
-          }
-        };
-        return remote.push(refs, options);
-      })
-      // takes care of windows bug, see the .catch for the proper pathway
-      // that this flow should take (cred cb doesn't run twice -> throws error)
-      .then(function() {
-        return Promise.reject(
-          new Error("should not be able to push to the repository"));
-      }, function(err) {
-        if (err.message.indexOf(401) === -1) {
-          throw err;
-        } else {
-          return Promise.resolve();
-        }
-      })
-      // catches linux / osx failure to use anonymous credentials
-      // stops callback infinite loop
-      .catch(function (reason) {
-        const messageWithoutNewlines = reason.message.replace(/\n|\r/g, "");
-        const validErrors = [
-          "Method push has thrown an error.",
-          "failed to set credentials: The parameter is incorrect."
-        ];
-        assert.ok(
-          _.includes(validErrors, messageWithoutNewlines),
-          "Unexpected error: " + reason.message
-        );
-      });
-  });
+            };
+            return remote.push(refs, options);
+          })
+          // takes care of windows bug, see the .catch for the proper pathway
+          // that this flow should take (cred cb doesn't run twice ->
+          // throws error)
+          .then(function() {
+            return Promise.reject(
+              new Error("should not be able to push to the repository"));
+            }, function(err) {
+              if (err.message.indexOf(401) === -1) {
+                throw err;
+              } else {
+                return Promise.resolve();
+              }
+            })
+            // catches linux / osx failure to use anonymous credentials
+            // stops callback infinite loop
+            .catch(function (reason) {
+              const messageWithoutNewlines = reason.message.replace(
+                /\n|\r/g,
+                ""
+              );
+              const validErrors = [
+                "Method push has thrown an error.",
+                "failed to set credentials: The parameter is incorrect."
+              ];
+              assert.ok(
+                _.includes(validErrors, messageWithoutNewlines),
+                "Unexpected error: " + reason.message
+              );
+            });
+          });
+  }
 
   it("is kept alive by refspec", function() {
     var repo = this.repository;
