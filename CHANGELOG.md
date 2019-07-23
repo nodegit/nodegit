@@ -1,5 +1,57 @@
 # Change Log
 
+## <a name="v0-25-0-alpha-16" href="#v0-25-0-alpha-16">v0.25.0-alpha.16</a> [(2019-07-23)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.16)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.15...v0.25.0-alpha.16)
+
+#### Summary of changes
+- Adds support for Node 12
+- Updates lodash dependency to address security notice
+- Expose Tree.prototype.createUpdated(repo, numUpdates, updates)
+- Bumps libgit2
+  - Fixes gitignore issue with pattern negation
+  - Remote.list now gets the correct list of remotes if remotes are changed by external process
+
+#### Merged PRs into NodeGit
+- [Bump libgit2 #1705](https://github.com/nodegit/nodegit/pull/1705)
+- [Fix Tree#createUpdated #1704](https://github.com/nodegit/nodegit/pull/1704)
+- [Fix failing tests on CI #1703](https://github.com/nodegit/nodegit/pull/1703)
+- [Audit lodash and fix package-lock.json #1702](https://github.com/nodegit/nodegit/pull/1702)
+- [Implement support for Node 12 #1696](https://github.com/nodegit/nodegit/pull/1696)
+
+#### Merged PRs into LibGit2
+- [config_file: refresh when creating an iterator #5181](https://github.com/libgit2/libgit2/pull/5181)
+- [azure: drop powershell #5141](https://github.com/libgit2/libgit2/pull/5141)
+- [fuzzer: use futils instead of fileops #5180](https://github.com/libgit2/libgit2/pull/5180)
+- [w32: fix unlinking of directory symlinks #5151](https://github.com/libgit2/libgit2/pull/5151)
+- [patch_parse: fix segfault due to line containing static contents #5179](https://github.com/libgit2/libgit2/pull/5179)
+- [ignore: fix determining whether a shorter pattern negates another #5173](https://github.com/libgit2/libgit2/pull/5173)
+- [patch_parse: handle missing newline indicator in old file #5159](https://github.com/libgit2/libgit2/pull/5159)
+- [patch_parse: do not depend on parsed buffer's lifetime #5158](https://github.com/libgit2/libgit2/pull/5158)
+- [sha1: fix compilation of WinHTTP backend #5174](https://github.com/libgit2/libgit2/pull/5174)
+- [repository: do not initialize HEAD if it's provided by templates #5176](https://github.com/libgit2/libgit2/pull/5176)
+- [configuration: cvar -> configmap #5138](https://github.com/libgit2/libgit2/pull/5138)
+- [Evict cache items more efficiently #5172](https://github.com/libgit2/libgit2/pull/5172)
+- [clar: fix suite count #5175](https://github.com/libgit2/libgit2/pull/5175)
+- [Ignore VS2017 specific files and folders #5163](https://github.com/libgit2/libgit2/pull/5163)
+- [gitattributes: ignore macros defined in subdirectories #5156](https://github.com/libgit2/libgit2/pull/5156)
+- [clar: correctly account for "data" suites when counting #5168](https://github.com/libgit2/libgit2/pull/5168)
+- [Allocate memory more efficiently when packing objects #5170](https://github.com/libgit2/libgit2/pull/5170)
+- [fileops: fix creation of directory in filesystem root #5131](https://github.com/libgit2/libgit2/pull/5131)
+- [win32: fix fuzzers and have CI build them #5160](https://github.com/libgit2/libgit2/pull/5160)
+- [Config parser separation #5134](https://github.com/libgit2/libgit2/pull/5134)
+- [config_file: implement stat cache to avoid repeated rehashing #5132](https://github.com/libgit2/libgit2/pull/5132)
+- [ci: build with ENABLE_WERROR on Windows #5143](https://github.com/libgit2/libgit2/pull/5143)
+- [Fix Regression: attr: Correctly load system attr file (on Windows) #5152](https://github.com/libgit2/libgit2/pull/5152)
+- [hash: fix missing error return on production builds #5145](https://github.com/libgit2/libgit2/pull/5145)
+- [Resolve static check warnings in example code #5142](https://github.com/libgit2/libgit2/pull/5142)
+- [Multiple hash algorithms #4438](https://github.com/libgit2/libgit2/pull/4438)
+- [More documentation #5128](https://github.com/libgit2/libgit2/pull/5128)
+- [Incomplete commondir support #4967](https://github.com/libgit2/libgit2/pull/4967)
+- [Remove warnings #5078](https://github.com/libgit2/libgit2/pull/5078)
+- [Re-run flaky tests #5140](https://github.com/libgit2/libgit2/pull/5140)
+
+
 ## <a name="v0-25-0-alpha-15" href="#v0-25-0-alpha-15">v0.25.0-alpha.15</a> [(2019-07-15)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0-alpha.15)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0-alpha.14...v0.25.0-alpha.15)
