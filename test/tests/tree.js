@@ -38,6 +38,24 @@ describe("Tree", function() {
     }).done(done);
   });
 
+  it("updates a tree", function () {
+    var repo = this.existingRepo;
+    var update = new NodeGit.TreeUpdate();
+    update.action = NodeGit.Tree.UPDATE.REMOVE;
+    update.path = "README.md";
+    return this.commit.getTree().then(function(tree) {
+        return tree.createUpdated(repo, 1, [update]);
+      })
+      .then(function(treeOid) {
+        return repo.getTree(treeOid);
+      })
+      .then(function(updatedTree) {
+        assert.throws(function () {
+          updatedTree.entryByName("README.md");
+        });
+      });
+  });
+
   it("walks its entries and returns the same entries on both progress and end",
   function() {
     var repo = this.repository;
