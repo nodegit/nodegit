@@ -429,20 +429,6 @@ void GitRepository::RefreshReferencesWorker::Execute()
     return;
   }
 
-  git_config *config;
-  baton->error_code = git_repository_config_snapshot(&config, repo);
-  if (baton->error_code != GIT_OK) {
-    if (giterr_last() != NULL) {
-      baton->error = git_error_dup(giterr_last());
-    }
-    git_odb_free(odb);
-    delete refreshData;
-    baton->out = NULL;
-    return;
-  }
-  git_config_free(config);
-
-
   // START Refresh HEAD
   git_reference *headRef = NULL;
   baton->error_code = lookupDirectReferenceByShorthand(&headRef, repo, "HEAD");
@@ -544,7 +530,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
     if (reference == NULL) {
       // lookup found the reference but failed to resolve it directly
       continue;
-    } 
+    }
 
     UpstreamModel *upstreamModel;
     if (UpstreamModel::fromReference(&upstreamModel, reference)) {
