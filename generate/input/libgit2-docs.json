@@ -178,10 +178,11 @@
         "git_commit_amend",
         "git_commit_create_buffer",
         "git_commit_create_with_signature",
-        "git_commit_dup"
+        "git_commit_dup",
+        "git_commit_signing_cb"
       ],
       "meta": {},
-      "lines": 502
+      "lines": 524
     },
     {
       "file": "git2/common.h",
@@ -261,12 +262,13 @@
         "giterr_clear",
         "giterr_set_str",
         "giterr_set_oom",
+        "git_object__size",
         "git_oid_iszero",
         "git_headlist_cb",
         "git_blame_init_options"
       ],
       "meta": {},
-      "lines": 437
+      "lines": 449
     },
     {
       "file": "git2/describe.h",
@@ -540,12 +542,11 @@
         "git_object_type2string",
         "git_object_string2type",
         "git_object_typeisloose",
-        "git_object_size",
         "git_object_peel",
         "git_object_dup"
       ],
       "meta": {},
-      "lines": 237
+      "lines": 223
     },
     {
       "file": "git2/odb.h",
@@ -725,7 +726,7 @@
         "git_rebase_free"
       ],
       "meta": {},
-      "lines": 347
+      "lines": 363
     },
     {
       "file": "git2/refdb.h",
@@ -2969,7 +2970,8 @@
       "group": "buf",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_buf_dispose-1"
+          "ex/HEAD/diff.html#git_buf_dispose-1",
+          "ex/HEAD/diff.html#git_buf_dispose-2"
         ],
         "tag.c": [
           "ex/HEAD/tag.html#git_buf_dispose-1"
@@ -4434,8 +4436,8 @@
     "git_commit_create_with_signature": {
       "type": "function",
       "file": "git2/commit.h",
-      "line": 488,
-      "lineto": 493,
+      "line": 489,
+      "lineto": 494,
       "args": [
         {
           "name": "out",
@@ -4455,7 +4457,7 @@
         {
           "name": "signature",
           "type": "const char *",
-          "comment": "the signature to add to the commit"
+          "comment": "the signature to add to the commit. Leave `NULL`\n to create a commit without adding a signature field."
         },
         {
           "name": "signature_field",
@@ -4476,8 +4478,8 @@
     "git_commit_dup": {
       "type": "function",
       "file": "git2/commit.h",
-      "line": 502,
-      "lineto": 502,
+      "line": 503,
+      "lineto": 503,
       "args": [
         {
           "name": "out",
@@ -6053,8 +6055,8 @@
     "git_oid_iszero": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 378,
-      "lineto": 378,
+      "line": 390,
+      "lineto": 390,
       "args": [
         {
           "name": "id",
@@ -6075,8 +6077,8 @@
     "git_blame_init_options": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 437,
-      "lineto": 437,
+      "line": 449,
+      "lineto": 449,
       "args": [
         {
           "name": "opts",
@@ -6373,7 +6375,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_free-2"
+          "ex/HEAD/diff.html#git_diff_free-3"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_diff_free-25",
@@ -6424,7 +6426,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_tree_to_tree-3"
+          "ex/HEAD/diff.html#git_diff_tree_to_tree-4"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_diff_tree_to_tree-27",
@@ -6475,7 +6477,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_tree_to_index-4"
+          "ex/HEAD/diff.html#git_diff_tree_to_index-5"
         ]
       }
     },
@@ -6517,7 +6519,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_index_to_workdir-5"
+          "ex/HEAD/diff.html#git_diff_index_to_workdir-6"
         ]
       }
     },
@@ -6559,7 +6561,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_tree_to_workdir-6"
+          "ex/HEAD/diff.html#git_diff_tree_to_workdir-7"
         ]
       }
     },
@@ -6601,7 +6603,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_tree_to_workdir_with_index-7"
+          "ex/HEAD/diff.html#git_diff_tree_to_workdir_with_index-8"
         ]
       }
     },
@@ -6702,7 +6704,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_find_similar-8"
+          "ex/HEAD/diff.html#git_diff_find_similar-9"
         ]
       }
     },
@@ -6916,7 +6918,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_print-9"
+          "ex/HEAD/diff.html#git_diff_print-10"
         ],
         "log.c": [
           "ex/HEAD/log.html#git_diff_print-30"
@@ -7201,7 +7203,12 @@
       },
       "description": "<p>Read the contents of a git patch file into a <code>git_diff</code> object.</p>\n",
       "comments": "<p>The diff object produced is similar to the one that would be produced if you actually produced it computationally by comparing two trees, however there may be subtle differences.  For example, a patch file likely contains abbreviated object IDs, so the object IDs in a <code>git_diff_delta</code> produced by this function will also be abbreviated.</p>\n\n<p>This function will only read patch files created by a git implementation, it will not read unified diffs produced by the <code>diff</code> program, nor any other types of patch files.</p>\n",
-      "group": "diff"
+      "group": "diff",
+      "examples": {
+        "diff.c": [
+          "ex/HEAD/diff.html#git_diff_from_buffer-11"
+        ]
+      }
     },
     "git_diff_get_stats": {
       "type": "function",
@@ -7231,7 +7238,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_get_stats-10"
+          "ex/HEAD/diff.html#git_diff_get_stats-12"
         ]
       }
     },
@@ -7339,7 +7346,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_stats_to_buf-11"
+          "ex/HEAD/diff.html#git_diff_stats_to_buf-13"
         ]
       }
     },
@@ -7366,7 +7373,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_diff_stats_free-12"
+          "ex/HEAD/diff.html#git_diff_stats_free-14"
         ]
       }
     },
@@ -11443,33 +11450,11 @@
       "comments": "",
       "group": "object"
     },
-    "git_object_size": {
-      "type": "function",
-      "file": "git2/object.h",
-      "line": 200,
-      "lineto": 200,
-      "args": [
-        {
-          "name": "type",
-          "type": "git_object_t",
-          "comment": "object type to get its size"
-        }
-      ],
-      "argline": "git_object_t type",
-      "sig": "git_object_t",
-      "return": {
-        "type": "size_t",
-        "comment": " size in bytes of the object"
-      },
-      "description": "<p>Get the size in bytes for the structure which\n acts as an in-memory representation of any given\n object type.</p>\n",
-      "comments": "<p>For all the core types, this would the equivalent of calling <code>sizeof(git_commit)</code> if the core types were not opaque on the external API.</p>\n",
-      "group": "object"
-    },
     "git_object_peel": {
       "type": "function",
       "file": "git2/object.h",
-      "line": 225,
-      "lineto": 228,
+      "line": 211,
+      "lineto": 214,
       "args": [
         {
           "name": "peeled",
@@ -11500,8 +11485,8 @@
     "git_object_dup": {
       "type": "function",
       "file": "git2/object.h",
-      "line": 237,
-      "lineto": 237,
+      "line": 223,
+      "lineto": 223,
       "args": [
         {
           "name": "dest",
@@ -13835,7 +13820,12 @@
       },
       "description": "<p>Directly generate a patch from the difference between two buffers.</p>\n",
       "comments": "<p>This is just like <code>git_diff_buffers()</code> except it generates a patch object for the difference instead of directly making callbacks.  You can use the standard <code>git_patch</code> accessor functions to read the patch data, and you must call <code>git_patch_free()</code> on the patch when done.</p>\n",
-      "group": "patch"
+      "group": "patch",
+      "examples": {
+        "diff.c": [
+          "ex/HEAD/diff.html#git_patch_from_buffers-15"
+        ]
+      }
     },
     "git_patch_free": {
       "type": "function",
@@ -13857,7 +13847,12 @@
       },
       "description": "<p>Free a git_patch object.</p>\n",
       "comments": "",
-      "group": "patch"
+      "group": "patch",
+      "examples": {
+        "diff.c": [
+          "ex/HEAD/diff.html#git_patch_free-16"
+        ]
+      }
     },
     "git_patch_get_delta": {
       "type": "function",
@@ -14135,7 +14130,12 @@
       },
       "description": "<p>Get the content of a patch as a single diff text.</p>\n",
       "comments": "",
-      "group": "patch"
+      "group": "patch",
+      "examples": {
+        "diff.c": [
+          "ex/HEAD/diff.html#git_patch_to_buf-17"
+        ]
+      }
     },
     "git_pathspec_new": {
       "type": "function",
@@ -14558,8 +14558,8 @@
     "git_rebase_options_init": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 159,
-      "lineto": 161,
+      "line": 175,
+      "lineto": 177,
       "args": [
         {
           "name": "opts",
@@ -14585,8 +14585,8 @@
     "git_rebase_init": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 180,
-      "lineto": 186,
+      "line": 196,
+      "lineto": 202,
       "args": [
         {
           "name": "out",
@@ -14632,8 +14632,8 @@
     "git_rebase_open": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 197,
-      "lineto": 200,
+      "line": 213,
+      "lineto": 216,
       "args": [
         {
           "name": "out",
@@ -14664,8 +14664,8 @@
     "git_rebase_orig_head_name": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 207,
-      "lineto": 207,
+      "line": 223,
+      "lineto": 223,
       "args": [
         {
           "name": "rebase",
@@ -14686,8 +14686,8 @@
     "git_rebase_orig_head_id": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 214,
-      "lineto": 214,
+      "line": 230,
+      "lineto": 230,
       "args": [
         {
           "name": "rebase",
@@ -14708,8 +14708,8 @@
     "git_rebase_onto_name": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 221,
-      "lineto": 221,
+      "line": 237,
+      "lineto": 237,
       "args": [
         {
           "name": "rebase",
@@ -14730,8 +14730,8 @@
     "git_rebase_onto_id": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 228,
-      "lineto": 228,
+      "line": 244,
+      "lineto": 244,
       "args": [
         {
           "name": "rebase",
@@ -14752,8 +14752,8 @@
     "git_rebase_operation_entrycount": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 236,
-      "lineto": 236,
+      "line": 252,
+      "lineto": 252,
       "args": [
         {
           "name": "rebase",
@@ -14774,8 +14774,8 @@
     "git_rebase_operation_current": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 247,
-      "lineto": 247,
+      "line": 263,
+      "lineto": 263,
       "args": [
         {
           "name": "rebase",
@@ -14796,8 +14796,8 @@
     "git_rebase_operation_byindex": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 256,
-      "lineto": 258,
+      "line": 272,
+      "lineto": 274,
       "args": [
         {
           "name": "rebase",
@@ -14823,8 +14823,8 @@
     "git_rebase_next": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 271,
-      "lineto": 273,
+      "line": 287,
+      "lineto": 289,
       "args": [
         {
           "name": "operation",
@@ -14850,8 +14850,8 @@
     "git_rebase_inmemory_index": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 286,
-      "lineto": 288,
+      "line": 302,
+      "lineto": 304,
       "args": [
         {
           "name": "index",
@@ -14877,8 +14877,8 @@
     "git_rebase_commit": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 312,
-      "lineto": 318,
+      "line": 328,
+      "lineto": 334,
       "args": [
         {
           "name": "id",
@@ -14924,8 +14924,8 @@
     "git_rebase_abort": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 328,
-      "lineto": 328,
+      "line": 344,
+      "lineto": 344,
       "args": [
         {
           "name": "rebase",
@@ -14946,8 +14946,8 @@
     "git_rebase_finish": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 338,
-      "lineto": 340,
+      "line": 354,
+      "lineto": 356,
       "args": [
         {
           "name": "rebase",
@@ -14973,8 +14973,8 @@
     "git_rebase_free": {
       "type": "function",
       "file": "git2/rebase.h",
-      "line": 347,
-      "lineto": 347,
+      "line": 363,
+      "lineto": 363,
       "args": [
         {
           "name": "rebase",
@@ -23526,8 +23526,8 @@
       "group": "tree",
       "examples": {
         "diff.c": [
-          "ex/HEAD/diff.html#git_tree_free-13",
-          "ex/HEAD/diff.html#git_tree_free-14"
+          "ex/HEAD/diff.html#git_tree_free-18",
+          "ex/HEAD/diff.html#git_tree_free-19"
         ],
         "general.c": [
           "ex/HEAD/general.html#git_tree_free-92",
@@ -24782,6 +24782,28 @@
       "description": "<p>Prune working tree</p>\n",
       "comments": "<p>Prune the working tree, that is remove the git data structures on disk. The repository will only be pruned of <code>git_worktree_is_prunable</code> succeeds.</p>\n",
       "group": "worktree"
+    },
+    "git_object__size": {
+      "type": "function",
+      "file": "git2/deprecated.h",
+      "line": 316,
+      "lineto": 316,
+      "args": [
+        {
+          "name": "type",
+          "type": "git_object_t",
+          "comment": "object type to get its size"
+        }
+      ],
+      "argline": "git_object_t type",
+      "sig": "git_object_t",
+      "return": {
+        "type": "size_t",
+        "comment": " size in bytes of the object"
+      },
+      "description": "<p>Get the size in bytes for the structure which\n acts as an in-memory representation of any given\n object type.</p>\n",
+      "comments": "<p>For all the core types, this would the equivalent of calling <code>sizeof(git_commit)</code> if the core types were not opaque on the external API.</p>\n",
+      "group": "object"
     }
   },
   "callbacks": {
@@ -25082,8 +25104,8 @@
     "git_headlist_cb": {
       "type": "callback",
       "file": "git2/deprecated.h",
-      "line": 423,
-      "lineto": 423,
+      "line": 435,
+      "lineto": 435,
       "args": [
         {
           "name": "rhead",
@@ -26142,6 +26164,42 @@
       },
       "description": "<p>Callback for the user&#39;s custom certificate checks.</p>\n",
       "comments": ""
+    },
+    "git_commit_signing_cb": {
+      "type": "callback",
+      "file": "git2/commit.h",
+      "line": 523,
+      "lineto": 524,
+      "args": [
+        {
+          "name": "signature",
+          "type": "git_buf *",
+          "comment": null
+        },
+        {
+          "name": "signature_field",
+          "type": "git_buf *",
+          "comment": null
+        },
+        {
+          "name": "commit_content",
+          "type": "const char *",
+          "comment": null
+        },
+        {
+          "name": "payload",
+          "type": "void *",
+          "comment": null
+        }
+      ],
+      "argline": "git_buf *signature, git_buf *signature_field, const char *commit_content, void *payload",
+      "sig": "git_buf *::git_buf *::const char *::void *",
+      "return": {
+        "type": "int",
+        "comment": null
+      },
+      "description": "<p>Commit signing callback.</p>\n",
+      "comments": "<p>The callback will be called with the commit content, giving a user an opportunity to sign the commit content. The signature_field buf may be left empty to specify the default field &quot;gpgsig&quot;.</p>\n\n<p>Signatures can take the form of any string, and can be created on an arbitrary header field. Signatures are most commonly used for verifying authorship of a commit using GPG or a similar cryptographically secure signing algorithm. See https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work for more details.</p>\n\n<p>When the callback: - returns GIT_PASSTHROUGH, no signature will be added to the commit. - returns &lt; 0, commit creation will be aborted. - returns GIT_OK, the signature parameter is expected to be filled.</p>\n"
     }
   },
   "globals": {},
@@ -26724,6 +26782,7 @@
             "git_commit_create_buffer",
             "git_commit_extract_signature",
             "git_commit_header_field",
+            "git_commit_signing_cb",
             "git_config_find_global",
             "git_config_find_programdata",
             "git_config_find_system",
@@ -27889,6 +27948,7 @@
         "file": "git2/config.h",
         "line": 104,
         "lineto": 108,
+        "block": "git_configmap_t type\nconst char * str_match\nint map_value",
         "tdef": "typedef",
         "description": " Mapping from config variables to values.",
         "comments": "",
@@ -27909,7 +27969,6 @@
             "comments": ""
           }
         ],
-        "block": "git_configmap_t type\nconst char * str_match\nint map_value",
         "used": {
           "returns": [],
           "needs": [
@@ -27932,14 +27991,10 @@
         "file": "git2/config.h",
         "line": 94,
         "lineto": 99,
+        "block": "GIT_CONFIGMAP_FALSE\nGIT_CONFIGMAP_TRUE\nGIT_CONFIGMAP_INT32\nGIT_CONFIGMAP_STRING",
         "tdef": "typedef",
         "description": " Config var type",
         "comments": "",
-        "used": {
-          "returns": [],
-          "needs": []
-        },
-        "block": "GIT_CONFIGMAP_FALSE\nGIT_CONFIGMAP_TRUE\nGIT_CONFIGMAP_INT32\nGIT_CONFIGMAP_STRING",
         "fields": [
           {
             "type": "int",
@@ -27965,7 +28020,11 @@
             "comments": "",
             "value": 3
           }
-        ]
+        ],
+        "used": {
+          "returns": [],
+          "needs": []
+        }
       }
     ],
     [
@@ -27980,7 +28039,6 @@
         "file": "git2/transport.h",
         "line": 147,
         "lineto": 152,
-        "block": "git_credtype_t credtype\nvoid (*)(git_cred *) free",
         "tdef": null,
         "description": " The base structure for all credential types",
         "comments": "",
@@ -27996,6 +28054,7 @@
             "comments": ""
           }
         ],
+        "block": "git_credtype_t credtype\nvoid (*)(git_cred *) free",
         "used": {
           "returns": [],
           "needs": [
@@ -28233,6 +28292,7 @@
           "const char * password"
         ],
         "type": "struct",
+        "value": "git_cred_userpass_payload",
         "file": "git2/cred_helpers.h",
         "line": 24,
         "lineto": 27,
@@ -28255,8 +28315,7 @@
         "used": {
           "returns": [],
           "needs": []
-        },
-        "value": "git_cred_userpass_payload"
+        }
       }
     ],
     [
@@ -32780,6 +32839,7 @@
           "needs": [
             "git_checkout_tree",
             "git_describe_commit",
+            "git_object__size",
             "git_object_dup",
             "git_object_free",
             "git_object_id",
@@ -32789,7 +32849,6 @@
             "git_object_owner",
             "git_object_peel",
             "git_object_short_id",
-            "git_object_size",
             "git_object_type",
             "git_object_type2string",
             "git_object_typeisloose",
@@ -32895,11 +32954,11 @@
             "git_tree_entry_type"
           ],
           "needs": [
+            "git_object__size",
             "git_object_lookup",
             "git_object_lookup_bypath",
             "git_object_lookup_prefix",
             "git_object_peel",
-            "git_object_size",
             "git_object_type2string",
             "git_object_typeisloose",
             "git_odb_hash",
@@ -33992,8 +34051,8 @@
         "type": "struct",
         "value": "git_rebase_operation",
         "file": "git2/rebase.h",
-        "line": 132,
-        "lineto": 147,
+        "line": 148,
+        "lineto": 163,
         "block": "git_rebase_operation_t type\nconst git_oid id\nconst char * exec",
         "tdef": "typedef",
         "description": " A rebase operation",
@@ -34038,8 +34097,8 @@
         ],
         "type": "enum",
         "file": "git2/rebase.h",
-        "line": 80,
-        "lineto": 116,
+        "line": 96,
+        "lineto": 132,
         "block": "GIT_REBASE_OPERATION_PICK\nGIT_REBASE_OPERATION_REWORD\nGIT_REBASE_OPERATION_EDIT\nGIT_REBASE_OPERATION_SQUASH\nGIT_REBASE_OPERATION_FIXUP\nGIT_REBASE_OPERATION_EXEC",
         "tdef": "typedef",
         "description": " Type of rebase operation in-progress after calling `git_rebase_next`.",
@@ -34097,14 +34156,16 @@
           "int inmemory",
           "const char * rewrite_notes_ref",
           "git_merge_options merge_options",
-          "git_checkout_options checkout_options"
+          "git_checkout_options checkout_options",
+          "git_commit_signing_cb signing_cb",
+          "void * payload"
         ],
         "type": "struct",
         "value": "git_rebase_options",
         "file": "git2/rebase.h",
-        "line": 31,
-        "lineto": 75,
-        "block": "unsigned int version\nint quiet\nint inmemory\nconst char * rewrite_notes_ref\ngit_merge_options merge_options\ngit_checkout_options checkout_options",
+        "line": 32,
+        "lineto": 91,
+        "block": "unsigned int version\nint quiet\nint inmemory\nconst char * rewrite_notes_ref\ngit_merge_options merge_options\ngit_checkout_options checkout_options\ngit_commit_signing_cb signing_cb\nvoid * payload",
         "tdef": "typedef",
         "description": " Rebase options",
         "comments": "<p>Use to tell the rebase machinery how to operate.</p>\n",
@@ -34138,6 +34199,16 @@
             "type": "git_checkout_options",
             "name": "checkout_options",
             "comments": " Options to control how files are written during `git_rebase_init`,\n `git_rebase_next` and `git_rebase_abort`.  Note that a minimum\n strategy of `GIT_CHECKOUT_SAFE` is defaulted in `init` and `next`,\n and a minimum strategy of `GIT_CHECKOUT_FORCE` is defaulted in\n `abort` to match git semantics."
+          },
+          {
+            "type": "git_commit_signing_cb",
+            "name": "signing_cb",
+            "comments": " If provided, this will be called with the commit content, allowing\n a signature to be added to the rebase commit. Can be skipped with\n GIT_PASSTHROUGH. If GIT_PASSTHROUGH is returned, a commit will be made\n without a signature.\n This field is only used when performing git_rebase_commit."
+          },
+          {
+            "type": "void *",
+            "name": "payload",
+            "comments": " This will be passed to each of the callbacks in this struct\n as the last parameter."
           }
         ],
         "used": {
@@ -38223,6 +38294,7 @@
     [
       "object",
       [
+        "git_object__size",
         "git_object_dup",
         "git_object_free",
         "git_object_id",
@@ -38232,7 +38304,6 @@
         "git_object_owner",
         "git_object_peel",
         "git_object_short_id",
-        "git_object_size",
         "git_object_string2type",
         "git_object_type",
         "git_object_type2string",
@@ -38911,6 +38982,10 @@
     [
       "show-index.c",
       "ex/HEAD/show-index.html"
+    ],
+    [
+      "stash.c",
+      "ex/HEAD/stash.html"
     ],
     [
       "status.c",

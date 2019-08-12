@@ -90,6 +90,7 @@
         "libgit2/src/config_mem.c",
         "libgit2/src/config_parse.c",
         "libgit2/src/config_parse.h",
+        "libgit2/src/config_snapshot.c",
         "libgit2/src/config.c",
         "libgit2/src/config.h",
         "libgit2/src/crlf.c",
