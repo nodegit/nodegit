@@ -1,5 +1,40 @@
 # Change Log
 
+## <a name="v0-25-1" href="#v0-25-1">v0.25.1</a> [(2019-08-13)](https://github.com/nodegit/nodegit/releases/tag/v0.25.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0...v0.25.1)
+
+#### Summary of changes
+Security patch for LibGit2:
+- A carefully constructed commit object with a very large number
+  of parents may lead to potential out-of-bounds writes or
+  potential denial of service.
+
+- The ProgramData configuration file is always read for compatibility
+  with Git for Windows and Portable Git installations.  The ProgramData
+  location is not necessarily writable only by administrators, so we
+  now ensure that the configuration file is owned by the administrator
+  or the current user.
+
+Additionally:
+- Stash should run much faster now.
+
+#### Merged PRs into LibGit2
+- [Parallelize checkout_create_the_new for perf #4205](https://github.com/libgit2/libgit2/pull/4205)
+- [stash: avoid recomputing tree when committing worktree](https://github.com/libgit2/libgit2/pull/5113)
+- [Variadic macros](https://github.com/libgit2/libgit2/pull/5121)
+- [Add sign capability to git_rebase_commit](https://github.com/libgit2/libgit2/pull/4913)
+- [remote: remove unused block of code](https://github.com/libgit2/libgit2/pull/5197)
+- [Adjust printf specifiers in examples code](https://github.com/libgit2/libgit2/pull/5146)
+- [config: check if we are running in a sandboxed environment](https://github.com/libgit2/libgit2/pull/5191)
+- [Fix example checkout to forbid rather than require --](https://github.com/libgit2/libgit2/pull/5184)
+- [editorconfig: update to match our coding style](https://github.com/libgit2/libgit2/pull/5183)
+- [Compare buffers in diff example](https://github.com/libgit2/libgit2/pull/5125)
+- [Include ahead_behind in the test suite](https://github.com/libgit2/libgit2/pull/5135)
+- [config: separate file and snapshot backends](https://github.com/libgit2/libgit2/pull/5186)
+- [object: deprecate git_object__size for removal](https://github.com/libgit2/libgit2/pull/5192)
+
+
 ## <a name="v0-25-0" href="#v0-25-0">v0.25.0</a> [(2019-08-09)](https://github.com/nodegit/nodegit/releases/tag/v0.25.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.24.3...v0.25.0)
