@@ -18,7 +18,7 @@ var args = cov.concat([
   "15000"
 ]);
 
-if (!process.env.APPVEYOR && !process.env.TRAVIS) {
+if (!process.env.APPVEYOR && !process.env.TRAVIS && !process.env.GITHUB_ACTION) {
   var local = path.join.bind(path, __dirname);
   var dummyPath = local("home");
   process.env.HOME = dummyPath;
