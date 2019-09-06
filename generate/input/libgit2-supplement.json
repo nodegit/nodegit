@@ -1392,6 +1392,10 @@
             {
               "type": "void *",
               "name": "payload"
+            },
+            {
+              "type": "int",
+              "name": "inmemory"
             }
           ],
           "used": {
