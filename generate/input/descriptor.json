@@ -3297,6 +3297,18 @@
           "return": {
             "ownedByThis": true
           }
+        },
+        "git_remote_update_tips": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_remote_upload": {
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
