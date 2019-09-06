@@ -39,18 +39,18 @@ int main(int argc, char *argv[])
     char *userauthlist;
     LIBSSH2_SESSION *session;
     LIBSSH2_CHANNEL *channel;
-    const char *pubkeyfile="etc/user.pub";
-    const char *privkeyfile="etc/user";
-    const char *username="username";
-    const char *password="password";
+    const char *pubkeyfile = "etc/user.pub";
+    const char *privkeyfile = "etc/user";
+    const char *username = "username";
+    const char *password = "password";
     int ec = 1;
 
 #ifdef WIN32
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return -1;
     }
@@ -59,14 +59,14 @@ int main(int argc, char *argv[])
     (void)argc;
     (void)argv;
 
-    if (getenv ("USER"))
-      username = getenv ("USER");
+    if(getenv("USER"))
+      username = getenv("USER");
 
-    if (getenv ("PRIVKEY"))
-      privkeyfile = getenv ("PRIVKEY");
+    if(getenv ("PRIVKEY"))
+      privkeyfile = getenv("PRIVKEY");
 
-    if (getenv ("PUBKEY"))
-      pubkeyfile = getenv ("PUBKEY");
+    if(getenv("PUBKEY"))
+      pubkeyfile = getenv("PUBKEY");
 
     hostaddr = htonl(0x7F000001);
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(4711);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
+    if(connect(sock, (struct sockaddr*)(&sin),
                 sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return 1;
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
      * This will trade welcome banners, exchange keys, and setup crypto, compression, and MAC layers
      */
     session = libssh2_session_init();
-    if (libssh2_session_startup(session, sock)) {
+    if(libssh2_session_startup(session, sock)) {
         fprintf(stderr, "Failure establishing SSH session\n");
         return 1;
     }
@@ -106,31 +106,34 @@ int main(int argc, char *argv[])
     /* check what authentication methods are available */
     userauthlist = libssh2_userauth_list(session, username, strlen(username));
     printf("Authentication methods: %s\n", userauthlist);
-    if (strstr(userauthlist, "password") != NULL) {
+    if(strstr(userauthlist, "password") != NULL) {
         auth_pw |= 1;
     }
-    if (strstr(userauthlist, "keyboard-interactive") != NULL) {
+    if(strstr(userauthlist, "keyboard-interactive") != NULL) {
         auth_pw |= 2;
     }
-    if (strstr(userauthlist, "publickey") != NULL) {
+    if(strstr(userauthlist, "publickey") != NULL) {
         auth_pw |= 4;
     }
 
-    if (auth_pw & 4) {
+    if(auth_pw & 4) {
         /* Authenticate by public key */
-        if (libssh2_userauth_publickey_fromfile(session, username, pubkeyfile, privkeyfile, password)) {
+        if(libssh2_userauth_publickey_fromfile(session, username, pubkeyfile, privkeyfile, password)) {
             printf("\tAuthentication by public key failed!\n");
             goto shutdown;
-        } else {
+        }
+        else {
             printf("\tAuthentication by public key succeeded.\n");
         }
-    } else {
+    }
+    else {
         printf("No supported authentication methods found!\n");
         goto shutdown;
     }
 
     /* Request a shell */
-    if (!(channel = libssh2_channel_open_session(session))) {
+    channel = libssh2_channel_open_session(session);
+    if(!channel) {
         fprintf(stderr, "Unable to open a session\n");
         goto shutdown;
     }
@@ -143,13 +146,13 @@ int main(int argc, char *argv[])
     /* Request a terminal with 'vanilla' terminal emulation
      * See /etc/termcap for more options
      */
-    if (libssh2_channel_request_pty(channel, "vanilla")) {
+    if(libssh2_channel_request_pty(channel, "vanilla")) {
         fprintf(stderr, "Failed requesting pty\n");
         goto skip_shell;
     }
 
     /* Open a SHELL on that pty */
-    if (libssh2_channel_shell(channel)) {
+    if(libssh2_channel_shell(channel)) {
         fprintf(stderr, "Unable to request shell on allocated pty\n");
         goto shutdown;
     }
@@ -157,7 +160,7 @@ int main(int argc, char *argv[])
     ec = 0;
 
   skip_shell:
-    if (channel) {
+    if(channel) {
         libssh2_channel_free(channel);
         channel = NULL;
     }

@@ -273,7 +273,7 @@ GREP = @GREP@
 HAVE_LIBBCRYPT = @HAVE_LIBBCRYPT@
 HAVE_LIBCRYPT32 = @HAVE_LIBCRYPT32@
 HAVE_LIBGCRYPT = @HAVE_LIBGCRYPT@
-HAVE_LIBMBEDTLS = @HAVE_LIBMBEDTLS@
+HAVE_LIBMBEDCRYPTO = @HAVE_LIBMBEDCRYPTO@
 HAVE_LIBSSL = @HAVE_LIBSSL@
 HAVE_LIBZ = @HAVE_LIBZ@
 INSTALL = @INSTALL@
@@ -289,8 +289,8 @@ LIBCRYPT32 = @LIBCRYPT32@
 LIBCRYPT32_PREFIX = @LIBCRYPT32_PREFIX@
 LIBGCRYPT = @LIBGCRYPT@
 LIBGCRYPT_PREFIX = @LIBGCRYPT_PREFIX@
-LIBMBEDTLS = @LIBMBEDTLS@
-LIBMBEDTLS_PREFIX = @LIBMBEDTLS_PREFIX@
+LIBMBEDCRYPTO = @LIBMBEDCRYPTO@
+LIBMBEDCRYPTO_PREFIX = @LIBMBEDCRYPTO_PREFIX@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBSREQUIRED = @LIBSREQUIRED@
@@ -305,7 +305,7 @@ LN_S = @LN_S@
 LTLIBBCRYPT = @LTLIBBCRYPT@
 LTLIBCRYPT32 = @LTLIBCRYPT32@
 LTLIBGCRYPT = @LTLIBGCRYPT@
-LTLIBMBEDTLS = @LTLIBMBEDTLS@
+LTLIBMBEDCRYPTO = @LTLIBMBEDCRYPTO@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBSSL = @LTLIBSSL@
 LTLIBZ = @LTLIBZ@
@@ -437,10 +437,11 @@ CRYPTO_CSOURCES = openssl.c wincng.c mbedtls.c
 CRYPTO_HHEADERS = openssl.h wincng.h mbedtls.h
 CSOURCES = channel.c comp.c crypt.c hostkey.c kex.c mac.c misc.c \
  packet.c publickey.c scp.c session.c sftp.c userauth.c transport.c \
- version.c knownhost.c agent.c $(CRYPTO_CSOURCES) pem.c keepalive.c global.c
+ version.c knownhost.c agent.c $(CRYPTO_CSOURCES) pem.c keepalive.c global.c \
+ blowfish.c bcrypt_pbkdf.c
 
 HHEADERS = libssh2_priv.h $(CRYPTO_HHEADERS) transport.h channel.h comp.h \
- mac.h misc.h packet.h userauth.h session.h sftp.h crypto.h
+ mac.h misc.h packet.h userauth.h session.h sftp.h crypto.h blf.h
 
 # Makefile.inc provides the CSOURCES and HHEADERS defines
 WIN32SOURCES = $(CSOURCES)
@@ -1055,6 +1056,9 @@ $(VCPROJ): win32/vc8proj.head win32/vc8proj.foot Makefile.am
 	done; \
 	cat $(srcdir)/vc8proj.foot) | \
 	awk '{printf("%s\r\n", gensub("\r", "", "g"))}' > $@ )
+
+checksrc:
+	perl src/checksrc.pl -i4 -m79 -ASIZEOFNOPAREN -ASNPRINTF -ACOPYRIGHT -AFOPENMODE -Wsrc/libssh2_config.h src/*.[ch] include/*.h example/*.c
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

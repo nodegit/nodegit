@@ -41,28 +41,27 @@
 
 #include "libssh2.h"
 
-static int test_libssh2_base64_decode (LIBSSH2_SESSION *session)
+static int test_libssh2_base64_decode(LIBSSH2_SESSION *session)
 {
     char *data;
     unsigned int datalen;
     const char *src = "Zm5vcmQ=";
-    unsigned int src_len = strlen (src);
+    unsigned int src_len = strlen(src);
     int ret;
 
     ret = libssh2_base64_decode(session, &data, &datalen,
                                 src, src_len);
-    if (ret)
+    if(ret)
         return ret;
 
-    if (datalen != 5 || strcmp (data, "fnord") != 0)
-    {
-        fprintf (stderr,
-                 "libssh2_base64_decode() failed (%d, %.*s)\n",
-                 datalen, datalen, data);
+    if(datalen != 5 || strcmp(data, "fnord") != 0) {
+        fprintf(stderr,
+                "libssh2_base64_decode() failed (%d, %.*s)\n",
+                datalen, datalen, data);
         return 1;
     }
 
-    free (data);
+    free(data);
 
     return 0;
 }
@@ -74,25 +73,23 @@ int main(int argc, char *argv[])
     (void)argv;
     (void)argc;
 
-    rc = libssh2_init (LIBSSH2_INIT_NO_CRYPTO);
-    if (rc != 0)
-    {
-        fprintf (stderr, "libssh2_init() failed: %d\n", rc);
+    rc = libssh2_init(LIBSSH2_INIT_NO_CRYPTO);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2_init() failed: %d\n", rc);
         return 1;
     }
 
     session = libssh2_session_init();
-    if (!session)
-    {
-        fprintf (stderr, "libssh2_session_init() failed\n");
+    if(!session) {
+        fprintf(stderr, "libssh2_session_init() failed\n");
         return 1;
     }
 
-    test_libssh2_base64_decode (session);
+    test_libssh2_base64_decode(session);
 
     libssh2_session_free(session);
 
-    libssh2_exit ();
+    libssh2_exit();
 
     return 0;
 }

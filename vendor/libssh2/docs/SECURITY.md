@@ -64,7 +64,7 @@ announcement.
   [distros@openwall](http://oss-security.openwall.org/wiki/mailing-lists/distros)
   when also informing and preparing them for the upcoming public security
   vulnerability announcement - attach the advisory draft for information. Note
-  that 'distros' won't accept an embargo longer than 19 days.
+  that 'distros' won't accept an embargo longer than 14 days.
 
 - Update the "security advisory" with the CVE number.
 
@@ -96,5 +96,5 @@ libssh2 project and you have shown an understanding for the project and its way
 of working. You must've been around for a good while and you should have no
 plans in vanishing in the near future.
 
-We do not make the list of partipants public mostly because it tends to vary
+We do not make the list of participants public mostly because it tends to vary
 somewhat over time and a list somewhere will only risk getting outdated.

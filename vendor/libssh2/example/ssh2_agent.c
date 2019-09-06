@@ -36,7 +36,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-const char *username="username";
+const char *username = "username";
 
 int main(int argc, char *argv[])
 {
@@ -54,16 +54,17 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    if (argc > 1) {
+    if(argc > 1) {
         hostaddr = inet_addr(argv[1]);
-    } else {
+    }
+    else {
         hostaddr = htonl(0x7F000001);
     }
 
@@ -71,9 +72,9 @@ int main(int argc, char *argv[])
         username = argv[2];
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
      * responsible for creating the socket establishing the connection
      */
     sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
+    if(sock == -1) {
         fprintf(stderr, "failed to create socket!\n");
         rc = 1;
         goto shutdown;
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
+    if(connect(sock, (struct sockaddr*)(&sin),
                 sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         goto shutdown;
@@ -100,7 +101,7 @@ int main(int argc, char *argv[])
      * banners, exchange keys, and setup crypto, compression, and MAC layers
      */
     session = libssh2_session_init();
-    if (libssh2_session_handshake(session, sock)) {
+    if(libssh2_session_handshake(session, sock)) {
         fprintf(stderr, "Failure establishing SSH session\n");
         return 1;
     }
@@ -120,43 +121,44 @@ int main(int argc, char *argv[])
     /* check what authentication methods are available */
     userauthlist = libssh2_userauth_list(session, username, strlen(username));
     fprintf(stderr, "Authentication methods: %s\n", userauthlist);
-    if (strstr(userauthlist, "publickey") == NULL) {
+    if(strstr(userauthlist, "publickey") == NULL) {
         fprintf(stderr, "\"publickey\" authentication is not supported\n");
         goto shutdown;
     }
 
     /* Connect to the ssh-agent */
     agent = libssh2_agent_init(session);
-    if (!agent) {
+    if(!agent) {
         fprintf(stderr, "Failure initializing ssh-agent support\n");
         rc = 1;
         goto shutdown;
     }
-    if (libssh2_agent_connect(agent)) {
+    if(libssh2_agent_connect(agent)) {
         fprintf(stderr, "Failure connecting to ssh-agent\n");
         rc = 1;
         goto shutdown;
     }
-    if (libssh2_agent_list_identities(agent)) {
+    if(libssh2_agent_list_identities(agent)) {
         fprintf(stderr, "Failure requesting identities to ssh-agent\n");
         rc = 1;
         goto shutdown;
     }
-    while (1) {
+    while(1) {
         rc = libssh2_agent_get_identity(agent, &identity, prev_identity);
-        if (rc == 1)
+        if(rc == 1)
             break;
-        if (rc < 0) {
+        if(rc < 0) {
             fprintf(stderr,
                     "Failure obtaining identity from ssh-agent support\n");
             rc = 1;
             goto shutdown;
         }
-        if (libssh2_agent_userauth(agent, username, identity)) {
+        if(libssh2_agent_userauth(agent, username, identity)) {
             fprintf(stderr, "\tAuthentication with username %s and "
                    "public key %s failed!\n",
                    username, identity->comment);
-        } else {
+        }
+        else {
             fprintf(stderr, "\tAuthentication with username %s and "
                    "public key %s succeeded!\n",
                    username, identity->comment);
@@ -164,7 +166,7 @@ int main(int argc, char *argv[])
         }
         prev_identity = identity;
     }
-    if (rc) {
+    if(rc) {
         fprintf(stderr, "Couldn't continue authentication\n");
         goto shutdown;
     }
@@ -172,7 +174,8 @@ int main(int argc, char *argv[])
     /* We're authenticated now. */
 
     /* Request a shell */
-    if (!(channel = libssh2_channel_open_session(session))) {
+    channel = libssh2_channel_open_session(session);
+    if(!channel) {
         fprintf(stderr, "Unable to open a session\n");
         goto shutdown;
     }
@@ -185,13 +188,13 @@ int main(int argc, char *argv[])
     /* Request a terminal with 'vanilla' terminal emulation
      * See /etc/termcap for more options
      */
-    if (libssh2_channel_request_pty(channel, "vanilla")) {
+    if(libssh2_channel_request_pty(channel, "vanilla")) {
         fprintf(stderr, "Failed requesting pty\n");
         goto skip_shell;
     }
 
     /* Open a SHELL on that pty */
-    if (libssh2_channel_shell(channel)) {
+    if(libssh2_channel_shell(channel)) {
         fprintf(stderr, "Unable to request shell on allocated pty\n");
         goto shutdown;
     }
@@ -210,7 +213,7 @@ int main(int argc, char *argv[])
      */
 
   skip_shell:
-    if (channel) {
+    if(channel) {
         libssh2_channel_free(channel);
         channel = NULL;
     }
@@ -223,8 +226,10 @@ int main(int argc, char *argv[])
 
   shutdown:
 
-    libssh2_agent_disconnect(agent);
-    libssh2_agent_free(agent);
+    if(agent) {
+        libssh2_agent_disconnect(agent);
+        libssh2_agent_free(agent);
+    }
 
     if(session) {
         libssh2_session_disconnect(session,
@@ -232,7 +237,7 @@ int main(int argc, char *argv[])
         libssh2_session_free(session);
     }
 
-    if (sock != -1) {
+    if(sock != -1) {
 #ifdef WIN32
         closesocket(sock);
 #else

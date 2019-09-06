@@ -73,10 +73,10 @@ int main(int argc, char *argv[])
     const char *fingerprint;
     LIBSSH2_SESSION *session = NULL;
     LIBSSH2_CHANNEL *channel;
-    const char *username="username";
-    const char *password="password";
-    const char *loclfile="scp_write.c";
-    const char *scppath="/tmp/TEST";
+    const char *username = "username";
+    const char *password = "password";
+    const char *loclfile = "scp_write.c";
+    const char *scppath = "/tmp/TEST";
     FILE *local;
     int rc;
     char mem[1024*100];
@@ -92,39 +92,40 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    if (argc > 1) {
+    if(argc > 1) {
         hostaddr = inet_addr(argv[1]);
-    } else {
+    }
+    else {
         hostaddr = htonl(0x7F000001);
     }
-    if (argc > 2) {
+    if(argc > 2) {
         username = argv[2];
     }
-    if (argc > 3) {
+    if(argc > 3) {
         password = argv[3];
     }
     if(argc > 4) {
         loclfile = argv[4];
     }
-    if (argc > 5) {
+    if(argc > 5) {
         scppath = argv[5];
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
     local = fopen(loclfile, "rb");
-    if (!local) {
+    if(!local) {
         fprintf(stderr, "Can't local file %s\n", loclfile);
         return -1;
     }
@@ -140,8 +141,8 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
-            sizeof(struct sockaddr_in)) != 0) {
+    if(connect(sock, (struct sockaddr*)(&sin),
+               sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return -1;
     }
@@ -158,8 +159,8 @@ int main(int argc, char *argv[])
     /* ... start it up. This will trade welcome banners, exchange keys,
      * and setup crypto, compression, and MAC layers
      */
-    while ((rc = libssh2_session_handshake(session, sock))
-           == LIBSSH2_ERROR_EAGAIN);
+    while((rc = libssh2_session_handshake(session, sock))
+          == LIBSSH2_ERROR_EAGAIN);
     if(rc) {
         fprintf(stderr, "Failure establishing SSH session: %d\n", rc);
         return -1;
@@ -177,21 +178,24 @@ int main(int argc, char *argv[])
     }
     fprintf(stderr, "\n");
 
-    if (auth_pw) {
+    if(auth_pw) {
         /* We could authenticate via password */
-        while ((rc = libssh2_userauth_password(session, username, password)) ==
-               LIBSSH2_ERROR_EAGAIN);
-        if (rc) {
+        while((rc = libssh2_userauth_password(session, username, password)) ==
+              LIBSSH2_ERROR_EAGAIN);
+        if(rc) {
             fprintf(stderr, "Authentication by password failed.\n");
             goto shutdown;
         }
-    } else {
+    }
+    else {
         /* Or by public key */
-        while ((rc = libssh2_userauth_publickey_fromfile(session, username,
-                                                         "/home/username/.ssh/id_rsa.pub",
-                                                         "/home/username/.ssh/id_rsa",
-                                                         password)) == LIBSSH2_ERROR_EAGAIN);
-        if (rc) {
+#define HOME "/home/username/"
+        while((rc = libssh2_userauth_publickey_fromfile(session, username,
+                                                        HOME ".ssh/id_rsa.pub",
+                                                        HOME ".ssh/id_rsa",
+                                                        password)) ==
+              LIBSSH2_ERROR_EAGAIN);
+        if(rc) {
             fprintf(stderr, "\tAuthentication by public key failed\n");
             goto shutdown;
         }
@@ -202,21 +206,21 @@ int main(int argc, char *argv[])
         channel = libssh2_scp_send(session, scppath, fileinfo.st_mode & 0777,
                                    (unsigned long)fileinfo.st_size);
 
-        if ((!channel) && (libssh2_session_last_errno(session) !=
-                           LIBSSH2_ERROR_EAGAIN)) {
+        if((!channel) && (libssh2_session_last_errno(session) !=
+                          LIBSSH2_ERROR_EAGAIN)) {
             char *err_msg;
 
             libssh2_session_last_error(session, &err_msg, NULL, 0);
             fprintf(stderr, "%s\n", err_msg);
             goto shutdown;
         }
-    } while (!channel);
+    } while(!channel);
 
     fprintf(stderr, "SCP session waiting to send file\n");
     start = time(NULL);
     do {
         nread = fread(mem, 1, sizeof(mem), local);
-        if (nread <= 0) {
+        if(nread <= 0) {
             /* end of file */
             break;
         }
@@ -226,12 +230,12 @@ int main(int argc, char *argv[])
 
         prev = 0;
         do {
-            while ((rc = libssh2_channel_write(channel, ptr, nread)) ==
-                   LIBSSH2_ERROR_EAGAIN) {
+            while((rc = libssh2_channel_write(channel, ptr, nread)) ==
+                  LIBSSH2_ERROR_EAGAIN) {
                 waitsocket(sock, session);
                 prev = 0;
             }
-            if (rc < 0) {
+            if(rc < 0) {
                 fprintf(stderr, "ERROR %d total %ld / %d prev %d\n", rc,
                         total, (int)nread, (int)prev);
                 break;
@@ -243,8 +247,8 @@ int main(int argc, char *argv[])
                 nread -= rc;
                 ptr += rc;
             }
-        } while (nread);
-    } while (!nread); /* only continue if nread was drained */
+        } while(nread);
+    } while(!nread); /* only continue if nread was drained */
 
     duration = (int)(time(NULL)-start);
 
@@ -252,22 +256,22 @@ int main(int argc, char *argv[])
            total, duration, total/(double)duration);
 
     fprintf(stderr, "Sending EOF\n");
-    while (libssh2_channel_send_eof(channel) == LIBSSH2_ERROR_EAGAIN);
+    while(libssh2_channel_send_eof(channel) == LIBSSH2_ERROR_EAGAIN);
 
     fprintf(stderr, "Waiting for EOF\n");
-    while (libssh2_channel_wait_eof(channel) == LIBSSH2_ERROR_EAGAIN);
+    while(libssh2_channel_wait_eof(channel) == LIBSSH2_ERROR_EAGAIN);
 
     fprintf(stderr, "Waiting for channel to close\n");
-    while (libssh2_channel_wait_closed(channel) == LIBSSH2_ERROR_EAGAIN);
+    while(libssh2_channel_wait_closed(channel) == LIBSSH2_ERROR_EAGAIN);
 
     libssh2_channel_free(channel);
     channel = NULL;
 
  shutdown:
 
-    while (libssh2_session_disconnect(session,
-                                      "Normal Shutdown, Thank you for playing") ==
-           LIBSSH2_ERROR_EAGAIN);
+    while(libssh2_session_disconnect(session,
+                                     "Normal Shutdown,") ==
+          LIBSSH2_ERROR_EAGAIN);
     libssh2_session_free(session);
 
 #ifdef WIN32

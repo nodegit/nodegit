@@ -90,6 +90,11 @@ build_triplet = @build@
 host_triplet = @host@
 @SSHD_TRUE@noinst_PROGRAMS = ssh2$(EXEEXT)
 @SSHD_TRUE@am__append_1 = ssh2.sh
+# TODO: need to add a test for specific openssl version some how
+# EXTRA_DIST += test_public_key_auth_succeeds_with_correct_ed25519_key.c
+# EXTRA_DIST += test_public_key_auth_succeeds_with_correct_encrypted_ed25519_key.c
+# EXTRA_DIST += test_public_key_auth_succeeds_with_correct_ed25519_key_from_mem.c
+@OPENSSL_TRUE@am__append_2 = test_public_key_auth_succeeds_with_correct_rsa_openssh_key.c
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
@@ -419,7 +424,7 @@ GREP = @GREP@
 HAVE_LIBBCRYPT = @HAVE_LIBBCRYPT@
 HAVE_LIBCRYPT32 = @HAVE_LIBCRYPT32@
 HAVE_LIBGCRYPT = @HAVE_LIBGCRYPT@
-HAVE_LIBMBEDTLS = @HAVE_LIBMBEDTLS@
+HAVE_LIBMBEDCRYPTO = @HAVE_LIBMBEDCRYPTO@
 HAVE_LIBSSL = @HAVE_LIBSSL@
 HAVE_LIBZ = @HAVE_LIBZ@
 INSTALL = @INSTALL@
@@ -435,8 +440,8 @@ LIBCRYPT32 = @LIBCRYPT32@
 LIBCRYPT32_PREFIX = @LIBCRYPT32_PREFIX@
 LIBGCRYPT = @LIBGCRYPT@
 LIBGCRYPT_PREFIX = @LIBGCRYPT_PREFIX@
-LIBMBEDTLS = @LIBMBEDTLS@
-LIBMBEDTLS_PREFIX = @LIBMBEDTLS_PREFIX@
+LIBMBEDCRYPTO = @LIBMBEDCRYPTO@
+LIBMBEDCRYPTO_PREFIX = @LIBMBEDCRYPTO_PREFIX@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBSREQUIRED = @LIBSREQUIRED@
@@ -451,7 +456,7 @@ LN_S = @LN_S@
 LTLIBBCRYPT = @LTLIBBCRYPT@
 LTLIBCRYPT32 = @LTLIBCRYPT32@
 LTLIBGCRYPT = @LTLIBGCRYPT@
-LTLIBMBEDTLS = @LTLIBMBEDTLS@
+LTLIBMBEDCRYPTO = @LTLIBMBEDCRYPTO@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBSSL = @LTLIBSSL@
 LTLIBZ = @LTLIBZ@
@@ -557,7 +562,9 @@ EXTRA_DIST = ssh2.sh mansyntax.sh etc/host etc/host.pub etc/user \
 	test_password_auth_succeeds_with_correct_credentials.c \
 	test_public_key_auth_fails_with_wrong_key.c \
 	test_public_key_auth_succeeds_with_correct_dsa_key.c \
-	test_public_key_auth_succeeds_with_correct_rsa_key.c
+	test_public_key_auth_succeeds_with_correct_rsa_key.c \
+	test_public_key_auth_succeeds_with_correct_encrypted_rsa_key.c \
+	$(am__append_2)
 all: all-am
 
 .SUFFIXES:

@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
     const char *fingerprint;
     LIBSSH2_SESSION *session;
     LIBSSH2_CHANNEL *channel;
-    const char *username="username";
-    const char *password="password";
-    const char *scppath="/tmp/TEST";
+    const char *username = "username";
+    const char *password = "password";
+    const char *scppath = "/tmp/TEST";
     libssh2_struct_stat fileinfo;
     int rc;
     libssh2_struct_stat_size got = 0;
@@ -49,31 +49,32 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    if (argc > 1) {
+    if(argc > 1) {
         hostaddr = inet_addr(argv[1]);
-    } else {
+    }
+    else {
         hostaddr = htonl(0x7F000001);
     }
-    if (argc > 2) {
+    if(argc > 2) {
         username = argv[2];
     }
-    if (argc > 3) {
+    if(argc > 3) {
         password = argv[3];
     }
-    if (argc > 4) {
+    if(argc > 4) {
         scppath = argv[4];
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
@@ -86,8 +87,8 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
-            sizeof(struct sockaddr_in)) != 0) {
+    if(connect(sock, (struct sockaddr*)(&sin),
+               sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return -1;
     }
@@ -119,18 +120,20 @@ int main(int argc, char *argv[])
     }
     fprintf(stderr, "\n");
 
-    if (auth_pw) {
+    if(auth_pw) {
         /* We could authenticate via password */
-        if (libssh2_userauth_password(session, username, password)) {
+        if(libssh2_userauth_password(session, username, password)) {
             fprintf(stderr, "Authentication by password failed.\n");
             goto shutdown;
         }
-    } else {
+    }
+    else {
         /* Or by public key */
-        if (libssh2_userauth_publickey_fromfile(session, username,
-                            "/home/username/.ssh/id_rsa.pub",
-                            "/home/username/.ssh/id_rsa",
-                            password)) {
+#define HOME_DIR "/home/username/"
+        if(libssh2_userauth_publickey_fromfile(session, username,
+                                               HOME_DIR ".ssh/id_rsa.pub",
+                                               HOME_DIR ".ssh/id_rsa",
+                                               password)) {
             fprintf(stderr, "\tAuthentication by public key failed\n");
             goto shutdown;
         }
@@ -139,7 +142,7 @@ int main(int argc, char *argv[])
     /* Request a file via SCP */
     channel = libssh2_scp_recv2(session, scppath, &fileinfo);
 
-    if (!channel) {
+    if(!channel) {
         fprintf(stderr, "Unable to open a session: %d\n",
                 libssh2_session_last_errno(session));
         goto shutdown;
@@ -148,7 +151,7 @@ int main(int argc, char *argv[])
 
     while(got < fileinfo.st_size) {
         char mem[1024];
-        int amount=sizeof(mem);
+        int amount = sizeof(mem);
 
         if((fileinfo.st_size -got) < amount) {
             amount = (int)(fileinfo.st_size -got);
@@ -170,7 +173,8 @@ int main(int argc, char *argv[])
 
  shutdown:
 
-    libssh2_session_disconnect(session, "Normal Shutdown, Thank you for playing");
+    libssh2_session_disconnect(session,
+                               "Normal Shutdown, Thank you for playing");
     libssh2_session_free(session);
 
 #ifdef WIN32

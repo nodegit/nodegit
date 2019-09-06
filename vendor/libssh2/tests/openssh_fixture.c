@@ -57,22 +57,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
-static int run_command(const char *command, char **output)
+static int run_command_varg(char **output, const char *command, va_list args)
 {
     FILE *pipe;
     char command_buf[BUFSIZ];
+    char buf[BUFSIZ];
+    char *p;
     int ret;
-    if (output) {
+    if(output) {
         *output = NULL;
     }
 
-    /* Rewrite the command to redirect stderr to stdout to we can output it */
-    ret = snprintf(command_buf, sizeof(command_buf), "%s 2>&1", command);
-    if (ret < 0 || ret >= BUFSIZ) {
+    /* Format the command string */
+    ret = vsnprintf(command_buf, sizeof(command_buf), command, args);
+    if(ret < 0 || ret >= BUFSIZ) {
         fprintf(stderr, "Unable to format command (%s)\n", command);
         return -1;
     }
+
+    /* Rewrite the command to redirect stderr to stdout to we can output it */
+    if(strlen(command_buf) + 6 >= sizeof(command_buf)) {
+        fprintf(stderr, "Unable to rewrite command (%s)\n", command);
+        return -1;
+    }
+
+    strncat(command_buf, " 2>&1", 6);
 
     fprintf(stdout, "Command: %s\n", command);
 #ifdef WIN32
@@ -80,64 +91,64 @@ static int run_command(const char *command, char **output)
 #else
     pipe = popen(command_buf, "r");
 #endif
-    if (pipe) {
-        char buf[BUFSIZ];
-        char *p = buf;
-        while (fgets(p, sizeof(buf) - (p - buf), pipe) != NULL)
-            ;
-
-#ifdef WIN32
-        ret = _pclose(pipe);
-#else
-        ret = pclose(pipe);
-#endif
-        if (ret == 0) {
-            if (output) {
-                /* command output may contain a trailing newline, so we trim
-                 * whitespace here */
-                size_t end = strlen(buf) - 1;
-                while (end > 0 && isspace(buf[end])) {
-                    buf[end] = '\0';
-                }
-
-                *output = strdup(buf);
-            }
-        }
-        else {
-            fprintf(stderr, "Error running command '%s' (exit %d): %s\n",
-                    command, ret, buf);
-        }
-        return ret;
-    }
-    else {
+    if(!pipe) {
         fprintf(stderr, "Unable to execute command '%s'\n", command);
         return -1;
     }
+    p = buf;
+    while(fgets(p, sizeof(buf) - (p - buf), pipe) != NULL)
+        ;
+
+#ifdef WIN32
+    ret = _pclose(pipe);
+#else
+    ret = pclose(pipe);
+#endif
+    if(ret != 0) {
+        fprintf(stderr, "Error running command '%s' (exit %d): %s\n",
+                command, ret, buf);
+    }
+
+    if(output) {
+        /* command output may contain a trailing newline, so we trim
+         * whitespace here */
+        size_t end = strlen(buf) - 1;
+        while(end > 0 && isspace(buf[end])) {
+            buf[end] = '\0';
+        }
+
+        *output = strdup(buf);
+    }
+    return ret;
+}
+
+static int run_command(char **output, const char *command, ...)
+{
+    va_list args;
+    int ret;
+
+    va_start(args, command);
+    ret = run_command_varg(output, command, args);
+    va_end(args);
+
+    return ret;
 }
 
 static int build_openssh_server_docker_image()
 {
-    return run_command("docker build -t libssh2/openssh_server openssh_server",
-                       NULL);
+    return run_command(NULL, "docker build -t libssh2/openssh_server openssh_server");
 }
 
 static int start_openssh_server(char **container_id_out)
 {
-    return run_command("docker run --detach -P libssh2/openssh_server",
-                       container_id_out);
+    return run_command(container_id_out,
+                       "docker run --detach -P libssh2/openssh_server"
+                       );
 }
 
 static int stop_openssh_server(char *container_id)
 {
-    char command_buf[BUFSIZ];
-    int rc = snprintf(command_buf, sizeof(command_buf), "docker stop %s",
-                      container_id);
-    if (rc > -1 && rc < BUFSIZ) {
-        return run_command(command_buf, NULL);
-    }
-    else {
-        return rc;
-    }
+    return run_command(NULL, "docker stop %s", container_id);
 }
 
 static const char *docker_machine_name()
@@ -148,22 +159,17 @@ static const char *docker_machine_name()
 static int ip_address_from_container(char *container_id, char **ip_address_out)
 {
     const char *active_docker_machine = docker_machine_name();
-    if (active_docker_machine != NULL) {
+    if(active_docker_machine != NULL) {
 
-        // This can be flaky when tests run in parallel (see
-        // https://github.com/docker/machine/issues/2612), so we retry a few
-        // times with exponential backoff if it fails
+        /* This can be flaky when tests run in parallel (see
+           https://github.com/docker/machine/issues/2612), so we retry a few
+           times with exponential backoff if it fails */
         int attempt_no = 0;
         int wait_time = 500;
-        for (;;) {
-            char command_buf[BUFSIZ];
-            int rc = snprintf(command_buf, sizeof(command_buf),
-                              "docker-machine ip %s", active_docker_machine);
-            if (rc > -1 && rc < BUFSIZ) {
-                return run_command(command_buf, ip_address_out);
-            }
+        for(;;) {
+            return run_command(ip_address_out, "docker-machine ip %s", active_docker_machine);
 
-            if (attempt_no > 5) {
+            if(attempt_no > 5) {
                 fprintf(
                     stderr,
                     "Unable to get IP from docker-machine after %d attempts\n",
@@ -185,92 +191,74 @@ static int ip_address_from_container(char *container_id, char **ip_address_out)
         }
     }
     else {
-        char command_buf[BUFSIZ];
-        int rc = snprintf(
-            command_buf, sizeof(command_buf),
-            "docker inspect --format \"{{ index (index (index "
-            ".NetworkSettings.Ports \\\"22/tcp\\\") 0) \\\"HostIp\\\" }}\" %s",
-            container_id);
-        if (rc > -1 && rc < BUFSIZ) {
-            return run_command(command_buf, ip_address_out);
-        }
-        else {
-            return rc;
-        }
+        return run_command(ip_address_out,
+                           "docker inspect --format "
+                           "\"{{ index (index (index .NetworkSettings.Ports "
+                           "\\\"22/tcp\\\") 0) \\\"HostIp\\\" }}\" %s",
+                           container_id);
     }
 }
 
 static int port_from_container(char *container_id, char **port_out)
 {
-    char command_buf[BUFSIZ];
-    int rc = snprintf(
-        command_buf, sizeof(command_buf),
-        "docker inspect --format \"{{ index (index (index "
-        ".NetworkSettings.Ports \\\"22/tcp\\\") 0) \\\"HostPort\\\" }}\" %s",
-        container_id);
-    if (rc > -1 && rc < BUFSIZ) {
-        return run_command(command_buf, port_out);
-    }
-    else {
-        return rc;
-    }
+    return run_command(port_out,
+                       "docker inspect --format "
+                       "\"{{ index (index (index .NetworkSettings.Ports "
+                       "\\\"22/tcp\\\") 0) \\\"HostPort\\\" }}\" %s",
+                       container_id);
 }
 
 static int open_socket_to_container(char *container_id)
 {
     char *ip_address = NULL;
+    char *port_string = NULL;
+    unsigned long hostaddr;
+    int sock;
+    struct sockaddr_in sin;
 
     int ret = ip_address_from_container(container_id, &ip_address);
-    if (ret == 0) {
-        char *port_string = NULL;
-        ret = port_from_container(container_id, &port_string);
-        if (ret == 0) {
-            unsigned long hostaddr = inet_addr(ip_address);
-            if (hostaddr != (unsigned long)(-1)) {
-                int sock = socket(AF_INET, SOCK_STREAM, 0);
-                if (sock > -1) {
-                    struct sockaddr_in sin;
-
-                    sin.sin_family = AF_INET;
-                    sin.sin_port = htons((short)strtol(port_string, NULL, 0));
-                    sin.sin_addr.s_addr = hostaddr;
-
-                    if (connect(sock, (struct sockaddr *)(&sin),
-                                sizeof(struct sockaddr_in)) == 0) {
-                        ret = sock;
-                    }
-                    else {
-                        fprintf(stderr, "Failed to connect to %s:%s\n",
-                                ip_address, port_string);
-                        ret = -1;
-                    }
-                }
-                else {
-                    fprintf(stderr, "Failed to open socket (%d)\n", sock);
-                    ret = -1;
-                }
-            }
-            else {
-                fprintf(stderr, "Failed to convert %s host address\n",
-                        ip_address);
-                ret = -1;
-            }
-
-            free(port_string);
-        }
-        else {
-            fprintf(stderr, "Failed to get port for container %s\n",
-                    container_id);
-            ret = -1;
-        }
-
-        free(ip_address);
+    if(ret != 0) {
+        fprintf(stderr, "Failed to get IP address for container %s\n", container_id);
+        ret = -1;
+        goto cleanup;
     }
-    else {
-        fprintf(stderr, "Failed to get IP address for container %s\n",
-                container_id);
+
+    ret = port_from_container(container_id, &port_string);
+    if(ret != 0) {
+        fprintf(stderr, "Failed to get port for container %s\n", container_id);
         ret = -1;
     }
+
+    hostaddr = inet_addr(ip_address);
+    if(hostaddr == (unsigned long)(-1)) {
+        fprintf(stderr, "Failed to convert %s host address\n", ip_address);
+        ret = -1;
+        goto cleanup;
+    }
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if(sock <= 0) {
+        fprintf(stderr, "Failed to open socket (%d)\n", sock);
+        ret = -1;
+        goto cleanup;
+    }
+
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons((short)strtol(port_string, NULL, 0));
+    sin.sin_addr.s_addr = hostaddr;
+
+    if(connect(sock, (struct sockaddr *)(&sin),
+               sizeof(struct sockaddr_in)) != 0) {
+        fprintf(stderr, "Failed to connect to %s:%s\n", ip_address, port_string);
+        ret = -1;
+        goto cleanup;
+    }
+
+    ret = sock;
+
+cleanup:
+    free(ip_address);
+    free(port_string);
 
     return ret;
 }
@@ -284,14 +272,14 @@ int start_openssh_fixture()
     WSADATA wsadata;
 
     ret = WSAStartup(MAKEWORD(2, 0), &wsadata);
-    if (ret != 0) {
+    if(ret != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", ret);
         return 1;
     }
 #endif
 
     ret = build_openssh_server_docker_image();
-    if (ret == 0) {
+    if(ret == 0) {
         return start_openssh_server(&running_container_id);
     }
     else {
@@ -302,7 +290,7 @@ int start_openssh_fixture()
 
 void stop_openssh_fixture()
 {
-    if (running_container_id) {
+    if(running_container_id) {
         stop_openssh_server(running_container_id);
         free(running_container_id);
         running_container_id = NULL;
