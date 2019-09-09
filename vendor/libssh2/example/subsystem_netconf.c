@@ -57,12 +57,12 @@ static int netconf_write(LIBSSH2_CHANNEL *channel, const char *buf, size_t len)
 
     do {
         i = libssh2_channel_write(channel, buf, len);
-        if (i < 0) {
+        if(i < 0) {
             fprintf(stderr, "libssh2_channel_write: %d\n", i);
             return -1;
         }
         wr += i;
-    } while (i > 0 && wr < (ssize_t)len);
+    } while(i > 0 && wr < (ssize_t)len);
 
     return 0;
 }
@@ -78,9 +78,9 @@ static int netconf_read_until(LIBSSH2_CHANNEL *channel, const char *endtag,
 
     do {
         len = libssh2_channel_read(channel, buf + rd, buflen - rd);
-        if (LIBSSH2_ERROR_EAGAIN == len)
+        if(LIBSSH2_ERROR_EAGAIN == len)
             continue;
-        else if (len < 0) {
+        else if(len < 0) {
             fprintf(stderr, "libssh2_channel_read: %d\n", (int)len);
             return -1;
         }
@@ -92,13 +92,14 @@ static int netconf_read_until(LIBSSH2_CHANNEL *channel, const char *endtag,
         /* really, this MUST be replaced with proper XML parsing! */
 
         endreply = strstr(buf, endtag);
-        if (endreply)
+        if(endreply)
             specialsequence = strstr(endreply, "]]>]]>");
 
-    } while (!specialsequence && rd < buflen);
+    } while(!specialsequence && rd < buflen);
 
-    if (!specialsequence) {
-        fprintf(stderr, "%s: ]]>]]> not found! read buffer too small?\n", __func__);
+    if(!specialsequence) {
+        fprintf(stderr, "%s: ]]>]]> not found! read buffer too small?\n",
+                __func__);
         return -1;
     }
 
@@ -125,8 +126,8 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
@@ -134,40 +135,41 @@ int main(int argc, char *argv[])
     int sock = -1;
 #endif
 
-    if (argc > 1)
+    if(argc > 1)
         server_ip = argv[1];
-    if (argc > 2)
+    if(argc > 2)
         username = argv[2];
-    if (argc > 3)
+    if(argc > 3)
         password = argv[3];
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
     /* Connect to SSH server */
     sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 #ifdef WIN32
-    if (sock == INVALID_SOCKET) {
+    if(sock == INVALID_SOCKET) {
         fprintf(stderr, "failed to open socket!\n");
         return -1;
     }
 #else
-    if (sock == -1) {
+    if(sock == -1) {
         perror("socket");
         return -1;
     }
 #endif
 
     sin.sin_family = AF_INET;
-    if (INADDR_NONE == (sin.sin_addr.s_addr = inet_addr(server_ip))) {
+    sin.sin_addr.s_addr = inet_addr(server_ip);
+    if(INADDR_NONE == sin.sin_addr.s_addr) {
         fprintf(stderr, "inet_addr: Invalid IP address \"%s\"\n", server_ip);
         return -1;
     }
     sin.sin_port = htons(830);
-    if (connect(sock, (struct sockaddr*)(&sin),
+    if(connect(sock, (struct sockaddr*)(&sin),
                 sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "Failed to connect to %s!\n", inet_ntoa(sin.sin_addr));
         return -1;
@@ -203,39 +205,41 @@ int main(int argc, char *argv[])
     /* check what authentication methods are available */
     userauthlist = libssh2_userauth_list(session, username, strlen(username));
     fprintf(stderr, "Authentication methods: %s\n", userauthlist);
-    if (strstr(userauthlist, "password"))
+    if(strstr(userauthlist, "password"))
         auth |= AUTH_PASSWORD;
-    if (strstr(userauthlist, "publickey"))
+    if(strstr(userauthlist, "publickey"))
         auth |= AUTH_PUBLICKEY;
 
     /* check for options */
     if(argc > 4) {
-        if ((auth & AUTH_PASSWORD) && !strcasecmp(argv[4], "-p"))
+        if((auth & AUTH_PASSWORD) && !strcasecmp(argv[4], "-p"))
             auth = AUTH_PASSWORD;
-        if ((auth & AUTH_PUBLICKEY) && !strcasecmp(argv[4], "-k"))
+        if((auth & AUTH_PUBLICKEY) && !strcasecmp(argv[4], "-k"))
             auth = AUTH_PUBLICKEY;
     }
 
-    if (auth & AUTH_PASSWORD) {
-        if (libssh2_userauth_password(session, username, password)) {
+    if(auth & AUTH_PASSWORD) {
+        if(libssh2_userauth_password(session, username, password)) {
             fprintf(stderr, "Authentication by password failed.\n");
             goto shutdown;
         }
-    } else if (auth & AUTH_PUBLICKEY) {
-        if (libssh2_userauth_publickey_fromfile(session, username, keyfile1,
+    }
+    else if(auth & AUTH_PUBLICKEY) {
+        if(libssh2_userauth_publickey_fromfile(session, username, keyfile1,
                                                 keyfile2, password)) {
             fprintf(stderr, "Authentication by public key failed!\n");
             goto shutdown;
         }
         fprintf(stderr, "Authentication by public key succeeded.\n");
-    } else {
+    }
+    else {
         fprintf(stderr, "No supported authentication methods found!\n");
         goto shutdown;
     }
 
     /* open a channel */
     channel = libssh2_channel_open_session(session);
-    if (!channel) {
+    if(!channel) {
         fprintf(stderr, "Could not open the channel!\n"
                 "(Note that this can be a problem at the server!"
                 " Please review the server logs.)\n");
@@ -243,7 +247,7 @@ int main(int argc, char *argv[])
     }
 
     /* execute the subsystem on our channel */
-    if (libssh2_channel_subsystem(channel, "netconf")) {
+    if(libssh2_channel_subsystem(channel, "netconf")) {
         fprintf(stderr, "Could not execute the \"netconf\" subsystem!\n"
                 "(Note that this can be a problem at the server!"
                 " Please review the server logs.)\n");
@@ -261,15 +265,16 @@ int main(int argc, char *argv[])
       "</capabilities>"
       "</hello>\n"
       "]]>]]>\n%n", (int *)&len);
-    if (-1 == netconf_write(channel, buf, len))
+    if(-1 == netconf_write(channel, buf, len))
         goto shutdown;
 
     fprintf(stderr, "Reading NETCONF server <hello>\n");
     len = netconf_read_until(channel, "</hello>", buf, sizeof(buf));
-    if (-1 == len)
+    if(-1 == len)
         goto shutdown;
 
-    fprintf(stderr, "Got %d bytes:\n----------------------\n%s", (int)len, buf);
+    fprintf(stderr, "Got %d bytes:\n----------------------\n%s",
+            (int)len, buf);
 
     fprintf(stderr, "Sending NETCONF <rpc>\n");
     snprintf(buf, sizeof(buf),
@@ -278,18 +283,19 @@ int main(int argc, char *argv[])
       "<get-interface-information><terse/></get-interface-information>"
       "</rpc>\n"
       "]]>]]>\n%n", (int *)&len);
-    if (-1 == netconf_write(channel, buf, len))
+    if(-1 == netconf_write(channel, buf, len))
         goto shutdown;
 
     fprintf(stderr, "Reading NETCONF <rpc-reply>\n");
     len = netconf_read_until(channel, "</rpc-reply>", buf, sizeof(buf));
-    if (-1 == len)
+    if(-1 == len)
         goto shutdown;
 
-    fprintf(stderr, "Got %d bytes:\n----------------------\n%s", (int)len, buf);
+    fprintf(stderr, "Got %d bytes:\n----------------------\n%s",
+            (int)len, buf);
 
 shutdown:
-    if (channel)
+    if(channel)
         libssh2_channel_free(channel);
     libssh2_session_disconnect(session, "Client disconnecting normally");
     libssh2_session_free(session);

@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
     struct sockaddr_in sin;
     const char *fingerprint;
     LIBSSH2_SESSION *session;
-    const char *username="username";
-    const char *password="password";
-    const char *loclfile="sftp_write.c";
-    const char *sftppath="/tmp/TEST";
+    const char *username = "username";
+    const char *password = "password";
+    const char *loclfile = "sftp_write.c";
+    const char *sftppath = "/tmp/TEST";
     int rc;
     FILE *local;
     LIBSSH2_SFTP *sftp_session;
@@ -57,16 +57,17 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    if (argc > 1) {
+    if(argc > 1) {
         hostaddr = inet_addr(argv[1]);
-    } else {
+    }
+    else {
         hostaddr = htonl(0x7F000001);
     }
 
@@ -83,14 +84,14 @@ int main(int argc, char *argv[])
         sftppath = argv[5];
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
     local = fopen(loclfile, "rb");
-    if (!local) {
+    if(!local) {
         fprintf(stderr, "Can't open local file %s\n", loclfile);
         return -1;
     }
@@ -104,8 +105,8 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
-            sizeof(struct sockaddr_in)) != 0) {
+    if(connect(sock, (struct sockaddr*)(&sin),
+               sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return -1;
     }
@@ -140,18 +141,20 @@ int main(int argc, char *argv[])
     }
     fprintf(stderr, "\n");
 
-    if (auth_pw) {
+    if(auth_pw) {
         /* We could authenticate via password */
-        if (libssh2_userauth_password(session, username, password)) {
+        if(libssh2_userauth_password(session, username, password)) {
             fprintf(stderr, "Authentication by password failed.\n");
             goto shutdown;
         }
-    } else {
+    }
+    else {
         /* Or by public key */
-        if (libssh2_userauth_publickey_fromfile(session, username,
-                            "/home/username/.ssh/id_rsa.pub",
-                            "/home/username/.ssh/id_rsa",
-                            password)) {
+#define HOME "/home/username/"
+        if(libssh2_userauth_publickey_fromfile(session, username,
+                                               HOME ".ssh/id_rsa.pub",
+                                               HOME ".ssh/id_rsa",
+                                               password)) {
             fprintf(stderr, "\tAuthentication by public key failed\n");
             goto shutdown;
         }
@@ -160,7 +163,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "libssh2_sftp_init()!\n");
     sftp_session = libssh2_sftp_init(session);
 
-    if (!sftp_session) {
+    if(!sftp_session) {
         fprintf(stderr, "Unable to init SFTP session\n");
         goto shutdown;
     }
@@ -173,7 +176,7 @@ int main(int argc, char *argv[])
                           LIBSSH2_FXF_WRITE|LIBSSH2_FXF_READ,
                           LIBSSH2_SFTP_S_IRUSR|LIBSSH2_SFTP_S_IWUSR|
                           LIBSSH2_SFTP_S_IRGRP|LIBSSH2_SFTP_S_IROTH);
-    if (!sftp_handle) {
+    if(!sftp_handle) {
         fprintf(stderr, "Unable to open file with SFTP\n");
         goto shutdown;
     }
@@ -188,14 +191,14 @@ int main(int argc, char *argv[])
 
     fprintf(stderr, "libssh2_sftp_open() a handle for APPEND\n");
 
-    if (!sftp_handle) {
+    if(!sftp_handle) {
         fprintf(stderr, "Unable to open file with SFTP\n");
         goto shutdown;
     }
     fprintf(stderr, "libssh2_sftp_open() is done, now send data!\n");
     do {
         nread = fread(mem, 1, sizeof(mem), local);
-        if (nread <= 0) {
+        if(nread <= 0) {
             /* end of file */
             break;
         }
@@ -208,9 +211,9 @@ int main(int argc, char *argv[])
                 break;
             ptr += rc;
             nread -= rc;
-        } while (nread);
+        } while(nread);
 
-    } while (rc > 0);
+    } while(rc > 0);
 
     libssh2_sftp_close(sftp_handle);
     libssh2_sftp_shutdown(sftp_session);
@@ -225,7 +228,7 @@ shutdown:
 #else
     close(sock);
 #endif
-    if (local)
+    if(local)
         fclose(local);
     fprintf(stderr, "all done\n");
 

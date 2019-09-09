@@ -38,8 +38,10 @@ set(MAN_PAGES
   libssh2_agent_disconnect.3
   libssh2_agent_free.3
   libssh2_agent_get_identity.3
+  libssh2_agent_get_identity_path.3
   libssh2_agent_init.3
   libssh2_agent_list_identities.3
+  libssh2_agent_set_identity_path.3
   libssh2_agent_userauth.3
   libssh2_banner_set.3
   libssh2_base64_decode.3
@@ -134,6 +136,7 @@ set(MAN_PAGES
   libssh2_session_free.3
   libssh2_session_get_blocking.3
   libssh2_session_get_timeout.3
+  libssh2_session_handshake.3
   libssh2_session_hostkey.3
   libssh2_session_init.3
   libssh2_session_init_ex.3
@@ -200,6 +203,7 @@ set(MAN_PAGES
   libssh2_userauth_publickey.3
   libssh2_userauth_publickey_fromfile.3
   libssh2_userauth_publickey_fromfile_ex.3
+  libssh2_userauth_publickey_frommemory.3
   libssh2_version.3)
 
 include(GNUInstallDirs)

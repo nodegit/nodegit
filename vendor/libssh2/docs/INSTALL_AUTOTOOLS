@@ -7,6 +7,22 @@ Software Foundation, Inc.
 This file is free documentation; the Free Software Foundation gives
 unlimited permission to copy, distribute and modify it.
 
+When Building directly from Master
+==================================
+
+If you want to build directly from the git repository, you must first
+generate the configure script and Makefile using autotools. There is
+a convenience script that calls all tools in the correct order. Make
+sure that autoconf, automake and libtool are installed on your system,
+then execute the following script:
+
+  ./buildconf
+
+After executing this script, you can build the project as usual:
+
+  ./configure
+  make
+
 Basic Installation
 ==================
 

@@ -559,6 +559,8 @@
       ],
       "sources": [
         "libssh2/src/agent.c",
+        "libssh2/src/bcrypt_pbkdf.c",
+        "libssh2/src/blowfish.c",
         "libssh2/src/crypt.c",
         "libssh2/src/keepalive.c",
         "libssh2/src/libgcrypt.c",

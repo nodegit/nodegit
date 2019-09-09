@@ -5,8 +5,9 @@
 #include <stdio.h>
 
 static const char *USERNAME = "libssh2"; /* configured in Dockerfile */
-static const char *KEY_FILE_PRIVATE = "key_dsa";
-static const char *KEY_FILE_PUBLIC = "key_dsa.pub"; /* configured in Dockerfile */
+static const char *PASSWORD = "libssh2";
+static const char *KEY_FILE_PRIVATE = "key_rsa_encrypted";
+static const char *KEY_FILE_PUBLIC = "key_rsa_encrypted.pub"; /* configured in Dockerfile */
 
 int test(LIBSSH2_SESSION *session)
 {
@@ -27,7 +28,7 @@ int test(LIBSSH2_SESSION *session)
 
     rc = libssh2_userauth_publickey_fromfile_ex(
         session, USERNAME, strlen(USERNAME), KEY_FILE_PUBLIC, KEY_FILE_PRIVATE,
-        NULL);
+        PASSWORD);
     if(rc != 0) {
         print_last_session_error("libssh2_userauth_publickey_fromfile_ex");
         return 1;

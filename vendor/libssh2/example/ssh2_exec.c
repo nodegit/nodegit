@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     LIBSSH2_CHANNEL *channel;
     int rc;
     int exitcode;
-    char *exitsignal=(char *)"none";
+    char *exitsignal = (char *)"none";
     int bytecount = 0;
     size_t len;
     LIBSSH2_KNOWNHOSTS *nh;
@@ -97,30 +97,30 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    if (argc > 1)
+    if(argc > 1)
         /* must be ip address only */
         hostname = argv[1];
 
-    if (argc > 2) {
+    if(argc > 2) {
         username = argv[2];
     }
-    if (argc > 3) {
+    if(argc > 3) {
         password = argv[3];
     }
-    if (argc > 4) {
+    if(argc > 4) {
         commandline = argv[4];
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
+    if(connect(sock, (struct sockaddr*)(&sin),
                 sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return -1;
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 
     /* Create a session instance */
     session = libssh2_session_init();
-    if (!session)
+    if(!session)
         return -1;
 
     /* tell libssh2 we want it all done non-blocking */
@@ -152,9 +152,9 @@ int main(int argc, char *argv[])
     /* ... start it up. This will trade welcome banners, exchange keys,
      * and setup crypto, compression, and MAC layers
      */
-    while ((rc = libssh2_session_handshake(session, sock)) ==
+    while((rc = libssh2_session_handshake(session, sock)) ==
            LIBSSH2_ERROR_EAGAIN);
-    if (rc) {
+    if(rc) {
         fprintf(stderr, "Failure establishing SSH session: %d\n", rc);
         return -1;
     }
@@ -206,104 +206,95 @@ int main(int argc, char *argv[])
     }
     libssh2_knownhost_free(nh);
 
-    if ( strlen(password) != 0 ) {
+    if(strlen(password) != 0) {
         /* We could authenticate via password */
-        while ((rc = libssh2_userauth_password(session, username, password)) ==
+        while((rc = libssh2_userauth_password(session, username, password)) ==
                LIBSSH2_ERROR_EAGAIN);
-        if (rc) {
+        if(rc) {
             fprintf(stderr, "Authentication by password failed.\n");
             goto shutdown;
         }
     }
     else {
         /* Or by public key */
-        while ((rc = libssh2_userauth_publickey_fromfile(session, username,
+        while((rc = libssh2_userauth_publickey_fromfile(session, username,
                                                          "/home/user/"
                                                          ".ssh/id_rsa.pub",
                                                          "/home/user/"
                                                          ".ssh/id_rsa",
                                                          password)) ==
                LIBSSH2_ERROR_EAGAIN);
-        if (rc) {
+        if(rc) {
             fprintf(stderr, "\tAuthentication by public key failed\n");
             goto shutdown;
         }
     }
 
 #if 0
-    libssh2_trace(session, ~0 );
+    libssh2_trace(session, ~0);
 #endif
 
     /* Exec non-blocking on the remove host */
-    while( (channel = libssh2_channel_open_session(session)) == NULL &&
-           libssh2_session_last_error(session,NULL,NULL,0) ==
-           LIBSSH2_ERROR_EAGAIN )
-    {
+    while((channel = libssh2_channel_open_session(session)) == NULL &&
+          libssh2_session_last_error(session, NULL, NULL, 0) ==
+          LIBSSH2_ERROR_EAGAIN) {
         waitsocket(sock, session);
     }
-    if( channel == NULL )
-    {
-        fprintf(stderr,"Error\n");
-        exit( 1 );
+    if(channel == NULL) {
+        fprintf(stderr, "Error\n");
+        exit(1);
     }
-    while( (rc = libssh2_channel_exec(channel, commandline)) ==
-           LIBSSH2_ERROR_EAGAIN )
-    {
+    while((rc = libssh2_channel_exec(channel, commandline)) ==
+           LIBSSH2_ERROR_EAGAIN) {
         waitsocket(sock, session);
     }
-    if( rc != 0 )
-    {
-        fprintf(stderr,"Error\n");
-        exit( 1 );
+    if(rc != 0) {
+        fprintf(stderr, "Error\n");
+        exit(1);
     }
-    for( ;; )
-    {
+    for(;;) {
         /* loop until we block */
         int rc;
-        do
-        {
+        do {
             char buffer[0x4000];
-            rc = libssh2_channel_read( channel, buffer, sizeof(buffer) );
-            if( rc > 0 )
-            {
+            rc = libssh2_channel_read(channel, buffer, sizeof(buffer) );
+            if(rc > 0) {
                 int i;
                 bytecount += rc;
                 fprintf(stderr, "We read:\n");
-                for( i=0; i < rc; ++i )
-                    fputc( buffer[i], stderr);
+                for(i = 0; i < rc; ++i)
+                    fputc(buffer[i], stderr);
                 fprintf(stderr, "\n");
             }
             else {
-                if( rc != LIBSSH2_ERROR_EAGAIN )
+                if(rc != LIBSSH2_ERROR_EAGAIN)
                     /* no need to output this for the EAGAIN case */
                     fprintf(stderr, "libssh2_channel_read returned %d\n", rc);
             }
         }
-        while( rc > 0 );
+        while(rc > 0);
 
         /* this is due to blocking that would occur otherwise so we loop on
            this condition */
-        if( rc == LIBSSH2_ERROR_EAGAIN )
-        {
+        if(rc == LIBSSH2_ERROR_EAGAIN) {
             waitsocket(sock, session);
         }
         else
             break;
     }
     exitcode = 127;
-    while( (rc = libssh2_channel_close(channel)) == LIBSSH2_ERROR_EAGAIN )
+    while((rc = libssh2_channel_close(channel)) == LIBSSH2_ERROR_EAGAIN)
         waitsocket(sock, session);
 
-    if( rc == 0 )
-    {
-        exitcode = libssh2_channel_get_exit_status( channel );
+    if(rc == 0) {
+        exitcode = libssh2_channel_get_exit_status(channel);
         libssh2_channel_get_exit_signal(channel, &exitsignal,
                                         NULL, NULL, NULL, NULL, NULL);
     }
 
-    if (exitsignal)
+    if(exitsignal)
         fprintf(stderr, "\nGot signal: %s\n", exitsignal);
-    else 
+    else
         fprintf(stderr, "\nEXIT: %d bytecount: %d\n", exitcode, bytecount);
 
     libssh2_channel_free(channel);

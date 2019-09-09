@@ -79,10 +79,10 @@ int main(int argc, char *argv[])
     struct sockaddr_in sin;
     const char *fingerprint;
     LIBSSH2_SESSION *session;
-    const char *username="username";
-    const char *password="password";
-    const char *sftppath="/tmp/TEST"; /* source path */
-    const char *dest="/tmp/TEST2";    /* destination path */
+    const char *username = "username";
+    const char *password = "password";
+    const char *sftppath = "/tmp/TEST"; /* source path */
+    const char *dest = "/tmp/TEST2";    /* destination path */
     int rc;
     LIBSSH2_SFTP *sftp_session;
     LIBSSH2_SFTP_HANDLE *sftp_handle;
@@ -90,21 +90,22 @@ int main(int argc, char *argv[])
     char mem[1000];
     struct timeval timeout;
     fd_set fd;
+    fd_set fd2;
 
 #ifdef WIN32
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
@@ -117,7 +118,7 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = htonl(0x7F000001);
-    if (connect(sock, (struct sockaddr*)(&sin),
+    if(connect(sock, (struct sockaddr*)(&sin),
                 sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return -1;
@@ -171,25 +172,26 @@ int main(int argc, char *argv[])
         goto shutdown;
     }
 
-    if (auth_pw) {
+    if(auth_pw) {
         /* We could authenticate via password */
-        while ((rc = libssh2_userauth_password(session, username, password))
+        while((rc = libssh2_userauth_password(session, username, password))
                == LIBSSH2_ERROR_EAGAIN);
-        if (rc) {
+        if(rc) {
             fprintf(stderr, "Authentication by password failed.\n");
             goto shutdown;
         }
-    } else {
+    }
+    else {
         /* Or by public key */
-        while ((rc =
-                libssh2_userauth_publickey_fromfile(session, username,
-                                                    "/home/username/"
-                                                    ".ssh/id_rsa.pub",
-                                                    "/home/username/"
-                                                    ".ssh/id_rsa",
-                                                    password)) ==
-               LIBSSH2_ERROR_EAGAIN);
-        if (rc) {
+        while((rc =
+               libssh2_userauth_publickey_fromfile(session, username,
+                                                   "/home/username/"
+                                                   ".ssh/id_rsa.pub",
+                                                   "/home/username/"
+                                                   ".ssh/id_rsa",
+                                                   password)) ==
+              LIBSSH2_ERROR_EAGAIN);
+        if(rc) {
             fprintf(stderr, "\tAuthentication by public key failed\n");
             goto shutdown;
         }
@@ -209,15 +211,15 @@ int main(int argc, char *argv[])
                 goto shutdown;
             }
         }
-    } while (!sftp_session);
+    } while(!sftp_session);
 
     /* Request a file via SFTP */
     do {
         sftp_handle = libssh2_sftp_open(sftp_session, sftppath,
                                         LIBSSH2_FXF_READ, 0);
 
-        if (!sftp_handle) {
-            if (libssh2_session_last_errno(session) != LIBSSH2_ERROR_EAGAIN) {
+        if(!sftp_handle) {
+            if(libssh2_session_last_errno(session) != LIBSSH2_ERROR_EAGAIN) {
                 fprintf(stderr, "Unable to open file with SFTP\n");
                 goto shutdown;
             }
@@ -226,7 +228,7 @@ int main(int argc, char *argv[])
                 waitsocket(sock, session); /* now we wait */
             }
         }
-    } while (!sftp_handle);
+    } while(!sftp_handle);
 
     fprintf(stderr, "libssh2_sftp_open() is done, now receive data!\n");
     do {
@@ -242,7 +244,7 @@ int main(int argc, char *argv[])
                 /* write to temporary storage area */
                 fwrite(mem, rc, 1, tempstorage);
             }
-        } while (rc > 0);
+        } while(rc > 0);
 
         if(rc != LIBSSH2_ERROR_EAGAIN) {
             /* error or end of file */
@@ -253,11 +255,12 @@ int main(int argc, char *argv[])
         timeout.tv_usec = 0;
 
         FD_ZERO(&fd);
-
+        FD_ZERO(&fd2);
         FD_SET(sock, &fd);
+        FD_SET(sock, &fd2);
 
         /* wait for readable or writeable */
-        rc = select(sock+1, &fd, &fd, NULL, &timeout);
+        rc = select(sock + 1, &fd, &fd2, NULL, &timeout);
         if(rc <= 0) {
             /* negative is error
                0 is timeout */
@@ -265,7 +268,7 @@ int main(int argc, char *argv[])
             break;
         }
 
-    } while (1);
+    } while(1);
 
     libssh2_sftp_close(sftp_handle);
     fclose(tempstorage);
@@ -301,7 +304,7 @@ int main(int argc, char *argv[])
                                         nread);
                 ptr += rc;
                 nread -= nread;
-            } while (rc >= 0);
+            } while(rc >= 0);
 
             if(rc != LIBSSH2_ERROR_EAGAIN) {
                 /* error or end of file */
@@ -312,11 +315,12 @@ int main(int argc, char *argv[])
             timeout.tv_usec = 0;
 
             FD_ZERO(&fd);
-
+            FD_ZERO(&fd2);
             FD_SET(sock, &fd);
+            FD_SET(sock, &fd2);
 
             /* wait for readable or writeable */
-            rc = select(sock+1, &fd, &fd, NULL, &timeout);
+            rc = select(sock + 1, &fd, &fd2, NULL, &timeout);
             if(rc <= 0) {
                 /* negative is error
                    0 is timeout */
@@ -324,7 +328,7 @@ int main(int argc, char *argv[])
                         rc);
                 break;
             }
-        } while (1);
+        } while(1);
         fprintf(stderr, "SFTP upload done!\n");
     }
     else {
@@ -336,7 +340,7 @@ int main(int argc, char *argv[])
 
   shutdown:
 
-    libssh2_session_disconnect(session, "Normal Shutdown, Thank you for playing");
+    libssh2_session_disconnect(session, "Normal Shutdown");
     libssh2_session_free(session);
 
 #ifdef WIN32
@@ -344,7 +348,7 @@ int main(int argc, char *argv[])
 #else
     close(sock);
 #endif
-    if (tempstorage)
+    if(tempstorage)
         fclose(tempstorage);
     fprintf(stderr, "all done\n");
 

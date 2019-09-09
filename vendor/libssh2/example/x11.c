@@ -48,14 +48,14 @@ static void remove_node(struct chan_X11_list *elem)
 
     current_node = gp_x11_chan;
 
-    if (gp_x11_chan == elem) {
+    if(gp_x11_chan == elem) {
         gp_x11_chan = gp_x11_chan->next;
         free(current_node);
         return;
     }
 
-    while (current_node->next != NULL) {
-        if (current_node->next == elem) {
+    while(current_node->next != NULL) {
+        if(current_node->next == elem) {
             current_node->next = current_node->next->next;
             current_node = current_node->next;
             free(current_node);
@@ -78,7 +78,7 @@ static int _raw_mode(void)
     struct termios tio;
 
     rc = tcgetattr(fileno(stdin), &tio);
-    if (rc != -1) {
+    if(rc != -1) {
         _saved_tio = tio;
         /* do the equivalent of cfmakeraw() manually, to build on Solaris */
         tio.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
@@ -106,37 +106,40 @@ static int _normal_mode(void)
 static void x11_callback(LIBSSH2_SESSION *session, LIBSSH2_CHANNEL *channel,
                          char *shost, int sport, void **abstract)
 {
-    const char * display      = NULL;
-    char * ptr          = NULL;
-    char * temp_buff    = NULL;
+    const char *display = NULL;
+    char *ptr          = NULL;
+    char *temp_buff    = NULL;
     int   display_port = 0;
     int   sock         = 0;
     int   rc           = 0;
     struct sockaddr_un addr;
     struct chan_X11_list *new;
     struct chan_X11_list *chan_iter;
-
+    (void)session;
+    (void)shost;
+    (void)sport;
+    (void)abstract;
     /*
      * Connect to the display
      * Inspired by x11_connect_display in openssh
      */
     display = getenv("DISPLAY");
-    if ( display != NULL) {
-        if (strncmp( display, "unix:", 5) == 0 ||
+    if(display != NULL) {
+        if(strncmp(display, "unix:", 5) == 0 ||
             display[0] == ':') {
             /* Connect to the local unix domain */
             ptr = strrchr(display, ':');
-            temp_buff = (char *) calloc(strlen(ptr+1), sizeof(char));
-            if (!temp_buff) {
+            temp_buff = (char *) calloc(strlen(ptr + 1), sizeof(char));
+            if(!temp_buff) {
                 perror("calloc");
                 return;
             }
-            memcpy(temp_buff, ptr+1, strlen(ptr+1));
+            memcpy(temp_buff, ptr + 1, strlen(ptr + 1));
             display_port = atoi(temp_buff);
             free(temp_buff);
 
             sock = socket(AF_UNIX, SOCK_STREAM, 0);
-            if (sock < 0)
+            if(sock < 0)
                 return;
             memset(&addr, 0, sizeof(addr));
             addr.sun_family = AF_UNIX;
@@ -144,9 +147,9 @@ static void x11_callback(LIBSSH2_SESSION *session, LIBSSH2_CHANNEL *channel,
                      _PATH_UNIX_X, display_port);
             rc = connect(sock, (struct sockaddr *) &addr, sizeof(addr));
 
-            if (rc != -1){
+            if(rc != -1) {
                 /* Connection Successfull */
-                if (gp_x11_chan == NULL) {
+                if(gp_x11_chan == NULL) {
                     /* Calloc ensure that gp_X11_chan is full of 0 */
                     gp_x11_chan = (struct chan_X11_list *)
                         calloc(1, sizeof(struct chan_X11_list));
@@ -156,7 +159,7 @@ static void x11_callback(LIBSSH2_SESSION *session, LIBSSH2_CHANNEL *channel,
                 }
                 else {
                     chan_iter = gp_x11_chan;
-                    while (chan_iter->next != NULL)
+                    while(chan_iter->next != NULL)
                         chan_iter = chan_iter->next;
                     /* Create the new Node */
                     new = (struct chan_X11_list *)
@@ -180,10 +183,10 @@ static void x11_callback(LIBSSH2_SESSION *session, LIBSSH2_CHANNEL *channel,
  */
 static int x11_send_receive(LIBSSH2_CHANNEL *channel, int sock)
 {
-    char * buf          = NULL;
-    int    bufsize      = 8192;
-    int    rc           = 0;
-    int    nfds         = 1;
+    char *buf          = NULL;
+    int   bufsize      = 8192;
+    int   rc           = 0;
+    int   nfds         = 1;
     LIBSSH2_POLLFD  *fds      = NULL;
     fd_set set;
     struct timeval timeval_out;
@@ -192,12 +195,14 @@ static int x11_send_receive(LIBSSH2_CHANNEL *channel, int sock)
 
 
     FD_ZERO(&set);
-    FD_SET(sock,&set);
+    FD_SET(sock, &set);
 
-    if ((buf = calloc (bufsize, sizeof(char))) == NULL)
+    buf = calloc(bufsize, sizeof(char));
+    if(!buf)
         return 0;
 
-    if ((fds = malloc (sizeof (LIBSSH2_POLLFD))) == NULL) {
+    fds = malloc(sizeof (LIBSSH2_POLLFD));
+    if(!fds) {
         free(buf);
         return 0;
     }
@@ -208,18 +213,18 @@ static int x11_send_receive(LIBSSH2_CHANNEL *channel, int sock)
     fds[0].revents = LIBSSH2_POLLFD_POLLIN;
 
     rc = libssh2_poll(fds, nfds, 0);
-    if (rc >0) {
+    if(rc >0) {
         rc = libssh2_channel_read(channel, buf, bufsize);
         write(sock, buf, rc);
     }
 
-    rc = select(sock+1, &set, NULL, NULL, &timeval_out);
-    if (rc > 0) {
+    rc = select(sock + 1, &set, NULL, NULL, &timeval_out);
+    if(rc > 0) {
         memset((void *)buf, 0, bufsize);
 
         /* Data in sock*/
         rc = read(sock, buf, bufsize);
-        if (rc > 0) {
+        if(rc > 0) {
             libssh2_channel_write(channel, buf, rc);
         }
         else {
@@ -230,7 +235,7 @@ static int x11_send_receive(LIBSSH2_CHANNEL *channel, int sock)
 
     free(fds);
     free(buf);
-    if (libssh2_channel_eof(channel) == 1) {
+    if(libssh2_channel_eof(channel) == 1) {
         return -1;
     }
     return 0;
@@ -270,10 +275,10 @@ main (int argc, char *argv[])
     timeval_out.tv_usec = 10;
 
 
-    if (argc > 3) {
-      hostaddr = inet_addr(argv[1]);
-      username = argv[2];
-      password = argv[3];
+    if(argc > 3) {
+        hostaddr = inet_addr(argv[1]);
+        username = argv[2];
+        password = argv[3];
     }
     else {
         fprintf(stderr, "Usage: %s destination username password",
@@ -281,51 +286,55 @@ main (int argc, char *argv[])
         return -1;
     }
 
-    if (argc > 4) {
+    if(argc > 4) {
         set_debug_on = 1;
-        fprintf (stderr, "DEBUG is ON: %d\n", set_debug_on);
+        fprintf(stderr, "DEBUG is ON: %d\n", set_debug_on);
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
-    sock = socket (AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if(sock == -1) {
         perror("socket");
         return -1;
     }
 
     sin.sin_family = AF_INET;
-    sin.sin_port = htons (22);
+    sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
 
     rc = connect(sock, (struct sockaddr *) &sin,
                  sizeof(struct sockaddr_in));
-    if (rc != 0) {
-        fprintf (stderr, "Failed to established connection!\n");
+    if(rc != 0) {
+        fprintf(stderr, "Failed to established connection!\n");
         return -1;
     }
     /* Open a session */
     session = libssh2_session_init();
     rc      = libssh2_session_handshake(session, sock);
-    if (rc != 0) {
+    if(rc != 0) {
         fprintf(stderr, "Failed Start the SSH session\n");
         return -1;
     }
 
-    if (set_debug_on == 1)
+    if(set_debug_on == 1)
         libssh2_trace(session, LIBSSH2_TRACE_CONN);
 
+    /* ignore pedantic warnings by gcc on the callback argument */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     /* Set X11 Callback */
     libssh2_session_callback_set(session, LIBSSH2_CALLBACK_X11,
                                  (void *)x11_callback);
+#pragma GCC diagnostic pop
 
     /* Authenticate via password */
     rc = libssh2_userauth_password(session, username, password);
-    if (rc != 0) {
+    if(rc != 0) {
         fprintf(stderr, "Failed to authenticate\n");
         session_shutdown(session);
         close(sock);
@@ -334,7 +343,7 @@ main (int argc, char *argv[])
 
     /* Open a channel */
     channel  = libssh2_channel_open_session(session);
-    if ( channel == NULL ) {
+    if(channel == NULL) {
         fprintf(stderr, "Failed to open a new channel\n");
         session_shutdown(session);
         close(sock);
@@ -343,8 +352,8 @@ main (int argc, char *argv[])
 
 
     /* Request a PTY */
-    rc = libssh2_channel_request_pty( channel, "xterm");
-    if (rc != 0) {
+    rc = libssh2_channel_request_pty(channel, "xterm");
+    if(rc != 0) {
         fprintf(stderr, "Failed to request a pty\n");
         session_shutdown(session);
         close(sock);
@@ -352,8 +361,8 @@ main (int argc, char *argv[])
     }
 
     /* Request X11 */
-    rc = libssh2_channel_x11_req(channel,0);
-    if(rc!=0) {
+    rc = libssh2_channel_x11_req(channel, 0);
+    if(rc != 0) {
         fprintf(stderr, "Failed to request X11 forwarding\n");
         session_shutdown(session);
         close(sock);
@@ -362,7 +371,7 @@ main (int argc, char *argv[])
 
     /* Request a shell */
     rc = libssh2_channel_shell(channel);
-    if (rc!=0) {
+    if(rc != 0) {
         fprintf(stderr, "Failed to open a shell\n");
         session_shutdown(session);
         close(sock);
@@ -370,7 +379,7 @@ main (int argc, char *argv[])
     }
 
     rc = _raw_mode();
-    if (rc != 0) {
+    if(rc != 0) {
         fprintf(stderr, "Failed to entered in raw mode\n");
         session_shutdown(session);
         close(sock);
@@ -380,15 +389,15 @@ main (int argc, char *argv[])
     memset(&w_size, 0, sizeof(struct winsize));
     memset(&w_size_bck, 0, sizeof(struct winsize));
 
-    while (1) {
+    while(1) {
 
         FD_ZERO(&set);
-        FD_SET(fileno(stdin),&set);
+        FD_SET(fileno(stdin), &set);
 
         /* Search if a resize pty has to be send */
         ioctl(fileno(stdin), TIOCGWINSZ, &w_size);
-        if ((w_size.ws_row != w_size_bck.ws_row) ||
-            (w_size.ws_col != w_size_bck.ws_col))   {
+        if((w_size.ws_row != w_size_bck.ws_row) ||
+           (w_size.ws_col != w_size_bck.ws_col)) {
             w_size_bck = w_size;
 
             libssh2_channel_request_pty_size(channel,
@@ -396,10 +405,12 @@ main (int argc, char *argv[])
                                              w_size.ws_row);
         }
 
-        if ((buf = calloc (bufsiz, sizeof(char))) == NULL)
+        buf = calloc(bufsiz, sizeof(char));
+        if(buf == NULL)
             break;
 
-        if ((fds = malloc (sizeof (LIBSSH2_POLLFD))) == NULL) {
+        fds = malloc(sizeof (LIBSSH2_POLLFD));
+        if(fds == NULL) {
             free(buf);
             break;
         }
@@ -410,25 +421,25 @@ main (int argc, char *argv[])
         fds[0].revents = LIBSSH2_POLLFD_POLLIN;
 
         rc = libssh2_poll(fds, nfds, 0);
-        if (rc >0) {
+        if(rc >0) {
             libssh2_channel_read(channel, buf, sizeof(buf));
             fprintf(stdout, "%s", buf);
             fflush(stdout);
         }
 
         /* Looping on X clients */
-        if (gp_x11_chan != NULL) {
+        if(gp_x11_chan != NULL) {
             current_node = gp_x11_chan;
         }
         else
             current_node = NULL;
 
-        while (current_node != NULL) {
+        while(current_node != NULL) {
             struct chan_X11_list *next_node;
             rc = x11_send_receive(current_node->chan, current_node->sock);
             next_node = current_node->next;
-            if (rc == -1){
-                shutdown(current_node->sock,SHUT_RDWR);
+            if(rc == -1) {
+                shutdown(current_node->sock, SHUT_RDWR);
                 close(current_node->sock);
                 remove_node(current_node);
             }
@@ -437,25 +448,25 @@ main (int argc, char *argv[])
         }
 
 
-        rc = select(fileno(stdin)+1,&set,NULL,NULL,&timeval_out);
-        if (rc > 0) {
+        rc = select(fileno(stdin) + 1, &set, NULL, NULL, &timeval_out);
+        if(rc > 0) {
             /* Data in stdin*/
-            rc = read(fileno(stdin), buf,1);
-            if (rc > 0)
-                libssh2_channel_write(channel,buf, sizeof(buf));
+            rc = read(fileno(stdin), buf, 1);
+            if(rc > 0)
+                libssh2_channel_write(channel, buf, sizeof(buf));
         }
 
-        free (fds);
-        free (buf);
+        free(fds);
+        free(buf);
 
-        if (libssh2_channel_eof (channel) == 1) {
-          break;
+        if(libssh2_channel_eof (channel) == 1) {
+            break;
         }
     }
 
-    if (channel) {
-      libssh2_channel_free (channel);
-      channel = NULL;
+    if(channel) {
+        libssh2_channel_free(channel);
+        channel = NULL;
     }
     _normal_mode();
 

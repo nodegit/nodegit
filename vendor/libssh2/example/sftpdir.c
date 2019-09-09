@@ -36,26 +36,16 @@
 #include <stdio.h>
 #include <ctype.h>
 
-/* last resort for systems not defining PRIu64 in inttypes.h */
-#ifndef __PRI64_PREFIX
 #ifdef WIN32
-#define __PRI64_PREFIX "I64"
+#define __FILESIZE "I64"
 #else
-#if __WORDSIZE == 64
-#define __PRI64_PREFIX "l"
-#else
-#define __PRI64_PREFIX "ll"
-#endif /* __WORDSIZE */
-#endif /* WIN32 */
-#endif /* !__PRI64_PREFIX */
-#ifndef PRIu64
-#define PRIu64 __PRI64_PREFIX "u"
-#endif  /* PRIu64 */
+#define __FILESIZE "llu"
+#endif
 
-const char *keyfile1="~/.ssh/id_rsa.pub";
-const char *keyfile2="~/.ssh/id_rsa";
-const char *username="username";
-const char *password="password";
+const char *keyfile1 = "~/.ssh/id_rsa.pub";
+const char *keyfile2 = "~/.ssh/id_rsa";
+const char *username = "username";
+const char *password = "password";
 
 static void kbd_callback(const char *name, int name_len,
                          const char *instruction, int instruction_len,
@@ -68,7 +58,7 @@ static void kbd_callback(const char *name, int name_len,
     (void)name_len;
     (void)instruction;
     (void)instruction_len;
-    if (num_prompts == 1) {
+    if(num_prompts == 1) {
         responses[0].text = strdup(password);
         responses[0].length = strlen(password);
     }
@@ -84,7 +74,7 @@ int main(int argc, char *argv[])
     const char *fingerprint;
     char *userauthlist;
     LIBSSH2_SESSION *session;
-    const char *sftppath="/tmp/secretdir";
+    const char *sftppath = "/tmp/secretdir";
     LIBSSH2_SFTP *sftp_session;
     LIBSSH2_SFTP_HANDLE *sftp_handle;
 
@@ -92,16 +82,17 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    if (argc > 1) {
+    if(argc > 1) {
         hostaddr = inet_addr(argv[1]);
-    } else {
+    }
+    else {
         hostaddr = htonl(0x7F000001);
     }
 
@@ -115,9 +106,9 @@ int main(int argc, char *argv[])
         sftppath = argv[4];
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
@@ -130,8 +121,8 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
-            sizeof(struct sockaddr_in)) != 0) {
+    if(connect(sock, (struct sockaddr*)(&sin),
+               sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return -1;
     }
@@ -166,58 +157,64 @@ int main(int argc, char *argv[])
     /* check what authentication methods are available */
     userauthlist = libssh2_userauth_list(session, username, strlen(username));
     fprintf(stderr, "Authentication methods: %s\n", userauthlist);
-    if (strstr(userauthlist, "password") != NULL) {
+    if(strstr(userauthlist, "password") != NULL) {
         auth_pw |= 1;
     }
-    if (strstr(userauthlist, "keyboard-interactive") != NULL) {
+    if(strstr(userauthlist, "keyboard-interactive") != NULL) {
         auth_pw |= 2;
     }
-    if (strstr(userauthlist, "publickey") != NULL) {
+    if(strstr(userauthlist, "publickey") != NULL) {
         auth_pw |= 4;
     }
 
     /* if we got an 5. argument we set this option if supported */
     if(argc > 5) {
-        if ((auth_pw & 1) && !strcasecmp(argv[5], "-p")) {
+        if((auth_pw & 1) && !strcasecmp(argv[5], "-p")) {
             auth_pw = 1;
         }
-        if ((auth_pw & 2) && !strcasecmp(argv[5], "-i")) {
+        if((auth_pw & 2) && !strcasecmp(argv[5], "-i")) {
             auth_pw = 2;
         }
-        if ((auth_pw & 4) && !strcasecmp(argv[5], "-k")) {
+        if((auth_pw & 4) && !strcasecmp(argv[5], "-k")) {
             auth_pw = 4;
         }
     }
 
-    if (auth_pw & 1) {
+    if(auth_pw & 1) {
         /* We could authenticate via password */
-        if (libssh2_userauth_password(session, username, password)) {
+        if(libssh2_userauth_password(session, username, password)) {
             fprintf(stderr, "\tAuthentication by password failed!\n");
             goto shutdown;
-        } else {
+        }
+        else {
             fprintf(stderr, "\tAuthentication by password succeeded.\n");
         }
-    } else if (auth_pw & 2) {
+    }
+    else if(auth_pw & 2) {
         /* Or via keyboard-interactive */
-        if (libssh2_userauth_keyboard_interactive(session, username,
-                                                  &kbd_callback) ) {
+        if(libssh2_userauth_keyboard_interactive(session, username,
+                                                 &kbd_callback) ) {
             fprintf(stderr,
-                "\tAuthentication by keyboard-interactive failed!\n");
+                    "\tAuthentication by keyboard-interactive failed!\n");
             goto shutdown;
-        } else {
-            fprintf(stderr,
-                "\tAuthentication by keyboard-interactive succeeded.\n");
         }
-    } else if (auth_pw & 4) {
+        else {
+            fprintf(stderr,
+                    "\tAuthentication by keyboard-interactive succeeded.\n");
+        }
+    }
+    else if(auth_pw & 4) {
         /* Or by public key */
-        if (libssh2_userauth_publickey_fromfile(session, username, keyfile1,
-                                                keyfile2, password)) {
+        if(libssh2_userauth_publickey_fromfile(session, username, keyfile1,
+                                               keyfile2, password)) {
             fprintf(stderr, "\tAuthentication by public key failed!\n");
             goto shutdown;
-        } else {
+        }
+        else {
             fprintf(stderr, "\tAuthentication by public key succeeded.\n");
         }
-    } else {
+    }
+    else {
         fprintf(stderr, "No supported authentication methods found!\n");
         goto shutdown;
     }
@@ -225,7 +222,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "libssh2_sftp_init()!\n");
     sftp_session = libssh2_sftp_init(session);
 
-    if (!sftp_session) {
+    if(!sftp_session) {
         fprintf(stderr, "Unable to init SFTP session\n");
         goto shutdown;
     }
@@ -237,7 +234,7 @@ int main(int argc, char *argv[])
     /* Request a dir listing via SFTP */
     sftp_handle = libssh2_sftp_opendir(sftp_session, sftppath);
 
-    if (!sftp_handle) {
+    if(!sftp_handle) {
         fprintf(stderr, "Unable to open dir with SFTP\n");
         goto shutdown;
     }
@@ -254,9 +251,10 @@ int main(int argc, char *argv[])
             /* rc is the length of the file name in the mem
                buffer */
 
-            if (longentry[0] != '\0') {
+            if(longentry[0] != '\0') {
                 printf("%s\n", longentry);
-            } else {
+            }
+            else {
                 if(attrs.flags & LIBSSH2_SFTP_ATTR_PERMISSIONS) {
                     /* this should check what permissions it
                        is and print the output accordingly */
@@ -267,14 +265,14 @@ int main(int argc, char *argv[])
                 }
 
                 if(attrs.flags & LIBSSH2_SFTP_ATTR_UIDGID) {
-                    printf("%4ld %4ld ", attrs.uid, attrs.gid);
+                    printf("%4d %4d ", (int) attrs.uid, (int) attrs.gid);
                 }
                 else {
                     printf("   -    - ");
                 }
 
                 if(attrs.flags & LIBSSH2_SFTP_ATTR_SIZE) {
-                    printf("%8" PRIu64 " ", attrs.filesize);
+                    printf("%8" __FILESIZE " ", attrs.filesize);
                 }
 
                 printf("%s\n", mem);
@@ -283,14 +281,14 @@ int main(int argc, char *argv[])
         else
             break;
 
-    } while (1);
+    } while(1);
 
     libssh2_sftp_closedir(sftp_handle);
     libssh2_sftp_shutdown(sftp_session);
 
  shutdown:
 
-    libssh2_session_disconnect(session, "Normal Shutdown, Thank you for playing");
+    libssh2_session_disconnect(session, "Normal Shutdown");
     libssh2_session_free(session);
 
 #ifdef WIN32

@@ -11,12 +11,12 @@ libssh2_hostkey_hash(LIBSSH2_SESSION *session, int hash_type);
 \fIsession\fP - Session instance as returned by 
 .BR libssh2_session_init_ex(3)
 
-\fIhash_type\fP - One of: \fBLIBSSH2_HOSTKEY_HASH_MD5\fP or 
-\fBLIBSSH2_HOSTKEY_HASH_SHA1\fP.
+\fIhash_type\fP - One of: \fBLIBSSH2_HOSTKEY_HASH_MD5\fP, 
+\fBLIBSSH2_HOSTKEY_HASH_SHA1\fP or \fBLIBSSH2_HOSTKEY_HASH_SHA256\fP.
 
 Returns the computed digest of the remote system's hostkey. The length of 
 the returned string is hash_type specific (e.g. 16 bytes for MD5, 
-20 bytes for SHA1).
+20 bytes for SHA1, 32 bytes for SHA256).
 .SH RETURN VALUE
 Computed hostkey hash value, or NULL if the information is not available
 (either the session has not yet been started up, or the requested hash

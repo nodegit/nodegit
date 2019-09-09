@@ -50,6 +50,14 @@ COPY ssh_host_rsa_key /tmp/etc/ssh/ssh_host_rsa_key
 RUN mv /tmp/etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key
 RUN chmod 600 /etc/ssh/ssh_host_rsa_key
 
+COPY ssh_host_ecdsa_key /tmp/etc/ssh/ssh_host_ecdsa_key
+RUN mv /tmp/etc/ssh/ssh_host_ecdsa_key /etc/ssh/ssh_host_ecdsa_key
+RUN chmod 600 /etc/ssh/ssh_host_ecdsa_key
+
+COPY ssh_host_ed25519_key /tmp/etc/ssh/ssh_host_ed25519_key
+RUN mv /tmp/etc/ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
+RUN chmod 600 /etc/ssh/ssh_host_ed25519_key
+
 RUN adduser --disabled-password --gecos 'Test user for libssh2 integration tests' libssh2
 RUN echo 'libssh2:my test password' | chpasswd
 

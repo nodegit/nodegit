@@ -40,9 +40,9 @@ int main(int argc, char *argv[])
     struct sockaddr_in sin;
     const char *fingerprint;
     LIBSSH2_SESSION *session;
-    const char *username="username";
-    const char *password="password";
-    const char *sftppath="/tmp/sftp_mkdir";
+    const char *username = "username";
+    const char *password = "password";
+    const char *sftppath = "/tmp/sftp_mkdir";
     int rc;
     LIBSSH2_SFTP *sftp_session;
 
@@ -50,16 +50,17 @@ int main(int argc, char *argv[])
     WSADATA wsadata;
     int err;
 
-    err = WSAStartup(MAKEWORD(2,0), &wsadata);
-    if (err != 0) {
+    err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+    if(err != 0) {
         fprintf(stderr, "WSAStartup failed with error: %d\n", err);
         return 1;
     }
 #endif
 
-    if (argc > 1) {
+    if(argc > 1) {
         hostaddr = inet_addr(argv[1]);
-    } else {
+    }
+    else {
         hostaddr = htonl(0x7F000001);
     }
 
@@ -73,9 +74,9 @@ int main(int argc, char *argv[])
         sftppath = argv[4];
     }
 
-    rc = libssh2_init (0);
-    if (rc != 0) {
-        fprintf (stderr, "libssh2 initialization failed (%d)\n", rc);
+    rc = libssh2_init(0);
+    if(rc != 0) {
+        fprintf(stderr, "libssh2 initialization failed (%d)\n", rc);
         return 1;
     }
 
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
     sin.sin_family = AF_INET;
     sin.sin_port = htons(22);
     sin.sin_addr.s_addr = hostaddr;
-    if (connect(sock, (struct sockaddr*)(&sin),
+    if(connect(sock, (struct sockaddr*)(&sin),
             sizeof(struct sockaddr_in)) != 0) {
         fprintf(stderr, "failed to connect!\n");
         return -1;
@@ -121,15 +122,16 @@ int main(int argc, char *argv[])
     }
     fprintf(stderr, "\n");
 
-    if (auth_pw) {
+    if(auth_pw) {
         /* We could authenticate via password */
-        if (libssh2_userauth_password(session, username, password)) {
+        if(libssh2_userauth_password(session, username, password)) {
             fprintf(stderr, "Authentication by password failed.\n");
             goto shutdown;
         }
-    } else {
+    }
+    else {
         /* Or by public key */
-        if (libssh2_userauth_publickey_fromfile(session, username,
+        if(libssh2_userauth_publickey_fromfile(session, username,
                             "/home/username/.ssh/id_rsa.pub",
                             "/home/username/.ssh/id_rsa",
                             password)) {
@@ -140,7 +142,7 @@ int main(int argc, char *argv[])
 
     sftp_session = libssh2_sftp_init(session);
 
-    if (!sftp_session) {
+    if(!sftp_session) {
         fprintf(stderr, "Unable to init SFTP session\n");
         goto shutdown;
     }
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
 
  shutdown:
 
-    libssh2_session_disconnect(session, "Normal Shutdown, Thank you for playing");
+    libssh2_session_disconnect(session, "Normal Shutdown");
     libssh2_session_free(session);
 
 #ifdef WIN32
