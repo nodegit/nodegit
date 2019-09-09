@@ -46,7 +46,8 @@ jobs:
           CXX: clang++
           npm_config_clang: 1
           GYP_DEFINES: use_obsolete_asm=true
-        run: npm install
+        # There is a race condition in node/generate that needs to be fixed
+        run: node utils/retry npm install
 
       - name: Test
         run: |
