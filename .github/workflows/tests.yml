@@ -57,7 +57,7 @@ jobs:
           node utils/retry npm test
 
       - name: Deploy
-        if: startsWith(github.ref, 'refs/tags/test-v')
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
           node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
@@ -107,19 +107,19 @@ jobs:
       # but it's not, because the CI runner for windows doesn't wait for each step as listed here
       # and it treats each additional step past the first as an orphaned process.
       - name: Deploy (Dependencies)
-        if: startsWith(github.ref, 'refs/tags/test-v')
+        if: startsWith(github.ref, 'refs/tags/v')
         run: npm install -g node-pre-gyp aws-sdk
 
       - name: Deploy (Clean)
-        if: startsWith(github.ref, 'refs/tags/test-v')
+        if: startsWith(github.ref, 'refs/tags/v')
         run: node lifecycleScripts\clean
 
       - name: Deploy (Package)
-        if: startsWith(github.ref, 'refs/tags/test-v')
+        if: startsWith(github.ref, 'refs/tags/v')
         run: node-pre-gyp package
 
       - name: Deploy (Publish)
-        if: startsWith(github.ref, 'refs/tags/test-v')
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
           node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
