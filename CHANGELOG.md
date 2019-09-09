@@ -1,5 +1,18 @@
 # Change Log
 
+## <a name="v0-26-0" href="#v0-26-0">v0.26.0</a> [(2019-09-09)](https://github.com/nodegit/nodegit/releases/tag/v0.26.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.1...v0.26.0)
+
+#### Summary of changes
+- Bumped libssh2 to 1.9 for security patch
+- Remote.prototype.upload and Remote.prototype.updateTips should be async now
+
+#### Merged PRs into NodeGit
+- [GitRemote upload and updateTips are async #1720](https://github.com/nodegit/nodegit/pull/1720)
+- [Update libssh2 to 1.9 #1719](https://github.com/nodegit/nodegit/pull/1719)
+
+
 ## <a name="v0-25-1" href="#v0-25-1">v0.25.1</a> [(2019-08-13)](https://github.com/nodegit/nodegit/releases/tag/v0.25.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.0...v0.25.1)
