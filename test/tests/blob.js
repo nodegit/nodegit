@@ -272,7 +272,7 @@ describe("Blob", function() {
     });
   });
 
-  describe("filteredContent", function() {
+  describe("filteredContent (DEPRECATED)", function() {
     var attrFileName = ".gitattributes";
     var filter = "*    text eol=crlf";
     var lineEndingRegex = /\r\n|\r|\n/;
@@ -476,6 +476,186 @@ describe("Blob", function() {
             err.message,
             "Number check_for_binary_data is required."
           );
+        });
+    });
+  });
+
+  describe("filter", function() {
+    var attrFileName = ".gitattributes";
+    var filter = "*    text eol=crlf";
+    var lineEndingRegex = /\r\n|\r|\n/;
+    var newFileName = "testfile.test";
+
+    it("retrieves the filtered content", function() {
+      var test = this;
+
+      return commitFile(
+        test.repository,
+        attrFileName,
+        filter,
+        "added gitattributes")
+        .then(function() {
+          return commitFile(
+            test.repository,
+            newFileName,
+            "this\nis\nfun\guys",
+            "added LF ending file"
+          );
+        })
+        .then(function(oid) {
+          return test.repository.getCommit(oid);
+        })
+        .then(function(commit) {
+          test.filteredCommit = commit;
+          return commit.getEntry(newFileName);
+        })
+        .then(function(entry) {
+          return entry.getBlob();
+        })
+        .then(function(lfBlob) {
+          test.lfBlob = lfBlob;
+          var ending = test.lfBlob.toString().match(lineEndingRegex);
+          assert.strictEqual(ending[0], "\n");
+
+          return test.lfBlob.filter(newFileName, { flags: 0 });
+        })
+        .then(function(content) {
+          var ending = content.match(lineEndingRegex);
+          assert.strictEqual(ending[0], "\r\n");
+          assert.notStrictEqual(content, test.blob.toString());
+        });
+    });
+
+    it("returns non-binary filtered content when checking binary", function() {
+      var test = this;
+
+      return commitFile(
+        test.repository,
+        attrFileName,
+        filter,
+        "added gitattributes")
+        .then(function() {
+          return commitFile(
+            test.repository,
+            newFileName,
+            "this\nis\nfun\guys",
+            "added LF ending file"
+          );
+        })
+        .then(function(oid) {
+          return test.repository.getCommit(oid);
+        })
+        .then(function(commit) {
+          test.filteredCommit = commit;
+          return commit.getEntry(newFileName);
+        })
+        .then(function(entry) {
+          return entry.getBlob();
+        })
+        .then(function(lfBlob) {
+          test.lfBlob = lfBlob;
+          var ending = test.lfBlob.toString().match(lineEndingRegex);
+          assert.strictEqual(ending[0], "\n");
+
+          return test.lfBlob.filter(
+            newFileName,
+            { flags: NodeGit.Blob.FILTER_FLAG.CHECK_FOR_BINARY }
+          );
+        })
+        .then(function(content) {
+          var ending = content.match(lineEndingRegex);
+          assert.strictEqual(ending[0], "\r\n");
+          assert.notStrictEqual(content, test.blob.toString());
+        });
+    });
+
+    it("returns nothing when checking binary blob", function() {
+      var test = this;
+      var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
+
+      return commitFile(
+        test.repository,
+        attrFileName,
+        filter,
+        "added gitattributes")
+        .then(function() {
+          return commitFile(
+            test.repository,
+            newFileName,
+            binary,
+            "binary content"
+          );
+        })
+        .then(function(oid) {
+          return test.repository.getCommit(oid);
+        })
+        .then(function(commit) {
+          test.filteredCommit = commit;
+          return commit.getEntry(newFileName);
+        })
+        .then(function(entry) {
+          return entry.getBlob();
+        })
+        .then(function(binaryBlob) {
+          test.binaryBlob = binaryBlob;
+          assert.equal(true, binaryBlob.isBinary());
+
+          return test.binaryBlob.filter(
+            newFileName,
+            { flags: NodeGit.Blob.FILTER_FLAG.CHECK_FOR_BINARY }
+          );
+        })
+        .then(function(content) {
+          assert.strictEqual(content, "");
+        });
+    });
+
+    it("returns blob when not checking binary on binary blob", function() {
+      var test = this;
+      var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
+
+      return commitFile(
+        test.repository,
+        attrFileName,
+        filter,
+        "added gitattributes")
+        .then(function() {
+          return commitFile(
+            test.repository,
+            newFileName,
+            binary,
+            "binary content"
+          );
+        })
+        .then(function(oid) {
+          return test.repository.getCommit(oid);
+        })
+        .then(function(commit) {
+          test.filteredCommit = commit;
+          return commit.getEntry(newFileName);
+        })
+        .then(function(entry) {
+          return entry.getBlob();
+        })
+        .then(function(binaryBlob) {
+          test.binaryBlob = binaryBlob;
+          assert.equal(true, binaryBlob.isBinary());
+
+          return test.binaryBlob.filter(
+            newFileName,
+            { flags: 0 }
+          );
+        })
+        .then(function(content) {
+          assert.strictEqual(content, binary.toString());
+        });
+    });
+
+    it("throws an error when the path is null", function() {
+      var test = this;
+      return test.blob.filter(test.blob, null, { flags: 0 })
+        .catch(function(err) {
+          assert.strictEqual(err.message, "String as_path is required.");
         });
     });
   });

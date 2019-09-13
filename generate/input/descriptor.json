@@ -4,6 +4,19 @@
       "JsName": "STATES",
       "isMask": false
     },
+    "blob_filter_flag": {
+      "values": {
+        "GIT_BLOB_FILTER_CHECK_FOR_BINARY": {
+          "JsName": "CHECK_FOR_BINARY"
+        },
+        "GIT_BLOB_FILTER_NO_SYSTEM_ATTRIBUTES": {
+          "JsName": "NO_SYSTEM_ATTRIBUTES"
+        },
+        "GIT_BLOB_FILTER_ATTTRIBUTES_FROM_HEAD": {
+          "JsName": "ATTTRIBUTES_FROM_HEAD"
+        }
+      }
+    },
     "branch": {
       "JsName": "BRANCH",
       "isMask": false
@@ -249,6 +262,34 @@
         "git_blob_create_from_stream_commit": {
           "ignore": true
         },
+        "git_blob_filter": {
+          "isAsync": true,
+          "isPrototypeMethod": true,
+          "args": {
+            "out": {
+              "isReturn": true,
+              "cppClassName": "GitBuf",
+              "jsClassName": "Buffer",
+              "shouldAlloc": true
+            },
+            "blob": {
+              "cppClassName": "GitBlob",
+              "jsClassName": "Blob",
+              "isSelf": true
+            },
+            "as_path": {
+              "cppClassName": "String",
+              "jsClassName": "String",
+              "cType": "const char *"
+            },
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_blob_filtered_content": {
           "isAsync": true,
           "isPrototypeMethod": false,
@@ -299,6 +340,9 @@
         "../include/wrapper.h",
         "node_buffer.h"
       ]
+    },
+    "blob_filter_options": {
+      "hasConstructor": true
     },
     "branch": {
       "functions": {
