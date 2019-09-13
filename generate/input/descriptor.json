@@ -3300,6 +3300,11 @@
         },
         "git_remote_update_tips": {
           "isAsync": true,
+          "args": {
+            "reflog_message": {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
