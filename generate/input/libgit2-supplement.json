@@ -1096,6 +1096,22 @@
         }
       ],
       [
+        "git_blob_filter_options",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "version",
+              "type": "int"
+            },
+            {
+              "name": "flags",
+              "type": "git_blob_filter_flag_t"
+            }
+          ]
+        }
+      ],
+      [
         "git_config_entry",
         {
           "fields": [
