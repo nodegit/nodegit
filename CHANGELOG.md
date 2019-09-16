@@ -1,5 +1,42 @@
 # Change Log
 
+## <a name="v0-26-1" href="#v0-26-1">v0.26.1</a> [(2019-09-16)](https://github.com/nodegit/nodegit/releases/tag/v0.26.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.0...v0.26.1)
+
+#### Summary of changes
+- Bumped LibGit2
+  - Additional git ignore fixes
+  - Allow credentials callback to return any credential type from list of supported types
+  - Memory leak and allocation fixes
+- updateTips has optional parameters and should convert plain objects into options structs correctly now
+- Added Nodegit.Blob.prototype.filter, this should be used instead of NodeGit.Blob.filteredContent as it is not deprecated.
+
+#### Merged PRs into NodeGit
+- [Bump libgit2 to latest fork of master #1723](https://github.com/nodegit/nodegit/pull/1723)
+- [updateTips: optional param and normalizeOptions #1722](https://github.com/nodegit/nodegit/pull/1722)
+
+#### Merged PRs into LibGit2
+- [Parallelize checkout_create_the_new for perf #4205](https://github.com/libgit2/libgit2/pull/4205)
+- [azure: build Docker images as part of the pipeline](https://github.com/libgit2/libgit2/pull/5198)
+- [smart: use push_glob instead of manual filtering](https://github.com/libgit2/libgit2/pull/5195)
+- [ntlm: fix failure to find openssl headers](https://github.com/libgit2/libgit2/pull/5216)
+- [cmake: remove extraneous logging](https://github.com/libgit2/libgit2/pull/5222)
+- [open:fix memory leak when passing NULL to git_repository_open_ext](https://github.com/libgit2/libgit2/pull/5224)
+- [apply: Fix a patch corruption related to EOFNL handling](https://github.com/libgit2/libgit2/pull/5209)
+- [ignore: correct handling of nested rules overriding wild card unignore](https://github.com/libgit2/libgit2/pull/5210)
+- [Memory allocation fixes for diff generator](https://github.com/libgit2/libgit2/pull/5214)
+- [Use an HTTP scheme that supports the given credentials](https://github.com/libgit2/libgit2/pull/5212)
+- [apply: git_apply_to_tree fails to apply patches that add new files](https://github.com/libgit2/libgit2/pull/5208)
+- [Optionally read `.gitattributes` from HEAD](https://github.com/libgit2/libgit2/pull/5189)
+- [config: implement "onbranch" conditional](https://github.com/libgit2/libgit2/pull/5196)
+- [Fix include casing for case-sensitive filesystems.](https://github.com/libgit2/libgit2/pull/5213)
+- [util: use 64 bit timer on Windows](https://github.com/libgit2/libgit2/pull/5054)
+- [Memory allocation audit](https://github.com/libgit2/libgit2/pull/5200)
+- [clone: don't decode URL percent encodings](https://github.com/libgit2/libgit2/pull/5187)
+- [Security updates from 0.28.3](https://github.com/libgit2/libgit2/pull/5202)
+
+
 ## <a name="v0-26-0" href="#v0-26-0">v0.26.0</a> [(2019-09-09)](https://github.com/nodegit/nodegit/releases/tag/v0.26.0)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.25.1...v0.26.0)
