@@ -753,7 +753,11 @@
           },
           {
             "name": "out",
-            "type": "std::vector<git_commit *> *"
+            "type": "void *"
+          },
+          {
+            "name": "returnPlainObjects",
+            "type": "bool"
           },
           {
             "name": "walk",

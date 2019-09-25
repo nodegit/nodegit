@@ -5,6 +5,7 @@
 #include <queue>
 #include <utility>
 #include <unordered_map>
+#include <sstream>
 
 #include "async_baton.h"
 #include "nodegit_wrapper.h"

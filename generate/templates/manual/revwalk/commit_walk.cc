@@ -1,10 +1,124 @@
+#define SET_ON_OBJECT(obj, field, data) Nan::Set(obj, Nan::New(field).ToLocalChecked(), data)
+
+v8::Local<v8::Object> signatureToJavascript(const git_signature *signature) {
+  v8::Local<v8::Object> signatureObject = Nan::New<v8::Object>();
+  SET_ON_OBJECT(signatureObject, "name", Nan::New(signature->name).ToLocalChecked());
+  SET_ON_OBJECT(signatureObject, "email", Nan::New(signature->email).ToLocalChecked());
+  SET_ON_OBJECT(signatureObject, "date", Nan::New<v8::Number>(signature->when.time * 1000));
+  std::stringstream fullSignature;
+  fullSignature << signature->name << " <" << signature << ">";
+  SET_ON_OBJECT(signatureObject, "full", Nan::New(fullSignature.str()).ToLocalChecked());
+  return signatureObject;
+}
+
+#include <iostream>
+class CommitModel {
+public:
+  CommitModel(git_commit *commit, bool fetchSignature):
+    commit(commit),
+    fetchSignature(fetchSignature),
+    signature({ 0, 0, 0 }),
+    signedData({ 0, 0, 0 })
+  {
+    if (fetchSignature) {
+      int error = git_commit_extract_signature(
+        &signature,
+        &signedData,
+        git_commit_owner(commit),
+        const_cast<git_oid *>(git_commit_id(commit)),
+        NULL
+      );
+      if (error != GIT_ENOTFOUND) {
+        assert(error == GIT_OK);
+      }
+    }
+
+    size_t parentCount = git_commit_parentcount(commit);
+    parentIds.reserve(parentCount);
+    for (size_t parentIndex = 0; parentIndex < parentCount; ++parentIndex) {
+      parentIds.push_back(git_oid_tostr_s(git_commit_parent_id(commit, parentIndex)));
+    }
+  }
+
+  v8::Local<v8::Value> toJavascript() {
+    if (!fetchSignature) {
+      v8::Local<v8::Value> commitObject = GitCommit::New(
+        commit,
+        true,
+        Nan::To<v8::Object>(GitRepository::New(
+          git_commit_owner(commit),
+          true
+        )).ToLocalChecked()
+      );
+      commit = NULL;
+      return commitObject;
+    }
+
+    v8::Local<v8::Object> commitModel = Nan::New<v8::Object>();
+    SET_ON_OBJECT(commitModel, "sha", Nan::New(git_oid_tostr_s(git_commit_id(commit))).ToLocalChecked());
+    SET_ON_OBJECT(commitModel, "message", Nan::New(git_commit_message(commit)).ToLocalChecked());
+    SET_ON_OBJECT(commitModel, "author", signatureToJavascript(git_commit_author(commit)));
+    SET_ON_OBJECT(commitModel, "committer", signatureToJavascript(git_commit_committer(commit)));
+
+    size_t parentCount = parentIds.size();
+    v8::Local<v8::Array> parents = Nan::New<v8::Array>(parentCount);
+    for (size_t parentIndex = 0; parentIndex < parentCount; ++parentIndex) {
+      Nan::Set(parents, Nan::New<v8::Number>(parentIndex), Nan::New(parentIds[parentIndex]).ToLocalChecked());
+    }
+    SET_ON_OBJECT(commitModel, "parents", parents);
+
+    if (signature.size != 0 || signedData.size != 0) {
+      v8::Local<v8::Object> gpgSignature = Nan::New<v8::Object>();
+      if (signature.size != 0) {
+        SET_ON_OBJECT(gpgSignature, "signature", Nan::New(signature.ptr).ToLocalChecked());
+      } else {
+        SET_ON_OBJECT(gpgSignature, "signature", Nan::Null());
+      }
+
+      if (signedData.size != 0) {
+        SET_ON_OBJECT(gpgSignature, "signedData", Nan::New(signedData.ptr).ToLocalChecked());
+      } else {
+        SET_ON_OBJECT(gpgSignature, "signedData", Nan::Null());
+      }
+
+      SET_ON_OBJECT(commitModel, "gpgSignature", gpgSignature);
+    }
+
+    return commitModel;
+  }
+
+  ~CommitModel() {
+    git_buf_dispose(&signature);
+    git_buf_dispose(&signedData);
+    if (commit) {
+      git_commit_free(commit);
+    }
+  }
+
+private:
+  git_commit *commit;
+  bool fetchSignature;
+  git_buf signature, signedData;
+  std::vector<std::string> parentIds;
+};
+
 NAN_METHOD(GitRevwalk::CommitWalk) {
   if (info.Length() == 0 || !info[0]->IsNumber()) {
     return Nan::ThrowError("Max count is required and must be a number.");
   }
 
-  if (info.Length() == 1 || !info[1]->IsFunction()) {
+  if (info.Length() == 1 || (info.Length() == 2 && !info[1]->IsFunction())) {
     return Nan::ThrowError("Callback is required and must be a Function.");
+  }
+
+  if (info.Length() >= 3) {
+    if (!info[1]->IsNull() && !info[1]->IsUndefined() && !info[1]->IsObject()) {
+      return Nan::ThrowError("Options must be an object, null, or undefined.");
+    }
+
+    if (!info[2]->IsFunction()) {
+      return Nan::ThrowError("Callback is required and must be a Function.");
+    }
   }
 
   CommitWalkBaton* baton = new CommitWalkBaton;
@@ -12,13 +126,24 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->max_count = Nan::To<unsigned int>(info[0]).FromJust();
-  baton->out = new std::vector<git_commit *>;
-  baton->out->reserve(baton->max_count);
+  std::vector<CommitModel *> *out = new std::vector<CommitModel *>;
+  out->reserve(baton->max_count);
+  baton->out = reinterpret_cast<void *>(out);
+  if (info.Length() == 3 && info[1]->IsObject()) {
+    v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
+    v8::Local<v8::String> propName = Nan::New("returnPlainObjects").ToLocalChecked();
+    if (Nan::Has(options, propName).FromJust()) {
+      baton->returnPlainObjects = Nan::Get(options, propName).ToLocalChecked()->IsTrue();
+    } else {
+      baton->returnPlainObjects = false;
+    }
+  } else {
+    baton->returnPlainObjects = false;
+  }
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
-
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]->IsFunction() ? info[1] : info[2]));
   CommitWalkWorker *worker = new CommitWalkWorker(baton, callback);
-  worker->SaveToPersistent("fastWalk", info.This());
+  worker->SaveToPersistent("commitWalk", info.This());
 
   Nan::AsyncQueueWorker(worker);
   return;
@@ -27,6 +152,7 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
 void GitRevwalk::CommitWalkWorker::Execute() {
   giterr_clear();
 
+  std::vector<CommitModel *> *out = reinterpret_cast<std::vector<CommitModel *> *>(baton->out);
   for (int i = 0; i < baton->max_count; i++) {
     git_oid next_commit_id;
     baton->error_code = git_revwalk_next(&next_commit_id, baton->walk);
@@ -41,12 +167,12 @@ void GitRevwalk::CommitWalkWorker::Execute() {
         baton->error = git_error_dup(giterr_last());
       }
 
-      while (baton->out->size()) {
-        git_commit_free(baton->out->back());
-        baton->out->pop_back();
+      while (out->size()) {
+        delete out->back();
+        out->pop_back();
       }
 
-      delete baton->out;
+      delete out;
       baton->out = NULL;
 
       return;
@@ -60,39 +186,37 @@ void GitRevwalk::CommitWalkWorker::Execute() {
         baton->error = git_error_dup(giterr_last());
       }
 
-      while (baton->out->size()) {
-        git_commit_free(baton->out->back());
-        baton->out->pop_back();
+      while (out->size()) {
+        delete out->back();
+        out->pop_back();
       }
 
-      delete baton->out;
+      delete out;
       baton->out = NULL;
 
       return;
     }
 
-    baton->out->push_back(commit);
+    out->push_back(new CommitModel(commit, baton->returnPlainObjects));
   }
 }
 
 void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
   if (baton->out != NULL) {
-    unsigned int size = baton->out->size();
+    std::vector<CommitModel *> *out = reinterpret_cast<std::vector<CommitModel *> *>(baton->out);
+    unsigned int size = out->size();
     Local<Array> result = Nan::New<Array>(size);
     for (unsigned int i = 0; i < size; i++) {
-      git_commit *commit = baton->out->at(i);
+      CommitModel *commitModel = out->at(i);
       Nan::Set(
         result,
         Nan::New<Number>(i),
-        GitCommit::New(
-          commit,
-          true,
-          Nan::To<v8::Object>(GitRepository::New(git_commit_owner(commit), true)).ToLocalChecked()
-        )
+        commitModel->toJavascript()
       );
+      delete commitModel;
     }
 
-    delete baton->out;
+    delete out;
 
     Local<v8::Value> argv[2] = {
       Nan::Null(),
