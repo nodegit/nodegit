@@ -1,5 +1,17 @@
 # Change Log
 
+## <a name="v0-26-2" href="#v0-26-2">v0.26.2</a> [(2019-09-26)](https://github.com/nodegit/nodegit/releases/tag/v0.26.2)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.1...v0.26.2)
+
+#### Summary of changes
+- Added options to fetch additional data (gpg signature) from LibGit2 in revWalk.prototype.commitWalk and return plain objects
+  - _revWalk.prototype.commitWalk(numCommits: number, { returnPlainObjects: boolean })_
+
+#### Merged PRs into NodeGit
+- [Optionally retrieve more data on commit walk #1728](https://github.com/nodegit/nodegit/pull/1728)
+
+
 ## <a name="v0-26-1" href="#v0-26-1">v0.26.1</a> [(2019-09-16)](https://github.com/nodegit/nodegit/releases/tag/v0.26.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.0...v0.26.1)
