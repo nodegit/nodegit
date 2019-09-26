@@ -7,19 +7,20 @@ Linux & macOS | Windows | Coverage | Dependencies
 ------------- | ------- | -------- | -------------
 [![Build Status Travis](https://api.travis-ci.org/nodegit/nodegit.svg?branch=master)](https://travis-ci.org/nodegit/nodegit) | [![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true)](https://ci.appveyor.com/project/timbranyen/nodegit) | [![Coveralls](https://coveralls.io/repos/nodegit/nodegit/badge.svg)](https://coveralls.io/r/nodegit/nodegit) | [![Dependencies](https://david-dm.org/nodegit/nodegit.svg)](https://david-dm.org/nodegit/nodegit)
 
-**Stable (libgit2@v0.27.3): 0.27.3**
+**Stable (libgit2@v0.28.3): 0.28.3**
 
 ## Have a problem? Come chat with us! ##
 
 Visit [slack.libgit2.org](http://slack.libgit2.org/) to sign up, then join us in #nodegit.
 
 ## Maintained by ##
-Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
-John Haley [@johnhaley81](http://twitter.com/johnhaley81), and
-Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp) with help from tons of
+Tyler Ang-Wanek [@twwanek](http://twitter.com/twwanek) with help from tons of
 [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
 
 ### Alumni Maintainers ###
+Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
+John Haley [@johnhaley81](http://twitter.com/johnhaley81),
+Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp),
 Steve Smith [@orderedlist](https://twitter.com/orderedlist),
 Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), and
 Nick Kallen [@nk](http://twitter.com/nk)

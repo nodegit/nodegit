@@ -64,10 +64,6 @@
     "mocha": "^5.2.0",
     "walk": "^2.3.9"
   },
-  "vendorDependencies": {
-    "libssh2": "1.8.0",
-    "http_parser": "2.5.0"
-  },
   "binary": {
     "module_name": "nodegit",
     "module_path": "./build/Release/",
