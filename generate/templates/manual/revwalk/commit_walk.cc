@@ -21,7 +21,7 @@ public:
     signedData({ 0, 0, 0 })
   {
     if (fetchSignature) {
-      int error = git_commit_extract_signature(
+      const int error = git_commit_extract_signature(
         &signature,
         &signedData,
         git_commit_owner(commit),
@@ -33,7 +33,7 @@ public:
       }
     }
 
-    size_t parentCount = git_commit_parentcount(commit);
+    const size_t parentCount = git_commit_parentcount(commit);
     parentIds.reserve(parentCount);
     for (size_t parentIndex = 0; parentIndex < parentCount; ++parentIndex) {
       parentIds.push_back(git_oid_tostr_s(git_commit_parent_id(commit, parentIndex)));
@@ -128,7 +128,7 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
   baton->max_count = Nan::To<unsigned int>(info[0]).FromJust();
   std::vector<CommitModel *> *out = new std::vector<CommitModel *>;
   out->reserve(baton->max_count);
-  baton->out = reinterpret_cast<void *>(out);
+  baton->out = static_cast<void *>(out);
   if (info.Length() == 3 && info[1]->IsObject()) {
     v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
     v8::Local<v8::String> propName = Nan::New("returnPlainObjects").ToLocalChecked();
@@ -152,7 +152,7 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
 void GitRevwalk::CommitWalkWorker::Execute() {
   giterr_clear();
 
-  std::vector<CommitModel *> *out = reinterpret_cast<std::vector<CommitModel *> *>(baton->out);
+  std::vector<CommitModel *> *out = static_cast<std::vector<CommitModel *> *>(baton->out);
   for (int i = 0; i < baton->max_count; i++) {
     git_oid next_commit_id;
     baton->error_code = git_revwalk_next(&next_commit_id, baton->walk);
@@ -203,8 +203,8 @@ void GitRevwalk::CommitWalkWorker::Execute() {
 
 void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
   if (baton->out != NULL) {
-    std::vector<CommitModel *> *out = reinterpret_cast<std::vector<CommitModel *> *>(baton->out);
-    unsigned int size = out->size();
+    std::vector<CommitModel *> *out = static_cast<std::vector<CommitModel *> *>(baton->out);
+    const unsigned int size = out->size();
     Local<Array> result = Nan::New<Array>(size);
     for (unsigned int i = 0; i < size; i++) {
       CommitModel *commitModel = out->at(i);
