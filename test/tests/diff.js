@@ -112,7 +112,7 @@ describe("Diff", function() {
     });
   });
 
-  it("can walk a DiffList", function() {
+  it("can walk an Array<Diff>", function() {
     return this.diff[0].patches()
       .then(function(patches) {
         var patch = patches[0];
