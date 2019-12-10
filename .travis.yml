@@ -4,7 +4,6 @@ dist: xenial
 branches:
   only:
     - master
-    - /^v\d+\.\d+\.\d+(-alpha\.\d+)?$/
 
 compiler: clang
 language: node_js
