@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-26-3" href="#v0-26-3">v0.26.3</a> [(2019-12-10)](https://github.com/nodegit/nodegit/releases/tag/v0.26.3)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.2...v0.26.3)
+
+#### Summary of changes
+- Include LibGit2 security patch: https://github.com/libgit2/libgit2/releases/tag/v0.28.4
+
+#### Merged PRs into NodeGit
+- [Bring in security patches from libgit2 #1743](https://github.com/nodegit/nodegit/pull/1743)
+
+
 ## <a name="v0-26-2" href="#v0-26-2">v0.26.2</a> [(2019-09-26)](https://github.com/nodegit/nodegit/releases/tag/v0.26.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.1...v0.26.2)
