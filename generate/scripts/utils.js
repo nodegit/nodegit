@@ -120,29 +120,35 @@ var util = {
   },
 
   syncDirs: function(fromDir, toDir) {
+    let toFilePaths;
+    let fromFilePaths;
     return Promise.all([
       util.getFilePathsRelativeToDir(toDir),
       util.getFilePathsRelativeToDir(fromDir)
-    ]).then(function(filePaths) {
-      const toFilePaths = filePaths[0];
-      const fromFilePaths = filePaths[1];
+    ])
+      .then(function(filePaths) {
+        toFilePaths = filePaths[0];
+        fromFilePaths = filePaths[1];
 
-      // Delete files that aren't in fromDir
-      toFilePaths.forEach(function(filePath) {
-        if (!util.isFile(path.join(fromDir, filePath))) {
-          fse.remove(path.join(toDir, filePath));
-        }
+        // Delete files that aren't in fromDir
+        return Promise.all(toFilePaths.map(function(filePath) {
+          if (!util.isFile(path.join(fromDir, filePath))) {
+            return fse.remove(path.join(toDir, filePath));
+          }
+          return Promise.resolve();
+        }));
+      })
+      .then(function() {
+        // Copy files that don't exist in toDir or have different contents
+        return Promise.all(fromFilePaths.map(function(filePath) {
+          const toFilePath = path.join(toDir, filePath);
+          const fromFilePath = path.join(fromDir, filePath);
+          if (!util.isFile(toFilePath) || util.readFile(toFilePath) !== util.readFile(fromFilePath)) {
+            return fse.copy(fromFilePath, toFilePath);
+          }
+          return Promise.resolve();
+        }));
       });
-
-      // Copy files that don't exist in toDir or have different contents
-      fromFilePaths.forEach(function(filePath) {
-        const toFilePath = path.join(toDir, filePath);
-        const fromFilePath = path.join(fromDir, filePath);
-        if (!util.isFile(toFilePath) || util.readFile(toFilePath) !== util.readFile(fromFilePath)) {
-          fse.copy(fromFilePath, toFilePath);
-        }
-      });
-    });
   }
 };
 
