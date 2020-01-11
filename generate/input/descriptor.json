@@ -485,6 +485,9 @@
         "../include/git_buf_converter.h"
       ]
     },
+    "cert": {
+      "needsForwardDeclaration": false
+    },
     "cert_hostkey": {
       "fields": {
         "hash_md5": {
@@ -494,6 +497,10 @@
         "hash_sha1": {
           "cppClassName": "String",
           "size": 20
+        },
+        "hash_sha256": {
+          "cppClassName": "String",
+          "size": 32
         }
       }
     },
