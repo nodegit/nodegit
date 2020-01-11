@@ -86,6 +86,14 @@
   },
   "new" : {
     "functions": {
+      "git_libgit2_opts": {
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/libgit2/opts.cc",
+        "isAsync": false,
+        "isPrototypeMethod": false,
+        "group": "libgit2"
+      },
       "git_clone": {
         "isManual": true,
         "cFile": "generate/templates/manual/clone/clone.cc",
