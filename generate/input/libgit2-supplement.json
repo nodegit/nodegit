@@ -1118,7 +1118,7 @@
             },
             {
               "name": "flags",
-              "type": "git_blob_filter_flag_t"
+              "type": "uint32_t"
             }
           ]
         }
@@ -1643,7 +1643,7 @@
               "name": "version"
             },
             {
-              "type": "git_stash_apply_flags",
+              "type": "uint32_t",
               "name": "flags"
             },
             {
