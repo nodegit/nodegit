@@ -396,16 +396,6 @@
               "jsClassName": "Buffer",
               "cType": "git_buf *",
               "shouldAlloc": true
-            },
-            "repo": {
-              "cppClassName": "GitRepository",
-              "jsClassName": "Repo",
-              "cType": "git_repository *"
-            },
-            "canonical_branch_name": {
-              "cppClassName": "String",
-              "jsClassName": "String",
-              "cType": "const char *"
             }
           },
           "return": {
@@ -415,7 +405,7 @@
         "git_branch_set_upstream": {
           "isAsync": true,
           "args": {
-            "upstream_name": {
+            "branch_name": {
               "isOptional": true
             }
           },
