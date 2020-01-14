@@ -10,7 +10,7 @@ NAN_METHOD(GitLibgit2::Opts)
 
   git_error_clear();
 
-  v8::Local<v8::Value> to;
+  v8::Local<v8::Value> to = Nan::Undefined();
   switch (from_option) {
     // GET size_t
     case GIT_OPT_GET_MWINDOW_SIZE:
@@ -92,7 +92,6 @@ NAN_METHOD(GitLibgit2::Opts)
       if (git_libgit2_opts(from_option, option_arg)) {
         return Nan::ThrowError("git_libgit2_opts failed");
       }
-      to = Nan::New<Number>(0);
       break;
     }
     // SET bool
@@ -108,7 +107,6 @@ NAN_METHOD(GitLibgit2::Opts)
       if (git_libgit2_opts(from_option, option_arg)) {
         return Nan::ThrowError("git_libgit2_opts failed");
       }
-      to = Nan::Undefined();
       break;
     }
     // SET size_t
@@ -122,7 +120,6 @@ NAN_METHOD(GitLibgit2::Opts)
       if (git_libgit2_opts(from_option, option_arg)) {
         return Nan::ThrowError("git_libgit2_opts failed");
       }
-      to = Nan::Undefined();
       break;
     }
     default: {
