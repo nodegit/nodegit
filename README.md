@@ -2,10 +2,7 @@
 
 > Node bindings to the [libgit2](http://libgit2.github.com/) project.
 
-
-Linux & macOS | Windows | Coverage | Dependencies
-------------- | ------- | -------- | -------------
-[![Build Status Travis](https://api.travis-ci.org/nodegit/nodegit.svg?branch=master)](https://travis-ci.org/nodegit/nodegit) | [![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/e5a5q75l9yfhnfv2?svg=true)](https://ci.appveyor.com/project/timbranyen/nodegit) | [![Coveralls](https://coveralls.io/repos/nodegit/nodegit/badge.svg)](https://coveralls.io/r/nodegit/nodegit) | [![Dependencies](https://david-dm.org/nodegit/nodegit.svg)](https://david-dm.org/nodegit/nodegit)
+[![Actions Status](https://github.com/nodegit/nodegit/workflows/Testing/badge.svg)](https://github.com/nodegit/nodegit/actions)
 
 **Stable (libgit2@v0.28.3): 0.28.3**
 
