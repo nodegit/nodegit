@@ -219,7 +219,7 @@ describe("Clone", function() {
         callbacks: {
           certificateCheck: () => 0,
           credentials: function(url, userName) {
-            return NodeGit.Cred.sshKeyFromAgent(userName);
+            return NodeGit.Credential.sshKeyFromAgent(userName);
           }
         }
       }
@@ -239,7 +239,7 @@ describe("Clone", function() {
         callbacks: {
           certificateCheck: () => 0,
           credentials: function(url, userName) {
-            return NodeGit.Cred.sshKeyNew(
+            return NodeGit.Credential.sshKeyNew(
               userName,
               sshPublicKeyPath,
               sshPrivateKeyPath,
@@ -263,7 +263,7 @@ describe("Clone", function() {
         callbacks: {
           certificateCheck: () => 0,
           credentials: function(url, userName) {
-            return NodeGit.Cred.sshKeyNew(
+            return NodeGit.Credential.sshKeyNew(
               userName,
               sshEncryptedPublicKeyPath,
               sshEncryptedPrivateKeyPath,
@@ -320,10 +320,10 @@ describe("Clone", function() {
           credentials: function() {
             if (firstPass) {
               firstPass = false;
-              return NodeGit.Cred.userpassPlaintextNew("fake-token",
+              return NodeGit.Credential.userpassPlaintextNew("fake-token",
                 "x-oauth-basic");
             } else {
-              return NodeGit.Cred.defaultNew();
+              return NodeGit.Credential.defaultNew();
             }
           }
         }

@@ -1,7 +1,7 @@
 {
   "types": {
-    "git_cred_default": {
-      "decl": "git_cred"
+    "git_credential_default": {
+      "decl": "git_credential"
     },
     "git_diff_hunk": {
       "decl": [
@@ -353,7 +353,7 @@
           }
         ],
         "return": {
-          "type": "void"
+          "type": "int"
         },
         "group": "index_name_entry"
       },
@@ -441,7 +441,7 @@
           }
         ],
         "return": {
-          "type": "void"
+          "type": "int"
         },
         "group": "index_reuc_entry"
       },
@@ -615,7 +615,7 @@
           }
         ],
         "return": {
-          "type": "void"
+          "type": "int"
         },
         "group": "repository"
       },
@@ -721,7 +721,7 @@
           }
         ],
         "return": {
-          "type": "void"
+          "type": "int"
         },
         "group": "repository"
       },
@@ -1455,7 +1455,7 @@
               "name": "sideband_progress"
             },
             {
-              "type": "git_cred_acquire_cb",
+              "type": "git_credential_acquire_cb",
               "name": "credentials"
             },
             {

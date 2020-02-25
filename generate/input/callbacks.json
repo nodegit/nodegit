@@ -180,11 +180,11 @@
       "error": -1
     }
   },
-  "git_cred_acquire_cb": {
+  "git_credential_acquire_cb": {
     "args": [
       {
-        "name": "cred",
-        "cType": "git_cred **",
+        "name": "credential",
+        "cType": "git_credential **",
         "isReturn": true
       },
       {
