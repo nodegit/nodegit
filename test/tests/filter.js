@@ -266,7 +266,11 @@ describe("Filter", function() {
         return Checkout.head(test.repository, opts);
       })
       .then(function(head) {
-        assert.fail(head, undefined, "Should not have actually checked out");
+        assert.strictEqual(
+          head,
+          undefined,
+          "Should not have actually checked out"
+        );
       })
       .catch(function(error) {
         assert.strictEqual(initialized, true);
