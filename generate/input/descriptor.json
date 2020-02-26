@@ -110,23 +110,31 @@
           }
         },
         "git_annotated_commit_from_ref": {
-          "return": {
-            "ownedBy": ["repo"]
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
           }
         },
         "git_annotated_commit_from_fetchhead": {
-          "return": {
-            "ownedBy": ["repo"]
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
           }
         },
         "git_annotated_commit_lookup": {
-          "return": {
-            "ownedBy": ["repo"]
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
           }
         },
         "git_annotated_commit_from_revspec": {
-          "return": {
-            "ownedBy": ["repo"]
+          "args": {
+            "out": {
+              "ownedBy": ["repo"]
+            }
           }
         }
       }
