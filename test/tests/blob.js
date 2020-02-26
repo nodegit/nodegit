@@ -128,7 +128,7 @@ describe("Blob", function() {
   describe("createFromBuffer", function() {
     it("creates a new blob from the buffer", function() {
       var content = "This is a new buffer";
-      var buf = new Buffer(content, content.length);
+      var buf = Buffer.from(content, content.length);
       var test = this;
 
       return Blob.createFromBuffer(test.repository, buf, content.length)
@@ -142,7 +142,7 @@ describe("Blob", function() {
 
     it("creates blob with content equal to length", function() {
       var content = "This is a new buffer";
-      var buf = new Buffer(content, content.length);
+      var buf = Buffer.from(content, content.length);
       var test = this;
 
       return Blob.createFromBuffer(test.repository, buf, 2)
@@ -171,7 +171,7 @@ describe("Blob", function() {
 
     it("throws an error when no length is provided", function() {
       var test = this;
-      return Blob.createFromBuffer(test.repository, new Buffer("testing"))
+      return Blob.createFromBuffer(test.repository, Buffer.from("testing"))
         .catch(function(error) {
           assert.strictEqual(error.message, "Number len is required.");
         });
@@ -368,7 +368,7 @@ describe("Blob", function() {
 
     it("returns nothing when checking binary blob", function() {
       var test = this;
-      var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
+      var binary = Buffer.from(new Uint8Array([1,2,3,4,5,6]));
 
       return commitFile(
         test.repository,
@@ -410,7 +410,7 @@ describe("Blob", function() {
 
     it("returns blob when not checking binary on binary blob", function() {
       var test = this;
-      var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
+      var binary = Buffer.from(new Uint8Array([1,2,3,4,5,6]));
 
       return commitFile(
         test.repository,
@@ -571,7 +571,7 @@ describe("Blob", function() {
 
     it("returns nothing when checking binary blob", function() {
       var test = this;
-      var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
+      var binary = Buffer.from(new Uint8Array([1,2,3,4,5,6]));
 
       return commitFile(
         test.repository,
@@ -612,7 +612,7 @@ describe("Blob", function() {
 
     it("returns blob when not checking binary on binary blob", function() {
       var test = this;
-      var binary = new Buffer(new Uint8Array([1,2,3,4,5,6]));
+      var binary = Buffer.from(new Uint8Array([1,2,3,4,5,6]));
 
       return commitFile(
         test.repository,
