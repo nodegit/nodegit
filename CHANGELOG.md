@@ -1,5 +1,25 @@
 # Change Log
 
+## <a name="v0-26-5" href="#v0-26-5">v0.26.5</a> [(2020-02-27)](https://github.com/nodegit/nodegit/releases/tag/v0.26.5)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.4...v0.26.5)
+
+#### Summary of changes
+- Bring in improvement to client certificate handling on Windows from [winhttp: support optional client cert #5384](https://github.com/libgit2/libgit2/pull/5384)
+- `Commit.prototype.parent()` now correctly assigns the repo property on the retrieved commit. This should solve certain bugs when working with a commit retrieved from `parent`.
+
+#### Merged PRs into NodeGit
+- [Bring in Libgit2 #5384 to NodeGit](https://github.com/nodegit/nodegit/pull/1758)
+- [Fix behavior of Commit#parent](https://github.com/nodegit/nodegit/pull/1509)
+- [Remove DiffList](https://github.com/nodegit/nodegit/pull/1733)
+- [Remove unnecessary assignment of Commit#repo](https://github.com/nodegit/nodegit/pull/1508)
+
+#### Merged PRs into LibGit2
+- [winhttp: support optional client cert #5384](https://github.com/libgit2/libgit2/pull/5384)
+- [Support `core.longpaths` on Windows #5347](https://github.com/libgit2/libgit2/pull/5347)
+- [Parallelize checkout_create_the_new for perf #4205](https://github.com/libgit2/libgit2/pull/4205)
+
+
 ## <a name="v0-26-4" href="#v0-26-4">v0.26.4</a> [(2020-01-14)](https://github.com/nodegit/nodegit/releases/tag/v0.26.4)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.3...v0.26.4)
