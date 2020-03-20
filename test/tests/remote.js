@@ -101,6 +101,31 @@ describe("Remote", function() {
       });
   });
 
+  it("can rename a remote", function() {
+    var repository = this.repository;
+
+    return Remote.list(repository)
+      .then(function(remoteNames) {
+        assert.deepEqual(remoteNames, ["origin"]);
+        return Remote.rename(repository, "origin", "origin2");
+      })
+      .then(function(problems) {
+        assert.deepEqual(problems, []);
+        return Remote.list(repository);
+      })
+      .then(function(remoteNames) {
+        assert.deepEqual(remoteNames, ["origin2"]);
+        return Remote.rename(repository, "origin2", "origin");
+      })
+      .then(function(problems) {
+        assert.deepEqual(problems, []);
+        return Remote.list(repository);
+      })
+      .then(function(remoteNames) {
+        assert.deepEqual(remoteNames, ["origin"]);
+      });
+  });
+
   it("can delete a remote", function() {
     var repository = this.repository;
 
