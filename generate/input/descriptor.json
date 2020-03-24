@@ -3312,7 +3312,20 @@
           "ignore": true
         },
         "git_remote_rename": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "problems": {
+              "isReturn": true,
+              "shouldAlloc": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "size": "count",
+              "key": "strings"
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_push": {
           "isAsync": true,
