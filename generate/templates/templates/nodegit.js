@@ -1,5 +1,5 @@
 var _ = require("lodash");
-var promisify = require("promisify-node");
+var util = require("util");
 var rawApi;
 
 // Attempt to load the production release first, if it fails fall back to the
@@ -15,6 +15,8 @@ catch (ex) {
 
   rawApi = require("../build/Debug/nodegit.node");
 }
+
+var promisify = fn => fn && util.promisify(fn); // jshint ignore:line
 
 // For disccussion on why `cloneDeep` is required, see:
 // https://github.com/facebook/jest/issues/3552
@@ -131,9 +133,6 @@ importExtension("filter_registry");
   {% endif %}
 {% endeach %}
 /* jshint ignore:end */
-
-// Wrap asynchronous methods to return promises.
-promisify(exports);
 
 // Set version.
 exports.version = require("../package").version;

@@ -37,15 +37,16 @@ describe("Revert", function() {
     var fileStats = fs.statSync(path.join(repoPath, fileName));
     assert.ok(fileStats.isFile());
 
-    Revert.revert(test.repository, test.firstCommit, new RevertOptions())
+    return Revert.revert(test.repository, test.firstCommit, new RevertOptions())
       .then(function() {
         try {
           fs.statSync(path.join(repoPath, fileName));
-          assert.fail("Working directory was not reverted");
+        } catch (e) {
+          // we expect this not to exist
+          return;
         }
-        catch (error) {
-          // pass
-        }
+
+        assert.fail("Working directory was not reverted");
       });
   });
 
