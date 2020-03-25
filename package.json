@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
+    "got": "^10.7.0",
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
     "nan": "^2.14.0",
@@ -46,7 +47,6 @@
     "node-pre-gyp": "^0.13.0",
     "promisify-node": "~0.3.0",
     "ramda": "^0.25.0",
-    "request-promise-native": "^1.0.5",
     "tar-fs": "^1.16.3"
   },
   "devDependencies": {

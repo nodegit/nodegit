@@ -1,7 +1,7 @@
 const fse = require("fs-extra");
 const path = require("path");
 const R = require("ramda");
-const request = require("request-promise-native");
+const got = require("got");
 const stream = require("stream");
 const tar = require("tar-fs");
 const zlib = require("zlib");
@@ -58,12 +58,9 @@ const getDistrbutionURLFromConfig = (config) => {
   return Promise.resolve(distURL);
 };
 
-const fetchFileFromURL = (distUrl) => request({
-  method: "GET",
-  uri: distUrl,
-  encoding: null,
-  gzip: true
-});
+const fetchFileFromURL = (distUrl) => got(distUrl, {
+  responseType: 'buffer'
+}).then(({ body }) => body);
 
 const extractFile = (body) => new Promise((resolve, reject) => {
   const streamableBody = new stream.Readable();
