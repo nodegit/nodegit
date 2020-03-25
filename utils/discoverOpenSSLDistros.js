@@ -2,7 +2,7 @@ const cheerio = require("cheerio");
 const fse = require("fs-extra");
 const path = require("path");
 const R = require("ramda");
-const request = require("request-promise-native");
+const got = require("got");
 
 const windowsCommonConditions = [
   R.test(/^\s*os=Windows$/gm),
@@ -149,8 +149,8 @@ const detectDistributionPairFromConfig = (itemHash, body) => R.pipe(
 )(distributionPairs);
 
 const getDistributionConfig = (itemHash) =>
-  request.get(getDistributionConfigURLFromHash(itemHash))
-    .then((body) => detectDistributionPairFromConfig(itemHash, body));
+  got(getDistributionConfigURLFromHash(itemHash))
+    .then(({ body }) => detectDistributionPairFromConfig(itemHash, body));
 
 const discoverDistributions = (treeHtml) => {
   const releaseHashes = [];
@@ -176,8 +176,8 @@ const writeFile = (distributions) =>
     .then(fse.writeFile(outputPath, JSON.stringify(distributions, null, 2)));
 
 const outputPath = path.resolve(__dirname, "..", "vendor", "static_config", "openssl_distributions.json");
-request(getDistributionsRootURL())
-  .then(discoverDistributions)
+got(getDistributionsRootURL())
+  .then(({ body }) => discoverDistributions(body))
   .then(R.filter(R.identity))
   .then(R.sortBy(R.prop(0)))
   .then(R.fromPairs)
