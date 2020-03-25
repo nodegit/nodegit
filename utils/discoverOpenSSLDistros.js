@@ -60,7 +60,7 @@ const debugPairs = R.toPairs({
     R.test(/^\s*compiler\.runtime=MTd$/gm),
     R.test(/^\s*compiler\.version=15$/gm)
   ]),
-  
+
   "macOS-clang-9-static-debug": R.allPass([
     ...macCommonConditions,
     R.test(/^\s*build_type=Debug$/gm),
@@ -133,13 +133,13 @@ const releasePairs = R.toPairs({
 const distributionPairs = [...debugPairs, ...releasePairs];
 
 const getDistributionConfigURLFromHash = itemHash =>
-  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/${itemHash}/conaninfo.txt`;
+  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.1c/stable/0/package/${itemHash}/0/conaninfo.txt`;
 
 const getDistributionDownloadURLFromHash = itemHash =>
-  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/${itemHash}/conan_package.tgz`;
+  `https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.1c/stable/0/package/${itemHash}/0/conan_package.tgz`;
 
 const getDistributionsRootURL = () =>
-  "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.0i/stable/package/";
+  "https://dl.bintray.com/conan-community/conan/conan/OpenSSL/1.1.1c/stable/0/package/";
 
 const detectDistributionPairFromConfig = (itemHash, body) => R.pipe(
   R.find(([_, predicate]) => predicate(body)),
