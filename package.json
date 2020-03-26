@@ -45,7 +45,6 @@
     "nan": "^2.14.0",
     "node-gyp": "^4.0.0",
     "node-pre-gyp": "^0.13.0",
-    "promisify-node": "~0.3.0",
     "ramda": "^0.25.0",
     "tar-fs": "^1.16.3"
   },

@@ -61,7 +61,7 @@ describe("TreeEntry", function() {
       });
   });
 
-  it("provides the full path when the entry came from a tree", function(done) {
+  it("provides the full path when the entry came from a tree", function() {
     var testTree = function(tree, _dir) {
       var dir = _dir || "",
         testPromises = [];
@@ -82,10 +82,7 @@ describe("TreeEntry", function() {
     };
 
     return this.commit.getTree()
-      .then(testTree)
-      .done(function() {
-        done();
-      });
+      .then(testTree);
   });
 
   it("provides the blob representation of the entry", function() {

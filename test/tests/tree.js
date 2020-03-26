@@ -31,11 +31,11 @@ describe("Tree", function() {
   });
 
   it("gets an entry by name",
-  function(done) {
-    this.commit.getTree().then(function(tree) {
+  function() {
+    return this.commit.getTree().then(function(tree) {
       var entry = tree.entryByName("README.md");
         assert(entry);
-    }).done(done);
+    });
   });
 
   it("updates a tree", function () {
