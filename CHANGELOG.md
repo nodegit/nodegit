@@ -1,5 +1,23 @@
 # Change Log
 
+## <a name="v0-27-0-alpha-1" href="#v0-27-0-alpha-1">v0.27.0-alpha.1</a> [(2020-03-26)](https://github.com/nodegit/nodegit/releases/tag/v0.27.0-alpha.1)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.5...v0.27.0-alpha.1)
+
+#### Summary of changes
+- Expose git_remote_rename
+- Bump OpenSSL from 1.1.0i -> 1.1.1c in Windows/Mac OS Electron builds
+- Replace unmaintained request library with got
+- Remove promisify-node and use vanilla promises for all NodeGit promises
+
+### #Merged PRs into NodeGit
+- [Remove promisify-node and remove old callback api remnants](https://github.com/nodegit/nodegit/pull/1772)
+- [Replace deprecated package request with got](https://github.com/nodegit/nodegit/pull/1771)
+- [Bump OpenSSL prebuilt to 1.1.1c](https://github.com/nodegit/nodegit/pull/1770)
+- [Expose git_remote_rename](https://github.com/nodegit/nodegit/pull/1767)
+- [Dedupe Remote.prototype.fetch](https://github.com/nodegit/nodegit/pull/1766)
+
+
 ## <a name="v0-26-5" href="#v0-26-5">v0.26.5</a> [(2020-02-27)](https://github.com/nodegit/nodegit/releases/tag/v0.26.5)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.4...v0.26.5)
