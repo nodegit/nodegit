@@ -1,5 +1,26 @@
 # Change Log
 
+## <a name="v0-27-0" href="#v0-27-0">v0.27.0</a> [(2020-07-28)](https://github.com/nodegit/nodegit/releases/tag/v0.27.0)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.5...v0.27.0)
+
+#### Summary of changes
+- Expose git_remote_rename
+- Bump OpenSSL from 1.1.0i -> 1.1.1c in Windows/Mac OS Electron builds
+- Replace unmaintained request library with got
+- Remove promisify-node and use vanilla promises for all NodeGit promises
+- Prebuilds for Node 14, deprecate Node 8
+- Persist RemoteCallbacks and ProxyOptions on the remote if using Remote.prototype.connect. This fixes a segfault when using any routines on a connected remote.
+
+### #Merged PRs into NodeGit
+- [Upgrade build environments #1785](https://github.com/nodegit/nodegit/pull/1785)
+- [Remote needs to persist the callback/proxyOpts/headers #1784](https://github.com/nodegit/nodegit/pull/1784)
+- [Remove promisify-node and remove old callback api remnants](https://github.com/nodegit/nodegit/pull/1772)
+- [Replace deprecated package request with got](https://github.com/nodegit/nodegit/pull/1771)
+- [Bump OpenSSL prebuilt to 1.1.1c](https://github.com/nodegit/nodegit/pull/1770)
+- [Expose git_remote_rename](https://github.com/nodegit/nodegit/pull/1767)
+- [Dedupe Remote.prototype.fetch](https://github.com/nodegit/nodegit/pull/1766)
+
 ## <a name="v0-27-0-alpha-1" href="#v0-27-0-alpha-1">v0.27.0-alpha.1</a> [(2020-03-26)](https://github.com/nodegit/nodegit/releases/tag/v0.27.0-alpha.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.26.5...v0.27.0-alpha.1)
