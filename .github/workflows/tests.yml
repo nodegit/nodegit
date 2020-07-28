@@ -14,8 +14,8 @@ jobs:
     name: "*nix Tests"
     strategy:
       matrix:
-        node: [8, 10, 12]
-        os: [ubuntu-16.04, macOS-10.14]
+        node: [10, 12, 14]
+        os: [ubuntu-16.04, macOS-10.15]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup Environment
@@ -31,7 +31,7 @@ jobs:
 
       - uses: actions/checkout@master
 
-      - name: Use Node.js 8.x
+      - name: Use Node.js
         uses: actions/setup-node@master
         with:
           node-version: ${{ matrix.node }}
@@ -72,7 +72,7 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [8, 10, 12]
+        node: [10, 12, 14]
         arch: [x86, x64]
     runs-on: windows-2016
     steps:
@@ -86,7 +86,7 @@ jobs:
 
       - uses: actions/checkout@master
 
-      - name: Use Node.js 8.x
+      - name: Use Node.js
         uses: implausible/setup-node@feature/expose-architecture-override
         with:
           node-version: ${{ matrix.node }}
