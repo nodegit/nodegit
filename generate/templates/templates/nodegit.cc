@@ -23,37 +23,21 @@
 #include "../include/convenient_hunk.h"
 #include "../include/filter_registry.h"
 
-#if (NODE_MODULE_VERSION > 48)
-  v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
-                                      v8::Local<v8::String> key) {
-    v8::Local<v8::Value> value;
-    Nan::Maybe<bool> result = Nan::HasPrivate(object, key);
-    if (!(result.IsJust() && result.FromJust()))
-      return v8::Local<v8::Value>();
-    if (Nan::GetPrivate(object, key).ToLocal(&value))
-      return value;
+v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object, v8::Local<v8::String> key) {
+  v8::Local<v8::Value> value;
+  Nan::Maybe<bool> result = Nan::HasPrivate(object, key);
+  if (!(result.IsJust() && result.FromJust()))
     return v8::Local<v8::Value>();
-  }
+  if (Nan::GetPrivate(object, key).ToLocal(&value))
+    return value;
+  return v8::Local<v8::Value>();
+}
 
-  void SetPrivate(v8::Local<v8::Object> object,
-                      v8::Local<v8::String> key,
-                      v8::Local<v8::Value> value) {
-    if (value.IsEmpty())
-      return;
-    Nan::SetPrivate(object, key, value);
-  }
-#else
-  v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
-                                      v8::Local<v8::String> key) {
-    return object->GetHiddenValue(key);
-  }
-
-  void SetPrivate(v8::Local<v8::Object> object,
-                      v8::Local<v8::String> key,
-                      v8::Local<v8::Value> value) {
-    object->SetHiddenValue(key, value);
-  }
-#endif
+void SetPrivate(v8::Local<v8::Object> object, v8::Local<v8::String> key, v8::Local<v8::Value> value) {
+  if (value.IsEmpty())
+    return;
+  Nan::SetPrivate(object, key, value);
+}
 
 void LockMasterEnable(const FunctionCallbackInfo<Value>& info) {
   LockMaster::Enable();
