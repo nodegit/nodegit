@@ -104,7 +104,7 @@ ThreadPool libgit2ThreadPool(10, uv_default_loop());
 std::once_flag libraryInitializedFlag;
 std::mutex libraryInitializationMutex;
 
-extern "C" void init(v8::Local<v8::Object> target) {
+NAN_MODULE_INIT(init) {
   {
     // We only want to do initialization logic once, and we also want to prevent any thread from completely loading
     // the module until initialization has occurred.
