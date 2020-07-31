@@ -5,8 +5,8 @@
 #include <map>
 #include <algorithm>
 #include <set>
-
 #include <openssl/crypto.h>
+#include <mutex>
 
 #include "../include/init_ssh2.h"
 #include "../include/lock_master.h"
@@ -98,14 +98,26 @@ void OpenSSL_ThreadSetup() {
   CRYPTO_THREADID_set_callback(OpenSSL_IDCallback);
 }
 
+// TODO initialize a thread pool per context. Replace uv_default_loop() with node::GetCurrentEventLoop(isolate);
 ThreadPool libgit2ThreadPool(10, uv_default_loop());
 
+std::once_flag libraryInitializedFlag;
+std::mutex libraryInitializationMutex;
+
 extern "C" void init(v8::Local<v8::Object> target) {
-  // Initialize thread safety in openssl and libssh2
-  OpenSSL_ThreadSetup();
-  init_ssh2();
-  // Initialize libgit2.
-  git_libgit2_init();
+  {
+    // We only want to do initialization logic once, and we also want to prevent any thread from completely loading
+    // the module until initialization has occurred.
+    // All of this initialization logic ends up being shared.
+    const std::lock_guard<std::mutex> lock(libraryInitializationMutex);
+    std::call_once(libraryInitializedFlag, []() {
+      // Initialize thread safety in openssl and libssh2
+      OpenSSL_ThreadSetup();
+      init_ssh2();
+      // Initialize libgit2.
+      git_libgit2_init();
+    });
+  }
 
   Nan::HandleScope scope;
 
