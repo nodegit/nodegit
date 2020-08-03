@@ -6,16 +6,7 @@
 class LockMasterImpl;
 
 class LockMaster {
-public:
-  enum Status {
-    Disabled = 0,
-    EnabledForAsyncOnly,
-    Enabled
-  };
-
 private:
-  static Status status;
-
   LockMasterImpl *impl;
 
   template<typename T>
@@ -44,7 +35,7 @@ public:
 
   // we lock on construction
   template<typename ...Types> LockMaster(bool asyncAction, const Types*... types) {
-    if((status == Disabled) || ((status == EnabledForAsyncOnly) && !asyncAction)) {
+    if(!asyncAction) {
       impl = NULL;
       return;
     }
@@ -85,33 +76,8 @@ public:
     }
   };
 
-  static void Initialize();
-
-  // Enables the thread safety system
-  static void Enable() {
-    status = Enabled;
-  }
-
-  static void SetStatus(Status status) {
-    LockMaster::status = status;
-  }
-
-  static void Disable() {
-    status = Disabled;
-  }
-
-  static Status GetStatus() {
-    return status;
-  }
-
-  // Diagnostic information that can be provided to the JavaScript layer
-  // for a minimal level of testing
-  struct Diagnostics {
-    // this counts all stored mutexes - even if they are unlocked:
-    int storedMutexesCount;
-  };
-
-  static Diagnostics GetDiagnostics();
+  static void InitializeGlobal();
+  static void InitializeContext();
 };
 
 

@@ -36,7 +36,9 @@ class LockMasterImpl {
   static NAN_GC_CALLBACK(CleanupMutexes);
 
 public:
-  static void Initialize();
+  static void InitializeGlobal();
+
+  static void InitializeContext();
 
   // INSTANCE variables / methods
 
@@ -53,7 +55,6 @@ public:
   static LockMasterImpl *CurrentLockMasterImpl() {
     return (LockMasterImpl *)uv_key_get(&currentLockMasterKey);
   }
-  static LockMaster::Diagnostics GetDiagnostics();
 
   LockMasterImpl() {
     Register();
@@ -76,21 +77,16 @@ std::map<const void *, ObjectInfo> LockMasterImpl::mutexes;
 uv_mutex_t LockMasterImpl::mapMutex;
 uv_key_t LockMasterImpl::currentLockMasterKey;
 
-void LockMasterImpl::Initialize() {
+void LockMasterImpl::InitializeGlobal() {
   uv_mutex_init(&mapMutex);
   uv_key_create(&currentLockMasterKey);
+}
+
+void LockMasterImpl::InitializeContext() {
   Nan::AddGCEpilogueCallback(CleanupMutexes);
 }
 
 NAN_GC_CALLBACK(LockMasterImpl::CleanupMutexes) {
-  // skip cleanup if thread safety is disabled
-  // this means that turning thread safety on and then off
-  // could result in remaining mutexes - but they would get cleaned up
-  // if thread safety is turned on again
-  if (LockMaster::GetStatus() == LockMaster::Disabled) {
-    return;
-  }
-
   uv_mutex_lock(&mapMutex);
 
   for (auto it = mutexes.begin(); it != mutexes.end(); )
@@ -113,8 +109,12 @@ NAN_GC_CALLBACK(LockMasterImpl::CleanupMutexes) {
   uv_mutex_unlock(&mapMutex);
 }
 
-void LockMaster::Initialize() {
-  LockMasterImpl::Initialize();
+void LockMaster::InitializeGlobal() {
+  LockMasterImpl::InitializeGlobal();
+}
+
+void LockMaster::InitializeContext() {
+  LockMasterImpl::InitializeContext();
 }
 
 std::vector<uv_mutex_t *> LockMasterImpl::GetMutexes(int useCountDelta) {
@@ -200,14 +200,6 @@ void LockMasterImpl::Unlock(bool releaseMutexes) {
   GetMutexes(releaseMutexes * -1);
 }
 
-LockMaster::Diagnostics LockMasterImpl::GetDiagnostics() {
-  LockMaster::Diagnostics diagnostics;
-  uv_mutex_lock(&LockMasterImpl::mapMutex);
-  diagnostics.storedMutexesCount = mutexes.size();
-  uv_mutex_unlock(&LockMasterImpl::mapMutex);
-  return diagnostics;
-}
-
 // LockMaster
 
 void LockMaster::ConstructorImpl() {
@@ -226,10 +218,6 @@ void LockMaster::ObjectsToLockAdded() {
   impl->Lock(true);
 }
 
-LockMaster::Diagnostics LockMaster::GetDiagnostics() {
-  return LockMasterImpl::GetDiagnostics();
-}
-
 // LockMaster::TemporaryUnlock
 
 void LockMaster::TemporaryUnlock::ConstructorImpl() {
@@ -242,5 +230,3 @@ void LockMaster::TemporaryUnlock::ConstructorImpl() {
 void LockMaster::TemporaryUnlock::DestructorImpl() {
   impl->Lock(false);
 }
-
-LockMaster::Status LockMaster::status = LockMaster::Disabled;

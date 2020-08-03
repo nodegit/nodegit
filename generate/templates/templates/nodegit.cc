@@ -23,54 +23,22 @@
 #include "../include/convenient_hunk.h"
 #include "../include/filter_registry.h"
 
-v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object, v8::Local<v8::String> key) {
-  v8::Local<v8::Value> value;
+using namespace v8;
+
+Local<Value> GetPrivate(Local<Object> object, Local<String> key) {
+  Local<Value> value;
   Nan::Maybe<bool> result = Nan::HasPrivate(object, key);
   if (!(result.IsJust() && result.FromJust()))
-    return v8::Local<v8::Value>();
+    return Local<Value>();
   if (Nan::GetPrivate(object, key).ToLocal(&value))
     return value;
-  return v8::Local<v8::Value>();
+  return Local<Value>();
 }
 
-void SetPrivate(v8::Local<v8::Object> object, v8::Local<v8::String> key, v8::Local<v8::Value> value) {
+void SetPrivate(Local<Object> object, Local<String> key, Local<Value> value) {
   if (value.IsEmpty())
     return;
   Nan::SetPrivate(object, key, value);
-}
-
-void LockMasterEnable(const FunctionCallbackInfo<Value>& info) {
-  LockMaster::Enable();
-}
-
-void LockMasterSetStatus(const FunctionCallbackInfo<Value>& info) {
-  Nan::HandleScope scope;
-
-  // convert the first argument to Status
-  if(info.Length() >= 0 && info[0]->IsNumber()) {
-    v8::Local<v8::Int32> value = Nan::To<v8::Int32>(info[0]).ToLocalChecked();
-    LockMaster::Status status = static_cast<LockMaster::Status>(value->Value());
-    if(status >= LockMaster::Disabled && status <= LockMaster::Enabled) {
-      LockMaster::SetStatus(status);
-      return;
-    }
-  }
-
-  // argument error
-  Nan::ThrowError("Argument must be one 0, 1 or 2");
-}
-
-void LockMasterGetStatus(const FunctionCallbackInfo<Value>& info) {
-  info.GetReturnValue().Set(Nan::New(LockMaster::GetStatus()));
-}
-
-void LockMasterGetDiagnostics(const FunctionCallbackInfo<Value>& info) {
-  LockMaster::Diagnostics diagnostics(LockMaster::GetDiagnostics());
-
-  // return a plain JS object with properties
-  v8::Local<v8::Object> result = Nan::New<v8::Object>();
-  Nan::Set(result, Nan::New("storedMutexesCount").ToLocalChecked(), Nan::New(diagnostics.storedMutexesCount));
-  info.GetReturnValue().Set(result);
 }
 
 static uv_mutex_t *opensslMutexes;
@@ -101,8 +69,8 @@ void OpenSSL_ThreadSetup() {
 // TODO initialize a thread pool per context. Replace uv_default_loop() with node::GetCurrentEventLoop(isolate);
 ThreadPool libgit2ThreadPool(10, uv_default_loop());
 
-std::once_flag libraryInitializedFlag;
-std::mutex libraryInitializationMutex;
+static std::once_flag libraryInitializedFlag;
+static std::mutex libraryInitializationMutex;
 
 NAN_MODULE_INIT(init) {
   {
@@ -116,6 +84,8 @@ NAN_MODULE_INIT(init) {
       init_ssh2();
       // Initialize libgit2.
       git_libgit2_init();
+
+      LockMaster::InitializeGlobal();
     });
   }
 
@@ -133,19 +103,7 @@ NAN_MODULE_INIT(init) {
   ConvenientPatch::InitializeComponent(target);
   GitFilterRegistry::InitializeComponent(target);
 
-  NODE_SET_METHOD(target, "enableThreadSafety", LockMasterEnable);
-  NODE_SET_METHOD(target, "setThreadSafetyStatus", LockMasterSetStatus);
-  NODE_SET_METHOD(target, "getThreadSafetyStatus", LockMasterGetStatus);
-  NODE_SET_METHOD(target, "getThreadSafetyDiagnostics", LockMasterGetDiagnostics);
-
-  v8::Local<v8::Object> threadSafety = Nan::New<v8::Object>();
-  Nan::Set(threadSafety, Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
-  Nan::Set(threadSafety, Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
-  Nan::Set(threadSafety, Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));
-
-  Nan::Set(target, Nan::New("THREAD_SAFETY").ToLocalChecked(), threadSafety);
-
-  LockMaster::Initialize();
+  LockMaster::InitializeContext();
 }
 
 NODE_MODULE(nodegit, init)
