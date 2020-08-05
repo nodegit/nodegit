@@ -84,8 +84,6 @@ NAN_MODULE_INIT(init) {
       init_ssh2();
       // Initialize libgit2.
       git_libgit2_init();
-
-      LockMaster::InitializeGlobal();
     });
   }
 
