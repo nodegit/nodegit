@@ -224,7 +224,7 @@ describe("Remote", function() {
         var fetchOpts = {
           callbacks: {
             credentials: function(url, userName) {
-              return NodeGit.Cred.sshKeyFromAgent(userName);
+              return NodeGit.Credential.sshKeyFromAgent(userName);
             },
             certificateCheck: () => 0,
 
@@ -261,7 +261,7 @@ describe("Remote", function() {
     return this.repository.fetch("origin", {
       callbacks: {
         credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyFromAgent(userName);
+          return NodeGit.Credential.sshKeyFromAgent(userName);
         },
         certificateCheck: () => 0
       }
@@ -273,7 +273,7 @@ describe("Remote", function() {
     var fetchOptions = {
       callbacks: {
         credentials: function(url, userName) {
-          return NodeGit.Cred.sshKeyNew(
+          return NodeGit.Credential.sshKeyNew(
             userName,
             path.resolve("./test/nodegit-test-rsa.pub"),
             path.resolve("./test/nodegit-test-rsa"),
@@ -302,7 +302,7 @@ describe("Remote", function() {
           credentials: function(url, userName) {
             if (firstPass) {
               firstPass = false;
-              return NodeGit.Cred.sshKeyFromAgent(userName);
+              return NodeGit.Credential.sshKeyFromAgent(userName);
             }
           },
           certificateCheck: () => 0
@@ -336,7 +336,7 @@ describe("Remote", function() {
         return repository.fetchAll({
           callbacks: {
             credentials: function(url, userName) {
-              return NodeGit.Cred.sshKeyFromAgent(userName);
+              return NodeGit.Credential.sshKeyFromAgent(userName);
             },
             certificateCheck: () => 0
           }
@@ -428,9 +428,10 @@ describe("Remote", function() {
                   if (firstPass) {
                     firstPass = false;
                     if (url.indexOf("https") === -1) {
-                      return NodeGit.Cred.sshKeyFromAgent(userName);
+                      return NodeGit.Credential.sshKeyFromAgent(userName);
                     } else {
-                      return NodeGit.Cred.userpassPlaintextNew(userName, "");
+                      return NodeGit.Credential
+                        .userpassPlaintextNew(userName, "");
                     }
                   } else {
                     return Promise.reject();

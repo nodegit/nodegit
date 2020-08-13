@@ -33,6 +33,10 @@
         }
       }
     },
+    "credential": {
+      "JsName": "TYPE",
+      "owner": "Credential"
+    },
     "describe_strategy": {
       "ignore": true
     },
@@ -132,6 +136,11 @@
     },
     "attr": {
       "functions": {
+        "git_attr_cache_flush": {
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_attr_foreach": {
           "ignore": true
         },
@@ -1066,61 +1075,61 @@
         }
       }
     },
-    "cred": {
+    "credential": {
       "needsForwardDeclaration": false,
       "selfFreeing": true,
-      "cType": "git_cred",
+      "cType": "git_credential",
       "fields": {
         "free": {
           "ignore": true
         }
       },
       "functions": {
-        "git_cred_default_new": {
+        "git_credential_default_new": {
           "isAsync": false
         },
-        "git_cred_free": {
+        "git_credential_free": {
           "ignore": true
         },
-        "git_cred_ssh_custom_new": {
+        "git_credential_ssh_custom_new": {
           "ignore": true
         },
-        "git_cred_ssh_interactive_new": {
+        "git_credential_ssh_interactive_new": {
           "ignore": true
         },
-        "git_cred_ssh_key_from_agent": {
+        "git_credential_ssh_key_from_agent": {
           "isAsync": false
         },
-        "git_cred_ssh_key_new": {
+        "git_credential_ssh_key_new": {
           "isAsync": false
         },
-        "git_cred_userpass": {
+        "git_credential_userpass": {
           "ignore": true
         },
-        "git_cred_userpass_plaintext_new": {
+        "git_credential_userpass_plaintext_new": {
           "isAsync": false
         }
       }
     },
-    "cred_default": {
+    "credential_default": {
       "ignore": true
     },
-    "cred_ssh_custom": {
+    "credential_ssh_custom": {
       "ignore": true
     },
-    "cred_ssh_interactive": {
+    "credential_ssh_interactive": {
       "ignore": true
     },
-    "cred_ssh_key": {
+    "credential_ssh_key": {
       "ignore": true
     },
-    "cred_username": {
+    "credential_username": {
       "ignore": true
     },
-    "cred_userpass_payload": {
+    "credential_userpass_payload": {
       "ignore": true
     },
-    "cred_userpass_plaintext": {
+    "credential_userpass_plaintext": {
       "ignore": true
     },
     "describe": {
@@ -1996,7 +2005,10 @@
         "git_index_name_clear": {
           "cppFunctionName": "Clear",
           "jsFunctionName": "clear",
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_name_entrycount": {
           "cppFunctionName": "Entrycount",
@@ -2031,7 +2043,10 @@
           "cppFunctionName": "Clear",
           "jsFunctionName": "clear",
           "isAsync": true,
-          "isPrototypeMethod": false
+          "isPrototypeMethod": false,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_reuc_entrycount": {
           "cppFunctionName": "Entrycount",
@@ -2571,10 +2586,17 @@
       "shouldAlloc": true,
       "functions": {
         "git_oid_cpy": {
+          "isAsync": false,
           "args": {
+            "src": {
+              "shouldAlloc": false
+            },
             "out": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_oid_fmt": {
@@ -2707,8 +2729,10 @@
         },
         "git_patch_from_diff": {
           "isAsync": true,
-          "return": {
-            "ownedBy": ["diff"]
+          "args": {
+            "out": {
+              "ownedBy": ["diff"]
+            }
           }
         },
         "git_patch_get_delta": {
@@ -3203,7 +3227,10 @@
           }
         },
         "git_remote_disconnect": {
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_remote_download": {
           "args": {
@@ -3408,7 +3435,10 @@
       ],
       "functions": {
         "git_repository__cleanup": {
-          "isAsync": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_repository_config": {
           "args": {
@@ -3525,6 +3555,9 @@
             "index": {
               "isOptional": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_repository_set_odb": {
@@ -4321,6 +4354,11 @@
     "treebuilder": {
       "selfFreeing": true,
       "functions": {
+        "git_treebuilder_clear": {
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_treebuilder_filter": {
           "ignore": true
         },

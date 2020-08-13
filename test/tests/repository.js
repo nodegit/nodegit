@@ -184,7 +184,7 @@ describe("Repository", function() {
 
     return repo.fetch("origin", {
       credentials: function(url, userName) {
-        return NodeGit.Cred.sshKeyFromAgent(userName);
+        return NodeGit.Credential.sshKeyFromAgent(userName);
       },
       certificateCheck: () => 0
     })

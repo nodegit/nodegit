@@ -23,7 +23,7 @@ cloneOptions.fetchOpts = {
     // `userName` argument to the `sshKeyFromAgent` function to validate
     // authentication.
     credentials: function(url, userName) {
-      return NodeGit.Cred.sshKeyFromAgent(userName);
+      return NodeGit.Credential.sshKeyFromAgent(userName);
     }
   }
 };
