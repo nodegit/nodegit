@@ -2,7 +2,11 @@
 #define THREAD_POOL_H
 
 #include <uv.h>
+#include <mutex>
 #include <queue>
+#include <thread>
+
+#include "./semaphore.h"
 
 class ThreadPool {
 public:
@@ -15,8 +19,12 @@ private:
     void *data;
 
     Work(Callback workCallback, Callback completionCallback, void *data)
-      : workCallback(workCallback), completionCallback(completionCallback), data(data) {
-    }
+      : workCallback(workCallback), completionCallback(completionCallback), data(data)
+    {}
+
+    Work()
+      : workCallback(NULL), completionCallback(NULL), data(NULL)
+    {}
   };
 
   struct LoopCallback {
@@ -25,22 +33,27 @@ private:
     bool isWork;
 
     LoopCallback(Callback callback, void *data, bool isWork)
-      : callback(callback), data(data), isWork(isWork) {
-    }
+      : callback(callback), data(data), isWork(isWork)
+    {}
+
+    LoopCallback()
+      : callback(NULL), data(NULL), isWork(false)
+    {}
   };
 
   // work to be performed on the threadpool
   std::queue<Work> workQueue;
-  uv_mutex_t workMutex;
-  uv_sem_t workSemaphore;
+  std::mutex workMutex;
+  Semaphore workSemaphore;
   int workInProgressCount;
 
   // completion and async callbacks to be performed on the loop
   std::queue<LoopCallback> loopQueue;
-  uv_mutex_t loopMutex;
+  std::mutex loopMutex;
   uv_async_t loopAsync;
 
-  static void RunEventQueue(void *threadPool);
+  std::vector<std::thread> threads;
+
   void RunEventQueue();
   static void RunLoopCallbacks(uv_async_t* handle);
   void RunLoopCallbacks();

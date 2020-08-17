@@ -59,6 +59,7 @@
         "src/convenient_hunk.cc",
         "src/filter_registry.cc",
         "src/git_buf_converter.cc",
+        "src/semaphore.cc",
         "src/str_array_converter.cc",
         "src/thread_pool.cc",
         {% each %}
