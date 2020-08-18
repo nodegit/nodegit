@@ -1,10 +1,14 @@
 var _ = require("lodash");
 var util = require("util");
-var worker = require("worker_threads");
+var worker;
+
+try {
+  worker = require("worker_threads");
+} catch (e) {}
 
 var rawApi;
 
-if (!worker.isMainThread || typeof importScripts === "function") {
+if (worker && (!worker.isMainThread || typeof importScripts === "function")) {
   throw new Error("NodeGit is currently not safe to run in a worker thread or web worker"); // jshint ignore:line
 }
 
