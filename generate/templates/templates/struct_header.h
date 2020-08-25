@@ -7,7 +7,9 @@
 #include <unordered_map>
 
 #include "async_baton.h"
+#include "async_worker.h"
 #include "callback_wrapper.h"
+#include "context.h"
 #include "reference_counter.h"
 #include "nodegit_wrapper.h"
 
@@ -37,7 +39,7 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
     friend class NodeGitWrapper<{{ cppClassName }}Traits>;
   public:
     {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
-    static void InitializeComponent (v8::Local<v8::Object> target);
+    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
     {% each fields as field %}
       {% if not field.ignore %}
@@ -52,25 +54,27 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
           );
 
           static void {{ field.name }}_async(void *baton);
-          static void {{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
+          static void {{ field.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result);
           {% if field.return.type == 'void' %}
-            struct {{ field.name|titleCase }}Baton : public AsyncBatonWithNoResult {
+            class {{ field.name|titleCase }}Baton : public nodegit::AsyncBatonWithNoResult {
+            public:
               {% each field.args|argsInfo as arg %}
                 {{ arg.cType }} {{ arg.name }};
               {% endeach %}
 
               {{ field.name|titleCase }}Baton()
-                : AsyncBatonWithNoResult() {
+                : nodegit::AsyncBatonWithNoResult() {
                 }
             };
           {% else %}
-            struct {{ field.name|titleCase }}Baton : public AsyncBatonWithResult<{{ field.return.type }}> {
+            class {{ field.name|titleCase }}Baton : public nodegit::AsyncBatonWithResult<{{ field.return.type }}> {
+            public:
               {% each field.args|argsInfo as arg %}
                 {{ arg.cType }} {{ arg.name }};
               {% endeach %}
 
               {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
-                : AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {
+                : nodegit::AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {
                 }
             };
           {% endif %}

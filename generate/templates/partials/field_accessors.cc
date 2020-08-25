@@ -144,7 +144,7 @@
             baton->ExecuteAsync({{ field.name }}_async);
             delete baton;
           } else {
-            baton->ExecuteAsync({{ field.name }}_async, deleteBaton);
+            baton->ExecuteAsync({{ field.name }}_async, nodegit::deleteBaton);
           }
           return;
         {% else %}
@@ -158,7 +158,7 @@
             delete baton;
           } else {
             result = baton->defaultResult;
-            baton->ExecuteAsync({{ field.name }}_async, deleteBaton);
+            baton->ExecuteAsync({{ field.name }}_async, nodegit::deleteBaton);
           }
           return result;
         {% endif %}
@@ -205,8 +205,11 @@
 
         Nan::TryCatch tryCatch;
 
-        // TODO This should take an async_resource, but we will need to figure out how to pipe the correct context into this
-        Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*(instance->{{ field.name }}.GetCallback()), {{ field.args|callbackArgsCount }}, argv);
+        Nan::MaybeLocal<v8::Value> maybeResult = (*(instance->{{ field.name }}.GetCallback()))(
+          baton->GetAsyncResource(),
+          {{ field.args|callbackArgsCount }},
+          argv
+        );
         v8::Local<v8::Value> result;
         if (!maybeResult.IsEmpty()) {
           result = maybeResult.ToLocalChecked();
@@ -247,7 +250,7 @@
         {% endif %}
       }
 
-      void {{ cppClassName }}::{{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result) {
+      void {{ cppClassName }}::{{ field.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result) {
         Nan::HandleScope scope;
 
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(_baton);

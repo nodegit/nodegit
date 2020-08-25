@@ -5,6 +5,7 @@ extern "C" {
   #include <git2.h>
 }
 
+#include "../include/context.h"
 #include "../include/convenient_hunk.h"
 #include "../include/convenient_patch.h"
 #include "../include/functions/copy.h"
@@ -129,36 +130,37 @@ ConvenientPatch::~ConvenientPatch() {
   PatchDataFree(this->patch);
 }
 
-void ConvenientPatch::InitializeComponent(Local<v8::Object> target) {
+void ConvenientPatch::InitializeComponent(Local<v8::Object> target, nodegit::Context *nodegitContext) {
   Nan::HandleScope scope;
 
-  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
+  Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
+  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(Nan::New("ConvenientPatch").ToLocalChecked());
 
-  Nan::SetPrototypeMethod(tpl, "hunks", Hunks);
-  Nan::SetPrototypeMethod(tpl, "lineStats", LineStats);
-  Nan::SetPrototypeMethod(tpl, "size", Size);
+  Nan::SetPrototypeMethod(tpl, "hunks", Hunks, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "lineStats", LineStats, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "size", Size, nodegitExternal);
 
-  Nan::SetPrototypeMethod(tpl, "oldFile", OldFile);
-  Nan::SetPrototypeMethod(tpl, "newFile", NewFile);
-  Nan::SetPrototypeMethod(tpl, "status", Status);
-  Nan::SetPrototypeMethod(tpl, "isUnmodified", IsUnmodified);
-  Nan::SetPrototypeMethod(tpl, "isAdded", IsAdded);
-  Nan::SetPrototypeMethod(tpl, "isDeleted", IsDeleted);
-  Nan::SetPrototypeMethod(tpl, "isModified", IsModified);
-  Nan::SetPrototypeMethod(tpl, "isRenamed", IsRenamed);
-  Nan::SetPrototypeMethod(tpl, "isCopied", IsCopied);
-  Nan::SetPrototypeMethod(tpl, "isIgnored", IsIgnored);
-  Nan::SetPrototypeMethod(tpl, "isUntracked", IsUntracked);
-  Nan::SetPrototypeMethod(tpl, "isTypeChange", IsTypeChange);
-  Nan::SetPrototypeMethod(tpl, "isUnreadable", IsUnreadable);
-  Nan::SetPrototypeMethod(tpl, "isConflicted", IsConflicted);
+  Nan::SetPrototypeMethod(tpl, "oldFile", OldFile, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "newFile", NewFile, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "status", Status, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isUnmodified", IsUnmodified, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isAdded", IsAdded, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isDeleted", IsDeleted, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isModified", IsModified, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isRenamed", IsRenamed, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isCopied", IsCopied, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isIgnored", IsIgnored, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isUntracked", IsUntracked, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isTypeChange", IsTypeChange, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isUnreadable", IsUnreadable, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "isConflicted", IsConflicted, nodegitExternal);
 
-  Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
-  constructor_template.Reset(_constructor_template);
-  Nan::Set(target, Nan::New("ConvenientPatch").ToLocalChecked(), _constructor_template);
+  Local<Function> constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+  nodegitContext->SaveToPersistent("ConvenientPatch::Template", constructor_template);
+  Nan::Set(target, Nan::New("ConvenientPatch").ToLocalChecked(), constructor_template);
 }
 
 NAN_METHOD(ConvenientPatch::JSNewFunction) {
@@ -176,7 +178,9 @@ NAN_METHOD(ConvenientPatch::JSNewFunction) {
 Local<v8::Value> ConvenientPatch::New(void *raw) {
   Nan::EscapableHandleScope scope;
   Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
-  return scope.Escape(Nan::NewInstance(Nan::New(ConvenientPatch::constructor_template), 1, argv).ToLocalChecked());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+  Local<Function> constructor_template = nodegitContext->GetFromPersistent("ConvenientPatch::Template").As<Function>();
+  return scope.Escape(Nan::NewInstance(constructor_template, 1, argv).ToLocalChecked());
 }
 
 ConvenientLineStats ConvenientPatch::GetLineStats() {
@@ -217,8 +221,13 @@ NAN_METHOD(ConvenientPatch::Hunks) {
 
   worker->SaveToPersistent("patch", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster ConvenientPatch::HunksWorker::AcquireLocks() {
+  return nodegit::LockMaster(true);
 }
 
 void ConvenientPatch::HunksWorker::Execute() {
@@ -396,5 +405,3 @@ NAN_METHOD(ConvenientPatch::IsConflicted) {
   to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_CONFLICTED);
   info.GetReturnValue().Set(to);
 }
-
-Nan::Persistent<Function> ConvenientPatch::constructor_template;

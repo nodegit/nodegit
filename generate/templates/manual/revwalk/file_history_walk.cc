@@ -207,8 +207,14 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback);
   worker->SaveToPersistent("fileHistoryWalk", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRevwalk::FileHistoryWalkWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRevwalk::FileHistoryWalkWorker::Execute()

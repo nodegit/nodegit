@@ -21,8 +21,14 @@ NAN_METHOD(GitRevwalk::FastWalk)
   FastWalkWorker *worker = new FastWalkWorker(baton, callback);
   worker->SaveToPersistent("fastWalk", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRevwalk::FastWalkWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRevwalk::FastWalkWorker::Execute()

@@ -14,8 +14,14 @@ NAN_METHOD(GitRepository::GetRemotes)
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   GetRemotesWorker *worker = new GetRemotesWorker(baton, callback);
   worker->SaveToPersistent("repo", info.This());
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRepository::GetRemotesWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRepository::GetRemotesWorker::Execute()
@@ -24,7 +30,7 @@ void GitRepository::GetRemotesWorker::Execute()
 
   git_repository *repo;
   {
-    LockMaster lockMaster(true, baton->repo);
+    nodegit::LockMaster lockMaster(true, baton->repo);
     baton->error_code = git_repository_open(&repo, git_repository_workdir(baton->repo));
   }
 

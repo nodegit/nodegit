@@ -8,6 +8,9 @@
 #include <sstream>
 
 #include "async_baton.h"
+#include "async_worker.h"
+#include "context.h"
+#include "lock_master.h"
 #include "nodegit_wrapper.h"
 #include "promise_completion.h"
 #include "reference_counter.h"
@@ -55,7 +58,7 @@ class {{ cppClassName }} : public
     friend class NodeGitWrapper<{{ cppClassName }}Traits>;
   {%endif %}
   public:
-    static void InitializeComponent (v8::Local<v8::Object> target);
+    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
     {% each functions as function %}
       {% if not function.ignore %}
@@ -71,14 +74,15 @@ class {{ cppClassName }} : public
     );
 
     static void {{ function.cppFunctionName }}_{{ arg.name }}_async(void *baton);
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result);
-    struct {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : public AsyncBatonWithResult<{{ arg.return.type }}> {
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result);
+    class {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : public nodegit::AsyncBatonWithResult<{{ arg.return.type }}> {
+    public:
       {% each arg.args|argsInfo as cbArg %}
       {{ cbArg.cType }} {{ cbArg.name }};
       {% endeach %}
 
       {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton(const {{ arg.return.type }} &defaultResult)
-        : AsyncBatonWithResult<{{ arg.return.type }}>(defaultResult) {
+        : nodegit::AsyncBatonWithResult<{{ arg.return.type }}>(defaultResult) {
         }
     };
           {% endif %}
@@ -104,16 +108,6 @@ class {{ cppClassName }} : public
     ~{{ cppClassName }}();
     {%endif%}
 
-    {% each functions as function %}
-      {% if not function.ignore %}
-        {% each function.args as arg %}
-          {% if arg.saveArg %}
-    Nan::Persistent<Object> {{ function.cppFunctionName }}_{{ arg.name }};
-          {% endif %}
-        {% endeach %}
-      {% endif %}
-    {% endeach %}
-
     {%each fields as field%}
       {%if not field.ignore%}
     static NAN_METHOD({{ field.cppFunctionName }});
@@ -138,16 +132,17 @@ class {{ cppClassName }} : public
         {%endif%}
       {%endeach%}
     };
-    class {{ function.cppFunctionName }}Worker : public Nan::AsyncWorker {
+    class {{ function.cppFunctionName }}Worker : public nodegit::AsyncWorker {
       public:
         {{ function.cppFunctionName }}Worker(
             {{ function.cppFunctionName }}Baton *_baton,
             Nan::Callback *callback
-        ) : Nan::AsyncWorker(callback)
+        ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:{{ cppClassName }}:{{ function.cppFunctionName }}")
           , baton(_baton) {};
         ~{{ function.cppFunctionName }}Worker() {};
         void Execute();
         void HandleOKCallback();
+        nodegit::LockMaster AcquireLocks();
 
       private:
         {{ function.cppFunctionName }}Baton *baton;

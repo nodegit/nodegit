@@ -79,9 +79,13 @@ template<typename Traits>
 v8::Local<v8::Value> NodeGitWrapper<Traits>::New(const typename Traits::cType *raw, bool selfFreeing, v8::Local<v8::Object> owner) {
   Nan::EscapableHandleScope scope;
   Local<v8::Value> argv[3] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing), owner };
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+  Local<Function> constructor_template = nodegitContext->GetFromPersistent(
+    std::string(Traits::className()) + "::Template"
+  ).As<Function>();
   return scope.Escape(
     Nan::NewInstance(
-      Nan::New(constructor_template),
+      constructor_template,
       owner.IsEmpty() ? 2 : 3, // passing an empty handle as part of the arguments causes a crash
       argv
     ).ToLocalChecked());
@@ -98,13 +102,10 @@ void NodeGitWrapper<Traits>::ClearValue() {
 }
 
 template<typename Traits>
-Nan::Persistent<v8::Function> NodeGitWrapper<Traits>::constructor_template;
+thread_local int NodeGitWrapper<Traits>::SelfFreeingInstanceCount;
 
 template<typename Traits>
-int NodeGitWrapper<Traits>::SelfFreeingInstanceCount;
-
-template<typename Traits>
-int NodeGitWrapper<Traits>::NonSelfFreeingConstructedCount;
+thread_local int NodeGitWrapper<Traits>::NonSelfFreeingConstructedCount;
 
 template<typename Traits>
 NAN_METHOD(NodeGitWrapper<Traits>::GetSelfFreeingInstanceCount) {

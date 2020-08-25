@@ -1,7 +1,7 @@
 #include "../include/reference_counter.h"
 
 void ReferenceCounter::incrementCountForPointer(void *ptr) {
-  LockMaster(true, &referenceCountByPointer);
+  nodegit::LockMaster lm(true, &referenceCountByPointer);
   if (referenceCountByPointer.find(ptr) == referenceCountByPointer.end()) {
     referenceCountByPointer[ptr] = 1;
   } else {
@@ -10,7 +10,7 @@ void ReferenceCounter::incrementCountForPointer(void *ptr) {
 }
 
 unsigned long ReferenceCounter::decrementCountForPointer(void *ptr) {
-  LockMaster(true, &referenceCountByPointer);
+  nodegit::LockMaster lm(true, &referenceCountByPointer);
   unsigned long referenceCount = referenceCountByPointer[ptr];
   if (referenceCount == 1) {
     referenceCountByPointer.erase(ptr);

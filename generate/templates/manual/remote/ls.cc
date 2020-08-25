@@ -14,41 +14,40 @@ NAN_METHOD(GitRemote::ReferenceList)
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   ReferenceListWorker *worker = new ReferenceListWorker(baton, callback);
   worker->SaveToPersistent("remote", info.This());
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRemote::ReferenceListWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->remote);
+  return lockMaster;
 }
 
 void GitRemote::ReferenceListWorker::Execute()
 {
   git_error_clear();
 
-  {
-    LockMaster lockMaster(
-      /*asyncAction: */true,
-      baton->remote
-    );
+  const git_remote_head **remote_heads;
+  size_t num_remote_heads;
+  baton->error_code = git_remote_ls(
+    &remote_heads,
+    &num_remote_heads,
+    baton->remote
+  );
 
-    const git_remote_head **remote_heads;
-    size_t num_remote_heads;
-    baton->error_code = git_remote_ls(
-      &remote_heads,
-      &num_remote_heads,
-      baton->remote
-    );
+  if (baton->error_code != GIT_OK) {
+    baton->error = git_error_dup(git_error_last());
+    delete baton->out;
+    baton->out = NULL;
+    return;
+  }
 
-    if (baton->error_code != GIT_OK) {
-      baton->error = git_error_dup(git_error_last());
-      delete baton->out;
-      baton->out = NULL;
-      return;
-    }
+  baton->out->reserve(num_remote_heads);
 
-    baton->out->reserve(num_remote_heads);
-
-    for (size_t head_index = 0; head_index < num_remote_heads; ++head_index) {
-      git_remote_head *remote_head = git_remote_head_dup(remote_heads[head_index]);
-      baton->out->push_back(remote_head);
-    }
+  for (size_t head_index = 0; head_index < num_remote_heads; ++head_index) {
+    git_remote_head *remote_head = git_remote_head_dup(remote_heads[head_index]);
+    baton->out->push_back(remote_head);
   }
 }
 

@@ -47,8 +47,10 @@
       },
       "sources": [
         "src/async_baton.cc",
+        "src/async_worker.cc",
         "src/lock_master.cc",
         "src/reference_counter.cc",
+        "src/thread_pool.cc",
         "src/nodegit.cc",
         "src/init_ssh2.cc",
         "src/promise_completion.cc",
@@ -59,9 +61,8 @@
         "src/convenient_hunk.cc",
         "src/filter_registry.cc",
         "src/git_buf_converter.cc",
-        "src/semaphore.cc",
         "src/str_array_converter.cc",
-        "src/thread_pool.cc",
+        "src/context.cc",
         {% each %}
           {% if type != "enum" %}
             "src/{{ name }}.cc",
@@ -113,7 +114,7 @@
               "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
               "MACOSX_DEPLOYMENT_TARGET": "10.9",
               'CLANG_CXX_LIBRARY': 'libc++',
-              'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+              'CLANG_CXX_LANGUAGE_STANDARD':'c++14',
 
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
@@ -165,7 +166,7 @@
         [
           "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
             "cflags": [
-              "-std=c++11"
+              "-std=c++14"
             ]
           }
         ],

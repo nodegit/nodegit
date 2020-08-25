@@ -9,15 +9,14 @@
 #include <node.h>
 
 #include "nan.h"
+#include "context.h"
 
 using namespace node;
 using namespace v8;
 
 class Wrapper : public Nan::ObjectWrap {
   public:
-
-    static Nan::Persistent<FunctionTemplate> constructor_template;
-    static void InitializeComponent (v8::Local<v8::Object> target);
+    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
     void *GetValue();
     static v8::Local<v8::Value> New(const void *raw);

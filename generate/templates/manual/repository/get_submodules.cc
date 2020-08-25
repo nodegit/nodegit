@@ -14,7 +14,8 @@ NAN_METHOD(GitRepository::GetSubmodules)
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   GetSubmodulesWorker *worker = new GetSubmodulesWorker(baton, callback);
   worker->SaveToPersistent("repo", info.This());
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
 }
 
@@ -35,11 +36,14 @@ int foreachSubmoduleCB(git_submodule *submodule, const char *name, void *void_pa
   return result;
 }
 
+nodegit::LockMaster GitRepository::GetSubmodulesWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->repo);
+  return lockMaster;
+}
+
 void GitRepository::GetSubmodulesWorker::Execute()
 {
   giterr_clear();
-
-  LockMaster lockMaster(true, baton->repo);
 
   submodule_foreach_payload payload { baton->repo, baton->out };
   baton->error_code = git_submodule_foreach(baton->repo, foreachSubmoduleCB, (void *)&payload);

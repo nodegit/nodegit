@@ -11,6 +11,7 @@
 #include "../include/init_ssh2.h"
 #include "../include/lock_master.h"
 #include "../include/nodegit.h"
+#include "../include/context.h"
 #include "../include/wrapper.h"
 #include "../include/promise_completion.h"
 #include "../include/functions/copy.h"
@@ -66,9 +67,6 @@ void OpenSSL_ThreadSetup() {
   CRYPTO_THREADID_set_callback(OpenSSL_IDCallback);
 }
 
-// TODO initialize a thread pool per context. Replace uv_default_loop() with node::GetCurrentEventLoop(isolate);
-ThreadPool libgit2ThreadPool(10, uv_default_loop());
-
 static std::once_flag libraryInitializedFlag;
 static std::mutex libraryInitializationMutex;
 
@@ -84,24 +82,30 @@ NAN_MODULE_INIT(init) {
       init_ssh2();
       // Initialize libgit2.
       git_libgit2_init();
+
+      // Register thread pool with libgit2
+      nodegit::ThreadPool::InitializeGlobal();
     });
   }
 
   Nan::HandleScope scope;
+  Local<Context> context = Nan::GetCurrentContext();
+  Isolate *isolate = context->GetIsolate();
+  nodegit::Context *nodegitContext = new nodegit::Context(isolate);
 
-  Wrapper::InitializeComponent(target);
-  PromiseCompletion::InitializeComponent();
+  Wrapper::InitializeComponent(target, nodegitContext);
+  PromiseCompletion::InitializeComponent(nodegitContext);
   {% each %}
     {% if type != "enum" %}
-      {{ cppClassName }}::InitializeComponent(target);
+      {{ cppClassName }}::InitializeComponent(target, nodegitContext);
     {% endif %}
   {% endeach %}
 
-  ConvenientHunk::InitializeComponent(target);
-  ConvenientPatch::InitializeComponent(target);
-  GitFilterRegistry::InitializeComponent(target);
+  ConvenientHunk::InitializeComponent(target, nodegitContext);
+  ConvenientPatch::InitializeComponent(target, nodegitContext);
+  GitFilterRegistry::InitializeComponent(target, nodegitContext);
 
-  LockMaster::InitializeContext();
+  nodegit::LockMaster::InitializeContext();
 }
 
 NODE_MODULE(nodegit, init)

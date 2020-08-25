@@ -74,24 +74,28 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  AsyncLibgit2QueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster {{ cppClassName }}::{{ cppFunctionName }}Worker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(
+    /*asyncAction: */true
+    {%each args|argsInfo as arg %}
+      {%if arg.cType|isPointer%}
+        {%if not arg.cType|isDoublePointer%}
+          ,baton->{{ arg.name }}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
+  );
+
+  return lockMaster;
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   git_error_clear();
-
-  {
-    LockMaster lockMaster(
-      /*asyncAction: */true
-      {%each args|argsInfo as arg %}
-        {%if arg.cType|isPointer%}
-          {%if not arg.cType|isDoublePointer%}
-            ,baton->{{ arg.name }}
-          {%endif%}
-        {%endif%}
-      {%endeach%}
-    );
 
   {%if .|hasReturnType %}
     {{ return.cType }} result = {{ cFunctionName }}(
@@ -123,7 +127,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
       baton->result = result;
 
     {%endif%}
-  }
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {

@@ -14,15 +14,20 @@ NAN_METHOD(GitRepository::GetReferences)
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   GetReferencesWorker *worker = new GetReferencesWorker(baton, callback);
   worker->SaveToPersistent("repo", info.This());
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRepository::GetReferencesWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->repo);
+  return lockMaster;
 }
 
 void GitRepository::GetReferencesWorker::Execute()
 {
   giterr_clear();
 
-  LockMaster lockMaster(true, baton->repo);
   git_repository *repo = baton->repo;
 
   git_strarray reference_names;

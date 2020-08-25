@@ -145,8 +145,14 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
   CommitWalkWorker *worker = new CommitWalkWorker(baton, callback);
   worker->SaveToPersistent("commitWalk", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRevwalk::CommitWalkWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRevwalk::CommitWalkWorker::Execute() {

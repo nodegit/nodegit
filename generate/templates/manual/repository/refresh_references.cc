@@ -406,15 +406,21 @@ NAN_METHOD(GitRepository::RefreshReferences)
   RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback);
   worker->SaveToPersistent("repo", info.This());
   worker->SaveToPersistent("signatureType", signatureType);
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRepository::RefreshReferencesWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->repo);
+  return lockMaster;
 }
 
 void GitRepository::RefreshReferencesWorker::Execute()
 {
   giterr_clear();
 
-  LockMaster lockMaster(true, baton->repo);
+  nodegit::LockMaster lockMaster(true, baton->repo);
   git_repository *repo = baton->repo;
   RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
   git_odb *odb;

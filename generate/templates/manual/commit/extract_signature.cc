@@ -67,31 +67,30 @@ NAN_METHOD(GitCommit::ExtractSignature)
   ExtractSignatureWorker *worker = new ExtractSignatureWorker(baton, callback);
   worker->SaveToPersistent("repo", Nan::To<v8::Object>(info[0]).ToLocalChecked());
   worker->SaveToPersistent("commit_id", Nan::To<v8::Object>(info[1]).ToLocalChecked());
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitCommit::ExtractSignatureWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->repo);
+  return lockMaster;
 }
 
 void GitCommit::ExtractSignatureWorker::Execute()
 {
   git_error_clear();
 
-  {
-    LockMaster lockMaster(
-      /*asyncAction: */true,
-      baton->repo
-    );
+  baton->error_code = git_commit_extract_signature(
+    &baton->signature,
+    &baton->signed_data,
+    baton->repo,
+    baton->commit_id,
+    (const char *)baton->field
+  );
 
-    baton->error_code = git_commit_extract_signature(
-      &baton->signature,
-      &baton->signed_data,
-      baton->repo,
-      baton->commit_id,
-      (const char *)baton->field
-    );
-
-    if (baton->error_code != GIT_OK && git_error_last() != NULL) {
-      baton->error = git_error_dup(git_error_last());
-    }
+  if (baton->error_code != GIT_OK && git_error_last() != NULL) {
+    baton->error = git_error_dup(git_error_last());
   }
 }
 
