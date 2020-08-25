@@ -73,6 +73,7 @@ class {{ cppClassName }} : public
             {% endeach %}
     );
 
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_cancelAsync(void *baton);
     static void {{ function.cppFunctionName }}_{{ arg.name }}_async(void *baton);
     static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result);
     class {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : public nodegit::AsyncBatonWithResult<{{ arg.return.type }}> {

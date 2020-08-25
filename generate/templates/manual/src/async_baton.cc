@@ -23,9 +23,12 @@ namespace nodegit {
     return asyncResource;
   }
 
-  void AsyncBaton::ExecuteAsyncPerform(AsyncCallback asyncCallback, CompletionCallback onCompletion) {
+  void AsyncBaton::ExecuteAsyncPerform(AsyncCallback asyncCallback, AsyncCallback asyncCancelCb, CompletionCallback onCompletion) {
     auto jsCallback = [asyncCallback, this]() {
       asyncCallback(this);
+    };
+    auto cancelCallback = [asyncCancelCb, this]() {
+      asyncCancelCb(this);
     };
 
     if (onCompletion) {
@@ -34,11 +37,11 @@ namespace nodegit {
       };
 
       ThreadPool::PostCallbackEvent(
-        [this, jsCallback](
+        [this, jsCallback, cancelCallback](
           ThreadPool::QueueCallbackFn queueCallback,
           ThreadPool::Callback callbackCompleted
         ) -> ThreadPool::Callback {
-          queueCallback(jsCallback);
+          queueCallback(jsCallback, cancelCallback);
           callbackCompleted();
 
           return []() {};
@@ -46,13 +49,13 @@ namespace nodegit {
       );
     } else {
       ThreadPool::PostCallbackEvent(
-        [this, jsCallback](
+        [this, jsCallback, cancelCallback](
           ThreadPool::QueueCallbackFn queueCallback,
           ThreadPool::Callback callbackCompleted
         ) -> ThreadPool::Callback {
           this->onCompletion = callbackCompleted;
 
-          queueCallback(jsCallback);
+          queueCallback(jsCallback, cancelCallback);
 
           return std::bind(&AsyncBaton::SignalCompletion, this);
         }

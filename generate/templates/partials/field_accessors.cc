@@ -141,10 +141,10 @@
           if (instance->{{ field.name }}.WillBeThrottled()) {
             delete baton;
           } else if (instance->{{ field.name }}.ShouldWaitForResult()) {
-            baton->ExecuteAsync({{ field.name }}_async);
+            baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync);
             delete baton;
           } else {
-            baton->ExecuteAsync({{ field.name }}_async, nodegit::deleteBaton);
+            baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync, nodegit::deleteBaton);
           }
           return;
         {% else %}
@@ -154,16 +154,19 @@
             result = baton->defaultResult;
             delete baton;
           } else if (instance->{{ field.name }}.ShouldWaitForResult()) {
-            result = baton->ExecuteAsync({{ field.name }}_async);
+            result = baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync);
             delete baton;
           } else {
             result = baton->defaultResult;
-            baton->ExecuteAsync({{ field.name }}_async, nodegit::deleteBaton);
+            baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync, nodegit::deleteBaton);
           }
           return result;
         {% endif %}
       }
 
+      void {{ cppClassName }}::{{ field.name }}_cancelAsync(void *untypedBaton) {
+
+      }
 
       void {{ cppClassName }}::{{ field.name }}_async(void *untypedBaton) {
         Nan::HandleScope scope;

@@ -12,7 +12,11 @@
     baton.{{ arg.name }} = {{ arg.name }};
   {% endeach %}
 
-  return baton.ExecuteAsync({{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  return baton.ExecuteAsync({{ cppFunctionName }}_{{ cbFunction.name }}_async, {{ cppFunctionName }}_{{ cbFunction.name }}_cancelAsync);
+}
+
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_cancelAsync(void *untypedBaton) {
+  // TODO decide between defaultResult and cancellation on a per callback basis
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void *untypedBaton) {

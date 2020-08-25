@@ -27,6 +27,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%if arg.payload.globalPayload %}
           globalPayload->{{ arg.name }} = NULL;
         {%else%}
+          // NOTE this is a dead path
           baton->{{ arg.payload.name }} = NULL;
         {%endif%}
         }
@@ -35,6 +36,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {%if arg.payload.globalPayload %}
             globalPayload->{{ arg.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
           {%else%}
+            // NOTE this is a dead path
             baton->{{ arg.payload.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
           {%endif%}
         }

@@ -14,7 +14,7 @@ namespace nodegit {
   class ThreadPool {
     public:
       typedef std::function<void()> Callback;
-      typedef std::function<void(Callback)> QueueCallbackFn;
+      typedef std::function<void(Callback, Callback)> QueueCallbackFn;
       typedef std::function<Callback(QueueCallbackFn, Callback)> OnPostCallbackFn;
 
       // Initializes thread pool and spins up the requested number of threads
@@ -40,6 +40,10 @@ namespace nodegit {
 
       // Called once at libgit2 initialization to setup contracts with libgit2
       static void InitializeGlobal();
+
+      // Will wait for all threads to terminate before returning
+      // It will also clean up any resources that the thread pool is keeping alive
+      void Shutdown();
 
     private:
       std::unique_ptr<ThreadPoolImpl> impl;

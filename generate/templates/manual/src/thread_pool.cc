@@ -218,7 +218,7 @@ namespace nodegit {
         nodegit::AsyncWorker *worker;
       };
 
-      typedef std::function<void(ThreadPool::Callback, bool)> QueueCallbackOnJSThreadFn;
+      typedef std::function<void(ThreadPool::Callback, ThreadPool::Callback, bool)> QueueCallbackOnJSThreadFn;
       typedef std::function<std::shared_ptr<Job>()> TakeNextJobFn;
 
     private:
@@ -297,7 +297,7 @@ namespace nodegit {
 
   void Orchestrator::OrchestratorImpl::RunJobLoop() {
     for ( ; ; ) {
-      auto job = takeNextJob(); // takes jobs from the threadpool queue
+      auto job = takeNextJob();
       switch (job->type) {
         case Job::Type::SHUTDOWN: {
           ScheduleShutdownTaskOnExecutor();
@@ -327,8 +327,8 @@ namespace nodegit {
 
             LockMaster::TemporaryUnlock temporaryUnlock;
             auto onCompletedCallback = (*callbackEvent)(
-              [this](ThreadPool::Callback callback) {
-                queueCallbackOnJSThread(callback, false);
+              [this](ThreadPool::Callback callback, ThreadPool::Callback cancelCallback) {
+                queueCallbackOnJSThread(callback, cancelCallback, false);
               },
               [callbackCondition, callbackMutex, &hasCompleted]() {
                 std::lock_guard<std::mutex> lock(*callbackMutex);
@@ -347,6 +347,11 @@ namespace nodegit {
               worker->WorkComplete();
               worker->Destroy();
             },
+            [worker]() {
+              worker->Cancel();
+              worker->WorkComplete();
+              worker->Destroy();
+            },
             true
           );
         }
@@ -354,6 +359,7 @@ namespace nodegit {
     }
   }
 
+  // TODO add a cancel callback to `OnPostCallbackFn` which can be used on nodegit terminate
   void Orchestrator::OrchestratorImpl::PostCallbackEvent(ThreadPool::OnPostCallbackFn onPostCallback) {
     std::lock_guard<std::mutex> lock(*executorEventsMutex);
     std::shared_ptr<Executor::CallbackEvent> callbackEvent(new Executor::CallbackEvent(onPostCallback));
@@ -417,7 +423,7 @@ namespace nodegit {
 
       std::shared_ptr<Orchestrator::Job> TakeNextJob();
 
-      void QueueCallbackOnJSThread(ThreadPool::Callback callback, bool isWork);
+      void QueueCallbackOnJSThread(ThreadPool::Callback callback, ThreadPool::Callback cancelCallback, bool isWork);
 
       static void RunJSThreadCallbacksFromOrchestrator(uv_async_t *handle);
 
@@ -425,24 +431,33 @@ namespace nodegit {
 
       static void RunLoopCallbacks(uv_async_t *handle);
 
+      void Shutdown();
+
     private:
+      bool isMarkedForDeletion;
+
       struct JSThreadCallback {
-        JSThreadCallback(ThreadPool::Callback callback, bool isWork)
-          :  isWork(isWork), callback(callback)
+        JSThreadCallback(ThreadPool::Callback callback, ThreadPool::Callback cancelCallback, bool isWork)
+          :  isWork(isWork), callback(callback), cancelCallback(cancelCallback)
         {}
 
         JSThreadCallback()
-          : isWork(false), callback(nullptr)
+          : isWork(false), callback(nullptr), cancelCallback(nullptr)
         {}
 
-        void operator()() {
+        void performCallback() {
           callback();
+        }
+
+        void cancel() {
+          cancelCallback();
         }
 
         bool isWork;
 
         private:
           ThreadPool::Callback callback;
+          ThreadPool::Callback cancelCallback;
       };
 
       void RunLoopCallbacks();
@@ -461,7 +476,8 @@ namespace nodegit {
   };
 
   ThreadPoolImpl::ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop)
-    : orchestratorJobMutex(new std::mutex),
+    : isMarkedForDeletion(false),
+      orchestratorJobMutex(new std::mutex),
       jsThreadCallbackMutex(new std::mutex)
   {
     uv_async_init(loop, &jsThreadCallbackAsync, RunLoopCallbacks);
@@ -472,7 +488,7 @@ namespace nodegit {
 
     for (int i = 0; i < numberOfThreads; i++) {
       orchestrators.emplace_back(
-        std::bind(&ThreadPoolImpl::QueueCallbackOnJSThread, this, _1, _2),
+        std::bind(&ThreadPoolImpl::QueueCallbackOnJSThread, this, _1, _2, _3),
         std::bind(&ThreadPoolImpl::TakeNextJob, this)
       );
     }
@@ -483,8 +499,7 @@ namespace nodegit {
     // there is work on the thread pool - reference the handle so
     // node doesn't terminate
     uv_ref((uv_handle_t *)&jsThreadCallbackAsync);
-    std::shared_ptr<Orchestrator::AsyncWorkJob> job(new Orchestrator::AsyncWorkJob(worker));
-    orchestratorJobQueue.emplace(job);
+    orchestratorJobQueue.emplace(new Orchestrator::AsyncWorkJob(worker));
     workInProgressCount++;
     orchestratorJobCondition.notify_one();
   }
@@ -504,11 +519,21 @@ namespace nodegit {
     return orchestratorJob;
   }
 
-  void ThreadPoolImpl::QueueCallbackOnJSThread(ThreadPool::Callback callback, bool isWork) {
-    // push the callback into the queue
-    std::lock_guard<std::mutex> lock(*jsThreadCallbackMutex);
+  void ThreadPoolImpl::QueueCallbackOnJSThread(ThreadPool::Callback callback, ThreadPool::Callback cancelCallback, bool isWork) {
+    std::unique_lock<std::mutex> lock(*jsThreadCallbackMutex);
+    // When the threadpool is shutting down, we want to free up the executors to also shutdown
+    // that means that we need to cancel all non-work callbacks as soon as we see them and
+    // we know that we are shutting down
+    if (isMarkedForDeletion && !isWork) {
+      // we don't know how long the cancelCallback will take, and it certainly doesn't need the lock
+      // while we're running it, so unlock it immediately.
+      lock.unlock();
+      cancelCallback();
+      return;
+    }
+
     bool queueWasEmpty = jsThreadCallbackQueue.empty();
-    jsThreadCallbackQueue.emplace(callback, isWork);
+    jsThreadCallbackQueue.emplace(callback, cancelCallback, isWork);
     // we only trigger RunLoopCallbacks via the jsThreadCallbackAsync handle if the queue
     // was empty.  Otherwise, we depend on RunLoopCallbacks to re-trigger itself
     if (queueWasEmpty) {
@@ -520,9 +545,7 @@ namespace nodegit {
     static_cast<ThreadPoolImpl *>(handle->data)->RunLoopCallbacks();
   }
 
-  // TODO every time this is called, if there is a cleanup operation in progress
-  // for the current context and there is workInProgress, we should ping the
-  // cleanup async handle which is not created yet
+  // NOTE this should theoretically never be triggered during a cleanup operation
   void ThreadPoolImpl::RunLoopCallbacks() {
     Nan::HandleScope scope;
     v8::Local<v8::Context> context = Nan::GetCurrentContext();
@@ -531,13 +554,12 @@ namespace nodegit {
     std::unique_lock<std::mutex> lock(*jsThreadCallbackMutex);
     // get the next callback to run
     JSThreadCallback jsThreadCallback = jsThreadCallbackQueue.front();
+    jsThreadCallbackQueue.pop();
 
     lock.unlock();
-    jsThreadCallback();
+    jsThreadCallback.performCallback();
     lock.lock();
 
-    // pop the queue, and if necessary, re-trigger RunLoopCallbacks
-    jsThreadCallbackQueue.pop();
     if (!jsThreadCallbackQueue.empty()) {
       uv_async_send(&jsThreadCallbackAsync);
     }
@@ -550,6 +572,80 @@ namespace nodegit {
       if (!workInProgressCount) {
         uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
       }
+    }
+  }
+
+  void ThreadPoolImpl::Shutdown() {
+    std::queue<std::shared_ptr<Orchestrator::Job>> cancelledJobs;
+    std::queue<JSThreadCallback> cancelledCallbacks;
+    {
+      std::unique_lock<std::mutex> orchestratorLock(*orchestratorJobMutex, std::defer_lock);
+      std::unique_lock<std::mutex> jsThreadLock(*jsThreadCallbackMutex, std::defer_lock);
+      std::lock(orchestratorLock, jsThreadLock);
+
+      // Once we've marked for deletion, we will start cancelling all callbacks
+      // when an attempt to queue a callback is made
+      isMarkedForDeletion = true;
+      // We want to grab all of the jobs that have been queued and run their cancel routines
+      // so that we can clean up their resources
+      orchestratorJobQueue.swap(cancelledJobs);
+      // We also want to grab all callbacks that have been queued so that we can
+      // run their cancel routines, this will help terminate the async workers
+      // that are currently being executed complete so that the threads
+      // running them can exit cleanly
+      jsThreadCallbackQueue.swap(cancelledCallbacks);
+      // Pushing a ShutdownJob into the queue will instruct all threads
+      // to start their shutdown process when they see the job is available.
+      orchestratorJobQueue.emplace(new Orchestrator::ShutdownJob);
+
+      if (workInProgressCount) {
+        // unref the jsThreadCallback for all work in progress
+        // it will not be used after this function has completed
+        while (workInProgressCount--) {
+          uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
+        }
+      }
+
+      orchestratorJobCondition.notify_all();
+    }
+
+    Nan::HandleScope scope;
+    v8::Local<v8::Context> context = Nan::GetCurrentContext();
+    node::CallbackScope callbackScope(context->GetIsolate(), Nan::New<v8::Object>(), {0, 0});
+
+    while (cancelledJobs.size()) {
+      std::shared_ptr<Orchestrator::Job> cancelledJob = cancelledJobs.front();
+      std::shared_ptr<Orchestrator::AsyncWorkJob> asyncWorkJob = std::static_pointer_cast<Orchestrator::AsyncWorkJob>(cancelledJob);
+
+      asyncWorkJob->worker->Cancel();
+      asyncWorkJob->worker->WorkComplete();
+      asyncWorkJob->worker->Destroy();
+
+      cancelledJobs.pop();
+    }
+
+    // We need to cancel all callbacks that were scheduled before the shutdown
+    // request went through. This will help finish any work any currently operating
+    // executors are undertaking
+    while (cancelledCallbacks.size()) {
+      JSThreadCallback cancelledCallback = cancelledCallbacks.front();
+      cancelledCallback.cancel();
+      cancelledCallbacks.pop();
+    }
+
+    std::for_each(orchestrators.begin(), orchestrators.end(), [](Orchestrator &orchestrator) {
+      orchestrator.WaitForThreadClose();
+    });
+
+    // After we have completed waiting for all threads to close
+    // we will need to cleanup the rest of the completion callbacks
+    // from workers that were still running when the shutdown signal
+    // was sent
+    std::lock_guard<std::mutex> jsThreadLock(*jsThreadCallbackMutex);
+    while (jsThreadCallbackQueue.size()) {
+      JSThreadCallback jsThreadCallback = jsThreadCallbackQueue.front();
+      jsThreadCallback.cancel();
+      jsThreadCallbackQueue.pop();
     }
   }
 
@@ -569,6 +665,10 @@ namespace nodegit {
 
   Nan::AsyncResource *ThreadPool::GetCurrentAsyncResource() {
     return Executor::GetCurrentAsyncResource();
+  }
+
+  void ThreadPool::Shutdown() {
+    impl->Shutdown();
   }
 
   void ThreadPool::InitializeGlobal() {

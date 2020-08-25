@@ -5,6 +5,13 @@ namespace nodegit {
     : Nan::AsyncWorker(callback, resourceName)
   {}
 
+  void AsyncWorker::Cancel() {
+    // We use Nan::AsyncWorker's ErrorMessage flow
+    // to trigger `HandleErrorCallback` for cancellation
+    // of AsyncWork
+    SetErrorMessage("SHUTTING DOWN");
+  }
+
   Nan::AsyncResource *AsyncWorker::GetAsyncResource() {
     return async_resource;
   }

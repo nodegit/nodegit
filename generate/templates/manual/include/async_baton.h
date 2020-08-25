@@ -28,7 +28,7 @@ namespace nodegit {
       Nan::AsyncResource *GetAsyncResource();
 
     protected:
-      void ExecuteAsyncPerform(AsyncCallback asyncCallback, CompletionCallback onCompletion);
+      void ExecuteAsyncPerform(AsyncCallback asyncCallback, AsyncCallback asyncCancelCb, CompletionCallback onCompletion);
 
     private:
       void SignalCompletion();
@@ -53,17 +53,17 @@ namespace nodegit {
         : defaultResult(defaultResult) {
       }
 
-      ResultT ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::CompletionCallback onCompletion = nullptr) {
+      ResultT ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::AsyncCallback asyncCancelCb, AsyncBaton::CompletionCallback onCompletion = nullptr) {
         result = 0;
-        ExecuteAsyncPerform(asyncCallback, onCompletion);
+        ExecuteAsyncPerform(asyncCallback, asyncCancelCb, onCompletion);
         return result;
       }
   };
 
   class AsyncBatonWithNoResult : public AsyncBaton {
     public:
-      void ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::CompletionCallback onCompletion = nullptr) {
-        ExecuteAsyncPerform(asyncCallback, onCompletion);
+      void ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::AsyncCallback asyncCancelCb, AsyncBaton::CompletionCallback onCompletion = nullptr) {
+        ExecuteAsyncPerform(asyncCallback, asyncCancelCb, onCompletion);
       }
   };
 }

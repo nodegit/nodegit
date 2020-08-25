@@ -15,15 +15,17 @@ namespace nodegit {
   public:
     Context(v8::Isolate *isolate);
 
+    ~Context();
+
+    static Context *GetCurrentContext();
+
+    v8::Local<v8::Value> GetFromPersistent(std::string key);
+
     void QueueWorker(nodegit::AsyncWorker *worker);
 
     void SaveToPersistent(std::string key, const v8::Local<v8::Value> &value);
 
-    v8::Local<v8::Value> GetFromPersistent(std::string key);
-
-    static Context *GetCurrentContext();
-
-    ~Context();
+    void ShutdownThreadPool();
 
   private:
     v8::Isolate *isolate;

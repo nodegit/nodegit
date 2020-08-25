@@ -53,6 +53,7 @@ class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
             {% endeach %}
           );
 
+          static void {{ field.name }}_cancelAsync(void *baton);
           static void {{ field.name }}_async(void *baton);
           static void {{ field.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result);
           {% if field.return.type == 'void' %}
