@@ -10,6 +10,7 @@ describe("Revert", function() {
 
   var Revert = NodeGit.Revert;
   var RevertOptions = NodeGit.RevertOptions;
+  var Status = NodeGit.Status;
 
   var test;
   var fileName = "foobar.js";
@@ -51,15 +52,13 @@ describe("Revert", function() {
   });
 
   it("revert modifies the index", function() {
-    Revert.revert(test.repository, test.firstCommit, new RevertOptions())
-    .then(function() {
-      return test.repository.index();
-    })
-    .then(function(index) {
-      var entries = index.entries;
-      assert.equal(1, entries.length);
-      assert.ok(_.endsWith(fileName, entries[0].path));
-    });
+    return Revert.revert(test.repository, test.firstCommit, new RevertOptions())
+      .then(() => test.repository.getStatus())
+      .then((status) => {
+        assert.equal(1, status.length);
+        assert.ok(_.endsWith(fileName, status[0].path()));
+        assert.equal(Status.STATUS.INDEX_DELETED, status[0].statusBit());
+      });
   });
 
   it("RevertOptions is optional (unspecified)", function() {

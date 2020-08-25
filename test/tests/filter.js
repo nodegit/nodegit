@@ -266,7 +266,11 @@ describe("Filter", function() {
         return Checkout.head(test.repository, opts);
       })
       .then(function(head) {
-        assert.fail(head, undefined, "Should not have actually checked out");
+        assert.strictEqual(
+          head,
+          undefined,
+          "Should not have actually checked out"
+        );
       })
       .catch(function(error) {
         assert.strictEqual(initialized, true);
@@ -406,7 +410,7 @@ describe("Filter", function() {
 
     var message = "some new fancy filter";
     var length = message.length;
-    var tempBuffer = new Buffer(message, "utf-8");
+    var tempBuffer = Buffer.from(message, "utf-8");
     var largeBufferSize = 500000000;
 
     it("should not apply when check returns GIT_PASSTHROUGH", function(){
@@ -938,7 +942,7 @@ describe("Filter", function() {
 
     var message = "This is the filtered content, friends";
     var length = message.length;
-    var tempBuffer = new Buffer(message, "utf-8");
+    var tempBuffer = Buffer.from(message, "utf-8");
 
     it("applies the filters for a path on demand", function() {
       var test = this;

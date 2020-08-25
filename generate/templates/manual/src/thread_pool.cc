@@ -1,3 +1,4 @@
+#include <nan.h>
 #include "../include/thread_pool.h"
 
 ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop) {
@@ -73,6 +74,9 @@ void ThreadPool::RunLoopCallbacks(uv_async_t* handle) {
 }
 
 void ThreadPool::RunLoopCallbacks() {
+  Nan::HandleScope scope;
+  v8::Local<v8::Context> context = Nan::GetCurrentContext();
+  node::CallbackScope callbackScope(context->GetIsolate(), Nan::New<v8::Object>(), {0, 0});
   // get the next callback to run
   uv_mutex_lock(&loopMutex);
   LoopCallback loopCallback = loopQueue.front();
