@@ -131,6 +131,24 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
     {%endif%}
 }
 
+void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
+  puts("HandleErrorCallback");
+  // inspect the baton for any pointers that have been initialized
+  // free any pointers that have been initialized
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+    baton->error = NULL;
+  }
+
+  // free the baton
+  delete baton;
+  baton = NULL;
+}
+
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   {%if return.isResultOrError %}
     if (baton->error_code >= GIT_OK) {

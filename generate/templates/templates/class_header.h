@@ -142,6 +142,7 @@ class {{ cppClassName }} : public
           , baton(_baton) {};
         ~{{ function.cppFunctionName }}Worker() {};
         void Execute();
+        void HandleErrorCallback();
         void HandleOKCallback();
         nodegit::LockMaster AcquireLocks();
 
