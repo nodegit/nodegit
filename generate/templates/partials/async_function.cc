@@ -133,6 +133,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
   puts("{{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback()");
+
+  v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error(ErrorMessage())).ToLocalChecked();
+  Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
+  v8::Local<v8::Value> argv[1] = {
+    err
+  };
+  callback->Call(1, argv, async_resource);
+
   // inspect the baton for any pointers that have been initialized
   // free any pointers that have been initialized
   if (baton->error) {
