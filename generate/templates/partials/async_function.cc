@@ -132,7 +132,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
-  puts("HandleErrorCallback");
+  puts("{{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback()");
   // inspect the baton for any pointers that have been initialized
   // free any pointers that have been initialized
   if (baton->error) {
@@ -143,6 +143,54 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
     free((void *)baton->error);
     baton->error = NULL;
   }
+
+  {%each args|argsInfo as arg %}
+    {%if arg.shouldAlloc %}
+      {%if not arg.isCppClassStringOrArray %}
+      {%elsif arg | isOid %}
+        if (baton->{{ arg.name}}NeedsFree) {
+          baton->{{ arg.name}}NeedsFree = false;
+          free((void*)baton->{{ arg.name }});
+        }
+      {%elsif arg.isCallbackFunction %}
+        {%if not arg.payload.globalPayload %}
+          delete baton->{{ arg.payload.name }};
+        {%endif%}
+      {%elsif arg.globalPayload %}
+        delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
+      {%else%}
+        free((void*)baton->{{ arg.name }});
+      {%endif%}
+    {%endif%}
+  {%endeach%}
+
+  {%each args|argsInfo as arg %}
+    {%if arg.isCppClassStringOrArray %}
+      {%if arg.freeFunctionName %}
+        {{ arg.freeFunctionName }}(baton->{{ arg.name }});
+      {%elsif not arg.isConst%}
+        free((void *)baton->{{ arg.name }});
+      {%endif%}
+    {%elsif arg | isOid %}
+      if (baton->{{ arg.name}}NeedsFree) {
+        baton->{{ arg.name}}NeedsFree = false;
+        free((void *)baton->{{ arg.name }});
+      }
+    {%elsif arg.isCallbackFunction %}
+      {%if not arg.payload.globalPayload %}
+        delete baton->{{ arg.payload.name }};
+      {%endif%}
+    {%elsif arg.globalPayload %}
+      delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
+    {%endif%}
+    {%if arg.cppClassName == "GitBuf" %}
+      {%if cppFunctionName == "Set" %}
+      {%else%}
+        git_buf_dispose(baton->{{ arg.name }});
+        free((void *)baton->{{ arg.name }});
+      {%endif%}
+    {%endif%}
+  {%endeach%}
 
   // free the baton
   delete baton;
