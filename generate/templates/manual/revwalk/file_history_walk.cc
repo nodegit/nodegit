@@ -424,6 +424,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
   baton->file_path = NULL;
 }
 
+void GitRevwalk::FileHistoryWalkWorker::HandleErrorCallback() {}
+
 void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
 {
   if (baton->out != NULL) {

@@ -51,6 +51,8 @@ void GitRemote::ReferenceListWorker::Execute()
   }
 }
 
+void GitRemote::ReferenceListWorker::HandleErrorCallback() {}
+
 void GitRemote::ReferenceListWorker::HandleOKCallback()
 {
   if (baton->out != NULL)

@@ -125,6 +125,8 @@ void GitClone::CloneWorker::Execute() {
   }
 }
 
+void GitClone::CloneWorker::HandleErrorCallback() {}
+
 void GitClone::CloneWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
     v8::Local<v8::Value> to;

@@ -77,6 +77,8 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
   }
 }
 
+void GitPatch::ConvenientFromDiffWorker::HandleErrorCallback() {}
+
 void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
   if (baton->out != NULL) {
     unsigned int size = baton->out->size();

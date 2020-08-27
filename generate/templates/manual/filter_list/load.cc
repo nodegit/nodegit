@@ -131,6 +131,8 @@ void GitFilterList::LoadWorker::Execute() {
   }
 }
 
+void GitFilterList::LoadWorker::HandleErrorCallback() {}
+
 void GitFilterList::LoadWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
     v8::Local<v8::Value> to;

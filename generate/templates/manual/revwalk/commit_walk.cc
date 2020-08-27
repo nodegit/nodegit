@@ -207,6 +207,8 @@ void GitRevwalk::CommitWalkWorker::Execute() {
   }
 }
 
+void GitRevwalk::CommitWalkWorker::HandleErrorCallback() {}
+
 void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
   if (baton->out != NULL) {
     std::vector<CommitModel *> *out = static_cast<std::vector<CommitModel *> *>(baton->out);

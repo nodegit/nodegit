@@ -589,6 +589,8 @@ void GitRepository::RefreshReferencesWorker::Execute()
   }
 }
 
+void GitRepository::RefreshReferencesWorker::HandleErrorCallback() {}
+
 void GitRepository::RefreshReferencesWorker::HandleOKCallback()
 {
   if (baton->out != NULL)

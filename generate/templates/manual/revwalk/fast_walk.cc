@@ -72,6 +72,8 @@ void GitRevwalk::FastWalkWorker::Execute()
   }
 }
 
+void GitRevwalk::FastWalkWorker::HandleErrorCallback() {}
+
 void GitRevwalk::FastWalkWorker::HandleOKCallback()
 {
   if (baton->out != NULL)

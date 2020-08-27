@@ -46,6 +46,8 @@ void GitFilterSource::RepoWorker::Execute() {
   }
 }
 
+void GitFilterSource::RepoWorker::HandleErrorCallback() {}
+
 void GitFilterSource::RepoWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
     v8::Local<v8::Value> to;

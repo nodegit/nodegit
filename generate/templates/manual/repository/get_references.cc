@@ -81,6 +81,8 @@ void GitRepository::GetReferencesWorker::Execute()
   }
 }
 
+void GitRepository::GetReferencesWorker::HandleErrorCallback() {}
+
 void GitRepository::GetReferencesWorker::HandleOKCallback()
 {
   if (baton->out != NULL)

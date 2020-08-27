@@ -94,6 +94,8 @@ void GitCommit::ExtractSignatureWorker::Execute()
   }
 }
 
+void GitCommit::ExtractSignatureWorker::HandleErrorCallback() {}
+
 void GitCommit::ExtractSignatureWorker::HandleOKCallback()
 {
   if (baton->error_code == GIT_OK)

@@ -62,6 +62,8 @@ void GitRepository::GetSubmodulesWorker::Execute()
   }
 }
 
+void GitRepository::GetSubmodulesWorker::HandleErrorCallback() {}
+
 void GitRepository::GetSubmodulesWorker::HandleOKCallback()
 {
   if (baton->out != NULL)

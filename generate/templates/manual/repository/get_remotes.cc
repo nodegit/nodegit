@@ -83,6 +83,8 @@ void GitRepository::GetRemotesWorker::Execute()
   }
 }
 
+void GitRepository::GetRemotesWorker::HandleErrorCallback() {}
+
 void GitRepository::GetRemotesWorker::HandleOKCallback()
 {
   if (baton->out != NULL)
