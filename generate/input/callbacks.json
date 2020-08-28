@@ -14,7 +14,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_apply_hunk_cb": {
@@ -32,7 +33,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_attr_foreach_cb": {
@@ -54,7 +56,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_checkout_notify_cb": {
@@ -88,7 +91,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": 0
     }
   },
   "git_checkout_progress_cb": {
@@ -111,10 +115,7 @@
       }
     ],
     "return": {
-      "type": "int",
-      "noResults": 1,
-      "success": 0,
-      "error": -1,
+      "type": "void",
       "throttle": 100
     }
   },
@@ -130,10 +131,8 @@
       }
     ],
     "return": {
-      "type": "int",
-      "noResults": 1,
-      "success": 0,
-      "error": -1
+      "type": "void",
+      "throttle": 100
     }
   },
   "git_commit_signing_cb": {
@@ -159,7 +158,8 @@
       "type": "int",
       "noResults": -30,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_config_foreach_cb": {
@@ -177,7 +177,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_credential_acquire_cb": {
@@ -208,7 +209,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_diff_binary_cb": {
@@ -230,7 +232,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_diff_file_cb": {
@@ -253,7 +256,7 @@
       "noResults": 1,
       "success": 0,
       "error": -1,
-      "throttle": 100
+      "cancel": -1
     }
   },
   "git_diff_hunk_cb": {
@@ -275,7 +278,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_diff_line_cb": {
@@ -301,7 +305,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_diff_notify_cb": {
@@ -328,7 +333,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_diff_progress_cb": {
@@ -355,7 +361,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_filter_apply_fn": {
@@ -385,7 +392,8 @@
       "type": "int",
       "noResults": -30,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_filter_check_fn": {
@@ -411,7 +419,8 @@
       "type": "int",
       "noResults": -30,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_filter_cleanup_fn": {
@@ -440,7 +449,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_filter_shutdown_fn": {
@@ -473,7 +483,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_indexer_progress_cb": {
@@ -492,6 +503,7 @@
       "noResults": 0,
       "success": 0,
       "error": -1,
+      "cancel": -1,
       "throttle": 100
     }
   },
@@ -514,7 +526,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_odb_foreach_cb": {
@@ -527,7 +540,14 @@
         "name": "payload",
         "cType": "void *"
       }
-    ]
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": -1,
+      "cancel": -1
+    }
   },
   "git_packbuilder_foreach_cb": {
     "args": [
@@ -548,7 +568,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_push_update_reference_cb": {
@@ -570,7 +591,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_remote_create_cb": {
@@ -601,7 +623,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": 1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_repository_create_cb": {
@@ -628,7 +651,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": 1
+      "error": 1,
+      "cancel": -1
     }
   },
   "git_reference_foreach_cb": {
@@ -646,7 +670,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_reference_foreach_name_cb": {
@@ -664,7 +689,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_repository_fetchhead_foreach_cb": {
@@ -694,7 +720,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": 1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_repository_mergehead_foreach_cb": {
@@ -712,7 +739,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": 1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_revwalk_hide_cb": {
@@ -730,7 +758,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_stash_apply_progress_cb": {
@@ -749,6 +778,7 @@
       "noResults":0,
       "success": 0,
       "error": -1,
+      "cancel": -1,
       "throttle": 100
     }
   },
@@ -775,7 +805,8 @@
       "type": "int",
       "noResults":0,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_status_cb": {
@@ -797,7 +828,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_submodule_cb": {
@@ -819,7 +851,8 @@
       "type": "int",
       "noResults": 0,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_tag_foreach_cb": {
@@ -841,7 +874,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_push_transfer_progress_cb": {
@@ -868,6 +902,7 @@
       "noResults": 0,
       "success": 0,
       "error": -1,
+      "cancel": -1,
       "throttle": 100
     }
   },
@@ -891,7 +926,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_transport_certificate_check_cb": {
@@ -917,7 +953,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_transport_message_cb": {
@@ -939,7 +976,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_treebuilder_filter_cb": {
@@ -957,7 +995,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": 0
     }
   },
   "git_treewalk_cb": {
@@ -979,7 +1018,8 @@
       "type": "int",
       "noResults": 1,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -1
     }
   },
   "git_url_resolve_cb": {
@@ -1005,7 +1045,8 @@
       "type": "int",
       "noResults": -30,
       "success": 0,
-      "error": -1
+      "error": -1,
+      "cancel": -30
     }
   }
 }

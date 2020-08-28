@@ -165,7 +165,11 @@
       }
 
       void {{ cppClassName }}::{{ field.name }}_cancelAsync(void *untypedBaton) {
-
+        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(untypedBaton);
+        {% if field.return.type != "void" %}
+          baton->result = {{ field.return.cancel }};
+        {% endif %}
+        baton->Done();
       }
 
       void {{ cppClassName }}::{{ field.name }}_async(void *untypedBaton) {
