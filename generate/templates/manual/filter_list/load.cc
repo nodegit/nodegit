@@ -131,7 +131,17 @@ void GitFilterList::LoadWorker::Execute() {
   }
 }
 
-void GitFilterList::LoadWorker::HandleErrorCallback() {}
+void GitFilterList::LoadWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitFilterList::LoadWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {

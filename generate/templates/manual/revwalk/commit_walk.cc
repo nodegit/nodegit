@@ -207,7 +207,17 @@ void GitRevwalk::CommitWalkWorker::Execute() {
   }
 }
 
-void GitRevwalk::CommitWalkWorker::HandleErrorCallback() {}
+void GitRevwalk::CommitWalkWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
   if (baton->out != NULL) {
@@ -252,4 +262,6 @@ void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
   } else {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

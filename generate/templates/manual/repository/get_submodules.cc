@@ -62,7 +62,17 @@ void GitRepository::GetSubmodulesWorker::Execute()
   }
 }
 
-void GitRepository::GetSubmodulesWorker::HandleErrorCallback() {}
+void GitRepository::GetSubmodulesWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRepository::GetSubmodulesWorker::HandleOKCallback()
 {
@@ -118,4 +128,6 @@ void GitRepository::GetSubmodulesWorker::HandleOKCallback()
   {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

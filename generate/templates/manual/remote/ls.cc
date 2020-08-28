@@ -51,7 +51,17 @@ void GitRemote::ReferenceListWorker::Execute()
   }
 }
 
-void GitRemote::ReferenceListWorker::HandleErrorCallback() {}
+void GitRemote::ReferenceListWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRemote::ReferenceListWorker::HandleOKCallback()
 {
@@ -98,4 +108,6 @@ void GitRemote::ReferenceListWorker::HandleOKCallback()
   {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

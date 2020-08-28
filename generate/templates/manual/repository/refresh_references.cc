@@ -589,7 +589,17 @@ void GitRepository::RefreshReferencesWorker::Execute()
   }
 }
 
-void GitRepository::RefreshReferencesWorker::HandleErrorCallback() {}
+void GitRepository::RefreshReferencesWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRepository::RefreshReferencesWorker::HandleOKCallback()
 {
@@ -678,4 +688,6 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
   {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

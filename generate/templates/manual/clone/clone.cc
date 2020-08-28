@@ -125,7 +125,17 @@ void GitClone::CloneWorker::Execute() {
   }
 }
 
-void GitClone::CloneWorker::HandleErrorCallback() {}
+void GitClone::CloneWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitClone::CloneWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {

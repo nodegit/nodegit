@@ -424,7 +424,17 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
   baton->file_path = NULL;
 }
 
-void GitRevwalk::FileHistoryWalkWorker::HandleErrorCallback() {}
+void GitRevwalk::FileHistoryWalkWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
 {
@@ -483,4 +493,6 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
   }
 
   callback->Call(0, NULL, async_resource);
+
+  delete baton;
 }

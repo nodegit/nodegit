@@ -83,7 +83,17 @@ void GitRepository::GetRemotesWorker::Execute()
   }
 }
 
-void GitRepository::GetRemotesWorker::HandleErrorCallback() {}
+void GitRepository::GetRemotesWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRepository::GetRemotesWorker::HandleOKCallback()
 {
@@ -139,4 +149,6 @@ void GitRepository::GetRemotesWorker::HandleOKCallback()
   {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

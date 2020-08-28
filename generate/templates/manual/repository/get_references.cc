@@ -81,7 +81,17 @@ void GitRepository::GetReferencesWorker::Execute()
   }
 }
 
-void GitRepository::GetReferencesWorker::HandleErrorCallback() {}
+void GitRepository::GetReferencesWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRepository::GetReferencesWorker::HandleOKCallback()
 {
@@ -137,4 +147,6 @@ void GitRepository::GetReferencesWorker::HandleOKCallback()
   {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

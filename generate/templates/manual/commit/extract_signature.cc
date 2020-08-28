@@ -94,7 +94,17 @@ void GitCommit::ExtractSignatureWorker::Execute()
   }
 }
 
-void GitCommit::ExtractSignatureWorker::HandleErrorCallback() {}
+void GitCommit::ExtractSignatureWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitCommit::ExtractSignatureWorker::HandleOKCallback()
 {

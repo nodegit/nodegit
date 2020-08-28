@@ -46,7 +46,17 @@ void GitFilterSource::RepoWorker::Execute() {
   }
 }
 
-void GitFilterSource::RepoWorker::HandleErrorCallback() {}
+void GitFilterSource::RepoWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitFilterSource::RepoWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {

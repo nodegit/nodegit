@@ -72,7 +72,17 @@ void GitRevwalk::FastWalkWorker::Execute()
   }
 }
 
-void GitRevwalk::FastWalkWorker::HandleErrorCallback() {}
+void GitRevwalk::FastWalkWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitRevwalk::FastWalkWorker::HandleOKCallback()
 {
@@ -180,4 +190,6 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       callback->Call(0, NULL, async_resource);
     }
   }
+
+  delete baton;
 }

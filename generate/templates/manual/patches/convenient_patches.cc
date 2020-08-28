@@ -77,7 +77,17 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
   }
 }
 
-void GitPatch::ConvenientFromDiffWorker::HandleErrorCallback() {}
+void GitPatch::ConvenientFromDiffWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
 
 void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
   if (baton->out != NULL) {
