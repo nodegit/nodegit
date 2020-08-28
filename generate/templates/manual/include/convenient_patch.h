@@ -77,6 +77,7 @@ class ConvenientPatch : public Nan::ObjectWrap {
           , baton(_baton) {};
         ~HunksWorker() {};
         void Execute();
+        void HandleErrorCallback();
         void HandleOKCallback();
         nodegit::LockMaster AcquireLocks();
 

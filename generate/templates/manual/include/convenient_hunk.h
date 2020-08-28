@@ -65,6 +65,7 @@ class ConvenientHunk : public Nan::ObjectWrap {
           , baton(_baton) {};
         ~LinesWorker() {};
         void Execute();
+        void HandleErrorCallback();
         void HandleOKCallback();
         nodegit::LockMaster AcquireLocks();
 

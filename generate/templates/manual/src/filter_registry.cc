@@ -96,6 +96,18 @@ void GitFilterRegistry::RegisterWorker::Execute() {
   }
 }
 
+void GitFilterRegistry::RegisterWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
+
 void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
     v8::Local<v8::Value> result = Nan::New(baton->error_code);
@@ -134,8 +146,8 @@ void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
   else {
     callback->Call(0, NULL, async_resource);
   }
+
   delete baton;
-  return;
 }
 
 NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
@@ -187,6 +199,18 @@ void GitFilterRegistry::UnregisterWorker::Execute() {
   }
 }
 
+void GitFilterRegistry::UnregisterWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  delete baton;
+}
+
 void GitFilterRegistry::UnregisterWorker::HandleOKCallback() {
   if (baton->error_code == GIT_OK) {
     nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
@@ -228,6 +252,6 @@ void GitFilterRegistry::UnregisterWorker::HandleOKCallback() {
   else {
     callback->Call(0, NULL, async_resource);
   }
+
   delete baton;
-  return;
 }

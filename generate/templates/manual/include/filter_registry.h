@@ -54,6 +54,7 @@ class GitFilterRegistry : public Nan::ObjectWrap {
         : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Register"), baton(_baton) {};
         ~RegisterWorker() {};
         void Execute();
+        void HandleErrorCallback();
         void HandleOKCallback();
         nodegit::LockMaster AcquireLocks();
 
@@ -67,6 +68,7 @@ class GitFilterRegistry : public Nan::ObjectWrap {
         : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Unregister"), baton(_baton) {};
         ~UnregisterWorker() {};
         void Execute();
+        void HandleErrorCallback();
         void HandleOKCallback();
         nodegit::LockMaster AcquireLocks();
 

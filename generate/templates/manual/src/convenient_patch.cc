@@ -263,6 +263,8 @@ void ConvenientPatch::HunksWorker::Execute() {
   }
 }
 
+void ConvenientPatch::HunksWorker::HandleErrorCallback() {}
+
 void ConvenientPatch::HunksWorker::HandleOKCallback() {
   unsigned int size = baton->hunks->size();
   Local<Array> result = Nan::New<Array>(size);
@@ -278,6 +280,8 @@ void ConvenientPatch::HunksWorker::HandleOKCallback() {
     result
   };
   callback->Call(2, argv, async_resource);
+
+  delete baton;
 }
 
 NAN_METHOD(ConvenientPatch::LineStats) {

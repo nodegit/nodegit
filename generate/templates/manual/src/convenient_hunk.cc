@@ -130,6 +130,8 @@ void ConvenientHunk::LinesWorker::Execute() {
   }
 }
 
+void ConvenientHunk::LinesWorker::HandleErrorCallback() {}
+
 void ConvenientHunk::LinesWorker::HandleOKCallback() {
   unsigned int size = baton->lines->size();
   Local<Array> result = Nan::New<Array>(size);
@@ -145,6 +147,8 @@ void ConvenientHunk::LinesWorker::HandleOKCallback() {
     result
   };
   callback->Call(2, argv, async_resource);
+
+  delete baton;
 }
 
 NAN_METHOD(ConvenientHunk::OldStart) {
