@@ -22,6 +22,11 @@ namespace nodegit {
     // This is used to inform libgit2 callbacks what asyncResource
     // they should use when working with any javascript
     Nan::AsyncResource *GetAsyncResource();
+
+    bool GetIsCancelled() const;
+
+  private:
+    bool isCancelled = false;
   };
 }
 

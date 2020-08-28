@@ -6,6 +6,8 @@ namespace nodegit {
   {}
 
   void AsyncWorker::Cancel() {
+    isCancelled = true;
+
     // We use Nan::AsyncWorker's ErrorMessage flow
     // to trigger `HandleErrorCallback` for cancellation
     // of AsyncWork
@@ -14,5 +16,9 @@ namespace nodegit {
 
   Nan::AsyncResource *AsyncWorker::GetAsyncResource() {
     return async_resource;
+  }
+
+  bool AsyncWorker::GetIsCancelled() const {
+    return isCancelled;
   }
 }
