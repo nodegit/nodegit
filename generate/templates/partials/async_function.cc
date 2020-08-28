@@ -132,8 +132,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
-  puts("{{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback()");
-
   if (!GetIsCancelled()) {
     v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error(ErrorMessage())).ToLocalChecked();
     Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
@@ -143,15 +141,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
     callback->Call(1, argv, async_resource);
   }
 
-  // inspect the baton for any pointers that have been initialized
-  // free any pointers that have been initialized
   if (baton->error) {
     if (baton->error->message) {
       free((void *)baton->error->message);
     }
 
     free((void *)baton->error);
-    baton->error = NULL;
   }
 
   {%each args|argsInfo as arg %}
@@ -202,9 +197,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
     {%endif%}
   {%endeach%}
 
-  // free the baton
   delete baton;
-  baton = NULL;
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
