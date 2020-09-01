@@ -166,13 +166,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
       {%else%}
         free((void*)baton->{{ arg.name }});
       {%endif%}
+    {%elsif arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
+      {{ arg.freeFunctionName }}(baton->{{ arg.name }});
     {%endif%}
   {%endeach%}
 
   {%each args|argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}
       {%if arg.freeFunctionName %}
-        {{ arg.freeFunctionName }}(baton->{{ arg.name }});
       {%elsif not arg.isConst%}
         free((void *)baton->{{ arg.name }});
       {%endif%}
@@ -331,6 +332,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {%else%}
           free((void*)baton->{{ arg.name }});
         {%endif%}
+      {%elsif arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
+        {{ arg.freeFunctionName }}(baton->{{ arg.name }});
       {%endif%}
     {%endeach%}
   }
@@ -338,7 +341,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   {%each args|argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}
       {%if arg.freeFunctionName %}
-        {{ arg.freeFunctionName }}(baton->{{ arg.name }});
       {%elsif not arg.isConst%}
         free((void *)baton->{{ arg.name }});
       {%endif%}
