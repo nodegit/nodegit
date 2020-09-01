@@ -6,7 +6,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
+  {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
