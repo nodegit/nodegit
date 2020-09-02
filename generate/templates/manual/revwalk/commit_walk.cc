@@ -216,6 +216,14 @@ void GitRevwalk::CommitWalkWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  auto out = static_cast<std::vector<CommitModel *> *>(baton->out);
+  while (out->size()) {
+    delete out->back();
+    out->pop_back();
+  }
+
+  delete out;
+
   delete baton;
 }
 

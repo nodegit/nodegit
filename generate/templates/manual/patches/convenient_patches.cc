@@ -86,6 +86,13 @@ void GitPatch::ConvenientFromDiffWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  while (!baton->out->empty()) {
+    PatchDataFree(baton->out->back());
+    baton->out->pop_back();
+  }
+
+  delete baton->out;
+
   delete baton;
 }
 

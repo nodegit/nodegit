@@ -99,6 +99,8 @@ NAN_METHOD(ConvenientHunk::Lines) {
   LinesBaton *baton = new LinesBaton();
 
   baton->hunk = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue();
+  baton->lines = new std::vector<git_diff_line *>;
+  baton->lines->reserve(baton->hunk->numLines);
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   LinesWorker *worker = new LinesWorker(baton, callback);
@@ -115,8 +117,6 @@ nodegit::LockMaster ConvenientHunk::LinesWorker::AcquireLocks() {
 }
 
 void ConvenientHunk::LinesWorker::Execute() {
-  baton->lines = new std::vector<git_diff_line *>;
-  baton->lines->reserve(baton->hunk->numLines);
   for (unsigned int i = 0; i < baton->hunk->numLines; ++i) {
     git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
     storeLine->origin = baton->hunk->lines->at(i)->origin;
@@ -130,7 +130,14 @@ void ConvenientHunk::LinesWorker::Execute() {
   }
 }
 
-void ConvenientHunk::LinesWorker::HandleErrorCallback() {}
+void ConvenientHunk::LinesWorker::HandleErrorCallback() {
+  while (!baton->lines->empty()) {
+    free(baton->lines->back());
+    baton->lines->pop_back();
+  }
+
+  delete baton->lines;
+}
 
 void ConvenientHunk::LinesWorker::HandleOKCallback() {
   unsigned int size = baton->lines->size();

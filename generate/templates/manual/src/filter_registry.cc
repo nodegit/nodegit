@@ -105,6 +105,8 @@ void GitFilterRegistry::RegisterWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  free(baton->filter_name);
+
   delete baton;
 }
 
@@ -146,6 +148,8 @@ void GitFilterRegistry::RegisterWorker::HandleOKCallback() {
   else {
     callback->Call(0, NULL, async_resource);
   }
+
+  free(baton->filter_name);
 
   delete baton;
 }
@@ -208,6 +212,8 @@ void GitFilterRegistry::UnregisterWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  free(baton->filter_name);
+
   delete baton;
 }
 
@@ -252,6 +258,8 @@ void GitFilterRegistry::UnregisterWorker::HandleOKCallback() {
   else {
     callback->Call(0, NULL, async_resource);
   }
+
+  free(baton->filter_name);
 
   delete baton;
 }

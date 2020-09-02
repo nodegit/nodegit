@@ -433,6 +433,14 @@ void GitRevwalk::FileHistoryWalkWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  for (unsigned int i = 0; i < baton->out->size(); ++i) {
+    delete static_cast<FileHistoryEvent *>(baton->out->at(i));
+  }
+
+  delete baton->out;
+
+  free((void *)baton->file_path);
+
   delete baton;
 }
 

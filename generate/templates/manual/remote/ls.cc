@@ -60,6 +60,8 @@ void GitRemote::ReferenceListWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  delete baton->out;
+
   delete baton;
 }
 

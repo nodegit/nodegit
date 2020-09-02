@@ -103,6 +103,11 @@ void GitCommit::ExtractSignatureWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  git_buf_dispose(&baton->signature);
+  git_buf_dispose(&baton->signed_data);
+
+  free(baton->field);
+
   delete baton;
 }
 

@@ -215,6 +215,8 @@ NAN_METHOD(ConvenientPatch::Hunks) {
   HunksBaton *baton = new HunksBaton();
 
   baton->patch = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetValue();
+  baton->hunks = new std::vector<HunkData *>;
+  baton->hunks->reserve(baton->patch->numHunks);
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   HunksWorker *worker = new HunksWorker(baton, callback);
@@ -232,9 +234,6 @@ nodegit::LockMaster ConvenientPatch::HunksWorker::AcquireLocks() {
 
 void ConvenientPatch::HunksWorker::Execute() {
   // copy hunks
-  baton->hunks = new std::vector<HunkData *>;
-  baton->hunks->reserve(baton->patch->numHunks);
-
   for (unsigned int i = 0; i < baton->patch->numHunks; ++i) {
     HunkData *hunkData = new HunkData();
     hunkData->numLines = baton->patch->hunks->at(i)->numLines;
@@ -263,7 +262,19 @@ void ConvenientPatch::HunksWorker::Execute() {
   }
 }
 
-void ConvenientPatch::HunksWorker::HandleErrorCallback() {}
+void ConvenientPatch::HunksWorker::HandleErrorCallback() {
+  while (!baton->hunks->empty()) {
+    HunkData *hunk = baton->hunks->back();
+    baton->hunks->pop_back();
+
+    while (!hunk->lines->empty()) {
+      free(hunk->lines->back());
+      hunk->lines->pop_back();
+    }
+  }
+
+  delete baton->hunks;
+}
 
 void ConvenientPatch::HunksWorker::HandleOKCallback() {
   unsigned int size = baton->hunks->size();

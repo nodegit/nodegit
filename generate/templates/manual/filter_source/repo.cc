@@ -55,6 +55,8 @@ void GitFilterSource::RepoWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  git_repository_free(baton->out);
+
   delete baton;
 }
 

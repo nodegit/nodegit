@@ -81,6 +81,13 @@ void GitRevwalk::FastWalkWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  while(!baton->out->empty()) {
+    free(baton->out->back());
+    baton->out->pop_back();
+  }
+
+  delete baton->out;
+
   delete baton;
 }
 

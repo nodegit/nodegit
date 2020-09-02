@@ -90,6 +90,14 @@ void GitRepository::GetReferencesWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  while (baton->out->size()) {
+    git_reference *referenceToFree = baton->out->back();
+    baton->out->pop_back();
+    git_reference_free(referenceToFree);
+  }
+
+  delete baton->out;
+
   delete baton;
 }
 

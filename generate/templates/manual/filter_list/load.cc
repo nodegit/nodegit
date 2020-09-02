@@ -140,6 +140,10 @@ void GitFilterList::LoadWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  git_filter_list_free(baton->filters);
+
+  free((void *)baton->path);
+
   delete baton;
 }
 
@@ -259,6 +263,8 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       callback->Call(0, NULL, async_resource);
     }
   }
+
+  free((void *)baton->path);
 
   delete baton;
 }

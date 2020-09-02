@@ -598,6 +598,9 @@ void GitRepository::RefreshReferencesWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
+  delete refreshData;
+
   delete baton;
 }
 
@@ -606,7 +609,7 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
   if (baton->out != NULL)
   {
     RefreshedRefModel::ensureSignatureRegexes();
-    RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
+    auto refreshData = (RefreshReferencesData *)baton->out;
     v8::Local<v8::Object> result = Nan::New<Object>();
 
     Nan::Set(

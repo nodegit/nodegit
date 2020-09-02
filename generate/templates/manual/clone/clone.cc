@@ -134,6 +134,11 @@ void GitClone::CloneWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  git_repository_free(baton->out);
+
+  free((void*)baton->url);
+  free((void*)baton->local_path);
+
   delete baton;
 }
 
@@ -224,6 +229,9 @@ void GitClone::CloneWorker::HandleOKCallback() {
       callback->Call(0, NULL, async_resource);
     }
   }
+
+  free((void*)baton->url);
+  free((void*)baton->local_path);
 
   delete baton;
 }

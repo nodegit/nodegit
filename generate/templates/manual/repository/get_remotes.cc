@@ -92,6 +92,14 @@ void GitRepository::GetRemotesWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  while (baton->out->size()) {
+    git_remote *remoteToFree = baton->out->back();
+    baton->out->pop_back();
+    git_remote_free(remoteToFree);
+  }
+
+  delete baton->out;
+
   delete baton;
 }
 

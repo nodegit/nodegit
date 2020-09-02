@@ -71,6 +71,13 @@ void GitRepository::GetSubmodulesWorker::HandleErrorCallback() {
     free((void *)baton->error);
   }
 
+  while (baton->out->size()) {
+    git_submodule_free(baton->out->back());
+    baton->out->pop_back();
+  }
+
+  delete baton->out;
+
   delete baton;
 }
 
