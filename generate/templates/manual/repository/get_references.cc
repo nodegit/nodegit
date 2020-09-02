@@ -4,7 +4,7 @@ NAN_METHOD(GitRepository::GetReferences)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  GetReferencesBaton* baton = new GetReferencesBaton;
+  GetReferencesBaton* baton = new GetReferencesBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

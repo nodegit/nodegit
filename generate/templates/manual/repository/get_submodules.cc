@@ -4,7 +4,7 @@ NAN_METHOD(GitRepository::GetSubmodules)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  GetSubmodulesBaton* baton = new GetSubmodulesBaton;
+  GetSubmodulesBaton* baton = new GetSubmodulesBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

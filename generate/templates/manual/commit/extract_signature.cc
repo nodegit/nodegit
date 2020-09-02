@@ -22,7 +22,7 @@ NAN_METHOD(GitCommit::ExtractSignature)
     }
   }
 
-  ExtractSignatureBaton* baton = new ExtractSignatureBaton;
+  ExtractSignatureBaton* baton = new ExtractSignatureBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

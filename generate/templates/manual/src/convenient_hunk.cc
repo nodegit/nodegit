@@ -96,7 +96,7 @@ NAN_METHOD(ConvenientHunk::Lines) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  LinesBaton *baton = new LinesBaton;
+  LinesBaton *baton = new LinesBaton();
 
   baton->hunk = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue();
 

@@ -39,7 +39,7 @@ NAN_METHOD(GitFilterList::Load) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  LoadBaton *baton = new LoadBaton;
+  LoadBaton *baton = new LoadBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

@@ -121,7 +121,7 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
     }
   }
 
-  CommitWalkBaton* baton = new CommitWalkBaton;
+  CommitWalkBaton* baton = new CommitWalkBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

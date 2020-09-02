@@ -4,7 +4,7 @@ NAN_METHOD(GitRemote::ReferenceList)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  ReferenceListBaton* baton = new ReferenceListBaton;
+  ReferenceListBaton* baton = new ReferenceListBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

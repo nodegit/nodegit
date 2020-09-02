@@ -51,7 +51,7 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  FilterRegisterBaton *baton = new FilterRegisterBaton;
+  FilterRegisterBaton *baton = new FilterRegisterBaton();
 
   baton->filter = Nan::ObjectWrap::Unwrap<GitFilter>(Nan::To<v8::Object>(info[1]).ToLocalChecked())->GetValue();
   Nan::Utf8String name(Nan::To<v8::String>(info[0]).ToLocalChecked());
@@ -161,7 +161,7 @@ NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  FilterUnregisterBaton *baton = new FilterUnregisterBaton;
+  FilterUnregisterBaton *baton = new FilterUnregisterBaton();
   Nan::Utf8String name(Nan::To<v8::String>(info[0]).ToLocalChecked());
 
   baton->filter_name = (char *)malloc(name.length() + 1);

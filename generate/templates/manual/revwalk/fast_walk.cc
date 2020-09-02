@@ -8,7 +8,7 @@ NAN_METHOD(GitRevwalk::FastWalk)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  FastWalkBaton* baton = new FastWalkBaton;
+  FastWalkBaton* baton = new FastWalkBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

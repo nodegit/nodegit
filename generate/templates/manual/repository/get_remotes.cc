@@ -4,7 +4,7 @@ NAN_METHOD(GitRepository::GetRemotes)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  GetRemotesBaton* baton = new GetRemotesBaton;
+  GetRemotesBaton* baton = new GetRemotesBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

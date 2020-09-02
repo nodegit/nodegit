@@ -7,7 +7,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  ConvenientFromDiffBaton *baton = new ConvenientFromDiffBaton;
+  ConvenientFromDiffBaton *baton = new ConvenientFromDiffBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

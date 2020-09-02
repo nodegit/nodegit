@@ -12,7 +12,7 @@ NAN_METHOD(GitFilterSource::Repo) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  RepoBaton *baton = new RepoBaton;
+  RepoBaton *baton = new RepoBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;

@@ -33,7 +33,7 @@ void PatchDataFree(PatchData *patch) {
 }
 
 PatchData *createFromRaw(git_patch *raw) {
-  PatchData *patch = new PatchData;
+  PatchData *patch = new PatchData();
   const git_diff_delta *delta = git_patch_get_delta(raw);
 
   patch->status = delta->status;
@@ -56,7 +56,7 @@ PatchData *createFromRaw(git_patch *raw) {
   patch->hunks->reserve(patch->numHunks);
 
   for (unsigned int i = 0; i < patch->numHunks; ++i) {
-    HunkData *hunkData = new HunkData;
+    HunkData *hunkData = new HunkData();
     const git_diff_hunk *hunk = NULL;
     int result = git_patch_get_hunk(&hunk, &hunkData->numLines, raw, i);
     if (result != 0) {
@@ -212,7 +212,7 @@ NAN_METHOD(ConvenientPatch::Hunks) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  HunksBaton *baton = new HunksBaton;
+  HunksBaton *baton = new HunksBaton();
 
   baton->patch = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetValue();
 
@@ -236,7 +236,7 @@ void ConvenientPatch::HunksWorker::Execute() {
   baton->hunks->reserve(baton->patch->numHunks);
 
   for (unsigned int i = 0; i < baton->patch->numHunks; ++i) {
-    HunkData *hunkData = new HunkData;
+    HunkData *hunkData = new HunkData();
     hunkData->numLines = baton->patch->hunks->at(i)->numLines;
     hunkData->hunk.old_start = baton->patch->hunks->at(i)->hunk.old_start;
     hunkData->hunk.old_lines = baton->patch->hunks->at(i)->hunk.old_lines;

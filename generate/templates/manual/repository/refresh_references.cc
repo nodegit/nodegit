@@ -395,11 +395,11 @@ NAN_METHOD(GitRepository::RefreshReferences)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  RefreshReferencesBaton* baton = new RefreshReferencesBaton;
+  RefreshReferencesBaton* baton = new RefreshReferencesBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->out = (void *)new RefreshReferencesData;
+  baton->out = (void *)new RefreshReferencesData();
   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));

@@ -25,7 +25,7 @@ NAN_METHOD(GitClone::Clone) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  CloneBaton *baton = new CloneBaton;
+  CloneBaton *baton = new CloneBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
