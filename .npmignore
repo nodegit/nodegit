@@ -12,9 +12,9 @@
 
 .astylerc
 .editorconfig
+.eslintrc.json
 .gitignore
 .gitmodules
-.jshintrc
 .travis.yml
 appveyor.yml
 

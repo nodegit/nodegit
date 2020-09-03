@@ -16,7 +16,7 @@ catch (ex) {
   rawApi = require("../build/Debug/nodegit.node");
 }
 
-var promisify = fn => fn && util.promisify(fn); // jshint ignore:line
+var promisify = fn => fn && util.promisify(fn); // eslint-disable-line
 
 // For disccussion on why `cloneDeep` is required, see:
 // https://github.com/facebook/jest/issues/3552
@@ -26,7 +26,7 @@ rawApi = _.cloneDeep(rawApi);
 
 // Native methods do not return an identifiable function, so we
 // have to override them here
-/* jshint ignore:start */
+/* eslint-disable */
 {% each . as idef %}
   {% if idef.type != "enum" %}
 
@@ -75,7 +75,7 @@ _FilterRegistry.register = promisify(_FilterRegistry_register);
 var _FilterRegistry_unregister = _FilterRegistry.unregister;
 _FilterRegistry.unregister = promisify(_FilterRegistry_unregister);
 
-/* jshint ignore:end */
+/* eslint-enable */
 
 // Set the exports prototype to the raw API.
 exports.__proto__ = rawApi;
@@ -110,7 +110,7 @@ importExtension("filter_registry");
     importExtension("{{ filename }}");
   {% endif %}
 {% endeach %}
-/* jshint ignore:start */
+/* eslint-disable */
 {% each . as idef %}
   {% if idef.type != "enum" %}
     {% each idef.functions as fn %}
@@ -132,7 +132,7 @@ importExtension("filter_registry");
     {% endeach %}
   {% endif %}
 {% endeach %}
-/* jshint ignore:end */
+/* eslint-enable */
 
 // Set version.
 exports.version = require("../package").version;
