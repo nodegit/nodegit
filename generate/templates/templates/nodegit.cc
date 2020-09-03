@@ -108,4 +108,4 @@ NAN_MODULE_INIT(init) {
   nodegit::LockMaster::InitializeContext();
 }
 
-NODE_MODULE(nodegit, init)
+NAN_MODULE_WORKER_ENABLED(nodegit, init)
