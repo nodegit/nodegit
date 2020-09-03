@@ -34,7 +34,12 @@
       "double"
     ],
     "no-undef": "error",
-    "no-unused-vars": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "none"
+      }
+    ],
     "no-invalid-this": "error"
   }
 }
