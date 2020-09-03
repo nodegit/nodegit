@@ -1,4 +1,3 @@
-var { Worker } = require("worker_threads");
 var path = require("path");
 var assert = require("assert");
 var fse = require("fs-extra");
@@ -54,52 +53,6 @@ describe("Clone", function() {
       test.repository = repo;
     });
   });
-
-  it("can clone with https via worker thread", function(done) {
-    const workerPath = path.join(__dirname, "../utils/clone_worker.js");
-    const worker = new Worker(workerPath, {
-      workerData: {
-        clonePath,
-        url: "https://github.com/nodegit/test.git"
-      }
-    });
-    worker.on("message", (success) => {
-      if (success) {
-        done();
-      } else {
-        assert.fail();
-      }
-    });
-    worker.on("error", () => assert.fail());
-    worker.on("exit", (code) => {
-      if (code !== 0) {
-        assert.fail();
-      }
-    });
-  });
-
-  for (let i = 0; i < 5; ++i) {
-    it(`can kill worker thread while cloning #${i}`, function(done) { // jshint ignore:line
-      const workerPath = path.join(__dirname, "../utils/clone_worker.js");
-      const worker = new Worker(workerPath, { 
-        workerData: {
-          clonePath,
-          url: "https://github.com/nodegit/test.git"
-        }
-      });
-      worker.on("error", () => assert.fail());
-      worker.on("message", () => assert.fail());
-      worker.on("exit", (code) => {
-        if (code === 1) {
-          done();
-        } else {
-          assert.fail();
-        }
-      });
-
-      setTimeout(() => { worker.terminate(); }, 500);
-    });
-  }
 
   it("can clone twice with https using same config object", function() {
     var test = this;
