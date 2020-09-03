@@ -8,10 +8,6 @@ try {
 
 var rawApi;
 
-if (worker && (!worker.isMainThread || typeof importScripts === "function")) {
-  throw new Error("NodeGit is currently not safe to run in a worker thread or web worker"); // jshint ignore:line
-}
-
 // Attempt to load the production release first, if it fails fall back to the
 // debug release.
 try {
