@@ -86,7 +86,6 @@ void GitFilterRegistry::RegisterWorker::Execute() {
   git_error_clear();
 
   {
-    nodegit::LockMaster lockMaster(/*asyncAction: */true, baton->filter_name, baton->filter);
     int result = git_filter_register(baton->filter_name, baton->filter, baton->filter_priority);
     baton->error_code = result;
 
@@ -193,7 +192,6 @@ void GitFilterRegistry::UnregisterWorker::Execute() {
   git_error_clear();
 
   {
-    nodegit::LockMaster lockMaster(/*asyncAction: */true, baton->filter_name);
     int result = git_filter_unregister(baton->filter_name);
     baton->error_code = result;
 

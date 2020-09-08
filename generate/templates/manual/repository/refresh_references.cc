@@ -420,7 +420,6 @@ void GitRepository::RefreshReferencesWorker::Execute()
 {
   giterr_clear();
 
-  nodegit::LockMaster lockMaster(true, baton->repo);
   git_repository *repo = baton->repo;
   RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
   git_odb *odb;
