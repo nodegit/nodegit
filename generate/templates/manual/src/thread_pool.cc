@@ -1,4 +1,5 @@
 #include <nan.h>
+#include "../include/context.h"
 #include "../include/thread_pool.h"
 
 #include <condition_variable>
@@ -84,7 +85,8 @@ namespace nodegit {
       Executor(
         PostCallbackEventToOrchestratorFn postCallbackEventToOrchestrator,
         PostCompletedEventToOrchestratorFn postCompletedEventToOrchestrator,
-        TakeNextTaskFn takeNextTask
+        TakeNextTaskFn takeNextTask,
+        nodegit::Context *context
       );
 
       void RunTaskLoop();
@@ -94,6 +96,8 @@ namespace nodegit {
       void WaitForThreadClose();
 
       static Nan::AsyncResource *GetCurrentAsyncResource();
+
+      static const nodegit::Context *GetCurrentContext();
 
       static void PostCallbackEvent(ThreadPool::OnPostCallbackFn onPostCallback);
 
@@ -114,6 +118,7 @@ namespace nodegit {
 
     private:
       Nan::AsyncResource *currentAsyncResource;
+      nodegit::Context *currentContext;
       // We need to populate the executor on every thread that libgit2
       // could make a callback on so that it can correctly queue callbacks
       // in the correct javascript context
@@ -127,9 +132,11 @@ namespace nodegit {
   Executor::Executor(
     PostCallbackEventToOrchestratorFn postCallbackEventToOrchestrator,
     PostCompletedEventToOrchestratorFn postCompletedEventToOrchestrator,
-    TakeNextTaskFn takeNextTask
+    TakeNextTaskFn takeNextTask,
+    nodegit::Context *context
   )
     : currentAsyncResource(nullptr),
+      currentContext(context),
       postCallbackEventToOrchestrator(postCallbackEventToOrchestrator),
       postCompletedEventToOrchestrator(postCompletedEventToOrchestrator),
       takeNextTask(takeNextTask),
@@ -164,6 +171,16 @@ namespace nodegit {
   Nan::AsyncResource *Executor::GetCurrentAsyncResource() {
     if (executor) {
       return executor->currentAsyncResource;
+    }
+
+    // NOTE this should always be set when a libgit2 callback is running,
+    //      so this case should not happen.
+    return nullptr;
+  }
+
+  const nodegit::Context *Executor::GetCurrentContext() {
+    if (executor) {
+      return executor->currentContext;
     }
 
     // NOTE this should always be set when a libgit2 callback is running,
@@ -226,7 +243,8 @@ namespace nodegit {
         public:
           OrchestratorImpl(
             QueueCallbackOnJSThreadFn queueCallbackOnJSThread,
-            TakeNextJobFn takeNextJob
+            TakeNextJobFn takeNextJob,
+            nodegit::Context *context
           );
 
           void RunJobLoop();
@@ -272,7 +290,8 @@ namespace nodegit {
     public:
       Orchestrator(
         QueueCallbackOnJSThreadFn queueCallbackOnJSThread,
-        TakeNextJobFn takeNextJob
+        TakeNextJobFn takeNextJob,
+        nodegit::Context *context
       );
 
       void WaitForThreadClose();
@@ -280,7 +299,8 @@ namespace nodegit {
 
   Orchestrator::OrchestratorImpl::OrchestratorImpl(
     QueueCallbackOnJSThreadFn queueCallbackOnJSThread,
-    TakeNextJobFn takeNextJob
+    TakeNextJobFn takeNextJob,
+    nodegit::Context *context
   )
     : taskMutex(new std::mutex),
       executorEventsMutex(new std::mutex),
@@ -291,7 +311,8 @@ namespace nodegit {
       executor(
         std::bind(&Orchestrator::OrchestratorImpl::PostCallbackEvent, this, _1),
         std::bind(&Orchestrator::OrchestratorImpl::PostCompletedEvent, this),
-        std::bind(&Orchestrator::OrchestratorImpl::TakeNextTask, this)
+        std::bind(&Orchestrator::OrchestratorImpl::TakeNextTask, this),
+        context
       )
   {}
 
@@ -406,9 +427,10 @@ namespace nodegit {
 
   Orchestrator::Orchestrator(
     QueueCallbackOnJSThreadFn queueCallbackOnJSThread,
-    TakeNextJobFn takeNextJob
+    TakeNextJobFn takeNextJob,
+    nodegit::Context *context
   )
-    : impl(new OrchestratorImpl(queueCallbackOnJSThread, takeNextJob))
+    : impl(new OrchestratorImpl(queueCallbackOnJSThread, takeNextJob, context))
   {}
 
   void Orchestrator::WaitForThreadClose() {
@@ -417,7 +439,7 @@ namespace nodegit {
 
   class ThreadPoolImpl {
     public:
-      ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop);
+      ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context);
 
       void QueueWorker(nodegit::AsyncWorker *worker);
 
@@ -475,7 +497,7 @@ namespace nodegit {
       std::vector<Orchestrator> orchestrators;
   };
 
-  ThreadPoolImpl::ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop)
+  ThreadPoolImpl::ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)
     : isMarkedForDeletion(false),
       orchestratorJobMutex(new std::mutex),
       jsThreadCallbackMutex(new std::mutex),
@@ -490,7 +512,8 @@ namespace nodegit {
     for (int i = 0; i < numberOfThreads; i++) {
       orchestrators.emplace_back(
         std::bind(&ThreadPoolImpl::QueueCallbackOnJSThread, this, _1, _2, _3),
-        std::bind(&ThreadPoolImpl::TakeNextJob, this)
+        std::bind(&ThreadPoolImpl::TakeNextJob, this),
+        context
       );
     }
   }
@@ -657,8 +680,8 @@ namespace nodegit {
     uv_close((uv_handle_t *)jsThreadCallbackAsync, nullptr);
   }
 
-  ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop)
-    : impl(new ThreadPoolImpl(numberOfThreads, loop))
+  ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)
+    : impl(new ThreadPoolImpl(numberOfThreads, loop, context))
   {}
 
   ThreadPool::~ThreadPool() {}
@@ -673,6 +696,10 @@ namespace nodegit {
 
   Nan::AsyncResource *ThreadPool::GetCurrentAsyncResource() {
     return Executor::GetCurrentAsyncResource();
+  }
+
+  const nodegit::Context *ThreadPool::GetCurrentContext() {
+    return Executor::GetCurrentContext();
   }
 
   void ThreadPool::Shutdown() {

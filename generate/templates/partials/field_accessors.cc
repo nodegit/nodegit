@@ -138,7 +138,9 @@
         {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
 
         {% if field.return.type == "void" %}
-          if (instance->{{ field.name }}.WillBeThrottled()) {
+          if (instance->nodegitContext != nodegit::ThreadPool::GetCurrentContext()) {
+            delete baton;
+          } else if (instance->{{ field.name }}.WillBeThrottled()) {
             delete baton;
           } else if (instance->{{ field.name }}.ShouldWaitForResult()) {
             baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync);
@@ -150,7 +152,10 @@
         {% else %}
           {{ field.return.type }} result;
 
-          if (instance->{{ field.name }}.WillBeThrottled()) {
+          if (instance->nodegitContext != nodegit::ThreadPool::GetCurrentContext()) {
+            result = baton->defaultResult;
+            delete baton;
+          } else if (instance->{{ field.name }}.WillBeThrottled()) {
             result = baton->defaultResult;
             delete baton;
           } else if (instance->{{ field.name }}.ShouldWaitForResult()) {

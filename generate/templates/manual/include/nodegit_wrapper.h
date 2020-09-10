@@ -14,6 +14,10 @@
 //  static const bool isFreeable
 //  static void free(cType *raw) - frees the object using freeFunctionName
 
+namespace nodegit {
+  class Context;
+}
+
 template<typename Traits>
 class NodeGitWrapper : public Nan::ObjectWrap {
 public:
@@ -29,6 +33,9 @@ public:
   // (and through a method) instead of changing selfFreeing, but that's
   // a separate issue.
   bool selfFreeing;
+  
+  const nodegit::Context *nodegitContext = nullptr;
+
 protected:
   cType *raw;
 

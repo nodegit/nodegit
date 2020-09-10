@@ -12,7 +12,7 @@ namespace nodegit {
   }
 
   Context::Context(v8::Isolate *isolate)
-    : isolate(isolate), threadPool(10, node::GetCurrentEventLoop(isolate))
+    : isolate(isolate), threadPool(10, node::GetCurrentEventLoop(isolate), this)
   {
     Nan::HandleScope scopoe;
     v8::Local<v8::Object> storage = Nan::New<v8::Object>();

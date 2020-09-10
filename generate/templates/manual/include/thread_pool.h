@@ -9,6 +9,7 @@
 #include "async_worker.h"
 
 namespace nodegit {
+  class Context;
   class ThreadPoolImpl;
 
   class ThreadPool {
@@ -20,7 +21,7 @@ namespace nodegit {
       // Initializes thread pool and spins up the requested number of threads
       // The provided loop will be used for completion callbacks, whenever
       // queued work is completed
-      ThreadPool(int numberOfThreads, uv_loop_t *loop);
+      ThreadPool(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context);
 
       ~ThreadPool();
 
@@ -34,6 +35,10 @@ namespace nodegit {
       // This ensures that any callbacks from libgit2 take the correct AsyncResource
       // when scheduling work on the JS thread.
       static Nan::AsyncResource *GetCurrentAsyncResource();
+
+      // Same as GetCurrentAsyncResource, except used to ensure callbacks occur
+      // in the correct context.
+      static const nodegit::Context *GetCurrentContext();
 
       // Queues a callback on the loop provided in the constructor
       static void PostCallbackEvent(OnPostCallbackFn onPostCallback);

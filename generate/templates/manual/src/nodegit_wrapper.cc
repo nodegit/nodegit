@@ -1,5 +1,6 @@
 template<typename Traits>
-NodeGitWrapper<Traits>::NodeGitWrapper(typename Traits::cType *raw, bool selfFreeing, v8::Local<v8::Object> owner) {
+NodeGitWrapper<Traits>::NodeGitWrapper(typename Traits::cType *raw, bool selfFreeing, v8::Local<v8::Object> owner)
+  : nodegitContext(nodegit::Context::GetCurrentContext()) {
   if (Traits::isSingleton) {
     ReferenceCounter::incrementCountForPointer((void *)raw);
     this->raw = raw;
@@ -35,7 +36,8 @@ NodeGitWrapper<Traits>::NodeGitWrapper(typename Traits::cType *raw, bool selfFre
 }
 
 template<typename Traits>
-NodeGitWrapper<Traits>::NodeGitWrapper(const char *error) {
+NodeGitWrapper<Traits>::NodeGitWrapper(const char *error)
+  : nodegitContext(nodegit::Context::GetCurrentContext()) {
   selfFreeing = false;
   raw = NULL;
   Nan::ThrowError(error);
