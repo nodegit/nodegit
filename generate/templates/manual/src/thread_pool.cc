@@ -457,6 +457,7 @@ namespace nodegit {
 
     private:
       bool isMarkedForDeletion;
+      nodegit::Context *currentContext;
 
       struct JSThreadCallback {
         JSThreadCallback(ThreadPool::Callback callback, ThreadPool::Callback cancelCallback, bool isWork)
@@ -499,6 +500,7 @@ namespace nodegit {
 
   ThreadPoolImpl::ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)
     : isMarkedForDeletion(false),
+      currentContext(context),
       orchestratorJobMutex(new std::mutex),
       jsThreadCallbackMutex(new std::mutex),
       jsThreadCallbackAsync(new uv_async_t)
@@ -672,12 +674,10 @@ namespace nodegit {
       jsThreadCallbackQueue.pop();
     }
 
-    // NOTE We are deliberately leaking this pointer because `async` cleanup in
-    // node has not completely landed yet. Trying to cleanup this pointer
-    // is probably not worth the fight as it's very little memory lost per context
-    // When all LTS versions of node and Electron support async cleanup, we should
-    // be heading back to cleanup this
-    uv_close((uv_handle_t *)jsThreadCallbackAsync, nullptr);
+    uv_close(reinterpret_cast<uv_handle_t *>(jsThreadCallbackAsync), [](uv_handle_t *handle) {
+      auto threadPoolImpl = static_cast<ThreadPoolImpl *>(handle->data);
+      delete threadPoolImpl->currentContext;
+    });
   }
 
   ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)

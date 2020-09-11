@@ -2,6 +2,7 @@
 #define NODEGIT_CONTEXT
 
 #include <map>
+#include <memory>
 #include <nan.h>
 #include <string>
 #include <uv.h>
@@ -27,10 +28,19 @@ namespace nodegit {
 
     void ShutdownThreadPool();
 
+    struct AsyncCleanupData {
+      Context *context;
+      node::AsyncCleanupHookHandle handle;
+      void (*doneCallback)(void*);
+      void *doneData;
+    };
+
   private:
     v8::Isolate *isolate;
 
     ThreadPool threadPool;
+
+    std::unique_ptr<AsyncCleanupData> asyncCleanupData;
 
     // This map contains persistent handles that need to be cleaned up
     // after the context has been torn down.

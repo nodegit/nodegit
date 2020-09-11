@@ -46,7 +46,7 @@ namespace nodegit {
       // Called once at libgit2 initialization to setup contracts with libgit2
       static void InitializeGlobal();
 
-      // Will wait for all threads to terminate before returning
+      // Will asynchronously shutdown the thread pool
       // It will also clean up any resources that the thread pool is keeping alive
       void Shutdown();
 
