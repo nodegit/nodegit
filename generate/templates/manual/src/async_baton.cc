@@ -37,7 +37,7 @@ namespace nodegit {
       };
 
       ThreadPool::PostCallbackEvent(
-        [this, jsCallback, cancelCallback](
+        [jsCallback, cancelCallback](
           ThreadPool::QueueCallbackFn queueCallback,
           ThreadPool::Callback callbackCompleted
         ) -> ThreadPool::Callback {

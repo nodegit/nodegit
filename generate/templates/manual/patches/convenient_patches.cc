@@ -36,7 +36,7 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
 
   std::vector<git_patch *> patchesToBeFreed;
 
-  for (int i = 0; i < git_diff_num_deltas(baton->diff); ++i) {
+  for (std::size_t i = 0; i < git_diff_num_deltas(baton->diff); ++i) {
     git_patch *nextPatch;
     int result = git_patch_from_diff(&nextPatch, baton->diff, i);
 
