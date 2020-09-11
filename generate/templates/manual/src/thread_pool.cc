@@ -493,7 +493,7 @@ namespace nodegit {
       // completion and async callbacks to be performed on the loop
       std::queue<JSThreadCallback> jsThreadCallbackQueue;
       std::unique_ptr<std::mutex> jsThreadCallbackMutex;
-      uv_async_t *jsThreadCallbackAsync;
+      uv_async_t jsThreadCallbackAsync;
 
       std::vector<Orchestrator> orchestrators;
   };
@@ -502,12 +502,11 @@ namespace nodegit {
     : isMarkedForDeletion(false),
       currentContext(context),
       orchestratorJobMutex(new std::mutex),
-      jsThreadCallbackMutex(new std::mutex),
-      jsThreadCallbackAsync(new uv_async_t)
+      jsThreadCallbackMutex(new std::mutex)
   {
-    uv_async_init(loop, jsThreadCallbackAsync, RunLoopCallbacks);
-    jsThreadCallbackAsync->data = this;
-    uv_unref((uv_handle_t *)jsThreadCallbackAsync);
+    uv_async_init(loop, &jsThreadCallbackAsync, RunLoopCallbacks);
+    jsThreadCallbackAsync.data = this;
+    uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
 
     workInProgressCount = 0;
 
@@ -524,7 +523,7 @@ namespace nodegit {
     std::lock_guard<std::mutex> lock(*orchestratorJobMutex);
     // there is work on the thread pool - reference the handle so
     // node doesn't terminate
-    uv_ref((uv_handle_t *)jsThreadCallbackAsync);
+    uv_ref((uv_handle_t *)&jsThreadCallbackAsync);
     orchestratorJobQueue.emplace(new Orchestrator::AsyncWorkJob(worker));
     workInProgressCount++;
     orchestratorJobCondition.notify_one();
@@ -563,7 +562,7 @@ namespace nodegit {
     // we only trigger RunLoopCallbacks via the jsThreadCallbackAsync handle if the queue
     // was empty.  Otherwise, we depend on RunLoopCallbacks to re-trigger itself
     if (queueWasEmpty) {
-      uv_async_send(jsThreadCallbackAsync);
+      uv_async_send(&jsThreadCallbackAsync);
     }
   }
 
@@ -587,7 +586,7 @@ namespace nodegit {
     lock.lock();
 
     if (!jsThreadCallbackQueue.empty()) {
-      uv_async_send(jsThreadCallbackAsync);
+      uv_async_send(&jsThreadCallbackAsync);
     }
 
     // if there is no ongoing work / completion processing, node doesn't need
@@ -596,7 +595,7 @@ namespace nodegit {
       std::lock_guard<std::mutex> orchestratorLock(*orchestratorJobMutex);
       workInProgressCount--;
       if (!workInProgressCount) {
-        uv_unref((uv_handle_t *)jsThreadCallbackAsync);
+        uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
       }
     }
   }
@@ -628,7 +627,7 @@ namespace nodegit {
         // unref the jsThreadCallback for all work in progress
         // it will not be used after this function has completed
         while (workInProgressCount--) {
-          uv_unref((uv_handle_t *)jsThreadCallbackAsync);
+          uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
         }
       }
 
@@ -674,7 +673,7 @@ namespace nodegit {
       jsThreadCallbackQueue.pop();
     }
 
-    uv_close(reinterpret_cast<uv_handle_t *>(jsThreadCallbackAsync), [](uv_handle_t *handle) {
+    uv_close(reinterpret_cast<uv_handle_t *>(&jsThreadCallbackAsync), [](uv_handle_t *handle) {
       auto threadPoolImpl = static_cast<ThreadPoolImpl *>(handle->data);
       delete threadPoolImpl->currentContext;
     });
