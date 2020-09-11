@@ -14,7 +14,8 @@ jobs:
     name: "*nix Tests"
     strategy:
       matrix:
-        node: [10, 12, 14]
+        # TODO wait for https://github.com/nodejs/node/pull/34819 backport to 10 + 12
+        node: [14]
         os: [ubuntu-16.04, macOS-10.15]
     runs-on: ${{ matrix.os }}
     steps:
@@ -72,7 +73,8 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [10, 12, 14]
+        # TODO wait for https://github.com/nodejs/node/pull/34819 backport to 10 + 12
+        node: [14]
         arch: [x86, x64]
     runs-on: windows-2016
     steps:
