@@ -77,16 +77,19 @@ namespace nodegit {
   std::mutex LockMasterImpl::mapMutex;
   thread_local LockMasterImpl* LockMasterImpl::currentLockMaster = nullptr;
 
-  LockMaster::LockMaster(LockMaster &&other)
-    : impl(std::exchange(other.impl, nullptr))
-  {}
+  LockMaster::LockMaster(LockMaster &&other) {
+    impl = other.impl;
+    other.impl = nullptr;
+  }
 
   LockMaster &LockMaster::operator=(LockMaster &&other) {
     if (&other == this) {
       return *this;
     }
 
-    impl = std::exchange(other.impl, nullptr);
+    impl = other.impl;
+    other.impl = nullptr;
+
     return *this;
   }
 
