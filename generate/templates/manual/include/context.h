@@ -27,7 +27,7 @@ namespace nodegit {
 
     void SaveToPersistent(std::string key, const v8::Local<v8::Value> &value);
 
-    void ShutdownThreadPool(AsyncContextCleanupHandle *cleanupHandle);
+    void ShutdownThreadPool(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle);
 
   private:
     v8::Isolate *isolate;

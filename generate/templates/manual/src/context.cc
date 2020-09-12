@@ -14,10 +14,10 @@ namespace nodegit {
   }
 
   void AsyncContextCleanupHandle::AsyncCleanupContext(void *data, void(*uvCallback)(void*), void *uvCallbackData) {
-    auto cleanupHandle = static_cast<nodegit::AsyncContextCleanupHandle *>(data);
+    std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle(static_cast<AsyncContextCleanupHandle *>(data));
     cleanupHandle->doneCallback = uvCallback;
     cleanupHandle->doneData = uvCallbackData;
-    cleanupHandle->context->ShutdownThreadPool(cleanupHandle);
+    cleanupHandle->context->ShutdownThreadPool(std::move(cleanupHandle));
   }
 
   Context::Context(v8::Isolate *isolate)
@@ -59,7 +59,7 @@ namespace nodegit {
     Nan::Set(storage, Nan::New(key).ToLocalChecked(), value);
   }
 
-  void Context::ShutdownThreadPool(AsyncContextCleanupHandle *cleanupHandle) {
-    threadPool.Shutdown(cleanupHandle);
+  void Context::ShutdownThreadPool(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {
+    threadPool.Shutdown(std::move(cleanupHandle));
   }
 }

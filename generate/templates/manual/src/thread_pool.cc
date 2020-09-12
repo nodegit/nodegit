@@ -453,7 +453,16 @@ namespace nodegit {
 
       static void RunLoopCallbacks(uv_async_t *handle);
 
-      void Shutdown(AsyncContextCleanupHandle *cleanupHandle);
+      void Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle);
+
+      struct AsyncCallbackData {
+        AsyncCallbackData(ThreadPoolImpl *pool)
+          : pool(pool)
+        {}
+
+        std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle;
+        ThreadPoolImpl *pool;
+      };
 
     private:
       bool isMarkedForDeletion;
@@ -505,7 +514,7 @@ namespace nodegit {
       jsThreadCallbackMutex(new std::mutex)
   {
     uv_async_init(loop, &jsThreadCallbackAsync, RunLoopCallbacks);
-    jsThreadCallbackAsync.data = this;
+    jsThreadCallbackAsync.data = new AsyncCallbackData(this);
     uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
 
     workInProgressCount = 0;
@@ -567,7 +576,10 @@ namespace nodegit {
   }
 
   void ThreadPoolImpl::RunLoopCallbacks(uv_async_t* handle) {
-    static_cast<ThreadPoolImpl *>(handle->data)->RunLoopCallbacks();
+    auto asyncCallbackData = static_cast<AsyncCallbackData *>(handle->data);
+    if (asyncCallbackData->pool) {
+      asyncCallbackData->pool->RunLoopCallbacks();
+    }
   }
 
   // NOTE this should theoretically never be triggered during a cleanup operation
@@ -600,7 +612,7 @@ namespace nodegit {
     }
   }
 
-  void ThreadPoolImpl::Shutdown(AsyncContextCleanupHandle *cleanupHandle) {
+  void ThreadPoolImpl::Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {
     std::queue<std::shared_ptr<Orchestrator::Job>> cancelledJobs;
     std::queue<JSThreadCallback> cancelledCallbacks;
     {
@@ -673,10 +685,13 @@ namespace nodegit {
       jsThreadCallbackQueue.pop();
     }
 
-    jsThreadCallbackAsync.data = cleanupHandle;
+    AsyncCallbackData *asyncCallbackData = static_cast<AsyncCallbackData *>(jsThreadCallbackAsync.data);
+    asyncCallbackData->cleanupHandle.swap(cleanupHandle);
+    asyncCallbackData->pool = nullptr;
+
     uv_close(reinterpret_cast<uv_handle_t *>(&jsThreadCallbackAsync), [](uv_handle_t *handle) {
-      auto cleanupHandle = static_cast<AsyncContextCleanupHandle *>(handle->data);
-      delete cleanupHandle;
+      auto asyncCallbackData = static_cast<AsyncCallbackData *>(handle->data);
+      delete asyncCallbackData;
     });
   }
 
@@ -702,8 +717,8 @@ namespace nodegit {
     return Executor::GetCurrentContext();
   }
 
-  void ThreadPool::Shutdown(AsyncContextCleanupHandle *cleanupHandle) {
-    impl->Shutdown(cleanupHandle);
+  void ThreadPool::Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {
+    impl->Shutdown(std::move(cleanupHandle));
   }
 
   void ThreadPool::InitializeGlobal() {
