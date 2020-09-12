@@ -12,6 +12,7 @@
 #include "thread_pool.h"
 
 namespace nodegit {
+  class AsyncContextCleanupHandle;
   class Context {
   public:
     Context(v8::Isolate *isolate);
@@ -26,21 +27,12 @@ namespace nodegit {
 
     void SaveToPersistent(std::string key, const v8::Local<v8::Value> &value);
 
-    void ShutdownThreadPool();
-
-    struct AsyncCleanupData {
-      Context *context;
-      node::AsyncCleanupHookHandle handle;
-      void (*doneCallback)(void*);
-      void *doneData;
-    };
+    void ShutdownThreadPool(AsyncContextCleanupHandle *cleanupHandle);
 
   private:
     v8::Isolate *isolate;
 
     ThreadPool threadPool;
-
-    std::unique_ptr<AsyncCleanupData> asyncCleanupData;
 
     // This map contains persistent handles that need to be cleaned up
     // after the context has been torn down.
@@ -49,6 +41,21 @@ namespace nodegit {
     Nan::Persistent<v8::Object> persistentStorage;
 
     static std::map<v8::Isolate *, Context *> contexts;
+  };
+
+  class AsyncContextCleanupHandle {
+    public:
+      ~AsyncContextCleanupHandle();
+
+    private:
+      static void AsyncCleanupContext(void *data, void (*uvCallback)(void *), void *uvCallbackData);
+
+      friend class Context;
+      AsyncContextCleanupHandle(v8::Isolate *isolate, Context *context);
+      Context *context;
+      node::AsyncCleanupHookHandle handle;
+      void (*doneCallback)(void *);
+      void *doneData;
   };
 }
 

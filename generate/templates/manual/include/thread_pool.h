@@ -10,6 +10,7 @@
 
 namespace nodegit {
   class Context;
+  class AsyncContextCleanupHandle;
   class ThreadPoolImpl;
 
   class ThreadPool {
@@ -48,7 +49,7 @@ namespace nodegit {
 
       // Will asynchronously shutdown the thread pool
       // It will also clean up any resources that the thread pool is keeping alive
-      void Shutdown();
+      void Shutdown(AsyncContextCleanupHandle *cleanupHandle);
 
     private:
       std::unique_ptr<ThreadPoolImpl> impl;

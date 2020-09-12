@@ -1,35 +1,38 @@
 #include "../include/context.h"
 
-namespace {
-  void AsyncCleanupContext(void *data, void(*uvCallback)(void*), void *uvCallbackData) {
-    auto asyncCleanupData = static_cast<nodegit::Context::AsyncCleanupData *>(data);
-    asyncCleanupData->doneCallback = uvCallback;
-    asyncCleanupData->doneData = uvCallbackData;
-
-    asyncCleanupData->context->ShutdownThreadPool();
-  }
-}
-
 namespace nodegit {
   std::map<v8::Isolate *, Context *> Context::contexts;
+
+  AsyncContextCleanupHandle::AsyncContextCleanupHandle(v8::Isolate *isolate, Context *context)
+    : context(context),
+      handle(node::AddEnvironmentCleanupHook(isolate, AsyncCleanupContext, this))
+  {}
+
+  AsyncContextCleanupHandle::~AsyncContextCleanupHandle() {
+    delete context;
+    doneCallback(doneData);
+  }
+
+  void AsyncContextCleanupHandle::AsyncCleanupContext(void *data, void(*uvCallback)(void*), void *uvCallbackData) {
+    auto cleanupHandle = static_cast<nodegit::AsyncContextCleanupHandle *>(data);
+    cleanupHandle->doneCallback = uvCallback;
+    cleanupHandle->doneData = uvCallbackData;
+    cleanupHandle->context->ShutdownThreadPool(cleanupHandle);
+  }
 
   Context::Context(v8::Isolate *isolate)
     : isolate(isolate)
     , threadPool(10, node::GetCurrentEventLoop(isolate), this)
-    , asyncCleanupData(new Context::AsyncCleanupData())
   {
     Nan::HandleScope scopoe;
     v8::Local<v8::Object> storage = Nan::New<v8::Object>();
     persistentStorage.Reset(storage);
     contexts[isolate] = this;
-    asyncCleanupData->context = this;
-    asyncCleanupData->handle = node::AddEnvironmentCleanupHook(isolate, AsyncCleanupContext, asyncCleanupData.get());
+    new AsyncContextCleanupHandle(isolate, this);
   }
 
   Context::~Context() {
     contexts.erase(isolate);
-
-    asyncCleanupData->doneCallback(asyncCleanupData->doneData);
   }
 
   Context *Context::GetCurrentContext() {
@@ -56,7 +59,7 @@ namespace nodegit {
     Nan::Set(storage, Nan::New(key).ToLocalChecked(), value);
   }
 
-  void Context::ShutdownThreadPool() {
-    threadPool.Shutdown();
+  void Context::ShutdownThreadPool(AsyncContextCleanupHandle *cleanupHandle) {
+    threadPool.Shutdown(cleanupHandle);
   }
 }

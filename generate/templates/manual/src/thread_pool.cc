@@ -453,7 +453,7 @@ namespace nodegit {
 
       static void RunLoopCallbacks(uv_async_t *handle);
 
-      void Shutdown();
+      void Shutdown(AsyncContextCleanupHandle *cleanupHandle);
 
     private:
       bool isMarkedForDeletion;
@@ -600,7 +600,7 @@ namespace nodegit {
     }
   }
 
-  void ThreadPoolImpl::Shutdown() {
+  void ThreadPoolImpl::Shutdown(AsyncContextCleanupHandle *cleanupHandle) {
     std::queue<std::shared_ptr<Orchestrator::Job>> cancelledJobs;
     std::queue<JSThreadCallback> cancelledCallbacks;
     {
@@ -673,9 +673,10 @@ namespace nodegit {
       jsThreadCallbackQueue.pop();
     }
 
+    jsThreadCallbackAsync.data = cleanupHandle;
     uv_close(reinterpret_cast<uv_handle_t *>(&jsThreadCallbackAsync), [](uv_handle_t *handle) {
-      auto threadPoolImpl = static_cast<ThreadPoolImpl *>(handle->data);
-      delete threadPoolImpl->currentContext;
+      auto cleanupHandle = static_cast<AsyncContextCleanupHandle *>(handle->data);
+      delete cleanupHandle;
     });
   }
 
@@ -701,8 +702,8 @@ namespace nodegit {
     return Executor::GetCurrentContext();
   }
 
-  void ThreadPool::Shutdown() {
-    impl->Shutdown();
+  void ThreadPool::Shutdown(AsyncContextCleanupHandle *cleanupHandle) {
+    impl->Shutdown(cleanupHandle);
   }
 
   void ThreadPool::InitializeGlobal() {
