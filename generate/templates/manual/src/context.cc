@@ -17,7 +17,11 @@ namespace nodegit {
     std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle(static_cast<AsyncContextCleanupHandle *>(data));
     cleanupHandle->doneCallback = uvCallback;
     cleanupHandle->doneData = uvCallbackData;
-    cleanupHandle->context->ShutdownThreadPool(std::move(cleanupHandle));
+    // the ordering of std::move and the call to Context::ShutdownThreadPool prohibits
+    // us from referring to context on cleanupHandle if we're also intending to move
+    // the unique_ptr into the method.
+    Context *context = cleanupHandle->context;
+    context->ShutdownThreadPool(std::move(cleanupHandle));
   }
 
   Context::Context(v8::Isolate *isolate)

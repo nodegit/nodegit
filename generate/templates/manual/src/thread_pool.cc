@@ -8,8 +8,6 @@
 #include <thread>
 #include <utility>
 
-#include <iostream>
-
 extern "C" {
   #include <git2/sys/custom_tls.h>
 }
