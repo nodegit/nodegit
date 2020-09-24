@@ -4,12 +4,32 @@ var fse = require("fs-extra");
 var local = path.join.bind(path, __dirname);
 var _ = require("lodash");
 
+const generatePathWithLength = (base, length) => {
+  let path = `${base}/`;
+  const baseLength = path.length;
+  const remaining = length - baseLength;
+
+  for (let i = 0; i < remaining; ++i) {
+		// add a slash every 240 characters, but not as first or last character
+    if (i % 239 == 0 && i != remaining - 1 && i != 0) {
+      path += "/";
+    } else {
+      path += "a";
+    }
+  }
+
+  assert.ok(path.length === length);
+
+  return path;
+};
+
 describe("Clone", function() {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Clone = NodeGit.Clone;
 
   var clonePath = local("../repos/clone");
+  var longClonePath = generatePathWithLength(clonePath, 600);
 
   var sshPublicKeyPath = local("../id_rsa.pub");
   var sshPrivateKeyPath = local("../id_rsa");
@@ -20,11 +40,18 @@ describe("Clone", function() {
   this.timeout(30000);
 
   beforeEach(function() {
-    return fse.remove(clonePath).catch(function(err) {
-      console.log(err);
+    if (process.platform === "win32") {
+      NodeGit.Libgit2.opts(NodeGit.Libgit2.OPT.SET_WINDOWS_LONGPATHS, 0);
+    }
 
-      throw err;
-    });
+    return fse.remove(clonePath)
+      .then(function() {
+        return fse.remove(longClonePath);
+      })
+      .catch(function(err) {
+        console.log(err);
+        throw err;
+      });
   });
 
   it.skip("can clone with http", function() {
@@ -51,6 +78,54 @@ describe("Clone", function() {
     return Clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
+    });
+  });
+
+  it("can clone into long path if opt set", function() {
+    var test = this;
+    var url = "https://github.com/nodegit/test.git";
+    var opts = {
+        fetchOpts: {
+          callbacks: {
+            certificateCheck: () => 0
+        }
+      }
+    };
+
+    fse.ensureDirSync(longClonePath);
+
+    if (process.platform === "win32") {
+      NodeGit.Libgit2.opts(NodeGit.Libgit2.OPT.SET_WINDOWS_LONGPATHS, 1);
+    }
+
+    return Clone(url, longClonePath, opts).then(function(repo) {
+      assert.ok(repo instanceof Repository);
+      test.repository = repo;
+    });
+  });
+
+  it("can't clone into long path if opt not set on win32", function() {
+    if (process.platform !== "win32") {
+      this.skip();
+    }
+
+    var url = "https://github.com/nodegit/test.git";
+    var opts = {
+        fetchOpts: {
+          callbacks: {
+            certificateCheck: () => 0
+        }
+      }
+    };
+
+    fse.ensureDirSync(longClonePath);
+
+    NodeGit.Libgit2.opts(NodeGit.Libgit2.OPT.SET_WINDOWS_LONGPATHS, 0);
+
+    return Clone(url, longClonePath, opts).then(function(repo) {
+      assert.fail("Clone should not succeed");
+    }).catch(function(error) {
+      assert.ok(error instanceof Error);
     });
   });
 
