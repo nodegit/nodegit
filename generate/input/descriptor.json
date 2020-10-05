@@ -3418,7 +3418,7 @@
           "ignore": true
         },
         "sideband_progress": {
-          "ignore": true
+          "ignore": false
         },
         "update_tips": {
           "ignore": true
