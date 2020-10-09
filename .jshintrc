@@ -2,7 +2,7 @@
   "boss": true,
   "curly": true,
   "eqnull": true,
-  "esversion": 9,
+  "esnext": true,
   "evil": true,
   "futurehostile": true,
   "globals": {
