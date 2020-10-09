@@ -79,7 +79,7 @@
     "generateNativeCode": "node generate/scripts/generateNativeCode",
     "install": "node lifecycleScripts/preinstall && node lifecycleScripts/install",
     "installDebug": "BUILD_DEBUG=true npm install",
-    "lint": "jshint lib test/tests test/utils examples lifecycleScripts",
+    "lint": "jshint lib test/tests test/utils lifecycleScripts",
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "mocha": "mocha --expose-gc test/runner test/tests --timeout 15000",
     "mochaDebug": "mocha --expose-gc --debug-brk test/runner test/tests --timeout 15000",
