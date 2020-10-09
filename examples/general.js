@@ -259,8 +259,9 @@ const path = require("path");
   // since the raw contents of the commit object will be cached in memory
 
   async function walk() {
+    let oid;
     try {
-      const oid = await revWalk.next();
+      oid = await revWalk.next();
     } catch(error) {
       if (error.errno !== nodegit.Error.CODE.ITEROVER) {
         throw error;
