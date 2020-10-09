@@ -247,8 +247,10 @@ const path = require("path");
   // of `branch1`.
   const revWalk = repo.createRevWalk();
 
-  revWalk.sorting(nodegit.Revwalk.SORT.TOPOLOGICAL,
-    nodegit.Revwalk.SORT.REVERSE);
+  revWalk.sorting(
+    nodegit.Revwalk.SORT.TOPOLOGICAL,
+    nodegit.Revwalk.SORT.REVERSE
+  );
 
   revWalk.push(oid);
 
