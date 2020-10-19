@@ -35,7 +35,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">= 6"
+    "node": ">= 12.19.0 < 13 || >= 14.10.0"
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
