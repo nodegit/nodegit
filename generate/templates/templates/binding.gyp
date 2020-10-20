@@ -47,8 +47,10 @@
       },
       "sources": [
         "src/async_baton.cc",
+        "src/async_worker.cc",
         "src/lock_master.cc",
         "src/reference_counter.cc",
+        "src/thread_pool.cc",
         "src/nodegit.cc",
         "src/init_ssh2.cc",
         "src/promise_completion.cc",
@@ -60,7 +62,7 @@
         "src/filter_registry.cc",
         "src/git_buf_converter.cc",
         "src/str_array_converter.cc",
-        "src/thread_pool.cc",
+        "src/context.cc",
         {% each %}
           {% if type != "enum" %}
             "src/{{ name }}.cc",

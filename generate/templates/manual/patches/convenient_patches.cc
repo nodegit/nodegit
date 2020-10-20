@@ -7,7 +7,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  ConvenientFromDiffBaton *baton = new ConvenientFromDiffBaton;
+  ConvenientFromDiffBaton *baton = new ConvenientFromDiffBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -21,57 +21,79 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
 
   worker->SaveToPersistent("diff", info[0]);
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitPatch::ConvenientFromDiffWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->diff);
+  return lockMaster;
 }
 
 void GitPatch::ConvenientFromDiffWorker::Execute() {
   git_error_clear();
 
-  {
-    LockMaster lockMaster(true, baton->diff);
-    std::vector<git_patch *> patchesToBeFreed;
+  std::vector<git_patch *> patchesToBeFreed;
 
-    for (int i = 0; i < git_diff_num_deltas(baton->diff); ++i) {
-      git_patch *nextPatch;
-      int result = git_patch_from_diff(&nextPatch, baton->diff, i);
+  for (std::size_t i = 0; i < git_diff_num_deltas(baton->diff); ++i) {
+    git_patch *nextPatch;
+    int result = git_patch_from_diff(&nextPatch, baton->diff, i);
 
-      if (result) {
-        while (!patchesToBeFreed.empty())
-        {
-          git_patch_free(patchesToBeFreed.back());
-          patchesToBeFreed.pop_back();
-        }
-
-        while (!baton->out->empty()) {
-          PatchDataFree(baton->out->back());
-          baton->out->pop_back();
-        }
-
-        baton->error_code = result;
-
-        if (git_error_last() != NULL) {
-          baton->error = git_error_dup(git_error_last());
-        }
-
-        delete baton->out;
-        baton->out = NULL;
-
-        return;
+    if (result) {
+      while (!patchesToBeFreed.empty())
+      {
+        git_patch_free(patchesToBeFreed.back());
+        patchesToBeFreed.pop_back();
       }
 
-      if (nextPatch != NULL) {
-        baton->out->push_back(createFromRaw(nextPatch));
-        patchesToBeFreed.push_back(nextPatch);
+      while (!baton->out->empty()) {
+        PatchDataFree(baton->out->back());
+        baton->out->pop_back();
       }
+
+      baton->error_code = result;
+
+      if (git_error_last() != NULL) {
+        baton->error = git_error_dup(git_error_last());
+      }
+
+      delete baton->out;
+      baton->out = NULL;
+
+      return;
     }
 
-    while (!patchesToBeFreed.empty())
-    {
-      git_patch_free(patchesToBeFreed.back());
-      patchesToBeFreed.pop_back();
+    if (nextPatch != NULL) {
+      baton->out->push_back(createFromRaw(nextPatch));
+      patchesToBeFreed.push_back(nextPatch);
     }
   }
+
+  while (!patchesToBeFreed.empty())
+  {
+    git_patch_free(patchesToBeFreed.back());
+    patchesToBeFreed.pop_back();
+  }
+}
+
+void GitPatch::ConvenientFromDiffWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  while (!baton->out->empty()) {
+    PatchDataFree(baton->out->back());
+    baton->out->pop_back();
+  }
+
+  delete baton->out;
+
+  delete baton;
 }
 
 void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {

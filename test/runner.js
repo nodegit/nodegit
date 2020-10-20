@@ -5,14 +5,6 @@ var exec = require('../utils/execPromise');
 
 var NodeGit = require('..');
 
-if(process.env.NODEGIT_TEST_THREADSAFETY) {
-  console.log('Enabling thread safety in NodeGit');
-  NodeGit.enableThreadSafety();
-} else if (process.env.NODEGIT_TEST_THREADSAFETY_ASYNC) {
-  console.log('Enabling thread safety for async actions only in NodeGit');
-  NodeGit.setThreadSafetyStatus(NodeGit.THREAD_SAFETY.ENABLED_FOR_ASYNC_ONLY);
-}
-
 var workdirPath = local("repos/workdir");
 
 before(function() {

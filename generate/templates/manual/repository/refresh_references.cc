@@ -395,26 +395,31 @@ NAN_METHOD(GitRepository::RefreshReferences)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  RefreshReferencesBaton* baton = new RefreshReferencesBaton;
+  RefreshReferencesBaton* baton = new RefreshReferencesBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->out = (void *)new RefreshReferencesData;
+  baton->out = (void *)new RefreshReferencesData();
   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback);
   worker->SaveToPersistent("repo", info.This());
   worker->SaveToPersistent("signatureType", signatureType);
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRepository::RefreshReferencesWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->repo);
+  return lockMaster;
 }
 
 void GitRepository::RefreshReferencesWorker::Execute()
 {
   giterr_clear();
 
-  LockMaster lockMaster(true, baton->repo);
   git_repository *repo = baton->repo;
   RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
   git_odb *odb;
@@ -583,12 +588,27 @@ void GitRepository::RefreshReferencesWorker::Execute()
   }
 }
 
+void GitRepository::RefreshReferencesWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
+  delete refreshData;
+
+  delete baton;
+}
+
 void GitRepository::RefreshReferencesWorker::HandleOKCallback()
 {
   if (baton->out != NULL)
   {
     RefreshedRefModel::ensureSignatureRegexes();
-    RefreshReferencesData *refreshData = (RefreshReferencesData *)baton->out;
+    auto refreshData = (RefreshReferencesData *)baton->out;
     v8::Local<v8::Object> result = Nan::New<Object>();
 
     Nan::Set(
@@ -670,4 +690,6 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
   {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

@@ -17,6 +17,7 @@ struct {{ cppClassName }}Traits {
   {% endif %}
   }
 
+  static std::string className() { return "{{ cppClassName }}"; };
   static const bool isSingleton = {{ isSingleton | toBool }};
   static const bool isFreeable = {{ freeFunctionName | toBool}};
   static void free({{ cType }} *raw) {

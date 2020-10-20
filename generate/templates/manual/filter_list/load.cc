@@ -39,7 +39,7 @@ NAN_METHOD(GitFilterList::Load) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  LoadBaton *baton = new LoadBaton;
+  LoadBaton *baton = new LoadBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -103,26 +103,48 @@ NAN_METHOD(GitFilterList::Load) {
   if (!info[4]->IsUndefined() && !info[4]->IsNull())
     worker->SaveToPersistent("flags", Nan::To<v8::Object>(info[4]).ToLocalChecked());
 
-  AsyncLibgit2QueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitFilterList::LoadWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(
+    true,
+    baton->repo,
+    baton->blob,
+    baton->path
+  );
+  return lockMaster;
 }
 
 void GitFilterList::LoadWorker::Execute() {
   git_error_clear();
 
-  {
-    LockMaster lockMaster(
-        /*asyncAction: */ true, baton->repo, baton->blob, baton->path);
+  int result = git_filter_list_load(&baton->filters, baton->repo, baton->blob,
+                                    baton->path, baton->mode, baton->flags);
 
-    int result = git_filter_list_load(&baton->filters, baton->repo, baton->blob,
-                                      baton->path, baton->mode, baton->flags);
+  baton->error_code = result;
 
-    baton->error_code = result;
-
-    if (result != GIT_OK && git_error_last() != NULL) {
-      baton->error = git_error_dup(git_error_last());
-    }
+  if (result != GIT_OK && git_error_last() != NULL) {
+    baton->error = git_error_dup(git_error_last());
   }
+}
+
+void GitFilterList::LoadWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  git_filter_list_free(baton->filters);
+
+  free((void *)baton->path);
+
+  delete baton;
 }
 
 void GitFilterList::LoadWorker::HandleOKCallback() {
@@ -133,7 +155,8 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
     if (baton->filters != NULL) {
       // GitFilterList baton->filters
       v8::Local<v8::Array> owners = Nan::New<Array>(0);
-      v8::Local<v8::Object> filterRegistry = Nan::New(GitFilterRegistry::persistentHandle);
+      nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+      v8::Local<v8::Object> filterRegistry = nodegitContext->GetFromPersistent("FilterRegistry").As<v8::Object>();
       v8::Local<v8::Array> propertyNames = Nan::GetPropertyNames(filterRegistry).ToLocalChecked();
 
       Nan::Set(
@@ -240,6 +263,8 @@ void GitFilterList::LoadWorker::HandleOKCallback() {
       callback->Call(0, NULL, async_resource);
     }
   }
+
+  free((void *)baton->path);
 
   delete baton;
 }

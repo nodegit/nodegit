@@ -170,6 +170,8 @@ var Helpers = {
         }
       }
 
+      type.freeFunctionName = libgitType.freeFunctionName;
+
       // we don't want to overwrite the c type of the passed in type
       _.merge(type, descriptor.types[normalizedType.replace("git_", "")] || {}, { cType: type.cType });
     }

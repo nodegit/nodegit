@@ -14,7 +14,7 @@ jobs:
     name: "*nix Tests"
     strategy:
       matrix:
-        node: [10, 12, 14]
+        node: [12, 14]
         os: [ubuntu-16.04, macOS-10.15]
     runs-on: ${{ matrix.os }}
     steps:
@@ -35,6 +35,7 @@ jobs:
         uses: actions/setup-node@master
         with:
           node-version: ${{ matrix.node }}
+          check-latest: true
 
       - name: Install Dependencies for Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
@@ -72,7 +73,7 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [10, 12, 14]
+        node: [12, 14]
         arch: [x86, x64]
     runs-on: windows-2016
     steps:
@@ -90,6 +91,7 @@ jobs:
         uses: implausible/setup-node@feature/expose-architecture-override
         with:
           node-version: ${{ matrix.node }}
+          check-latest: true
           node-arch: ${{ matrix.arch }}
 
       - name: Install

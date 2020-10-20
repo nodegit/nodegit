@@ -25,7 +25,7 @@ NAN_METHOD(GitClone::Clone) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  CloneBaton *baton = new CloneBaton;
+  CloneBaton *baton = new CloneBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -86,37 +86,60 @@ NAN_METHOD(GitClone::Clone) {
   if (!info[2]->IsUndefined() && !info[2]->IsNull())
     worker->SaveToPersistent("options", Nan::To<v8::Object>(info[2]).ToLocalChecked());
 
-  AsyncLibgit2QueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitClone::CloneWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(
+    true,
+    baton->url,
+    baton->local_path,
+    baton->options
+  );
+  return lockMaster;
 }
 
 void GitClone::CloneWorker::Execute() {
   git_error_clear();
 
-  {
-    LockMaster lockMaster(
-        /*asyncAction: */ true, baton->url, baton->local_path, baton->options);
+  git_repository *repo;
+  int result =
+      git_clone(&repo, baton->url, baton->local_path, baton->options);
 
-    git_repository *repo;
-    int result =
-        git_clone(&repo, baton->url, baton->local_path, baton->options);
+  if (result == GIT_OK) {
+    // This is required to clean up after the clone to avoid file locking
+    // issues in Windows and potentially other issues we don't know about.
+    git_repository_free(repo);
 
-    if (result == GIT_OK) {
-      // This is required to clean up after the clone to avoid file locking
-      // issues in Windows and potentially other issues we don't know about.
-      git_repository_free(repo);
-
-      // We want to provide a valid repository object, so reopen the repository
-      // after clone and cleanup.
-      result = git_repository_open(&baton->out, baton->local_path);
-    }
-
-    baton->error_code = result;
-
-    if (result != GIT_OK && git_error_last() != NULL) {
-      baton->error = git_error_dup(git_error_last());
-    }
+    // We want to provide a valid repository object, so reopen the repository
+    // after clone and cleanup.
+    result = git_repository_open(&baton->out, baton->local_path);
   }
+
+  baton->error_code = result;
+
+  if (result != GIT_OK && git_error_last() != NULL) {
+    baton->error = git_error_dup(git_error_last());
+  }
+}
+
+void GitClone::CloneWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  git_repository_free(baton->out);
+
+  free((void*)baton->url);
+  free((void*)baton->local_path);
+
+  delete baton;
 }
 
 void GitClone::CloneWorker::HandleOKCallback() {
@@ -206,6 +229,9 @@ void GitClone::CloneWorker::HandleOKCallback() {
       callback->Call(0, NULL, async_resource);
     }
   }
+
+  free((void*)baton->url);
+  free((void*)baton->local_path);
 
   delete baton;
 }

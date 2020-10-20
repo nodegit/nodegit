@@ -16,18 +16,20 @@ Wrapper::Wrapper(void *raw) {
   this->raw = raw;
 }
 
-void Wrapper::InitializeComponent(Local<v8::Object> target) {
+void Wrapper::InitializeComponent(Local<v8::Object> target, nodegit::Context *nodegitContext) {
   Nan::HandleScope scope;
 
-  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
+  Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
+  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(Nan::New("Wrapper").ToLocalChecked());
 
-  Nan::SetPrototypeMethod(tpl, "toBuffer", ToBuffer);
+  Nan::SetPrototypeMethod(tpl, "toBuffer", ToBuffer, nodegitExternal);
 
-  constructor_template.Reset(tpl);
-  Nan::Set(target, Nan::New("Wrapper").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
+  Local<Value> constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+  nodegitContext->SaveToPersistent("Wrapper::Template", constructor_template);
+  Nan::Set(target, Nan::New("Wrapper").ToLocalChecked(), constructor_template);
 }
 
 NAN_METHOD(Wrapper::JSNewFunction) {
@@ -47,8 +49,9 @@ Local<v8::Value> Wrapper::New(const void *raw) {
 
   Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
   Local<Object> instance;
-  Local<FunctionTemplate> constructorHandle = Nan::New(constructor_template);
-  instance = Nan::NewInstance(Nan::GetFunction(constructorHandle).ToLocalChecked(), 1, argv).ToLocalChecked();
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+  Local<Function> constructor_template = nodegitContext->GetFromPersistent("Wrapper::Template").As<Function>();
+  instance = Nan::NewInstance(constructor_template, 1, argv).ToLocalChecked();
 
   return scope.Escape(instance);
 }
@@ -75,6 +78,3 @@ NAN_METHOD(Wrapper::ToBuffer) {
 
   info.GetReturnValue().Set(nodeBuffer);
 }
-
-
-Nan::Persistent<FunctionTemplate> Wrapper::constructor_template;

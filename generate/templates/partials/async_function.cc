@@ -6,7 +6,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton;
+  {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -27,6 +27,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%if arg.payload.globalPayload %}
           globalPayload->{{ arg.name }} = NULL;
         {%else%}
+          // NOTE this is a dead path
           baton->{{ arg.payload.name }} = NULL;
         {%endif%}
         }
@@ -35,6 +36,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {%if arg.payload.globalPayload %}
             globalPayload->{{ arg.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
           {%else%}
+            // NOTE this is a dead path
             baton->{{ arg.payload.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
           {%endif%}
         }
@@ -74,24 +76,28 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  AsyncLibgit2QueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster {{ cppClassName }}::{{ cppFunctionName }}Worker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(
+    /*asyncAction: */true
+    {%each args|argsInfo as arg %}
+      {%if arg.cType|isPointer%}
+        {%if not arg.cType|isDoublePointer%}
+          ,baton->{{ arg.name }}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
+  );
+
+  return lockMaster;
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   git_error_clear();
-
-  {
-    LockMaster lockMaster(
-      /*asyncAction: */true
-      {%each args|argsInfo as arg %}
-        {%if arg.cType|isPointer%}
-          {%if not arg.cType|isDoublePointer%}
-            ,baton->{{ arg.name }}
-          {%endif%}
-        {%endif%}
-      {%endeach%}
-    );
 
   {%if .|hasReturnType %}
     {{ return.cType }} result = {{ cFunctionName }}(
@@ -123,7 +129,76 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
       baton->result = result;
 
     {%endif%}
+}
+
+void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
+  if (!GetIsCancelled()) {
+    v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error(ErrorMessage())).ToLocalChecked();
+    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
+    v8::Local<v8::Value> argv[1] = {
+      err
+    };
+    callback->Call(1, argv, async_resource);
   }
+
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  {%each args|argsInfo as arg %}
+    {%if arg.shouldAlloc %}
+      {%if not arg.isCppClassStringOrArray %}
+      {%elsif arg | isOid %}
+        if (baton->{{ arg.name}}NeedsFree) {
+          baton->{{ arg.name}}NeedsFree = false;
+          free((void*)baton->{{ arg.name }});
+        }
+      {%elsif arg.isCallbackFunction %}
+        {%if not arg.payload.globalPayload %}
+          delete baton->{{ arg.payload.name }};
+        {%endif%}
+      {%elsif arg.globalPayload %}
+        delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
+      {%else%}
+        free((void*)baton->{{ arg.name }});
+      {%endif%}
+    {%elsif arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
+      {{ arg.freeFunctionName }}(baton->{{ arg.name }});
+    {%endif%}
+  {%endeach%}
+
+  {%each args|argsInfo as arg %}
+    {%if arg.isCppClassStringOrArray %}
+      {%if arg.freeFunctionName %}
+      {%elsif not arg.isConst%}
+        free((void *)baton->{{ arg.name }});
+      {%endif%}
+    {%elsif arg | isOid %}
+      if (baton->{{ arg.name}}NeedsFree) {
+        baton->{{ arg.name}}NeedsFree = false;
+        free((void *)baton->{{ arg.name }});
+      }
+    {%elsif arg.isCallbackFunction %}
+      {%if not arg.payload.globalPayload %}
+        delete baton->{{ arg.payload.name }};
+      {%endif%}
+    {%elsif arg.globalPayload %}
+      delete ({{ cppFunctionName}}_globalPayload*)baton->{{ arg.name }};
+    {%endif%}
+    {%if arg.cppClassName == "GitBuf" %}
+      {%if cppFunctionName == "Set" %}
+      {%else%}
+        git_buf_dispose(baton->{{ arg.name }});
+        free((void *)baton->{{ arg.name }});
+      {%endif%}
+    {%endif%}
+  {%endeach%}
+
+  delete baton;
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
@@ -257,6 +332,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {%else%}
           free((void*)baton->{{ arg.name }});
         {%endif%}
+      {%elsif arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
+        {{ arg.freeFunctionName }}(baton->{{ arg.name }});
       {%endif%}
     {%endeach%}
   }
@@ -264,7 +341,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   {%each args|argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}
       {%if arg.freeFunctionName %}
-        {{ arg.freeFunctionName }}(baton->{{ arg.name }});
       {%elsif not arg.isConst%}
         free((void *)baton->{{ arg.name }});
       {%endif%}

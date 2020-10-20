@@ -5,6 +5,7 @@ extern "C" {
   #include <git2.h>
 }
 
+#include "../include/context.h"
 #include "../include/functions/copy.h"
 #include "../include/convenient_hunk.h"
 #include "../include/diff_line.h"
@@ -32,27 +33,28 @@ ConvenientHunk::~ConvenientHunk() {
   HunkDataFree(this->hunk);
 }
 
-void ConvenientHunk::InitializeComponent(Local<v8::Object> target) {
+void ConvenientHunk::InitializeComponent(Local<v8::Object> target, nodegit::Context *nodegitContext) {
   Nan::HandleScope scope;
 
-  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
+  Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
+  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(Nan::New("ConvenientHunk").ToLocalChecked());
 
-  Nan::SetPrototypeMethod(tpl, "size", Size);
-  Nan::SetPrototypeMethod(tpl, "lines", Lines);
+  Nan::SetPrototypeMethod(tpl, "size", Size, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "lines", Lines, nodegitExternal);
 
-  Nan::SetPrototypeMethod(tpl, "oldStart", OldStart);
-  Nan::SetPrototypeMethod(tpl, "oldLines", OldLines);
-  Nan::SetPrototypeMethod(tpl, "newStart", NewStart);
-  Nan::SetPrototypeMethod(tpl, "newLines", NewLines);
-  Nan::SetPrototypeMethod(tpl, "headerLen", HeaderLen);
-  Nan::SetPrototypeMethod(tpl, "header", Header);
+  Nan::SetPrototypeMethod(tpl, "oldStart", OldStart, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "oldLines", OldLines, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "newStart", NewStart, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "newLines", NewLines, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "headerLen", HeaderLen, nodegitExternal);
+  Nan::SetPrototypeMethod(tpl, "header", Header, nodegitExternal);
 
-  Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
-  constructor_template.Reset(_constructor_template);
-  Nan::Set(target, Nan::New("ConvenientHunk").ToLocalChecked(), _constructor_template);
+  Local<Function> constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+  nodegitContext->SaveToPersistent("ConvenientHunk::Template", constructor_template);
+  Nan::Set(target, Nan::New("ConvenientHunk").ToLocalChecked(), constructor_template);
 }
 
 NAN_METHOD(ConvenientHunk::JSNewFunction) {
@@ -67,10 +69,12 @@ NAN_METHOD(ConvenientHunk::JSNewFunction) {
   info.GetReturnValue().Set(info.This());
 }
 
-Local<v8::Value> ConvenientHunk::New(void *raw) {
+Local<Value> ConvenientHunk::New(void *raw) {
   Nan::EscapableHandleScope scope;
-  Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
-  return scope.Escape(Nan::NewInstance(Nan::New(ConvenientHunk::constructor_template), 1, argv).ToLocalChecked());
+  Local<Value> argv[1] = { Nan::New<External>((void *)raw) };
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+  Local<Function> constructor_template = nodegitContext->GetFromPersistent("ConvenientHunk::Template").As<Function>();
+  return scope.Escape(Nan::NewInstance(constructor_template, 1, argv).ToLocalChecked());
 }
 
 HunkData *ConvenientHunk::GetValue() {
@@ -92,22 +96,27 @@ NAN_METHOD(ConvenientHunk::Lines) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  LinesBaton *baton = new LinesBaton;
+  LinesBaton *baton = new LinesBaton();
 
   baton->hunk = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue();
+  baton->lines = new std::vector<git_diff_line *>;
+  baton->lines->reserve(baton->hunk->numLines);
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   LinesWorker *worker = new LinesWorker(baton, callback);
 
   worker->SaveToPersistent("hunk", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
 }
 
+nodegit::LockMaster ConvenientHunk::LinesWorker::AcquireLocks() {
+  return nodegit::LockMaster(true);
+}
+
 void ConvenientHunk::LinesWorker::Execute() {
-  baton->lines = new std::vector<git_diff_line *>;
-  baton->lines->reserve(baton->hunk->numLines);
   for (unsigned int i = 0; i < baton->hunk->numLines; ++i) {
     git_diff_line *storeLine = (git_diff_line *)malloc(sizeof(git_diff_line));
     storeLine->origin = baton->hunk->lines->at(i)->origin;
@@ -119,6 +128,15 @@ void ConvenientHunk::LinesWorker::Execute() {
     storeLine->content = strdup(baton->hunk->lines->at(i)->content);
     baton->lines->push_back(storeLine);
   }
+}
+
+void ConvenientHunk::LinesWorker::HandleErrorCallback() {
+  while (!baton->lines->empty()) {
+    free(baton->lines->back());
+    baton->lines->pop_back();
+  }
+
+  delete baton->lines;
 }
 
 void ConvenientHunk::LinesWorker::HandleOKCallback() {
@@ -136,6 +154,8 @@ void ConvenientHunk::LinesWorker::HandleOKCallback() {
     result
   };
   callback->Call(2, argv, async_resource);
+
+  delete baton;
 }
 
 NAN_METHOD(ConvenientHunk::OldStart) {
@@ -181,5 +201,3 @@ NAN_METHOD(ConvenientHunk::Header) {
 
   info.GetReturnValue().Set(to);
 }
-
-Nan::Persistent<Function> ConvenientHunk::constructor_template;

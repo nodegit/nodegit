@@ -34,7 +34,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   git_error_clear();
 
   { // lock master scope start
-    LockMaster lockMaster(
+    nodegit::LockMaster lockMaster(
       /*asyncAction: */false
       {%each args|argsInfo as arg %}
         {%if arg.cType|isPointer%}

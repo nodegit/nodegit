@@ -106,10 +106,11 @@ void {{ cppClassName }}::ConstructFields() {
   {% endeach %}
 }
 
-void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
+void {{ cppClassName }}::InitializeComponent(Local<Object> target, nodegit::Context *nodegitContext) {
   Nan::HandleScope scope;
 
-  v8::Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
+  Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
+  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
@@ -117,16 +118,16 @@ void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
   {% each fields as field %}
     {% if not field.ignore %}
     {% if not field | isPayload %}
-      Nan::SetAccessor(tpl->InstanceTemplate(), Nan::New("{{ field.jsFunctionName }}").ToLocalChecked(), Get{{ field.cppFunctionName}}, Set{{ field.cppFunctionName}});
+      Nan::SetAccessor(tpl->InstanceTemplate(), Nan::New("{{ field.jsFunctionName }}").ToLocalChecked(), Get{{ field.cppFunctionName}}, Set{{ field.cppFunctionName}}, nodegitExternal);
     {% endif %}
     {% endif %}
   {% endeach %}
 
   InitializeTemplate(tpl);
 
-  v8::Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
-  constructor_template.Reset(_constructor_template);
-  Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
+  v8::Local<Function> constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+  nodegitContext->SaveToPersistent("{{ cppClassName }}::Template", constructor_template);
+  Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), constructor_template);
 }
 
 {% partial fieldAccessors . %}

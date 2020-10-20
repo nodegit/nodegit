@@ -192,7 +192,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  FileHistoryWalkBaton* baton = new FileHistoryWalkBaton;
+  FileHistoryWalkBaton* baton = new FileHistoryWalkBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -207,8 +207,14 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback);
   worker->SaveToPersistent("fileHistoryWalk", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRevwalk::FileHistoryWalkWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRevwalk::FileHistoryWalkWorker::Execute()
@@ -418,6 +424,26 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
   baton->file_path = NULL;
 }
 
+void GitRevwalk::FileHistoryWalkWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  for (unsigned int i = 0; i < baton->out->size(); ++i) {
+    delete static_cast<FileHistoryEvent *>(baton->out->at(i));
+  }
+
+  delete baton->out;
+
+  free((void *)baton->file_path);
+
+  delete baton;
+}
+
 void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
 {
   if (baton->out != NULL) {
@@ -475,4 +501,6 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
   }
 
   callback->Call(0, NULL, async_resource);
+
+  delete baton;
 }

@@ -12,7 +12,13 @@
     baton.{{ arg.name }} = {{ arg.name }};
   {% endeach %}
 
-  return baton.ExecuteAsync({{ cppFunctionName }}_{{ cbFunction.name }}_async);
+  return baton.ExecuteAsync({{ cppFunctionName }}_{{ cbFunction.name }}_async, {{ cppFunctionName }}_{{ cbFunction.name }}_cancelAsync);
+}
+
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_cancelAsync(void *untypedBaton) {
+  {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(untypedBaton);
+  baton->result = {{ cbFunction.return.cancel }};
+  baton->Done();
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void *untypedBaton) {
@@ -49,8 +55,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
   };
 
   Nan::TryCatch tryCatch;
-  // TODO This should take an async_resource, but we will need to figure out how to pipe the correct context into this
-  Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*callback, {{ cbFunction.args|callbackArgsCount }}, argv);
+  Nan::MaybeLocal<v8::Value> maybeResult = (*callback)(baton->GetAsyncResource(), {{ cbFunction.args|callbackArgsCount }}, argv);
+
   v8::Local<v8::Value> result;
   if (!maybeResult.IsEmpty()) {
     result = maybeResult.ToLocalChecked();
@@ -88,7 +94,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
   baton->Done();
 }
 
-void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result) {
+void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result) {
   Nan::HandleScope scope;
 
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(_baton);

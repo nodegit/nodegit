@@ -13,7 +13,6 @@ extern "C" {
 #include "../include/functions/copy.h"
 #include "../include/{{ filename }}.h"
 #include "nodegit_wrapper.cc"
-#include "../include/async_libgit2_queue_worker.h"
 
 {% each dependencies as dependency %}
   #include "{{ dependency }}"
@@ -43,10 +42,11 @@ using namespace node;
     {% endeach %}
   }
 
-  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
+  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext) {
     Nan::HandleScope scope;
 
-    v8::Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction);
+    v8::Local<v8::External> nodegitExternal = Nan::New<v8::External>(nodegitContext);
+    v8::Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
     tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
@@ -54,40 +54,41 @@ using namespace node;
     {% each functions as function %}
       {% if not function.ignore %}
         {% if function.isPrototypeMethod %}
-          Nan::SetPrototypeMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
+          Nan::SetPrototypeMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }}, nodegitExternal);
         {% else %}
-          Nan::SetMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
+          Nan::SetMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }}, nodegitExternal);
         {% endif %}
       {% endif %}
     {% endeach %}
 
     {% each fields as field %}
       {% if not field.ignore %}
-        Nan::SetPrototypeMethod(tpl, "{{ field.jsFunctionName }}", {{ field.cppFunctionName }});
+        Nan::SetPrototypeMethod(tpl, "{{ field.jsFunctionName }}", {{ field.cppFunctionName }}, nodegitExternal);
       {% endif %}
     {% endeach %}
 
     InitializeTemplate(tpl);
 
-    v8::Local<Function> _constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
-    constructor_template.Reset(_constructor_template);
-    Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), _constructor_template);
+    v8::Local<Function> constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
+    nodegitContext->SaveToPersistent("{{ cppClassName }}::Template", constructor_template);
+    Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), constructor_template);
   }
 
 {% else %}
 
-  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target) {
+  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext) {
     Nan::HandleScope scope;
+    Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
 
     {% if functions|hasFunctionOnRootProto %}
-      v8::Local<FunctionTemplate> object = Nan::New<FunctionTemplate>({{ functions|getCPPFunctionForRootProto }});
+      v8::Local<FunctionTemplate> object = Nan::New<FunctionTemplate>({{ functions|getCPPFunctionForRootProto }}, nodegitExternal);
     {% else %}
       v8::Local<Object> object = Nan::New<Object>();
     {% endif %}
 
     {% each functions as function %}
       {% if not function.ignore %}
-        Nan::SetMethod(object, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }});
+        Nan::SetMethod(object, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }}, nodegitExternal);
       {% endif %}
     {% endeach %}
 

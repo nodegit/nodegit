@@ -5,12 +5,13 @@
 #include <map>
 #include <algorithm>
 #include <set>
-
 #include <openssl/crypto.h>
+#include <mutex>
 
 #include "../include/init_ssh2.h"
 #include "../include/lock_master.h"
 #include "../include/nodegit.h"
+#include "../include/context.h"
 #include "../include/wrapper.h"
 #include "../include/promise_completion.h"
 #include "../include/functions/copy.h"
@@ -23,70 +24,22 @@
 #include "../include/convenient_hunk.h"
 #include "../include/filter_registry.h"
 
-#if (NODE_MODULE_VERSION > 48)
-  v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
-                                      v8::Local<v8::String> key) {
-    v8::Local<v8::Value> value;
-    Nan::Maybe<bool> result = Nan::HasPrivate(object, key);
-    if (!(result.IsJust() && result.FromJust()))
-      return v8::Local<v8::Value>();
-    if (Nan::GetPrivate(object, key).ToLocal(&value))
-      return value;
-    return v8::Local<v8::Value>();
-  }
+using namespace v8;
 
-  void SetPrivate(v8::Local<v8::Object> object,
-                      v8::Local<v8::String> key,
-                      v8::Local<v8::Value> value) {
-    if (value.IsEmpty())
-      return;
-    Nan::SetPrivate(object, key, value);
-  }
-#else
-  v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
-                                      v8::Local<v8::String> key) {
-    return object->GetHiddenValue(key);
-  }
-
-  void SetPrivate(v8::Local<v8::Object> object,
-                      v8::Local<v8::String> key,
-                      v8::Local<v8::Value> value) {
-    object->SetHiddenValue(key, value);
-  }
-#endif
-
-void LockMasterEnable(const FunctionCallbackInfo<Value>& info) {
-  LockMaster::Enable();
+Local<Value> GetPrivate(Local<Object> object, Local<String> key) {
+  Local<Value> value;
+  Nan::Maybe<bool> result = Nan::HasPrivate(object, key);
+  if (!(result.IsJust() && result.FromJust()))
+    return Local<Value>();
+  if (Nan::GetPrivate(object, key).ToLocal(&value))
+    return value;
+  return Local<Value>();
 }
 
-void LockMasterSetStatus(const FunctionCallbackInfo<Value>& info) {
-  Nan::HandleScope scope;
-
-  // convert the first argument to Status
-  if(info.Length() >= 0 && info[0]->IsNumber()) {
-    v8::Local<v8::Int32> value = Nan::To<v8::Int32>(info[0]).ToLocalChecked();
-    LockMaster::Status status = static_cast<LockMaster::Status>(value->Value());
-    if(status >= LockMaster::Disabled && status <= LockMaster::Enabled) {
-      LockMaster::SetStatus(status);
-      return;
-    }
-  }
-
-  // argument error
-  Nan::ThrowError("Argument must be one 0, 1 or 2");
-}
-
-void LockMasterGetStatus(const FunctionCallbackInfo<Value>& info) {
-  info.GetReturnValue().Set(Nan::New(LockMaster::GetStatus()));
-}
-
-void LockMasterGetDiagnostics(const FunctionCallbackInfo<Value>& info) {
-  LockMaster::Diagnostics diagnostics(LockMaster::GetDiagnostics());
-
-  // return a plain JS object with properties
-  v8::Local<v8::Object> result = Nan::New<v8::Object>();
-  Nan::Set(result, Nan::New("storedMutexesCount").ToLocalChecked(), Nan::New(diagnostics.storedMutexesCount));
-  info.GetReturnValue().Set(result);
+void SetPrivate(Local<Object> object, Local<String> key, Local<Value> value) {
+  if (value.IsEmpty())
+    return;
+  Nan::SetPrivate(object, key, value);
 }
 
 static uv_mutex_t *opensslMutexes;
@@ -114,42 +67,45 @@ void OpenSSL_ThreadSetup() {
   CRYPTO_THREADID_set_callback(OpenSSL_IDCallback);
 }
 
-ThreadPool libgit2ThreadPool(10, uv_default_loop());
+static std::once_flag libraryInitializedFlag;
+static std::mutex libraryInitializationMutex;
 
-extern "C" void init(v8::Local<v8::Object> target) {
-  // Initialize thread safety in openssl and libssh2
-  OpenSSL_ThreadSetup();
-  init_ssh2();
-  // Initialize libgit2.
-  git_libgit2_init();
+NAN_MODULE_INIT(init) {
+  {
+    // We only want to do initialization logic once, and we also want to prevent any thread from completely loading
+    // the module until initialization has occurred.
+    // All of this initialization logic ends up being shared.
+    const std::lock_guard<std::mutex> lock(libraryInitializationMutex);
+    std::call_once(libraryInitializedFlag, []() {
+      // Initialize thread safety in openssl and libssh2
+      OpenSSL_ThreadSetup();
+      init_ssh2();
+      // Initialize libgit2.
+      git_libgit2_init();
+
+      // Register thread pool with libgit2
+      nodegit::ThreadPool::InitializeGlobal();
+    });
+  }
 
   Nan::HandleScope scope;
+  Local<Context> context = Nan::GetCurrentContext();
+  Isolate *isolate = context->GetIsolate();
+  nodegit::Context *nodegitContext = new nodegit::Context(isolate);
 
-  Wrapper::InitializeComponent(target);
-  PromiseCompletion::InitializeComponent();
+  Wrapper::InitializeComponent(target, nodegitContext);
+  PromiseCompletion::InitializeComponent(nodegitContext);
   {% each %}
     {% if type != "enum" %}
-      {{ cppClassName }}::InitializeComponent(target);
+      {{ cppClassName }}::InitializeComponent(target, nodegitContext);
     {% endif %}
   {% endeach %}
 
-  ConvenientHunk::InitializeComponent(target);
-  ConvenientPatch::InitializeComponent(target);
-  GitFilterRegistry::InitializeComponent(target);
+  ConvenientHunk::InitializeComponent(target, nodegitContext);
+  ConvenientPatch::InitializeComponent(target, nodegitContext);
+  GitFilterRegistry::InitializeComponent(target, nodegitContext);
 
-  NODE_SET_METHOD(target, "enableThreadSafety", LockMasterEnable);
-  NODE_SET_METHOD(target, "setThreadSafetyStatus", LockMasterSetStatus);
-  NODE_SET_METHOD(target, "getThreadSafetyStatus", LockMasterGetStatus);
-  NODE_SET_METHOD(target, "getThreadSafetyDiagnostics", LockMasterGetDiagnostics);
-
-  v8::Local<v8::Object> threadSafety = Nan::New<v8::Object>();
-  Nan::Set(threadSafety, Nan::New("DISABLED").ToLocalChecked(), Nan::New((int)LockMaster::Disabled));
-  Nan::Set(threadSafety, Nan::New("ENABLED_FOR_ASYNC_ONLY").ToLocalChecked(), Nan::New((int)LockMaster::EnabledForAsyncOnly));
-  Nan::Set(threadSafety, Nan::New("ENABLED").ToLocalChecked(), Nan::New((int)LockMaster::Enabled));
-
-  Nan::Set(target, Nan::New("THREAD_SAFETY").ToLocalChecked(), threadSafety);
-
-  LockMaster::Initialize();
+  nodegit::LockMaster::InitializeContext();
 }
 
-NODE_MODULE(nodegit, init)
+NAN_MODULE_WORKER_ENABLED(nodegit, init)

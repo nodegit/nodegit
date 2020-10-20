@@ -1,5 +1,11 @@
 var _ = require("lodash");
 var util = require("util");
+var worker;
+
+try {
+  worker = require("worker_threads");
+} catch (e) {}
+
 var rawApi;
 
 // Attempt to load the production release first, if it fails fall back to the

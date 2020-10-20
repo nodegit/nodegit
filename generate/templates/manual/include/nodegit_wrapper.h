@@ -14,6 +14,10 @@
 //  static const bool isFreeable
 //  static void free(cType *raw) - frees the object using freeFunctionName
 
+namespace nodegit {
+  class Context;
+}
+
 template<typename Traits>
 class NodeGitWrapper : public Nan::ObjectWrap {
 public:
@@ -29,6 +33,9 @@ public:
   // (and through a method) instead of changing selfFreeing, but that's
   // a separate issue.
   bool selfFreeing;
+  
+  const nodegit::Context *nodegitContext = nullptr;
+
 protected:
   cType *raw;
 
@@ -37,12 +44,10 @@ protected:
   // CopyablePersistentTraits are used to get the reset-on-destruct behavior.
   Nan::Persistent<v8::Object, Nan::CopyablePersistentTraits<v8::Object> > owner;
 
-  static Nan::Persistent<v8::Function> constructor_template;
-
   // diagnostic count of self-freeing object instances
-  static int SelfFreeingInstanceCount;
+  thread_local static int SelfFreeingInstanceCount;
   // diagnostic count of constructed non-self-freeing object instances
-  static int NonSelfFreeingConstructedCount;
+  thread_local static int NonSelfFreeingConstructedCount;
 
   static void InitializeTemplate(v8::Local<v8::FunctionTemplate> &tpl);
 

@@ -8,7 +8,7 @@ NAN_METHOD(GitRevwalk::FastWalk)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  FastWalkBaton* baton = new FastWalkBaton;
+  FastWalkBaton* baton = new FastWalkBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -21,8 +21,14 @@ NAN_METHOD(GitRevwalk::FastWalk)
   FastWalkWorker *worker = new FastWalkWorker(baton, callback);
   worker->SaveToPersistent("fastWalk", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRevwalk::FastWalkWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRevwalk::FastWalkWorker::Execute()
@@ -64,6 +70,25 @@ void GitRevwalk::FastWalkWorker::Execute()
 
     baton->out->push_back(nextCommit);
   }
+}
+
+void GitRevwalk::FastWalkWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  while(!baton->out->empty()) {
+    free(baton->out->back());
+    baton->out->pop_back();
+  }
+
+  delete baton->out;
+
+  delete baton;
 }
 
 void GitRevwalk::FastWalkWorker::HandleOKCallback()
@@ -172,4 +197,6 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
       callback->Call(0, NULL, async_resource);
     }
   }
+
+  delete baton;
 }

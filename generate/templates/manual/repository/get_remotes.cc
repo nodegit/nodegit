@@ -4,7 +4,7 @@ NAN_METHOD(GitRepository::GetRemotes)
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  GetRemotesBaton* baton = new GetRemotesBaton;
+  GetRemotesBaton* baton = new GetRemotesBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -14,8 +14,14 @@ NAN_METHOD(GitRepository::GetRemotes)
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   GetRemotesWorker *worker = new GetRemotesWorker(baton, callback);
   worker->SaveToPersistent("repo", info.This());
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRepository::GetRemotesWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRepository::GetRemotesWorker::Execute()
@@ -24,7 +30,7 @@ void GitRepository::GetRemotesWorker::Execute()
 
   git_repository *repo;
   {
-    LockMaster lockMaster(true, baton->repo);
+    nodegit::LockMaster lockMaster(true, baton->repo);
     baton->error_code = git_repository_open(&repo, git_repository_workdir(baton->repo));
   }
 
@@ -75,6 +81,26 @@ void GitRepository::GetRemotesWorker::Execute()
 
     baton->out->push_back(remote);
   }
+}
+
+void GitRepository::GetRemotesWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  while (baton->out->size()) {
+    git_remote *remoteToFree = baton->out->back();
+    baton->out->pop_back();
+    git_remote_free(remoteToFree);
+  }
+
+  delete baton->out;
+
+  delete baton;
 }
 
 void GitRepository::GetRemotesWorker::HandleOKCallback()
@@ -131,4 +157,6 @@ void GitRepository::GetRemotesWorker::HandleOKCallback()
   {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }

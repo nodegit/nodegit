@@ -12,7 +12,7 @@ NAN_METHOD(GitFilterSource::Repo) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
-  RepoBaton *baton = new RepoBaton;
+  RepoBaton *baton = new RepoBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -23,25 +23,41 @@ NAN_METHOD(GitFilterSource::Repo) {
 
   worker->SaveToPersistent("src", info.This());
 
-  AsyncLibgit2QueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitFilterSource::RepoWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true, baton->src);
+  return lockMaster;
 }
 
 void GitFilterSource::RepoWorker::Execute() {
   git_error_clear();
 
-  {
-    LockMaster lockMaster(true, baton->src);
+  git_repository *repo = git_filter_source_repo(baton->src);
+  baton->error_code = git_repository_open(&repo, git_repository_path(repo));
 
-    git_repository *repo = git_filter_source_repo(baton->src);
-    baton->error_code = git_repository_open(&repo, git_repository_path(repo));
-
-    if (baton->error_code == GIT_OK) {
-      baton->out = repo;
-    } else if (git_error_last() != NULL) {
-      baton->error = git_error_dup(git_error_last());
-    }
+  if (baton->error_code == GIT_OK) {
+    baton->out = repo;
+  } else if (git_error_last() != NULL) {
+    baton->error = git_error_dup(git_error_last());
   }
+}
+
+void GitFilterSource::RepoWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  git_repository_free(baton->out);
+
+  delete baton;
 }
 
 void GitFilterSource::RepoWorker::HandleOKCallback() {

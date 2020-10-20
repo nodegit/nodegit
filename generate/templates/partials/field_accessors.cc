@@ -138,32 +138,44 @@
         {{ cppClassName }}* instance = {{ field.name }}_getInstanceFromBaton(baton);
 
         {% if field.return.type == "void" %}
-          if (instance->{{ field.name }}.WillBeThrottled()) {
+          if (instance->nodegitContext != nodegit::ThreadPool::GetCurrentContext()) {
+            delete baton;
+          } else if (instance->{{ field.name }}.WillBeThrottled()) {
             delete baton;
           } else if (instance->{{ field.name }}.ShouldWaitForResult()) {
-            baton->ExecuteAsync({{ field.name }}_async);
+            baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync);
             delete baton;
           } else {
-            baton->ExecuteAsync({{ field.name }}_async, deleteBaton);
+            baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync, nodegit::deleteBaton);
           }
           return;
         {% else %}
           {{ field.return.type }} result;
 
-          if (instance->{{ field.name }}.WillBeThrottled()) {
+          if (instance->nodegitContext != nodegit::ThreadPool::GetCurrentContext()) {
+            result = baton->defaultResult;
+            delete baton;
+          } else if (instance->{{ field.name }}.WillBeThrottled()) {
             result = baton->defaultResult;
             delete baton;
           } else if (instance->{{ field.name }}.ShouldWaitForResult()) {
-            result = baton->ExecuteAsync({{ field.name }}_async);
+            result = baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync);
             delete baton;
           } else {
             result = baton->defaultResult;
-            baton->ExecuteAsync({{ field.name }}_async, deleteBaton);
+            baton->ExecuteAsync({{ field.name }}_async, {{ field.name }}_cancelAsync, nodegit::deleteBaton);
           }
           return result;
         {% endif %}
       }
 
+      void {{ cppClassName }}::{{ field.name }}_cancelAsync(void *untypedBaton) {
+        {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(untypedBaton);
+        {% if field.return.type != "void" %}
+          baton->result = {{ field.return.cancel }};
+        {% endif %}
+        baton->Done();
+      }
 
       void {{ cppClassName }}::{{ field.name }}_async(void *untypedBaton) {
         Nan::HandleScope scope;
@@ -205,8 +217,11 @@
 
         Nan::TryCatch tryCatch;
 
-        // TODO This should take an async_resource, but we will need to figure out how to pipe the correct context into this
-        Nan::MaybeLocal<v8::Value> maybeResult = Nan::Call(*(instance->{{ field.name }}.GetCallback()), {{ field.args|callbackArgsCount }}, argv);
+        Nan::MaybeLocal<v8::Value> maybeResult = (*(instance->{{ field.name }}.GetCallback()))(
+          baton->GetAsyncResource(),
+          {{ field.args|callbackArgsCount }},
+          argv
+        );
         v8::Local<v8::Value> result;
         if (!maybeResult.IsEmpty()) {
           result = maybeResult.ToLocalChecked();
@@ -247,7 +262,7 @@
         {% endif %}
       }
 
-      void {{ cppClassName }}::{{ field.name }}_promiseCompleted(bool isFulfilled, AsyncBaton *_baton, v8::Local<v8::Value> result) {
+      void {{ cppClassName }}::{{ field.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result) {
         Nan::HandleScope scope;
 
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(_baton);

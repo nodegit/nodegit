@@ -5,6 +5,8 @@
 #include <string>
 
 #include "async_baton.h"
+#include "async_worker.h"
+#include "lock_master.h"
 #include "promise_completion.h"
 
 extern "C" {
@@ -37,8 +39,7 @@ using namespace v8;
 
 class ConvenientPatch : public Nan::ObjectWrap {
   public:
-    static Nan::Persistent<Function> constructor_template;
-    static void InitializeComponent (v8::Local<v8::Object> target);
+    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
     static v8::Local<v8::Value> New(void *raw);
 
@@ -67,16 +68,18 @@ class ConvenientPatch : public Nan::ObjectWrap {
       PatchData *patch;
       std::vector<HunkData *> *hunks;
     };
-    class HunksWorker : public Nan::AsyncWorker {
+    class HunksWorker : public nodegit::AsyncWorker {
       public:
         HunksWorker(
             HunksBaton *_baton,
             Nan::Callback *callback
-        ) : Nan::AsyncWorker(callback)
+        ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:ConvenientPatch:Hunks")
           , baton(_baton) {};
         ~HunksWorker() {};
         void Execute();
+        void HandleErrorCallback();
         void HandleOKCallback();
+        nodegit::LockMaster AcquireLocks();
 
       private:
         HunksBaton *baton;

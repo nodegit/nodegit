@@ -1487,6 +1487,9 @@
         "git2/sys/filter.h"
       ],
       "fields": {
+        "cleanup": {
+          "ignore": true
+        },
         "stream": {
           "ignore": true
         }

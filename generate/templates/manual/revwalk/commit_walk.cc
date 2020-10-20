@@ -121,7 +121,7 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
     }
   }
 
-  CommitWalkBaton* baton = new CommitWalkBaton;
+  CommitWalkBaton* baton = new CommitWalkBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -145,8 +145,14 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
   CommitWalkWorker *worker = new CommitWalkWorker(baton, callback);
   worker->SaveToPersistent("commitWalk", info.This());
 
-  Nan::AsyncQueueWorker(worker);
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegitContext->QueueWorker(worker);
   return;
+}
+
+nodegit::LockMaster GitRevwalk::CommitWalkWorker::AcquireLocks() {
+  nodegit::LockMaster lockMaster(true);
+  return lockMaster;
 }
 
 void GitRevwalk::CommitWalkWorker::Execute() {
@@ -201,6 +207,26 @@ void GitRevwalk::CommitWalkWorker::Execute() {
   }
 }
 
+void GitRevwalk::CommitWalkWorker::HandleErrorCallback() {
+  if (baton->error) {
+    if (baton->error->message) {
+      free((void *)baton->error->message);
+    }
+
+    free((void *)baton->error);
+  }
+
+  auto out = static_cast<std::vector<CommitModel *> *>(baton->out);
+  while (out->size()) {
+    delete out->back();
+    out->pop_back();
+  }
+
+  delete out;
+
+  delete baton;
+}
+
 void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
   if (baton->out != NULL) {
     std::vector<CommitModel *> *out = static_cast<std::vector<CommitModel *> *>(baton->out);
@@ -244,4 +270,6 @@ void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
   } else {
     callback->Call(0, NULL, async_resource);
   }
+
+  delete baton;
 }
