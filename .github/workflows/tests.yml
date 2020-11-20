@@ -41,7 +41,9 @@ jobs:
 
       - name: Install Dependencies for Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
-        run: sudo apt install build-essential libssl-dev libkrb5-dev libc++-dev
+        run: |
+          sudo apt update
+          sudo apt install build-essential libssl-dev libkrb5-dev libc++-dev
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
