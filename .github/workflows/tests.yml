@@ -33,12 +33,16 @@ jobs:
 
       - name: Use Node.js
         uses: actions/setup-node@master
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           node-version: ${{ matrix.node }}
 
       - name: Install Dependencies for Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
         run: sudo apt install build-essential libssl-dev libkrb5-dev libc++-dev
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
       - name: Install
         env:
@@ -88,6 +92,8 @@ jobs:
 
       - name: Use Node.js
         uses: implausible/setup-node@feature/expose-architecture-override
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           node-version: ${{ matrix.node }}
           node-arch: ${{ matrix.arch }}
