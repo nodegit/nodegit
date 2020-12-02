@@ -114,7 +114,7 @@
               "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
               "MACOSX_DEPLOYMENT_TARGET": "10.9",
               'CLANG_CXX_LIBRARY': 'libc++',
-              'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+              'CLANG_CXX_LANGUAGE_STANDARD':'c++14',
 
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
@@ -166,7 +166,7 @@
         [
           "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
             "cflags": [
-              "-std=c++11"
+              "-std=c++14"
             ]
           }
         ],
