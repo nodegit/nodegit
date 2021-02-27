@@ -23,12 +23,13 @@
     "no-shadow": "warn",
     "no-unused-vars": [
       "error",
+      // allow unused vars starting with _
       {
         "argsIgnorePattern": "^_",
         "ignoreRestSiblings": true,
         "varsIgnorePattern": "^_"
       }
-    ], // allow unused vars starting with _
+    ],
     "node/no-missing-require": "warn",
     "prefer-const": "warn"
   }
