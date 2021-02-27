@@ -1,15 +1,9 @@
-var bannedCppClassNames = [
-  "Buffer",
-  "Function",
-  "GitBuf",
-  "GitStrarray",
-  "Wrapper"
-];
+var bannedCppClassNames = ["Buffer", "Function", "GitBuf", "GitStrarray", "Wrapper"];
 
-module.exports = function(fields) {
+module.exports = function (fields) {
   var result = [];
 
-  fields.forEach(function (field, index){
+  fields.forEach(function (field, index) {
     var fieldInfo = {};
 
     fieldInfo.__proto__ = field;
@@ -17,10 +11,10 @@ module.exports = function(fields) {
     fieldInfo.index = index;
     fieldInfo.parsedName = field.name || "result";
     fieldInfo.isCppClassIntType = ~["Uint32", "Int32"].indexOf(field.cppClassName);
-    fieldInfo.parsedClassName = (field.cppClassName || '').toLowerCase() + "_t";
+    fieldInfo.parsedClassName = (field.cppClassName || "").toLowerCase() + "_t";
     fieldInfo.hasOwner = !fieldInfo.selfOwned && !!fieldInfo.ownedByThis;
-    fieldInfo.isUnwrappable = fieldInfo.isLibgitType && !fieldInfo.isEnum &&
-      !bannedCppClassNames.includes(fieldInfo.cppClassName);
+    fieldInfo.isUnwrappable =
+      fieldInfo.isLibgitType && !fieldInfo.isEnum && !bannedCppClassNames.includes(fieldInfo.cppClassName);
 
     result.push(fieldInfo);
   });

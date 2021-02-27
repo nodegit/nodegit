@@ -216,7 +216,7 @@
       ]
     }
   },
-  "new" : {
+  "new": {
     "functions": {
       "git_libgit2_opts": {
         "type": "function",
@@ -1102,12 +1102,7 @@
           "git_config_next"
         ]
       ],
-      [
-        "diff",
-        [
-          "git_diff_get_perfdata"
-        ]
-      ],
+      ["diff", ["git_diff_get_perfdata"]],
       [
         "diff_stats",
         [
@@ -1139,38 +1134,15 @@
           "git_filter_source_flags"
         ]
       ],
-      [
-        "hashsig",
-        [
-          "git_hashsig_compare",
-          "git_hashsig_create",
-          "git_hashsig_create_fromfile"
-        ]
-      ],
+      ["hashsig", ["git_hashsig_compare", "git_hashsig_create", "git_hashsig_create_fromfile"]],
       [
         "index_conflict_iterator",
-        [
-          "git_index_conflict_iterator_free",
-          "git_index_conflict_iterator_new",
-          "git_index_conflict_next"
-        ]
+        ["git_index_conflict_iterator_free", "git_index_conflict_iterator_new", "git_index_conflict_next"]
       ],
-      [
-        "index_iterator",
-        [
-          "git_index_iterator_free",
-          "git_index_iterator_new",
-          "git_index_iterator_next"
-        ]
-      ],
+      ["index_iterator", ["git_index_iterator_free", "git_index_iterator_new", "git_index_iterator_next"]],
       [
         "index_name_entry",
-        [
-          "git_index_name_add",
-          "git_index_name_clear",
-          "git_index_name_entrycount",
-          "git_index_name_get_byindex"
-        ]
+        ["git_index_name_add", "git_index_name_clear", "git_index_name_entrycount", "git_index_name_get_byindex"]
       ],
       [
         "index_reuc_entry",
@@ -1184,12 +1156,7 @@
           "git_index_reuc_remove"
         ]
       ],
-      [
-        "merge_file_result",
-        [
-          "git_merge_file_result_free"
-        ]
-      ],
+      ["merge_file_result", ["git_merge_file_result_free"]],
       [
         "odb_object",
         [
@@ -1203,33 +1170,11 @@
       ],
       [
         "odb_stream",
-        [
-          "git_odb_stream_finalize_write",
-          "git_odb_stream_free",
-          "git_odb_stream_read",
-          "git_odb_stream_write"
-        ]
+        ["git_odb_stream_finalize_write", "git_odb_stream_free", "git_odb_stream_read", "git_odb_stream_write"]
       ],
-      [
-        "oid_shorten",
-        [
-          "git_oid_shorten_add",
-          "git_oid_shorten_free",
-          "git_oid_shorten_new"
-        ]
-      ],
-      [
-        "patch",
-        [
-          "git_patch_convenient_from_diff"
-        ]
-      ],
-      [
-        "path",
-        [
-          "git_path_is_gitfile"
-        ]
-      ],
+      ["oid_shorten", ["git_oid_shorten_add", "git_oid_shorten_free", "git_oid_shorten_new"]],
+      ["patch", ["git_patch_convenient_from_diff"]],
+      ["path", ["git_path_is_gitfile"]],
       [
         "pathspec_match_list",
         [
@@ -1243,19 +1188,9 @@
       ],
       [
         "reflog_entry",
-        [
-          "git_reflog_entry_committer",
-          "git_reflog_entry_id_new",
-          "git_reflog_entry_id_old",
-          "git_reflog_entry_message"
-        ]
+        ["git_reflog_entry_committer", "git_reflog_entry_id_new", "git_reflog_entry_id_old", "git_reflog_entry_message"]
       ],
-      [
-        "remote",
-        [
-          "git_remote_reference_list"
-        ]
-      ],
+      ["remote", ["git_remote_reference_list"]],
       [
         "repository",
         [
@@ -1270,36 +1205,13 @@
           "git_repository_submodule_cache_clear"
         ]
       ],
-      [
-        "revwalk",
-        [
-          "git_revwalk_commit_walk",
-          "git_revwalk_fast_walk",
-          "git_revwalk_file_history_walk"
-        ]
-      ],
-      [
-        "stash",
-        [
-          "git_stash_save_options_init",
-          "git_stash_save_with_opts"
-        ]
-      ],
+      ["revwalk", ["git_revwalk_commit_walk", "git_revwalk_fast_walk", "git_revwalk_file_history_walk"]],
+      ["stash", ["git_stash_save_options_init", "git_stash_save_with_opts"]],
       [
         "status_list",
-        [
-          "git_status_list_entrycount",
-          "git_status_list_free",
-          "git_status_list_get_perfdata",
-          "git_status_list_new"
-        ]
+        ["git_status_list_entrycount", "git_status_list_free", "git_status_list_get_perfdata", "git_status_list_new"]
       ],
-      [
-        "tree",
-        [
-          "git_tree_get_all_filepaths"
-        ]
-      ],
+      ["tree", ["git_tree_get_all_filepaths"]],
       [
         "tree_entry",
         [
@@ -1337,9 +1249,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_apply_init_options"
-            ]
+            "needs": ["git_apply_init_options"]
           }
         }
       ],
@@ -1449,9 +1359,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_describe_init_format_options"
-            ]
+            "needs": ["git_describe_init_format_options"]
           }
         }
       ],
@@ -1486,9 +1394,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_describe_init_options"
-            ]
+            "needs": ["git_describe_init_options"]
           }
         }
       ],
@@ -1584,10 +1490,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_fetch_init_options",
-              "git_remote_init_callbacks"
-            ]
+            "needs": ["git_fetch_init_options", "git_remote_init_callbacks"]
           }
         }
       ],
@@ -1722,9 +1625,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_remote_init_callbacks"
-            ]
+            "needs": ["git_remote_init_callbacks"]
           }
         }
       ],
@@ -1755,9 +1656,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_remote_create_init_options"
-            ]
+            "needs": ["git_remote_create_init_options"]
           }
         }
       ],
@@ -1788,9 +1687,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_remote_reference_list"
-            ]
+            "needs": ["git_remote_reference_list"]
           }
         }
       ],
@@ -1892,10 +1789,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_stash_apply_init_options",
-              "git_checkout_init_options"
-            ]
+            "needs": ["git_stash_apply_init_options", "git_checkout_init_options"]
           }
         }
       ],
@@ -1959,10 +1853,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_stash_save_with_opts",
-              "git_stash_save_options_init"
-            ]
+            "needs": ["git_stash_save_with_opts", "git_stash_save_options_init"]
           }
         }
       ],
@@ -1989,11 +1880,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_status_init_options",
-              "git_status_foreach_ext",
-              "git_status_list_new"
-            ]
+            "needs": ["git_status_init_options", "git_status_foreach_ext", "git_status_list_new"]
           }
         }
       ],
@@ -2024,9 +1911,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_worktree_add_options_init"
-            ]
+            "needs": ["git_worktree_add_options_init"]
           }
         }
       ],
@@ -2045,9 +1930,7 @@
             }
           ],
           "used": {
-            "needs": [
-              "git_worktree_prune_options_init"
-            ]
+            "needs": ["git_worktree_prune_options_init"]
           }
         }
       ],
@@ -2146,9 +2029,7 @@
       ]
     },
     "message": {
-      "functions": [
-        "git_message_trailer_array_free"
-      ]
+      "functions": ["git_message_trailer_array_free"]
     },
     "odb": {
       "functions": [
@@ -2169,11 +2050,7 @@
       ]
     },
     "oid": {
-      "functions": [
-        "git_oid_shorten_add",
-        "git_oid_shorten_free",
-        "git_oid_shorten_new"
-      ]
+      "functions": ["git_oid_shorten_add", "git_oid_shorten_free", "git_oid_shorten_new"]
     },
     "pathspec": {
       "functions": [

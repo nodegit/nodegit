@@ -2,9 +2,9 @@ const fse = require("fs-extra");
 const path = require("path");
 const NodeGit = require("../../");
 
-const getDirExtFiles = function(dir, ext, done) {
+const getDirExtFiles = function (dir, ext, done) {
   let results = [];
-  fse.readdir(dir, function(err, list) {
+  fse.readdir(dir, function (err, list) {
     if (err) {
       return done(err);
     }
@@ -15,9 +15,9 @@ const getDirExtFiles = function(dir, ext, done) {
         return done(null, results);
       }
       file = path.resolve(dir, file);
-      fse.stat(file, function(err, stat) {
+      fse.stat(file, function (err, stat) {
         if (stat && stat.isDirectory()) {
-          getDirExtFiles(file, ext, function(err, res) {
+          getDirExtFiles(file, ext, function (err, res) {
             results = results.concat(res);
             next();
           });
@@ -32,9 +32,9 @@ const getDirExtFiles = function(dir, ext, done) {
   });
 };
 
-const getDirFilesToChange = function(dir, ext) {
-  return new Promise(function(resolve, reject) {
-    getDirExtFiles(dir, ext, function(err, results) {
+const getDirFilesToChange = function (dir, ext) {
+  return new Promise(function (resolve, reject) {
+    getDirExtFiles(dir, ext, function (err, results) {
       if (err) {
         reject(err);
       }
@@ -47,38 +47,34 @@ const getDirFilesToChange = function(dir, ext) {
 // in directory 'dir' recursively.
 // Returns relative file paths
 const changeDirExtFiles = function (dir, ext, newText) {
-  let filesChanged = [];
+  const filesChanged = [];
   return getDirFilesToChange(dir, ext)
-  .then(function(filesWithExt) {
-    filesWithExt.forEach(function(file) {
-      fse.writeFile(
-        file,
-        newText,
-        { encoding: "utf-8" }
-      );
-      filesChanged.push(path.relative(dir, file));
+    .then(function (filesWithExt) {
+      filesWithExt.forEach(function (file) {
+        fse.writeFile(file, newText, { encoding: "utf-8" });
+        filesChanged.push(path.relative(dir, file));
+      });
+      return filesChanged;
+    })
+    .catch(function () {
+      throw new Error("Error getting files with extension .".concat(ext));
     });
-    return filesChanged;
-  })
-  .catch(function() {
-    throw new Error("Error getting files with extension .".concat(ext));
-  });
 };
 
 // 'times' to limit the number of iterations in the loop.
 // 0 means no limit.
-const loopingCheckoutHead = async function(repoPath, repo, times) {
+const loopingCheckoutHead = async function (repoPath, repo, times) {
   const text0 = "Text0: changing content to trigger checkout";
   const text1 = "Text1: changing content to trigger checkout";
 
   let iteration = 0;
   // eslint-disable-next-line no-constant-condition
-  for (let i = 0; true; i = ++i%2) {
-    const newText = (i == 0) ? text0 : text1;
-    const jsRelativeFilePahts = await changeDirExtFiles(repoPath, "js", newText);  // jshint ignore:line
-    let checkoutOpts = {
+  for (let i = 0; true; i = ++i % 2) {
+    const newText = i == 0 ? text0 : text1;
+    const jsRelativeFilePahts = await changeDirExtFiles(repoPath, "js", newText); // jshint ignore:line
+    const checkoutOpts = {
       checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,
-      paths: jsRelativeFilePahts
+      paths: jsRelativeFilePahts,
     };
     await NodeGit.Checkout.head(repo, checkoutOpts);
 

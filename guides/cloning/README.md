@@ -10,10 +10,9 @@ first.**
 
 [Return to all guides](../)
 
-* * *
+---
 
-HTTP/HTTPS
-----------
+## HTTP/HTTPS
 
 This guide explains how to clone a repository, and in the case of failure,
 attempt to open the existing path.
@@ -25,13 +24,13 @@ attempt to open the existing path.
 In the guides directory, we like to keep our NodeGit relative to the project
 root.
 
-``` javascript
+```javascript
 var NodeGit = require("../../../");
 ```
 
 However, in your project you will most likely be using the following command:
 
-``` javascript
+```javascript
 var NodeGit = require("nodegit");
 ```
 
@@ -43,7 +42,7 @@ In this example we're going to clone one of our test repositories from GitHub.
 You could easily substitute this with any valid http or https Git repository
 URL.
 
-``` javascript
+```javascript
 var cloneURL = "https://github.com/nodegit/test";
 ```
 
@@ -52,12 +51,12 @@ var cloneURL = "https://github.com/nodegit/test";
 The second argument to the `clone` method is a path.
 
 Ideally your application will clone a repository into the same folder path
-regardless of how or where you execute it from.  Paths are relative to the
+regardless of how or where you execute it from. Paths are relative to the
 current working directory in NodeGit, so you will need to normalize it first.
 
 This is very simple in Node:
 
-``` javascript
+```javascript
 var localPath = require("path").join(__dirname, "tmp");
 ```
 
@@ -68,7 +67,7 @@ or where you execute it from.
 
 The third argument to the `clone` method is an optional simple object.
 
-``` javascript
+```javascript
 var cloneOptions = {};
 ```
 
@@ -77,16 +76,18 @@ var cloneOptions = {};
 #### GitHub certificate issue in OS X
 
 Unfortunately in OS X there is a problem where libgit2 is unable to look up
-GitHub certificates correctly.  In order to bypass this problem, we're going
+GitHub certificates correctly. In order to bypass this problem, we're going
 to passthrough the certificate check.
 
-*Note: this is not a problem with Windows or Linux*
+_Note: this is not a problem with Windows or Linux_
 
-``` javascript
+```javascript
 cloneOptions.fetchOpts = {
   callbacks: {
-    certificateCheck: function() { return 0; }
-  }
+    certificateCheck: function () {
+      return 0;
+    },
+  },
 };
 ```
 
@@ -95,23 +96,23 @@ cloneOptions.fetchOpts = {
 You can easily invoke our top-level Clone as a function passing along the three
 aforementioned arguments.
 
-``` javascript
+```javascript
 var cloneRepository = NodeGit.Clone(cloneURL, localPath, cloneOptions);
 ```
 
-Notice how we store the return value from `Git.Clone`.  This is a
+Notice how we store the return value from `Git.Clone`. This is a
 [Promise](https://www.promisejs.org/) to represent the asynchronous operation.
 It offers finer control flow by allowing us to capture errors and fallback if
 there is a clone failure.
 
 ### Handling clone failure
 
-A naive way to handle a clone failure is to try opening the same path.  Clones
-will most commonly fail when the directory already exists.  We can define
+A naive way to handle a clone failure is to try opening the same path. Clones
+will most commonly fail when the directory already exists. We can define
 a function to attempt opening in this case.
 
-``` javascript
-var errorAndAttemptOpen = function() {
+```javascript
+var errorAndAttemptOpen = function () {
   return NodeGit.Repository.open(localPath);
 };
 ```
@@ -123,10 +124,9 @@ This will be called as part of the Promise resolution in the final step.
 Lastly in our clone operation, we'll assemble a Promise chain to handle errors
 and work with the `Git.Repository` instance result.
 
-``` javascript
-cloneRepository.catch(errorAndAttemptOpen)
-  .then(function(repository) {
-    // Access any repository methods here.
-    console.log("Is the repository bare? %s", Boolean(repository.isBare()));
-  });
+```javascript
+cloneRepository.catch(errorAndAttemptOpen).then(function (repository) {
+  // Access any repository methods here.
+  console.log("Is the repository bare? %s", Boolean(repository.isBare()));
+});
 ```

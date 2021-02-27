@@ -5,7 +5,7 @@ var path = require("path");
 const opensslVendorDirectory = path.resolve(__dirname, "..", "vendor", "openssl");
 const libssh2VendorDirectory = path.resolve(__dirname, "..", "vendor", "libssh2");
 const libssh2ConfigureScript = path.join(libssh2VendorDirectory, "configure");
-const libssh2StaticConfigDirectory  = path.resolve(__dirname, "..", "vendor", "static_config", "libssh2");
+const libssh2StaticConfigDirectory = path.resolve(__dirname, "..", "vendor", "static_config", "libssh2");
 
 module.exports = function retrieveExternalDependencies() {
   console.info("[nodegit] Configuring libssh2.");
@@ -19,28 +19,26 @@ module.exports = function retrieveExternalDependencies() {
   }
 
   // Run the `configure` script on Linux
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     var newEnv = {};
-    Object.keys(process.env).forEach(function(key) {
+    Object.keys(process.env).forEach(function (key) {
       newEnv[key] = process.env[key];
     });
 
-    let cpArgs = process.env.NODEGIT_OPENSSL_STATIC_LINK === '1'
-      ? ` --with-libssl-prefix=${opensslVendorDirectory}`
-      : '';
+    const cpArgs =
+      process.env.NODEGIT_OPENSSL_STATIC_LINK === "1" ? ` --with-libssl-prefix=${opensslVendorDirectory}` : "";
     cp.exec(
       `${libssh2ConfigureScript}${cpArgs}`,
       {
         cwd: libssh2VendorDirectory,
-        env: newEnv
+        env: newEnv,
       },
-      function(err, stdout, stderr) {
+      function (err, stdout, stderr) {
         if (err) {
           console.error(err);
           console.error(stderr);
           reject(err, stderr);
-        }
-        else {
+        } else {
           resolve(stdout);
         }
       }

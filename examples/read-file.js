@@ -9,11 +9,10 @@ const path = require("path");
   const commit = await repo.getCommit("59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5");
   const entry = await commit.getEntry("README.md");
   const blob = await entry.getBlob();
-  
+
   console.log(entry.name(), entry.sha(), blob.rawsize() + "b");
   console.log("========================================================\n\n");
   const firstTenLines = blob.toString().split("\n").slice(0, 10).join("\n");
   console.log(firstTenLines);
   console.log("...");
 })();
-

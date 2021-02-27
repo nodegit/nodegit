@@ -1,6 +1,6 @@
 var isPointer = require("./is_pointer");
 
-module.exports = function(fn, argReturnsOnly, isAsync) {
+module.exports = function (fn, argReturnsOnly, isAsync) {
   var result = [];
   var args = fn.args || [];
 
@@ -12,7 +12,7 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
   // any sort of string to argument index
   // in the template.
   var nameToArgIndex = {};
-  var thisArgName = '';
+  var thisArgName = "";
   args.forEach(function (arg, index) {
     nameToArgIndex[arg.name] = index;
     if (arg.isSelf) {
@@ -29,17 +29,14 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
 
     return_info.isAsync = isAsync;
     return_info.parsedName = isAsync ? "baton->" + return_info.name : return_info.name;
-    return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
-    return_info.needsDereference
-      = isAsync &&
-        return_info.cppClassName == "Number" &&
-        isPointer(return_info.cType);
-    return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
+    return_info.isCppClassIntType = ~["Uint32", "Int32"].indexOf(return_info.cppClassName);
+    return_info.needsDereference = isAsync && return_info.cppClassName == "Number" && isPointer(return_info.cType);
+    return_info.parsedClassName = (return_info.cppClassName || "").toLowerCase() + "_t";
     return_info.returnNameOrName = return_info.returnName || return_info.name;
     return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;
     return_info.isOutParam = true;
-    return_info.hasOwner = !return_info.selfOwned &&
-      !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
+    return_info.hasOwner =
+      !return_info.selfOwned && !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
     return_info.ownedByIndices = [];
 
     if (isAsync && return_info.ownedByThis) {
@@ -53,24 +50,20 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     if (!isAsync && return_info.ownedBy) {
       return_info.ownedBy.forEach(function (argName) {
         return_info.ownedByIndices.push(nameToArgIndex[argName]);
-      })
+      });
     }
 
     result.push(return_info);
   });
 
-  if (!result.length
-      && !argReturnsOnly
-      && fn.return
-      && !fn.return.isErrorCode
-      && fn.return.cType != "void") {
+  if (!result.length && !argReturnsOnly && fn.return && !fn.return.isErrorCode && fn.return.cType != "void") {
     var return_info = {};
 
     return_info.__proto__ = fn.return;
 
     return_info.isAsync = isAsync;
-    return_info.hasOwner = !return_info.selfOwned &&
-      !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
+    return_info.hasOwner =
+      !return_info.selfOwned && !!(return_info.ownedBy || return_info.ownedByThis || return_info.ownerFn);
     return_info.ownedByIndices = [];
     return_info.ownedBy = return_info.ownedBy || [];
 
@@ -89,14 +82,13 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     } else {
       return_info.parsedName = "result";
     }
-    return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
-    return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
+    return_info.isCppClassIntType = ~["Uint32", "Int32"].indexOf(return_info.cppClassName);
+    return_info.parsedClassName = (return_info.cppClassName || "").toLowerCase() + "_t";
     return_info.returnNameOrName = return_info.returnName || return_info.name;
     return_info.jsOrCppClassName = return_info.jsClassName || return_info.cppClassName;
 
     result.push(return_info);
   }
-
 
   return result;
 };

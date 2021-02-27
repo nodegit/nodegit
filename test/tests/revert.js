@@ -5,7 +5,7 @@ var path = require("path");
 var fs = require("fs");
 var local = path.join.bind(path, __dirname);
 
-describe("Revert", function() {
+describe("Revert", function () {
   var NodeGit = require("../../");
 
   var Revert = NodeGit.Revert;
@@ -16,42 +16,37 @@ describe("Revert", function() {
   var fileName = "foobar.js";
   var repoPath = local("../repos/revertRepo");
 
-  beforeEach(function() {
+  beforeEach(function () {
     test = this;
 
     return RepoUtils.createRepository(repoPath)
-      .then(function(repository) {
+      .then(function (repository) {
         test.repository = repository;
 
-        return RepoUtils.commitFileToRepo(
-          repository,
-          fileName,
-          "line1\nline2\nline3"
-        );
+        return RepoUtils.commitFileToRepo(repository, fileName, "line1\nline2\nline3");
       })
-      .then(function(firstCommit) {
+      .then(function (firstCommit) {
         test.firstCommit = firstCommit;
       });
   });
 
-  it("revert modifies the working directoy", function() {
+  it("revert modifies the working directoy", function () {
     var fileStats = fs.statSync(path.join(repoPath, fileName));
     assert.ok(fileStats.isFile());
 
-    return Revert.revert(test.repository, test.firstCommit, new RevertOptions())
-      .then(function() {
-        try {
-          fs.statSync(path.join(repoPath, fileName));
-        } catch (e) {
-          // we expect this not to exist
-          return;
-        }
+    return Revert.revert(test.repository, test.firstCommit, new RevertOptions()).then(function () {
+      try {
+        fs.statSync(path.join(repoPath, fileName));
+      } catch (e) {
+        // we expect this not to exist
+        return;
+      }
 
-        assert.fail("Working directory was not reverted");
-      });
+      assert.fail("Working directory was not reverted");
+    });
   });
 
-  it("revert modifies the index", function() {
+  it("revert modifies the index", function () {
     return Revert.revert(test.repository, test.firstCommit, new RevertOptions())
       .then(() => test.repository.getStatus())
       .then((status) => {
@@ -61,24 +56,21 @@ describe("Revert", function() {
       });
   });
 
-  it("RevertOptions is optional (unspecified)", function() {
-    return Revert.revert(test.repository, test.firstCommit)
-      .catch(function(error) {
-        throw error;
-      });
+  it("RevertOptions is optional (unspecified)", function () {
+    return Revert.revert(test.repository, test.firstCommit).catch(function (error) {
+      throw error;
+    });
   });
 
-  it("RevertOptions is optional (null)", function() {
-    return Revert.revert(test.repository, test.firstCommit, null)
-      .catch(function(error) {
-        throw error;
-      });
+  it("RevertOptions is optional (null)", function () {
+    return Revert.revert(test.repository, test.firstCommit, null).catch(function (error) {
+      throw error;
+    });
   });
 
-  it("RevertOptions without MergeOptions should not segfault", function() {
-    return Revert.revert(test.repository, test.firstCommit, {})
-      .catch(function(error) {
-        throw error;
-      });
+  it("RevertOptions without MergeOptions should not segfault", function () {
+    return Revert.revert(test.repository, test.firstCommit, {}).catch(function (error) {
+      throw error;
+    });
   });
 });

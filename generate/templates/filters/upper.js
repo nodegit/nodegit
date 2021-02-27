@@ -1,3 +1,3 @@
-module.exports = function(value) {
+module.exports = function (value) {
   return value.toUpperCase();
 };

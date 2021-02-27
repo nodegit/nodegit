@@ -1,7 +1,6 @@
 const nodegit = require("../");
 const path = require("path");
 
-
 // **nodegit** is a javascript library for node.js that wraps libgit2, a
 // pure C implementation of the Git core. It provides an asynchronous
 // interface around any functions that do I/O, and a synchronous interface
@@ -73,7 +72,7 @@ const path = require("path");
   // Now that we've written the object, we can check out what SHA1 was
   // generated when the object was written to our database.
   console.log("Written Object: ", oid.toString());
-  
+
   // ### Object Parsing
 
   // libgit2 has methods to parse every object type in Git so you don't have
@@ -99,10 +98,7 @@ const path = require("path");
   // including commonly needed variations, such as `git_commit_time` which
   // returns the author time and `git_commit_message` which gives you the
   // commit message.
-  console.log(
-    "Commit:", commit.message(),
-    commit.author().name(), commit.date()
-  );
+  console.log("Commit:", commit.message(), commit.author().name(), commit.date());
 
   // Commits can have zero or more parents. The first (root) commit will
   // have no parents, most commits will have one (i.e. the commit it was
@@ -117,32 +113,21 @@ const path = require("path");
 
   // nodegit provides a couple of methods to create commit objects easily as
   // well.
-  const author = nodegit.Signature.now("Scott Chacon",
-    "schacon@gmail.com");
-  const committer = nodegit.Signature.now("Scott A Chacon",
-    "scott@github.com");
+  const author = nodegit.Signature.now("Scott Chacon", "schacon@gmail.com");
+  const committer = nodegit.Signature.now("Scott A Chacon", "scott@github.com");
 
   // Commit objects need a tree to point to and optionally one or more
   // parents. Here we're creating oid objects to create the commit with,
   // but you can also use existing ones:
-  const treeId = nodegit.Oid.fromString(
-    "4170d10f19600b9cb086504e8e05fe7d863358a2");
-  const parentId = nodegit.Oid.fromString(
-    "eebd0ead15d62eaf0ba276da53af43bbc3ce43ab");
+  const treeId = nodegit.Oid.fromString("4170d10f19600b9cb086504e8e05fe7d863358a2");
+  const parentId = nodegit.Oid.fromString("eebd0ead15d62eaf0ba276da53af43bbc3ce43ab");
 
   let tree = await repo.getTree(treeId);
   const parent = await repo.getCommit(parentId);
   // Here we actually create the commit object with a single call with all
   // the values we need to create the commit. The SHA key is written to
   // the `commit_id` variable here.
-  oid = await repo.createCommit(
-    null /* do not update the HEAD */,
-    author,
-    committer,
-    "example commit",
-    tree,
-    [parent]
-  );
+  oid = await repo.createCommit(null /* do not update the HEAD */, author, committer, "example commit", tree, [parent]);
   console.log("New Commit:", oid.toString());
 
   // #### Tag Parsing
@@ -179,9 +164,7 @@ const path = require("path");
 
   console.log("Tree Size:", tree.entryCount());
 
-  /**
-   * @param {nodegit.Tree} tree 
-   */
+  /** @param {nodegit.Tree} tree */
   function dfs(tree) {
     const promises = [];
 
@@ -247,10 +230,7 @@ const path = require("path");
   // of `branch1`.
   const revWalk = repo.createRevWalk();
 
-  revWalk.sorting(
-    nodegit.Revwalk.SORT.TOPOLOGICAL,
-    nodegit.Revwalk.SORT.REVERSE
-  );
+  revWalk.sorting(nodegit.Revwalk.SORT.TOPOLOGICAL, nodegit.Revwalk.SORT.REVERSE);
 
   revWalk.push(oid);
 
@@ -264,7 +244,7 @@ const path = require("path");
     let oid;
     try {
       oid = await revWalk.next();
-    } catch(error) {
+    } catch (error) {
       if (error.errno !== nodegit.Error.CODE.ITEROVER) {
         throw error;
       } else {
@@ -284,7 +264,7 @@ const path = require("path");
   // The [index file API][gi] allows you to read, traverse, update and write
   // the Git index file (sometimes thought of as the staging area).
   const index = await repo.refreshIndex();
-  
+
   // For each entry in the index, you can get a bunch of information
   // including the SHA (oid), path and mode which map to the tree objects
   // that are written out. It also has filesystem properties to help

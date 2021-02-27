@@ -97,8 +97,7 @@
       "ignore": true
     }
   },
-  "types":
-  {
+  "types": {
     "allocator": {
       "ignore": true
     },
@@ -375,10 +374,7 @@
           }
         }
       },
-      "dependencies": [
-        "../include/wrapper.h",
-        "node_buffer.h"
-      ]
+      "dependencies": ["../include/wrapper.h", "node_buffer.h"]
     },
     "blob_filter_options": {
       "hasConstructor": true
@@ -448,22 +444,20 @@
               "isOptional": true
             }
           },
-          "return" : {
+          "return": {
             "isReturn": true,
             "isErrorCode": true
           }
         },
         "git_branch_upstream": {
           "isAsync": true,
-          "return" : {
+          "return": {
             "isReturn": true,
             "isErrorCode": true
           }
         }
       },
-      "dependencies": [
-        "../include/buf.h"
-      ]
+      "dependencies": ["../include/buf.h"]
     },
     "buf": {
       "freeFunctionName": "git_buf_dispose",
@@ -510,9 +504,7 @@
           "isAsync": false
         }
       },
-      "dependencies": [
-        "../include/git_buf_converter.h"
-      ]
+      "dependencies": ["../include/git_buf_converter.h"]
     },
     "cert": {
       "needsForwardDeclaration": false
@@ -540,10 +532,7 @@
           "jsClassName": "Buffer"
         }
       },
-      "dependencies": [
-        "../include/wrapper.h",
-        "node_buffer.h"
-      ]
+      "dependencies": ["../include/wrapper.h", "node_buffer.h"]
     },
     "checkout": {
       "functions": {
@@ -1045,9 +1034,7 @@
           }
         }
       },
-      "dependencies": [
-        "../include/git_buf_converter.h"
-      ]
+      "dependencies": ["../include/git_buf_converter.h"]
     },
     "config_backend": {
       "ignore": true
@@ -1185,47 +1172,45 @@
     },
     "diff": {
       "selfFreeing": true,
-      "cDependencies": [
-        "git2/sys/diff.h"
-      ],
+      "cDependencies": ["git2/sys/diff.h"],
       "functions": {
         "git_diff_blob_to_buffer": {
           "args": {
-            "old_blob" : {
+            "old_blob": {
               "isOptional": true
             },
-            "old_as_path" : {
+            "old_as_path": {
               "isOptional": true
             },
-            "buffer" : {
+            "buffer": {
               "isOptional": true
             },
-            "buffer_len" : {
+            "buffer_len": {
               "isOptional": true
             },
-            "buffer_as_path" : {
+            "buffer_as_path": {
               "isOptional": true
             },
-            "options" : {
+            "options": {
               "isOptional": true
             },
-            "file_cb" : {
+            "file_cb": {
               "isOptional": true
             },
             "binary_cb": {
               "isOptional": true
             },
-            "hunk_cb" : {
+            "hunk_cb": {
               "isOptional": true
             },
-            "line_cb" : {
+            "line_cb": {
               "isOptional": true
             }
           },
           "return": {
             "isErrorCode": true
           },
-         "isAsync": true
+          "isAsync": true
         },
         "git_diff_blobs": {
           "ignore": true
@@ -1450,9 +1435,7 @@
     },
     "diff_perfdata": {
       "selfFreeing": true,
-      "cDependencies": [
-        "git2/sys/diff.h"
-      ]
+      "cDependencies": ["git2/sys/diff.h"]
     },
     "diff_similarity_metric": {
       "ignore": true
@@ -1513,16 +1496,12 @@
       }
     },
     "fetch_options": {
-      "dependencies": [
-        "../include/str_array_converter.h"
-      ]
+      "dependencies": ["../include/str_array_converter.h"]
     },
     "filter": {
       "selfFreeing": false,
       "hasConstructor": true,
-      "cDependencies": [
-        "git2/sys/filter.h"
-      ],
+      "cDependencies": ["git2/sys/filter.h"],
       "fields": {
         "cleanup": {
           "ignore": true
@@ -1586,9 +1565,7 @@
           }
         }
       },
-      "cDependencies": [
-        "git2/sys/filter.h"
-      ]
+      "cDependencies": ["git2/sys/filter.h"]
     },
     "filter_list": {
       "selfFreeing": true,
@@ -1636,10 +1613,7 @@
           "ignore": true
         }
       },
-      "dependencies": [
-        "../include/git_buf_converter.h",
-        "../include/filter_registry.h"
-      ]
+      "dependencies": ["../include/git_buf_converter.h", "../include/filter_registry.h"]
     },
     "giterr": {
       "ignore": true
@@ -1704,9 +1678,7 @@
           "ignore": true
         }
       },
-      "cDependencies": [
-        "git2/sys/hashsig.h"
-      ]
+      "cDependencies": ["git2/sys/hashsig.h"]
     },
     "ignore": {
       "functions": {
@@ -1962,13 +1934,13 @@
           "return": {
             "isErrorCode": true
           }
-   	    },
-	      "git_index_write": {
-	        "args": {
-	          "force": {
-	            "isOptional": true
-	          }
-	        },
+        },
+        "git_index_write": {
+          "args": {
+            "force": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -1987,9 +1959,7 @@
           }
         }
       },
-      "dependencies": [
-        "../include/str_array_converter.h"
-      ]
+      "dependencies": ["../include/str_array_converter.h"]
     },
     "index_conflict_iterator": {
       "selfFreeing": true,
@@ -2083,9 +2053,7 @@
           "isPrototypeMethod": false
         }
       },
-      "cDependencies": [
-        "git2/sys/index.h"
-      ]
+      "cDependencies": ["git2/sys/index.h"]
     },
     "index_reuc_entry": {
       "fields": {
@@ -2149,9 +2117,7 @@
           }
         }
       },
-      "cDependencies": [
-        "git2/sys/index.h"
-      ]
+      "cDependencies": ["git2/sys/index.h"]
     },
     "index_time": {
       "isReturnable": true,
@@ -2644,10 +2610,7 @@
           }
         }
       },
-      "dependencies": [
-        "../include/wrapper.h",
-        "node_buffer.h"
-      ]
+      "dependencies": ["../include/wrapper.h", "node_buffer.h"]
     },
     "odb_stream": {
       "ignore": true
@@ -2790,9 +2753,7 @@
     },
     "patch": {
       "selfFreeing": true,
-      "dependencies": [
-        "../include/convenient_patch.h"
-      ],
+      "dependencies": ["../include/convenient_patch.h"],
       "ownerFn": {
         "name": "git_patch_owner",
         "singletonCppClassName": "GitRepository"
@@ -2896,15 +2857,11 @@
       }
     },
     "path": {
-      "cDependencies": [
-        "git2/sys/path.h"
-      ]
+      "cDependencies": ["git2/sys/path.h"]
     },
     "pathspec": {
       "selfFreeing": true,
-      "dependencies": [
-        "../include/str_array_converter.h"
-      ],
+      "dependencies": ["../include/str_array_converter.h"],
       "functions": {
         "git_pathspec_free": {
           "ignore": true
@@ -2977,9 +2934,7 @@
       "ignore": true
     },
     "push_options": {
-      "dependencies": [
-        "../include/str_array_converter.h"
-      ]
+      "dependencies": ["../include/str_array_converter.h"]
     },
     "rebase": {
       "hasConstructor": false,
@@ -3263,9 +3218,7 @@
       }
     },
     "reference_iterator": {
-      "cDependencies": [
-        "git2/sys/refdb_backend.h"
-      ],
+      "cDependencies": ["git2/sys/refdb_backend.h"],
       "needsForwardDeclaration": false,
       "ignore": true
     },
@@ -3342,10 +3295,7 @@
       }
     },
     "remote": {
-      "dependencies": [
-        "../include/str_array_converter.h",
-        "../include/remote_head.h"
-      ],
+      "dependencies": ["../include/str_array_converter.h", "../include/remote_head.h"],
       "cType": "git_remote",
       "selfFreeing": true,
       "ownerFn": {
@@ -3616,9 +3566,7 @@
       }
     },
     "remote_head": {
-      "dependencies": [
-        "../include/functions/free.h"
-      ],
+      "dependencies": ["../include/functions/free.h"],
       "freeFunctionName": "git_remote_head_free",
       "selfFreeing": true
     },
@@ -3626,11 +3574,7 @@
       "hasConstructor": false,
       "selfFreeing": true,
       "isSingleton": true,
-      "dependencies": [
-        "git2/sys/repository.h",
-        "../include/submodule.h",
-        "../include/remote.h"
-      ],
+      "dependencies": ["git2/sys/repository.h", "../include/submodule.h", "../include/remote.h"],
       "functions": {
         "git_repository__cleanup": {
           "isAsync": true,
@@ -3816,9 +3760,7 @@
       }
     },
     "reset": {
-      "dependencies": [
-        "../include/str_array_converter.h"
-      ],
+      "dependencies": ["../include/str_array_converter.h"],
       "functions": {
         "git_reset": {
           "isCollectionRoot": true,
@@ -3868,10 +3810,7 @@
         "name": "git_revwalk_repository",
         "singletonCppClassName": "GitRepository"
       },
-      "dependencies": [
-        "../include/commit.h",
-        "../include/functions/copy.h"
-      ],
+      "dependencies": ["../include/commit.h", "../include/functions/copy.h"],
       "functions": {
         "git_revwalk_add_hide_cb": {
           "ignore": true
@@ -3884,10 +3823,10 @@
         }
       }
     },
-	  "signature": {
+    "signature": {
       "selfFreeing": true,
       "dupFunction": "git_signature_dup",
-	    "functions": {
+      "functions": {
         "git_signature_default": {
           "isAsync": true,
           "return": {
@@ -3900,9 +3839,9 @@
         "git_signature_free": {
           "ignore": true
         },
-	      "git_signature_new": {
-	        "isAsync": false
-	      },
+        "git_signature_new": {
+          "isAsync": false
+        },
         "git_signature_now": {
           "isAsync": false,
           "args": {
@@ -3914,8 +3853,8 @@
             "isErrorCode": true
           }
         }
-	    }
-	  },
+      }
+    },
     "smart": {
       "functions": {
         "git_smart_subtransport_git": {
@@ -4000,9 +3939,7 @@
       "ignore": true
     },
     "status": {
-      "cDependencies": [
-        "git2/sys/diff.h"
-      ],
+      "cDependencies": ["git2/sys/diff.h"],
       "functions": {
         "git_status_byindex": {
           "isAsync": false,
@@ -4090,15 +4027,11 @@
           "ignore": true
         }
       },
-      "dependencies": [
-        "../include/str_array_converter.h"
-      ]
+      "dependencies": ["../include/str_array_converter.h"]
     },
     "stream": {
       "ignore": true,
-      "cDependencies": [
-        "git2/sys/stream.h"
-      ]
+      "cDependencies": ["git2/sys/stream.h"]
     },
     "stream_registration": {
       "ignore": true
@@ -4259,9 +4192,7 @@
       }
     },
     "tag": {
-      "dependencies": [
-        "../include/str_array_converter.h"
-      ],
+      "dependencies": ["../include/str_array_converter.h"],
       "selfFreeing": true,
       "ownerFn": {
         "name": "git_tag_owner",
@@ -4498,9 +4429,7 @@
           "ignore": true
         }
       },
-      "cDependencies": [
-        "git2/sys/transport.h"
-      ]
+      "cDependencies": ["git2/sys/transport.h"]
     },
     "tree": {
       "selfFreeing": true,
@@ -4713,9 +4642,7 @@
           }
         }
       },
-      "dependencies": [
-        "../include/git_buf_converter.h"
-      ]
+      "dependencies": ["../include/git_buf_converter.h"]
     },
     "tree_update": {
       "hasConstructor": true,

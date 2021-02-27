@@ -24,28 +24,25 @@ module.exports = function generate() {
   }
 
   return submoduleStatus()
-    .then(function(statuses) {
-      var dirtySubmodules = statuses
-        .filter(function(status) {
-          return status.onNewCommit
-            || status.needsInitialization
-            || status.workDirDirty;
-        });
+    .then(function (statuses) {
+      var dirtySubmodules = statuses.filter(function (status) {
+        return status.onNewCommit || status.needsInitialization || status.workDirDirty;
+      });
 
       if (dirtySubmodules.length) {
         console.warn("[nodegit] WARNING - Some submodules are out-of-sync");
-        dirtySubmodules.forEach(function(submodule) {
+        dirtySubmodules.forEach(function (submodule) {
           console.warn("[nodegit]\t" + submodule.name);
         });
       }
     })
     .then(tryGenerate)
-    .catch(function(e) {
+    .catch(function (e) {
       console.error("[nodegit] ERROR - Could not generate native code");
       console.error(e);
       throw e;
     });
-}
+};
 
 if (require.main === module) {
   module.exports();
