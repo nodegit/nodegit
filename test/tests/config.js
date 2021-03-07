@@ -143,7 +143,7 @@ describe("Config", function() {
       .then(function(config) {
         return config.getString("user.fakevalue");
       })
-      .catch(function (e) {
+      .catch(function (_e) {
         return true;
       });
   });

@@ -46,6 +46,6 @@ return NodeGit.Clone(url, clonePath, cloneOpts)
   assert.strictEqual(applyCallbackResult, 0);
   parentPort.postMessage("success");
 })
-.catch((err) => { 
+.catch(() => { 
   parentPort.postMessage("failure");
 });

@@ -10,6 +10,7 @@
 //
 //     node git_profanity_check some/repo/.git
 //
+// eslint-disable-next-line node/shebang
 var git = require("../../");
 
 var curses = ["put", "curse", "words", "here"];

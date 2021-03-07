@@ -201,6 +201,7 @@ module.exports = function generateJson() {
       else if (enumerable.owner) {
         return true;
       }
+      return false;
     });
 
     var override = descriptor.enums[enumerable.typeName] || {};

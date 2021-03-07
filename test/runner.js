@@ -3,6 +3,7 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 var exec = require('../utils/execPromise');
 
+// eslint-disable-next-line no-unused-vars
 var NodeGit = require('..');
 
 var workdirPath = local("repos/workdir");

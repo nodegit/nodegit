@@ -149,11 +149,13 @@ describe("Stash", function() {
       const fileContent2 = "Somewhere over the repo, changes were made.";
       const repo = this.repository;
       const filePath = path.join(repo.workdir(), fileName);
+      // eslint-disable-next-line no-unused-vars
       let oldContent;
       const stashMessage = "stash test";
 
       return fse.readFile(filePath)
         .then((content) => {
+          // eslint-disable-next-line no-unused-vars
           oldContent = content;
           return fse.writeFile(filePath, fileContent);
         })
@@ -181,11 +183,13 @@ describe("Stash", function() {
       const fileContent = "Cha-cha-cha-chaaaaaangessssss";
       const repo = this.repository;
       const filePath = path.join(repo.workdir(), fileName);
+      // eslint-disable-next-line no-unused-vars
       let oldContent;
       const stashMessage = "stash test";
 
       return fse.readFile(filePath)
         .then((content) => {
+          // eslint-disable-next-line no-unused-vars
           oldContent = content;
           return fse.writeFile(filePath, fileContent);
         })

@@ -100,6 +100,7 @@ describe("Signature", function() {
     assert.equal(startSelfFreeingCount + 1, endSelfFreeingCount);
     assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
 
+    // eslint-disable-next-line no-unused-vars
     time = null;
     garbageCollect();
     endSelfFreeingCount = Time.getSelfFreeingInstanceCount();

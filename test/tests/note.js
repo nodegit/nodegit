@@ -59,7 +59,7 @@ describe("Note", function() {
     var sig = Signature.create("John", "john@doe.com", Date.now(), 0);
 
     Note.create(this.repository, noteRef, sig, sig, sha, "Testing!", 1)
-      .then((noteSha) => Note.remove(this.repository, noteRef, sig, sig, sha))
+      .then((_noteSha) => Note.remove(this.repository, noteRef, sig, sig, sha))
       .then(function() {
         return Note.read(test.repository, noteRef, sha).catch(function(ex) {
           assert.equal(ex.message, "note could not be found");

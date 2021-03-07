@@ -1,3 +1,4 @@
+/* eslint-disable no-process-exit */
 var buildFlags = require("../utils/buildFlags");
 var spawn = require("child_process").spawn;
 var path = require("path");

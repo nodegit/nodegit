@@ -177,7 +177,7 @@ describe("Remote", function() {
         var refs = [ref + ":" + ref];
 
         return remote.push(refs, fetchOpts)
-        .then(function(res) {
+        .then(function(_res) {
           assert.ok(wasCalled);
         });
       });
@@ -205,7 +205,7 @@ describe("Remote", function() {
           var refs = [ref + ":" + ref];
 
           return remote.push(refs, fetchOpts)
-          .then(function(res) {
+          .then(function(_res) {
             assert.ok(wasCalled);
           });
         });
@@ -354,7 +354,7 @@ describe("Remote", function() {
         var refs = [ref + ":" + ref];
         var options = {
           callbacks: {
-            credentials: function(url, userName) {
+            credentials: function(_url, _userName) {
               var test = Promise.resolve("test")
               .then(function() { return; })
               .then(function() { return; })
@@ -388,7 +388,7 @@ describe("Remote", function() {
           var refs = [ref + ":" + ref];
           var options = {
             callbacks: {
-              credentials: function(url, userName) {
+              credentials: function(_url, _userName) {
                 var test = Promise.resolve()
                 .then(Promise.resolve.bind(Promise))
                 .then(Promise.resolve.bind(Promise))

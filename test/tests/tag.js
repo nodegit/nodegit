@@ -350,7 +350,7 @@ describe("Tag", function() {
           "-----END PGP SIGNATURE-----"
         ];
         const message = "I'm a teapot";
-        const signingCallback = (message) => ({
+        const signingCallback = (_message) => ({
           code: NodeGit.Error.CODE.OK,
           signedData: signatureLines.join("\n")
         });

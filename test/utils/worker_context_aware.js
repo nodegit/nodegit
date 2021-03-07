@@ -34,7 +34,7 @@ return NodeGit.Clone(url, clonePath, opts)
   var historyCount = 0;
   var history = commit.history();
 
-  history.on("commit", function(commit) {
+  history.on("commit", function(_commit) {
     // Number of commits is known to be higher than 200
     if (++historyCount == 200) {
       // Tracked objects must work too when the Garbage Collector is triggered
@@ -59,12 +59,12 @@ return NodeGit.Clone(url, clonePath, opts)
     }
   });
   
-  history.on("end", function(commits) {
+  history.on("end", function(_commits) {
     // Test should not get this far
     parentPort.postMessage("failure");
   });
 
-  history.on("error", function(err) {
+  history.on("error", function(_end) {
     assert.ok(false);
   });
 

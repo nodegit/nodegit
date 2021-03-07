@@ -158,7 +158,7 @@ describe("Filter", function() {
           assert.strictEqual(result, NodeGit.Error.CODE.OK);
           return Registry.unregister(filterName);
         })
-        .then(function(result) {
+        .then(function(_result) {
           assert.fail("Should not have unregistered successfully");
         })
         .catch(function(error) {
@@ -254,7 +254,7 @@ describe("Filter", function() {
       var test = this;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.PASSTHROUGH;
         },
@@ -298,11 +298,11 @@ describe("Filter", function() {
       var test = this;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.OK;
         },
-        check: function(src, attr) {
+        check: function(_src, _attr) {
           return NodeGit.Error.CODE.OK;
         }
       }, 0)
@@ -418,11 +418,11 @@ describe("Filter", function() {
         var largeBuffer = Buffer.alloc(largeBufferSize, "a");
 
         return Registry.register(filterName, {
-          apply: function(to, from, source) {
+          apply: function(to, _from, _source) {
             to.set(largeBuffer, largeBufferSize);
             return NodeGit.Error.CODE.OK;
           },
-          check: function(src, attr) {
+          check: function(_src, _attr) {
             return NodeGit.Error.CODE.OK;
           }
         }, 0)
@@ -474,11 +474,11 @@ describe("Filter", function() {
       var test = this;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.OK;
         },
-        check: function(src, attr) {
+        check: function(_src, _attr) {
           return NodeGit.Error.CODE.OK;
         }
       }, 0)
@@ -514,11 +514,11 @@ describe("Filter", function() {
       var test = this;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.OK;
         },
-        check: function(src, attr) {
+        check: function(src, _attr) {
           return src.path() === "README.md" ?
             0 : NodeGit.Error.CODE.PASSTHROUGH;
         }
@@ -539,7 +539,7 @@ describe("Filter", function() {
             "test commit"
           );
         })
-        .then(function(oid) {
+        .then(function(_oid) {
           return test.repository.getHeadCommit();
         })
         .then(function(commit) {
@@ -568,11 +568,11 @@ describe("Filter", function() {
       var test = this;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.OK;
         },
-        check: function(src, attr) {
+        check: function(src, _attr) {
           return src.path() === "README.md" ?
             0 : NodeGit.Error.CODE.PASSTHROUGH;
         }
@@ -594,7 +594,7 @@ describe("Filter", function() {
             "test commit"
           );
         })
-        .then(function(oid) {
+        .then(function(_oid) {
           garbageCollect();
           return test.repository.getHeadCommit();
         })
@@ -649,11 +649,11 @@ describe("Filter", function() {
       var test = this;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.OK;
         },
-        check: function(src, attr) {
+        check: function(_src, _attr) {
           return NodeGit.Error.CODE.OK;
         }
       }, 0)
@@ -688,11 +688,11 @@ describe("Filter", function() {
       var test = this;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.OK;
         },
-        check: function(src, attr) {
+        check: function(_src, _attr) {
           return NodeGit.Error.CODE.OK;
         }
       }, 0)
@@ -730,11 +730,11 @@ describe("Filter", function() {
       var list;
 
       return Registry.register(filterName, {
-        apply: function(to, from, source) {
+        apply: function(to, _from, _source) {
           to.set(tempBuffer, length);
           return NodeGit.Error.CODE.OK;
         },
-        check: function(src, attr) {
+        check: function(_src, _attr) {
           return NodeGit.Error.CODE.OK;
         }
       }, 0)

@@ -1,3 +1,4 @@
+/* eslint-disable no-process-exit */
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 

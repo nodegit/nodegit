@@ -229,7 +229,7 @@ describe("Diff", function() {
           null,
           null,
           null,
-          function(delta, hunk, payload) {
+          function(delta, hunk, _payload) {
             assert.equal(hunk.oldStart(), 1);
             assert.equal(hunk.oldLines(), 19);
             assert.equal(hunk.newStart(), 1);
@@ -262,7 +262,7 @@ describe("Diff", function() {
           null,
           null,
           null,
-          function(delta, hunk, payload) {
+          function(_delta, _hunk, _payload) {
             assert.fail(
               "There aren't any changes so this shouldn't be called.");
             done();

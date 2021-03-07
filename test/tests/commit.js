@@ -32,7 +32,7 @@ describe("Commit", function() {
       });
   }
 
-  function commitFile(repo, fileName, fileContent, commitMessage) {
+  function commitFile(repo, fileName, fileContent, _commitMessage) {
     var index;
     var treeOid;
     var parent;
@@ -662,7 +662,7 @@ describe("Commit", function() {
           throw error;
         });
       })
-      .then(function(signatureInfo) {
+      .then(function(_signatureInfo) {
         assert.equal(commit.message(), message);
         assert.deepEqual(commit.parents(), parents);
       });
@@ -710,7 +710,7 @@ describe("Commit", function() {
 
     var history = this.commit.history();
 
-    history.on("commit", function(commit) {
+    history.on("commit", function(_commit) {
       historyCount++;
     });
 
@@ -721,7 +721,7 @@ describe("Commit", function() {
       done();
     });
 
-    history.on("error", function(err) {
+    history.on("error", function(_err) {
       assert.ok(false);
     });
 
@@ -793,7 +793,7 @@ describe("Commit", function() {
 
         var treeWalker = tree.walk();
 
-        treeWalker.on("entry", function(entry) {
+        treeWalker.on("entry", function(_entry) {
           commitTreeEntryCount++;
         });
 
@@ -801,7 +801,7 @@ describe("Commit", function() {
           fail(error);
         });
 
-        treeWalker.on("end", function(entries) {
+        treeWalker.on("end", function(_entries) {
           try {
             assert.equal(commitTreeEntryCount, expectedCommitTreeEntryCount);
             resolve();
@@ -1042,6 +1042,7 @@ describe("Commit", function() {
     assert.equal(startSelfFreeingCount + 1, endSelfFreeingCount);
     assert.equal(startNonSelfFreeingCount, endNonSelfFreeingCount);
 
+    // eslint-disable-next-line no-unused-vars
     signature = null;
     garbageCollect();
     endSelfFreeingCount = Signature.getSelfFreeingInstanceCount();

@@ -369,7 +369,7 @@ describe("Index", function() {
     var test = this;
 
     return test.index.find("src/thisisfake.cc")
-      .then(function(position) {
+      .then(function(_position) {
         assert.fail("the item should not be found");
       })
       .catch(function(error) {
@@ -381,7 +381,7 @@ describe("Index", function() {
     var test = this;
 
     return test.index.find("src")
-      .then(function(position) {
+      .then(function(_position) {
         assert.fail("the item should not be found");
       })
       .catch(function(error) {
@@ -402,7 +402,7 @@ describe("Index", function() {
     var test = this;
 
     return test.index.find("testing123/")
-      .then(function(position) {
+      .then(function(_position) {
         assert.fail("the item should not be found");
       })
       .catch(function(error) {

@@ -62,7 +62,7 @@ var IndexSetup = {
         return repository.createCommit(theirBranch.name(), theirSignature,
           theirSignature, "they made a commit", oid, [ourCommit]);
       })
-      .then(function(commitOid) {
+      .then(function(_commitOid) {
         return fse.writeFile(path.join(repository.workdir(), fileName),
           baseFileContent + ourFileContent);
       })

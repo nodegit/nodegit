@@ -1,3 +1,4 @@
+/* eslint-disable no-octal */
 var assert = require("assert");
 var path = require("path");
 var fse = require("fs-extra");

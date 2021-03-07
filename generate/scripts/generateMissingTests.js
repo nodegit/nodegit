@@ -8,7 +8,7 @@ module.exports = function generateMissingTests() {
   var output = {};
 
   function findMissingTest(idef) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
       var testFilePath = path.join(testFilesPath, idef.filename + ".js");
       var result = {};
 

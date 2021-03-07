@@ -6,14 +6,13 @@ var _ = require("lodash");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
-
 const generatePathWithLength = (base, length) => {
   let path = `${base}/`;
   const baseLength = path.length;
   const remaining = length - baseLength;
 
   for (let i = 0; i < remaining; ++i) {
-		// add a slash every 240 characters, but not as first or last character
+    // add a slash every 240 characters, but not as first or last character
     if (i % 239 == 0 && i != remaining - 1 && i != 0) {
       path += "/";
     } else {
@@ -26,7 +25,7 @@ const generatePathWithLength = (base, length) => {
   return path;
 };
 
-describe("Clone", function() {
+describe("Clone", function () {
   var NodeGit = require("../../");
   var Repository = NodeGit.Repository;
   var Clone = NodeGit.Clone;
@@ -42,69 +41,70 @@ describe("Clone", function() {
   // Set a reasonable timeout here now that our repository has grown.
   this.timeout(30000);
 
-  beforeEach(function() {
-    return fse.remove(clonePath)
-      .then(function() {
+  beforeEach(function () {
+    return fse
+      .remove(clonePath)
+      .then(function () {
         return fse.remove(longClonePath);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         console.log(err);
         throw err;
       });
   });
 
-  it.skip("can clone with http", function() {
+  it.skip("can clone with http", function () {
     var test = this;
     var url = "http://git.tbranyen.com/smart/site-content";
 
-    return Clone(url, clonePath).then(function(repo) {
+    return Clone(url, clonePath).then(function (repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
   });
 
-  it("can clone with https", function() {
+  it("can clone with https", function () {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var opts = {
-        fetchOpts: {
-          callbacks: {
-            certificateCheck: () => 0
-        }
-      }
+      fetchOpts: {
+        callbacks: {
+          certificateCheck: () => 0,
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
   });
 
-  it("can clone twice with https using same config object", function() {
+  it("can clone twice with https using same config object", function () {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var progressCount = 0;
     var opts = {
       fetchOpts: {
         callbacks: {
-          transferProgress: function(progress) {
+          transferProgress: function (_progress) {
             progressCount++;
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
     return Clone(url, clonePath, opts)
-      .then(function(repo) {
+      .then(function (repo) {
         assert.ok(repo instanceof Repository);
         assert.notEqual(progressCount, 0);
         return fse.remove(clonePath);
       })
-      .then(function() {
+      .then(function () {
         progressCount = 0;
         return Clone(url, clonePath, opts);
       })
-      .then(function(repo) {
+      .then(function (repo) {
         assert.ok(repo instanceof Repository);
         assert.notEqual(progressCount, 0);
         test.repository = repo;
@@ -119,127 +119,117 @@ describe("Clone", function() {
     return now;
   }
 
-  it("can clone with https and default throttled progress", function() {
+  it("can clone with https and default throttled progress", function () {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var progressCount = 0;
     var lastInvocation;
     var progressIntervals = [];
     var opts = {
-        fetchOpts: {
-          callbacks: {
-            transferProgress: function(progress) {
-              lastInvocation = updateProgressIntervals(progressIntervals,
-                lastInvocation);
-              progressCount++;
-            }
-          }
-        }
+      fetchOpts: {
+        callbacks: {
+          transferProgress: function (_progress) {
+            lastInvocation = updateProgressIntervals(progressIntervals, lastInvocation);
+            progressCount++;
+          },
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       assert.notEqual(progressCount, 0);
-      var averageProgressInterval = _.sum(progressIntervals) /
-        progressIntervals.length;
+      var averageProgressInterval = _.sum(progressIntervals) / progressIntervals.length;
       // even though we are specifying a throttle period of 100,
       // the throttle is applied on the scheduling side,
       // and actual execution is at the mercy of the main js thread
       // so the actual throttle intervals could be less than the specified
       // throttle period
       if (!averageProgressInterval || averageProgressInterval < 75) {
-        assert.fail(averageProgressInterval, 75,
-          "unexpected average time between callbacks", "<");
+        assert.fail(averageProgressInterval, 75, "unexpected average time between callbacks", "<");
       }
       test.repository = repo;
     });
   });
 
-  it("can clone with https and explicitly throttled progress", function() {
+  it("can clone with https and explicitly throttled progress", function () {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var progressCount = 0;
     var lastInvocation;
     var progressIntervals = [];
     var opts = {
-        fetchOpts: {
-          callbacks: {
-            transferProgress: {
-              throttle: 50,
-              callback: function(progress) {
-                lastInvocation = updateProgressIntervals(progressIntervals,
-                  lastInvocation);
-                progressCount++;
-              }
-            }
-          }
-        }
+      fetchOpts: {
+        callbacks: {
+          transferProgress: {
+            throttle: 50,
+            callback: function (_progress) {
+              lastInvocation = updateProgressIntervals(progressIntervals, lastInvocation);
+              progressCount++;
+            },
+          },
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       assert.notEqual(progressCount, 0);
-      var averageProgressInterval = _.sum(progressIntervals) /
-        progressIntervals.length;
+      var averageProgressInterval = _.sum(progressIntervals) / progressIntervals.length;
       if (!averageProgressInterval || averageProgressInterval < 35) {
-        assert.fail(averageProgressInterval, 35,
-          "unexpected average time between callbacks", "<");
+        assert.fail(averageProgressInterval, 35, "unexpected average time between callbacks", "<");
       }
       test.repository = repo;
     });
   });
 
-  it("can clone without waiting for callback results", function() {
+  it("can clone without waiting for callback results", function () {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var lastReceivedObjects = 0;
     var cloneFinished = false;
     var opts = {
-        fetchOpts: {
-          callbacks: {
-            transferProgress: {
-              waitForResult: false,
-              callback: function(progress) {
-                var receivedObjects = progress.receivedObjects();
-                assert.false(
-                  cloneFinished,
-                  "callback running after clone completion"
-                );
-                assert.gt(receivedObjects, lastReceivedObjects);
-                lastReceivedObjects = receivedObjects;
-              }
-            }
-          }
-        }
+      fetchOpts: {
+        callbacks: {
+          transferProgress: {
+            waitForResult: false,
+            callback: function (progress) {
+              var receivedObjects = progress.receivedObjects();
+              assert.false(cloneFinished, "callback running after clone completion");
+              assert.gt(receivedObjects, lastReceivedObjects);
+              lastReceivedObjects = receivedObjects;
+            },
+          },
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       cloneFinished = true;
       test.repository = repo;
     });
   });
 
-  it("can clone using nested function", function() {
+  it("can clone using nested function", function () {
     var test = this;
     var url = "https://github.com/nodegit/test.git";
     var opts = {
       fetchOpts: {
         callbacks: {
-          certificateCheck: () => 0
-        }
-      }
+          certificateCheck: () => 0,
+        },
+      },
     };
 
-    return Clone.clone(url, clonePath, opts).then(function(repo) {
+    return Clone.clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
   });
 
   if (process.platform === "win32") {
-    it("can clone with ssh using old agent with sha1 signing support only",
-      async function () {
+    it("can clone with ssh using old agent with sha1 signing support only", async function () {
       var pageant = local("../../vendor/pageant.exe");
       var old_pageant = local("../../vendor/pageant_sha1.exe");
       var privateKey = local("../../vendor/private.ppk");
@@ -249,11 +239,11 @@ describe("Clone", function() {
         fetchOpts: {
           callbacks: {
             certificateCheck: () => 0,
-            credentials: function(url, userName) {
+            credentials: function (url, userName) {
               return NodeGit.Credential.sshKeyFromAgent(userName);
-            }
-          }
-        }
+            },
+          },
+        },
       };
 
       try {
@@ -261,27 +251,33 @@ describe("Clone", function() {
       } catch (e) {
         try {
           await exec("taskkill /im pageant_sha1.exe /f /t");
-        } catch(e) {}
+        } catch (e) {
+          // ignore
+        }
       }
       try {
         await exec(`powershell -command "Start-Process ${old_pageant} ${privateKey}`);
       } catch (e) {
         try {
           await exec(`powershell -command "Start-Process ${pageant} ${privateKey}`);
-        } catch (e) {}
+        } catch (e) {
+          // ignore
+        }
         return assert.fail("Cannot run old pageant");
       }
 
       try {
         const repo = await Clone(url, clonePath, opts);
         test.repository = repo;
-      } catch(e) {
+      } catch (e) {
         return assert.fail("Clone error: " + e.message);
       }
 
       try {
         await exec("taskkill /im pageant_sha1.exe /f /t");
-      } catch(e) {}
+      } catch (e) {
+        // ignore
+      }
 
       try {
         await exec(`powershell -command "Start-Process ${pageant} ${privateKey}`);
@@ -293,70 +289,66 @@ describe("Clone", function() {
     });
   }
 
-  it("can clone with ssh", function() {
+  it("can clone with ssh", function () {
     var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       fetchOpts: {
         callbacks: {
           certificateCheck: () => 0,
-          credentials: function(url, userName) {
+          credentials: function (url, userName) {
             return NodeGit.Credential.sshKeyFromAgent(userName);
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
   });
 
-  it("can clone with ssh while manually loading a key", function() {
+  it("can clone with ssh while manually loading a key", function () {
     var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       fetchOpts: {
         callbacks: {
           certificateCheck: () => 0,
-          credentials: function(url, userName) {
-            return NodeGit.Credential.sshKeyNew(
-              userName,
-              sshPublicKeyPath,
-              sshPrivateKeyPath,
-              "");
-          }
-        }
-      }
+          credentials: function (url, userName) {
+            return NodeGit.Credential.sshKeyNew(userName, sshPublicKeyPath, sshPrivateKeyPath, "");
+          },
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
   });
 
-  it("can clone with ssh while manually loading an encrypted key", function() {
+  it("can clone with ssh while manually loading an encrypted key", function () {
     var test = this;
     var url = "git@github.com:nodegit/test.git";
     var opts = {
       fetchOpts: {
         callbacks: {
           certificateCheck: () => 0,
-          credentials: function(url, userName) {
+          credentials: function (url, userName) {
             return NodeGit.Credential.sshKeyNew(
               userName,
               sshEncryptedPublicKeyPath,
               sshEncryptedPrivateKeyPath,
               "test-password"
             );
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
@@ -364,35 +356,35 @@ describe("Clone", function() {
 
   // Since 15 March the unauthenticated git protocol on port 9418 is no longer supported in Github.
   // https://github.blog/2021-09-01-improving-git-protocol-security-github/
-  it.skip("can clone with git", function() {
+  it.skip("can clone with git", function () {
     var test = this;
     var url = "git://github.com/nodegit/test.git";
     var opts = {
       fetchOpts: {
         callbacks: {
-          certificateCheck: () => 0
-        }
-      }
+          certificateCheck: () => 0,
+        },
+      },
     };
 
-    return Clone(url, clonePath, opts).then(function(repo) {
+    return Clone(url, clonePath, opts).then(function (repo) {
       test.repository = repo;
       assert.ok(repo instanceof Repository);
     });
   });
 
-  it("can clone with filesystem", function() {
+  it("can clone with filesystem", function () {
     var test = this;
     var prefix = process.platform === "win32" ? "" : "file://";
     var url = prefix + local("../repos/empty");
 
-    return Clone(url, clonePath).then(function(repo) {
+    return Clone(url, clonePath).then(function (repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
     });
   });
 
-  it("will not segfault when accessing a url without username", function() {
+  it("will not segfault when accessing a url without username", function () {
     var url = "https://github.com/nodegit/private";
 
     var firstPass = true;
@@ -401,17 +393,16 @@ describe("Clone", function() {
       fetchOpts: {
         callbacks: {
           certificateCheck: () => 0,
-          credentials: function() {
+          credentials: function () {
             if (firstPass) {
               firstPass = false;
-              return NodeGit.Credential.userpassPlaintextNew("fake-token",
-                "x-oauth-basic");
+              return NodeGit.Credential.userpassPlaintextNew("fake-token", "x-oauth-basic");
             } else {
               return NodeGit.Credential.defaultNew();
             }
-          }
-        }
-      }
-    }).catch(function(reason) { });
+          },
+        },
+      },
+    }).catch(function (_reason) {});
   });
 });

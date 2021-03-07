@@ -16,14 +16,14 @@ var isBare = 0;
 // In NodeGit we use Promises to make callbacks easier to deal with.
 //
 // For more information visit https://www.promisejs.org/
-NodeGit.Repository.init(pathToRepo, isBare).then(function (repo) {
+NodeGit.Repository.init(pathToRepo, isBare).then(function (_repo) {
   // In this function we have a repo object that we can perform git operations
   // on.
 
   // Note that with a new repository many functions will fail until there is
   // an initial commit.
 })
-.catch(function (reasonForFailure) {
+.catch(function (_reasonForFailure) {
   // If the repo cannot be created for any reason we can handle that case here.
   // NodeGit won't init a repo over a pre-existing repo.
 });

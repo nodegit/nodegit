@@ -78,7 +78,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     throw new Error("Expected macOsDeploymentTarget to be specified");
   }
 
-  const arguments = [
+  const buildArgs = [
     process.arch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc",
     // speed up ecdh on little-endian platforms with 128bit int support
     "enable-ec_nistp_64_gcc_128",
@@ -95,7 +95,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     `-mmacosx-version-min=${macOsDeploymentTarget}`
   ];
 
-  await execPromise(`./Configure ${arguments.join(" ")}`, {
+  await execPromise(`./Configure ${buildArgs.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
@@ -117,7 +117,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 };
 
 const buildLinux = async (buildCwd) => {
-  const arguments = [
+  const buildArgs = [
     "linux-x86_64",
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
@@ -134,7 +134,7 @@ const buildLinux = async (buildCwd) => {
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`
   ];
-  await execPromise(`./Configure ${arguments.join(" ")}`, {
+  await execPromise(`./Configure ${buildArgs.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
@@ -256,7 +256,9 @@ const buildOpenSSLIfNecessary = async ({
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL build, dir exists");
     return;
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
   const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
@@ -309,7 +311,9 @@ const downloadOpenSSLIfNecessary = async ({
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL download, dir exists");
     return;
-  } catch {}
+  } catch {
+    // ignore
+  }
   
   if (maybeDownloadSha256Url) {
     maybeDownloadSha256 = (await got(maybeDownloadSha256Url)).body.trim();
@@ -348,10 +352,9 @@ const getOpenSSLPackageName = () => {
 const getOpenSSLPackageUrl = () => `${packageJson.binary.host}${getOpenSSLPackageName()}`;
 
 const buildPackage = async () => {
-  let resolve, reject;
-  const promise = new Promise((_resolve, _reject) => {
+  let resolve;
+  const promise = new Promise((_resolve) => {
     resolve = _resolve;
-    reject = _reject;
   });
   await pipeline(
     tar.pack(extractPath, {
@@ -361,7 +364,9 @@ const buildPackage = async () => {
         return path.extname(name) === ".pc"
           || path.basename(name) === "pkgconfig";
       },
+      // eslint-disable-next-line no-octal
       dmode: 0755,
+      // eslint-disable-next-line no-octal
       fmode: 0644
     }),
     zlib.createGzip(),

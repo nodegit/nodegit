@@ -112,10 +112,10 @@ describe("Branch", function() {
 
     // don't force the move
     return Branch.move(branch, branchName2, 0)
-      .then(function(branch) {
+      .then(function(_branch) {
         return Promise.reject(new Error(
           "should not be able to rename the branch"));
-      }, function(error) {
+      }, function(_error) {
         return Promise.resolve()
           .then(function() {
             // force the move
@@ -150,10 +150,10 @@ describe("Branch", function() {
         return Branch.createFromAnnotated(
           repo, branchName, annotatedCommit, 0);
       })
-      .then(function(branch) {
+      .then(function(_branch) {
         return Promise.reject(new Error(
           "should not be able to create the branch"));
-      }, function(error) {
+      }, function(_error) {
         return Promise.resolve()
           .then(function() {
             // force the branch creation

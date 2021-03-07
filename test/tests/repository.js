@@ -67,7 +67,7 @@ describe("Repository", function() {
 
   it("can initialize a repository into a folder", function() {
     return Repository.init(newRepoPath, 1)
-      .then(function(path, isBare) {
+      .then(function(_path, _isBare) {
         return Repository.open(newRepoPath);
       });
   });

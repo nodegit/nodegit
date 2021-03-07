@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-unpublished-require
 var cleanForPublish = require("clean-for-publish");
 var path = require("path");
 

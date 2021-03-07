@@ -24,7 +24,9 @@ if (!isElectron) {
     if (built_with_electron) {
       isElectron = true;
     }
-  } catch (e) {}
+  } catch (e) {
+    // ignore
+  }
 }
 
 process.stdout.write(isElectron ? "1" : "0");

@@ -13,7 +13,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
       var fileNames = Object.keys(fileContent);
 
       return Promise.all(fileNames.map(function(fileName) {
-        fse.writeFile(
+        return fse.writeFile(
           path.join(repo.workdir(), fileName), fileContent[fileName]);
       }))
 
@@ -87,7 +87,7 @@ nodegit.Repository.open(path.resolve(__dirname, "../.git"))
         return index.addAll(
           "newFile*",
           nodegit.Index.ADD_OPTION.ADD_CHECK_PATHSPEC,
-          function(path, matchedPattern) {
+          function(path, _matchedPattern) {
             if (path == "newFile1") {
               return 0; // add the file
             }

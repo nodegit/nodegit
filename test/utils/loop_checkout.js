@@ -60,7 +60,7 @@ const changeDirExtFiles = function (dir, ext, newText) {
     });
     return filesChanged;
   })
-  .catch(function(err) {
+  .catch(function() {
     throw new Error("Error getting files with extension .".concat(ext));
   });
 };
@@ -72,6 +72,7 @@ const loopingCheckoutHead = async function(repoPath, repo, times) {
   const text1 = "Text1: changing content to trigger checkout";
 
   let iteration = 0;
+  // eslint-disable-next-line no-constant-condition
   for (let i = 0; true; i = ++i%2) {
     const newText = (i == 0) ? text0 : text1;
     const jsRelativeFilePahts = await changeDirExtFiles(repoPath, "js", newText);  // jshint ignore:line

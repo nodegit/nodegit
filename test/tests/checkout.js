@@ -29,7 +29,7 @@ describe("Checkout", function() {
     var test = this;
 
     return Checkout.head(test.repository)
-    .then(function(blob) {
+    .then(function(_blob) {
       var packageContent = fse.readFileSync(packageJsonPath, "utf-8");
 
       assert.ok(~packageContent.indexOf("\"ejs\": \"~1.0.0\","));
@@ -175,7 +175,7 @@ describe("Checkout", function() {
     .then(() => {
       return test.repository.checkoutBranch(testBranchName);
     })
-    .then((branch) => {
+    .then((_branch) => {
       fse.writeFileSync(packageJsonPath, "\n");
 
       return test.repository.refreshIndex()
@@ -196,7 +196,7 @@ describe("Checkout", function() {
       return test.repository.createCommit("refs/heads/" + testBranchName,
         signature, signature, "we made breaking changes", oid, [ourCommit]);
     })
-    .then((commit) => {
+    .then((_commit) => {
       return Promise.all([
         test.repository.getBranchCommit(testBranchName),
         test.repository.getBranchCommit("master")

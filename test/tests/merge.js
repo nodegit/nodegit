@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars -- there's too many */
 var assert = require("assert");
 var path = require("path");
 var fse = require("fs-extra");

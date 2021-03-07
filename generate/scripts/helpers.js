@@ -11,7 +11,7 @@ var callbackDefs = require("../input/callbacks.json");
 var descriptor = require("../input/descriptor.json");
 var libgit2 = require("../input/libgit2-docs.json");
 
-var cTypes = libgit2.groups.map(function(group) { return group[0];});
+// var cTypes = libgit2.groups.map(function(group) { return group[0];});
 
 var cTypeMappings = {
   "char": "String",
@@ -82,6 +82,7 @@ var Helpers = {
   hasConstructor: function(type, normalizedType) {
     if (normalizedType && descriptor.types[normalizedType.substr(4)]) {
       var descriptorEntry = descriptor.types[normalizedType.substr(4)];
+      // eslint-disable-next-line no-prototype-builtins
       if (descriptorEntry.hasOwnProperty('hasConstructor')) {
         return descriptorEntry.hasConstructor;
       }
@@ -116,6 +117,7 @@ var Helpers = {
         libgitType = type[1];
         return true;
       }
+      return false;
     });
 
     return libgitType;
@@ -149,6 +151,7 @@ var Helpers = {
           cbFieldName = cbField.name;
           return true;
         }
+        return false;
       });
 
       if (cbFieldName) {
@@ -223,7 +226,7 @@ var Helpers = {
       return fnDef;
     });
 
-    var typeDefOverrides = descriptor.types[typeDef.typeName] || {};
+    typeDefOverrides = descriptor.types[typeDef.typeName] || {};
     var functionOverrides = typeDefOverrides.functions || {};
     typeDef.functions.forEach(function(fnDef) {
       Helpers.decorateFunction(fnDef, typeDef, functionOverrides[fnDef.cFunctionName] || {}, enums);
@@ -233,7 +236,7 @@ var Helpers = {
   },
 
   decorateField: function(field, allFields, fieldOverrides, enums) {
-    var normalizeType = Helpers.normalizeCtype(field.type);
+    // var normalizeType = Helpers.normalizeCtype(field.type);
 
     field.cType = field.type;
     field.cppFunctionName = utils.titleCase(field.name);

@@ -63,4 +63,4 @@ return NodeGit.Clone(url, clonePath, cloneOpts)
     parentPort.postMessage("numbersDoNotMatch");
   }
   return promisify(setTimeout)(50000);
-}).catch((err) => parentPort.postMessage("failure"));
+}).catch(() => parentPort.postMessage("failure"));

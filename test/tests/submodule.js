@@ -161,7 +161,7 @@ describe("Submodule", function() {
   it("can run sync callback without deadlocking", function() {
     var repo = this.workdirRepository;
     var submodules = [];
-    var submoduleCallback = function(submodule, name, payload) {
+    var submoduleCallback = function(submodule, name, _payload) {
       var submoduleName = submodule.name();
       assert.equal(submoduleName, name);
       submodules.push(name);
@@ -177,7 +177,7 @@ describe("Submodule", function() {
   it("can run async callback without deadlocking", function() {
     var repo = this.workdirRepository;
     var submodules = [];
-    var submoduleCallback = function(submodule, name, payload) {
+    var submoduleCallback = function(submodule, name, _payload) {
       var owner = submodule.owner();
 
       return Submodule.lookup(owner, name)

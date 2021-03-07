@@ -79,7 +79,7 @@ describe("Rebase", function() {
           ourCommit = commit;
         }).then(function() {
           return repository.createBranch(ourBranchName, commitOid)
-            .then(function(branch) {
+            .then(function(_branch) {
               return repository.createBranch(theirBranchName, commitOid);
             });
         });
@@ -659,7 +659,7 @@ describe("Rebase", function() {
       .then(function() {
         return RepoUtils.addFileToIndex(repository, fileName);
       })
-      .then(function(oid) {
+      .then(function(_oid) {
         return repository.refreshIndex()
           .then(function(index) {
             assert.ok(!index.hasConflicts());
@@ -911,7 +911,7 @@ describe("Rebase", function() {
           ourCommit = commit;
         }).then(function() {
           return repository.createBranch(ourBranchName, commitOid)
-            .then(function(branch) {
+            .then(function(_branch) {
               return repository.createBranch(theirBranchName, commitOid);
             });
         });
@@ -1686,7 +1686,7 @@ describe("Rebase", function() {
       .then(function() {
         return RepoUtils.addFileToIndex(repository, fileName);
       })
-      .then(function(oid) {
+      .then(function(_oid) {
         return repository.refreshIndex()
           .then(function(index) {
             assert.ok(!index.hasConflicts());
@@ -1845,7 +1845,7 @@ describe("Rebase", function() {
 
         return NodeGit.Rebase.init(repository, ourAnnotatedCommit,
           theirAnnotatedCommit, null, {
-            signingCb: (commitContent) => ({
+            signingCb: (_commitContent) => ({
               code: NodeGit.Error.CODE.OK,
               field: "moose-sig",
               signedData: "A moose was here."

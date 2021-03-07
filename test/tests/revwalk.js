@@ -26,13 +26,12 @@ describe("Revwalk", function() {
       })
       .then(function(commit) {
         test.commit = commit;
+      })
+      .then(function() {
+        this.walker = this.repository.createRevWalk();
+        this.walker.sorting(NodeGit.Revwalk.SORT.TIME);
+        this.walker.push(this.commit.id());
       });
-  });
-
-  beforeEach(function() {
-    this.walker = this.repository.createRevWalk();
-    this.walker.sorting(NodeGit.Revwalk.SORT.TIME);
-    this.walker.push(this.commit.id());
   });
 
   it("can create a walker", function() {
@@ -107,11 +106,11 @@ describe("Revwalk", function() {
   it("can get the largest number of commits within a specified range",
     function() {
       var test = this;
-      var storedCommits;
+      var _storedCommits;
       return test.walker.getCommits(991)
         .then(function(commits) {
           assert.equal(commits.length, 990);
-          storedCommits = commits;
+          _storedCommits = commits;
           test.walker = test.repository.createRevWalk();
           test.walker.push(test.commit.id());
         });
