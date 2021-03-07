@@ -194,15 +194,14 @@ module.exports = function generateJson() {
   });
   // Process enums
   _(enums).forEach(function(enumerable) {
-    output.some(function(obj) {
+    for (const obj of output) {
       if (enumerable.typeName.indexOf(obj.typeName) == 0) {
           enumerable.owner = obj.jsClassName;
       }
       else if (enumerable.owner) {
-        return true;
+        break;
       }
-      return false;
-    });
+    }
 
     var override = descriptor.enums[enumerable.typeName] || {};
 
