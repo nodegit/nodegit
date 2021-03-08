@@ -97,7 +97,8 @@ public:
 
     git_tag *referencedTag;
     if (git_tag_lookup(&referencedTag, repo, referencedTargetOid) == GIT_OK) {
-      refModel->message = strdup(git_tag_message(referencedTag));
+      const char *tagMessage = git_tag_message(referencedTag);
+      refModel->message = tagMessage ? strdup(tagMessage) : NULL;
 
       git_odb_object *tagOdbObject;
       if (git_odb_read(&tagOdbObject, odb, git_tag_id(referencedTag)) == GIT_OK) {
