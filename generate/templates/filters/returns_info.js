@@ -52,7 +52,7 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
     // sync functions will need to know this.
     if (!isAsync && return_info.ownedBy) {
       return_info.ownedBy.forEach(function (argName) {
-        return_info.ownedByIndices.push(nameToArgIndex[return_info.ownedBy]);
+        return_info.ownedByIndices.push(nameToArgIndex[argName]);
       })
     }
 
