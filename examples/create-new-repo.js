@@ -1,46 +1,32 @@
-var nodegit = require("../");
-var path = require("path");
-var fse = require("fs-extra");
-var fileName = "newfile.txt";
-var fileContent = "hello world";
-var repoDir = "../../newRepo";
+const nodegit = require("../");
+const path = require("path");
+const fs = require("fs");
+const fileName = "newfile.txt";
+const fileContent = "hello world";
+const repoDir = "../newRepo";
 
-var repository;
-var index;
 
-fse.ensureDir(path.resolve(__dirname, repoDir))
-.then(function() {
-  return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
-})
-.then(function(repo) {
-  repository = repo;
-  return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
-})
-.then(function(){
-  return repository.refreshIndex();
-})
-.then(function(idx) {
-  index = idx;
-})
-.then(function() {
-  return index.addByPath(fileName);
-})
-.then(function() {
-  return index.write();
-})
-.then(function() {
-  return index.writeTree();
-})
-.then(function(oid) {
-  var author = nodegit.Signature.now("Scott Chacon",
+(async () => {
+  await fs.promises.mkdir(path.resolve(__dirname, repoDir), {
+    recursive: true,
+  });
+  const repo = await nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
+  await fs.promises.writeFile(path.join(repo.workdir(), fileName), fileContent);
+  const index = await repo.refreshIndex();
+  await index.addByPath(fileName);
+  await index.write();
+  
+  const oid = await index.writeTree();
+  
+  const author = nodegit.Signature.now("Scott Chacon",
     "schacon@gmail.com");
-  var committer = nodegit.Signature.now("Scott A Chacon",
+  const committer = nodegit.Signature.now("Scott A Chacon",
     "scott@github.com");
 
   // Since we're creating an inital commit, it has no parents. Note that unlike
   // normal we don't get the head either, because there isn't one yet.
-  return repository.createCommit("HEAD", author, committer, "message", oid, []);
-})
-.done(function(commitId) {
+  const commitId = await repo.createCommit("HEAD", author, committer, "message", oid, []);
   console.log("New Commit: ", commitId);
-});
+})();
+
+
