@@ -1,24 +1,36 @@
 # Change Log
 
-## <a name="v0-28-0-alpha.1" href="#v0-28-0-alpha-1">v0.28.0-alpha.1</a> [(2020-11-20)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.1)
+## <a name="v0-28-0-alpha.1" href="#v0-28-0-alpha-1">v0.28.0-alpha.1</a> [(2021-03-12)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.1)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.27.0...v0.28.0-alpha.1)
 
 #### Summary of changes
-- Support for Electron 11
+- *Notice* We planned to fix / address Electron 11 compatibility, but ran into some roadblocks. Fix is coming soon, follow [#114](https://github.com/nodegit/nodegit/issues/1774) for details
 - Drops support for Node 10.x.y, < 12.19.x, < 14.10.0
-- Drops support for Electron 9.x.y, < 10.1.4
 - Brings in LibGit2 1.0.0
+- NodeGit.Config.prototype.setBool handles truthiness, and NodeGit.Config.prototype.getBool returns true or false
+- Fix GC ownership memory issue
+- Exposes sidebandProgress callback in GitRemoteCallbacks
 - Fixes issue with winhttp and optional client certificates
+- Addresses proxy issue with certification validation in Windows
+- Fix crash in NodeGit.Repository.prototype.refreshReferences
 - Deprecations
   - NodeGit.Cred is deprecated in favor of NodeGit.Credential
 
 #### Merged PRs into NodeGit
-- [Merge pull request #1795 from ianhattendorf/refactor/context-awareness](https://github.com/nodegit/nodegit/pull/1795)
-- [Merge pull request #1797 from ianhattendorf/fix/longpaths-enum](https://github.com/nodegit/nodegit/pull/1797)
-- [Merge pull request #1788 from implausible/bump/libgit2-1.0.0](https://github.com/nodegit/nodegit/pull/1788)
+- [Include libgit2 winhttp proxy fix #1824](https://github.com/nodegit/nodegit/pull/1824)
+- [Return/accept boolean for Config#get/setBool #1827](https://github.com/nodegit/nodegit/pull/1827)
+- [First stab at #1800 (async/await in examples) #1802](https://github.com/nodegit/nodegit/pull/1802)
+- [returns_info: fix ownedByIndices #1823](https://github.com/nodegit/nodegit/pull/1823)
+- [Remove block for sideband_progress in remote_callbacks #1801](https://github.com/nodegit/nodegit/pull/1801)
+- [Use key to grab credential type #1828](https://github.com/nodegit/nodegit/pull/1828)
+- [Don't strdup nullptr from git_tag_message #1822](https://github.com/nodegit/nodegit/pull/1822)
+- [Refactor for context-awareness #1795](https://github.com/nodegit/nodegit/pull/1795)
+- [Update longpath enums to match libgit2 #1797](https://github.com/nodegit/nodegit/pull/1797)
+- [Bump libgit2 to fork of v1.0.0 #1788](https://github.com/nodegit/nodegit/pull/1788)
 
 #### Merged PRs into Libgit2
+- [winhttp: skip certificate check if unable to send request #5814](https://github.com/libgit2/libgit2/pull/5814)
 - [sanitizer ci: skip negotiate tests](https://github.com/libgit2/libgit2/pull/5596)
 - [Add CI support for Memory and UndefinedBehavior Sanitizers](https://github.com/libgit2/libgit2/pull/5569)
 - [Access HEAD via the refdb backends](https://github.com/libgit2/libgit2/pull/5563)
