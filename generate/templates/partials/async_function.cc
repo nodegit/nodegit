@@ -214,18 +214,18 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   {%elsif not .|returnsCount %}
     v8::Local<v8::Value> result = Nan::Undefined();
   {%else%}
-    v8::Local<v8::Value> to;
+    v8::Local<v8::Value> v8ConversionSlot;
     {%if .|returnsCount > 1 %}
       v8::Local<Object> result = Nan::New<Object>();
     {%endif%}
     {%each .|returnsInfo 0 1 as _return %}
       {%partial convertToV8 _return %}
       {%if .|returnsCount > 1 %}
-        Nan::Set(result, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), to);
+        Nan::Set(result, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), v8ConversionSlot);
       {%endif%}
     {%endeach%}
     {%if .|returnsCount == 1 %}
-      v8::Local<v8::Value> result = to;
+      v8::Local<v8::Value> result = v8ConversionSlot;
     {%endif%}
   {%endif%}
 
