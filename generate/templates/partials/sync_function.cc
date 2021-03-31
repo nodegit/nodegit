@@ -111,18 +111,18 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         }
       {%endif%}
 
-      v8::Local<v8::Value> to;
+      v8::Local<v8::Value> v8ConversionSlot;
       {%if .|returnsCount > 1 %}
         v8::Local<Object> toReturn = Nan::New<Object>();
       {%endif%}
       {%each .|returnsInfo as _return %}
         {%partial convertToV8 _return %}
         {%if .|returnsCount > 1 %}
-          Nan::Set(toReturn, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), to);
+          Nan::Set(toReturn, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), v8ConversionSlot);
         {%endif%}
       {%endeach%}
       {%if .|returnsCount == 1 %}
-        return info.GetReturnValue().Set(scope.Escape(to));
+        return info.GetReturnValue().Set(scope.Escape(v8ConversionSlot));
       {%else%}
         return info.GetReturnValue().Set(scope.Escape(toReturn));
       {%endif%}

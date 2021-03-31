@@ -82,6 +82,10 @@
       "JsName": "TYPE",
       "isMask": false
     },
+    "revspec": {
+      "JsName": "TYPE",
+      "isMask": false
+    },
     "sort": {
       "owner": "Revwalk"
     },
@@ -306,6 +310,9 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_blob_filter_options_init": {
+          "ignore": true
         },
         "git_blob_filtered_content": {
           "isAsync": true,
@@ -2728,6 +2735,10 @@
       "dependencies": [
         "../include/convenient_patch.h"
       ],
+      "ownerFn": {
+        "name": "git_patch_owner",
+        "singletonCppClassName": "GitRepository"
+      },
       "functions": {
         "git_patch_free": {
           "ignore": true
@@ -3672,9 +3683,6 @@
         }
       }
     },
-    "revspec": {
-      "ignore": true
-    },
     "revwalk": {
       "selfFreeing": true,
       "ownerFn": {
@@ -3881,7 +3889,11 @@
     },
     "strarray": {
       "selfFreeing": true,
+      "freeFunctionName": "git_strarray_dispose",
       "functions": {
+        "git_strarray_dispose": {
+          "ignore": true
+        },
         "git_strarray_free": {
           "ignore": true
         }

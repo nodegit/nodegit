@@ -2,7 +2,7 @@
   {% if not field.ignore %}
     // start field block
     NAN_METHOD({{ cppClassName }}::{{ field.cppFunctionName }}) {
-      v8::Local<v8::Value> to;
+      v8::Local<v8::Value> v8ConversionSlot;
 
       {% if field | isFixedLengthString %}
       char* {{ field.name }} = (char *)Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue()->{{ field.name }};
@@ -25,7 +25,7 @@
       {% endif %}
 
       {% partial convertToV8 field %}
-      info.GetReturnValue().Set(to);
+      info.GetReturnValue().Set(v8ConversionSlot);
     }
     // end field block
   {% endif %}

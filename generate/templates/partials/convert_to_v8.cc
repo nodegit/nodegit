@@ -2,18 +2,18 @@
 {% if cppClassName == 'String' %}
   if ({{= parsedName =}}){
     {% if size %}
-      to = Nan::New<v8::String>({{= parsedName =}}, {{ size }}).ToLocalChecked();
+      v8ConversionSlot = Nan::New<v8::String>({{= parsedName =}}, {{ size }}).ToLocalChecked();
     {% elsif cType == 'char **' %}
-      to = Nan::New<v8::String>(*{{= parsedName =}}).ToLocalChecked();
+      v8ConversionSlot = Nan::New<v8::String>(*{{= parsedName =}}).ToLocalChecked();
     {% elsif cType == 'char' %}
       char convertToNullTerminated[2] = { {{= parsedName =}}, '\0' };
-      to = Nan::New<v8::String>(convertToNullTerminated).ToLocalChecked();
+      v8ConversionSlot = Nan::New<v8::String>(convertToNullTerminated).ToLocalChecked();
     {% else %}
-      to = Nan::New<v8::String>({{= parsedName =}}).ToLocalChecked();
+      v8ConversionSlot = Nan::New<v8::String>({{= parsedName =}}).ToLocalChecked();
     {% endif %}
   }
   else {
-    to = Nan::Null();
+    v8ConversionSlot = Nan::Null();
   }
 
   {% if freeFunctionName %}
@@ -32,16 +32,16 @@
       {% endif %}
       Nan::Set(tmpArray, Nan::New<Number>(i), element);
     }
-    to = tmpArray;
+    v8ConversionSlot = tmpArray;
   {% elsif isCppClassIntType %}
-    to = Nan::New<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}});
+    v8ConversionSlot = Nan::New<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}});
   {% else %}
-    to = Nan::New<{{ cppClassName }}>({% if needsDereference %}*{% endif %}{{= parsedName =}});
+    v8ConversionSlot = Nan::New<{{ cppClassName }}>({% if needsDereference %}*{% endif %}{{= parsedName =}});
   {% endif %}
 
 {% elsif cppClassName == 'External' %}
 
-  to = Nan::New<External>((void *){{= parsedName =}});
+  v8ConversionSlot = Nan::New<External>((void *){{= parsedName =}});
 
 {% elsif cppClassName == 'Array' %}
 
@@ -55,16 +55,16 @@
     v8::Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}});
   {% endif %}
 
-  to = tmpArray;
+  v8ConversionSlot = tmpArray;
 {% elsif cppClassName == 'GitBuf' %}
   {% if doNotConvert %}
-  to = Nan::Null();
+  v8ConversionSlot = Nan::Null();
   {% else %}
   if ({{= parsedName =}}) {
-    to = Nan::New<v8::String>({{= parsedName =}}->ptr, {{= parsedName = }}->size).ToLocalChecked();
+    v8ConversionSlot = Nan::New<v8::String>({{= parsedName =}}->ptr, {{= parsedName = }}->size).ToLocalChecked();
   }
   else {
-    to = Nan::Null();
+    v8ConversionSlot = Nan::Null();
   }
   {% endif %}
 {% else %}
@@ -104,9 +104,9 @@
       {% endif %}
     {% endif %}
     {% if cppClassName == 'Wrapper' %}
-      to = {{ cppClassName }}::New({{ cType|asElementPointer parsedName }});
+      v8ConversionSlot = {{ cppClassName }}::New({{ cType|asElementPointer parsedName }});
     {% else %}
-      to = {{ cppClassName }}::New(
+      v8ConversionSlot = {{ cppClassName }}::New(
         {{ cType|asElementPointer parsedName }},
         {{ selfFreeing|toBool }}
         {% if hasOwner %}
@@ -116,12 +116,12 @@
     {% endif %}
   }
   else {
-    to = Nan::Null();
+    v8ConversionSlot = Nan::Null();
   }
   {% if cType|isArrayType %}
-      Nan::Set(tmpArray, Nan::New<Number>(i), to);
+      Nan::Set(tmpArray, Nan::New<Number>(i), v8ConversionSlot);
     }
-    to = tmpArray;
+    v8ConversionSlot = tmpArray;
   {% endif %}
 {% endif %}
 // end convert_to_v8 block

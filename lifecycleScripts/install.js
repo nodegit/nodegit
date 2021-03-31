@@ -1,5 +1,6 @@
 var buildFlags = require("../utils/buildFlags");
 var spawn = require("child_process").spawn;
+var path = require("path");
 
 module.exports = function install() {
   console.log("[nodegit] Running install script");
@@ -28,7 +29,12 @@ module.exports = function install() {
   }
 
   return new Promise(function(resolve, reject) {
-    var spawnedNodePreGyp = spawn(nodePreGyp, args);
+    var spawnedNodePreGyp = spawn(nodePreGyp, args, {
+      env: Object.assign({}, process.env, {
+        npm_config_node_gyp: path.join(__dirname, "..", "node_modules",
+          "node-gyp", "bin", "node-gyp.js")
+      })
+    });
 
     spawnedNodePreGyp.stdout.on("data", function(data) {
       console.info(data.toString().trim());

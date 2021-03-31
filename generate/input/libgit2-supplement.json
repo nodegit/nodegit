@@ -1124,6 +1124,49 @@
         }
       ],
       [
+        "git_cert_ssh_raw_type_t",
+        {
+          "type": "enum",
+          "fields": [
+            {
+              "type": "uint32_t",
+              "name": "GIT_CERT_SSH_RAW_TYPE_UNKNOWN",
+              "value": 0
+            },
+            {
+              "type": "uint32_t",
+              "name": "GIT_CERT_SSH_RAW_TYPE_RSA",
+              "value": 1
+            },
+            {
+              "type": "uint32_t",
+              "name": "GIT_CERT_SSH_RAW_TYPE_DSS",
+              "value": 2
+            },
+            {
+              "type": "uint32_t",
+              "name": "GIT_CERT_SSH_RAW_TYPE_KEY_ECDSA_256",
+              "value": 3
+            },
+            {
+              "type": "uint32_t",
+              "name": "GIT_CERT_SSH_RAW_TYPE_KEY_ECDSA_384",
+              "value": 4
+            },
+            {
+              "type": "uint32_t",
+              "name": "GIT_CERT_SSH_RAW_TYPE_KEY_ECDSA_521",
+              "value": 5
+            },
+            {
+              "type": "uint32_t",
+              "name": "GIT_CERT_SSH_RAW_TYPE_KEY_ED25519",
+              "value": 6
+            }
+          ]
+        }
+      ],
+      [
         "git_config_entry",
         {
           "fields": [
