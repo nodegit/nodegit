@@ -2,6 +2,7 @@
 #define NODEGIT_WRAPPER_H
 
 #include <nan.h>
+#include <algorithm>
 #include <unordered_map>
 
 // the Traits template parameter supplies:
@@ -33,7 +34,7 @@ public:
   // (and through a method) instead of changing selfFreeing, but that's
   // a separate issue.
   bool selfFreeing;
-  
+
   const nodegit::Context *nodegitContext = nullptr;
 
 protected:
@@ -63,8 +64,17 @@ protected:
 public:
   static v8::Local<v8::Value> New(const cType *raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
 
+  void Reference();
+  void Unreference();
+
+  void AddReferenceCallbacks(size_t, std::function<void()>, std::function<void()>);
+
   cType *GetValue();
   void ClearValue();
+
+private:
+  std::unordered_map<size_t, std::function<void()>> referenceCallbacks;
+  std::unordered_map<size_t, std::function<void()>> unreferenceCallbacks;
 };
 
 #endif

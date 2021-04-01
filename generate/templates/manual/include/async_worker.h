@@ -2,6 +2,7 @@
 #define NODEGIT_ASYNC_WORKER
 
 #include <nan.h>
+#include <functional>
 #include "lock_master.h"
 
 namespace nodegit {
@@ -25,7 +26,12 @@ namespace nodegit {
 
     bool GetIsCancelled() const;
 
+    void Destroy() override;
+
+    void RegisterCleanupCall(std::function<void()> cleanupCall);
+
   private:
+    std::vector<std::function<void()>> cleanupCalls;
     bool isCancelled = false;
   };
 }

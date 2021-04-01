@@ -69,9 +69,45 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
         worker->SaveToPersistent("{{ arg.name }}", info.This());
+        {
+          auto objectWrapPointer = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This());
+          objectWrapPointer->Reference();
+          worker->RegisterCleanupCall([objectWrapPointer]() {
+            objectWrapPointer->Unreference();
+          });
+        }
       {%elsif not arg.isCallbackFunction %}
-        if (!info[{{ arg.jsArg }}]->IsUndefined() && !info[{{ arg.jsArg }}]->IsNull())
-          worker->SaveToPersistent("{{ arg.name }}", Nan::To<v8::Object>(info[{{ arg.jsArg }}]).ToLocalChecked());
+        worker->SaveToPersistent("{{ arg.name }}", info[{{ arg.jsArg }}]);
+        {%if  arg.isUnwrappable %}
+          {
+            auto unwrap = info[{{ arg.jsArg }}];
+            if (!unwrap->IsUndefined() && !unwrap->IsNull()) {
+              {% if arg.cppClassName == "Array" %}
+                auto unwrapArray = v8::Local<v8::Array>::Cast(info[{{ arg.jsArg }}]);
+                for (uint32_t i = 0; i < unwrapArray->Length(); ++i) {
+                  v8::Local<v8::Value> arrayValue = Nan::Get(unwrapArray, i).ToLocalChecked();
+                  if (!arrayValue->IsString()) { // Don't cast a string-oid
+                    auto objectWrapPointer = Nan::ObjectWrap::Unwrap<{{ arg.arrayElementCppClassName }}>(
+                      Nan::Get(unwrapArray, i).ToLocalChecked().As<v8::Object>()
+                    );
+                    objectWrapPointer->Reference();
+                    worker->RegisterCleanupCall([objectWrapPointer]() {
+                      objectWrapPointer->Unreference();
+                    });
+                  }
+                }
+              {% else %}
+                if (!info[{{ arg.jsArg }}]->IsString()) { // Don't cast a string-oid
+                  auto objectWrapPointer = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info[{{ arg.jsArg }}].As<v8::Object>());
+                  objectWrapPointer->Reference();
+                  worker->RegisterCleanupCall([objectWrapPointer]() {
+                    objectWrapPointer->Unreference();
+                  });
+                }
+              {% endif %}
+            }
+          }
+        {% endif %}
       {%endif%}
     {%endif%}
   {%endeach%}
