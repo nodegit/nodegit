@@ -1,5 +1,19 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.3" href="#v0-28-0-alpha-3">v0.28.0-alpha.3</a> [(2021-04-02)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.3)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.2...v0.28.0-alpha.3)
+
+#### Summary of changes
+- Addresses failure to open repo with empty default branch name
+
+#### Merged PRs into NodeGit
+- [Bring in changes from libgit2 #5832 #1832](https://github.com/nodegit/nodegit/pull/1832)
+
+#### Cherrypicked PRs into Libgit2
+- [Default to GIT_BRANCH_DEFAULT if init.defaultBranch is empty string #5832](https://github.com/libgit2/libgit2/pull/5832)
+
+
 ## <a name="v0-28-0-alpha.2" href="#v0-28-0-alpha-2">v0.28.0-alpha.2</a> [(2021-03-31)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.2)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.1...v0.28.0-alpha.2)
