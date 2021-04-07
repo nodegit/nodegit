@@ -221,7 +221,7 @@ NAN_METHOD(ConvenientPatch::Hunks) {
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   HunksWorker *worker = new HunksWorker(baton, callback);
 
-  worker->SaveToPersistent("patch", info.This());
+  worker->Reference<ConvenientPatch>("patch", info.This());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
@@ -419,4 +419,12 @@ NAN_METHOD(ConvenientPatch::IsConflicted) {
   Local<v8::Value> to;
   to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_CONFLICTED);
   info.GetReturnValue().Set(to);
+}
+
+void ConvenientPatch::Reference() {
+  Ref();
+}
+
+void ConvenientPatch::Unreference() {
+  Unref();
 }

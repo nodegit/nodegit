@@ -50,6 +50,9 @@ class ConvenientPatch : public Nan::ObjectWrap {
     size_t GetNumHunks();
     PatchData *GetValue();
 
+    void Reference();
+    void Unreference();
+
   private:
     ConvenientPatch(PatchData *raw);
     ~ConvenientPatch();

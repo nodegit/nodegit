@@ -406,7 +406,7 @@ NAN_METHOD(GitRepository::RefreshReferences)
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback);
   worker->Reference<GitRepository>("repo", info.This());
-  worker->SaveToPersistent("signatureType", signatureType);
+  worker->Reference("signatureType", signatureType);
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;
