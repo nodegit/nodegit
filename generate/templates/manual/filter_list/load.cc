@@ -92,16 +92,8 @@ NAN_METHOD(GitFilterList::Load) {
       new Nan::Callback(v8::Local<Function>::Cast(info[5]));
   LoadWorker *worker = new LoadWorker(baton, callback);
 
-  if (!info[0]->IsUndefined() && !info[0]->IsNull())
-    worker->SaveToPersistent("repo", Nan::To<v8::Object>(info[0]).ToLocalChecked());
-  if (!info[1]->IsUndefined() && !info[1]->IsNull())
-    worker->SaveToPersistent("blob", Nan::To<v8::Object>(info[1]).ToLocalChecked());
-  if (!info[2]->IsUndefined() && !info[2]->IsNull())
-    worker->SaveToPersistent("path", Nan::To<v8::Object>(info[2]).ToLocalChecked());
-  if (!info[3]->IsUndefined() && !info[3]->IsNull())
-    worker->SaveToPersistent("mode", Nan::To<v8::Object>(info[3]).ToLocalChecked());
-  if (!info[4]->IsUndefined() && !info[4]->IsNull())
-    worker->SaveToPersistent("flags", Nan::To<v8::Object>(info[4]).ToLocalChecked());
+  worker->Reference<GitRepository>("repo", info[0]);
+  worker->Reference<GitBlob>("blob", info[1]);
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

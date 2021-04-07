@@ -68,45 +68,18 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-        worker->SaveToPersistent("{{ arg.name }}", info.This());
-        {
-          auto objectWrapPointer = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This());
-          objectWrapPointer->Reference();
-          worker->RegisterCleanupCall([objectWrapPointer]() {
-            objectWrapPointer->Unreference();
-          });
-        }
+        worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info.This());
       {%elsif not arg.isCallbackFunction %}
-        worker->SaveToPersistent("{{ arg.name }}", info[{{ arg.jsArg }}]);
         {%if  arg.isUnwrappable %}
-          {
-            auto unwrap = info[{{ arg.jsArg }}];
-            if (!unwrap->IsUndefined() && !unwrap->IsNull()) {
-              {% if arg.cppClassName == "Array" %}
-                auto unwrapArray = v8::Local<v8::Array>::Cast(info[{{ arg.jsArg }}]);
-                for (uint32_t i = 0; i < unwrapArray->Length(); ++i) {
-                  v8::Local<v8::Value> arrayValue = Nan::Get(unwrapArray, i).ToLocalChecked();
-                  if (!arrayValue->IsString()) { // Don't cast a string-oid
-                    auto objectWrapPointer = Nan::ObjectWrap::Unwrap<{{ arg.arrayElementCppClassName }}>(
-                      Nan::Get(unwrapArray, i).ToLocalChecked().As<v8::Object>()
-                    );
-                    objectWrapPointer->Reference();
-                    worker->RegisterCleanupCall([objectWrapPointer]() {
-                      objectWrapPointer->Unreference();
-                    });
-                  }
-                }
-              {% else %}
-                if (!info[{{ arg.jsArg }}]->IsString()) { // Don't cast a string-oid
-                  auto objectWrapPointer = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info[{{ arg.jsArg }}].As<v8::Object>());
-                  objectWrapPointer->Reference();
-                  worker->RegisterCleanupCall([objectWrapPointer]() {
-                    objectWrapPointer->Unreference();
-                  });
-                }
-              {% endif %}
+          {% if arg.cppClassName == "Array" %}
+            if (info[{{ arg.jsArg }}]->IsArray()) {
+              worker->Reference<{{ arg.arrayElementCppClassName }}>("{{ arg.name }}", info[{{ arg.jsArg }}].As<v8::Array>());
             }
-          }
+          {% else %}
+            worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info[{{ arg.jsArg }}]);
+          {% endif %}
+        {% else %}
+          worker->Reference("{{ arg.name }}", info[{{ arg.jsArg }}]);
         {% endif %}
       {%endif%}
     {%endif%}

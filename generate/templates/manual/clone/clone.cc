@@ -79,12 +79,10 @@ NAN_METHOD(GitClone::Clone) {
       new Nan::Callback(v8::Local<Function>::Cast(info[3]));
   CloneWorker *worker = new CloneWorker(baton, callback);
 
-  if (!info[0]->IsUndefined() && !info[0]->IsNull())
-    worker->SaveToPersistent("url", Nan::To<v8::Object>(info[0]).ToLocalChecked());
-  if (!info[1]->IsUndefined() && !info[1]->IsNull())
-    worker->SaveToPersistent("local_path", Nan::To<v8::Object>(info[1]).ToLocalChecked());
-  if (!info[2]->IsUndefined() && !info[2]->IsNull())
-    worker->SaveToPersistent("options", Nan::To<v8::Object>(info[2]).ToLocalChecked());
+  worker->SaveToPersistent("url", info[0]);
+  worker->SaveToPersistent("local_path", info[1]);
+  worker->SaveToPersistent("options", info[2]);
+  worker->Reference<GitCloneOptions>("options", info[2]);
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

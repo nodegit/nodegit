@@ -65,8 +65,8 @@ NAN_METHOD(GitCommit::ExtractSignature)
   }
 
   ExtractSignatureWorker *worker = new ExtractSignatureWorker(baton, callback);
-  worker->SaveToPersistent("repo", Nan::To<v8::Object>(info[0]).ToLocalChecked());
-  worker->SaveToPersistent("commit_id", Nan::To<v8::Object>(info[1]).ToLocalChecked());
+  worker->Reference<GitRepository>("repo", info[0]);
+  worker->Reference<GitOid>("commit_id", info[1]);
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;

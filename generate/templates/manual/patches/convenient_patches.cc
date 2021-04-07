@@ -19,7 +19,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
   ConvenientFromDiffWorker *worker = new ConvenientFromDiffWorker(baton, callback);
 
-  worker->SaveToPersistent("diff", info[0]);
+  worker->Reference<GitDiff>("diff", info[0]);
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

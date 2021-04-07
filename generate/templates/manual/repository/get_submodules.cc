@@ -13,7 +13,7 @@ NAN_METHOD(GitRepository::GetSubmodules)
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   GetSubmodulesWorker *worker = new GetSubmodulesWorker(baton, callback);
-  worker->SaveToPersistent("repo", info.This());
+  worker->Reference<GitRepository>("repo", info.This());
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;
