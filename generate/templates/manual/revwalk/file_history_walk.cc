@@ -205,7 +205,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[2]));
   FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback);
-  worker->SaveToPersistent("fileHistoryWalk", info.This());
+  worker->Reference<GitRevwalk>("fileHistoryWalk", info.This());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

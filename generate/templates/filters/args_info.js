@@ -1,3 +1,11 @@
+var bannedCppClassNames = [
+  "Buffer",
+  "Function",
+  "GitBuf",
+  "GitStrarray",
+  "Wrapper"
+];
+
 module.exports = function(args) {
   var result = [],
       cArg,
@@ -19,6 +27,9 @@ module.exports = function(args) {
     arg.cArg = cArg;
     arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
     arg.isConst = ~arg.cType.indexOf("const ");
+
+    arg.isUnwrappable = arg.isLibgitType && !arg.isEnum &&
+      !bannedCppClassNames.includes(arg.cppClassName);
 
     // if we have a callback then we also need the corresponding payload for that callback
     if (arg.isCallbackFunction) {

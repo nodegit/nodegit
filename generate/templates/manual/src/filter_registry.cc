@@ -71,8 +71,8 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
   RegisterWorker *worker = new RegisterWorker(baton, callback);
 
-  worker->SaveToPersistent("filter_name", Nan::To<v8::Object>(info[0]).ToLocalChecked());
-  worker->SaveToPersistent("filter_priority", Nan::To<v8::Object>(info[2]).ToLocalChecked());
+  worker->Reference("filter_name", info[0]);
+  worker->Reference("filter_priority", info[2]);
 
   nodegitContext->QueueWorker(worker);
   return;
@@ -177,7 +177,7 @@ NAN_METHOD(GitFilterRegistry::GitFilterUnregister) {
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
   UnregisterWorker *worker = new UnregisterWorker(baton, callback);
 
-  worker->SaveToPersistent("filter_name", info[0]);
+  worker->Reference("filter_name", info[0]);
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

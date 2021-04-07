@@ -105,7 +105,7 @@ NAN_METHOD(ConvenientHunk::Lines) {
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   LinesWorker *worker = new LinesWorker(baton, callback);
 
-  worker->SaveToPersistent("hunk", info.This());
+  worker->Reference<ConvenientHunk>("hunk", info.This());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
@@ -200,4 +200,12 @@ NAN_METHOD(ConvenientHunk::Header) {
   }
 
   info.GetReturnValue().Set(to);
+}
+
+void ConvenientHunk::Reference() {
+  Ref();
+}
+
+void ConvenientHunk::Unreference() {
+  Unref();
 }

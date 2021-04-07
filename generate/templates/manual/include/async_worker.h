@@ -2,6 +2,7 @@
 #define NODEGIT_ASYNC_WORKER
 
 #include <nan.h>
+#include <functional>
 #include "lock_master.h"
 
 namespace nodegit {
@@ -25,7 +26,49 @@ namespace nodegit {
 
     bool GetIsCancelled() const;
 
+    void Destroy() override;
+
+    void RegisterCleanupCall(std::function<void()> cleanupCall);
+
+    template<class NodeGitWrapperT>
+    void Reference(v8::Local<v8::Value> item) {
+      if (item->IsString() || item->IsNull() || item->IsUndefined()) {
+        return;
+      }
+
+      auto objectWrapPointer = Nan::ObjectWrap::Unwrap<NodeGitWrapperT>(item.As<v8::Object>());
+      objectWrapPointer->Reference();
+      RegisterCleanupCall([objectWrapPointer]() {
+        objectWrapPointer->Unreference();
+      });
+    }
+
+    template<class NodeGitWrapperT>
+    inline void Reference(const char *label, v8::Local<v8::Value> item) {
+      SaveToPersistent(label, item);
+      Reference<NodeGitWrapperT>(item);
+    }
+
+    template<class NodeGitWrapperT>
+    inline void Reference(const char *label, v8::Local<v8::Object> item) {
+      SaveToPersistent(label, item);
+      Reference<NodeGitWrapperT>(item);
+    }
+
+    template<class NodeGitWrapperT>
+    inline void Reference(const char *label, v8::Local<v8::Array> array) {
+      SaveToPersistent(label, array);
+      for (uint32_t i = 0; i < array->Length(); ++i) {
+        Reference<NodeGitWrapperT>(Nan::Get(array, i).ToLocalChecked());
+      }
+    }
+
+    inline void Reference(const char *label, v8::Local<v8::Value> item) {
+      SaveToPersistent(label, item);
+    }
+
   private:
+    std::vector<std::function<void()>> cleanupCalls;
     bool isCancelled = false;
   };
 }

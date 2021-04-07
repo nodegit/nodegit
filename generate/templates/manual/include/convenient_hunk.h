@@ -36,6 +36,9 @@ class ConvenientHunk : public Nan::ObjectWrap {
     char *GetHeader();
     size_t GetSize();
 
+    void Reference();
+    void Unreference();
+
   private:
     ConvenientHunk(HunkData *hunk);
     ~ConvenientHunk();

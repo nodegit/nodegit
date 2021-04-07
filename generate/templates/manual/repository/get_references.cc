@@ -13,7 +13,7 @@ NAN_METHOD(GitRepository::GetReferences)
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   GetReferencesWorker *worker = new GetReferencesWorker(baton, callback);
-  worker->SaveToPersistent("repo", info.This());
+  worker->Reference<GitRepository>("repo", info.This());
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;

@@ -21,7 +21,7 @@ NAN_METHOD(GitFilterSource::Repo) {
   Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[0]));
   RepoWorker *worker = new RepoWorker(baton, callback);
 
-  worker->SaveToPersistent("src", info.This());
+  worker->Reference<GitFilterSource>("src", info.This());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

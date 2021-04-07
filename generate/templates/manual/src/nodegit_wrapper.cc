@@ -124,3 +124,25 @@ void NodeGitWrapper<Traits>::InitializeTemplate(v8::Local<v8::FunctionTemplate> 
   Nan::SetMethod(tpl, "getSelfFreeingInstanceCount", GetSelfFreeingInstanceCount);
   Nan::SetMethod(tpl, "getNonSelfFreeingConstructedCount", GetNonSelfFreeingConstructedCount);
 }
+
+template<typename Traits>
+void NodeGitWrapper<Traits>::Reference() {
+  Ref();
+  for (auto &i : referenceCallbacks) {
+    i.second();
+  }
+}
+
+template<typename Traits>
+void NodeGitWrapper<Traits>::Unreference() {
+  Unref();
+  for (auto &i : unreferenceCallbacks) {
+    i.second();
+  }
+}
+
+template<typename Traits>
+void NodeGitWrapper<Traits>::AddReferenceCallbacks(size_t fieldIndex, std::function<void()> refCb, std::function<void()> unrefCb) {
+  referenceCallbacks[fieldIndex] = refCb;
+  unreferenceCallbacks[fieldIndex] = unrefCb;
+}

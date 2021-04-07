@@ -68,10 +68,19 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-        worker->SaveToPersistent("{{ arg.name }}", info.This());
+        worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info.This());
       {%elsif not arg.isCallbackFunction %}
-        if (!info[{{ arg.jsArg }}]->IsUndefined() && !info[{{ arg.jsArg }}]->IsNull())
-          worker->SaveToPersistent("{{ arg.name }}", Nan::To<v8::Object>(info[{{ arg.jsArg }}]).ToLocalChecked());
+        {%if  arg.isUnwrappable %}
+          {% if arg.cppClassName == "Array" %}
+            if (info[{{ arg.jsArg }}]->IsArray()) {
+              worker->Reference<{{ arg.arrayElementCppClassName }}>("{{ arg.name }}", info[{{ arg.jsArg }}].As<v8::Array>());
+            }
+          {% else %}
+            worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info[{{ arg.jsArg }}]);
+          {% endif %}
+        {% else %}
+          worker->Reference("{{ arg.name }}", info[{{ arg.jsArg }}]);
+        {% endif %}
       {%endif%}
     {%endif%}
   {%endeach%}

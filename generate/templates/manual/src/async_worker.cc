@@ -21,4 +21,15 @@ namespace nodegit {
   bool AsyncWorker::GetIsCancelled() const {
     return isCancelled;
   }
+
+  void AsyncWorker::Destroy() {
+    std::for_each(cleanupCalls.begin(), cleanupCalls.end(), [](std::function<void()> cleanupCall) {
+      cleanupCall();
+    });
+    Nan::AsyncWorker::Destroy();
+  }
+
+  void AsyncWorker::RegisterCleanupCall(std::function<void()> cleanupCall) {
+    cleanupCalls.push_back(cleanupCall);
+  }
 }

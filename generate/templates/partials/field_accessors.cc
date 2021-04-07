@@ -43,7 +43,22 @@
 
         wrapper->{{ field.name }}.Reset({{ field.name }});
 
-        wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}{% if field.cppClassName == 'GitStrarray' %}StrArrayConverter::Convert(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked()){% else %}Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>(Nan::To<v8::Object>({{ field.name }}).ToLocalChecked())->GetValue(){% endif %};
+        {% if field.cppClassName == 'GitStrarray' %}
+          wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}StrArrayConverter::Convert({{ field.name }});
+        {% else %}
+          auto wrappedObject = Nan::ObjectWrap::Unwrap<{{ field.cppClassName }}>({{ field.name }});
+          wrapper->raw->{{ field.name }} = {% if not field.cType | isPointer %}*{% endif %}wrappedObject->GetValue();
+          {%-- We are assuming that users are responsible enough to not replace fields on their structs mid-operation, and would rather build out code to prevent that than be smarter here --%}
+          wrapper->AddReferenceCallbacks(
+            {{ field.index }},
+            [wrappedObject]() {
+              wrappedObject->Reference();
+            },
+            [wrappedObject]() {
+              wrappedObject->Unreference();
+            }
+          );
+        {% endif %}
 
       {% elsif field.isCallbackFunction %}
         Nan::Callback *callback = NULL;

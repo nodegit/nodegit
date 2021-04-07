@@ -345,7 +345,9 @@ describe("Revwalk", function() {
     var test = this;
 
     return leakTest(NodeGit.Revwalk, function() {
-      return Promise.resolve(NodeGit.Revwalk.create(test.repository));
+      const walker = test.repository.createRevWalk();
+      walker.push("115d114e2c4d5028c7a78428f16a4528c51be7dd");
+      return walker.next();
     });
   });
 

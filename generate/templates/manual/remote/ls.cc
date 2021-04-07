@@ -13,7 +13,7 @@ NAN_METHOD(GitRemote::ReferenceList)
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   ReferenceListWorker *worker = new ReferenceListWorker(baton, callback);
-  worker->SaveToPersistent("remote", info.This());
+  worker->Reference<GitRemote>("remote", info.This());
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;
