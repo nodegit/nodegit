@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.4" href="#v0-28-0-alpha-4">v0.28.0-alpha.4</a> [(2021-04-07)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.4)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.3...v0.28.0-alpha.4)
+
+#### Summary of changes
+- Introduces harder safeguards on persistent references to prevent garbage collection during async work
+
+#### Merged PRs into NodeGit
+- [Workaround: Prevent objectwrap from being cleaned up during async work #1833](https://github.com/nodegit/nodegit/pull/1833)
+
+
 ## <a name="v0-28-0-alpha.3" href="#v0-28-0-alpha-3">v0.28.0-alpha.3</a> [(2021-04-02)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.3)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.2...v0.28.0-alpha.3)
