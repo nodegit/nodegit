@@ -1,5 +1,20 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.5" href="#v0-28-0-alpha-5">v0.28.0-alpha.5</a> [(2021-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.5)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.4...v0.28.0-alpha.5)
+
+#### Summary of changes
+- Fixes crash in multithreaded checkout in fork of libgit2
+
+#### Merged PRs into NodeGit
+- [Update multithreaded checkout in libgit2 #1834](https://github.com/nodegit/nodegit/pull/1834)
+
+#### Merged PRs into Libgit2
+- [Default to GIT_BRANCH_DEFAULT if init.defaultBranch is empty string](https://github.com/libgit2/libgit2/pull/5832)
+- [Remove duplicate line, in example code](https://github.com/libgit2/libgit2/pull/5821)
+
+
 ## <a name="v0-28-0-alpha.4" href="#v0-28-0-alpha-4">v0.28.0-alpha.4</a> [(2021-04-07)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.4)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.3...v0.28.0-alpha.4)
