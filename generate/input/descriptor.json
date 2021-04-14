@@ -2743,6 +2743,29 @@
         "git_patch_free": {
           "ignore": true
         },
+        "git_patch_from_blobs": {
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true
+            },
+            "old_blob": {
+              "isOptional": true
+            },
+            "old_as_path": {
+              "isOptional": true
+            },
+            "new_blob": {
+              "isOptional": true
+            },
+            "new_as_path": {
+              "isOptional": true
+            },
+            "opts": {
+              "isOptional": true
+            }
+          }
+        },
         "git_patch_from_blob_and_buffer": {
           "ignore": true
         },

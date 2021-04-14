@@ -61,4 +61,26 @@ describe("Patch", function() {
       });
 
   });
+
+  it("can generate patch from blobs", async function() {
+    // Generates a patch for README.md from commit fce88902e66c72b5b93e75bdb5ae717038b221f6
+    const file = "README.md";
+
+    const blob = await NodeGit.Blob.lookup(this.repository, "b252f396b17661462372f78b7bcfc403b8731aaa");
+    const oldBlob = await NodeGit.Blob.lookup(this.repository, "b8d014998072c3f9e4b7eba8486011e80d8de98a");
+    const patch = await NodeGit.Patch.fromBlobs(oldBlob, file, blob, file);
+
+    assert.strictEqual(patch.size(0, 0, 0), 254);
+  });
+
+  it ("can generate patch from blobs without 'old_blob'", async function() {
+    // Generates a patch for README.md from commit fce88902e66c72b5b93e75bdb5ae717038b221f6
+    // without old_blob. Should show all lines as additions.
+    const file = "README.md";
+
+    const blob = await NodeGit.Blob.lookup(this.repository, "b252f396b17661462372f78b7bcfc403b8731aaa");
+    const patch = await NodeGit.Patch.fromBlobs(null, file, blob, file);
+
+    assert.strictEqual(patch.size(0, 0, 0), 8905);
+  });
 });
