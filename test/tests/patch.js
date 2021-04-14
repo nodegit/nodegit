@@ -83,7 +83,7 @@ describe("Patch", function() {
     });
   });
 
-  it ("can generate patch from blobs without 'old_blob'", function() {
+  it("can generate patch from blobs without 'old_blob'", function() {
     // Generates a patch for README.md from commit 
     // fce88902e66c72b5b93e75bdb5ae717038b221f6 without
     // old_blob. Should show all lines as additions.
@@ -98,5 +98,12 @@ describe("Patch", function() {
           assert.strictEqual(patch.size(0, 0, 0), 8905);
         });
     });
+  });
+
+  it("can generate patch from blobs without arguments", function() {
+    NodeGit.Patch.fromBlobs()
+      .then(patch => {
+        assert.strictEqual(patch.size(0, 0, 0), 0);
+      });
   });
 });
