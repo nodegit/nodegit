@@ -121,6 +121,7 @@ namespace nodegit {
       // could make a callback on so that it can correctly queue callbacks
       // in the correct javascript context
       thread_local static Executor *executor;
+      thread_local static bool isExecutorThread;
       PostCallbackEventToOrchestratorFn postCallbackEventToOrchestrator;
       PostCompletedEventToOrchestratorFn postCompletedEventToOrchestrator;
       TakeNextTaskFn takeNextTask;
@@ -144,6 +145,7 @@ namespace nodegit {
   void Executor::RunTaskLoop() {
     // Set the thread local storage so that libgit2 can pick up the current executor
     // for the thread.
+    isExecutorThread = true;
     executor = this;
 
     for ( ; ; ) {
@@ -201,10 +203,13 @@ namespace nodegit {
   }
 
   void Executor::TeardownTLSOnLibgit2ChildThread() {
-    Executor::executor = nullptr;
+    if (!isExecutorThread) {
+      Executor::executor = nullptr;
+    }
   }
 
   thread_local Executor *Executor::executor = nullptr;
+  thread_local bool Executor::isExecutorThread = false;
 
   class Orchestrator {
     public:
@@ -280,7 +285,6 @@ namespace nodegit {
           std::unique_ptr<Executor::Task> task;
           std::thread thread;
           Executor executor;
-
       };
 
       std::unique_ptr<OrchestratorImpl> impl;
