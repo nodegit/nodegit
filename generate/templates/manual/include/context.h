@@ -23,6 +23,7 @@
   || NODE_MODULE_VERSION == 88)
 
 #include "async_worker.h"
+#include "cleanup_handle.h"
 #include "thread_pool.h"
 
 namespace nodegit {
@@ -41,6 +42,12 @@ namespace nodegit {
 
     void SaveToPersistent(std::string key, const v8::Local<v8::Value> &value);
 
+    void SaveCleanupHandle(std::string key, std::shared_ptr<nodegit::CleanupHandle> cleanupHandle);
+
+    std::shared_ptr<nodegit::CleanupHandle> GetCleanupHandle(std::string key);
+
+    std::shared_ptr<nodegit::CleanupHandle> RemoveCleanupHandle(std::string key);
+
     void ShutdownThreadPool(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle);
 
   private:
@@ -53,6 +60,8 @@ namespace nodegit {
     // Often this is used as a context-aware storage cell for `*::InitializeComponent`
     // to store function templates on them.
     Nan::Persistent<v8::Object> persistentStorage;
+
+    std::map<std::string, std::shared_ptr<CleanupHandle>> cleanupHandles;
 
     static std::map<v8::Isolate *, Context *> contexts;
   };

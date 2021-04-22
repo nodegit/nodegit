@@ -43,6 +43,10 @@ namespace nodegit {
     contexts.erase(isolate);
   }
 
+  std::shared_ptr<CleanupHandle> Context::GetCleanupHandle(std::string key) {
+    return cleanupHandles[key];
+  }
+
   Context *Context::GetCurrentContext() {
     Nan::HandleScope scope;
     v8::Local<v8::Context> context = Nan::GetCurrentContext();
@@ -61,10 +65,20 @@ namespace nodegit {
     threadPool.QueueWorker(worker);
   }
 
+  std::shared_ptr<CleanupHandle> Context::RemoveCleanupHandle(std::string key) {
+    std::shared_ptr<CleanupHandle> cleanupItem = cleanupHandles[key];
+    cleanupHandles.erase(key);
+    return cleanupItem;
+  }
+
   void Context::SaveToPersistent(std::string key, const v8::Local<v8::Value> &value) {
     Nan::HandleScope scope;
     v8::Local<v8::Object> storage = Nan::New(persistentStorage);
     Nan::Set(storage, Nan::New(key).ToLocalChecked(), value);
+  }
+
+  void Context::SaveCleanupHandle(std::string key, std::shared_ptr<CleanupHandle> cleanupItem) {
+    cleanupHandles[key] = cleanupItem;
   }
 
   void Context::ShutdownThreadPool(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {

@@ -19,7 +19,8 @@ NAN_METHOD(GitFilterSource::Repo) {
   baton->src = Nan::ObjectWrap::Unwrap<GitFilterSource>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[0]));
-  RepoWorker *worker = new RepoWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  RepoWorker *worker = new RepoWorker(baton, callback, cleanupHandles);
 
   worker->Reference<GitFilterSource>("src", info.This());
 

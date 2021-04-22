@@ -12,7 +12,8 @@ NAN_METHOD(GitRepository::GetRemotes)
   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
-  GetRemotesWorker *worker = new GetRemotesWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  GetRemotesWorker *worker = new GetRemotesWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRepository>("repo", info.This());
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "cleanup_handle.h"
+
 // the Traits template parameter supplies:
 //  typename cppClass - the C++ type of the NodeGit wrapper (e.g. GitRepository)
 //  typename cType - the C type of the libgit2 object being wrapped (e.g. git_repository)
@@ -39,6 +41,7 @@ public:
 
 protected:
   cType *raw;
+  std::vector<std::shared_ptr<nodegit::CleanupHandle>> childCleanupVector;
 
   // owner of the object, in the memory management sense. only populated
   // when using ownedByThis, and the type doesn't have a dupFunction
@@ -63,6 +66,8 @@ protected:
 
 public:
   static v8::Local<v8::Value> New(const cType *raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+
+  void SaveCleanupHandle(std::shared_ptr<nodegit::CleanupHandle> cleanupHandle);
 
   void Reference();
   void Unreference();

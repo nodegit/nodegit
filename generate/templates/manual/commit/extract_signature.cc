@@ -64,7 +64,8 @@ NAN_METHOD(GitCommit::ExtractSignature)
     callback = new Nan::Callback(Local<Function>::Cast(info[3]));
   }
 
-  ExtractSignatureWorker *worker = new ExtractSignatureWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  ExtractSignatureWorker *worker = new ExtractSignatureWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRepository>("repo", info[0]);
   worker->Reference<GitOid>("commit_id", info[1]);
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());

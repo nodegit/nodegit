@@ -7,6 +7,7 @@
 
 #include "async_baton.h"
 #include "async_worker.h"
+#include "cleanup_handle.h"
 #include "context.h"
 #include "lock_master.h"
 #include "nodegit_wrapper.h"
@@ -50,8 +51,8 @@ class GitFilterRegistry : public Nan::ObjectWrap {
 
     class RegisterWorker : public nodegit::AsyncWorker {
       public:
-        RegisterWorker(FilterRegisterBaton *_baton, Nan::Callback *callback)
-        : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Register"), baton(_baton) {};
+        RegisterWorker(FilterRegisterBaton *_baton, Nan::Callback *callback, std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &cleanupHandles)
+        : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Register", cleanupHandles), baton(_baton) {};
         ~RegisterWorker() {};
         void Execute();
         void HandleErrorCallback();

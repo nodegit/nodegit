@@ -9,6 +9,7 @@
 
 #include "async_baton.h"
 #include "async_worker.h"
+#include "cleanup_handle.h"
 #include "context.h"
 #include "lock_master.h"
 #include "nodegit_wrapper.h"
@@ -137,8 +138,9 @@ class {{ cppClassName }} : public
       public:
         {{ function.cppFunctionName }}Worker(
             {{ function.cppFunctionName }}Baton *_baton,
-            Nan::Callback *callback
-        ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:{{ cppClassName }}:{{ function.cppFunctionName }}")
+            Nan::Callback *callback,
+            std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &cleanupHandles
+        ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:{{ cppClassName }}:{{ function.cppFunctionName }}", cleanupHandles)
           , baton(_baton) {};
         ~{{ function.cppFunctionName }}Worker() {};
         void Execute();

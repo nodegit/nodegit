@@ -18,7 +18,8 @@ NAN_METHOD(GitRevwalk::FastWalk)
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
-  FastWalkWorker *worker = new FastWalkWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  FastWalkWorker *worker = new FastWalkWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRevwalk>("fastWalk", info.This());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());

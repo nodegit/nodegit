@@ -17,6 +17,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
@@ -63,7 +66,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%endeach%}
 
   Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[{{args|jsArgsCount}}]));
-  {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback);
+  {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback, cleanupHandles);
 
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
@@ -85,7 +88,6 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;
 }

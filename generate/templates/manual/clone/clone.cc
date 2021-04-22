@@ -26,6 +26,8 @@ NAN_METHOD(GitClone::Clone) {
   }
 
   CloneBaton *baton = new CloneBaton();
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -77,14 +79,13 @@ NAN_METHOD(GitClone::Clone) {
 
   Nan::Callback *callback =
       new Nan::Callback(v8::Local<Function>::Cast(info[3]));
-  CloneWorker *worker = new CloneWorker(baton, callback);
+  CloneWorker *worker = new CloneWorker(baton, callback, cleanupHandles);
 
   worker->Reference("url", info[0]);
   worker->Reference("local_path", info[1]);
   worker->Reference("options", info[2]);
   worker->Reference<GitCloneOptions>("options", info[2]);
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;
 }

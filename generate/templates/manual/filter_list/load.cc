@@ -90,7 +90,8 @@ NAN_METHOD(GitFilterList::Load) {
 
   Nan::Callback *callback =
       new Nan::Callback(v8::Local<Function>::Cast(info[5]));
-  LoadWorker *worker = new LoadWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  LoadWorker *worker = new LoadWorker(baton, callback, cleanupHandles);
 
   worker->Reference<GitRepository>("repo", info[0]);
   worker->Reference<GitBlob>("blob", info[1]);

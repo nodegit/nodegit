@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include "../include/nodegit.h"
+#include "../include/cleanup_handle.h"
 #include "../include/context.h"
 #include "../include/lock_master.h"
 #include "../include/functions/copy.h"
@@ -52,6 +53,8 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
   }
 
   FilterRegisterBaton *baton = new FilterRegisterBaton();
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
 
   baton->filter = Nan::ObjectWrap::Unwrap<GitFilter>(Nan::To<v8::Object>(info[1]).ToLocalChecked())->GetValue();
   Nan::Utf8String name(Nan::To<v8::String>(info[0]).ToLocalChecked());
@@ -63,13 +66,11 @@ NAN_METHOD(GitFilterRegistry::GitFilterRegister) {
   baton->error_code = GIT_OK;
   baton->filter_priority = Nan::To<int>(info[2]).FromJust();
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
-
   Local<Object> filterRegistry = nodegitContext->GetFromPersistent("FilterRegistry").As<Object>();
   Nan::Set(filterRegistry, Nan::To<v8::String>(info[0]).ToLocalChecked(), Nan::To<v8::Object>(info[1]).ToLocalChecked());
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[3]));
-  RegisterWorker *worker = new RegisterWorker(baton, callback);
+  RegisterWorker *worker = new RegisterWorker(baton, callback, cleanupHandles);
 
   worker->Reference("filter_name", info[0]);
   worker->Reference("filter_priority", info[2]);

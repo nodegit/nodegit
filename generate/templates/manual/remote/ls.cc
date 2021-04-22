@@ -12,7 +12,8 @@ NAN_METHOD(GitRemote::ReferenceList)
   baton->remote = Nan::ObjectWrap::Unwrap<GitRemote>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
-  ReferenceListWorker *worker = new ReferenceListWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  ReferenceListWorker *worker = new ReferenceListWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRemote>("remote", info.This());
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

@@ -404,7 +404,8 @@ NAN_METHOD(GitRepository::RefreshReferences)
   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
-  RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRepository>("repo", info.This());
   worker->Reference("signatureType", signatureType);
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());

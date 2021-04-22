@@ -57,6 +57,7 @@
         "src/wrapper.cc",
         "src/functions/copy.cc",
         "src/functions/free.cc",
+        "src/cleanup_handle.cc",
         "src/convenient_patch.cc",
         "src/convenient_hunk.cc",
         "src/filter_registry.cc",

@@ -3,11 +3,15 @@
 
 #include <nan.h>
 #include <functional>
+#include <memory>
+#include <vector>
 #include "lock_master.h"
+#include "cleanup_handle.h"
 
 namespace nodegit {
   class AsyncWorker : public Nan::AsyncWorker {
   public:
+    AsyncWorker(Nan::Callback *callback, const char *resourceName, std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &cleanupHandles);
     AsyncWorker(Nan::Callback *callback, const char *resourceName);
 
     // This must be implemented by every async worker
@@ -66,6 +70,9 @@ namespace nodegit {
     inline void Reference(const char *label, v8::Local<v8::Value> item) {
       SaveToPersistent(label, item);
     }
+
+  protected:
+    std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
 
   private:
     std::vector<std::function<void()>> cleanupCalls;

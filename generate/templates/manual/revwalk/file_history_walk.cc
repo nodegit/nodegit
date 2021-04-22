@@ -204,7 +204,8 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[2]));
-  FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback);
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRevwalk>("fileHistoryWalk", info.This());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
