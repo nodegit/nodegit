@@ -75,6 +75,7 @@ module.exports = function generateNativeCode() {
     returnsCount: require("../templates/filters/returns_count"),
     returnsInfo: require("../templates/filters/returns_info"),
     subtract: require("../templates/filters/subtract"),
+    thisInfo: require("../templates/filters/this_info"),
     titleCase: require("../templates/filters/title_case"),
     toBool: require('../templates/filters/to_bool'),
     toSizeOfArray: require("../templates/filters/to_size_of_array"),
