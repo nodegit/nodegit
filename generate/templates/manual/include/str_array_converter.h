@@ -12,6 +12,8 @@ class StrArrayConverter {
   public:
 
     static git_strarray *Convert (v8::Local<v8::Value> val);
+    static void ConvertInto(git_strarray *out, v8::Local<v8::Array> val);
+    static void ConvertInto(git_strarray *out, v8::Local<v8::String> val);
 
   private:
     static git_strarray *ConvertArray(v8::Local<v8::Array> val);

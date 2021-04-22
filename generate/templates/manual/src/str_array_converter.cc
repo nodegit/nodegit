@@ -62,3 +62,19 @@ git_strarray *StrArrayConverter::ConstructStrArray(int argc, char** argv) {
 
   return result;
 }
+
+void StrArrayConverter::ConvertInto(git_strarray *out, v8::Local<v8::Array> val) {
+  out->count = val->Length();
+  out->strings = new char *[out->count];
+  for (uint32_t i = 0; i < out->count; ++i) {
+    Nan::Utf8String utf8String(Nan::Get(val, i).ToLocalChecked().As<v8::String>());
+    out->strings[i] = strdup(*utf8String);
+  }
+}
+
+void StrArrayConverter::ConvertInto(git_strarray *out, v8::Local<v8::String> val) {
+  Nan::Utf8String utf8String(val);
+  out->count = 1;
+  out->strings = new char *[1];
+  out->strings[0] = strdup(*utf8String);
+}
