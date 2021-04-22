@@ -35,7 +35,7 @@ NAN_METHOD(GitFilterList::Load) {
     return Nan::ThrowError("Number flags is required.");
   }
 
-  if (info.Length() == 5 || !info[5]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -89,7 +89,7 @@ NAN_METHOD(GitFilterList::Load) {
   baton->flags = from_flags;
 
   Nan::Callback *callback =
-      new Nan::Callback(v8::Local<Function>::Cast(info[5]));
+      new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   LoadWorker *worker = new LoadWorker(baton, callback, cleanupHandles);
 

@@ -1,6 +1,6 @@
 NAN_METHOD(GitRemote::ReferenceList)
 {
-  if (info.Length() == 0 || !info[0]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -11,7 +11,7 @@ NAN_METHOD(GitRemote::ReferenceList)
   baton->out = new std::vector<git_remote_head*>;
   baton->remote = Nan::ObjectWrap::Unwrap<GitRemote>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   ReferenceListWorker *worker = new ReferenceListWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRemote>("remote", info.This());

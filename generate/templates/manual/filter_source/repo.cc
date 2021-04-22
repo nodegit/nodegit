@@ -8,7 +8,7 @@
  * @param Repository callback
  */
 NAN_METHOD(GitFilterSource::Repo) {
-  if (info.Length() == 0 || !info[0]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -18,7 +18,7 @@ NAN_METHOD(GitFilterSource::Repo) {
   baton->error = NULL;
   baton->src = Nan::ObjectWrap::Unwrap<GitFilterSource>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[0]));
+  Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   RepoWorker *worker = new RepoWorker(baton, callback, cleanupHandles);
 

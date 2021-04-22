@@ -3,7 +3,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
     return Nan::ThrowError("Diff diff is required.");
   }
 
-  if (info.Length() == 1 || !info[1]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -16,7 +16,7 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
   baton->out = new std::vector<PatchData *>;
   baton->out->reserve(git_diff_num_deltas(baton->diff));
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   ConvenientFromDiffWorker *worker = new ConvenientFromDiffWorker(baton, callback, cleanupHandles);
 

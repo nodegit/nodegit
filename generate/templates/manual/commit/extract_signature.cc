@@ -8,18 +8,12 @@ NAN_METHOD(GitCommit::ExtractSignature)
     return Nan::ThrowError("Oid commit_id is required.");
   }
 
-  if (info.Length() == 2 || (info.Length() == 3 && !info[2]->IsFunction())) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+  if (info.Length() >= 4 && !info[2]->IsString() && !info[2]->IsUndefined() && !info[2]->IsNull()) {
+    return Nan::ThrowError("String signature_field must be a string or undefined/null.");
   }
 
-  if (info.Length() >= 4) {
-    if (!info[2]->IsString() && !info[2]->IsUndefined() && !info[2]->IsNull()) {
-      return Nan::ThrowError("String signature_field must be a string or undefined/null.");
-    }
-
-    if (!info[3]->IsFunction()) {
-      return Nan::ThrowError("Callback is required and must be a Function.");
-    }
+  if (!info[info.Length() - 1]->IsFunction()) {
+    return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
   ExtractSignatureBaton* baton = new ExtractSignatureBaton();
@@ -57,12 +51,7 @@ NAN_METHOD(GitCommit::ExtractSignature)
     baton->field = NULL;
   }
 
-  Nan::Callback *callback;
-  if (info[2]->IsFunction()) {
-    callback = new Nan::Callback(Local<Function>::Cast(info[2]));
-  } else {
-    callback = new Nan::Callback(Local<Function>::Cast(info[3]));
-  }
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
 
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   ExtractSignatureWorker *worker = new ExtractSignatureWorker(baton, callback, cleanupHandles);

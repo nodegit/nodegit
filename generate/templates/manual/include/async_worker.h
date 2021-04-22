@@ -38,7 +38,7 @@ namespace nodegit {
 
     template<class NodeGitWrapperT>
     void Reference(v8::Local<v8::Value> item) {
-      if (item->IsString() || item->IsNull() || item->IsUndefined()) {
+      if (item->IsFunction() || item->IsString() || item->IsNull() || item->IsUndefined()) {
         return;
       }
 

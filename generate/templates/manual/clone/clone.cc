@@ -21,7 +21,7 @@ NAN_METHOD(GitClone::Clone) {
     return Nan::ThrowError("String local_path is required.");
   }
 
-  if (info.Length() == 3 || !info[3]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -78,7 +78,7 @@ NAN_METHOD(GitClone::Clone) {
   baton->options = from_options;
 
   Nan::Callback *callback =
-      new Nan::Callback(v8::Local<Function>::Cast(info[3]));
+      new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
   CloneWorker *worker = new CloneWorker(baton, callback, cleanupHandles);
 
   worker->Reference("url", info[0]);

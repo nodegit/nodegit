@@ -392,7 +392,7 @@ NAN_METHOD(GitRepository::RefreshReferences)
     signatureType = Nan::New("gpgsig").ToLocalChecked();
   }
 
-  if (info.Length() == 0 || (info.Length() == 1 && !info[0]->IsFunction()) || (info.Length() == 2 && !info[1]->IsFunction())) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -403,7 +403,7 @@ NAN_METHOD(GitRepository::RefreshReferences)
   baton->out = (void *)new RefreshReferencesData();
   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRepository>("repo", info.This());

@@ -1,6 +1,6 @@
 NAN_METHOD(GitRepository::GetRemotes)
 {
-  if (info.Length() == 0 || !info[0]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -11,7 +11,7 @@ NAN_METHOD(GitRepository::GetRemotes)
   baton->out = new std::vector<git_remote *>;
   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   GetRemotesWorker *worker = new GetRemotesWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRepository>("repo", info.This());

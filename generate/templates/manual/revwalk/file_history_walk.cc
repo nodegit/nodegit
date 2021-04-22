@@ -188,7 +188,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
     return Nan::ThrowError("Max count is required and must be a number.");
   }
 
-  if (info.Length() == 2 || !info[2]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -203,7 +203,7 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   baton->out->reserve(baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[2]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRevwalk>("fileHistoryWalk", info.This());

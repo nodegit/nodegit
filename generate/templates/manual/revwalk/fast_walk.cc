@@ -4,7 +4,7 @@ NAN_METHOD(GitRevwalk::FastWalk)
     return Nan::ThrowError("Max count is required and must be a number.");
   }
 
-  if (info.Length() == 1 || !info[1]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -17,7 +17,7 @@ NAN_METHOD(GitRevwalk::FastWalk)
   baton->out->reserve(baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   FastWalkWorker *worker = new FastWalkWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRevwalk>("fastWalk", info.This());

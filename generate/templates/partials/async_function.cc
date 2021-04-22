@@ -2,7 +2,7 @@
 {%partial doc .%}
 NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%partial guardArguments .%}
-  if (info.Length() == {{args|jsArgsCount}} || !info[{{args|jsArgsCount}}]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -65,7 +65,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[{{args|jsArgsCount}}]));
+  Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
   {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback, cleanupHandles);
 
   {%each args|argsInfo as arg %}
