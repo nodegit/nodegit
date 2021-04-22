@@ -64,6 +64,7 @@
         "src/git_buf_converter.cc",
         "src/str_array_converter.cc",
         "src/context.cc",
+        "src/v8_helpers.cc",
         {% each %}
           {% if type != "enum" %}
             "src/{{ name }}.cc",
