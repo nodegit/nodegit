@@ -545,6 +545,9 @@
         },
         "git_checkout_index": {
           "args": {
+            "index": {
+              "isOptional": true
+            },
             "opts": {
               "isOptional": true
             }
@@ -579,9 +582,21 @@
     "cherrypick": {
       "functions": {
         "git_cherrypick": {
+          "args": {
+            "cherrypick_options": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
+          }
+        },
+        "git_cherrypick_commit": {
+          "args": {
+            "merge_options": {
+              "isOptional": true
+            }
           }
         },
         "git_cherrypick_init_options": {
@@ -2108,6 +2123,10 @@
         "git2/sys/index.h"
       ]
     },
+    "index_time": {
+      "hasConstructor": true,
+      "ignoreInit": true
+    },
     "indexer": {
       "ignore": true
     },
@@ -2206,10 +2225,12 @@
               "jsClassName": "Number"
             },
             "merge_opts": {
+              "isOptional": true,
               "cType": "git_merge_options *",
               "cppClassName": "GitMergeOptions"
             },
             "checkout_opts": {
+              "isOptional": true,
               "cType": "git_checkout_options *",
               "cppClassName": "GitCheckoutOptions"
             }
@@ -2980,6 +3001,7 @@
         "git_rebase_init": {
           "args": {
             "out": {
+              "isSelf": true,
               "ownedBy": ["repo"]
             },
             "upstream": {
@@ -3023,6 +3045,9 @@
             "out": {
               "isSelf": true,
               "ownedBy": ["repo"]
+            },
+            "opts": {
+              "isOptional": true
             }
           }
         },
@@ -3267,6 +3292,17 @@
         },
         "git_remote_connect": {
           "isAsync": true,
+          "args": {
+            "callbacks": {
+              "isOptional": true
+            },
+            "proxy_opts": {
+              "isOptional": true
+            },
+            "custom_headers": {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
@@ -3280,6 +3316,9 @@
         "git_remote_download": {
           "args": {
             "refspecs": {
+              "isOptional": true
+            },
+            "opts": {
               "isOptional": true
             }
           },
@@ -3312,6 +3351,9 @@
         },
         "git_remote_fetch": {
           "args": {
+            "opts": {
+              "isOptional": true
+            },
             "reflog_message": {
               "isOptional": true
             },
@@ -3405,6 +3447,9 @@
             "isErrorCode": true
           },
           "args": {
+            "refspecs": {
+              "isOptional": true
+            },
             "opts": {
               "isOptional": true
             }
@@ -3436,6 +3481,11 @@
           }
         },
         "git_remote_upload": {
+          "args": {
+            "refspecs": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -3785,6 +3835,11 @@
     "stash": {
       "functions": {
         "git_stash_apply": {
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -3809,6 +3864,11 @@
           }
         },
         "git_stash_pop": {
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
