@@ -571,7 +571,6 @@ describe("Filter", function() {
 
     it("applies the filters for a path on demand", function() {
       var test = this;
-      var list;
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
@@ -601,8 +600,7 @@ describe("Filter", function() {
             NodeGit.Filter.FLAG.DEFAULT
           );
         })
-        .then(function(_list) {
-          list = _list;
+        .then(function(list) {
           return list.applyToFile(test.repository, "README.md");
         })
         .then(function(content) {
@@ -612,7 +610,6 @@ describe("Filter", function() {
 
     it("applies the filters to a buffer on demand", function() {
       var test = this;
-      var list;
 
       return Registry.register(filterName, {
         apply: function(to, from, source) {
@@ -642,8 +639,7 @@ describe("Filter", function() {
             NodeGit.Filter.FLAG.DEFAULT
           );
         })
-        .then(function(_list) {
-          list = _list;
+        .then(function(list) {
           /* jshint ignore:start */
           return list.applyToData(new String("garbo garbo garbo garbo"));
           /* jshint ignore:end */
@@ -704,6 +700,7 @@ describe("Filter", function() {
         })
         .then(function(content) {
           assert.equal(content, message);
+          list = null;
         });
     });
   });
