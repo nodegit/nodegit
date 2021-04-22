@@ -27,6 +27,8 @@ namespace nodegit {
 
       Nan::AsyncResource *GetAsyncResource();
 
+      void SetCallbackError(v8::Local<v8::Value> error);
+
     protected:
       void ExecuteAsyncPerform(AsyncCallback asyncCallback, AsyncCallback asyncCancelCb, CompletionCallback onCompletion);
 
@@ -35,6 +37,7 @@ namespace nodegit {
       void WaitForCompletion();
 
       Nan::AsyncResource *asyncResource;
+      Nan::Global<v8::Value> &callbackErrorHandle;
       ThreadPool::Callback onCompletion;
       std::unique_ptr<std::mutex> completedMutex;
       std::condition_variable completedCondition;

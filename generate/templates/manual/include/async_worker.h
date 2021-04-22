@@ -28,6 +28,8 @@ namespace nodegit {
     // they should use when working with any javascript
     Nan::AsyncResource *GetAsyncResource();
 
+    Nan::Global<v8::Value> *GetCallbackErrorHandle();
+
     bool GetIsCancelled() const;
 
     void Destroy() override;
@@ -75,8 +77,10 @@ namespace nodegit {
     std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
 
   private:
+    Nan::Global<v8::Value> callbackErrorHandle;
     std::vector<std::function<void()>> cleanupCalls;
     bool isCancelled = false;
+
   };
 }
 

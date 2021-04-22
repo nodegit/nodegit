@@ -22,6 +22,10 @@ namespace nodegit {
     return async_resource;
   }
 
+  Nan::Global<v8::Value> *AsyncWorker::GetCallbackErrorHandle() {
+    return &callbackErrorHandle;
+  }
+
   bool AsyncWorker::GetIsCancelled() const {
     return isCancelled;
   }
