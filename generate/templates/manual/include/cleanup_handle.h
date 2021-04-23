@@ -10,6 +10,11 @@ namespace nodegit {
     CleanupHandle();
     virtual ~CleanupHandle();
   };
+
+  class FilterRegistryCleanupHandles : public CleanupHandle {
+  public:
+    std::map<std::string, std::shared_ptr<CleanupHandle>> registeredFilters;
+  };
 }
 
 #endif

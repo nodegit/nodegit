@@ -34,6 +34,13 @@ rawApi = _.cloneDeep(rawApi);
 // have to override them here
 /* jshint ignore:start */
 {% each . as idef %}
+  {% if idef.type == 'struct' %}
+    rawApi.{{ idef.jsClassName }} = util.deprecate(function {{ idef.jsClassName }}() {
+      try {
+        require("./deprecated/structs/{{ idef.jsClassName }}").call(this, rawApi);
+      } catch (error) {/* allow these to be undefined */}
+    }, "Instantiation of {{ idef.jsClassName }} is deprecated and will be removed in an upcoming version");
+  {% endif %}
   {% if idef.type != "enum" %}
 
     {% if idef.functions.length > 0 %}
@@ -100,9 +107,7 @@ var importExtension = function(name) {
 // Load up utils
 rawApi.Utils = {};
 require("./utils/lookup_wrapper");
-require("./utils/normalize_options");
 require("./utils/shallow_clone");
-require("./utils/normalize_fetch_options");
 
 // Load up extra types;
 require("./status_file");

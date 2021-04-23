@@ -75,9 +75,9 @@ namespace nodegit {
 
   protected:
     std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+    Nan::Global<v8::Value> callbackErrorHandle;
 
   private:
-    Nan::Global<v8::Value> callbackErrorHandle;
     std::vector<std::function<void()>> cleanupCalls;
     bool isCancelled = false;
 

@@ -2,9 +2,7 @@
 #define {{ cppClassName|upper }}_H
 #include <nan.h>
 #include <string>
-#include <queue>
 #include <utility>
-#include <unordered_map>
 #include <sstream>
 
 #include "async_baton.h"

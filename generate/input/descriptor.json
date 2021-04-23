@@ -3014,6 +3014,7 @@
               "isOptional": true
             },
             "opts": {
+              "preserveOnThis": true,
               "isOptional": true
             }
           }
@@ -3047,7 +3048,8 @@
               "ownedBy": ["repo"]
             },
             "opts": {
-              "isOptional": true
+              "isOptional": true,
+              "preserveOnThis": true
             }
           }
         },
@@ -3294,10 +3296,12 @@
           "isAsync": true,
           "args": {
             "callbacks": {
-              "isOptional": true
+              "isOptional": true,
+              "preserveOnThis": true
             },
             "proxy_opts": {
-              "isOptional": true
+              "isOptional": true,
+              "preserveOnThis": true
             },
             "custom_headers": {
               "isOptional": true

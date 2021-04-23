@@ -12,7 +12,7 @@
  * Determine if node module is compiled under a supported node release.
  * Currently 12 - 15 (ignoring pre-releases). Will need to be updated
  * for new major versions.
- * 
+ *
  * See: https://github.com/nodejs/node/issues/36349
  * and: https://github.com/nodejs/node/blob/master/doc/abi_version_registry.json
  */
@@ -59,7 +59,7 @@ namespace nodegit {
     // after the context has been torn down.
     // Often this is used as a context-aware storage cell for `*::InitializeComponent`
     // to store function templates on them.
-    Nan::Persistent<v8::Object> persistentStorage;
+    Nan::Global<v8::Object> persistentStorage;
 
     std::map<std::string, std::shared_ptr<CleanupHandle>> cleanupHandles;
 
