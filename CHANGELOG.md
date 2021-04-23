@@ -1,5 +1,67 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.6" href="#v0-28-0-alpha-6">v0.28.0-alpha.6</a> [(2021-04-23)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.6)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.5...v0.28.0-alpha.6)
+
+#### Summary of changes
+- Rewrote options normalization such that it is done in C++. Provided deprecated classes for backwards compatibility. These will be removed in a later version of Nodegit.
+- Deprecated construction of these objects, in the future, please pass plain objects with just the fields you wish to override to NodeGit, and the library will take care of the rest.
+  - NodeGit.ApplyOptions
+  - NodeGit.BlameOptions
+  - NodeGit.BlobFilterOptions
+  - NodeGit.CheckoutOptions
+  - NodeGit.CherrypickOptions
+  - NodeGit.CloneOptions
+  - NodeGit.DescribeFormatOptions
+  - NodeGit.DiffFindOptions
+  - NodeGit.FetchOptions
+  - NodeGit.MergeFileInput
+  - NodeGit.MergeFileOptions
+  - NodeGit.MergeOptions
+  - NodeGit.ProxyOptions
+  - NodeGit.PushOptions
+  - NodeGit.RebaseOptions
+  - NodeGit.RemoteCreatOptions
+  - NodeGit.RepositoryInitOptions
+  - NodeGit.RevertOptions
+  - NodeGit.StashApplyOptions
+  - NodeGit.StatusOptions
+  - NodeGit.SubmoduleUpdateOptions
+- Ensured the following functions have their optional arguments labeled/working as optional:
+  - NodeGit.Apply
+  - NodeGit.Checkout.index
+  - NodeGit.Cherrypick
+  - NodeGit.Cherrypick.commit
+  - NodeGit.Merge
+  - NodeGit.Patch.fromBlobs
+  - NodeGit.Rebase.open
+  - NodeGit.Remote.prototype.connect
+  - NodeGit.Remote.prototype.download
+  - NodeGit.Remote.prototype.fetch
+  - NodeGit.Remote.prototype.prune
+  - NodeGit.Remote.prototype.push
+  - NodeGit.Remote.prototype.upload
+  - NodeGit.Stash.apply
+  - NodeGit.Stash.pop
+  - NodeGit.Worktree.isPrunable
+  - NodeGit.Worktree.prune
+- Updated the following functions to be async:
+  - NodeGit.Apply
+  - NodeGit.Remote.prototype.prune
+  - NodeGit.Worktree.isPrunable
+  - NodeGit.Worktree.prune
+- Addressed issue where GitWorktreePruneOptions and GitWorktreeAddOptions were impossible to instantiate, thus making working with worktress possible now.
+- Addressed issue where GitIndexTime was not configurable
+- Addressed issue where the following functions did not return errors from libgit2:
+  - NodeGit.Merge.analysis
+  - NodeGit.Note.commitRemove
+
+#### Merged PRs into NodeGit
+- [Eliminate need for normalize options #1837](https://github.com/nodegit/nodegit/pull/1837)
+- [Define optional arguments for Patch.fromBlobs() #1835](https://github.com/nodegit/nodegit/pull/1835)
+
+
 ## <a name="v0-28-0-alpha.5" href="#v0-28-0-alpha-5">v0.28.0-alpha.5</a> [(2021-04-09)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.5)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.4...v0.28.0-alpha.5)
