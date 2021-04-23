@@ -57,6 +57,11 @@ class {{ cppClassName }} : public
     friend class NodeGitWrapper<{{ cppClassName }}Traits>;
   {%endif %}
   public:
+    {{ cppClassName }}(const {{ cppClassName }} &) = delete;
+    {{ cppClassName }}({{ cppClassName }} &&) = delete;
+    {{ cppClassName }} &operator=(const {{ cppClassName }} &) = delete;
+    {{ cppClassName }} &operator=({{ cppClassName }} &&) = delete;
+
     static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
     {% each functions as function %}
@@ -146,6 +151,10 @@ class {{ cppClassName }} : public
             std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &cleanupHandles
         ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:{{ cppClassName }}:{{ function.cppFunctionName }}", cleanupHandles)
           , baton(_baton) {};
+        {{ function.cppFunctionName }}Worker(const {{ function.cppFunctionName }}Worker &) = delete;
+        {{ function.cppFunctionName }}Worker({{ function.cppFunctionName }}Worker &&) = delete;
+        {{ function.cppFunctionName }}Worker &operator=(const {{ function.cppFunctionName }}Worker &) = delete;
+        {{ function.cppFunctionName }}Worker &operator=({{ function.cppFunctionName }}Worker &&) = delete;
         ~{{ function.cppFunctionName }}Worker() {};
         void Execute();
         void HandleErrorCallback();
@@ -179,6 +188,11 @@ class {{ cppClassName }} : public
             {%endif%}
           {%endeach%}
       }
+
+      {{ function.cppFunctionName }}_globalPayload(const {{ function.cppFunctionName }}_globalPayload &) = delete;
+      {{ function.cppFunctionName }}_globalPayload({{ function.cppFunctionName }}_globalPayload &&) = delete;
+      {{ function.cppFunctionName }}_globalPayload &operator=(const {{ function.cppFunctionName }}_globalPayload &) = delete;
+      {{ function.cppFunctionName }}_globalPayload &operator=({{ function.cppFunctionName }}_globalPayload &&) = delete;
 
       ~{{ function.cppFunctionName }}_globalPayload() {
           {%each function.args as arg %}

@@ -40,6 +40,11 @@ public:
     }
   }
 
+  CommitModel(const CommitModel &) = delete;
+  CommitModel(CommitModel &&) = delete;
+  CommitModel &operator=(const CommitModel &) = delete;
+  CommitModel &operator=(CommitModel &&) = delete;
+
   v8::Local<v8::Value> toJavascript() {
     if (!fetchSignature) {
       v8::Local<v8::Value> commitObject = GitCommit::New(

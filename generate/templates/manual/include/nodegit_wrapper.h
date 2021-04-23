@@ -57,6 +57,10 @@ protected:
 
   NodeGitWrapper(cType *raw, bool selfFreeing, v8::Local<v8::Object> owner);
   NodeGitWrapper(const char *error); // calls ThrowError
+  NodeGitWrapper(const NodeGitWrapper &) = delete;
+  NodeGitWrapper(NodeGitWrapper &&) = delete;
+  NodeGitWrapper &operator=(const NodeGitWrapper &) = delete;
+  NodeGitWrapper &operator=(NodeGitWrapper &&) = delete;
   ~NodeGitWrapper();
 
   static NAN_METHOD(JSNewFunction);

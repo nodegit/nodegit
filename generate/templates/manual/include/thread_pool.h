@@ -24,6 +24,11 @@ namespace nodegit {
       // queued work is completed
       ThreadPool(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context);
 
+      ThreadPool(const ThreadPool &) = delete;
+      ThreadPool(ThreadPool &&) = delete;
+      ThreadPool &operator=(const ThreadPool &) = delete;
+      ThreadPool &operator=(ThreadPool &&) = delete;
+
       ~ThreadPool();
 
       // Queues work on the thread pool, followed by completion call scheduled

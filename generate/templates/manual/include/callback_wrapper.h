@@ -23,6 +23,11 @@ class CallbackWrapper {
 public:
   CallbackWrapper(): jsCallback(nullptr), throttle(0), lastCallTime(0) {}
 
+  CallbackWrapper(const CallbackWrapper &) = delete;
+  CallbackWrapper(CallbackWrapper &&) = delete;
+  CallbackWrapper &operator=(const CallbackWrapper &) = delete;
+  CallbackWrapper &operator=(CallbackWrapper &&) = delete;
+
   bool HasCallback() {
     return jsCallback != nullptr;
   }

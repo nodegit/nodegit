@@ -22,6 +22,11 @@ public:
     }
   }
 
+  FileHistoryEvent(const FileHistoryEvent &) = delete;
+  FileHistoryEvent(FileHistoryEvent &&) = delete;
+  FileHistoryEvent &operator=(const FileHistoryEvent &) = delete;
+  FileHistoryEvent &operator=(FileHistoryEvent &&) = delete;
+
   ~FileHistoryEvent() {
     if (commit != NULL) {
       git_commit_free(commit);

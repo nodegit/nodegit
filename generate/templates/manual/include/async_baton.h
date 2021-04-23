@@ -20,6 +20,10 @@ namespace nodegit {
       typedef std::function<void(AsyncBaton *)> CompletionCallback;
 
       AsyncBaton();
+      AsyncBaton(const AsyncBaton &) = delete;
+      AsyncBaton(AsyncBaton &&) = delete;
+      AsyncBaton &operator=(const AsyncBaton &) = delete;
+      AsyncBaton &operator=(AsyncBaton &&) = delete;
 
       virtual ~AsyncBaton() {}
 

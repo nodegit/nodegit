@@ -83,6 +83,11 @@ public:
     }
   }
 
+  RefreshedRefModel(const RefreshedRefModel &) = delete;
+  RefreshedRefModel(RefreshedRefModel &&) = delete;
+  RefreshedRefModel &operator=(const RefreshedRefModel &) = delete;
+  RefreshedRefModel &operator=(RefreshedRefModel &&) = delete;
+
   static int fromReference(RefreshedRefModel **out, git_reference *ref, git_odb *odb) {
     RefreshedRefModel *refModel = new RefreshedRefModel(ref);
     const git_oid *referencedTargetOid = git_reference_target(ref);
@@ -262,6 +267,11 @@ public:
     ahead(0),
     behind(0) {}
 
+  UpstreamModel(const UpstreamModel &) = delete;
+  UpstreamModel(UpstreamModel &&) = delete;
+  UpstreamModel &operator=(const UpstreamModel &) = delete;
+  UpstreamModel &operator=(UpstreamModel &&) = delete;
+
   static bool fromReference(UpstreamModel **out, git_reference *ref) {
     if (!git_reference_is_branch(ref)) {
       return false;
@@ -350,6 +360,11 @@ public:
     headRefFullName(NULL),
     cherrypick(NULL),
     merge(NULL) {}
+
+  RefreshReferencesData(const RefreshReferencesData &) = delete;
+  RefreshReferencesData(RefreshReferencesData &&) = delete;
+  RefreshReferencesData &operator=(const RefreshReferencesData &) = delete;
+  RefreshReferencesData &operator=(RefreshReferencesData &&) = delete;
 
   ~RefreshReferencesData() {
     while(refs.size()) {

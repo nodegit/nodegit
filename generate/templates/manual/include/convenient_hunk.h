@@ -41,6 +41,10 @@ class ConvenientHunk : public Nan::ObjectWrap {
 
   private:
     ConvenientHunk(HunkData *hunk);
+    ConvenientHunk(const ConvenientHunk &) = delete;
+    ConvenientHunk(ConvenientHunk &&) = delete;
+    ConvenientHunk &operator=(const ConvenientHunk &) = delete;
+    ConvenientHunk &operator=(ConvenientHunk &&) = delete;
     ~ConvenientHunk();
 
     HunkData *hunk;
@@ -66,7 +70,11 @@ class ConvenientHunk : public Nan::ObjectWrap {
             Nan::Callback *callback
         ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:ConvenientHunk:Lines")
           , baton(_baton) {};
-        ~LinesWorker() {};
+        LinesWorker(const LinesWorker &) = delete;
+        LinesWorker(LinesWorker &&) = delete;
+        LinesWorker &operator=(const LinesWorker &) = delete;
+        LinesWorker &operator=(LinesWorker &&) = delete;
+        ~LinesWorker(){};
         void Execute();
         void HandleErrorCallback();
         void HandleOKCallback();

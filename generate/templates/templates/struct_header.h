@@ -42,6 +42,10 @@ struct {{ cType }}_extended {
 
     public:
       {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+      {{ cppClassName }}(const {{ cppClassName }} &) = delete;
+      {{ cppClassName }}({{ cppClassName }} &&) = delete;
+      {{ cppClassName }} &operator=(const {{ cppClassName }} &) = delete;
+      {{ cppClassName }} &operator=({{ cppClassName }} &&) = delete;
       static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
     private:
@@ -72,6 +76,11 @@ class Configurable{{ cppClassName }} : public nodegit::ConfigurableClassWrapper<
 public:
   static v8ConversionResult fromJavascript(nodegit::Context *nodegitContext, v8::Local<v8::Value> input);
   ~Configurable{{ cppClassName }}();
+
+  Configurable{{ cppClassName }}(const Configurable{{ cppClassName }} &) = delete;
+  Configurable{{ cppClassName }}(Configurable{{ cppClassName }} &&) = delete;
+  Configurable{{ cppClassName }} &operator=(const Configurable{{ cppClassName }} &) = delete;
+  Configurable{{ cppClassName }} &operator=(Configurable{{ cppClassName }} &&) = delete;
 
   {% each fields as field %}
     {% if not field.ignore %}

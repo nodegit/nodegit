@@ -23,6 +23,10 @@ namespace nodegit {
         Task(Type initType)
           : type(initType)
         {}
+        Task(const Task &) = delete;
+        Task(Task &&) = delete;
+        Task &operator=(const Task &) = delete;
+        Task &operator=(Task &&) = delete;
 
         // We must define a virtual destructor so that derived classes are castable
         virtual ~Task() {}
@@ -55,6 +59,10 @@ namespace nodegit {
         Event(Type initType)
           : type(initType)
         {}
+        Event(const Event &) = delete;
+        Event(Event &&) = delete;
+        Event &operator=(const Event &) = delete;
+        Event &operator=(Event &&) = delete;
 
         Type type;
 
@@ -236,6 +244,10 @@ namespace nodegit {
         Job(Type initType)
           : type(initType)
         {}
+        Job(const Job &) = delete;
+        Job(Job &&) = delete;
+        Job &operator=(const Job &) = delete;
+        Job &operator=(Job &&) = delete;
 
         virtual ~Job() {}
 
