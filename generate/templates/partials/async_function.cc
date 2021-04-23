@@ -160,20 +160,20 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
     {%endeach%}
   );
 
-    {%if return.isResultOrError %}
+    {% if return.isResultOrError %}
       baton->error_code = result;
       if (result < GIT_OK && git_error_last() != NULL) {
         baton->error = git_error_dup(git_error_last());
       }
 
-    {%elsif return.isErrorCode %}
+    {% elsif return.isErrorCode %}
       baton->error_code = result;
 
       if (result != GIT_OK && git_error_last() != NULL) {
         baton->error = git_error_dup(git_error_last());
       }
 
-    {%elsif not return.cType == 'void' %}
+    {%elsif return.cType != 'void' %}
 
       baton->result = result;
 

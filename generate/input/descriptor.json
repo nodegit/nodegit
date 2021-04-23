@@ -146,6 +146,21 @@
     "apply_options": {
       "hasConstructor": true
     },
+    "apply": {
+      "functions": {
+        "git_apply": {
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
+    },
     "attr": {
       "functions": {
         "git_attr_cache_flush": {
@@ -1998,6 +2013,7 @@
       }
     },
     "index_entry": {
+      "isReturnable": true,
       "hasConstructor": true,
       "ignoreInit": true
     },
@@ -2124,6 +2140,7 @@
       ]
     },
     "index_time": {
+      "isReturnable": true,
       "hasConstructor": true,
       "ignoreInit": true
     },
@@ -2261,6 +2278,9 @@
               "cppClassName": "Number",
               "jsClassName": "Number"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_merge_analysis_for_ref": {
@@ -2389,6 +2409,9 @@
             "notes_commit_out": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_note_comitter": {
@@ -3441,6 +3464,17 @@
               "key": "strings"
             }
           },
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_remote_prune": {
+          "args": {
+            "callbacks": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
           "return": {
             "isErrorCode": true
           }
@@ -4568,6 +4602,14 @@
         "git_worktree_free": {
           "ignore": true
         },
+        "git_worktree_is_prunable": {
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true
+        },
         "git_worktree_lookup": {
           "args": {
             "out": {
@@ -4587,6 +4629,17 @@
         },
         "git_worktree_prune_options_init": {
           "ignore": true
+        },
+        "git_worktree_prune": {
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       },
       "dependencies": [

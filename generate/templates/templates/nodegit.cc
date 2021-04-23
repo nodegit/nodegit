@@ -96,8 +96,12 @@ NAN_MODULE_INIT(init) {
   Wrapper::InitializeComponent(target, nodegitContext);
   PromiseCompletion::InitializeComponent(nodegitContext);
   {% each %}
-    {% if type != "enum" %}
+    {% if type == 'class' %}
       {{ cppClassName }}::InitializeComponent(target, nodegitContext);
+    {% elsif type == 'struct' %}
+    {% if isReturnable %}
+      {{ cppClassName }}::InitializeComponent(target, nodegitContext);
+    {% endif %}
     {% endif %}
   {% endeach %}
 

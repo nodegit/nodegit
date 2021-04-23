@@ -81,6 +81,7 @@ class {{ cppClassName }} : public
       {{ cbArg.cType }} {{ cbArg.name }};
       {% endeach %}
 
+
       {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton(const {{ arg.return.type }} &defaultResult)
         : nodegit::AsyncBatonWithResult<{{ arg.return.type }}>(defaultResult) {
         }
@@ -131,6 +132,11 @@ class {{ cppClassName }} : public
           {%endif%}
         {%endif%}
       {%endeach%}
+      {% if function.return.isResultOrError %}
+      {% elsif function.return.isErrorCode %}
+      {% elsif function.return.cType != 'void' %}
+        {{ function.return.cType }} result;
+      {% endif %}
     };
     class {{ function.cppFunctionName }}Worker : public nodegit::AsyncWorker {
       public:

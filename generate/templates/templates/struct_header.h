@@ -35,79 +35,36 @@ struct {{ cType }}_extended {
   void* payload;
 };
 {% endif %}
-class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
-    // grant full access to base class
-    friend class NodeGitWrapper<{{ cppClassName }}Traits>;
-  public:
-    {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
-    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+{% if isReturnable %}
+  class {{ cppClassName }} : public NodeGitWrapper<{{ cppClassName }}Traits> {
+      // grant full access to base class
+      friend class NodeGitWrapper<{{ cppClassName }}Traits>;
 
-    {% each fields as field %}
-      {% if not field.ignore %}
-        {% if field.isCallbackFunction %}
-          static {{ field.return.type }} {{ field.name }}_cppCallback (
-            {% each field.args|argsInfo as arg %}
-              {{ arg.cType }} {{ arg.name}}
-              {% if not arg.lastArg %}
-                ,
-              {% endif %}
-            {% endeach %}
-          );
+    public:
+      {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+      static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
-          static void {{ field.name }}_cancelAsync(void *baton);
-          static void {{ field.name }}_async(void *baton);
-          static void {{ field.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result);
-          {% if field.return.type == 'void' %}
-            class {{ field.name|titleCase }}Baton : public nodegit::AsyncBatonWithNoResult {
-            public:
-              {% each field.args|argsInfo as arg %}
-                {{ arg.cType }} {{ arg.name }};
-              {% endeach %}
+    private:
+      {{ cppClassName }}();
+      ~{{ cppClassName }}();
 
-              {{ field.name|titleCase }}Baton()
-                : nodegit::AsyncBatonWithNoResult() {}
-            };
-          {% else %}
-            class {{ field.name|titleCase }}Baton : public nodegit::AsyncBatonWithResult<{{ field.return.type }}> {
-            public:
-              {% each field.args|argsInfo as arg %}
-                {{ arg.cType }} {{ arg.name }};
-              {% endeach %}
+      void ConstructFields();
 
-              {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
-                : nodegit::AsyncBatonWithResult<{{ field.return.type }}>(defaultResult) {}
-            };
+      {% each fields as field %}
+        {% if not field.ignore %}
+          {% if not field.isEnum %}
+            {% if field.isLibgitType %}
+              Nan::Global<Value> {{ field.name }};
+            {% endif %}
           {% endif %}
-          static {{ cppClassName }} * {{ field.name }}_getInstanceFromBaton (
-            {{ field.name|titleCase }}Baton *baton);
+
+          static NAN_GETTER(Get{{ field.cppFunctionName }});
+          static NAN_SETTER(Set{{ field.cppFunctionName }});
+
         {% endif %}
-      {% endif %}
-    {% endeach %}
-
-  private:
-    {{ cppClassName }}();
-    ~{{ cppClassName }}();
-
-    void ConstructFields();
-
-    {% each fields as field %}
-      {% if not field.ignore %}
-        {% if not field.isEnum %}
-          {% if field.isLibgitType %}
-            Nan::Persistent<Object> {{ field.name }};
-          {% elsif field.isCallbackFunction %}
-            CallbackWrapper {{ field.name }};
-          {% elsif field.payloadFor %}
-            Nan::Persistent<Value> {{ field.name }};
-          {% endif %}
-        {% endif %}
-
-        static NAN_GETTER(Get{{ field.cppFunctionName }});
-        static NAN_SETTER(Set{{ field.cppFunctionName }});
-
-      {% endif %}
-    {% endeach %}
-};
+      {% endeach %}
+  };
+{% endif %}
 
 class Configurable{{ cppClassName }} : public nodegit::ConfigurableClassWrapper<{{ cppClassName }}Traits> {
   friend class nodegit::ConfigurableClassWrapper<{{ cppClassName }}Traits>;
