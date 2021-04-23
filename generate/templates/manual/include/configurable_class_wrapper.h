@@ -18,11 +18,11 @@ namespace nodegit {
 
     struct v8ConversionResult {
       v8ConversionResult(std::string _error)
-        : error(_error), result(nullptr)
+        : error(std::move(_error)), result(nullptr)
       {}
 
       v8ConversionResult(std::shared_ptr<configurableCppClass> _result)
-        : result(_result)
+        : result(std::move(_result))
       {}
 
       std::string error;
