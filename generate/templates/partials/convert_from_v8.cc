@@ -14,7 +14,7 @@
     {% elsif cppClassName == 'GitBuf' %}
     {%-- Print nothing --%}
     {%else%}
-    if (info[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
+    if ((info.Length() - 1) > {{ jsArg }} && info[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
       {%endif%}
     {%endif%}
   {%if cppClassName == 'String'%}

@@ -23,6 +23,10 @@ namespace nodegit {
         Task(Type initType)
           : type(initType)
         {}
+        Task(const Task &) = delete;
+        Task(Task &&) = delete;
+        Task &operator=(const Task &) = delete;
+        Task &operator=(Task &&) = delete;
 
         // We must define a virtual destructor so that derived classes are castable
         virtual ~Task() {}
@@ -37,11 +41,12 @@ namespace nodegit {
       };
 
       struct WorkTask : Task {
-        WorkTask(ThreadPool::Callback initCallback, Nan::AsyncResource *asyncResource)
-          : Task(WORK), asyncResource(asyncResource), callback(initCallback)
+        WorkTask(ThreadPool::Callback initCallback, Nan::AsyncResource *asyncResource, Nan::Global<v8::Value> *callbackErrorHandle)
+          : Task(WORK), asyncResource(asyncResource), callbackErrorHandle(callbackErrorHandle), callback(initCallback)
         {}
 
         Nan::AsyncResource *asyncResource;
+        Nan::Global<v8::Value> *callbackErrorHandle;
         ThreadPool::Callback callback;
       };
 
@@ -54,6 +59,10 @@ namespace nodegit {
         Event(Type initType)
           : type(initType)
         {}
+        Event(const Event &) = delete;
+        Event(Event &&) = delete;
+        Event &operator=(const Event &) = delete;
+        Event &operator=(Event &&) = delete;
 
         Type type;
 
@@ -97,6 +106,8 @@ namespace nodegit {
 
       static const nodegit::Context *GetCurrentContext();
 
+      static Nan::Global<v8::Value> *GetCurrentCallbackErrorHandle();
+
       static void PostCallbackEvent(ThreadPool::OnPostCallbackFn onPostCallback);
 
       // Libgit2 will call this before it spawns a child thread.
@@ -116,11 +127,14 @@ namespace nodegit {
 
     private:
       Nan::AsyncResource *currentAsyncResource;
+      Nan::Global<v8::Value> *currentCallbackErrorHandle;
       nodegit::Context *currentContext;
+
       // We need to populate the executor on every thread that libgit2
       // could make a callback on so that it can correctly queue callbacks
       // in the correct javascript context
       thread_local static Executor *executor;
+      thread_local static bool isExecutorThread;
       PostCallbackEventToOrchestratorFn postCallbackEventToOrchestrator;
       PostCompletedEventToOrchestratorFn postCompletedEventToOrchestrator;
       TakeNextTaskFn takeNextTask;
@@ -134,6 +148,7 @@ namespace nodegit {
     nodegit::Context *context
   )
     : currentAsyncResource(nullptr),
+      currentCallbackErrorHandle(nullptr),
       currentContext(context),
       postCallbackEventToOrchestrator(postCallbackEventToOrchestrator),
       postCompletedEventToOrchestrator(postCompletedEventToOrchestrator),
@@ -144,6 +159,7 @@ namespace nodegit {
   void Executor::RunTaskLoop() {
     // Set the thread local storage so that libgit2 can pick up the current executor
     // for the thread.
+    isExecutorThread = true;
     executor = this;
 
     for ( ; ; ) {
@@ -155,7 +171,9 @@ namespace nodegit {
       WorkTask *workTask = static_cast<WorkTask *>(task.get());
 
       currentAsyncResource = workTask->asyncResource;
+      currentCallbackErrorHandle = workTask->callbackErrorHandle;
       workTask->callback();
+      currentCallbackErrorHandle = nullptr;
       currentAsyncResource = nullptr;
 
       postCompletedEventToOrchestrator();
@@ -186,6 +204,16 @@ namespace nodegit {
     return nullptr;
   }
 
+  Nan::Global<v8::Value> *Executor::GetCurrentCallbackErrorHandle() {
+    if (executor) {
+      return executor->currentCallbackErrorHandle;
+    }
+
+    // NOTE this should always be set when a libgit2 callback is running,
+    //      so this case should not happen.
+    return nullptr;
+  }
+
   void Executor::PostCallbackEvent(ThreadPool::OnPostCallbackFn onPostCallback) {
     if (executor) {
       executor->postCallbackEventToOrchestrator(onPostCallback);
@@ -201,10 +229,13 @@ namespace nodegit {
   }
 
   void Executor::TeardownTLSOnLibgit2ChildThread() {
-    Executor::executor = nullptr;
+    if (!isExecutorThread) {
+      Executor::executor = nullptr;
+    }
   }
 
   thread_local Executor *Executor::executor = nullptr;
+  thread_local bool Executor::isExecutorThread = false;
 
   class Orchestrator {
     public:
@@ -213,6 +244,10 @@ namespace nodegit {
         Job(Type initType)
           : type(initType)
         {}
+        Job(const Job &) = delete;
+        Job(Job &&) = delete;
+        Job &operator=(const Job &) = delete;
+        Job &operator=(Job &&) = delete;
 
         virtual ~Job() {}
 
@@ -264,7 +299,7 @@ namespace nodegit {
           // The only thread safe way to pull events from executorEventsQueue
           std::shared_ptr<Executor::Event> TakeEventFromExecutor();
 
-          void ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Nan::AsyncResource *asyncResource);
+          void ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Nan::AsyncResource *asyncResource, Nan::Global<v8::Value> *callbackErrorHandle);
 
           void ScheduleShutdownTaskOnExecutor();
 
@@ -280,7 +315,6 @@ namespace nodegit {
           std::unique_ptr<Executor::Task> task;
           std::thread thread;
           Executor executor;
-
       };
 
       std::unique_ptr<OrchestratorImpl> impl;
@@ -331,7 +365,7 @@ namespace nodegit {
           // when a callback is fired. We need to be on the same thread to ensure
           // the same thread that acquired the locks also releases them
           nodegit::LockMaster lock = worker->AcquireLocks();
-          ScheduleWorkTaskOnExecutor(std::bind(&nodegit::AsyncWorker::Execute, worker), worker->GetAsyncResource());
+          ScheduleWorkTaskOnExecutor(std::bind(&nodegit::AsyncWorker::Execute, worker), worker->GetAsyncResource(), worker->GetCallbackErrorHandle());
           for ( ; ; ) {
             std::shared_ptr<Executor::Event> event = TakeEventFromExecutor();
             if (event->type == Executor::Event::Type::COMPLETED) {
@@ -407,9 +441,9 @@ namespace nodegit {
     taskCondition.notify_one();
   }
 
-  void Orchestrator::OrchestratorImpl::ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Nan::AsyncResource *asyncResource) {
+  void Orchestrator::OrchestratorImpl::ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Nan::AsyncResource *asyncResource, Nan::Global<v8::Value> *callbackErrorHandle) {
     std::lock_guard<std::mutex> lock(*taskMutex);
-    task.reset(new Executor::WorkTask(callback, asyncResource));
+    task.reset(new Executor::WorkTask(callback, asyncResource, callbackErrorHandle));
     taskCondition.notify_one();
   }
 
@@ -722,6 +756,10 @@ namespace nodegit {
 
   const nodegit::Context *ThreadPool::GetCurrentContext() {
     return Executor::GetCurrentContext();
+  }
+
+  Nan::Global<v8::Value> *ThreadPool::GetCurrentCallbackErrorHandle() {
+    return Executor::GetCurrentCallbackErrorHandle();
   }
 
   void ThreadPool::Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {

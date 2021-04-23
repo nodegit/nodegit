@@ -79,6 +79,10 @@ namespace nodegit {
         // So we rely on ConstructorImpl to abort if there is no registered LockMaster
         ConstructorImpl();
       }
+      TemporaryUnlock(const TemporaryUnlock &) = delete;
+      TemporaryUnlock(TemporaryUnlock &&) = delete;
+      TemporaryUnlock &operator=(const TemporaryUnlock &) = delete;
+      TemporaryUnlock &operator=(TemporaryUnlock &&) = delete;
       ~TemporaryUnlock() {
         if(!impl) {
           return;

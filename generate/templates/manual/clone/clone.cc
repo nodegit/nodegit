@@ -21,11 +21,26 @@ NAN_METHOD(GitClone::Clone) {
     return Nan::ThrowError("String local_path is required.");
   }
 
-  if (info.Length() == 3 || !info[3]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
   CloneBaton *baton = new CloneBaton();
+  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+
+  if (info[2]->IsNull() || info[2]->IsUndefined()) {
+    baton->options = nullptr;
+  } else {
+    auto conversionResult = ConfigurableGitCloneOptions::fromJavascript(nodegitContext, info[2]);
+    if (!conversionResult.result) {
+      return Nan::ThrowError(Nan::New(conversionResult.error).ToLocalChecked());
+    }
+
+    auto convertedObject = conversionResult.result;
+    cleanupHandles["options"] = convertedObject;
+    baton->options = convertedObject->GetValue();
+  }
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
@@ -64,27 +79,14 @@ NAN_METHOD(GitClone::Clone) {
   memset((void *)(((char *)from_local_path) + local_path.length()), 0, 1);
   // end convert_from_v8 block
   baton->local_path = from_local_path;
-  // start convert_from_v8 block
-  const git_clone_options *from_options = NULL;
-  if (info[2]->IsObject()) {
-    from_options = Nan::ObjectWrap::Unwrap<GitCloneOptions>(Nan::To<v8::Object>(info[2]).ToLocalChecked())
-                       ->GetValue();
-  } else {
-    from_options = 0;
-  }
-  // end convert_from_v8 block
-  baton->options = from_options;
 
   Nan::Callback *callback =
-      new Nan::Callback(v8::Local<Function>::Cast(info[3]));
-  CloneWorker *worker = new CloneWorker(baton, callback);
+      new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
+  CloneWorker *worker = new CloneWorker(baton, callback, cleanupHandles);
 
   worker->Reference("url", info[0]);
   worker->Reference("local_path", info[1]);
-  worker->Reference("options", info[2]);
-  worker->Reference<GitCloneOptions>("options", info[2]);
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;
 }
@@ -174,42 +176,15 @@ void GitClone::CloneWorker::HandleOKCallback() {
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
-      std::queue<v8::Local<v8::Value>> workerArguments;
-      workerArguments.push(GetFromPersistent("url"));
-      workerArguments.push(GetFromPersistent("local_path"));
-      workerArguments.push(GetFromPersistent("options"));
       bool callbackFired = false;
-      while (!workerArguments.empty()) {
-        v8::Local<v8::Value> node = workerArguments.front();
-        workerArguments.pop();
-
-        if (!node->IsObject() || node->IsArray() || node->IsBooleanObject() ||
-            node->IsDate() || node->IsFunction() || node->IsNumberObject() ||
-            node->IsRegExp() || node->IsStringObject()) {
-          continue;
-        }
-
-        v8::Local<v8::Object> nodeObj = Nan::To<v8::Object>(node).ToLocalChecked();
-        v8::Local<v8::Value> checkValue = GetPrivate(
-            nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
-
-        if (!checkValue.IsEmpty() && !checkValue->IsNull() &&
-            !checkValue->IsUndefined()) {
-          v8::Local<v8::Value> argv[1] = {Nan::To<v8::Object>(checkValue).ToLocalChecked()};
+      if (!callbackErrorHandle.IsEmpty()) {
+        v8::Local<v8::Value> maybeError = Nan::New(callbackErrorHandle);
+        if (!maybeError->IsNull() && !maybeError->IsUndefined()) {
+          v8::Local<v8::Value> argv[1] = {
+            maybeError
+          };
           callback->Call(1, argv, async_resource);
           callbackFired = true;
-          break;
-        }
-
-        v8::Local<v8::Array> properties = Nan::GetPropertyNames(nodeObj).ToLocalChecked();
-        for (unsigned int propIndex = 0; propIndex < properties->Length();
-             ++propIndex) {
-          v8::Local<v8::String> propName =
-              Nan::To<v8::String>(Nan::Get(properties, propIndex).ToLocalChecked()).ToLocalChecked();
-          v8::Local<v8::Value> nodeToQueue = Nan::Get(nodeObj, propName).ToLocalChecked();
-          if (!nodeToQueue->IsUndefined()) {
-            workerArguments.push(nodeToQueue);
-          }
         }
       }
 

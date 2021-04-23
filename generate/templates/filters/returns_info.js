@@ -84,7 +84,11 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
       });
     }
 
-    return_info.parsedName = return_info.name && isAsync ? "baton->" + return_info.name : "result";
+    if (isAsync) {
+      return_info.parsedName = "baton->" + (return_info.name || "result");
+    } else {
+      return_info.parsedName = "result";
+    }
     return_info.isCppClassIntType = ~['Uint32', 'Int32'].indexOf(return_info.cppClassName);
     return_info.parsedClassName = (return_info.cppClassName || '').toLowerCase() + "_t";
     return_info.returnNameOrName = return_info.returnName || return_info.name;

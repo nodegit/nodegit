@@ -146,6 +146,21 @@
     "apply_options": {
       "hasConstructor": true
     },
+    "apply": {
+      "functions": {
+        "git_apply": {
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        }
+      }
+    },
     "attr": {
       "functions": {
         "git_attr_cache_flush": {
@@ -545,6 +560,9 @@
         },
         "git_checkout_index": {
           "args": {
+            "index": {
+              "isOptional": true
+            },
             "opts": {
               "isOptional": true
             }
@@ -579,9 +597,21 @@
     "cherrypick": {
       "functions": {
         "git_cherrypick": {
+          "args": {
+            "cherrypick_options": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
+          }
+        },
+        "git_cherrypick_commit": {
+          "args": {
+            "merge_options": {
+              "isOptional": true
+            }
           }
         },
         "git_cherrypick_init_options": {
@@ -1983,6 +2013,7 @@
       }
     },
     "index_entry": {
+      "isReturnable": true,
       "hasConstructor": true,
       "ignoreInit": true
     },
@@ -2108,6 +2139,11 @@
         "git2/sys/index.h"
       ]
     },
+    "index_time": {
+      "isReturnable": true,
+      "hasConstructor": true,
+      "ignoreInit": true
+    },
     "indexer": {
       "ignore": true
     },
@@ -2206,10 +2242,12 @@
               "jsClassName": "Number"
             },
             "merge_opts": {
+              "isOptional": true,
               "cType": "git_merge_options *",
               "cppClassName": "GitMergeOptions"
             },
             "checkout_opts": {
+              "isOptional": true,
               "cType": "git_checkout_options *",
               "cppClassName": "GitCheckoutOptions"
             }
@@ -2240,6 +2278,9 @@
               "cppClassName": "Number",
               "jsClassName": "Number"
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_merge_analysis_for_ref": {
@@ -2368,6 +2409,9 @@
             "notes_commit_out": {
               "isReturn": true
             }
+          },
+          "return": {
+            "isErrorCode": true
           }
         },
         "git_note_comitter": {
@@ -2980,6 +3024,7 @@
         "git_rebase_init": {
           "args": {
             "out": {
+              "isSelf": true,
               "ownedBy": ["repo"]
             },
             "upstream": {
@@ -2992,6 +3037,7 @@
               "isOptional": true
             },
             "opts": {
+              "preserveOnThis": true,
               "isOptional": true
             }
           }
@@ -3023,6 +3069,10 @@
             "out": {
               "isSelf": true,
               "ownedBy": ["repo"]
+            },
+            "opts": {
+              "isOptional": true,
+              "preserveOnThis": true
             }
           }
         },
@@ -3267,6 +3317,19 @@
         },
         "git_remote_connect": {
           "isAsync": true,
+          "args": {
+            "callbacks": {
+              "isOptional": true,
+              "preserveOnThis": true
+            },
+            "proxy_opts": {
+              "isOptional": true,
+              "preserveOnThis": true
+            },
+            "custom_headers": {
+              "isOptional": true
+            }
+          },
           "return": {
             "isErrorCode": true
           }
@@ -3280,6 +3343,9 @@
         "git_remote_download": {
           "args": {
             "refspecs": {
+              "isOptional": true
+            },
+            "opts": {
               "isOptional": true
             }
           },
@@ -3312,6 +3378,9 @@
         },
         "git_remote_fetch": {
           "args": {
+            "opts": {
+              "isOptional": true
+            },
             "reflog_message": {
               "isOptional": true
             },
@@ -3399,12 +3468,26 @@
             "isErrorCode": true
           }
         },
+        "git_remote_prune": {
+          "args": {
+            "callbacks": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
         "git_remote_push": {
           "isAsync": true,
           "return": {
             "isErrorCode": true
           },
           "args": {
+            "refspecs": {
+              "isOptional": true
+            },
             "opts": {
               "isOptional": true
             }
@@ -3436,6 +3519,11 @@
           }
         },
         "git_remote_upload": {
+          "args": {
+            "refspecs": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -3785,6 +3873,11 @@
     "stash": {
       "functions": {
         "git_stash_apply": {
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -3809,6 +3902,11 @@
           }
         },
         "git_stash_pop": {
+          "args": {
+            "options": {
+              "isOptional": true
+            }
+          },
           "isAsync": true,
           "return": {
             "isErrorCode": true
@@ -4504,6 +4602,14 @@
         "git_worktree_free": {
           "ignore": true
         },
+        "git_worktree_is_prunable": {
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true
+        },
         "git_worktree_lookup": {
           "args": {
             "out": {
@@ -4523,6 +4629,17 @@
         },
         "git_worktree_prune_options_init": {
           "ignore": true
+        },
+        "git_worktree_prune": {
+          "args": {
+            "opts": {
+              "isOptional": true
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       },
       "dependencies": [

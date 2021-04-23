@@ -2,11 +2,11 @@
 #define GITFILTERREGISTRY_H
 #include <nan.h>
 #include <string>
-#include <queue>
 #include <utility>
 
 #include "async_baton.h"
 #include "async_worker.h"
+#include "cleanup_handle.h"
 #include "context.h"
 #include "lock_master.h"
 #include "nodegit_wrapper.h"
@@ -50,8 +50,12 @@ class GitFilterRegistry : public Nan::ObjectWrap {
 
     class RegisterWorker : public nodegit::AsyncWorker {
       public:
-        RegisterWorker(FilterRegisterBaton *_baton, Nan::Callback *callback)
-        : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Register"), baton(_baton) {};
+        RegisterWorker(FilterRegisterBaton *_baton, Nan::Callback *callback, std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &cleanupHandles)
+        : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Register", cleanupHandles), baton(_baton) {};
+        RegisterWorker(const RegisterWorker &) = delete;
+        RegisterWorker(RegisterWorker &&) = delete;
+        RegisterWorker &operator=(const RegisterWorker &) = delete;
+        RegisterWorker &operator=(RegisterWorker &&) = delete;
         ~RegisterWorker() {};
         void Execute();
         void HandleErrorCallback();
@@ -66,6 +70,10 @@ class GitFilterRegistry : public Nan::ObjectWrap {
       public:
         UnregisterWorker(FilterUnregisterBaton *_baton, Nan::Callback *callback)
         : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Unregister"), baton(_baton) {};
+        UnregisterWorker(const UnregisterWorker &) = delete;
+        UnregisterWorker(UnregisterWorker &&) = delete;
+        UnregisterWorker &operator=(const UnregisterWorker &) = delete;
+        UnregisterWorker &operator=(UnregisterWorker &&) = delete;
         ~UnregisterWorker() {};
         void Execute();
         void HandleErrorCallback();

@@ -80,6 +80,13 @@ var Helpers = {
   },
 
   hasConstructor: function(type, normalizedType) {
+    if (normalizedType && descriptor.types[normalizedType.substr(4)]) {
+      var descriptorEntry = descriptor.types[normalizedType.substr(4)];
+      if (descriptorEntry.hasOwnProperty('hasConstructor')) {
+        return descriptorEntry.hasConstructor;
+      }
+    }
+
     return type.used
       && type.used.needs
       && type.used.needs.some(function (fnName) {
@@ -159,7 +166,9 @@ var Helpers = {
     if (libgitType) {
       type.isLibgitType = true;
       type.isEnum = libgitType.type === "enum";
-      type.hasConstructor = Helpers.hasConstructor(type, normalizedType);
+      type.hasConstructor = Helpers.hasConstructor(libgitType, normalizedType);
+      type.isClassType = !type.isEnum && !type.hasConstructor;
+      type.isStructType = !type.isEnum && !!type.hasConstructor;
 
       // there are no enums at the struct level currently, but we still need to override function args
       if (type.isEnum) {

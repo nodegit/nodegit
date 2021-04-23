@@ -3,15 +3,16 @@
 
 #include <nan.h>
 #include <uv.h>
+#include <memory>
 
 using namespace v8;
 using namespace node;
 
 class CallbackWrapper {
-  Nan::Callback* jsCallback;
+  std::unique_ptr<Nan::Callback> jsCallback;
 
   // throttling data, used for callbacks that need to be throttled
-  int throttle; // in milliseconds - if > 0, calls to the JS callback will be throttled
+  uint32_t throttle; // in milliseconds - if > 0, calls to the JS callback will be throttled
   uint64_t lastCallTime;
 
   // false will trigger the callback and not wait for the callback to finish
@@ -20,29 +21,23 @@ class CallbackWrapper {
   bool waitForResult;
 
 public:
-  CallbackWrapper() {
-    jsCallback = NULL;
-    lastCallTime = 0;
-    throttle = 0;
-  }
+  CallbackWrapper(): jsCallback(nullptr), throttle(0), lastCallTime(0) {}
 
-  ~CallbackWrapper() {
-    SetCallback(NULL);
-  }
+  CallbackWrapper(const CallbackWrapper &) = delete;
+  CallbackWrapper(CallbackWrapper &&) = delete;
+  CallbackWrapper &operator=(const CallbackWrapper &) = delete;
+  CallbackWrapper &operator=(CallbackWrapper &&) = delete;
 
   bool HasCallback() {
-    return jsCallback != NULL;
+    return jsCallback != nullptr;
   }
 
   Nan::Callback* GetCallback() {
-    return jsCallback;
+    return jsCallback.get();
   }
 
-  void SetCallback(Nan::Callback* callback, int throttle = 0, bool waitForResult = true) {
-    if(jsCallback) {
-      delete jsCallback;
-    }
-    jsCallback = callback;
+  void SetCallback(std::unique_ptr<Nan::Callback> callback, uint32_t throttle = 0, bool waitForResult = true) {
+    jsCallback = std::move(callback);
     this->throttle = throttle;
     this->waitForResult = waitForResult;
   }

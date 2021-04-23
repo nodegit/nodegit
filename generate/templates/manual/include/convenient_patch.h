@@ -39,7 +39,12 @@ using namespace v8;
 
 class ConvenientPatch : public Nan::ObjectWrap {
   public:
-    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+    ConvenientPatch(const ConvenientPatch &) = delete;
+    ConvenientPatch(ConvenientPatch &&) = delete;
+    ConvenientPatch &operator=(const ConvenientPatch &) = delete;
+    ConvenientPatch &operator=(ConvenientPatch &&) = delete;
+
+    static void InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
     static v8::Local<v8::Value> New(void *raw);
 
@@ -78,7 +83,11 @@ class ConvenientPatch : public Nan::ObjectWrap {
             Nan::Callback *callback
         ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:ConvenientPatch:Hunks")
           , baton(_baton) {};
-        ~HunksWorker() {};
+        HunksWorker(const HunksWorker &) = delete;
+        HunksWorker(HunksWorker &&) = delete;
+        HunksWorker &operator=(const HunksWorker &) = delete;
+        HunksWorker &operator=(HunksWorker &&) = delete;
+        ~HunksWorker(){};
         void Execute();
         void HandleErrorCallback();
         void HandleOKCallback();

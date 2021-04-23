@@ -146,3 +146,8 @@ void NodeGitWrapper<Traits>::AddReferenceCallbacks(size_t fieldIndex, std::funct
   referenceCallbacks[fieldIndex] = refCb;
   unreferenceCallbacks[fieldIndex] = unrefCb;
 }
+
+template<typename Traits>
+void NodeGitWrapper<Traits>::SaveCleanupHandle(std::shared_ptr<nodegit::CleanupHandle> cleanupHandle) {
+  childCleanupVector.push_back(cleanupHandle);
+}

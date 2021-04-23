@@ -1,6 +1,10 @@
 #include "../include/async_worker.h"
 
 namespace nodegit {
+  AsyncWorker::AsyncWorker(Nan::Callback *callback, const char *resourceName, std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &_cleanupHandles)
+    : Nan::AsyncWorker(callback, resourceName), cleanupHandles(_cleanupHandles)
+  {}
+
   AsyncWorker::AsyncWorker(Nan::Callback *callback, const char *resourceName)
     : Nan::AsyncWorker(callback, resourceName)
   {}
@@ -16,6 +20,10 @@ namespace nodegit {
 
   Nan::AsyncResource *AsyncWorker::GetAsyncResource() {
     return async_resource;
+  }
+
+  Nan::Global<v8::Value> *AsyncWorker::GetCallbackErrorHandle() {
+    return &callbackErrorHandle;
   }
 
   bool AsyncWorker::GetIsCancelled() const {

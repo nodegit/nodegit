@@ -24,6 +24,11 @@ namespace nodegit {
       // queued work is completed
       ThreadPool(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context);
 
+      ThreadPool(const ThreadPool &) = delete;
+      ThreadPool(ThreadPool &&) = delete;
+      ThreadPool &operator=(const ThreadPool &) = delete;
+      ThreadPool &operator=(ThreadPool &&) = delete;
+
       ~ThreadPool();
 
       // Queues work on the thread pool, followed by completion call scheduled
@@ -40,6 +45,10 @@ namespace nodegit {
       // Same as GetCurrentAsyncResource, except used to ensure callbacks occur
       // in the correct context.
       static const nodegit::Context *GetCurrentContext();
+
+      // Same as GetCurrentAsyncResource, except used for callbacks to store errors
+      // for use after completion of async work
+      static Nan::Global<v8::Value> *GetCurrentCallbackErrorHandle();
 
       // Queues a callback on the loop provided in the constructor
       static void PostCallbackEvent(OnPostCallbackFn onPostCallback);

@@ -1766,7 +1766,12 @@
               "type": "int",
               "name": "lock"
             }
-          ]
+          ],
+          "used": {
+            "needs": [
+              "git_worktree_add_options_init"
+            ]
+          }
         }
       ],
       [
@@ -1782,7 +1787,12 @@
               "type": "uint32_t",
               "name": "flags"
             }
-          ]
+          ],
+          "used": {
+            "needs": [
+              "git_worktree_prune_options_init"
+            ]
+          }
         }
       ],
       [

@@ -4,7 +4,7 @@ NAN_METHOD(GitRevwalk::FastWalk)
     return Nan::ThrowError("Max count is required and must be a number.");
   }
 
-  if (info.Length() == 1 || !info[1]->IsFunction()) {
+  if (!info[info.Length() - 1]->IsFunction()) {
     return Nan::ThrowError("Callback is required and must be a Function.");
   }
 
@@ -17,8 +17,9 @@ NAN_METHOD(GitRevwalk::FastWalk)
   baton->out->reserve(baton->max_count);
   baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[1]));
-  FastWalkWorker *worker = new FastWalkWorker(baton, callback);
+  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
+  std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
+  FastWalkWorker *worker = new FastWalkWorker(baton, callback, cleanupHandles);
   worker->Reference<GitRevwalk>("fastWalk", info.This());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
@@ -134,50 +135,15 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
     }
     else if (baton->error_code < 0)
     {
-      std::queue< Local<v8::Value> > workerArguments;
       bool callbackFired = false;
-
-      while(!workerArguments.empty())
-      {
-        Local<v8::Value> node = workerArguments.front();
-        workerArguments.pop();
-
-        if (
-          !node->IsObject()
-          || node->IsArray()
-          || node->IsBooleanObject()
-          || node->IsDate()
-          || node->IsFunction()
-          || node->IsNumberObject()
-          || node->IsRegExp()
-          || node->IsStringObject()
-        )
-        {
-          continue;
-        }
-
-        Local<v8::Object> nodeObj = Nan::To<v8::Object>(node).ToLocalChecked();
-        Local<v8::Value> checkValue = GetPrivate(nodeObj, Nan::New("NodeGitPromiseError").ToLocalChecked());
-
-        if (!checkValue.IsEmpty() && !checkValue->IsNull() && !checkValue->IsUndefined())
-        {
-          Local<v8::Value> argv[1] = {
-            Nan::To<v8::Object>(checkValue).ToLocalChecked()
+      if (!callbackErrorHandle.IsEmpty()) {
+        v8::Local<v8::Value> maybeError = Nan::New(callbackErrorHandle);
+        if (!maybeError->IsNull() && !maybeError->IsUndefined()) {
+          v8::Local<v8::Value> argv[1] = {
+            maybeError
           };
           callback->Call(1, argv, async_resource);
           callbackFired = true;
-          break;
-        }
-
-        Local<v8::Array> properties = Nan::GetPropertyNames(nodeObj).ToLocalChecked();
-        for (unsigned int propIndex = 0; propIndex < properties->Length(); ++propIndex)
-        {
-          Local<v8::String> propName = Nan::To<v8::String>(Nan::Get(properties, propIndex).ToLocalChecked()).ToLocalChecked();
-          Local<v8::Value> nodeToQueue = Nan::Get(nodeObj, propName).ToLocalChecked();
-          if (!nodeToQueue->IsUndefined())
-          {
-            workerArguments.push(nodeToQueue);
-          }
         }
       }
 
