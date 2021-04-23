@@ -33,6 +33,11 @@ namespace nodegit {
     ConfigurableClassWrapper(nodegit::Context *_nodeGitContext)
       : nodegitContext(_nodeGitContext), raw(nullptr) {}
 
+    ConfigurableClassWrapper(const ConfigurableClassWrapper &) = delete;
+    ConfigurableClassWrapper(ConfigurableClassWrapper &&) = delete;
+    ConfigurableClassWrapper &operator=(const ConfigurableClassWrapper &) = delete;
+    ConfigurableClassWrapper &operator=(ConfigurableClassWrapper &&) = delete;
+
     virtual ~ConfigurableClassWrapper() {
       if (raw != nullptr) {
         delete raw;
