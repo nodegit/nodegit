@@ -1,5 +1,19 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.7" href="#v0-28-0-alpha-7">v0.28.0-alpha.7</a> [(2021-04-30)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.7)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.6...v0.28.0-alpha.7)
+
+#### Summary of changes
+- Fixes issue with where proxy authentication fails on linux/osx with assertion error.
+
+#### Merged PRs into NodeGit
+- [Bump Libgit2 to fix proxy auth on linux / osx #1841](https://github.com/nodegit/nodegit/pull/1841)
+
+#### Merged PRs into Libgit2
+- [https://github.com/libgit2/libgit2/pull/5852](https://github.com/libgit2/libgit2/pull/5852)
+
+
 ## <a name="v0-28-0-alpha.6" href="#v0-28-0-alpha-6">v0.28.0-alpha.6</a> [(2021-04-23)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.6)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.5...v0.28.0-alpha.6)
