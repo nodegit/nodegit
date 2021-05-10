@@ -1,5 +1,19 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.8" href="#v0-28-0-alpha-8">v0.28.0-alpha.8</a> [(2021-05-10)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.8)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.7...v0.28.0-alpha.8)
+
+#### Summary of changes
+- Fixes another issue where Kerberos proxy authentication causes network failures
+
+#### Merged PRs into NodeGit
+- [Bump libgit2 to include libgit2#5852 #1844](https://github.com/nodegit/nodegit/pull/1844)
+
+#### Merged PRs into Libgit2
+- [Fix issues with Proxy Authentication after httpclient refactor #5852](https://github.com/libgit2/libgit2/pull/5852)
+
+
 ## <a name="v0-28-0-alpha.7" href="#v0-28-0-alpha-7">v0.28.0-alpha.7</a> [(2021-04-30)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.7)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.6...v0.28.0-alpha.7)
