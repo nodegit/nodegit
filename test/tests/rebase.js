@@ -2415,4 +2415,129 @@ describe("Rebase", function() {
           assert.equal(error.errno, NodeGit.Error.CODE.ITEROVER);
         });
       });
+
+      
+  it("rebase signs correctly if rebaseOptions are re-used", function () {
+    const ourFileName = "ourNewFile.txt";
+    const theirFileName = "theirNewFile.txt";
+
+    const ourFileContent = "I like Toll Roads. I have an EZ-Pass!";
+    const theirFileContent = "I'm skeptical about Toll Roads";
+
+    const ourSignature = NodeGit.Signature.create
+          ("Ron Paul", "RonPaul@TollRoadsRBest.info", 123456789, 60);
+    const theirSignature = NodeGit.Signature.create
+          ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
+
+    let ourCommit;
+    let theirCommit;
+
+    let rebase;
+    let newCommitOid;
+    
+    const rebaseOptions = {
+      signingCb: () => ({
+        code: NodeGit.Error.CODE.OK,
+        field: "moose-sig",
+        signedData: "A moose was here."
+      })
+    };
+          
+    const repository = this.repository;
+
+    // Create two commits on master
+    // one
+    return fse.writeFile(path.join(repository.workdir(), ourFileName),
+      ourFileContent)
+      .then(() => RepoUtils.addFileToIndex(repository, ourFileName))
+      .then((oid) => {
+        assert.equal(oid.toString(),
+          "11ead82b1135b8e240fb5d61e703312fb9cc3d6a");
+        return repository.createCommit("HEAD", ourSignature, ourSignature,
+          "we made a commit", oid, []);
+      })
+      .then((commitOid) => {
+        assert.equal(commitOid.toString(),
+          "91a183f87842ebb7a9b08dad8bc2473985796844");
+        return repository.getCommit(commitOid);
+      })
+      .then((_ourCommit) => {
+        ourCommit = _ourCommit;
+        return fse.writeFile(path.join(repository.workdir(), theirFileName),
+          theirFileContent);
+      })
+      .then(() => RepoUtils.addFileToIndex(repository, theirFileName))
+      .then((oid) => {
+        assert.equal(oid.toString(),
+          "76631cb5a290dafe2959152626bb90f2a6d8ec94");
+        return repository.createCommit("HEAD", theirSignature,
+          theirSignature, "they made a commit", oid, [ourCommit]);
+      })
+      .then((commitOid) => {
+        assert.equal(commitOid.toString(),
+          "0e9231d489b3f4303635fc4b0397830da095e7e7");
+        return repository.getCommit(commitOid);
+
+      })
+      .then((_theirCommit) => {
+        theirCommit = _theirCommit;
+        return Promise.all([
+          NodeGit.AnnotatedCommit.lookup(
+            repository,
+            ourCommit.id()
+          ),
+          NodeGit.AnnotatedCommit.lookup(
+            repository,
+            theirCommit.id()
+          )
+        ]);
+      })
+      // rebase latest commit
+      .then(([ourAnnotatedCommit, theirAnnotatedCommit]) =>
+        NodeGit.Rebase.init(
+        repository,
+        // branch, upstream, onto
+        theirAnnotatedCommit, ourAnnotatedCommit, null,
+        rebaseOptions // use once
+      ))
+      .then(() => {
+        return NodeGit.Rebase.open(
+          repository,
+          rebaseOptions // use twice
+        );
+      })
+      .then((_rebase) => {
+        rebase = _rebase;
+        return rebase.next();
+      })
+      .then(() => {
+        const operationCurrentIndex = rebase.operationCurrent();
+        assert(operationCurrentIndex === 0);
+        // Make sure we don't crash calling the signature CB
+        // after collecting garbage.
+        garbageCollect();
+        return rebase.commit(null, ourSignature);
+      })
+      .then((_newCommitOid) => {
+        newCommitOid = _newCommitOid;
+        assert.strictEqual(newCommitOid.toString(),
+          "89ad8168264267bcc50ee60ade3bc3804f55aa72");
+        return rebase.next();
+      })
+      .then(() => {
+        assert.fail("should throw");
+      })
+      .catch((error) => {
+        assert(error.errno === NodeGit.Error.CODE.ITEROVER);
+        assert.strictEqual(rebase.finish(ourSignature), 0);
+        return NodeGit.Commit.extractSignature(
+          repository,
+          newCommitOid.toString(),
+          "moose-sig"
+        );
+      })
+      .then((sig) => {
+        assert.strictEqual(sig.signature, "A moose was here.");
+      });
+});
 });
