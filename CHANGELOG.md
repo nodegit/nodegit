@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.9" href="#v0-28-0-alpha-9">v0.28.0-alpha.9</a> [(2021-06-04)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.9)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.8...v0.28.0-alpha.9)
+
+#### Summary of changes
+- Fixes an issue where rebase.init and rebase.open were ignoring callbacks in some situations
+
+#### Merged PRs into NodeGit
+- [Shallow clone rebase options before modifying #1845](https://github.com/nodegit/nodegit/pull/1845)
+
+
 ## <a name="v0-28-0-alpha.8" href="#v0-28-0-alpha-8">v0.28.0-alpha.8</a> [(2021-05-10)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.8)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.7...v0.28.0-alpha.8)
