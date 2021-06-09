@@ -725,6 +725,28 @@
         },
         "group": "repository"
       },
+      "git_repository_statistics": {
+        "args": [
+          {
+            "name": "out",
+            "type": "void *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/repository/statistics.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "repository",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_repository_submodule_cache_all": {
         "type": "function",
         "file": "sys/repository.h",
@@ -1043,6 +1065,7 @@
           "git_repository_get_remotes",
           "git_repository_refresh_references",
           "git_repository_set_index",
+          "git_repository_statistics",
           "git_repository_submodule_cache_all",
           "git_repository_submodule_cache_clear"
         ]
