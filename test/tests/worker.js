@@ -53,9 +53,9 @@ if (Worker) {
     });
 
     for (let i = 0; i < 5; ++i) {
-      it(`can kill worker thread while in use #${i}`, function(done) { // jshint ignore:line
+      it.only(`can kill worker thread while in use #${i}`, function(done) { // jshint ignore:line
         const workerPath = local("../utils/worker.js");
-        const worker = new Worker(workerPath, { 
+        const worker = new Worker(workerPath, {
           workerData: {
             clonePath,
             url: "https://github.com/nodegit/test.git"
@@ -64,10 +64,9 @@ if (Worker) {
         worker.on("message", (message) => {
           switch (message) {
             case "init":
-              setTimeout(() => { worker.terminate(); }, 500);
               break;
             case "success":
-              assert.fail();
+              worker.terminate();
               break;
             case "failure":
               assert.fail();

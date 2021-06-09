@@ -5,6 +5,7 @@ const {
 } = require("worker_threads");
 const assert = require("assert");
 const NodeGit = require("../../");
+const { promisify } = require("util");
 
 if (isMainThread) {
   throw new Error("Must be run via worker thread");
@@ -35,4 +36,5 @@ return NodeGit.Clone(url, clonePath, opts).then((_repository) => {
 }).then((branch) => {
   assert.ok(branch instanceof NodeGit.Reference);
   parentPort.postMessage("success");
+  return promisify(setTimeout)(5000);
 }).catch(() => parentPort.postMessage("failure"));
