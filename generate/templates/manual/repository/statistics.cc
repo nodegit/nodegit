@@ -30,7 +30,7 @@ public:
 
   using CommitsGraphMap = std::unordered_map<std::string, std::unique_ptr<CommitsGraphNode>>;
 
-  void AddNode(const std::string &oidStr, const std::vector<std::string> &parents, uint32_t numParents);
+  void AddNode(const std::string &oidStr, const std::vector<std::string> &parents);
   uint32_t CalculateMaxDepth();
 
 private:
@@ -45,11 +45,11 @@ private:
  * 
  * \param oidStr oid of the commit object to add.
  * \param parents oids of the commit's parents.
- * \param numParents Number of parents of the commit object.
  */
-void CommitsGraph::AddNode(const std::string &oidStr, const std::vector<std::string> &parents,
-  uint32_t numParents)
+void CommitsGraph::AddNode(const std::string &oidStr, const std::vector<std::string> &parents)
 {
+  uint32_t numParents = static_cast<uint32_t>(parents.size());
+
   auto emplacePair = m_mapOidNode.emplace(std::make_pair(
     oidStr, std::make_unique<CommitsGraphNode>(numParents)));
 
@@ -380,19 +380,9 @@ bool WorkerStoreOdbData::Initialize() {
     return true;
   }
 
-  if (m_repoPath.empty()) {
-    return false;
-  }
-  else {
-    if (git_repository_open(&m_repo, m_repoPath.c_str()) != GIT_OK) {
-      return false;
-    }
-    
-    if (git_repository_odb(&m_odb, m_repo) != GIT_OK) {
-      return false;
-    }
-  }
-  return true;
+  return !m_repoPath.empty() &&
+    git_repository_open(&m_repo, m_repoPath.c_str()) == GIT_OK &&
+    git_repository_odb(&m_odb, m_repo) == GIT_OK;
 }
 
 /**
@@ -836,7 +826,10 @@ static int forEachOdbCb(const git_oid *oid, void *payloadToCast)
     static_cast<WorkerPool<WorkerStoreOdbData,WorkItemOid>*>(payloadToCast);
 
   // Must insert copies of oid, since the pointers might not survive until worker thread picks it up
-  if (!workerPool->InsertWork(std::make_unique<WorkItemOid>(*oid))) {
+  workerPool->InsertWork(std::make_unique<WorkItemOid>(*oid));
+
+  // check there were no problems inserting work
+  if (!workerPool->Status()) {
     return GIT_EUSER;
   }
 
@@ -869,7 +862,7 @@ private:
   int storeAndCountRefs();
   // stage 2 methods: count reachability of each object (with threads)
   // NOTE: we need this stage, since so far libgit2 doesn't provide unreachable objects
-  void setObjectsReachability();
+  bool setObjectsReachability();
   void setReachabilityFromRefs();
   void setUnreachables();
   // stage 3 methods: prune unreachable oids
@@ -912,7 +905,9 @@ int RepoAnalysis::Analyze()
     return errorCode;
   }
 
-  setObjectsReachability();
+  if (!setObjectsReachability()) {
+    return GIT_EUSER;
+  }
   pruneUnreachables();
 
   statsCountAndMax();
@@ -978,6 +973,7 @@ int RepoAnalysis::storeObjectsInfo()
   workerPool.Init(workers);
 
   if ((errorCode = git_odb_foreach(odb, forEachOdbCb, &workerPool)) != GIT_OK) {
+    workerPool.Shutdown();
     git_odb_free(odb);
     return errorCode;
   }
@@ -989,6 +985,12 @@ int RepoAnalysis::storeObjectsInfo()
 
   // wait for the threads to finish and shutdown the work pool
   workerPool.Shutdown();
+
+  // check there were no problems during execution
+  if (!workerPool.Status()) {
+    git_odb_free(odb);
+    return GIT_EUSER;
+  }
 
   git_odb_free(odb);
 
@@ -1077,8 +1079,9 @@ int RepoAnalysis::storeAndCountRefs()
  * RepoAnalysis::setObjectsReachability
  * Leverages threads to set reachability from tags, commits, and trees.
  * NOTE: performance didn't improve leveraging threads for adding objects to unreachables container.
+ * \return false if the workerPool finished with errors; true otherwise
  */
-void RepoAnalysis::setObjectsReachability()
+bool RepoAnalysis::setObjectsReachability()
 {
   // references are not objects, hence they won't be sent to the worker threads
   setReachabilityFromRefs();
@@ -1103,28 +1106,19 @@ void RepoAnalysis::setObjectsReachability()
     workInserted = 0;
     // insert tag
     if (itTagInfo != m_odbObjectsData.tags.info.end()) {
-      if (!workerPool.InsertWork(
-        std::make_unique<WorkItemOidStrType>(&itTagInfo->second, GIT_OBJECT_TAG))) {
-        return;
-      }
+      workerPool.InsertWork(std::make_unique<WorkItemOidStrType>(&itTagInfo->second, GIT_OBJECT_TAG));
       ++itTagInfo;
       ++workInserted;
     }
     // insert commmit
     if (itCommitInfo != m_odbObjectsData.commits.info.end()) {
-      if (!workerPool.InsertWork(
-        std::make_unique<WorkItemOidStrType>(&itCommitInfo->second, GIT_OBJECT_COMMIT))) {
-        return;
-      }
+      workerPool.InsertWork(std::make_unique<WorkItemOidStrType>(&itCommitInfo->second, GIT_OBJECT_COMMIT));
       ++itCommitInfo;
       ++workInserted;
     }
     // insert tree
     if (itTreeInfo != m_odbObjectsData.trees.info.end()) {
-      if (!workerPool.InsertWork(
-        std::make_unique<WorkItemOidStrType>(&itTreeInfo->second, GIT_OBJECT_TREE))) {
-        return;
-      }
+      workerPool.InsertWork(std::make_unique<WorkItemOidStrType>(&itTreeInfo->second, GIT_OBJECT_TREE));
       ++itTreeInfo;
       ++workInserted;
     }
@@ -1134,7 +1128,14 @@ void RepoAnalysis::setObjectsReachability()
   // wait for the threads to finish and shutdown the work pool
   workerPool.Shutdown();
 
+  // check there were no problems during execution
+  if (!workerPool.Status()) {
+    return false;
+  }
+
   setUnreachables();
+
+  return true;
 }
 
 /**
@@ -1196,28 +1197,28 @@ void RepoAnalysis::setReachabilityFromRefs()
  * After setting reachability, we add the unreached objects to their unreachables container.
  */
 void RepoAnalysis::setUnreachables()
-  {
-    for (const auto &tag : m_odbObjectsData.tags.info) {
-      if (!tag.second.reachability) {
-        m_odbObjectsData.tags.unreachables.emplace(tag.first);
-      }
-    }
-    for (const auto &commit : m_odbObjectsData.commits.info) {
-      if (!commit.second.reachability) {
-        m_odbObjectsData.commits.unreachables.emplace(commit.first);
-      }
-    }
-    for (const auto &tree : m_odbObjectsData.trees.info) {
-      if (!tree.second.reachability) {
-        m_odbObjectsData.trees.unreachables.emplace(tree.first);
-      }
-    }
-    for (const auto &blob : m_odbObjectsData.blobs.info) {
-      if (!blob.second.reachability) {
-        m_odbObjectsData.blobs.unreachables.emplace(blob.first);
-      }
+{
+  for (const auto &tag : m_odbObjectsData.tags.info) {
+    if (!tag.second.reachability) {
+      m_odbObjectsData.tags.unreachables.emplace(tag.first);
     }
   }
+  for (const auto &commit : m_odbObjectsData.commits.info) {
+    if (!commit.second.reachability) {
+      m_odbObjectsData.commits.unreachables.emplace(commit.first);
+    }
+  }
+  for (const auto &tree : m_odbObjectsData.trees.info) {
+    if (!tree.second.reachability) {
+      m_odbObjectsData.trees.unreachables.emplace(tree.first);
+    }
+  }
+  for (const auto &blob : m_odbObjectsData.blobs.info) {
+    if (!blob.second.reachability) {
+      m_odbObjectsData.blobs.unreachables.emplace(blob.first);
+    }
+  }
+}
 
 /**
  * RepoAnalysis::pruneUnreachables
@@ -1422,15 +1423,14 @@ void RepoAnalysis::statsCountAndMax()
   for (auto &info : m_odbObjectsData.commits.info) {
     OdbObjectsData::CommitInfo &commitInfo = info.second;
     size_t size = commitInfo.size;
-    size_t numParents = commitInfo.parents.size();
 
     m_odbObjectsData.commits.totalSize += size;
     m_odbObjectsData.commits.maxSize = std::max<size_t>(m_odbObjectsData.commits.maxSize, size);
-    m_odbObjectsData.commits.maxParents = std::max<size_t>(m_odbObjectsData.commits.maxParents, numParents);
+    m_odbObjectsData.commits.maxParents = std::max<size_t>(
+      m_odbObjectsData.commits.maxParents, commitInfo.parents.size());
 
     // build commit's graph
-    m_odbObjectsData.commits.graph.AddNode(info.first,
-      commitInfo.parents, static_cast<uint32_t>(numParents));
+    m_odbObjectsData.commits.graph.AddNode(info.first, commitInfo.parents);
   }
   // trees
   for (auto &info : m_odbObjectsData.trees.info) {
@@ -1595,8 +1595,8 @@ bool RepoAnalysis::calculateMaxTagDepth()
 
     // update maxTagDepth
     OdbObjectsData::TagInfo &tagInfo = itTagInfo->second;
-    m_statistics.historyStructure.maxTagDepth = std::max<uint32_t>(m_statistics.historyStructure.maxTagDepth,
-      tagInfo.depth);
+    m_statistics.historyStructure.maxTagDepth = std::max<uint32_t>(
+      m_statistics.historyStructure.maxTagDepth, tagInfo.depth);
   }
 
   return true;

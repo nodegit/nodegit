@@ -58,9 +58,13 @@ public:
   WorkerPool& operator=(const WorkerPool &other) = delete;
   WorkerPool& operator=(WorkerPool &&other) = delete;
 
-  bool Init(std::vector< std::shared_ptr<Worker> > workers);
-  bool InsertWork(std::unique_ptr<WorkItem> &&work);
+  void Init(std::vector< std::shared_ptr<Worker> > workers);
+  void InsertWork(std::unique_ptr<WorkItem> &&work);
   void Shutdown();
+  bool Status() { return m_status.workersInitialize && m_status.workersExecute && !m_status.shutdownEarly; }
+  bool StatusWorkersInitialize() { return m_status.workersInitialize; }
+  bool StatusWorkersExecute() { return m_status.workersExecute; }
+  bool StatusShutdownEarly() { return !m_status.shutdownEarly; }
 
 private:
   void DoWork(std::shared_ptr<Worker> worker);
@@ -69,7 +73,13 @@ private:
   std::condition_variable m_workQueueCondition {};
   std::queue< std::unique_ptr<WorkItem> > m_workQueue {};
   std::vector<std::unique_ptr<std::thread>> m_threads {};
-  bool m_stop {true}; // initially the workpool has no worker threads
+  bool m_stop {true};               // initially the workpool has no worker threads
+  struct {
+    bool workersInitialize {true};
+    bool workersExecute {true};
+    bool shutdownEarly {false};   // for instance if the workerPool was ShutDown, and InsertWork called after that
+  } m_status;
+  std::mutex m_statusMutex {};
 };
 
 
@@ -78,37 +88,37 @@ WorkerPool<Worker,WorkItem>::WorkerPool() {
   static_assert(std::is_base_of<IWorker, Worker>::value, "Worker must inherit from IWorker");
 }
 
-// returns true it it wasn't initialized previously; false otherwise
+// launches the worker threads, if they hadn't been launched already
 template<class Worker, class WorkItem>
-bool WorkerPool<Worker,WorkItem>::Init(std::vector< std::shared_ptr<Worker> > workers)
+void WorkerPool<Worker,WorkItem>::Init(std::vector< std::shared_ptr<Worker> > workers)
 {
   {
     std::lock_guard<std::mutex> lock(m_workQueueMutex);
     if (!m_stop)
-      return false;
+      return;
     m_stop = false;
   }
   
   std::for_each (workers.begin(), workers.end(), [this](std::shared_ptr<Worker> worker) {
     m_threads.emplace_back(std::make_unique<std::thread>(std::bind(&WorkerPool::DoWork, this, worker)));
   });
-  
-  return true;
 }
 
-// returns true if successfully inserted work; false otherwise
+// queues work, or updates shutdownEarly status
 template<class Worker, class WorkItem>
-bool WorkerPool<Worker,WorkItem>::InsertWork(std::unique_ptr<WorkItem> &&work)
+void WorkerPool<Worker,WorkItem>::InsertWork(std::unique_ptr<WorkItem> &&work)
 {
   {
     std::lock_guard<std::mutex> lock(m_workQueueMutex);
-    if (m_stop)
-      return false;
+    if (m_stop) {
+      // update shutdownEarly status and return
+      std::lock_guard<std::mutex> lock(m_statusMutex);
+      m_status.shutdownEarly = true;
+      return;
+    }
     m_workQueue.emplace(std::move(work));
   }
   m_workQueueCondition.notify_one();
-  
-  return true;
 }
 
 template<class Worker, class WorkItem>
@@ -132,10 +142,13 @@ void WorkerPool<Worker,WorkItem>::Shutdown()
 template<class Worker, class WorkItem>
 void WorkerPool<Worker,WorkItem>::DoWork(std::shared_ptr<Worker> worker)
 {
-  if (!worker->Initialize()) {
-    return; // signal main that we've exited early
+  if (!worker->Initialize())
+  { // update initialized status and stop worker
+    std::lock_guard<std::mutex> lock(m_statusMutex);
+    m_status.workersInitialize = false;
+    return;
   }
-  
+
   while (true) {
     std::unique_ptr<WorkItem> work {};
     {
@@ -143,16 +156,26 @@ void WorkerPool<Worker,WorkItem>::DoWork(std::shared_ptr<Worker> worker)
       m_workQueueCondition.wait(lock, [this] {
         return this->m_stop || !this->m_workQueue.empty();
       });
-      
-      if (m_stop && m_workQueue.empty())
+
+      // stop all workers if any of them failed on Initialize() or Execute()
+      // or the workerPool shutdown early
+      if (!Status()) {
         return;
+      }
+
+      if (m_stop && m_workQueue.empty()) {
+        return;
+      }
       
       work = std::move(m_workQueue.front());
       m_workQueue.pop();
     }
     
-    if (!worker->Execute(std::move(work))) {
-      return; // signal main that we've exited early
+    if (!worker->Execute(std::move(work)))
+    { // update execute status
+      std::lock_guard<std::mutex> lock(m_statusMutex);
+      m_status.workersExecute = false;
+      return;
     }
   }
 }
