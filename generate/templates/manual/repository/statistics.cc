@@ -829,7 +829,7 @@ static int forEachOdbCb(const git_oid *oid, void *payloadToCast)
   workerPool->InsertWork(std::make_unique<WorkItemOid>(*oid));
 
   // check there were no problems inserting work
-  if (!workerPool->Status()) {
+  if (workerPool->Status() != WPStatus::kOk) {
     return GIT_EUSER;
   }
 
@@ -987,7 +987,7 @@ int RepoAnalysis::storeObjectsInfo()
   workerPool.Shutdown();
 
   // check there were no problems during execution
-  if (!workerPool.Status()) {
+  if (workerPool.Status() != WPStatus::kOk) {
     git_odb_free(odb);
     return GIT_EUSER;
   }
@@ -1129,7 +1129,7 @@ bool RepoAnalysis::setObjectsReachability()
   workerPool.Shutdown();
 
   // check there were no problems during execution
-  if (!workerPool.Status()) {
+  if (workerPool.Status() != WPStatus::kOk) {
     return false;
   }
 
