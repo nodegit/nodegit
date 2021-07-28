@@ -31,7 +31,7 @@ const getCompilerVersion = () => {
   if (osName === "win32" || osName === "win64") {
     return "vs14";
   } else if (osName === "macOS") {
-    return "clang-9";
+    return "clang-9.1";
   } else {
     // We only discover distros for Mac and Windows. We don't care about any other OS.
     return "unknown";
