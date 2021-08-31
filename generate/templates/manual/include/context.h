@@ -8,20 +8,6 @@
 #include <uv.h>
 #include <v8.h>
 
-/*
- * Determine if node module is compiled under a supported node release.
- * Currently 12 - 15 (ignoring pre-releases). Will need to be updated
- * for new major versions.
- *
- * See: https://github.com/nodejs/node/issues/36349
- * and: https://github.com/nodejs/node/blob/master/doc/abi_version_registry.json
- */
-#define IS_CONTEXT_AWARE_NODE_MODULE_VERSION \
-  (NODE_MODULE_VERSION == 72 \
-  || NODE_MODULE_VERSION == 79 \
-  || NODE_MODULE_VERSION == 83 \
-  || NODE_MODULE_VERSION == 88)
-
 #include "async_worker.h"
 #include "cleanup_handle.h"
 #include "thread_pool.h"

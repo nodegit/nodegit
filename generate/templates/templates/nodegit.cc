@@ -112,8 +112,4 @@ NAN_MODULE_INIT(init) {
   nodegit::LockMaster::InitializeContext();
 }
 
-#if IS_CONTEXT_AWARE_NODE_MODULE_VERSION
 NAN_MODULE_WORKER_ENABLED(nodegit, init)
-#else
-NODE_MODULE(nodegit, init)
-#endif
