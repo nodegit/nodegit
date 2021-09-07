@@ -40,6 +40,7 @@ namespace nodegit {
   }
 
   Context::~Context() {
+    nodegit::TrackerWrap::DeleteFromList(&trackerList);
     contexts.erase(isolate);
   }
 
