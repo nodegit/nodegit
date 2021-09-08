@@ -45,6 +45,10 @@ namespace nodegit {
       list->Link(&trackerList);
     }
 
+    inline int TrackerListSize() {
+      return nodegit::TrackerWrap::SizeFromList(&trackerList);
+    }
+
   private:
     v8::Isolate *isolate;
 

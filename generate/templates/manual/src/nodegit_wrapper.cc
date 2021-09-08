@@ -53,6 +53,9 @@ NodeGitWrapper<Traits>::~NodeGitWrapper() {
     SelfFreeingInstanceCount--;
     raw = NULL;
   }
+  else if (!selfFreeing) {
+    --NonSelfFreeingConstructedCount;
+  }
 }
 
 template<typename Traits>
