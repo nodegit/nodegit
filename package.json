@@ -51,7 +51,7 @@
   "devDependencies": {
     "aws-sdk": "^2.326.0",
     "babel-cli": "7.0.0-beta.3",
-    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-es2015": "7.0.0-beta.3",
     "cheerio": "^1.0.0-rc.2",
     "clean-for-publish": "~1.0.2",
     "combyne": "~0.8.1",
