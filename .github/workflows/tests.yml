@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         node: [12, 14]
-        os: [ubuntu-16.04, macOS-10.15]
+        os: [ubuntu-18.04, macOS-10.15]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup Environment
