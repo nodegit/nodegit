@@ -10,40 +10,100 @@ on:
 name: Testing
 
 jobs:
-  nix-tests:
-    name: "*nix Tests"
+  linux-tests:
+    name: "Linux Tests"
     strategy:
       matrix:
         node: [12, 14]
-        os: [ubuntu-16.04, macOS-10.15]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    container: ubuntu:16.04
     steps:
+      - name: Install Dependencies for Ubuntu
+        # git >= 2.18 required for actions/checkout git support
+        run: apt update && apt install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt update && apt install -y git build-essential clang python3 libssl-dev libkrb5-dev libc++-dev
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
       - name: Setup Environment
         run: |
           mkdir ~/.ssh_tests
           chmod 700 ~/.ssh_tests
-          echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh_tests/config
-          echo -e "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBkHMoNRRkHYNE7EnQLdFxMgVcqGgNPYDhrWiLMlYuzpmEcUnhwW3zNaIa4J2JlGkRNgYZVia1Ic1V3koJPE3YO2+exAfJBIPeb6O1qDADc2hFFHzd28wmHKUkO61yzo2ZjDQfaEVtjN39Yiy19AbddN3bzNrgvuQT574fa6Rghl2RfecKYO77iHA1RGXIFc8heXVIUuUV/jHjb56WqoHH8vyt1DqUz89oyiHq8Cku0qzKN80COheZPseA1EvT0zlIgbXBxwijN4xRmvInK0fB5Kc9r3kddH2tT7V09bOFJsvGQaQmQ1WFTCqjpBFw1CHKcbfPLOxbLpVIR9gyx03R" > ~/.ssh_tests/id_rsa.pub
-          echo -e "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAwZBzKDUUZB2DROxJ0C3RcTIFXKhoDT2A4a1oizJWLs6ZhHFJ\n4cFt8zWiGuCdiZRpETYGGVYmtSHNVd5KCTxN2DtvnsQHyQSD3m+jtagwA3NoRRR8\n3dvMJhylJDutcs6NmYw0H2hFbYzd/WIstfQG3XTd28za4L7kE+e+H2ukYIZdkX3n\nCmDu+4hwNURlyBXPIXl1SFLlFf4x42+elqqBx/L8rdQ6lM/PaMoh6vApLtKsyjfN\nAjoXmT7HgNRL09M5SIG1wccIozeMUZryJytHweSnPa95HXR9rU+1dPWzhSbLxkGk\nJkNVhUwqo6QRcNQhynG3zyzsWy6VSEfYMsdN0QIDAQABAoIBABsZNPYBEFy/wPvq\nNJ8/et3lCdkh/oc0ABIYK9Wo82XUKKvhDF3drZ3p+UrX/VYgf+EX9hyf8gVTuSJ3\nX1gRqDhIgeTxPsHGrwt6B6pL5ITnKEbbimuo9Ni1E+2RqUO0ZSCE/1sSRv4CRaXO\nk8HZawif7ttxv4bNUrLys6xEbpvQlOMzgs4s/OBB/XMEqnFRGPJeeTy8bkOWyTwl\nLj06nq2brs4qK4eijI/MoGy1CD8JCpL4gG39GPTXd8GpudXmdelDn1E0t9nhL6Se\naOMaiPhy7kBJD4wZ//WZTSR1XyjNBH3DGkNZxPIWcX+wJFyNoLbSbVSda/7Dtvp3\nCPfiNhECgYEA/+3JswSzcVEANNF5OLZ76x+TODkZ9T6YF4SR8/uJjNViWgUpX7vw\nmyXF+2AwzNaotbBKmNG619BcUeMmQB76c+UiMLeJuJcT/Jj0xmEUopHonGqEIcvg\nHg6cafE1is7d+l669bfjitlx+3muF2CYnylSN1LWHxIITVUj3BmcWqUCgYEAwZ45\nWdaHfK7G6GjI7liDQT4ZlslA8dmLv2Jl2ExBBMoY3m3Sre428z2ZFa4O/nsBYP0a\nDxgYmX20fQGcbPugKdCYHc7HkKbMU1GwiVCGpDYZCm2gJKTvam3dYNaiAfq5DyhP\nzDCZNJ5rrSMprXsuRv2O4c5u8qtJ5ByaOJBjOr0CgYBMlkAxzkpUssS5CaaZDiLv\nLbfEr3HRLjYdc5KpzLBQ8NpJzhmfiIJsK1Wf8B0qb2J1XJg2Oy0KwFOgPbWIoryY\nSg19Pq98Cdn1UWCOrSabr8ZIaKe55WTgGcc8/O3k6BsNfaO9PJZfSssNUlCCtml1\n18u+uo9RJPhPDBd7Gj7r8QKBgFraxWy7t24xkZMDgK4fiM/3tQhFvhz/CY2wPbxG\n5Ae8UfkmLcOCUfTIReqfd9fAnsAFZNIKa5izHRu/wsh9NwYIJSlvm8PsEVtTrPRy\nfgvWet+i24/2eYZGsag8b19gaLCNKQzXDT1czYg8RNVsRSX427BoLzXeXNkW9uNu\nFbI9AoGAV2kxcdcKS4BtNHKPeGgV87dM0DWhQaAtEXEIcQquFtba0lAXioGHg8U4\nzeiugl4Qzchwk5qd3wnZ4SOhx0s16/5gQDlnkbjFR6EREUnvLRwV92zBXUTOGIkh\nZ7Z4rcgUKlVAaHT3OHN/lTyqJG/ib+K4wZhbztl/ox+JUFsvD98=\n-----END RSA PRIVATE KEY-----" > ~/.ssh_tests/id_rsa
+          printf "%b" "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh_tests/config
+          printf "%b" "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBkHMoNRRkHYNE7EnQLdFxMgVcqGgNPYDhrWiLMlYuzpmEcUnhwW3zNaIa4J2JlGkRNgYZVia1Ic1V3koJPE3YO2+exAfJBIPeb6O1qDADc2hFFHzd28wmHKUkO61yzo2ZjDQfaEVtjN39Yiy19AbddN3bzNrgvuQT574fa6Rghl2RfecKYO77iHA1RGXIFc8heXVIUuUV/jHjb56WqoHH8vyt1DqUz89oyiHq8Cku0qzKN80COheZPseA1EvT0zlIgbXBxwijN4xRmvInK0fB5Kc9r3kddH2tT7V09bOFJsvGQaQmQ1WFTCqjpBFw1CHKcbfPLOxbLpVIR9gyx03R\n" > ~/.ssh_tests/id_rsa.pub
+          printf "%b" "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAwZBzKDUUZB2DROxJ0C3RcTIFXKhoDT2A4a1oizJWLs6ZhHFJ\n4cFt8zWiGuCdiZRpETYGGVYmtSHNVd5KCTxN2DtvnsQHyQSD3m+jtagwA3NoRRR8\n3dvMJhylJDutcs6NmYw0H2hFbYzd/WIstfQG3XTd28za4L7kE+e+H2ukYIZdkX3n\nCmDu+4hwNURlyBXPIXl1SFLlFf4x42+elqqBx/L8rdQ6lM/PaMoh6vApLtKsyjfN\nAjoXmT7HgNRL09M5SIG1wccIozeMUZryJytHweSnPa95HXR9rU+1dPWzhSbLxkGk\nJkNVhUwqo6QRcNQhynG3zyzsWy6VSEfYMsdN0QIDAQABAoIBABsZNPYBEFy/wPvq\nNJ8/et3lCdkh/oc0ABIYK9Wo82XUKKvhDF3drZ3p+UrX/VYgf+EX9hyf8gVTuSJ3\nX1gRqDhIgeTxPsHGrwt6B6pL5ITnKEbbimuo9Ni1E+2RqUO0ZSCE/1sSRv4CRaXO\nk8HZawif7ttxv4bNUrLys6xEbpvQlOMzgs4s/OBB/XMEqnFRGPJeeTy8bkOWyTwl\nLj06nq2brs4qK4eijI/MoGy1CD8JCpL4gG39GPTXd8GpudXmdelDn1E0t9nhL6Se\naOMaiPhy7kBJD4wZ//WZTSR1XyjNBH3DGkNZxPIWcX+wJFyNoLbSbVSda/7Dtvp3\nCPfiNhECgYEA/+3JswSzcVEANNF5OLZ76x+TODkZ9T6YF4SR8/uJjNViWgUpX7vw\nmyXF+2AwzNaotbBKmNG619BcUeMmQB76c+UiMLeJuJcT/Jj0xmEUopHonGqEIcvg\nHg6cafE1is7d+l669bfjitlx+3muF2CYnylSN1LWHxIITVUj3BmcWqUCgYEAwZ45\nWdaHfK7G6GjI7liDQT4ZlslA8dmLv2Jl2ExBBMoY3m3Sre428z2ZFa4O/nsBYP0a\nDxgYmX20fQGcbPugKdCYHc7HkKbMU1GwiVCGpDYZCm2gJKTvam3dYNaiAfq5DyhP\nzDCZNJ5rrSMprXsuRv2O4c5u8qtJ5ByaOJBjOr0CgYBMlkAxzkpUssS5CaaZDiLv\nLbfEr3HRLjYdc5KpzLBQ8NpJzhmfiIJsK1Wf8B0qb2J1XJg2Oy0KwFOgPbWIoryY\nSg19Pq98Cdn1UWCOrSabr8ZIaKe55WTgGcc8/O3k6BsNfaO9PJZfSssNUlCCtml1\n18u+uo9RJPhPDBd7Gj7r8QKBgFraxWy7t24xkZMDgK4fiM/3tQhFvhz/CY2wPbxG\n5Ae8UfkmLcOCUfTIReqfd9fAnsAFZNIKa5izHRu/wsh9NwYIJSlvm8PsEVtTrPRy\nfgvWet+i24/2eYZGsag8b19gaLCNKQzXDT1czYg8RNVsRSX427BoLzXeXNkW9uNu\nFbI9AoGAV2kxcdcKS4BtNHKPeGgV87dM0DWhQaAtEXEIcQquFtba0lAXioGHg8U4\nzeiugl4Qzchwk5qd3wnZ4SOhx0s16/5gQDlnkbjFR6EREUnvLRwV92zBXUTOGIkh\nZ7Z4rcgUKlVAaHT3OHN/lTyqJG/ib+K4wZhbztl/ox+JUFsvD98=\n-----END RSA PRIVATE KEY-----\n" > ~/.ssh_tests/id_rsa
           chmod 600 ~/.ssh_tests/id_rsa*
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
 
       - name: Use Node.js
-        uses: actions/setup-node@master
+        uses: actions/setup-node@v2
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
 
-      - name: Install Dependencies for Ubuntu
-        if: startsWith(matrix.os, 'ubuntu')
-        run: sudo apt install build-essential libssl-dev libkrb5-dev libc++-dev
+      - name: Install
+        env:
+          CC: clang
+          CXX: clang++
+          npm_config_clang: 1
+          GYP_DEFINES: use_obsolete_asm=true
+        # There is a race condition in node/generate that needs to be fixed
+        run: |
+          npm set unsafe-perm true
+          node utils/retry npm install
+
+      - name: Test
+        run: |
+          set -e
+          eval `ssh-agent -s`
+          ssh-add ~/.ssh_tests/id_rsa
+          node utils/retry npm test
+
+      - name: Deploy
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
+          node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
+          node_pre_gyp_secretAccessKey: ${{ secrets.node_pre_gyp_secretAccessKey }}
+        run: |
+          npm install -g node-pre-gyp aws-sdk
+          node lifecycleScripts/clean
+          node-pre-gyp package
+          node-pre-gyp publish
+
+  macos-tests:
+    name: "macOS Tests"
+    strategy:
+      matrix:
+        node: [12, 14]
+    runs-on: macOS-10.15
+  # This is mostly the same as the Linux steps, waiting for anchor support
+  # https://github.com/actions/runner/issues/1182
+    steps:
+      - name: Setup Environment
+        run: |
+          mkdir ~/.ssh_tests
+          chmod 700 ~/.ssh_tests
+          printf "%b" "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh_tests/config
+          printf "%b" "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBkHMoNRRkHYNE7EnQLdFxMgVcqGgNPYDhrWiLMlYuzpmEcUnhwW3zNaIa4J2JlGkRNgYZVia1Ic1V3koJPE3YO2+exAfJBIPeb6O1qDADc2hFFHzd28wmHKUkO61yzo2ZjDQfaEVtjN39Yiy19AbddN3bzNrgvuQT574fa6Rghl2RfecKYO77iHA1RGXIFc8heXVIUuUV/jHjb56WqoHH8vyt1DqUz89oyiHq8Cku0qzKN80COheZPseA1EvT0zlIgbXBxwijN4xRmvInK0fB5Kc9r3kddH2tT7V09bOFJsvGQaQmQ1WFTCqjpBFw1CHKcbfPLOxbLpVIR9gyx03R\n" > ~/.ssh_tests/id_rsa.pub
+          printf "%b" "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAwZBzKDUUZB2DROxJ0C3RcTIFXKhoDT2A4a1oizJWLs6ZhHFJ\n4cFt8zWiGuCdiZRpETYGGVYmtSHNVd5KCTxN2DtvnsQHyQSD3m+jtagwA3NoRRR8\n3dvMJhylJDutcs6NmYw0H2hFbYzd/WIstfQG3XTd28za4L7kE+e+H2ukYIZdkX3n\nCmDu+4hwNURlyBXPIXl1SFLlFf4x42+elqqBx/L8rdQ6lM/PaMoh6vApLtKsyjfN\nAjoXmT7HgNRL09M5SIG1wccIozeMUZryJytHweSnPa95HXR9rU+1dPWzhSbLxkGk\nJkNVhUwqo6QRcNQhynG3zyzsWy6VSEfYMsdN0QIDAQABAoIBABsZNPYBEFy/wPvq\nNJ8/et3lCdkh/oc0ABIYK9Wo82XUKKvhDF3drZ3p+UrX/VYgf+EX9hyf8gVTuSJ3\nX1gRqDhIgeTxPsHGrwt6B6pL5ITnKEbbimuo9Ni1E+2RqUO0ZSCE/1sSRv4CRaXO\nk8HZawif7ttxv4bNUrLys6xEbpvQlOMzgs4s/OBB/XMEqnFRGPJeeTy8bkOWyTwl\nLj06nq2brs4qK4eijI/MoGy1CD8JCpL4gG39GPTXd8GpudXmdelDn1E0t9nhL6Se\naOMaiPhy7kBJD4wZ//WZTSR1XyjNBH3DGkNZxPIWcX+wJFyNoLbSbVSda/7Dtvp3\nCPfiNhECgYEA/+3JswSzcVEANNF5OLZ76x+TODkZ9T6YF4SR8/uJjNViWgUpX7vw\nmyXF+2AwzNaotbBKmNG619BcUeMmQB76c+UiMLeJuJcT/Jj0xmEUopHonGqEIcvg\nHg6cafE1is7d+l669bfjitlx+3muF2CYnylSN1LWHxIITVUj3BmcWqUCgYEAwZ45\nWdaHfK7G6GjI7liDQT4ZlslA8dmLv2Jl2ExBBMoY3m3Sre428z2ZFa4O/nsBYP0a\nDxgYmX20fQGcbPugKdCYHc7HkKbMU1GwiVCGpDYZCm2gJKTvam3dYNaiAfq5DyhP\nzDCZNJ5rrSMprXsuRv2O4c5u8qtJ5ByaOJBjOr0CgYBMlkAxzkpUssS5CaaZDiLv\nLbfEr3HRLjYdc5KpzLBQ8NpJzhmfiIJsK1Wf8B0qb2J1XJg2Oy0KwFOgPbWIoryY\nSg19Pq98Cdn1UWCOrSabr8ZIaKe55WTgGcc8/O3k6BsNfaO9PJZfSssNUlCCtml1\n18u+uo9RJPhPDBd7Gj7r8QKBgFraxWy7t24xkZMDgK4fiM/3tQhFvhz/CY2wPbxG\n5Ae8UfkmLcOCUfTIReqfd9fAnsAFZNIKa5izHRu/wsh9NwYIJSlvm8PsEVtTrPRy\nfgvWet+i24/2eYZGsag8b19gaLCNKQzXDT1czYg8RNVsRSX427BoLzXeXNkW9uNu\nFbI9AoGAV2kxcdcKS4BtNHKPeGgV87dM0DWhQaAtEXEIcQquFtba0lAXioGHg8U4\nzeiugl4Qzchwk5qd3wnZ4SOhx0s16/5gQDlnkbjFR6EREUnvLRwV92zBXUTOGIkh\nZ7Z4rcgUKlVAaHT3OHN/lTyqJG/ib+K4wZhbztl/ox+JUFsvD98=\n-----END RSA PRIVATE KEY-----\n" > ~/.ssh_tests/id_rsa
+          chmod 600 ~/.ssh_tests/id_rsa*
+          git config --global user.name "John Doe"
+          git config --global user.email johndoe@example.com
+
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
 
       - name: Install
         env:
@@ -89,7 +149,7 @@ jobs:
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
 
       - name: Use Node.js
         uses: implausible/setup-node@feature/expose-architecture-override
