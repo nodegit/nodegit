@@ -16,20 +16,22 @@ const macCommonConditions = [
 ];
 
 const debugPairs = R.toPairs({
-  "win32-vs14-static-debug": R.allPass([
-    ...windowsCommonConditions,
-    R.pathEq(['settings', 'arch'], 'x86'),
-    R.pathEq(['settings', 'build_type'], 'Debug'),
-    R.pathEq(['settings', 'compiler.runtime'], 'MTd'),
-    R.pathEq(['settings', 'compiler.version'], '14')
-  ]),
-  "win32-vs15-static-debug": R.allPass([
-    ...windowsCommonConditions,
-    R.pathEq(['settings', 'arch'], 'x86'),
-    R.pathEq(['settings', 'build_type'], 'Debug'),
-    R.pathEq(['settings', 'compiler.runtime'], 'MTd'),
-    R.pathEq(['settings', 'compiler.version'], '15')
-  ]),
+  // win32 no longer available on conan
+  // see: https://github.com/conan-io/conan-center-index/blob/master/docs/faqs.md#why-not-x86-binaries
+  // "win32-vs14-static-debug": R.allPass([
+  //   ...windowsCommonConditions,
+  //   R.pathEq(['settings', 'arch'], 'x86'),
+  //   R.pathEq(['settings', 'build_type'], 'Debug'),
+  //   R.pathEq(['settings', 'compiler.runtime'], 'MTd'),
+  //   R.pathEq(['settings', 'compiler.version'], '14')
+  // ]),
+  // "win32-vs15-static-debug": R.allPass([
+  //   ...windowsCommonConditions,
+  //   R.pathEq(['settings', 'arch'], 'x86'),
+  //   R.pathEq(['settings', 'build_type'], 'Debug'),
+  //   R.pathEq(['settings', 'compiler.runtime'], 'MTd'),
+  //   R.pathEq(['settings', 'compiler.version'], '15')
+  // ]),
 
   "win64-vs14-static-debug": R.allPass([
     ...windowsCommonConditions,
@@ -54,20 +56,22 @@ const debugPairs = R.toPairs({
 });
 
 const releasePairs = R.toPairs({
-  "win32-vs14-static-release": R.allPass([
-    ...windowsCommonConditions,
-    R.pathEq(['settings', 'arch'], 'x86'),
-    R.pathEq(['settings', 'build_type'], 'Release'),
-    R.pathEq(['settings', 'compiler.runtime'], 'MT'),
-    R.pathEq(['settings', 'compiler.version'], '14')
-  ]),
-  "win32-vs15-static-release": R.allPass([
-    ...windowsCommonConditions,
-    R.pathEq(['settings', 'arch'], 'x86'),
-    R.pathEq(['settings', 'build_type'], 'Release'),
-    R.pathEq(['settings', 'compiler.runtime'], 'MT'),
-    R.pathEq(['settings', 'compiler.version'], '15')
-  ]),
+  // win32 no longer available on conan
+  // see: https://github.com/conan-io/conan-center-index/blob/master/docs/faqs.md#why-not-x86-binaries
+  // "win32-vs14-static-release": R.allPass([
+  //   ...windowsCommonConditions,
+  //   R.pathEq(['settings', 'arch'], 'x86'),
+  //   R.pathEq(['settings', 'build_type'], 'Release'),
+  //   R.pathEq(['settings', 'compiler.runtime'], 'MT'),
+  //   R.pathEq(['settings', 'compiler.version'], '14')
+  // ]),
+  // "win32-vs15-static-release": R.allPass([
+  //   ...windowsCommonConditions,
+  //   R.pathEq(['settings', 'arch'], 'x86'),
+  //   R.pathEq(['settings', 'build_type'], 'Release'),
+  //   R.pathEq(['settings', 'compiler.runtime'], 'MT'),
+  //   R.pathEq(['settings', 'compiler.version'], '15')
+  // ]),
 
   "win64-vs14-static-release": R.allPass([
     ...windowsCommonConditions,
