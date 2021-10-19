@@ -1,11 +1,11 @@
 const crypto = require("crypto");
 const execPromise = require("./execPromise");
 const fsNonPromise = require("fs");
-const fs = fsNonPromise.promises;
+const { promises: fs } = fsNonPromise;
 const path = require("path");
 const got = require("got");
-const os = require("os");
-const promisify = require("util").promisify;
+const { performance } = require("perf_hooks");
+const { promisify } = require("util");
 const stream = require("stream");
 const tar = require("tar-fs");
 const zlib = require("zlib");
@@ -42,10 +42,10 @@ class HashVerify extends stream.Transform {
   }
 }
 
-const buildDarwin = async (buildCwd) => {
+const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
   await execPromise(`./Configure darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp --prefix="${
     extractPath
-  }" --openssldir="${extractPath}" -mmacosx-version-min=10.11`, {
+  }" --openssldir="${extractPath}" -mmacosx-version-min=${macOsDeploymentTarget}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
@@ -71,10 +71,9 @@ const buildWin32 = async (buildCwd) => {
   }, { pipeOutput: true });
 };
 
-const buildOpenSSLIfNecessary = async (openSSLVersion) => {
-  const platform = os.platform();
-  if (platform !== "darwin" && platform !== "win32") {
-    console.log(`Skipping OpenSSL build, not required on ${platform}`);
+const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) => {
+  if (process.platform !== "darwin" && process.platform !== "win32") {
+    console.log(`Skipping OpenSSL build, not required on ${process.platform}`);
     return;
   }
 
@@ -110,12 +109,12 @@ const buildOpenSSLIfNecessary = async (openSSLVersion) => {
 
   const buildCwd = path.join(extractPath, `openssl-${openSSLVersion}`);
 
-  if (platform === "darwin") {
-    await buildDarwin(buildCwd);
-  } else if (platform === "win32") {
+  if (process.platform === "darwin") {
+    await buildDarwin(buildCwd, macOsDeploymentTarget);
+  } else if (process.platform === "win32") {
     await buildWin32(buildCwd);
   } else {
-    throw new Error(`Unknown platform: ${platform}`);
+    throw new Error(`Unknown platform: ${process.platform}`);
   }
 
   console.log("Build finished.");
@@ -123,7 +122,15 @@ const buildOpenSSLIfNecessary = async (openSSLVersion) => {
 
 const acquireOpenSSL = async () => {
   try {
-    await buildOpenSSLIfNecessary("1.1.1c");
+    let macOsDeploymentTarget;
+    if (process.platform === 'darwin') {
+      macOsDeploymentTarget = process.argv[2];
+      if (!macOsDeploymentTarget || !macOsDeploymentTarget.match(/\d+\.\d+/)) {
+        throw new Error(`Invalid macOsDeploymentTarget: ${macOsDeploymentTarget}`);
+      }
+    }
+
+    await buildOpenSSLIfNecessary("1.1.1c", macOsDeploymentTarget);
   } catch (err) {
     console.error("Acquire failed: ", err);
     process.exit(1);
