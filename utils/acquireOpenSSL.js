@@ -1,87 +1,107 @@
-const fse = require("fs-extra");
+const crypto = require("crypto");
+const execPromise = require("./execPromise");
+const fsNonPromise = require("fs");
+const fs = fsNonPromise.promises;
 const path = require("path");
-const R = require("ramda");
 const got = require("got");
+const os = require("os");
+const promisify = require("util").promisify;
 const stream = require("stream");
 const tar = require("tar-fs");
 const zlib = require("zlib");
+
+const pipeline = promisify(stream.pipeline);
 
 const vendorPath = path.resolve(__dirname, "..", "vendor");
 const distrosFilePath = path.join(vendorPath, "static_config", "openssl_distributions.json");
 const extractPath = path.join(vendorPath, "openssl");
 
-const getOSName = () => {
-  if (process.platform === "win32") {
-    if (process.arch === "x64") {
-      return "win64";
-    } else {
-      return "win32";
-    }
-  } else if (process.platform === "darwin") {
-    return "macOS";
-  } else {
-    // We only discover distros for Mac and Windows. We don't care about any other OS.
-    return "unknown";
-  }
-};
-
-const getCompilerVersion = () => {
-  // TODO: Get actual compiler version. For now, just assume latest compiler for distros in openssl_distributions.js
-  const osName = getOSName();
-  if (osName === "win32" || osName === "win64") {
-    return "vs14";
-  } else if (osName === "macOS") {
-    return "clang-9";
-  } else {
-    // We only discover distros for Mac and Windows. We don't care about any other OS.
-    return "unknown";
-  }
-};
-
 // TODO: Determine if we are GYPing in Debug
 const getIsDebug = () => false;
 
-const getMatchingDistributionName = () =>
-  `${getOSName()}-${getCompilerVersion()}-static${getIsDebug() ? "-debug" : "-release"}`;
+const getOpenSSLSourceUrl = (version) => `https://www.openssl.org/source/openssl-${version}.tar.gz`;
+const getOpenSSLSourceSha256Url = (version) => `${getOpenSSLSourceUrl(version)}.sha256`;
 
-const getDistributionsConfig = () =>
-  fse.readFile(distrosFilePath, "utf8")
-    .then(JSON.parse);
-
-const getDistrbutionURLFromConfig = (config) => {
-  const distName = getMatchingDistributionName();
-  const distURL = R.propOr(null, distName, config);
-
-  if (!distURL) {
-    return Promise.reject(new Error("No matching distribution for this operating system"));
+class HashVerify extends stream.Transform {
+  constructor(algorithm, expected) {
+    super();
+    this.expected = expected;
+    this.hash = crypto.createHash(algorithm);
   }
-  return Promise.resolve(distURL);
+  
+  _transform(chunk, encoding, callback) {
+    this.hash.update(chunk, encoding);
+    callback(null, chunk);
+  }
+
+  _final(callback) {
+    const digest = this.hash.digest("hex");
+    const digestOk = digest === this.expected;
+    callback(digestOk ? null : new Error(`Digest not OK: ${digest} !== ${this.expected}`));
+  }
+}
+
+const buildOpenSSLIfNecessary = async (openSSLVersion) => {
+  const platform = os.platform();
+  if (platform !== "darwin") {
+    return;
+  }
+
+  try {
+    await fs.stat(extractPath);
+    console.log("Skipping OpenSSL build, dir exists");
+    return;
+  } catch {}
+
+  const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
+  const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
+
+  const openSSLSha256 = (await got(openSSLSha256Url)).body.trim();
+
+  const downloadStream = got.stream(openSSLUrl);
+  let lastReport = performance.now();
+  downloadStream.on("downloadProgress", ({ percent, transferred, total }) => {
+    const currentTime = performance.now();
+    if (currentTime - lastReport > 1 * 1000) {
+      lastReport = currentTime;
+      console.log(`progress: ${transferred}/${total} (${(percent * 100).toFixed(2)}%)`)
+    }
+  });
+  
+  await pipeline(
+    downloadStream,
+    new HashVerify("sha256", openSSLSha256),
+    zlib.createGunzip(),
+    tar.extract(extractPath)
+  );
+
+  console.log("OpenSSL download + extract complete: SHA256 OK.");
+
+  const buildCwd = path.join(extractPath, `openssl-${openSSLVersion}`);
+
+  await execPromise(`./Configure darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp --prefix="${extractPath}" --openssldir="${extractPath}" -mmacosx-version-min=10.11`, {
+    cwd: buildCwd
+  }, { pipeOutput: true });
+
+  await execPromise("make depend", {
+    cwd: buildCwd
+  }, { pipeOutput: true });
+
+  await execPromise("make install", {
+    cwd: buildCwd,
+    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
+  }, { pipeOutput: true });
+
+  console.log("Build finished.");
+}
+
+const acquireOpenSSL = async () => {
+  try {
+    await buildOpenSSLIfNecessary("1.1.1c");
+  } catch (err) {
+    console.error("Acquire failed: ", err);
+    process.exit(1);
+  }
 };
-
-const fetchFileFromURL = (distUrl) => got(distUrl, {
-  responseType: 'buffer'
-}).then(({ body }) => body);
-
-const extractFile = (body) => new Promise((resolve, reject) => {
-  const streamableBody = new stream.Readable();
-  streamableBody.push(body);
-  streamableBody.push(null);
-  streamableBody
-    .pipe(zlib.createGunzip())
-    .on("error", reject)
-    .pipe(tar.extract(extractPath))
-    .on("error", reject)
-    .on("close", resolve);
-});
-
-const acquireOpenSSL = () =>
-  getDistributionsConfig()
-    .then(getDistrbutionURLFromConfig)
-    .then(fetchFileFromURL)
-    .then(extractFile)
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    });
 
 acquireOpenSSL();
