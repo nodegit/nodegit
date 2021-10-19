@@ -12,6 +12,7 @@ const zlib = require("zlib");
 
 const pipeline = promisify(stream.pipeline);
 
+const win32BatPath = path.join(__dirname, "build-openssl.bat");
 const vendorPath = path.resolve(__dirname, "..", "vendor");
 const distrosFilePath = path.join(vendorPath, "static_config", "openssl_distributions.json");
 const extractPath = path.join(vendorPath, "openssl");
@@ -41,9 +42,39 @@ class HashVerify extends stream.Transform {
   }
 }
 
+const buildDarwin = async (buildCwd) => {
+  await execPromise(`./Configure darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp --prefix="${
+    extractPath
+  }" --openssldir="${extractPath}" -mmacosx-version-min=10.11`, {
+    cwd: buildCwd
+  }, { pipeOutput: true });
+
+  await execPromise("make depend", {
+    cwd: buildCwd
+  }, { pipeOutput: true });
+
+  await execPromise("make install", {
+    cwd: buildCwd,
+    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
+  }, { pipeOutput: true });
+};
+
+const buildWin32 = async (buildCwd) => {
+  const vcvarsPath = `${
+    process.env.ProgramFiles
+  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvars${
+    process.arch === "x64" ? "64" : "32"
+  }.bat`;
+  await execPromise(`win32BatPath "${vcvarsPath}" ${process.arch === "x64" ? "VC-WIN64A" : "VC-WIN32"}`, {
+    cwd: buildCwd,
+    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
+  }, { pipeOutput: true });
+};
+
 const buildOpenSSLIfNecessary = async (openSSLVersion) => {
   const platform = os.platform();
-  if (platform !== "darwin") {
+  if (platform !== "darwin" && platform !== "win32") {
+    console.log(`Skipping OpenSSL build, not required on ${platform}`);
     return;
   }
 
@@ -79,18 +110,13 @@ const buildOpenSSLIfNecessary = async (openSSLVersion) => {
 
   const buildCwd = path.join(extractPath, `openssl-${openSSLVersion}`);
 
-  await execPromise(`./Configure darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp --prefix="${extractPath}" --openssldir="${extractPath}" -mmacosx-version-min=10.11`, {
-    cwd: buildCwd
-  }, { pipeOutput: true });
-
-  await execPromise("make depend", {
-    cwd: buildCwd
-  }, { pipeOutput: true });
-
-  await execPromise("make install", {
-    cwd: buildCwd,
-    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
-  }, { pipeOutput: true });
+  if (platform === "darwin") {
+    await buildDarwin(buildCwd);
+  } else if (platform === "win32") {
+    await buildWin32(buildCwd);
+  } else {
+    throw new Error(`Unknown platform: ${platform}`);
+  }
 
   console.log("Build finished.");
 }
