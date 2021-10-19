@@ -1,14 +1,15 @@
 {
   "variables": {
     "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))",
-    "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")"
+    "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
+    "electron_openssl_root%": "<!(node -p \"process.env.npm_config_openssl_dir || '<(module_root_dir)/vendor/openssl'\")"
   },
 
   "targets": [
     {
       "target_name": "acquireOpenSSL",
         "conditions": [
-        ["<(is_electron) == 1 and OS != 'linux'", {
+        ["<(is_electron) == 1 and OS != 'linux' and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
           "actions": [{
             "action_name": "acquire",
             "action": ["node", "utils/acquireOpenSSL.js"],
@@ -104,11 +105,11 @@
             "conditions": [
               ["<(is_electron) == 1", {
                 "include_dirs": [
-                  "vendor/openssl/include"
+                  "<(electron_openssl_root)/include"
                 ],
                 "libraries": [
-                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.a",
-                  "<(module_root_dir)/vendor/openssl/lib/libssl.a"
+                  "<(electron_openssl_root)/lib/libcrypto.a",
+                  "<(electron_openssl_root)/lib/libssl.a"
                 ]
               }]
             ],
@@ -131,10 +132,10 @@
           "OS=='win'", {
             "conditions": [
               ["<(is_electron) == 1", {
-                "include_dirs": ["vendor/openssl/include"],
+                "include_dirs": ["<(electron_openssl_root)/include"],
                 "libraries": [
-                  "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib",
-                  "<(module_root_dir)/vendor/openssl/lib/libssl.lib"
+                  "<(electron_openssl_root)/lib/libcrypto.lib",
+                  "<(electron_openssl_root)/lib/libssl.lib"
                 ]
               }]
             ],
