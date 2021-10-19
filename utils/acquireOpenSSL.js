@@ -60,12 +60,12 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 };
 
 const buildWin32 = async (buildCwd) => {
-  const vcvarsPath = `${
-    process.env.ProgramFiles
-  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvars${
-    process.arch === "x64" ? "64" : "32"
-  }.bat`;
-  await execPromise(`win32BatPath "${vcvarsPath}" ${process.arch === "x64" ? "VC-WIN64A" : "VC-WIN32"}`, {
+  const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
+    process.env.ProgramFiles || "C:\\Program Files"
+  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
+  const vcvarsallArch = process.arch === "x64" ? "x64" : "x86";
+  const vcTarget = process.arch === "x64" ? "VC-WIN64A" : "VC-WIN32";
+  await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vcvarsallArch} ${vcTarget}`, {
     cwd: buildCwd,
     maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
   }, { pipeOutput: true });

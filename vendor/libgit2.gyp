@@ -10,7 +10,7 @@
     "is_electron%": "<!(node ../utils/isBuildingForElectron.js <(node_root_dir))",
     "is_clang%": 0,
     "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
-    "electron_openssl_root%": "<!(node -p \"process.env.npm_config_openssl_dir || '<(module_root_dir)/vendor/openssl'\")"
+    "electron_openssl_root%": "<!(node -p \"process.env.npm_config_openssl_dir || String.raw`<(module_root_dir)/vendor/openssl`\")"
   },
   "targets": [
     {
