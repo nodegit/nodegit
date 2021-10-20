@@ -49,7 +49,11 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await execPromise("make depend", {
+  await execPromise("make", {
+    cwd: buildCwd
+  }, { pipeOutput: true });
+
+  await execPromise("make test", {
     cwd: buildCwd
   }, { pipeOutput: true });
 
