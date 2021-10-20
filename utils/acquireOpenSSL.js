@@ -141,7 +141,7 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
     tar.extract(extractPath)
   );
 
-  console.log("OpenSSL download + extract complete: SHA256 OK.");
+  console.log(`OpenSSL ${openSSLVersion} download + extract complete: SHA256 OK.`);
 
   const buildCwd = path.join(extractPath, `openssl-${openSSLVersion}`);
 
