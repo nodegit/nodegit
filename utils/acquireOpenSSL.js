@@ -69,6 +69,12 @@ const buildWin32 = async (buildCwd) => {
   const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
     process.env.ProgramFiles || "C:\\Program Files"
   }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
+  try {
+    await fs.stat(vcvarsallPath);
+  } catch {
+    throw new Error(`vcvarsall.bat not found at ${vcvarsallPath}`);
+  }
+  
   const vcvarsallArch = process.arch === "x64" ? "x64" : "x86";
   const vcTarget = process.arch === "x64" ? "VC-WIN64A" : "VC-WIN32";
   await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vcvarsallArch} ${vcTarget}`, {
