@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const execPromise = require("./execPromise");
+// for fs.remove. replace with fs.rm after dropping v12 support
+const fse = require("fs-extra");
 const fsNonPromise = require("fs");
 const { promises: fs } = fsNonPromise;
 const path = require("path");
@@ -75,12 +77,41 @@ const buildWin32 = async (buildCwd) => {
   }, { pipeOutput: true });
 };
 
+const removeOpenSSLIfOudated = async (openSSLVersion) => {
+  try {
+    let pkgconfigContent;
+    try {
+      pkgconfigContent = await fs.readFile(path.join(extractPath, "lib", "pkgconfig", "openssl.pc"), "utf8");
+    } catch {
+      /* if we fail to read the file, assume removal not required */
+    }
+
+    if (!pkgconfigContent) {
+      return;
+    }
+
+    const versionMatch = pkgconfigContent.match(/\nVersion: (\d\.\d\.\d[a-z]*)\n/);
+    const installedVersion = versionMatch && versionMatch[1];
+    if (!installedVersion || installedVersion === openSSLVersion) {
+      return;
+    }
+
+    console.log("Removing outdated OpenSSL at: ", extractPath);
+    await fse.remove(extractPath);
+    console.log("Outdated OpenSSL removed.");
+  } catch (err) {
+    console.log("Remove outdated OpenSSL failed: ", err);
+  }
+};
+
 const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) => {
   if (process.platform !== "darwin" && process.platform !== "win32") {
     console.log(`Skipping OpenSSL build, not required on ${process.platform}`);
     return;
   }
 
+  await removeOpenSSLIfOudated(openSSLVersion);
+  
   try {
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL build, dir exists");
@@ -127,7 +158,7 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
 const acquireOpenSSL = async () => {
   try {
     let macOsDeploymentTarget;
-    if (process.platform === 'darwin') {
+    if (process.platform === "darwin") {
       macOsDeploymentTarget = process.argv[2];
       if (!macOsDeploymentTarget || !macOsDeploymentTarget.match(/\d+\.\d+/)) {
         throw new Error(`Invalid macOsDeploymentTarget: ${macOsDeploymentTarget}`);
