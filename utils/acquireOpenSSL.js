@@ -79,18 +79,19 @@ const buildWin32 = async (buildCwd) => {
 
 const removeOpenSSLIfOudated = async (openSSLVersion) => {
   try {
-    let pkgconfigContent;
+    let openSSLResult;
     try {
-      pkgconfigContent = await fs.readFile(path.join(extractPath, "lib", "pkgconfig", "openssl.pc"), "utf8");
+      const openSSLPath = path.join(extractPath, 'bin', 'openssl');
+      openSSLResult = await execPromise(`${openSSLPath} version`);
     } catch {
-      /* if we fail to read the file, assume removal not required */
+      /* if we fail to get the version, assume removal not required */
     }
 
-    if (!pkgconfigContent) {
+    if (!openSSLResult) {
       return;
     }
 
-    const versionMatch = pkgconfigContent.match(/\nVersion: (\d\.\d\.\d[a-z]*)\n/);
+    const versionMatch = openSSLResult.match(/^OpenSSL (\d\.\d\.\d[a-z]*)/);
     const installedVersion = versionMatch && versionMatch[1];
     if (!installedVersion || installedVersion === openSSLVersion) {
       return;
