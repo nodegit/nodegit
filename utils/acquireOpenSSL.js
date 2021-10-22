@@ -16,11 +16,7 @@ const pipeline = promisify(stream.pipeline);
 
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
 const vendorPath = path.resolve(__dirname, "..", "vendor");
-const distrosFilePath = path.join(vendorPath, "static_config", "openssl_distributions.json");
 const extractPath = path.join(vendorPath, "openssl");
-
-// TODO: Determine if we are GYPing in Debug
-const getIsDebug = () => false;
 
 const getOpenSSLSourceUrl = (version) => `https://www.openssl.org/source/openssl-${version}.tar.gz`;
 const getOpenSSLSourceSha256Url = (version) => `${getOpenSSLSourceUrl(version)}.sha256`;
