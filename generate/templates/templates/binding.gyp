@@ -14,7 +14,7 @@
           "actions": [{
             "action_name": "acquire",
             "action": ["node", "utils/acquireOpenSSL.js", "<(macOS_deployment_target)"],
-            "inputs": ["vendor/static_config/openssl_distributions.json"],
+            "inputs": [""],
             "outputs": ["vendor/openssl"],
             "message": "Acquiring OpenSSL binaries and headers"
           }]
