@@ -62,8 +62,12 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 };
 
 const buildWin32 = async (buildCwd) => {
+  const vcvarsallArch = process.arch === "x64" ? "x64" : "x86";
+  const programFilesPath = (vcvarsallArch === "x64"
+    ? process.env["ProgramFiles(x86)"]
+    : process.env.ProgramFiles) || "C:\\Program Files";
   const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
-    process.env.ProgramFiles || "C:\\Program Files"
+    programFilesPath
   }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
   try {
     await fs.stat(vcvarsallPath);
@@ -71,8 +75,7 @@ const buildWin32 = async (buildCwd) => {
     throw new Error(`vcvarsall.bat not found at ${vcvarsallPath}`);
   }
   
-  const vcvarsallArch = process.arch === "x64" ? "x64" : "x86";
-  const vcTarget = process.arch === "x64" ? "VC-WIN64A" : "VC-WIN32";
+  const vcTarget = vcvarsallArch === "x64" ? "VC-WIN64A" : "VC-WIN32";
   await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vcvarsallArch} ${vcTarget}`, {
     cwd: buildCwd,
     maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
@@ -83,7 +86,7 @@ const removeOpenSSLIfOudated = async (openSSLVersion) => {
   try {
     let openSSLResult;
     try {
-      const openSSLPath = path.join(extractPath, 'bin', 'openssl');
+      const openSSLPath = path.join(extractPath, "bin", "openssl");
       openSSLResult = await execPromise(`${openSSLPath} version`);
     } catch {
       /* if we fail to get the version, assume removal not required */
