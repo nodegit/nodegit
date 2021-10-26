@@ -9,7 +9,8 @@
     "gcc_version%": 0,
     "is_electron%": "<!(node ../utils/isBuildingForElectron.js <(node_root_dir))",
     "is_clang%": 0,
-    "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")"
+    "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
+    "electron_openssl_root%": "<!(node ../utils/getElectronOpenSSLRoot.js <(module_root_dir))",
   },
   "targets": [
     {
@@ -336,7 +337,7 @@
             "conditions": [
               ["<(is_electron) == 1", {
                 "include_dirs": [
-                  "openssl/include"
+                  "<(electron_openssl_root)/include"
                 ]
               }]
             ],
@@ -438,7 +439,7 @@
                 },
               }],
               ["<(is_electron) == 1", {
-                "include_dirs": ["openssl/include"]
+                "include_dirs": ["<(electron_openssl_root)/include"]
               }]
             ],
           },
@@ -616,18 +617,18 @@
       "conditions": [
         ["OS=='mac' and <(is_electron) == 1", {
           "include_dirs": [
-            "openssl/include",
+            "<(electron_openssl_root)/include",
           ]
         }],
         ["OS=='win'", {
           "conditions": [
             ["<(is_electron) == 1", {
               "include_dirs": [
-                "openssl/include"
+                "<(electron_openssl_root)/include"
               ],
               "libraries": [
-                "<(module_root_dir)/vendor/openssl/lib/libssl.lib",
-                "<(module_root_dir)/vendor/openssl/lib/libcrypto.lib"
+                "<(electron_openssl_root)/lib/libssl.lib",
+                "<(electron_openssl_root)/lib/libcrypto.lib"
               ]
             }, {
               "defines": [
@@ -674,7 +675,7 @@
       ],
       "conditions": [
         ["OS=='mac' and <(is_electron) == 1", {
-          "include_dirs": ["openssl/include"]
+          "include_dirs": ["<(electron_openssl_root)/include"]
         }],
         ["OS=='mac'", {
           "sources": [
