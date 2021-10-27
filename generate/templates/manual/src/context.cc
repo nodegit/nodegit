@@ -5,11 +5,7 @@ namespace nodegit {
 
   AsyncContextCleanupHandle::AsyncContextCleanupHandle(v8::Isolate *isolate, Context *context)
     : context(context),
-#if IS_CONTEXT_AWARE_NODE_MODULE_VERSION
       handle(node::AddEnvironmentCleanupHook(isolate, AsyncCleanupContext, this))
-#else
-      handle(nullptr)
-#endif
   {}
 
   AsyncContextCleanupHandle::~AsyncContextCleanupHandle() {
@@ -40,6 +36,7 @@ namespace nodegit {
   }
 
   Context::~Context() {
+    nodegit::TrackerWrap::DeleteFromList(&trackerList);
     contexts.erase(isolate);
   }
 

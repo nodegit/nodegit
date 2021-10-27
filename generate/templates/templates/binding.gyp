@@ -67,6 +67,7 @@
         "src/str_array_converter.cc",
         "src/context.cc",
         "src/v8_helpers.cc",
+        "src/tracker_wrap.cc",
         {% each %}
           {% if type != "enum" %}
             "src/{{ name }}.cc",

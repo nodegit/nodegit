@@ -1,10 +1,10 @@
 #ifndef NODEGIT_WRAPPER_H
 #define NODEGIT_WRAPPER_H
 
-#include <nan.h>
 #include <algorithm>
 #include <unordered_map>
 
+#include "tracker_wrap.h"
 #include "cleanup_handle.h"
 
 // the Traits template parameter supplies:
@@ -16,13 +16,16 @@
 //
 //  static const bool isFreeable
 //  static void free(cType *raw) - frees the object using freeFunctionName
+//
+// nodegit::TrackerWrap allows for cheap tracking of new objects, avoiding searchs
+// in a container to remove the tracking of a specific object.
 
 namespace nodegit {
   class Context;
 }
 
 template<typename Traits>
-class NodeGitWrapper : public Nan::ObjectWrap {
+class NodeGitWrapper : public nodegit::TrackerWrap {
 public:
   // replicate Traits typedefs for ease of use
   typedef typename Traits::cType cType;
@@ -37,7 +40,7 @@ public:
   // a separate issue.
   bool selfFreeing;
 
-  const nodegit::Context *nodegitContext = nullptr;
+  nodegit::Context *nodegitContext = nullptr;
 
 protected:
   cType *raw;
@@ -67,6 +70,8 @@ protected:
 
   static NAN_METHOD(GetSelfFreeingInstanceCount);
   static NAN_METHOD(GetNonSelfFreeingConstructedCount);
+
+  void SetNativeOwners(v8::Local<v8::Object> owners);
 
 public:
   static v8::Local<v8::Value> New(const cType *raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());

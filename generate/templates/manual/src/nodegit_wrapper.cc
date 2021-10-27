@@ -1,6 +1,7 @@
 template<typename Traits>
 NodeGitWrapper<Traits>::NodeGitWrapper(typename Traits::cType *raw, bool selfFreeing, v8::Local<v8::Object> owner)
   : nodegitContext(nodegit::Context::GetCurrentContext()) {
+  nodegitContext->LinkTrackerList(this);
   if (Traits::isSingleton) {
     ReferenceCounter::incrementCountForPointer((void *)raw);
     this->raw = raw;
@@ -20,6 +21,7 @@ NodeGitWrapper<Traits>::NodeGitWrapper(typename Traits::cType *raw, bool selfFre
       Traits::duplicate(&this->raw, raw);
       selfFreeing = true;
     } else {
+      SetNativeOwners(owner);
       this->owner.Reset(owner);
       this->raw = raw;
     }
@@ -45,10 +47,14 @@ NodeGitWrapper<Traits>::NodeGitWrapper(const char *error)
 
 template<typename Traits>
 NodeGitWrapper<Traits>::~NodeGitWrapper() {
+  Unlink();
   if (Traits::isFreeable && selfFreeing) {
     Traits::free(raw);
     SelfFreeingInstanceCount--;
     raw = NULL;
+  }
+  else if (!selfFreeing) {
+    --NonSelfFreeingConstructedCount;
   }
 }
 
@@ -75,6 +81,33 @@ NAN_METHOD(NodeGitWrapper<Traits>::JSNewFunction) {
 
   instance->Wrap(info.This());
   info.GetReturnValue().Set(info.This());
+}
+
+template<typename Traits>
+void NodeGitWrapper<Traits>::SetNativeOwners(v8::Local<v8::Object> owners) {
+  assert(owners->IsArray() || owners->IsObject());
+  Nan::HandleScope scope;
+  std::unique_ptr< std::vector<nodegit::TrackerWrap*> > trackerOwners = 
+    std::make_unique< std::vector<nodegit::TrackerWrap*> >();
+
+  if (owners->IsArray()) {
+    v8::Local<v8::Context> context = Nan::GetCurrentContext();
+    const v8::Local<v8::Array> ownersArray = owners.As<v8::Array>();
+    const uint32_t numOwners = ownersArray->Length();
+
+    for (uint32_t i = 0; i < numOwners; ++i) {
+      v8::Local<v8::Value> value = ownersArray->Get(context, i).ToLocalChecked();
+      const v8::Local<v8::Object> object = value.As<v8::Object>();
+      Nan::ObjectWrap *objectWrap = Nan::ObjectWrap::Unwrap<Nan::ObjectWrap>(object);
+      trackerOwners->push_back(static_cast<nodegit::TrackerWrap*>(objectWrap));
+    }
+  }
+  else if (owners->IsObject()) {
+    Nan::ObjectWrap *objectWrap = Nan::ObjectWrap::Unwrap<Nan::ObjectWrap>(owners);
+    trackerOwners->push_back(static_cast<nodegit::TrackerWrap*>(objectWrap));
+  }
+
+  SetTrackerWrapOwners(std::move(trackerOwners));
 }
 
 template<typename Traits>

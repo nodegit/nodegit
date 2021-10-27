@@ -67,6 +67,13 @@ void OpenSSL_ThreadSetup() {
   CRYPTO_THREADID_set_callback(OpenSSL_IDCallback);
 }
 
+// diagnostic function
+NAN_METHOD(GetNumberOfTrackedObjects) {
+  nodegit::Context *currentNodeGitContext = nodegit::Context::GetCurrentContext();
+  assert (currentNodeGitContext != nullptr);
+  info.GetReturnValue().Set(currentNodeGitContext->TrackerListSize());
+}
+
 static std::once_flag libraryInitializedFlag;
 static std::mutex libraryInitializationMutex;
 
@@ -87,6 +94,12 @@ NAN_MODULE_INIT(init) {
       nodegit::ThreadPool::InitializeGlobal();
     });
   }
+
+  // Exports function 'getNumberOfTrackedObjects'
+  Nan::Set(target
+    , Nan::New<v8::String>("getNumberOfTrackedObjects").ToLocalChecked()
+    , Nan::GetFunction(Nan::New<v8::FunctionTemplate>(GetNumberOfTrackedObjects)).ToLocalChecked()
+  );
 
   Nan::HandleScope scope;
   Local<Context> context = Nan::GetCurrentContext();
@@ -112,8 +125,4 @@ NAN_MODULE_INIT(init) {
   nodegit::LockMaster::InitializeContext();
 }
 
-#if IS_CONTEXT_AWARE_NODE_MODULE_VERSION
 NAN_MODULE_WORKER_ENABLED(nodegit, init)
-#else
-NODE_MODULE(nodegit, init)
-#endif

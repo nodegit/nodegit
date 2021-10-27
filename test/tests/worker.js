@@ -84,5 +84,48 @@ if (Worker) {
         });
       });
     }
+
+    // NOTE: first try was to build a test measuring memory used, checking
+    // that memory allocated by objects was being freed, but it was problematic
+    // to obtain the memory freed by a different context (a worker) after the
+    // context was gone, and the data in the tests wasn't consistent.
+    // So instead this test checks that the count of objects created/destroyed
+    // during the test match the count of objects being tracked by the
+    // nodegit::Context, which will be destroyed on context shutdown. To check
+    // that they are actually being freed can be done with a debugger/profiler.
+    it("can track objects to free on context shutdown", function(done) {
+      let testOk;
+      const workerPath = local("../utils/worker_context_aware.js");
+      const worker = new Worker(workerPath, {
+        workerData: {
+          clonePath,
+          url: "https://github.com/nodegit/test.git"
+        }
+      });
+      worker.on("message", (message) => {
+        switch (message) {
+          case "numbersMatch":
+            testOk = true;
+            worker.terminate();
+            break;
+          case "numbersDoNotMatch":
+            testOk = false;
+            worker.terminate();
+            break;
+          case "failure":
+            assert.fail();
+            break;
+        }
+      });
+      worker.on("error", () => assert.fail());
+      worker.on("exit", (code) => {
+        if (code === 1 && testOk === true) {
+          done();
+        }
+        else {
+          assert.fail();
+        }
+      });
+    });
   });
 }

@@ -721,19 +721,10 @@ namespace nodegit {
     asyncCallbackData->cleanupHandle.swap(cleanupHandle);
     asyncCallbackData->pool = nullptr;
 
-#if IS_CONTEXT_AWARE_NODE_MODULE_VERSION
     uv_close(reinterpret_cast<uv_handle_t *>(&jsThreadCallbackAsync), [](uv_handle_t *handle) {
-      auto closeAsyncCallbackData = static_cast<AsyncCallbackData *>(handle->data);
-      delete closeAsyncCallbackData;
+      auto asyncCallbackData = static_cast<AsyncCallbackData *>(handle->data);
+      delete asyncCallbackData;
     });
-#else
-    // NOTE We are deliberately leaking this pointer because `async` cleanup in
-    // node has not completely landed yet. Trying to cleanup this pointer
-    // is probably not worth the fight as it's very little memory lost per context
-    // When all LTS versions of node and Electron support async cleanup, we should
-    // be heading back to cleanup this
-    uv_close(reinterpret_cast<uv_handle_t *>(&jsThreadCallbackAsync), nullptr);
-#endif
   }
 
   ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)

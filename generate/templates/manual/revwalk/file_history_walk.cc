@@ -35,7 +35,7 @@ public:
 
   v8::Local<v8::Value> toJavascript() {
     v8::Local<v8::Object> historyEntry = Nan::New<v8::Object>();
-    v8::Local<v8::Array> owners = Nan::New<Array>(1);
+    v8::Local<v8::Array> owners = Nan::New<Array>(0);
     Nan::Set(
       owners,
       Nan::New<v8::Number>(owners->Length()),
