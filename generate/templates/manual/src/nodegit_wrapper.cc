@@ -92,11 +92,11 @@ void NodeGitWrapper<Traits>::SetNativeOwners(v8::Local<v8::Object> owners) {
 
   if (owners->IsArray()) {
     v8::Local<v8::Context> context = Nan::GetCurrentContext();
-    const v8::Local<v8::Array> array = owners.As<v8::Array>();
-    uint32_t length = array->Length();
+    const v8::Local<v8::Array> ownersArray = owners.As<v8::Array>();
+    const uint32_t numOwners = ownersArray->Length();
 
-    for (uint32_t i = 0; i < length; ++i) {
-      v8::Local<v8::Value> value = array->Get(context, i).ToLocalChecked();
+    for (uint32_t i = 0; i < numOwners; ++i) {
+      v8::Local<v8::Value> value = ownersArray->Get(context, i).ToLocalChecked();
       const v8::Local<v8::Object> object = value.As<v8::Object>();
       Nan::ObjectWrap *objectWrap = Nan::ObjectWrap::Unwrap<Nan::ObjectWrap>(object);
       trackerOwners->push_back(static_cast<nodegit::TrackerWrap*>(objectWrap));

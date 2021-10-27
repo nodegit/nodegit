@@ -35,9 +35,7 @@ namespace {
    * Frees the memory of the TrackerWrap pointer it holds.
    */
   TrackerWrapTreeNode::~TrackerWrapTreeNode() {
-    if (m_trackerWrap != nullptr) {
-      delete m_trackerWrap;
-    }
+    delete m_trackerWrap;
   }
 
   /**

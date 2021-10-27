@@ -7,8 +7,9 @@
 
 namespace nodegit {
   // Base class used to track wrapped objects, so that we can
-  // free the objects that were not freed (because their
-  // WeakCallback didn't trigger) at the time of context closing.
+  // free the objects that were not freed at the time of context
+  // closing (because their WeakCallback didn't trigger. See
+  // https://github.com/nodejs/help/issues/3297).
   // Implementation based on node.js's class RefTracker (napi).
   class TrackerWrap : public Nan::ObjectWrap {
   public:
