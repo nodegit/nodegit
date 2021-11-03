@@ -83,12 +83,23 @@ void CommitsGraph::AddNode(const std::string &oidStr, const std::vector<std::str
  * multiple times, we only add a child when the last parent (parentsLeft) inserts it. This is
  * actually what makes the algorithm fast.
  * Recursive algorithm avoided to prevent stack overflow in case of excessive levels in the tree.
+ * 
+ * Explanation of the algorithm:
+ * once the graph is built with the commit history, `CalculateMaxDepth()` counts the maximum number
+ * of levels from any of the roots to any of the leaves, which gives us the maximum depth
+ * (`historyStructure.maxDepth` in the final result).
+ * Inside `CalculateMaxDepth()`, to count levels, we add in an iterative way for each level and
+ * starting at the roots level, all the children from that level, but only if each child is the last
+ * time we'll consider it in the algorithm (for example if a child node 'C' has 2 parents 'P1' and
+ * 'P2', and 'P1' has already been considered before in the algorithm as parent of 'C', and now we are
+ * processing 'C' as a child from 'P2', which will be the last time, as 'C' has no more parents left).
+ * This way we prevent counting 'C' multiple times.
  */
 uint32_t CommitsGraph::CalculateMaxDepth()
 {
   uint32_t maxDepth {0};
-  std::set<CommitsGraphNode *> parents {};
-  std::set<CommitsGraphNode *> children {};
+  std::unordered_set<CommitsGraphNode *> parents {};
+  std::unordered_set<CommitsGraphNode *> children {};
 
   // start from the root commmits
   for (CommitsGraphNode *root : m_roots) {
@@ -271,8 +282,9 @@ struct OdbObjectsData
   struct {
     std::unordered_map<std::string, CommitInfo> info {};
     std::unordered_set<std::string> unreachables {};
-    // tree of commits (graph) to be built while reading the object database,
-    // in order to calculate the maximum history depth
+    // Tree of commits (graph) to be built after having read the object
+    // database, and pruned unreachable objects.
+    // Used to calculate the maximum history depth.
     CommitsGraph graph {};
     size_t totalSize {0};
     size_t maxSize {0};
@@ -317,7 +329,7 @@ struct OdbObjectsData
  * \class WorkItemOid
  * WorkItem storing odb oids for the WorkPool.
  */
-class WorkItemOid : public WorkItem{
+class WorkItemOid : public WorkItem {
 public:
   WorkItemOid(const git_oid &oid)
     : m_oid(oid) {}
@@ -352,7 +364,7 @@ public:
   bool Execute(std::unique_ptr<WorkItem> &&work);
 
 private:
-  OdbObjectsData::TreeInfoAndStats thisTreeInfoAndStats(git_tree *tree, size_t size, size_t numEntries);
+  OdbObjectsData::TreeInfoAndStats thisTreeInfoAndStats(const git_tree *tree, size_t size, size_t numEntries);
 
   std::string m_repoPath {};
   git_repository *m_repo {nullptr};
@@ -532,27 +544,23 @@ bool WorkerStoreOdbData::Execute(std::unique_ptr<WorkItem> &&work)
  * \param numEntries number of entries of this tree.
  * \return this tree's data and partial statistics.
   */
-OdbObjectsData::TreeInfoAndStats WorkerStoreOdbData::thisTreeInfoAndStats(git_tree *tree, size_t size,
+OdbObjectsData::TreeInfoAndStats WorkerStoreOdbData::thisTreeInfoAndStats(const git_tree *tree, size_t size,
   size_t numEntries)
 {
-  const git_tree_entry *te {nullptr};
-  git_object_t te_type {GIT_OBJECT_INVALID};
-  const char *teName {nullptr};
-  size_t teNameLen {0};
-  const git_oid *te_oid {nullptr};
-
   OdbObjectsData::TreeInfoAndStats treeInfoAndStats {};
   treeInfoAndStats.size = size;
   treeInfoAndStats.numEntries = numEntries;
 
   for (size_t i = 0; i < numEntries; ++i)
   {
-    te = git_tree_entry_byindex(tree, i);
+    const git_tree_entry *te = git_tree_entry_byindex(tree, i);
     if (te == nullptr) {
       continue;
     }
-
-    te_type = git_tree_entry_type(te);
+    git_object_t te_type = git_tree_entry_type(te);
+    const char *teName {nullptr};
+    size_t teNameLen {0};
+    const git_oid *te_oid {nullptr};
 
     switch (te_type)
     {
@@ -585,7 +593,7 @@ OdbObjectsData::TreeInfoAndStats WorkerStoreOdbData::thisTreeInfoAndStats(git_tr
         
       case GIT_OBJECT_TREE:
       {
-        // We store tree's name lenght to compare in posterior stage, after threads work
+        // We store tree's name length to compare in posterior stage, after threads work
         teName = git_tree_entry_name(te);
         teNameLen = std::char_traits<char>::length(teName);
 
@@ -608,7 +616,7 @@ OdbObjectsData::TreeInfoAndStats WorkerStoreOdbData::thisTreeInfoAndStats(git_tr
  * \class WorkItemOidStrType
  * WorkItem storing pointers to object info structs for the WorkPool.
  */
-class WorkItemOidStrType : public WorkItem{
+class WorkItemOidStrType : public WorkItem {
 public:
   WorkItemOidStrType(void *objectInfo, git_object_t type)
     : m_objectInfo(objectInfo), m_oid_type(type) {}
@@ -896,22 +904,31 @@ private:
 
 /**
  * RepoAnalysis::Analyze
+ * To obtain the final result, the whole process is run in different stages.
+ * If a stage leverages threads via a worker pool, the worker pool is created
+ * and we wait until all the threads are done to continue with the next stage.
  */
 int RepoAnalysis::Analyze()
 {
   int errorCode {GIT_OK};
 
+  // stage 1
   if ((errorCode = storeObjectsInfo() != GIT_OK)) {
     return errorCode;
   }
 
+  // stage 2
   if (!setObjectsReachability()) {
     return GIT_EUSER;
   }
+
+  // stage 3
   pruneUnreachables();
 
+  // stage 4
   statsCountAndMax();
 
+  // stage 5
   if (!statsHistoryAndBiggestCheckouts()) {
     return GIT_EUSER;
   }
@@ -946,7 +963,8 @@ v8::Local<v8::Object> RepoAnalysis::StatisticsToJS() const
 /**
  * RepoAnalysis::storeObjectsInfo
  * Store information from read odb objects.
- * Build a container with only reachable objects (avoid dangling objects).
+ * Starts building a container which eventually will hold only reachable objects.
+ * Leverages threads via a worker pool <WorkerStoreOdbData,WorkItemOid>.
  */
 int RepoAnalysis::storeObjectsInfo()
 {
@@ -1077,7 +1095,11 @@ int RepoAnalysis::storeAndCountRefs()
 
 /**
  * RepoAnalysis::setObjectsReachability
- * Leverages threads to set reachability from tags, commits, and trees.
+ * Leverages threads via a worker pool <WorkerReachCounter,WorkItemOidStrType> to
+ * set reachability from tags, commits, and trees.
+ * NOTE: the worker pool leveraged in this method runs at a different stage than the
+ * worker pool leveraged in previous stages, meaning they do not run at the same time, hence
+ * access to 'm_odbObjectsData->....info' won't suffer from a data race.
  * NOTE: performance didn't improve leveraging threads for adding objects to unreachables container.
  * \return false if the workerPool finished with errors; true otherwise
  */
@@ -1477,7 +1499,8 @@ bool RepoAnalysis::statsHistoryAndBiggestCheckouts()
 /**
  * RepoAnalysis::calculateBiggestCheckouts
  * 
- * Once threads have collected data from objects, biggest checkouts can be calculated.
+ * Once threads have collected data from objects and unreachable objects
+ * have been pruned, biggest checkouts can be calculated.
  * Threads have already collected partial non-recursive tree statistics.
  * \return true if success; false if something went wrong.
  */
