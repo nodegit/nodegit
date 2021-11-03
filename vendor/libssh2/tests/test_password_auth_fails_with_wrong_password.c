@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-static const char *USERNAME = "libssh2"; /* configured in Dockerfile */
+static const char *USERNAME = "libssh2"; /* set in Dockerfile */
 static const char *WRONG_PASSWORD = "i'm not the password";
 
 int test(LIBSSH2_SESSION *session)

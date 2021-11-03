@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
     }
 
     /* Create a session instance and start it up
-     * This will trade welcome banners, exchange keys, and setup crypto, compression, and MAC layers
+     * This will trade welcome banners, exchange keys,
+     * and setup crypto, compression, and MAC layers
      */
     session = libssh2_session_init();
     if(libssh2_session_startup(session, sock)) {
@@ -92,9 +93,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    /* At this point we havn't authenticated,
-     * The first thing to do is check the hostkey's fingerprint against our known hosts
-     * Your app may have it hard coded, may go to a file, may present it to the user, that's your call
+    /* At this point we haven't authenticated,
+     * The first thing to do is check the hostkey's
+     * fingerprint against our known hosts
+     * Your app may have it hard coded, may go to a file,
+     * may present it to the user, that's your call
      */
     fingerprint = libssh2_hostkey_hash(session, LIBSSH2_HOSTKEY_HASH_SHA1);
     printf("Fingerprint: ");
@@ -118,7 +121,8 @@ int main(int argc, char *argv[])
 
     if(auth_pw & 4) {
         /* Authenticate by public key */
-        if(libssh2_userauth_publickey_fromfile(session, username, pubkeyfile, privkeyfile, password)) {
+        if(libssh2_userauth_publickey_fromfile(session, username, pubkeyfile,
+                                               privkeyfile, password)) {
             printf("\tAuthentication by public key failed!\n");
             goto shutdown;
         }

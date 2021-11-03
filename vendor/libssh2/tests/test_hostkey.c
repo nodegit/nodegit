@@ -32,11 +32,13 @@ int test(LIBSSH2_SESSION *session)
 
     if(type == LIBSSH2_HOSTKEY_TYPE_ECDSA_256) {
         rc = libssh2_base64_decode(session, &expected_hostkey, &expected_len,
-                                   EXPECTED_ECDSA_HOSTKEY, strlen(EXPECTED_ECDSA_HOSTKEY));
+                                   EXPECTED_ECDSA_HOSTKEY,
+                                   strlen(EXPECTED_ECDSA_HOSTKEY));
     }
     else if(type == LIBSSH2_HOSTKEY_TYPE_RSA) {
         rc = libssh2_base64_decode(session, &expected_hostkey, &expected_len,
-                                   EXPECTED_RSA_HOSTKEY, strlen(EXPECTED_RSA_HOSTKEY));
+                                   EXPECTED_RSA_HOSTKEY,
+                                   strlen(EXPECTED_RSA_HOSTKEY));
     }
     else {
         fprintf(stderr, "Unexpected type of hostkey: %i\n", type);
@@ -49,7 +51,7 @@ int test(LIBSSH2_SESSION *session)
     }
 
     if(len != expected_len) {
-        fprintf(stderr, "Hostkey does not have the expected length %ld != %d\n",
+        fprintf(stderr, "Hostkey does not have the expected length %ld!=%d\n",
                 (unsigned long)len, expected_len);
         return 1;
     }

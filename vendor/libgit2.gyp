@@ -601,6 +601,7 @@
         "libssh2/src/pem.c",
         "libssh2/src/session.c",
         "libssh2/src/userauth.c",
+        "libssh2/src/agent_win.c",
       ],
       "include_dirs": [
         ".",

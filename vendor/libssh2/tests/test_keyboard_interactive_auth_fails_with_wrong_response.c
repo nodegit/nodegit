@@ -4,11 +4,11 @@
 
 #include <stdio.h>
 
-static const char *USERNAME = "libssh2"; /* configured in Dockerfile */
+static const char *USERNAME = "libssh2"; /* set in Dockerfile */
 static const char *WRONG_PASSWORD = "i'm not the password";
 
 static void kbd_callback(const char *name, int name_len,
-                         const char *instruction, int instruction_len,
+                         const char *instruct, int instruct_len,
                          int num_prompts,
                          const LIBSSH2_USERAUTH_KBDINT_PROMPT *prompts,
                          LIBSSH2_USERAUTH_KBDINT_RESPONSE *responses,
@@ -17,7 +17,7 @@ static void kbd_callback(const char *name, int name_len,
     int i;
     (void)abstract;
     fprintf(stdout, "Kb-int name: %.*s\n", name_len, name);
-    fprintf(stdout, "Kb-int instruction: %.*s\n", instruction_len, instruction);
+    fprintf(stdout, "Kb-int instruction: %.*s\n", instruct_len, instruct);
     for(i = 0; i < num_prompts; ++i) {
         fprintf(stdout, "Kb-int prompt %d: %.*s\n", i, prompts[i].length,
                 prompts[i].text);

@@ -57,6 +57,7 @@ set(EXAMPLES
   sftpdir_nonblock
   ssh2_exec
   ssh2_agent
+  ssh2_agent_forwarding
   ssh2_echo
   sftp_append
   subsystem_netconf
