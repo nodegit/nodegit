@@ -6,6 +6,7 @@ var exec = require('../utils/execPromise');
 var NodeGit = require('..');
 
 var workdirPath = local("repos/workdir");
+var constWorkdirPath = local("repos/constworkdir");
 
 before(function() {
   this.timeout(350000);
@@ -20,6 +21,9 @@ before(function() {
     })
     .then(function() {
       return exec("git init " + local("repos", "empty"));
+    })
+    .then(function() {
+      return exec("git clone " + url + " " + constWorkdirPath);
     })
     .then(function() {
       return exec("git clone " + url + " " + workdirPath);

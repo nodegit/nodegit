@@ -3,6 +3,9 @@
 #include <nan.h>
 #include <string>
 #include <utility>
+#include <algorithm>
+#include <set>
+#include <unordered_set>
 #include <sstream>
 
 #include "async_baton.h"
@@ -13,6 +16,7 @@
 #include "nodegit_wrapper.h"
 #include "promise_completion.h"
 #include "reference_counter.h"
+#include "worker_pool.h"
 
 extern "C" {
 #include <git2.h>

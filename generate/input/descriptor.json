@@ -3699,6 +3699,9 @@
         "git_repository_set_refdb": {
           "ignore": true
         },
+        "git_repository_statistics": {
+          "isAsync": true
+        },
         "git_repository_submodule_cache_all": {
           "return": {
             "isErrorCode": true
