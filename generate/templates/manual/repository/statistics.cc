@@ -48,7 +48,7 @@ private:
  */
 void CommitsGraph::AddNode(const std::string &oidStr, const std::vector<std::string> &parents)
 {
-  uint32_t numParents = static_cast<uint32_t>(parents.size());
+  const uint32_t numParents = static_cast<uint32_t>(parents.size());
 
   auto emplacePair = m_mapOidNode.emplace(std::make_pair(
     oidStr, std::make_unique<CommitsGraphNode>(numParents)));
@@ -429,11 +429,11 @@ bool WorkerStoreOdbData::Execute(std::unique_ptr<WorkItem> &&work)
         git_object_free(target);
         return false;
       }
-      size_t size = git_odb_object_size(obj);
+      const size_t size = git_odb_object_size(obj);
       git_odb_object_free(obj);
 
       // obtain CommitInfo
-      unsigned int numParents = git_commit_parentcount(commit);
+      const unsigned int numParents = git_commit_parentcount(commit);
       std::vector<std::string> parents {};
       for (unsigned int i = 0; i < numParents; ++i) {
         parents.emplace_back(reinterpret_cast<const char *>(git_commit_parent_id(commit, i)->id),
@@ -461,7 +461,7 @@ bool WorkerStoreOdbData::Execute(std::unique_ptr<WorkItem> &&work)
       git_tree *tree = (git_tree*)target;
 
       // do not count empty trees, like git's empty tree "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
-      size_t numEntries = git_tree_entrycount(tree);
+      const size_t numEntries = git_tree_entrycount(tree);
       if (numEntries == 0) {
         git_object_free(target);
         return true;
@@ -473,7 +473,7 @@ bool WorkerStoreOdbData::Execute(std::unique_ptr<WorkItem> &&work)
         git_object_free(target);
         return false;
       }
-      size_t size = git_odb_object_size(obj);
+      const size_t size = git_odb_object_size(obj);
       git_odb_object_free(obj);
 
       // obtain tree data and calculate statistics for only this tree (not recursively)
@@ -492,7 +492,7 @@ bool WorkerStoreOdbData::Execute(std::unique_ptr<WorkItem> &&work)
     case GIT_OBJECT_BLOB:
     {
       git_blob *blob = (git_blob*)target;
-      size_t size = git_blob_rawsize(blob);
+      const size_t size = git_blob_rawsize(blob);
       OdbObjectsData::BlobInfo blobInfo {size, OdbObjectsData::kUnreachable};
 
       { // lock
@@ -557,7 +557,7 @@ OdbObjectsData::TreeInfoAndStats WorkerStoreOdbData::thisTreeInfoAndStats(const 
     if (te == nullptr) {
       continue;
     }
-    git_object_t te_type = git_tree_entry_type(te);
+    const git_object_t te_type = git_tree_entry_type(te);
     const char *teName {nullptr};
     size_t teNameLen {0};
     const git_oid *te_oid {nullptr};
@@ -763,7 +763,7 @@ void WorkerReachCounter::setReachabilityFromCommits(void *objectInfo)
 {
   const OdbObjectsData::CommitInfo *commitInfo =
     static_cast<const OdbObjectsData::CommitInfo *>(objectInfo);
-  size_t numParents = commitInfo->parents.size();
+  const size_t numParents = commitInfo->parents.size();
 
   // set parents' reachability
   for (size_t i = 0; i < numParents; ++i) {
@@ -977,8 +977,8 @@ int RepoAnalysis::storeObjectsInfo()
   }
 
   // initialize workers for the worker pool
-  std::string repoPath = git_repository_path(m_repo);
-  unsigned int numThreads =
+  const std::string repoPath = git_repository_path(m_repo);
+  const unsigned int numThreads =
     std::max<unsigned int>(std::thread::hardware_concurrency(), static_cast<unsigned int>(kMinThreads));
 
   std::vector< std::shared_ptr<WorkerStoreOdbData> > workers {};
@@ -998,6 +998,8 @@ int RepoAnalysis::storeObjectsInfo()
 
   // main thread will work on the refs while waiting for the threads to finish
   if ((errorCode = storeAndCountRefs() != GIT_OK)) {
+    workerPool.Shutdown();
+    git_odb_free(odb);
     return errorCode;
   }
 
@@ -1036,7 +1038,7 @@ int RepoAnalysis::storeAndCountRefs()
   {
     // lookup ref
     git_reference *ref {nullptr};
-    int refLookupError = git_reference_lookup(&ref, m_repo, ref_list.strings[i]);
+    const int refLookupError = git_reference_lookup(&ref, m_repo, ref_list.strings[i]);
     if (refLookupError == GIT_ENOTFOUND || refLookupError == GIT_EINVALIDSPEC) {
       continue;
     }
@@ -1074,10 +1076,10 @@ int RepoAnalysis::storeAndCountRefs()
     if (oid_ref != nullptr)
     {
       git_object *target {nullptr};
-      if (git_object_lookup(&target, m_repo, oid_ref, GIT_OBJECT_ANY) != GIT_OK) {
+      if ((errorCode = git_object_lookup(&target, m_repo, oid_ref, GIT_OBJECT_ANY)) != GIT_OK) {
         git_reference_free(ref);
         git_strarray_dispose(&ref_list);
-        return false;
+        return errorCode;
       }
 
       m_peeledRefs.emplace(std::make_pair(
@@ -1108,7 +1110,7 @@ bool RepoAnalysis::setObjectsReachability()
   // references are not objects, hence they won't be sent to the worker threads
   setReachabilityFromRefs();
 
-  unsigned int numThreads =
+  const unsigned int numThreads =
     std::max<unsigned int>(std::thread::hardware_concurrency(), static_cast<unsigned int>(kMinThreads));
   std::vector< std::shared_ptr<WorkerReachCounter> > workers {};
   for (unsigned int i = 0; i < numThreads; ++i) {
@@ -1348,7 +1350,7 @@ void RepoAnalysis::pruneUnreachableCommits()
       if (itCommitInfo != m_odbObjectsData.commits.info.end())
       {
         // decrease commit's parents reachability and add them as newUnreachable
-        size_t numParents = itCommitInfo->second.parents.size();
+        const size_t numParents = itCommitInfo->second.parents.size();
         for (size_t i = 0; i < numParents; ++i) {
           OdbObjectsData::iterCommitInfo itParentCommitInfo =
             m_odbObjectsData.commits.info.find(itCommitInfo->second.parents.at(i));
@@ -1441,13 +1443,15 @@ void RepoAnalysis::pruneUnreachableBlobs()
  */
 void RepoAnalysis::statsCountAndMax()
 {
+  size_t objectSize {};
+
   // commits
   for (auto &info : m_odbObjectsData.commits.info) {
     OdbObjectsData::CommitInfo &commitInfo = info.second;
-    size_t size = commitInfo.size;
+    objectSize = commitInfo.size;
 
-    m_odbObjectsData.commits.totalSize += size;
-    m_odbObjectsData.commits.maxSize = std::max<size_t>(m_odbObjectsData.commits.maxSize, size);
+    m_odbObjectsData.commits.totalSize += objectSize;
+    m_odbObjectsData.commits.maxSize = std::max<size_t>(m_odbObjectsData.commits.maxSize, objectSize);
     m_odbObjectsData.commits.maxParents = std::max<size_t>(
       m_odbObjectsData.commits.maxParents, commitInfo.parents.size());
 
@@ -1457,20 +1461,20 @@ void RepoAnalysis::statsCountAndMax()
   // trees
   for (auto &info : m_odbObjectsData.trees.info) {
     OdbObjectsData::TreeInfoAndStats &treeInfo = info.second;
-    size_t size = treeInfo.size;
-    size_t numEntries = treeInfo.numEntries;
+    const size_t numEntries = treeInfo.numEntries;
+    objectSize = treeInfo.size;
 
-    m_odbObjectsData.trees.totalSize += size;
+    m_odbObjectsData.trees.totalSize += objectSize;
     m_odbObjectsData.trees.totalEntries += numEntries;
     m_odbObjectsData.trees.maxEntries = std::max<size_t>(m_odbObjectsData.trees.maxEntries, numEntries);
   }
   // blobs
   for (auto &info : m_odbObjectsData.blobs.info) {
     OdbObjectsData::BlobInfo &blobInfo = info.second;
-    size_t size = blobInfo.size;
+    objectSize = blobInfo.size;
 
-    m_odbObjectsData.blobs.totalSize += size;
-    m_odbObjectsData.blobs.maxSize = std::max<size_t>(m_odbObjectsData.blobs.maxSize, size);
+    m_odbObjectsData.blobs.totalSize += objectSize;
+    m_odbObjectsData.blobs.maxSize = std::max<size_t>(m_odbObjectsData.blobs.maxSize, objectSize);
   }
   // no need to process tags here (we already have the count)
 }
@@ -1542,6 +1546,9 @@ bool RepoAnalysis::calculateBiggestCheckouts()
  * 
  * Calculates tree statistics recursively, considering individual tree's statistics
  * have already been calculated.
+ * The maximum number of recursive calls depend directly on the maximum path depth of
+ * the repository. For instance, the linux repository have a maximum path depth of 13,
+ * so it should be safe against stack overflow.
  * Returns an iterator to the tree info container, or to end if something went wrong.
  */
 OdbObjectsData::iterTreeInfo RepoAnalysis::calculateTreeStatistics(const std::string &oidTree)
