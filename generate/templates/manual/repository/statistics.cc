@@ -1443,12 +1443,10 @@ void RepoAnalysis::pruneUnreachableBlobs()
  */
 void RepoAnalysis::statsCountAndMax()
 {
-  size_t objectSize {};
-
   // commits
   for (auto &info : m_odbObjectsData.commits.info) {
     OdbObjectsData::CommitInfo &commitInfo = info.second;
-    objectSize = commitInfo.size;
+    const size_t objectSize = commitInfo.size;
 
     m_odbObjectsData.commits.totalSize += objectSize;
     m_odbObjectsData.commits.maxSize = std::max<size_t>(m_odbObjectsData.commits.maxSize, objectSize);
@@ -1462,7 +1460,7 @@ void RepoAnalysis::statsCountAndMax()
   for (auto &info : m_odbObjectsData.trees.info) {
     OdbObjectsData::TreeInfoAndStats &treeInfo = info.second;
     const size_t numEntries = treeInfo.numEntries;
-    objectSize = treeInfo.size;
+    const size_t objectSize = treeInfo.size;
 
     m_odbObjectsData.trees.totalSize += objectSize;
     m_odbObjectsData.trees.totalEntries += numEntries;
@@ -1471,7 +1469,7 @@ void RepoAnalysis::statsCountAndMax()
   // blobs
   for (auto &info : m_odbObjectsData.blobs.info) {
     OdbObjectsData::BlobInfo &blobInfo = info.second;
-    objectSize = blobInfo.size;
+    const size_t objectSize = blobInfo.size;
 
     m_odbObjectsData.blobs.totalSize += objectSize;
     m_odbObjectsData.blobs.maxSize = std::max<size_t>(m_odbObjectsData.blobs.maxSize, objectSize);
