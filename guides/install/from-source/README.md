@@ -72,7 +72,7 @@ A local version of OpenSSL is required when building for Electron on Windows and
 - We rely on the Visual Studio dev tools to be installed, specifically `vcvarsall.bat` to provide access to the tools. If this is not in the default location for VS2017, you'll need to `npm config set vcvarsall_path <path>` or set the environment variable `npm_config_vcvarsall_path` pointing to it.
 - See [Compilation and Installation](https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows) regarding required dependencies, specifically `Perl` (Strawberry Perl is known to work) and `NASM`. Make sure they're on the PATH.
 
-Alternatively, you can provide your own OpenSSL binaries and headers. These can either go in `vendor/openssl` (e.g. `<nodegit_root>/vendor/openssl/{lib,bin,include}` should exist) or in an external directory located by `npm config set openssl_dir` or the environment variable `npm_config_openssl_dir`.
+Alternatively, you can provide your own OpenSSL binaries and headers. These can either go in `vendor/openssl` (e.g. `<nodegit_root>/vendor/openssl/{lib,bin,include}` should exist) or in an external directory located by `npm config set openssl_dir <path>` or the environment variable `npm_config_openssl_dir`. Additionally, you can `npm config set openssl_bin_url <url>` or the environment variable `npm_config_openssl_bin_url` to download and extract prebuilt binaries (only supports tar.gz files). `npm config set openssl_bin_sha256 <sha256>` or the environment variable `npm_config_openssl_bin_sha256` can be set to verify the download.
 
 ##### A note on environment variables in Windows #####
 In many of the npm scripts (and examples above), things are run like
