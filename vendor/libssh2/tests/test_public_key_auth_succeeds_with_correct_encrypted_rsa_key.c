@@ -4,10 +4,11 @@
 
 #include <stdio.h>
 
-static const char *USERNAME = "libssh2"; /* configured in Dockerfile */
+/* configured in Dockerfile */
+static const char *USERNAME = "libssh2";
 static const char *PASSWORD = "libssh2";
 static const char *KEY_FILE_PRIVATE = "key_rsa_encrypted";
-static const char *KEY_FILE_PUBLIC = "key_rsa_encrypted.pub"; /* configured in Dockerfile */
+static const char *KEY_FILE_PUBLIC = "key_rsa_encrypted.pub";
 
 int test(LIBSSH2_SESSION *session)
 {

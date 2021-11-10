@@ -118,6 +118,7 @@ set(TESTS
   public_key_auth_succeeds_with_correct_encrypted_rsa_key
   keyboard_interactive_auth_fails_with_wrong_response
   keyboard_interactive_auth_succeeds_with_correct_response
+  agent_forward_succeeds
   )
 
 if(CRYPTO_BACKEND STREQUAL "OpenSSL")
@@ -129,7 +130,9 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL")
         public_key_auth_succeeds_with_correct_ed25519_key
         public_key_auth_succeeds_with_correct_encrypted_ed25519_key
         public_key_auth_succeeds_with_correct_ed25519_key_from_mem
-      )
+        public_key_auth_succeeds_with_correct_ecdsa_key
+        public_key_auth_succeeds_with_correct_signed_ecdsa_key
+       )
     endif()
 endif()
 

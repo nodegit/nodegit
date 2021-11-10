@@ -4,7 +4,8 @@
 
 #include <stdio.h>
 
-static const char *PASSWORD = "my test password"; /* configured in Dockerfile */
+/* configured in Dockerfile */
+static const char *PASSWORD = "my test password";
 static const char *WRONG_USERNAME = "i dont exist";
 
 int test(LIBSSH2_SESSION *session)

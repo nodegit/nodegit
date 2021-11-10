@@ -32,11 +32,43 @@ function returns 0, the packet will be accepted nonetheless.
 .IP LIBSSH2_CALLBACK_X11
 Called when an X11 connection has been accepted
 .IP LIBSSH2_CALLBACK_SEND
-Called when libssh2 wants to send some data on the connection.
-Can be set to a custom function to handle I/O your own way.
+Called when libssh2 wants to send data on the connection.  Can be set to a
+custom function to handle I/O your own way.
+
+The prototype of the callback:
+
+.nf
+ssize_t sendcb(libssh2_socket_t sockfd, const void *buffer,
+               size_t length, int flags, void **abstract);
+.fi
+
+\fBsockfd\fP is the socket to write to, \fBbuffer\fP points to the data to
+send, \fBlength\fP is the size of the data, \fBflags\fP is the flags that
+would've been used to a \fIsend()\fP call and \fBabstract\fP is a pointer to
+the abstract pointer set in the \fIlibssh2_session_init_ex(3)\fP call.
+
+The callback returns the number of bytes sent, or -1 for error. The special
+return code \fB-EAGAIN\fP can be returned to signal that the send was aborted
+to prevent getting blocked and it needs to be called again.
 .IP LIBSSH2_CALLBACK_RECV
-Called when libssh2 wants to receive some data from the connection.
-Can be set to a custom function to handle I/O your own way.
+Called when libssh2 wants to read data from the connection. Can be set to a
+custom function to handle I/O your own way.
+
+The prototype of the callback:
+
+.nf
+ssize_t recvcb(libssh2_socket_t sockfd, void *buffer,
+               size_t length, int flags, void **abstract);
+.fi
+
+\fBsockfd\fP is the socket to read from, \fBbuffer\fP where to store received
+data into, \fBlength\fP is the size of the buffer, \fBflags\fP is the flags
+that would've been used to a \fIrecv()\fP call and \fBabstract\fP is a pointer
+to the abstract pointer set in the \fIlibssh2_session_init_ex(3)\fP call.
+
+The callback returns the number of bytes read, or -1 for error. The special
+return code \fB-EAGAIN\fP can be returned to signal that the read was aborted
+to prevent getting blocked and it needs to be called again.
 .SH RETURN VALUE
 Pointer to previous callback handler. Returns NULL if no prior callback
 handler was set or the callback type was unknown.

@@ -2,7 +2,7 @@
 AC_INIT(libssh2, [-], libssh2-devel@cool.haxx.se)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src])
-AC_CONFIG_HEADERS([src/libssh2_config.h example/libssh2_config.h])
+AC_CONFIG_HEADERS([src/libssh2_config.h])
 AM_MAINTAINER_MODE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
@@ -36,12 +36,9 @@ case "$host" in
     CFLAGS="$CFLAGS -DLIBSSH2_WIN32"
     LIBS="$LIBS -lws2_32"
     ;;
-	*-cygwin)
-	CFLAGS="$CFLAGS -DLIBSSH2_WIN32"
+    *darwin*)
+    CFLAGS="$CFLAGS -DLIBSSH2_DARWIN"
     ;;
-	*darwin*)
-	CFLAGS="$CFLAGS -DLIBSSH2_DARWIN"
-	;;
     *hpux*)
     ;;
     *osf*)
@@ -69,6 +66,7 @@ AC_SEARCH_LIBS(inet_addr, nsl)
 AC_SUBST(LIBS)
 
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -127,8 +125,6 @@ fi
 m4_set_foreach([crypto_backends], [backend],
   [AM_CONDITIONAL(m4_toupper(backend), test "$found_crypto" = "backend")]
 )
-m4_undefine([backend])
-
 
 # libz
 
@@ -284,6 +280,21 @@ esac], [build_examples='yes'])
 AC_MSG_RESULT($build_examples)
 AM_CONDITIONAL([BUILD_EXAMPLES], [test "x$build_examples" != "xno"])
 
+
+# Build OSS fuzzing targets?
+AC_ARG_ENABLE([ossfuzzers],
+  [AS_HELP_STRING([--enable-ossfuzzers],
+    [Whether to generate the fuzzers for OSS-Fuzz])],
+  [have_ossfuzzers=yes], [have_ossfuzzers=no])
+AM_CONDITIONAL([USE_OSSFUZZERS], [test "x$have_ossfuzzers" = "xyes"])
+
+
+# Set the correct flags for the given fuzzing engine.
+AC_SUBST([LIB_FUZZING_ENGINE])
+AM_CONDITIONAL([USE_OSSFUZZ_FLAG], [test "x$LIB_FUZZING_ENGINE" = "x-fsanitize=fuzzer"])
+AM_CONDITIONAL([USE_OSSFUZZ_STATIC], [test -f "$LIB_FUZZING_ENGINE"])
+
+
 # Checks for header files.
 # AC_HEADER_STDC
 AC_CHECK_HEADERS([errno.h fcntl.h stdio.h stdlib.h unistd.h sys/uio.h])
@@ -373,6 +384,7 @@ LIBSSH2_CHECK_OPTION_WERROR
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  tests/Makefile
+                 tests/ossfuzz/Makefile
                  example/Makefile
                  docs/Makefile
                  libssh2.pc])

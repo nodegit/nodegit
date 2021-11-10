@@ -58,10 +58,19 @@ COPY ssh_host_ed25519_key /tmp/etc/ssh/ssh_host_ed25519_key
 RUN mv /tmp/etc/ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
 RUN chmod 600 /etc/ssh/ssh_host_ed25519_key
 
+COPY ca_ecdsa.pub /tmp/etc/ssh/ca_ecdsa.pub
+RUN mv /tmp/etc/ssh/ca_ecdsa.pub /etc/ssh/ca_ecdsa.pub
+RUN chmod 600 /etc/ssh/ca_ecdsa.pub
+
+COPY ca_ecdsa /tmp/etc/ssh/ca_ecdsa
+RUN mv /tmp/etc/ssh/ca_ecdsa /etc/ssh/ca_ecdsa
+RUN chmod 600 /etc/ssh/ca_ecdsa
+
 RUN adduser --disabled-password --gecos 'Test user for libssh2 integration tests' libssh2
 RUN echo 'libssh2:my test password' | chpasswd
 
 RUN sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
+RUN echo "TrustedUserCAKeys /etc/ssh/ca_ecdsa.pub" >> /etc/ssh/sshd_config
 
 # SSH login fix. Otherwise user is kicked off after login
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd

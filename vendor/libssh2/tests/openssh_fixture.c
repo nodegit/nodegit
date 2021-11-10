@@ -62,10 +62,12 @@
 static int run_command_varg(char **output, const char *command, va_list args)
 {
     FILE *pipe;
+    char redirect_stderr[] = "%s 2>&1";
     char command_buf[BUFSIZ];
     char buf[BUFSIZ];
-    char *p;
     int ret;
+    size_t buf_len;
+
     if(output) {
         *output = NULL;
     }
@@ -78,26 +80,33 @@ static int run_command_varg(char **output, const char *command, va_list args)
     }
 
     /* Rewrite the command to redirect stderr to stdout to we can output it */
-    if(strlen(command_buf) + 6 >= sizeof(command_buf)) {
+    if(strlen(command_buf) + strlen(redirect_stderr) >= sizeof(buf)) {
         fprintf(stderr, "Unable to rewrite command (%s)\n", command);
         return -1;
     }
 
-    strncat(command_buf, " 2>&1", 6);
+    ret = snprintf(buf, sizeof(buf), redirect_stderr, command_buf);
+    if(ret < 0 || ret >= BUFSIZ) {
+        fprintf(stderr, "Unable to rewrite command (%s)\n", command);
+        return -1;
+    }
 
     fprintf(stdout, "Command: %s\n", command);
 #ifdef WIN32
-    pipe = _popen(command_buf, "r");
+    pipe = _popen(buf, "r");
 #else
-    pipe = popen(command_buf, "r");
+    pipe = popen(buf, "r");
 #endif
     if(!pipe) {
         fprintf(stderr, "Unable to execute command '%s'\n", command);
         return -1;
     }
-    p = buf;
-    while(fgets(p, sizeof(buf) - (p - buf), pipe) != NULL)
-        ;
+    buf[0] = 0;
+    buf_len = 0;
+    while(buf_len < (sizeof(buf) - 1) &&
+        fgets(&buf[buf_len], sizeof(buf) - buf_len, pipe) != NULL) {
+        buf_len = strlen(buf);
+    }
 
 #ifdef WIN32
     ret = _pclose(pipe);
@@ -112,9 +121,9 @@ static int run_command_varg(char **output, const char *command, va_list args)
     if(output) {
         /* command output may contain a trailing newline, so we trim
          * whitespace here */
-        size_t end = strlen(buf) - 1;
-        while(end > 0 && isspace(buf[end])) {
-            buf[end] = '\0';
+        size_t end = strlen(buf);
+        while(end > 0 && isspace(buf[end - 1])) {
+            buf[end - 1] = '\0';
         }
 
         *output = strdup(buf);
@@ -134,16 +143,31 @@ static int run_command(char **output, const char *command, ...)
     return ret;
 }
 
-static int build_openssh_server_docker_image()
+static int build_openssh_server_docker_image(void)
 {
-    return run_command(NULL, "docker build -t libssh2/openssh_server openssh_server");
+    return run_command(NULL, "docker build -t libssh2/openssh_server "
+                             "openssh_server");
+}
+
+static const char *openssh_server_port(void)
+{
+    return getenv("OPENSSH_SERVER_PORT");
 }
 
 static int start_openssh_server(char **container_id_out)
 {
-    return run_command(container_id_out,
-                       "docker run --detach -P libssh2/openssh_server"
-                       );
+    const char *container_host_port = openssh_server_port();
+    if(container_host_port != NULL) {
+        return run_command(container_id_out,
+                           "docker run --rm -d -p %s:22 "
+                           "libssh2/openssh_server",
+                           container_host_port);
+    }
+    else {
+        return run_command(container_id_out,
+                           "docker run --rm -d -p 22 "
+                           "libssh2/openssh_server");
+    }
 }
 
 static int stop_openssh_server(char *container_id)
@@ -151,9 +175,46 @@ static int stop_openssh_server(char *container_id)
     return run_command(NULL, "docker stop %s", container_id);
 }
 
-static const char *docker_machine_name()
+static const char *docker_machine_name(void)
 {
     return getenv("DOCKER_MACHINE_NAME");
+}
+
+static int is_running_inside_a_container()
+{
+#ifdef WIN32
+    return 0;
+#else
+    const char *cgroup_filename = "/proc/self/cgroup";
+    FILE *f = NULL;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read = 0;
+    int found = 0;
+    f = fopen(cgroup_filename, "r");
+    if(f == NULL) {
+        /* Don't go further, we are not in a container */
+        return 0;
+    }
+    while((read = getline(&line, &len, f)) != -1) {
+        if(strstr(line, "docker") != NULL) {
+            found = 1;
+            break;
+        }
+    }
+    fclose(f);
+    free(line);
+    return found;
+#endif
+}
+
+static unsigned int portable_sleep(unsigned int seconds)
+{
+#ifdef WIN32
+    Sleep(seconds);
+#else
+    sleep(seconds);
+#endif
 }
 
 static int ip_address_from_container(char *container_id, char **ip_address_out)
@@ -167,9 +228,12 @@ static int ip_address_from_container(char *container_id, char **ip_address_out)
         int attempt_no = 0;
         int wait_time = 500;
         for(;;) {
-            return run_command(ip_address_out, "docker-machine ip %s", active_docker_machine);
-
-            if(attempt_no > 5) {
+            int ret = run_command(ip_address_out, "docker-machine ip %s",
+                                  active_docker_machine);
+            if(ret == 0) {
+                return 0;
+            }
+            else if(attempt_no > 5) {
                 fprintf(
                     stderr,
                     "Unable to get IP from docker-machine after %d attempts\n",
@@ -177,35 +241,44 @@ static int ip_address_from_container(char *container_id, char **ip_address_out)
                 return -1;
             }
             else {
-#ifdef WIN32
-#pragma warning(push)
-#pragma warning(disable : 4996)
-                _sleep(wait_time);
-#pragma warning(pop)
-#else
-                sleep(wait_time);
-#endif
+                portable_sleep(wait_time);
                 ++attempt_no;
                 wait_time *= 2;
             }
         }
     }
     else {
-        return run_command(ip_address_out,
-                           "docker inspect --format "
-                           "\"{{ index (index (index .NetworkSettings.Ports "
-                           "\\\"22/tcp\\\") 0) \\\"HostIp\\\" }}\" %s",
-                           container_id);
+        if(is_running_inside_a_container()) {
+            return run_command(ip_address_out,
+                               "docker inspect --format "
+                               "\"{{ .NetworkSettings.IPAddress }}\""
+                               " %s",
+                               container_id);
+        }
+        else {
+            return run_command(ip_address_out,
+                               "docker inspect --format "
+                               "\"{{ index (index (index "
+                               ".NetworkSettings.Ports "
+                               "\\\"22/tcp\\\") 0) \\\"HostIp\\\" }}\" %s",
+                               container_id);
+        }
     }
 }
 
 static int port_from_container(char *container_id, char **port_out)
 {
-    return run_command(port_out,
-                       "docker inspect --format "
-                       "\"{{ index (index (index .NetworkSettings.Ports "
-                       "\\\"22/tcp\\\") 0) \\\"HostPort\\\" }}\" %s",
-                       container_id);
+    if(is_running_inside_a_container()) {
+        *port_out = strdup("22");
+        return 0;
+    }
+    else {
+        return run_command(port_out,
+                           "docker inspect --format "
+                           "\"{{ index (index (index .NetworkSettings.Ports "
+                           "\\\"22/tcp\\\") 0) \\\"HostPort\\\" }}\" %s",
+                           container_id);
+    }
 }
 
 static int open_socket_to_container(char *container_id)
@@ -215,18 +288,29 @@ static int open_socket_to_container(char *container_id)
     unsigned long hostaddr;
     int sock;
     struct sockaddr_in sin;
+    int counter = 0;
 
     int ret = ip_address_from_container(container_id, &ip_address);
     if(ret != 0) {
-        fprintf(stderr, "Failed to get IP address for container %s\n", container_id);
+        fprintf(stderr, "Failed to get IP address for container %s\n",
+                container_id);
         ret = -1;
         goto cleanup;
     }
 
     ret = port_from_container(container_id, &port_string);
     if(ret != 0) {
-        fprintf(stderr, "Failed to get port for container %s\n", container_id);
+        fprintf(stderr, "Failed to get port for container %s\n",
+                container_id);
         ret = -1;
+    }
+
+    /* 0.0.0.0 is returned by Docker for Windows, because the container
+       is reachable from anywhere. But we cannot connect to 0.0.0.0,
+       instead we assume localhost and try to connect to 127.0.0.1. */
+    if(ip_address && strcmp(ip_address, "0.0.0.0") == 0) {
+        free(ip_address);
+        ip_address = strdup("127.0.0.1");
     }
 
     hostaddr = inet_addr(ip_address);
@@ -247,14 +331,25 @@ static int open_socket_to_container(char *container_id)
     sin.sin_port = htons((short)strtol(port_string, NULL, 0));
     sin.sin_addr.s_addr = hostaddr;
 
-    if(connect(sock, (struct sockaddr *)(&sin),
-               sizeof(struct sockaddr_in)) != 0) {
-        fprintf(stderr, "Failed to connect to %s:%s\n", ip_address, port_string);
-        ret = -1;
+    for(counter = 0; counter < 3; ++counter) {
+        if(connect(sock, (struct sockaddr *)(&sin),
+                   sizeof(struct sockaddr_in)) != 0) {
+            ret = -1;
+            fprintf(stderr,
+                    "Connection to %s:%s attempt #%d failed: retrying...\n",
+                    ip_address, port_string, counter);
+            portable_sleep(1 + 2*counter);
+        }
+        else {
+            ret = sock;
+            break;
+        }
+    }
+    if(ret == -1) {
+        fprintf(stderr, "Failed to connect to %s:%s\n",
+                ip_address, port_string);
         goto cleanup;
     }
-
-    ret = sock;
 
 cleanup:
     free(ip_address);
