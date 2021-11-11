@@ -35,6 +35,8 @@
 /vendor/libssh2/src/stamp-h1
 /vendor/libssh2/tests/.deps/
 /vendor/libssh2/tests/Makefile
+/vendor/libssh2/tests/ossfuzz/.deps
+/vendor/libssh2/tests/ossfuzz/Makefile
 
 *.log
 .DS_STORE
