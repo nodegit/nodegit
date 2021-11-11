@@ -1,5 +1,27 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.10" href="#v0-28-0-alpha-10">v0.28.0-alpha.10</a> [(2021-11-11)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.10)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.9...v0.28.0-alpha.10)
+
+#### Summary of changes
+- Reworked CI due to GitHub dropping Ubuntu 16.04 support
+- When building for Electron on Windows/macOS and prebuilts are unavailable: NodeGit will attempt to build OpenSSL locally by default. This is due to Conan changing their API/provided OpenSSL binaries. There are options for pointing to an installed OpenSSL location or URL for downloading prebuilt binaries, see [Building from source](http://www.nodegit.org/guides/install/from-source/).
+- Updated OpenSSL to 1.1.1l
+- Updated libssh2 to 1.10.0
+- Added `Repo.prototype.statistics` method for calculating repository statistics
+- More progress towards becoming context-aware
+
+#### Merged PRs into NodeGit
+- [Allow download of prebuilt OpenSSL](https://github.com/nodegit/nodegit/pull/1875)
+- [Update libssh2 to 1.10.0](https://github.com/nodegit/nodegit/pull/1874)
+- [Statistics with same output as "git-sizer -j"](https://github.com/nodegit/nodegit/pull/1846)
+- [Fix memory leak on context shutdown](https://github.com/nodegit/nodegit/pull/1856)
+- [Build OpenSSL locally for Electron](https://github.com/nodegit/nodegit/pull/1870)
+- [Fix a reference error when compiling with VC2019](https://github.com/nodegit/nodegit/pull/1859)
+- [Use containers for Linux CI](https://github.com/nodegit/nodegit/pull/1860)
+
+
 ## <a name="v0-28-0-alpha.9" href="#v0-28-0-alpha-9">v0.28.0-alpha.9</a> [(2021-06-04)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.9)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.8...v0.28.0-alpha.9)
@@ -73,7 +95,7 @@
   - NodeGit.Cherrypick
   - NodeGit.Cherrypick.commit
   - NodeGit.Merge
-  - NodeGit.Patch.fromBlobs
+  - NodeGit.PatchBlobs
   - NodeGit.Rebase.open
   - NodeGit.Remote.prototype.connect
   - NodeGit.Remote.prototype.download
