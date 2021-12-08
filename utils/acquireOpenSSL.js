@@ -41,7 +41,13 @@ class HashVerify extends stream.Transform {
 }
 
 const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
-  await execPromise(`./Configure darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp --prefix="${
+  const triplet = process.arch === 'x64'
+    ? 'darwin64-x86_64-cc'
+    : 'darwin64-arm64-cc';
+
+  await execPromise(`./Configure ${
+    triplet
+  } no-shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp --prefix="${
     extractPath
   }" --openssldir="${extractPath}" -mmacosx-version-min=${macOsDeploymentTarget}`, {
     cwd: buildCwd
