@@ -1785,7 +1785,7 @@ describe("Merge", function() {
           "=======\n" +
           theirFileContent +
           ">>>>>>> " + fileName + "\n";
-        assert.equal(result.ptr, diff);
+        assert.equal(result.ptr.substring(0, result.len), diff);
       });
   });
 });

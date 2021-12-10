@@ -2338,6 +2338,15 @@
               "shouldAlloc": true
             },
             "opts": {
+              "ancestor": {
+                "isOptional": true
+              },
+              "ours": {
+                "isOptional": true
+              },
+              "theirs": {
+                "isOptional": true
+              },
               "isOptional": true
             }
           },
