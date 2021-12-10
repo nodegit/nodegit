@@ -85,9 +85,9 @@
     "mochaDebug": "mocha --expose-gc --debug-brk test/runner test/tests --timeout 15000",
     "postinstall": "node lifecycleScripts/postinstall",
     "prepublish": "npm run babel",
-    "rebuild": "node generate && npm run babel && node-gyp configure build",
+    "rebuild": "node generate && npm run babel && npx node-gyp configure build",
     "rebuildDebug": "node generate && npm run babel && node-gyp configure --debug build",
-    "recompile": "node-gyp configure build",
+    "recompile": "npx node-gyp configure build",
     "recompileDebug": "node-gyp configure --debug build",
     "test": "npm run lint && node --expose-gc test",
     "xcodeDebug": "node-gyp configure -- -f xcode"
