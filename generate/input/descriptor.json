@@ -2337,16 +2337,16 @@
               "jsClassName": "MergeFileResult",
               "shouldAlloc": true
             },
+            "ancestor": {
+              "isOptional": true
+            },
+            "ours": {
+              "isOptional": true
+            },
+            "theirs": {
+              "isOptional": true
+            },
             "opts": {
-              "ancestor": {
-                "isOptional": true
-              },
-              "ours": {
-                "isOptional": true
-              },
-              "theirs": {
-                "isOptional": true
-              },
               "isOptional": true
             }
           },
