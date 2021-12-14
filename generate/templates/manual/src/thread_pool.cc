@@ -479,10 +479,6 @@ namespace nodegit {
 
       void QueueCallbackOnJSThread(ThreadPool::Callback callback, ThreadPool::Callback cancelCallback, bool isWork);
 
-      static void RunJSThreadCallbacksFromOrchestrator(uv_async_t *handle);
-
-      void RunJSThreadCallbacksFromOrchestrator();
-
       static void RunLoopCallbacks(uv_async_t *handle);
 
       void Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle);
@@ -498,7 +494,6 @@ namespace nodegit {
 
     private:
       bool isMarkedForDeletion;
-      nodegit::Context *currentContext;
 
       struct JSThreadCallback {
         JSThreadCallback(ThreadPool::Callback callback, ThreadPool::Callback cancelCallback, bool isWork)
@@ -539,9 +534,9 @@ namespace nodegit {
       std::vector<Orchestrator> orchestrators;
   };
 
+  // context required to be passed to Orchestrators, but ThreadPoolImpl doesn't need to keep it
   ThreadPoolImpl::ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)
     : isMarkedForDeletion(false),
-      currentContext(context),
       orchestratorJobMutex(new std::mutex),
       jsThreadCallbackMutex(new std::mutex)
   {
