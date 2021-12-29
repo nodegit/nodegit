@@ -175,8 +175,8 @@ fse.remove(path.resolve(__dirname, repoDir))
   }
 })
 
-// we need to get a new index as the other one isnt backed to
-// the repository in the usual fashion, and just behaves weirdly
+// we need to get a new index as the other one is not backed to
+// the repository in the usual fashion, and just behaves weirdly.
 .then(function() {
   return repository.refreshIndex()
     .then(function(index) {

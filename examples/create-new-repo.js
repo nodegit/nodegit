@@ -23,7 +23,7 @@ const repoDir = "../newRepo";
   const committer = nodegit.Signature.now("Scott A Chacon",
     "scott@github.com");
 
-  // Since we're creating an inital commit, it has no parents. Note that unlike
+  // Since we're creating an initial commit, it has no parents. Note that unlike
   // normal we don't get the head either, because there isn't one yet.
   const commitId = await repo.createCommit("HEAD", author, committer, "message", oid, []);
   console.log("New Commit: ", commitId);
