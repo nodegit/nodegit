@@ -256,9 +256,9 @@ const path = require("path");
 
   // Now that we have the starting point pushed onto the walker, we start
   // asking for ancestors. It will return them in the sorting order we asked
-  // for as commit oids. We can then lookup and parse the commited pointed
+  // for as commit oids. We can then lookup and parse the commits pointed
   // at by the returned OID; note that this operation is specially fast
-  // since the raw contents of the commit object will be cached in memory
+  // since the raw contents of the commit object will be cached in memory.
 
   async function walk() {
     let oid;
