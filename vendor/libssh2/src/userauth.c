@@ -1086,6 +1086,148 @@ static int plain_method_len(const char *method, size_t method_len)
     return method_len;
 }
 
+/**
+ * @function _libssh2_key_sign_algorithm
+ * @abstract Upgrades the algorithm used for public key signing RFC 8332
+ * @discussion Based on the incoming key_method value, this function
+ * will upgrade the key method input based on user preferences,
+ * server support algos and crypto backend support
+ * @related _libssh2_supported_key_sign_algorithms()
+ * @param key_method current key method, usually the default key sig method
+ * @param key_method_len length of the key method buffer
+ * @result error code or zero on success
+ */
+
+static int
+_libssh2_key_sign_algorithm(LIBSSH2_SESSION *session,
+                            unsigned char **key_method,
+                            size_t *key_method_len)
+{
+    const char *s = NULL;
+    const char *a = NULL;
+    const char *match = NULL;
+    const char *p = NULL;
+    const char *f = NULL;
+    char *i = NULL;
+    int p_len = 0;
+    int f_len = 0;
+    int rc = 0;
+    int match_len = 0;
+    char *filtered_algs = NULL;
+
+    const char *supported_algs =
+    _libssh2_supported_key_sign_algorithms(session,
+                                           *key_method,
+                                           *key_method_len);
+
+    if(supported_algs == NULL || session->server_sign_algorithms == NULL) {
+        /* no upgrading key algorithm supported, do nothing */
+        return LIBSSH2_ERROR_NONE;
+    }
+
+    filtered_algs = LIBSSH2_ALLOC(session, strlen(supported_algs) + 1);
+    if(!filtered_algs) {
+        rc = _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                            "Unable to allocate filtered algs");
+        return rc;
+    }
+
+    s = session->server_sign_algorithms;
+    i = filtered_algs;
+
+    /* this walks the server algo list and the supported algo list and creates
+     a filtered list that includes matches */
+
+    while(s && *s) {
+        p = strchr(s, ',');
+        p_len = p ? (p - s) : (int) strlen(s);
+        a = supported_algs;
+
+        while(a && *a) {
+            f = strchr(a, ',');
+            f_len = f ? (f - a) : (int) strlen(a);
+
+            if(f_len == p_len && memcmp(a, s, p_len)) {
+
+                if(i != filtered_algs) {
+                    memcpy(i, ",", 1);
+                    i += 1;
+                }
+
+                memcpy(i, s, p_len);
+                i += p_len;
+            }
+
+            a = f ? (f + 1) : NULL;
+        }
+
+        s = p ? (p + 1) : NULL;
+    }
+
+    filtered_algs[i - filtered_algs] = '\0';
+
+    if(session->sign_algo_prefs) {
+        s = session->sign_algo_prefs;
+    }
+    else {
+        s = supported_algs;
+    }
+
+    /* now that we have the possible supported algos, match based on the prefs
+     or what is supported by the crypto backend, look for a match */
+
+    while(s && *s && !match) {
+        p = strchr(s, ',');
+        p_len = p ? (p - s) : (int) strlen(s);
+        a = filtered_algs;
+
+        while(a && *a && !match) {
+            f = strchr(a, ',');
+            f_len = f ? (f - a) : (int) strlen(a);
+
+            if(f_len == p_len && memcmp(a, s, p_len)) {
+                /* found a match, upgrade key method */
+                match = s;
+                match_len = p_len;
+            }
+            else {
+                a = f ? (f + 1) : NULL;
+            }
+        }
+
+        s = p ? (p + 1) : NULL;
+    }
+
+    if(match != NULL) {
+        if(*key_method)
+            LIBSSH2_FREE(session, *key_method);
+
+        *key_method = LIBSSH2_ALLOC(session, match_len);
+        if(key_method) {
+            memcpy(*key_method, match, match_len);
+            *key_method_len = match_len;
+
+            _libssh2_debug(session, LIBSSH2_TRACE_KEX,
+                           "Signing using %.*s", match_len, match);
+        }
+        else {
+            *key_method_len = 0;
+            rc = _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                                "Unable to allocate key method upgrade");
+        }
+    }
+    else {
+        /* no match was found */
+        rc = _libssh2_error(session, LIBSSH2_ERROR_METHOD_NONE,
+                            "No signing signature matched");
+    }
+
+    if(filtered_algs)
+        LIBSSH2_FREE(session, filtered_algs);
+
+    return rc;
+}
+
 int
 _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
                             const char *username,
@@ -1144,15 +1286,14 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
             memcpy(session->userauth_pblc_method, pubkeydata + 4,
                    session->userauth_pblc_method_len);
         }
-        /*
-         * The length of the method name read from plaintext prefix in the
-         * file must match length embedded in the key.
-         * TODO: The data should match too but we don't check that. Should we?
-         */
-        else if(session->userauth_pblc_method_len !=
-                 _libssh2_ntohu32(pubkeydata))
-            return _libssh2_error(session, LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED,
-                                  "Invalid public key");
+
+        /* upgrade key key signing algo needed */
+        rc = _libssh2_key_sign_algorithm(session,
+                                         &session->userauth_pblc_method,
+                                         &session->userauth_pblc_method_len);
+
+        if(rc)
+            return rc;
 
         /*
          * 45 = packet_type(1) + username_len(4) + servicename_len(4) +

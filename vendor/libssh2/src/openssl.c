@@ -154,19 +154,55 @@ _libssh2_rsa_new(libssh2_rsa_ctx ** rsa,
 }
 
 int
+_libssh2_rsa_sha2_verify(libssh2_rsa_ctx * rsactx,
+                         size_t hash_len,
+                         const unsigned char *sig,
+                         unsigned long sig_len,
+                         const unsigned char *m, unsigned long m_len)
+{
+    int ret;
+    int nid_type;
+    unsigned char *hash = malloc(hash_len);
+    if(hash == NULL)
+        return -1;
+
+    if(hash_len == SHA_DIGEST_LENGTH) {
+        nid_type = NID_sha1;
+        ret = _libssh2_sha1(m, m_len, hash);
+    }
+    else if(hash_len == SHA256_DIGEST_LENGTH) {
+        nid_type = NID_sha256;
+        ret = _libssh2_sha256(m, m_len, hash);
+
+    }
+    else if(hash_len == SHA512_DIGEST_LENGTH) {
+        nid_type = NID_sha512;
+        ret = _libssh2_sha512(m, m_len, hash);
+    }
+    else
+        ret = -1; /* unsupported digest */
+
+    if(ret != 0) {
+        free(hash);
+        return -1; /* failure */
+    }
+
+    ret = RSA_verify(nid_type, hash, hash_len,
+                     (unsigned char *) sig, sig_len, rsactx);
+
+    free(hash);
+
+    return (ret == 1) ? 0 : -1;
+}
+
+int
 _libssh2_rsa_sha1_verify(libssh2_rsa_ctx * rsactx,
                          const unsigned char *sig,
                          unsigned long sig_len,
                          const unsigned char *m, unsigned long m_len)
 {
-    unsigned char hash[SHA_DIGEST_LENGTH];
-    int ret;
-
-    if(_libssh2_sha1(m, m_len, hash))
-        return -1; /* failure */
-    ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH,
-                     (unsigned char *) sig, sig_len, rsactx);
-    return (ret == 1) ? 0 : -1;
+    return _libssh2_rsa_sha2_verify(rsactx, SHA_DIGEST_LENGTH, sig, sig_len, m,
+                                    m_len);
 }
 
 #if LIBSSH2_DSA
@@ -1876,7 +1912,7 @@ _libssh2_ed25519_new_public(libssh2_ed25519_ctx ** ed_ctx,
 
 
 int
-_libssh2_rsa_sha1_sign(LIBSSH2_SESSION * session,
+_libssh2_rsa_sha2_sign(LIBSSH2_SESSION * session,
                        libssh2_rsa_ctx * rsactx,
                        const unsigned char *hash,
                        size_t hash_len,
@@ -1893,7 +1929,17 @@ _libssh2_rsa_sha1_sign(LIBSSH2_SESSION * session,
         return -1;
     }
 
-    ret = RSA_sign(NID_sha1, hash, hash_len, sig, &sig_len, rsactx);
+    if(hash_len == SHA_DIGEST_LENGTH)
+        ret = RSA_sign(NID_sha1, hash, hash_len, sig, &sig_len, rsactx);
+    else if(hash_len == SHA256_DIGEST_LENGTH)
+        ret = RSA_sign(NID_sha256, hash, hash_len, sig, &sig_len, rsactx);
+    else if(hash_len == SHA512_DIGEST_LENGTH)
+        ret = RSA_sign(NID_sha512, hash, hash_len, sig, &sig_len, rsactx);
+    else {
+        _libssh2_error(session, LIBSSH2_ERROR_PROTO,
+                       "Unsupported hash digest length");
+        ret = -1;
+    }
 
     if(!ret) {
         LIBSSH2_FREE(session, sig);
@@ -1905,6 +1951,19 @@ _libssh2_rsa_sha1_sign(LIBSSH2_SESSION * session,
 
     return 0;
 }
+
+
+int
+_libssh2_rsa_sha1_sign(LIBSSH2_SESSION * session,
+                       libssh2_rsa_ctx * rsactx,
+                       const unsigned char *hash,
+                       size_t hash_len,
+                       unsigned char **signature, size_t *signature_len)
+{
+    return _libssh2_rsa_sha2_sign(session, rsactx, hash, hash_len,
+                                  signature, signature_len);
+}
+
 
 #if LIBSSH2_DSA
 int
@@ -3281,6 +3340,29 @@ _libssh2_dh_dtor(_libssh2_dh_ctx *dhctx)
 {
     BN_clear_free(*dhctx);
     *dhctx = NULL;
+}
+
+/* _libssh2_supported_key_sign_algorithms
+ *
+ * Return supported key hash algo upgrades, see crypto.h
+ *
+ */
+
+const char *
+_libssh2_supported_key_sign_algorithms(LIBSSH2_SESSION *session,
+                                       unsigned char *key_method,
+                                       size_t key_method_len)
+{
+    (void)session;
+
+#if LIBSSH2_RSA_SHA2
+    if(key_method_len == 7 &&
+       memcmp(key_method, "ssh-rsa", key_method_len) == 0) {
+        return "rsa-sha2-512,rsa-sha2-256,ssh-rsa";
+    }
+#endif
+
+    return NULL;
 }
 
 #endif /* LIBSSH2_OPENSSL */

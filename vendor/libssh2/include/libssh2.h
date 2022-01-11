@@ -356,6 +356,7 @@ typedef struct _LIBSSH2_USERAUTH_KBDINT_RESPONSE
 #define LIBSSH2_METHOD_COMP_SC      7
 #define LIBSSH2_METHOD_LANG_CS      8
 #define LIBSSH2_METHOD_LANG_SC      9
+#define LIBSSH2_METHOD_SIGN_ALGO    10
 
 /* flags */
 #define LIBSSH2_FLAG_SIGPIPE        1
