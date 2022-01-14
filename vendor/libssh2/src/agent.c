@@ -94,6 +94,10 @@
 #define SSH_AGENT_CONSTRAIN_LIFETIME 1
 #define SSH_AGENT_CONSTRAIN_CONFIRM 2
 
+/* Signature request methods */
+#define SSH_AGENT_RSA_SHA2_256 2
+#define SSH_AGENT_RSA_SHA2_512 4
+
 #ifdef PF_UNIX
 static int
 agent_connect_unix(LIBSSH2_AGENT *agent)
@@ -375,6 +379,7 @@ agent_sign(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
     ssize_t method_len;
     unsigned char *s;
     int rc;
+    uint32_t sign_flags = 0;
 
     /* Create a request to sign the data */
     if(transctx->state == agent_NB_state_init) {
@@ -391,7 +396,18 @@ agent_sign(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
         _libssh2_store_str(&s, (const char *)data, data_len);
 
         /* flags */
-        _libssh2_store_u32(&s, 0);
+        if(session->userauth_pblc_method_len > 0 &&
+            session->userauth_pblc_method) {
+            if(session->userauth_pblc_method_len == 12 &&
+                !memcmp(session->userauth_pblc_method, "rsa-sha2-512", 12)) {
+                sign_flags = SSH_AGENT_RSA_SHA2_512;
+            }
+            else if(session->userauth_pblc_method_len == 12 &&
+                !memcmp(session->userauth_pblc_method, "rsa-sha2-256", 12)) {
+                sign_flags = SSH_AGENT_RSA_SHA2_256;
+            }
+        }
+        _libssh2_store_u32(&s, sign_flags);
 
         transctx->request_len = s - transctx->request;
         transctx->send_recv_total = 0;
