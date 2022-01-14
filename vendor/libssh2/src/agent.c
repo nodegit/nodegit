@@ -379,6 +379,7 @@ agent_sign(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
     ssize_t method_len;
     unsigned char *s;
     int rc;
+    unsigned char *method_name;
     uint32_t sign_flags = 0;
 
     /* Create a request to sign the data */
@@ -465,7 +466,37 @@ agent_sign(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
         rc = LIBSSH2_ERROR_AGENT_PROTOCOL;
         goto error;
     }
+
+    /* method name */
+    method_name = LIBSSH2_ALLOC(session, method_len);
+    if(!method_name) {
+        rc = LIBSSH2_ERROR_ALLOC;
+        goto error;
+    }
+    memcpy(method_name, s, method_len);
     s += method_len;
+
+    /* check to see if we match requested */
+    if((size_t)method_len == session->userauth_pblc_method_len) {
+        if(memcmp(method_name, session->userauth_pblc_method, method_len)) {
+            _libssh2_debug(session,
+                           LIBSSH2_TRACE_KEX,
+                           "Agent sign method %.*s",
+                           method_len, method_name);
+
+            rc = LIBSSH2_ERROR_ALGO_UNSUPPORTED;
+            goto error;
+        }
+    }
+    else {
+        _libssh2_debug(session,
+                       LIBSSH2_TRACE_KEX,
+                       "Agent sign method %.*s",
+                       method_len, method_name);
+
+        rc = LIBSSH2_ERROR_ALGO_UNSUPPORTED;
+        goto error;
+    }
 
     /* Read the signature */
     len -= 4;
@@ -494,6 +525,8 @@ agent_sign(LIBSSH2_SESSION *session, unsigned char **sig, size_t *sig_len,
 
     LIBSSH2_FREE(session, transctx->response);
     transctx->response = NULL;
+
+    transctx->state = agent_NB_state_init;
 
     return _libssh2_error(session, rc, "agent sign failure");
 }

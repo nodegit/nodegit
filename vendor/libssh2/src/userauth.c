@@ -1283,9 +1283,6 @@ _libssh2_key_sign_algorithm(LIBSSH2_SESSION *session,
         if(key_method) {
             memcpy(*key_method, match, match_len);
             *key_method_len = match_len;
-
-            _libssh2_debug(session, LIBSSH2_TRACE_KEX,
-                           "Signing using %.*s", match_len, match);
         }
         else {
             *key_method_len = 0;
@@ -1321,6 +1318,10 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
         };
     int rc;
     unsigned char *s;
+    int auth_attempts = 0;
+
+    retry_auth:
+    auth_attempts++;
 
     if(session->userauth_pblc_state == libssh2_NB_state_idle) {
 
@@ -1364,13 +1365,26 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
                    session->userauth_pblc_method_len);
         }
 
-        /* upgrade key key signing algo needed */
-        rc = _libssh2_key_sign_algorithm(session,
-                                         &session->userauth_pblc_method,
-                                         &session->userauth_pblc_method_len);
+        /* upgrade key signing algo if it is supported and
+         * it is our first auth attempt, otherwise fallback to
+         * the key default algo */
+        if(auth_attempts == 1) {
+            rc = _libssh2_key_sign_algorithm(session,
+                                        &session->userauth_pblc_method,
+                                        &session->userauth_pblc_method_len);
 
-        if(rc)
-            return rc;
+            if(rc)
+                return rc;
+        }
+
+        if(session->userauth_pblc_method_len &&
+           session->userauth_pblc_method) {
+            _libssh2_debug(session,
+                           LIBSSH2_TRACE_KEX,
+                           "Signing using %.*s",
+                           session->userauth_pblc_method_len,
+                           session->userauth_pblc_method);
+        }
 
         /*
          * 45 = packet_type(1) + username_len(4) + servicename_len(4) +
@@ -1527,6 +1541,17 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
         if(rc == LIBSSH2_ERROR_EAGAIN) {
             return _libssh2_error(session, LIBSSH2_ERROR_EAGAIN,
                                   "Would block");
+        }
+        else if(rc == LIBSSH2_ERROR_ALGO_UNSUPPORTED && auth_attempts == 1) {
+            /* try again with the default key algo */
+            LIBSSH2_FREE(session, session->userauth_pblc_method);
+            session->userauth_pblc_method = NULL;
+            LIBSSH2_FREE(session, session->userauth_pblc_packet);
+            session->userauth_pblc_packet = NULL;
+            session->userauth_pblc_state = libssh2_NB_state_idle;
+
+            rc = LIBSSH2_ERROR_NONE;
+            goto retry_auth;
         }
         else if(rc) {
             LIBSSH2_FREE(session, session->userauth_pblc_method);
