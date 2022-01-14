@@ -63,11 +63,13 @@
 static char *userauth_list(LIBSSH2_SESSION *session, const char *username,
                            unsigned int username_len)
 {
-    static const unsigned char reply_codes[3] =
-        { SSH_MSG_USERAUTH_SUCCESS, SSH_MSG_USERAUTH_FAILURE, 0 };
+    unsigned char reply_codes[4] =
+        { SSH_MSG_USERAUTH_SUCCESS, SSH_MSG_USERAUTH_FAILURE,
+          SSH_MSG_USERAUTH_BANNER, 0 };
     /* packet_type(1) + username_len(4) + service_len(4) +
        service(14)"ssh-connection" + method_len(4) = 27 */
     unsigned long methods_len;
+    unsigned int banner_len;
     unsigned char *s;
     int rc;
 
@@ -134,6 +136,57 @@ static char *userauth_list(LIBSSH2_SESSION *session, const char *username,
             return NULL;
         }
 
+        if(session->userauth_list_data[0] == SSH_MSG_USERAUTH_BANNER) {
+            if(session->userauth_list_data_len < 5) {
+                LIBSSH2_FREE(session, session->userauth_list_data);
+                session->userauth_list_data = NULL;
+                _libssh2_error(session, LIBSSH2_ERROR_PROTO,
+                               "Unexpected packet size");
+                return NULL;
+            }
+            banner_len = _libssh2_ntohu32(session->userauth_list_data + 1);
+            if(banner_len >= session->userauth_list_data_len - 5) {
+                LIBSSH2_FREE(session, session->userauth_list_data);
+                session->userauth_list_data = NULL;
+                _libssh2_error(session, LIBSSH2_ERROR_OUT_OF_BOUNDARY,
+                               "Unexpected userauth banner size");
+                return NULL;
+            }
+            session->userauth_banner = LIBSSH2_ALLOC(session, banner_len);
+            if(!session->userauth_banner) {
+                LIBSSH2_FREE(session, session->userauth_list_data);
+                session->userauth_list_data = NULL;
+                _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                              "Unable to allocate memory for userauth_banner");
+                return NULL;
+            }
+            memmove(session->userauth_banner, session->userauth_list_data + 5,
+                    banner_len);
+            session->userauth_banner[banner_len] = '\0';
+            _libssh2_debug(session, LIBSSH2_TRACE_AUTH,
+                           "Banner: %s",
+                           session->userauth_banner);
+            LIBSSH2_FREE(session, session->userauth_list_data);
+            session->userauth_list_data = NULL;
+            /* SSH_MSG_USERAUTH_BANNER has been handled */
+            reply_codes[2] = 0;
+            rc = _libssh2_packet_requirev(session, reply_codes,
+                                          &session->userauth_list_data,
+                                          &session->userauth_list_data_len, 0,
+                                          NULL, 0,
+                                &session->userauth_list_packet_requirev_state);
+            if(rc == LIBSSH2_ERROR_EAGAIN) {
+                _libssh2_error(session, LIBSSH2_ERROR_EAGAIN,
+                               "Would block requesting userauth list");
+                return NULL;
+            }
+            else if(rc || (session->userauth_list_data_len < 1)) {
+                _libssh2_error(session, rc, "Failed getting response");
+                session->userauth_list_state = libssh2_NB_state_idle;
+                return NULL;
+            }
+        }
+
         if(session->userauth_list_data[0] == SSH_MSG_USERAUTH_SUCCESS) {
             /* Wow, who'dve thought... */
             _libssh2_error(session, LIBSSH2_ERROR_NONE, "No error");
@@ -187,6 +240,30 @@ libssh2_userauth_list(LIBSSH2_SESSION * session, const char *user,
     BLOCK_ADJUST_ERRNO(ptr, session,
                        userauth_list(session, user, user_len));
     return ptr;
+}
+
+/* libssh2_userauth_banner
+ *
+ * Retrieve banner message from server, if available.
+ * When no such message is sent by server or if no authentication attempt has
+ * been made, this function returns LIBSSH2_ERROR_MISSING_AUTH_BANNER.
+ */
+LIBSSH2_API int
+libssh2_userauth_banner(LIBSSH2_SESSION *session, char **banner)
+{
+    if(NULL == session)
+        return LIBSSH2_ERROR_MISSING_USERAUTH_BANNER;
+
+    if(!session->userauth_banner) {
+        return _libssh2_error(session,
+                              LIBSSH2_ERROR_MISSING_USERAUTH_BANNER,
+                              "Missing userauth banner");
+    }
+
+    if(banner != NULL)
+        *banner = session->userauth_banner;
+
+    return LIBSSH2_ERROR_NONE;
 }
 
 /*

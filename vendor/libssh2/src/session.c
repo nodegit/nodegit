@@ -994,6 +994,9 @@ session_free(LIBSSH2_SESSION *session)
     if(session->userauth_list_data) {
         LIBSSH2_FREE(session, session->userauth_list_data);
     }
+    if(session->userauth_banner) {
+        LIBSSH2_FREE(session, session->userauth_banner);
+    }
     if(session->userauth_pswd_data) {
         LIBSSH2_FREE(session, session->userauth_pswd_data);
     }

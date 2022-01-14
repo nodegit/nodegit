@@ -163,6 +163,7 @@ dist_man_MANS = \
 	libssh2_trace.3 \
 	libssh2_trace_sethandler.3 \
 	libssh2_userauth_authenticated.3 \
+	libssh2_userauth_banner.3 \
 	libssh2_userauth_hostbased_fromfile.3 \
 	libssh2_userauth_hostbased_fromfile_ex.3 \
 	libssh2_userauth_keyboard_interactive.3 \
