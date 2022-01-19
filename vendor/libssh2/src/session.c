@@ -981,6 +981,12 @@ session_free(LIBSSH2_SESSION *session)
     if(session->remote.lang_prefs) {
         LIBSSH2_FREE(session, session->remote.lang_prefs);
     }
+    if(session->server_sign_algorithms) {
+        LIBSSH2_FREE(session, session->server_sign_algorithms);
+    }
+    if(session->sign_algo_prefs) {
+        LIBSSH2_FREE(session, session->sign_algo_prefs);
+    }
 
     /*
      * Make sure all memory used in the state variables are free
