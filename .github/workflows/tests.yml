@@ -1,20 +1,23 @@
 on:
   push:
     branches:
-      - master
-      - backport/*
+      - figma
     tags:
       - v*.*.*
   pull_request:
 
 name: Testing
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   linux-tests:
     name: "Linux Tests"
     strategy:
       matrix:
-        node: [12, 14]
+        node: [16]
     runs-on: ubuntu-latest
     container: ubuntu:16.04
     steps:
@@ -53,7 +56,7 @@ jobs:
           GYP_DEFINES: use_obsolete_asm=true
         # There is a race condition in node/generate that needs to be fixed
         run: |
-          npm set unsafe-perm true
+          chown root .
           node utils/retry npm install
 
       - name: Test
@@ -63,12 +66,15 @@ jobs:
           ssh-add ~/.ssh_tests/id_rsa
           node utils/retry npm test
 
+      - name: configure aws credentials
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::060562746757:role/nodegit-repository
+          aws-region: us-west-2
+
       - name: Deploy
         if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
-          node_pre_gyp_secretAccessKey: ${{ secrets.node_pre_gyp_secretAccessKey }}
         run: |
           npm install -g node-pre-gyp aws-sdk
           node lifecycleScripts/clean
@@ -79,7 +85,7 @@ jobs:
     name: "macOS Tests"
     strategy:
       matrix:
-        node: [12, 14]
+        node: [16]
     runs-on: macOS-10.15
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
@@ -121,74 +127,17 @@ jobs:
           ssh-add ~/.ssh_tests/id_rsa
           node utils/retry npm test
 
+      - name: configure aws credentials
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::060562746757:role/nodegit-repository
+          aws-region: us-west-2
+
       - name: Deploy
         if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
-          node_pre_gyp_secretAccessKey: ${{ secrets.node_pre_gyp_secretAccessKey }}
         run: |
           npm install -g node-pre-gyp aws-sdk
           node lifecycleScripts/clean
           node-pre-gyp package
           node-pre-gyp publish
-
-  windows-tests:
-    name: Windows Tests
-    strategy:
-      matrix:
-        node: [12, 14]
-        arch: [x86, x64]
-    runs-on: windows-2016
-    steps:
-      - name: Setup Environment
-        run: |
-          git config --file C:\ProgramData\Git\config core.autocrlf input
-          git config --system core.autocrlf input
-          git config --global core.autocrlf input
-          git config --global user.name "John Doe"
-          git config --global user.email johndoe@example.com
-
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: implausible/setup-node@feature/expose-architecture-override
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        with:
-          node-version: ${{ matrix.node }}
-          check-latest: true
-          node-arch: ${{ matrix.arch }}
-
-      - name: Install
-        run: npm install
-
-      - name: Test
-        env:
-          GIT_SSH: ${{ github.workspace }}\vendor\plink.exe
-        run: |
-          powershell -command "Start-Process ${{ github.workspace }}\vendor\pageant.exe ${{ github.workspace }}\vendor\private.ppk"
-          node utils/retry npm test
-
-      # You're probably wondering why this isn't a single `run: |` step, it certainly is for *nix,
-      # but it's not, because the CI runner for windows doesn't wait for each step as listed here
-      # and it treats each additional step past the first as an orphaned process.
-      - name: Deploy (Dependencies)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: npm install -g node-pre-gyp aws-sdk
-
-      - name: Deploy (Clean)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: node lifecycleScripts\clean
-
-      - name: Deploy (Package)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: node-pre-gyp package
-
-      - name: Deploy (Publish)
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
-          node_pre_gyp_secretAccessKey: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: node-pre-gyp publish
