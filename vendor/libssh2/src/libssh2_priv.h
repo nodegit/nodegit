@@ -642,7 +642,6 @@ struct _LIBSSH2_SESSION
 
     /* public key algorithms accepted as comma separated list */
     char *server_sign_algorithms;
-    size_t server_sign_algorithms_len;
 
     /* key signing algorithm preferences -- NULL yields server order */
     char *sign_algo_prefs;
