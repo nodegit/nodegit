@@ -64,8 +64,10 @@
 
 #ifdef OPENSSL_NO_RSA
 # define LIBSSH2_RSA 0
+# define LIBSSH2_RSA_SHA2 0
 #else
 # define LIBSSH2_RSA 1
+# define LIBSSH2_RSA_SHA2 1
 #endif
 
 #ifdef OPENSSL_NO_DSA

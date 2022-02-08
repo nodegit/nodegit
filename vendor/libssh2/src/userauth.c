@@ -63,11 +63,13 @@
 static char *userauth_list(LIBSSH2_SESSION *session, const char *username,
                            unsigned int username_len)
 {
-    static const unsigned char reply_codes[3] =
-        { SSH_MSG_USERAUTH_SUCCESS, SSH_MSG_USERAUTH_FAILURE, 0 };
+    unsigned char reply_codes[4] =
+        { SSH_MSG_USERAUTH_SUCCESS, SSH_MSG_USERAUTH_FAILURE,
+          SSH_MSG_USERAUTH_BANNER, 0 };
     /* packet_type(1) + username_len(4) + service_len(4) +
        service(14)"ssh-connection" + method_len(4) = 27 */
     unsigned long methods_len;
+    unsigned int banner_len;
     unsigned char *s;
     int rc;
 
@@ -134,6 +136,57 @@ static char *userauth_list(LIBSSH2_SESSION *session, const char *username,
             return NULL;
         }
 
+        if(session->userauth_list_data[0] == SSH_MSG_USERAUTH_BANNER) {
+            if(session->userauth_list_data_len < 5) {
+                LIBSSH2_FREE(session, session->userauth_list_data);
+                session->userauth_list_data = NULL;
+                _libssh2_error(session, LIBSSH2_ERROR_PROTO,
+                               "Unexpected packet size");
+                return NULL;
+            }
+            banner_len = _libssh2_ntohu32(session->userauth_list_data + 1);
+            if(banner_len >= session->userauth_list_data_len - 5) {
+                LIBSSH2_FREE(session, session->userauth_list_data);
+                session->userauth_list_data = NULL;
+                _libssh2_error(session, LIBSSH2_ERROR_OUT_OF_BOUNDARY,
+                               "Unexpected userauth banner size");
+                return NULL;
+            }
+            session->userauth_banner = LIBSSH2_ALLOC(session, banner_len);
+            if(!session->userauth_banner) {
+                LIBSSH2_FREE(session, session->userauth_list_data);
+                session->userauth_list_data = NULL;
+                _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                              "Unable to allocate memory for userauth_banner");
+                return NULL;
+            }
+            memmove(session->userauth_banner, session->userauth_list_data + 5,
+                    banner_len);
+            session->userauth_banner[banner_len] = '\0';
+            _libssh2_debug(session, LIBSSH2_TRACE_AUTH,
+                           "Banner: %s",
+                           session->userauth_banner);
+            LIBSSH2_FREE(session, session->userauth_list_data);
+            session->userauth_list_data = NULL;
+            /* SSH_MSG_USERAUTH_BANNER has been handled */
+            reply_codes[2] = 0;
+            rc = _libssh2_packet_requirev(session, reply_codes,
+                                          &session->userauth_list_data,
+                                          &session->userauth_list_data_len, 0,
+                                          NULL, 0,
+                                &session->userauth_list_packet_requirev_state);
+            if(rc == LIBSSH2_ERROR_EAGAIN) {
+                _libssh2_error(session, LIBSSH2_ERROR_EAGAIN,
+                               "Would block requesting userauth list");
+                return NULL;
+            }
+            else if(rc || (session->userauth_list_data_len < 1)) {
+                _libssh2_error(session, rc, "Failed getting response");
+                session->userauth_list_state = libssh2_NB_state_idle;
+                return NULL;
+            }
+        }
+
         if(session->userauth_list_data[0] == SSH_MSG_USERAUTH_SUCCESS) {
             /* Wow, who'dve thought... */
             _libssh2_error(session, LIBSSH2_ERROR_NONE, "No error");
@@ -187,6 +240,30 @@ libssh2_userauth_list(LIBSSH2_SESSION * session, const char *user,
     BLOCK_ADJUST_ERRNO(ptr, session,
                        userauth_list(session, user, user_len));
     return ptr;
+}
+
+/* libssh2_userauth_banner
+ *
+ * Retrieve banner message from server, if available.
+ * When no such message is sent by server or if no authentication attempt has
+ * been made, this function returns LIBSSH2_ERROR_MISSING_AUTH_BANNER.
+ */
+LIBSSH2_API int
+libssh2_userauth_banner(LIBSSH2_SESSION *session, char **banner)
+{
+    if(NULL == session)
+        return LIBSSH2_ERROR_MISSING_USERAUTH_BANNER;
+
+    if(!session->userauth_banner) {
+        return _libssh2_error(session,
+                              LIBSSH2_ERROR_MISSING_USERAUTH_BANNER,
+                              "Missing userauth banner");
+    }
+
+    if(banner != NULL)
+        *banner = session->userauth_banner;
+
+    return LIBSSH2_ERROR_NONE;
 }
 
 /*
@@ -1086,6 +1163,145 @@ static int plain_method_len(const char *method, size_t method_len)
     return method_len;
 }
 
+/**
+ * @function _libssh2_key_sign_algorithm
+ * @abstract Upgrades the algorithm used for public key signing RFC 8332
+ * @discussion Based on the incoming key_method value, this function
+ * will upgrade the key method input based on user preferences,
+ * server support algos and crypto backend support
+ * @related _libssh2_supported_key_sign_algorithms()
+ * @param key_method current key method, usually the default key sig method
+ * @param key_method_len length of the key method buffer
+ * @result error code or zero on success
+ */
+
+static int
+_libssh2_key_sign_algorithm(LIBSSH2_SESSION *session,
+                            unsigned char **key_method,
+                            size_t *key_method_len)
+{
+    const char *s = NULL;
+    const char *a = NULL;
+    const char *match = NULL;
+    const char *p = NULL;
+    const char *f = NULL;
+    char *i = NULL;
+    int p_len = 0;
+    int f_len = 0;
+    int rc = 0;
+    int match_len = 0;
+    char *filtered_algs = NULL;
+
+    const char *supported_algs =
+    _libssh2_supported_key_sign_algorithms(session,
+                                           *key_method,
+                                           *key_method_len);
+
+    if(supported_algs == NULL || session->server_sign_algorithms == NULL) {
+        /* no upgrading key algorithm supported, do nothing */
+        return LIBSSH2_ERROR_NONE;
+    }
+
+    filtered_algs = LIBSSH2_ALLOC(session, strlen(supported_algs) + 1);
+    if(!filtered_algs) {
+        rc = _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                            "Unable to allocate filtered algs");
+        return rc;
+    }
+
+    s = session->server_sign_algorithms;
+    i = filtered_algs;
+
+    /* this walks the server algo list and the supported algo list and creates
+     a filtered list that includes matches */
+
+    while(s && *s) {
+        p = strchr(s, ',');
+        p_len = p ? (p - s) : (int) strlen(s);
+        a = supported_algs;
+
+        while(a && *a) {
+            f = strchr(a, ',');
+            f_len = f ? (f - a) : (int) strlen(a);
+
+            if(f_len == p_len && memcmp(a, s, p_len) == 0) {
+
+                if(i != filtered_algs) {
+                    memcpy(i, ",", 1);
+                    i += 1;
+                }
+
+                memcpy(i, s, p_len);
+                i += p_len;
+            }
+
+            a = f ? (f + 1) : NULL;
+        }
+
+        s = p ? (p + 1) : NULL;
+    }
+
+    filtered_algs[i - filtered_algs] = '\0';
+
+    if(session->sign_algo_prefs) {
+        s = session->sign_algo_prefs;
+    }
+    else {
+        s = supported_algs;
+    }
+
+    /* now that we have the possible supported algos, match based on the prefs
+     or what is supported by the crypto backend, look for a match */
+
+    while(s && *s && !match) {
+        p = strchr(s, ',');
+        p_len = p ? (p - s) : (int) strlen(s);
+        a = filtered_algs;
+
+        while(a && *a && !match) {
+            f = strchr(a, ',');
+            f_len = f ? (f - a) : (int) strlen(a);
+
+            if(f_len == p_len && memcmp(a, s, p_len) == 0) {
+                /* found a match, upgrade key method */
+                match = s;
+                match_len = p_len;
+            }
+            else {
+                a = f ? (f + 1) : NULL;
+            }
+        }
+
+        s = p ? (p + 1) : NULL;
+    }
+
+    if(match != NULL) {
+        if(*key_method)
+            LIBSSH2_FREE(session, *key_method);
+
+        *key_method = LIBSSH2_ALLOC(session, match_len);
+        if(key_method) {
+            memcpy(*key_method, match, match_len);
+            *key_method_len = match_len;
+        }
+        else {
+            *key_method_len = 0;
+            rc = _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                                "Unable to allocate key method upgrade");
+        }
+    }
+    else {
+        /* no match was found */
+        rc = _libssh2_error(session, LIBSSH2_ERROR_METHOD_NONE,
+                            "No signing signature matched");
+    }
+
+    if(filtered_algs)
+        LIBSSH2_FREE(session, filtered_algs);
+
+    return rc;
+}
+
 int
 _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
                             const char *username,
@@ -1102,6 +1318,10 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
         };
     int rc;
     unsigned char *s;
+    int auth_attempts = 0;
+
+    retry_auth:
+    auth_attempts++;
 
     if(session->userauth_pblc_state == libssh2_NB_state_idle) {
 
@@ -1144,15 +1364,27 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
             memcpy(session->userauth_pblc_method, pubkeydata + 4,
                    session->userauth_pblc_method_len);
         }
-        /*
-         * The length of the method name read from plaintext prefix in the
-         * file must match length embedded in the key.
-         * TODO: The data should match too but we don't check that. Should we?
-         */
-        else if(session->userauth_pblc_method_len !=
-                 _libssh2_ntohu32(pubkeydata))
-            return _libssh2_error(session, LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED,
-                                  "Invalid public key");
+
+        /* upgrade key signing algo if it is supported and
+         * it is our first auth attempt, otherwise fallback to
+         * the key default algo */
+        if(auth_attempts == 1) {
+            rc = _libssh2_key_sign_algorithm(session,
+                                        &session->userauth_pblc_method,
+                                        &session->userauth_pblc_method_len);
+
+            if(rc)
+                return rc;
+        }
+
+        if(session->userauth_pblc_method_len &&
+           session->userauth_pblc_method) {
+            _libssh2_debug(session,
+                           LIBSSH2_TRACE_KEX,
+                           "Signing using %.*s",
+                           session->userauth_pblc_method_len,
+                           session->userauth_pblc_method);
+        }
 
         /*
          * 45 = packet_type(1) + username_len(4) + servicename_len(4) +
@@ -1309,6 +1541,17 @@ _libssh2_userauth_publickey(LIBSSH2_SESSION *session,
         if(rc == LIBSSH2_ERROR_EAGAIN) {
             return _libssh2_error(session, LIBSSH2_ERROR_EAGAIN,
                                   "Would block");
+        }
+        else if(rc == LIBSSH2_ERROR_ALGO_UNSUPPORTED && auth_attempts == 1) {
+            /* try again with the default key algo */
+            LIBSSH2_FREE(session, session->userauth_pblc_method);
+            session->userauth_pblc_method = NULL;
+            LIBSSH2_FREE(session, session->userauth_pblc_packet);
+            session->userauth_pblc_packet = NULL;
+            session->userauth_pblc_state = libssh2_NB_state_idle;
+
+            rc = LIBSSH2_ERROR_NONE;
+            goto retry_auth;
         }
         else if(rc) {
             LIBSSH2_FREE(session, session->userauth_pblc_method);

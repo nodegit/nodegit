@@ -640,6 +640,12 @@ struct _LIBSSH2_SESSION
     unsigned char server_hostkey_sha256[SHA256_DIGEST_LENGTH];
     int server_hostkey_sha256_valid;
 
+    /* public key algorithms accepted as comma separated list */
+    char *server_sign_algorithms;
+
+    /* key signing algorithm preferences -- NULL yields server order */
+    char *sign_algo_prefs;
+
     /* (remote as source of data -- packet_read ) */
     libssh2_endpoint_data remote;
 
@@ -713,6 +719,7 @@ struct _LIBSSH2_SESSION
     libssh2_nonblocking_states userauth_list_state;
     unsigned char *userauth_list_data;
     size_t userauth_list_data_len;
+    char *userauth_banner;
     packet_requirev_state_t userauth_list_packet_requirev_state;
 
     /* State variables used in libssh2_userauth_password_ex() */
@@ -1006,6 +1013,7 @@ _libssh2_debug(LIBSSH2_SESSION * session, int context, const char *format, ...)
 #define SSH_MSG_DEBUG                               4
 #define SSH_MSG_SERVICE_REQUEST                     5
 #define SSH_MSG_SERVICE_ACCEPT                      6
+#define SSH_MSG_EXT_INFO                            7
 
 #define SSH_MSG_KEXINIT                             20
 #define SSH_MSG_NEWKEYS                             21

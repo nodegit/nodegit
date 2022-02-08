@@ -981,6 +981,12 @@ session_free(LIBSSH2_SESSION *session)
     if(session->remote.lang_prefs) {
         LIBSSH2_FREE(session, session->remote.lang_prefs);
     }
+    if(session->server_sign_algorithms) {
+        LIBSSH2_FREE(session, session->server_sign_algorithms);
+    }
+    if(session->sign_algo_prefs) {
+        LIBSSH2_FREE(session, session->sign_algo_prefs);
+    }
 
     /*
      * Make sure all memory used in the state variables are free
@@ -993,6 +999,9 @@ session_free(LIBSSH2_SESSION *session)
     }
     if(session->userauth_list_data) {
         LIBSSH2_FREE(session, session->userauth_list_data);
+    }
+    if(session->userauth_banner) {
+        LIBSSH2_FREE(session, session->userauth_banner);
     }
     if(session->userauth_pswd_data) {
         LIBSSH2_FREE(session, session->userauth_pswd_data);

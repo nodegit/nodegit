@@ -93,6 +93,19 @@ int _libssh2_rsa_sha1_sign(LIBSSH2_SESSION * session,
                            size_t hash_len,
                            unsigned char **signature,
                            size_t *signature_len);
+#if LIBSSH2_RSA_SHA2
+int _libssh2_rsa_sha2_sign(LIBSSH2_SESSION * session,
+                           libssh2_rsa_ctx * rsactx,
+                           const unsigned char *hash,
+                           size_t hash_len,
+                           unsigned char **signature,
+                           size_t *signature_len);
+int _libssh2_rsa_sha2_verify(libssh2_rsa_ctx * rsa,
+                             size_t hash_len,
+                             const unsigned char *sig,
+                             unsigned long sig_len,
+                             const unsigned char *m, unsigned long m_len);
+#endif
 int _libssh2_rsa_new_private_frommemory(libssh2_rsa_ctx ** rsa,
                                         LIBSSH2_SESSION * session,
                                         const char *filedata,
@@ -244,5 +257,24 @@ int _libssh2_pub_priv_keyfilememory(LIBSSH2_SESSION *session,
                                     const char *privatekeydata,
                                     size_t privatekeydata_len,
                                     const char *passphrase);
+
+
+/**
+ * @function _libssh2_supported_key_sign_algorithms
+ * @abstract Returns supported algorithms used for upgrading public
+ * key signing RFC 8332
+ * @discussion Based on the incoming key_method value, this function
+ * will return supported algorithms that can upgrade the key method
+ * @related _libssh2_key_sign_algorithm()
+ * @param key_method current key method, usually the default key sig method
+ * @param key_method_len length of the key method buffer
+ * @result comma seperated list of supported upgrade options per RFC 8332, if
+ * there is no upgrade option return NULL
+ */
+
+const char *
+_libssh2_supported_key_sign_algorithms(LIBSSH2_SESSION *session,
+                                       unsigned char *key_method,
+                                       size_t key_method_len);
 
 #endif /* __LIBSSH2_CRYPTO_H */

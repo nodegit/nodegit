@@ -356,6 +356,7 @@ typedef struct _LIBSSH2_USERAUTH_KBDINT_RESPONSE
 #define LIBSSH2_METHOD_COMP_SC      7
 #define LIBSSH2_METHOD_LANG_CS      8
 #define LIBSSH2_METHOD_LANG_SC      9
+#define LIBSSH2_METHOD_SIGN_ALGO    10
 
 /* flags */
 #define LIBSSH2_FLAG_SIGPIPE        1
@@ -506,6 +507,8 @@ typedef struct _LIBSSH2_POLLFD {
 #define LIBSSH2_ERROR_CHANNEL_WINDOW_FULL       -47
 #define LIBSSH2_ERROR_KEYFILE_AUTH_FAILED       -48
 #define LIBSSH2_ERROR_RANDGEN                   -49
+#define LIBSSH2_ERROR_MISSING_USERAUTH_BANNER   -50
+#define LIBSSH2_ERROR_ALGO_UNSUPPORTED          -51
 
 /* this is a define to provide the old (<= 1.2.7) name */
 #define LIBSSH2_ERROR_BANNER_NONE LIBSSH2_ERROR_BANNER_RECV
@@ -614,6 +617,8 @@ LIBSSH2_API const char *libssh2_session_banner_get(LIBSSH2_SESSION *session);
 LIBSSH2_API char *libssh2_userauth_list(LIBSSH2_SESSION *session,
                                         const char *username,
                                         unsigned int username_len);
+LIBSSH2_API int libssh2_userauth_banner(LIBSSH2_SESSION *session,
+                                        char **banner);
 LIBSSH2_API int libssh2_userauth_authenticated(LIBSSH2_SESSION *session);
 
 LIBSSH2_API int

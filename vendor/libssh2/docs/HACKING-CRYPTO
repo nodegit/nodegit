@@ -637,6 +637,32 @@ Note: this procedure is not used if macro _libssh2_rsa_sha1_signv() is defined.
 void _libssh2_rsa_free(libssh2_rsa_ctx *rsactx);
 Releases the RSA computation context at rsactx.
 
+LIBSSH2_RSA_SHA2
+#define as 1 if the crypto library supports RSA SHA2 256/512, else 0.
+If defined as 0, the rest of this section can be omitted.
+
+int _libssh2_rsa_sha2_sign(LIBSSH2_SESSION * session,
+                           libssh2_rsa_ctx * rsactx,
+                           const unsigned char *hash,
+                           size_t hash_len,
+                           unsigned char **signature,
+                           size_t *signature_len);
+RSA signs the (hash, hashlen) SHA-2 hash bytes based on hash length and stores
+the allocated signature at (signature, signature_len).
+Signature buffer must be allocated from the given session.
+Returns 0 if OK, else -1.
+This procedure is already prototyped in crypto.h.
+Note: this procedure is not used if macro _libssh2_rsa_sha1_signv() is defined.
+
+int _libssh2_rsa_sha2_verify(libssh2_rsa_ctx * rsa,
+                             size_t hash_len,
+                             const unsigned char *sig,
+                             unsigned long sig_len,
+                             const unsigned char *m, unsigned long m_len);
+Verify (sig, sig_len) signature of (m, m_len) using an SHA-2 hash based on
+hash length and the RSA context.
+Return 0 if OK, else -1.
+This procedure is already prototyped in crypto.h.
 
 7.2) DSA
 LIBSSH2_DSA
@@ -900,3 +926,14 @@ If this is not needed, it should be defined as an empty macro.
 int _libssh2_random(unsigned char *buf, int len);
 Store len random bytes at buf.
 Returns 0 if OK, else -1.
+
+const char * _libssh2_supported_key_sign_algorithms(LIBSSH2_SESSION *session,
+                                                    unsigned char *key_method,
+                                                    size_t key_method_len);
+
+This function is for implementing key hash upgrading as defined in RFC 8332.
+
+Based on the incoming key_method value, this function will return a
+list of supported algorithms that can upgrade the original key method algorithm
+as a comma seperated list, if there is no upgrade option this function should
+return NULL.

@@ -616,6 +616,75 @@ _libssh2_packet_add(LIBSSH2_SESSION * session, unsigned char *data,
             return 0;
 
             /*
+              byte      SSH_MSG_EXT_INFO
+              uint32    nr-extensions
+              [repeat   "nr-extensions" times]
+              string    extension-name  [RFC8308]
+              string    extension-value (binary)
+            */
+
+        case SSH_MSG_EXT_INFO:
+            if(datalen >= 5) {
+                uint32_t nr_extensions = 0;
+                struct string_buf buf;
+                buf.data = (unsigned char *)data;
+                buf.dataptr = buf.data;
+                buf.len = datalen;
+                buf.dataptr += 1; /* advance past type */
+
+                if(_libssh2_get_u32(&buf, &nr_extensions) != 0) {
+                    rc = _libssh2_error(session, LIBSSH2_ERROR_PROTO,
+                                        "Invalid extension info received");
+                }
+
+                while(rc == 0 && nr_extensions > 0) {
+
+                    size_t name_len = 0;
+                    size_t value_len = 0;
+                    unsigned char *name = NULL;
+                    unsigned char *value = NULL;
+
+                    nr_extensions -= 1;
+
+                    _libssh2_get_string(&buf, &name, &name_len);
+                    _libssh2_get_string(&buf, &value, &value_len);
+
+                    if(name != NULL && value != NULL) {
+                        _libssh2_debug(session,
+                                       LIBSSH2_TRACE_KEX,
+                                       "Server to Client extension %.*s: %.*s",
+                                       name_len, name, value_len, value);
+                    }
+
+                    if(name_len == 15 &&
+                        memcmp(name, "server-sig-algs", 15) == 0) {
+                        if(session->server_sign_algorithms) {
+                            LIBSSH2_FREE(session,
+                                         session->server_sign_algorithms);
+                        }
+
+                        session->server_sign_algorithms =
+                                                LIBSSH2_ALLOC(session,
+                                                              value_len + 1);
+
+                        if(session->server_sign_algorithms) {
+                            memcpy(session->server_sign_algorithms,
+                                   value, value_len);
+                            session->server_sign_algorithms[value_len] = '\0';
+                        }
+                        else {
+                            rc = _libssh2_error(session, LIBSSH2_ERROR_ALLOC,
+                                                "memory for server sign algo");
+                        }
+                    }
+                }
+            }
+
+            LIBSSH2_FREE(session, data);
+            session->packAdd_state = libssh2_NB_state_idle;
+            return rc;
+
+            /*
               byte      SSH_MSG_GLOBAL_REQUEST
               string    request name in US-ASCII only
               boolean   want reply
