@@ -1,5 +1,17 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.11" href="#v0-28-0-alpha-11">v0.28.0-alpha.11</a> [(2022-02-08)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.11)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.10...v0.28.0-alpha.11)
+
+#### Summary of changes
+- Updated libssh2 to add RSA SHA2 256/512 SSH key support
+
+#### Merged PRs into NodeGit
+- [RSA SHA2 256/512 key upgrade support RFC 8332 #536 (#626)](https://github.com/nodegit/nodegit/pull/1888)
+- [Fix typos in examples](https://github.com/nodegit/nodegit/pull/1884)
+- [Don't build shared OpenSSL libs](https://github.com/nodegit/nodegit/pull/1877)
+
 ## <a name="v0-28-0-alpha.10" href="#v0-28-0-alpha-10">v0.28.0-alpha.10</a> [(2021-11-11)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.10)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.9...v0.28.0-alpha.10)
