@@ -1,8 +1,8 @@
 {
+  "esversion": 9,
   "boss": true,
   "curly": true,
   "eqnull": true,
-  "esnext": true,
   "evil": true,
   "futurehostile": true,
   "globals": {
@@ -16,7 +16,7 @@
     "it": true
   },
   "immed": false,
-  "maxlen": 80,
+  "maxlen": 120,
   "node": true,
   "predef": [
     "Promise",
