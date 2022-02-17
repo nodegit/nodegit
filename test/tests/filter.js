@@ -335,7 +335,7 @@ describe("Filter", function() {
 
     it("can run sync callback on checkout without deadlocking", function() { // jshint ignore:line
       var test = this;
-      var syncCallbackResult = true;
+      var syncCallbackResult = 1;
 
       return Registry.register(filterName, {
         apply: function() {
@@ -365,9 +365,10 @@ describe("Filter", function() {
         });
     });
 
+    // Temporary workaround for LFS checkout. Test skipped.
+    // To activate when reverting workaround.
     // 'Checkout.head' and 'Submodule.lookup' do work with the repo locked.
     // They should work together without deadlocking.
-    // Temporary workaround for LFS checkout. Test skipped to be reverted.
     it.skip("can run async callback on checkout without deadlocking", function() { // jshint ignore:line
       var test = this;
       var submoduleNameIn = "vendor/libgit2";

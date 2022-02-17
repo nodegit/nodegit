@@ -41,7 +41,7 @@ return NodeGit.Clone(url, clonePath, opts)
       garbageCollect();
 
       // Count total of objects left after being created/destroyed
-      const selfFreeingCount =
+      const freeingCount =
         NodeGit.Cert.getNonSelfFreeingConstructedCount() +
         NodeGit.Repository.getSelfFreeingInstanceCount() +
         NodeGit.Commit.getSelfFreeingInstanceCount() +
@@ -50,7 +50,7 @@ return NodeGit.Clone(url, clonePath, opts)
 
       const numberOfTrackedObjects = NodeGit.getNumberOfTrackedObjects();
 
-      if (selfFreeingCount === numberOfTrackedObjects) {
+      if (freeingCount === numberOfTrackedObjects) {
         parentPort.postMessage("numbersMatch");
       }
       else {
