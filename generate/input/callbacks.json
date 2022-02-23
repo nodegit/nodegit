@@ -135,19 +135,40 @@
       "throttle": 100
     }
   },
-  "git_commit_signing_cb": {
+  "git_commit_create_cb": {
     "args": [
       {
-        "name": "signature",
-        "cType": "git_buf *"
+        "name": "out",
+        "cType": "git_oid *",
+        "isReturn": true
       },
       {
-        "name": "signature_field",
-        "cType": "git_buf *"
+        "name": "author",
+        "cType": "const git_signature *"
       },
       {
-        "name": "commit_content",
+        "name": "committer",
+        "cType": "const git_signature *"
+      },
+      {
+        "name": "message_encoding",
         "cType": "const char *"
+      },
+      {
+        "name": "message",
+        "cType": "const char *"
+      },
+      {
+        "name": "tree",
+        "cType": "const git_tree *"
+      },
+      {
+        "name": "parent_count",
+        "cType": "size_t"
+      },
+      {
+        "name": "parents",
+        "cType": "const git_oid * []"
       },
       {
         "name": "payload",

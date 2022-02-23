@@ -1667,6 +1667,20 @@
           "return": {
             "isResultOrError": true
           }
+        },
+        "git_graph_reachable_from_any": {
+          "args": {
+            "descendant_array": {
+              "cType": "git_oid *",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitOid"
+            }
+          },
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         }
       }
     },
@@ -3088,6 +3102,57 @@
         },
         "git_rebase_options_init": {
           "ignore": true
+        }
+      }
+    },
+    "rebase_options": {
+      "fields": {
+        "signing_cb": {
+          "ignore": true
+        },
+        "commit_create_cb": {
+          "args": [
+            {
+              "name": "out",
+              "cType": "git_oid *"
+            },
+            {
+              "name": "author",
+              "cType": "const git_signature *"
+            },
+            {
+              "name": "committer",
+              "cType": "const git_signature *"
+            },
+            {
+              "name": "message_encoding",
+              "cType": "const char *"
+            },
+            {
+              "name": "message",
+              "cType": "const char *"
+            },
+            {
+              "name": "tree",
+              "cType": "const git_tree *"
+            },
+            {
+              "name": "parent_count",
+              "cType": "size_t"
+            },
+            {
+              "name": "parents",
+              "cType": "const git_oid **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitOid",
+              "arrayLengthArgumentName": "parent_count"
+            },
+            {
+              "name": "payload",
+              "cType": "void *"
+            }
+          ]
         }
       }
     },

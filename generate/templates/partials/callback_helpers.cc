@@ -36,7 +36,7 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
     {% endif %}
   {% endeach %}
 
-  v8::Local<Value> argv[{{ cbFunction.args|callbackArgsCount }}] = {
+  v8::Local<v8::Value> argv[{{ cbFunction.args|callbackArgsCount }}] = {
     {% each cbFunction.args|callbackArgsInfo as arg %}
       {% if not arg.firstArg %}, {% endif %}
       {% if arg.isEnum %}

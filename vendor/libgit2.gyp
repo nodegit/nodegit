@@ -74,8 +74,6 @@
         "libgit2/src/blob.h",
         "libgit2/src/branch.c",
         "libgit2/src/branch.h",
-        "libgit2/src/buf_text.c",
-        "libgit2/src/buf_text.h",
         "libgit2/src/buffer.c",
         "libgit2/src/buffer.h",
         "libgit2/src/cache.c",
@@ -297,6 +295,8 @@
         "libgit2/src/userdiff.h",
         "libgit2/src/util.c",
         "libgit2/src/util.h",
+        "libgit2/src/utf8.c",
+        "libgit2/src/utf8.h",
         "libgit2/src/varint.c",
         "libgit2/src/varint.h",
         "libgit2/src/vector.c",
@@ -673,6 +673,9 @@
         "libgit2/deps/ntlmclient/utf8.h",
         "libgit2/deps/ntlmclient/util.c",
         "libgit2/deps/ntlmclient/util.h"
+      ],
+      "defines": [
+        "UNICODE_BUILTIN"
       ],
       "conditions": [
         ["OS=='mac' and <(is_electron) == 1", {
