@@ -43,10 +43,6 @@ describe("Clone", function() {
   this.timeout(30000);
 
   beforeEach(function() {
-    if (process.platform === "win32") {
-      NodeGit.Libgit2.opts(NodeGit.Libgit2.OPT.SET_WINDOWS_LONGPATHS, 0);
-    }
-
     return fse.remove(clonePath)
       .then(function() {
         return fse.remove(longClonePath);
@@ -81,54 +77,6 @@ describe("Clone", function() {
     return Clone(url, clonePath, opts).then(function(repo) {
       assert.ok(repo instanceof Repository);
       test.repository = repo;
-    });
-  });
-
-  it("can clone into long path if opt set", function() {
-    var test = this;
-    var url = "https://github.com/nodegit/test.git";
-    var opts = {
-        fetchOpts: {
-          callbacks: {
-            certificateCheck: () => 0
-        }
-      }
-    };
-
-    fse.ensureDirSync(longClonePath);
-
-    if (process.platform === "win32") {
-      NodeGit.Libgit2.opts(NodeGit.Libgit2.OPT.SET_WINDOWS_LONGPATHS, 1);
-    }
-
-    return Clone(url, longClonePath, opts).then(function(repo) {
-      assert.ok(repo instanceof Repository);
-      test.repository = repo;
-    });
-  });
-
-  it("can't clone into long path if opt not set on win32", function() {
-    if (process.platform !== "win32") {
-      this.skip();
-    }
-
-    var url = "https://github.com/nodegit/test.git";
-    var opts = {
-        fetchOpts: {
-          callbacks: {
-            certificateCheck: () => 0
-        }
-      }
-    };
-
-    fse.ensureDirSync(longClonePath);
-
-    NodeGit.Libgit2.opts(NodeGit.Libgit2.OPT.SET_WINDOWS_LONGPATHS, 0);
-
-    return Clone(url, longClonePath, opts).then(function(repo) {
-      assert.fail("Clone should not succeed");
-    }).catch(function(error) {
-      assert.ok(error instanceof Error);
     });
   });
 

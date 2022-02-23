@@ -59,6 +59,7 @@ describe("Graph", function() {
     )
       .catch(function(result) {
         assert(~result.message.indexOf("81b06fac"));
+        assert(~result.message.indexOf("object not found - no match for id"));
       });
   });
 });
