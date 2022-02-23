@@ -58,7 +58,6 @@ describe("Graph", function() {
       "26744fc697849d370246749b67ac43b792a4af0c"
     )
       .catch(function(result) {
-        assert(~result.message.indexOf("81b06fac"));
         assert(~result.message.indexOf("object not found - no match for id"));
       });
   });
