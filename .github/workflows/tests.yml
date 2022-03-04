@@ -14,13 +14,13 @@ jobs:
     name: "Linux Tests"
     strategy:
       matrix:
-        node: [12, 14]
+        node: [12, 14, 16]
     runs-on: ubuntu-latest
     container: ubuntu:16.04
     steps:
       - name: Install Dependencies for Ubuntu
         # git >= 2.18 required for actions/checkout git support
-        run: apt update && apt install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt update && apt install -y git build-essential clang python3 libssl-dev libkrb5-dev libc++-dev
+        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang python3 libssl-dev libkrb5-dev libc++-dev
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
@@ -52,7 +52,10 @@ jobs:
           npm_config_clang: 1
           GYP_DEFINES: use_obsolete_asm=true
         # There is a race condition in node/generate that needs to be fixed
+        # Node 16 changed the logic it uses to select it's UID which means to make node run as root and not 1001, we need to chwon the current directory. More Details:
+        # https://stackoverflow.com/questions/70298238/getting-eaccess-when-running-npm-8-as-root
         run: |
+          chown root.root -R .
           npm set unsafe-perm true
           node utils/retry npm install
 
@@ -79,7 +82,7 @@ jobs:
     name: "macOS Tests"
     strategy:
       matrix:
-        node: [12, 14]
+        node: [12, 14, 16]
     runs-on: macOS-10.15
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
@@ -137,7 +140,7 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [12, 14]
+        node: [12, 14, 16]
         arch: [x86, x64]
     runs-on: windows-2016
     steps:
