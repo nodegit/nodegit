@@ -43,8 +43,8 @@
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
     "nan": "^2.14.1",
-    "node-gyp": "^7.1.2",
-    "node-pre-gyp": "^0.13.0",
+    "node-gyp": "^9.0.0",
+    "@mapbox/node-pre-gyp": "^1.0.8",
     "ramda": "^0.25.0",
     "tar-fs": "^1.16.3"
   },

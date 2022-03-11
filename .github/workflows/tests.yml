@@ -20,9 +20,23 @@ jobs:
     steps:
       - name: Install Dependencies for Ubuntu
         # git >= 2.18 required for actions/checkout git support
-        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang python3 libssl-dev libkrb5-dev libc++-dev
+        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+      - name: Setup python 3.6
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          mkdir ~/python
+          cd ~/python
+          wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz
+          tar -xvf Python-3.6.15.tgz
+          cd Python-3.6.15
+          ./configure
+          make
+          make install
 
       - name: Setup Environment
         run: |
@@ -142,7 +156,7 @@ jobs:
       matrix:
         node: [12, 14, 16]
         arch: [x86, x64]
-    runs-on: windows-2016
+    runs-on: windows-2019
     steps:
       - name: Setup Environment
         run: |
