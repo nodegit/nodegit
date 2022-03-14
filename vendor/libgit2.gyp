@@ -120,6 +120,8 @@
         "libgit2/src/diff.h",
         "libgit2/src/errors.c",
         "libgit2/src/errors.h",
+        "libgit2/src/email.c",
+        "libgit2/src/email.h",
         "libgit2/src/fetch.c",
         "libgit2/src/fetch.h",
         "libgit2/src/fetchhead.c",
