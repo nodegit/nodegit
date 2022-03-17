@@ -333,6 +333,82 @@ describe("Filter", function() {
         });
     });
 
+    it("can run sync callback on checkout without deadlocking", function() { // jshint ignore:line
+      var test = this;
+      var syncCallbackResult = 1;
+
+      return Registry.register(filterName, {
+        apply: function() {
+          syncCallbackResult = test.repository.isEmpty();
+        },
+        check: function() {
+          return NodeGit.Error.CODE.OK;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
+          return fse.writeFile(
+            packageJsonPath,
+            "Changing content to trigger checkout",
+            { encoding: "utf-8" }
+          );
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          assert.strictEqual(syncCallbackResult, 0);
+        });
+    });
+
+    // Temporary workaround for LFS checkout. Test skipped.
+    // To activate when reverting workaround.
+    // 'Checkout.head' and 'Submodule.lookup' do work with the repo locked.
+    // They should work together without deadlocking.
+    it.skip("can run async callback on checkout without deadlocking", function() { // jshint ignore:line
+      var test = this;
+      var submoduleNameIn = "vendor/libgit2";
+      var asyncCallbackResult = "";
+
+      return Registry.register(filterName, {
+        apply: function() {
+          return NodeGit.Submodule.lookup(test.repository, submoduleNameIn)
+            .then(function(submodule) {
+              return submodule.name();
+            })
+            .then(function(name) {
+              asyncCallbackResult = name;
+              return NodeGit.Error.CODE.OK;
+            });
+        },
+        check: function() {
+          return NodeGit.Error.CODE.OK;
+        }
+      }, 0)
+        .then(function(result) {
+          assert.strictEqual(result, NodeGit.Error.CODE.OK);
+          return fse.writeFile(
+            packageJsonPath,
+            "Changing content to trigger checkout",
+            { encoding: "utf-8" }
+          );
+        })
+        .then(function() {
+          var opts = {
+            checkoutStrategy: Checkout.STRATEGY.FORCE,
+            paths: "package.json"
+          };
+          return Checkout.head(test.repository, opts);
+        })
+        .then(function() {
+          assert.equal(asyncCallbackResult, submoduleNameIn);
+        });
+    });
+
     // this test is useless on 32 bit CI, because we cannot construct
     // a buffer big enough to test anything of significance :)...
     if (process.arch === "x64") {

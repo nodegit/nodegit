@@ -8,6 +8,20 @@
 
 #include "async_worker.h"
 
+// Temporary workaround for LFS checkout. Comment added to be reverted.
+// With the threadpool rewrite, a Worker will execute its callbacks with
+// objects temporary unlock (to prevent deadlocks), and we'll wait until
+// the callback is done to lock them back again (to make sure it's thread-safe).
+// LFS checkout lost performance after this, and the proper way to fix it is
+// to integrate nodegit-lfs into nodegit. Until this is implemented, a
+// temporary workaround has been applied, which affects only Workers leveraging
+// threaded libgit2 functions (at the moment only checkout) and does the
+// following:
+// - do not wait for the current callback to end, so that it can send the
+//  next callback to the main JS thread.
+// - do not temporary unlock the objects, since they would be locked back
+//  again before the callback is executed.
+
 namespace nodegit {
   class Context;
   class AsyncContextCleanupHandle;
@@ -17,7 +31,9 @@ namespace nodegit {
     public:
       typedef std::function<void()> Callback;
       typedef std::function<void(Callback, Callback)> QueueCallbackFn;
-      typedef std::function<Callback(QueueCallbackFn, Callback)> OnPostCallbackFn;
+      // Temporary workaround for LFS checkout. Code modified to be reverted.
+      // typedef std::function<Callback(QueueCallbackFn, Callback)> OnPostCallbackFn;
+      typedef std::function<Callback(QueueCallbackFn, Callback, bool)> OnPostCallbackFn;
 
       // Initializes thread pool and spins up the requested number of threads
       // The provided loop will be used for completion callbacks, whenever

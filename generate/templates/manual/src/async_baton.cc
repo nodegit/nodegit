@@ -46,7 +46,8 @@ namespace nodegit {
       ThreadPool::PostCallbackEvent(
         [jsCallback, cancelCallback](
           ThreadPool::QueueCallbackFn queueCallback,
-          ThreadPool::Callback callbackCompleted
+          ThreadPool::Callback callbackCompleted,
+          bool isThreaded // Temporary workaround for LFS checkout. Code added to be reverted.
         ) -> ThreadPool::Callback {
           queueCallback(jsCallback, cancelCallback);
           callbackCompleted();
@@ -58,13 +59,22 @@ namespace nodegit {
       ThreadPool::PostCallbackEvent(
         [this, jsCallback, cancelCallback](
           ThreadPool::QueueCallbackFn queueCallback,
-          ThreadPool::Callback callbackCompleted
+          ThreadPool::Callback callbackCompleted,
+          bool isThreaded // Temporary workaround for LFS checkout. Code added to be reverted.
         ) -> ThreadPool::Callback {
-          this->onCompletion = callbackCompleted;
+          // Temporary workaround for LFS checkout. Code modified to be reverted.
+          if (!isThreaded) {
+            this->onCompletion = callbackCompleted;
 
-          queueCallback(jsCallback, cancelCallback);
+            queueCallback(jsCallback, cancelCallback);
 
-          return std::bind(&AsyncBaton::SignalCompletion, this);
+            return std::bind(&AsyncBaton::SignalCompletion, this);
+          }
+          else {
+            this->onCompletion = std::bind(&AsyncBaton::SignalCompletion, this);
+            queueCallback(jsCallback, cancelCallback);
+            return []() {};
+          }
         }
       );
 
