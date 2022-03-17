@@ -87,6 +87,9 @@ jobs:
     strategy:
       matrix:
         node: [14, 16]
+        arch: 
+          - x64
+          - arm64
     runs-on: macOS-10.15
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
@@ -110,6 +113,7 @@ jobs:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           node-version: ${{ matrix.node }}
+          architecture: ${{ matrix.arch }}
           check-latest: true
 
       - name: Install
