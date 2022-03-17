@@ -86,10 +86,10 @@ jobs:
     name: "macOS Tests"
     strategy:
       matrix:
-        node: [14, 16]
-        arch: 
-          - x64
-          - arm64
+        config:
+          - { node: 14, arch: x64 }
+          - { node: 16, arch: x64 }
+          - { node: 16, arch: arm64 }
     runs-on: macOS-10.15
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
@@ -112,8 +112,8 @@ jobs:
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
-          node-version: ${{ matrix.node }}
-          architecture: ${{ matrix.arch }}
+          node-version: ${{ matrix.config.node }}
+          architecture: ${{ matrix.config.arch }}
           check-latest: true
 
       - name: Install
