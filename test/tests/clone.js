@@ -414,7 +414,9 @@ describe("Clone", function() {
     });
   });
 
-  it("can clone with git", function() {
+  // Since 15 March the unauthenticated git protocol on port 9418 is no longer supported in Github.
+  // https://github.blog/2021-09-01-improving-git-protocol-security-github/
+  it.skip("can clone with git", function() {
     var test = this;
     var url = "git://github.com/nodegit/test.git";
     var opts = {
