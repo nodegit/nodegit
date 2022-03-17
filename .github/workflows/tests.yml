@@ -84,10 +84,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
-          node_pre_gyp_secretAccessKey: ${{ secrets.node_pre_gyp_secretAccessKey }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
         run: |
-          npm install -g node-pre-gyp aws-sdk
+          npm install -g @mapbox/node-pre-gyp aws-sdk
           node lifecycleScripts/clean
           node-pre-gyp package
           node-pre-gyp publish
@@ -142,10 +142,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
-          node_pre_gyp_secretAccessKey: ${{ secrets.node_pre_gyp_secretAccessKey }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
         run: |
-          npm install -g node-pre-gyp aws-sdk
+          npm install -g @mapbox/node-pre-gyp aws-sdk
           node lifecycleScripts/clean
           node-pre-gyp package
           node-pre-gyp publish
@@ -192,7 +192,7 @@ jobs:
       # and it treats each additional step past the first as an orphaned process.
       - name: Deploy (Dependencies)
         if: startsWith(github.ref, 'refs/tags/v')
-        run: npm install -g node-pre-gyp aws-sdk
+        run: npm install -g @mapbox/node-pre-gyp aws-sdk
 
       - name: Deploy (Clean)
         if: startsWith(github.ref, 'refs/tags/v')
@@ -206,6 +206,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          node_pre_gyp_accessKeyId: ${{ secrets.node_pre_gyp_accessKeyId }}
-          node_pre_gyp_secretAccessKey: ${{ secrets.node_pre_gyp_secretAccessKey }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
         run: node-pre-gyp publish
