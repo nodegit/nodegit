@@ -30,7 +30,7 @@ module.exports = function install() {
     return Promise.resolve();
   }
 
-  return exec("node \"" + path.join(rootPath, "dist/nodegit.js\""))
+  return exec("node \"" + path.join(rootPath, "lib/nodegit.js\""))
     .catch(function(e) {
       if (~e.toString().indexOf("Module version mismatch")) {
         console.warn(
