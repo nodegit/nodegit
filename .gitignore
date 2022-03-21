@@ -1,6 +1,5 @@
 /build/
 /coverage/
-/dist/
 /include/
 /lib/enums.js
 /lib/nodegit.js
