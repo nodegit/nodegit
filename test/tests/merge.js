@@ -1634,4 +1634,158 @@ describe("Merge", function() {
       });
     });
   });
+
+  it("can merge file from index", function() {
+    var baseFileContent = "All Bobs are created equal. ish.\n";
+    var ourFileContent = "Big Bobs are best, IMHO.\n";
+    var theirFileContent = "Nobody expects the small Bobquisition!\n";
+
+    var baseSignature = NodeGit.Signature.create
+          ("Peaceful Bob", "justchill@bob.net", 123456789, 60);
+    var ourSignature = NodeGit.Signature.create
+          ("Big Bob", "impressive@bob.net", 123456789, 60);
+    var theirSignature = NodeGit.Signature.create
+          ("Small Bob", "underestimated@bob.net", 123456789, 60);
+
+    var repository = this.repository;
+    var baseCommit;
+    var baseCommitOid;
+    var ourCommit;
+    var theirCommit;
+    var ourBranch;
+    var theirBranch;
+    var fileName = "newFile.txt";
+
+    return fse.writeFile(path.join(repository.workdir(), fileName),
+      baseFileContent)
+      .then(function() {
+        return repository.refreshIndex();
+      })
+      .then(function(index) {
+        return index.addByPath(fileName)
+          .then(function() {
+            return index.write();
+          })
+          .then(function() {
+            return index.writeTree();
+          });
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "ea2f6521fb8097a881f43796946ac1603e1f4d75");
+
+        return repository.createCommit("HEAD", baseSignature,
+        baseSignature, "bobs are all ok", oid, []);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "a9b202f7612273fb3a68f718304298704eaeb735");
+        baseCommitOid = commitOid;
+
+        return repository.getCommit(commitOid).then(function(commit) {
+          baseCommit = commit;
+        });
+      })
+      .then(function() {
+        return repository.createBranch(ourBranchName, baseCommitOid)
+          .then(function(branch) {
+            ourBranch = branch;
+          });
+      })
+      .then(function() {
+        return repository.createBranch(theirBranchName, baseCommitOid)
+          .then(function(branch) {
+            theirBranch = branch;
+          });
+      })
+      .then(function() {
+        return fse.writeFile(path.join(repository.workdir(), fileName),
+          ourFileContent);
+      })
+      .then(function() {
+        return repository.refreshIndex();
+      })
+      .then(function(index) {
+        return index.addByPath(fileName)
+          .then(function() {
+            return index.write();
+          })
+          .then(function() {
+            return index.writeTree();
+          });
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "c39b1e38b09085856cec7e7ff33e90f5a537d8a5");
+
+        return repository.createCommit(ourBranch.name(), ourSignature,
+          ourSignature, "lol big bobs :yesway:", oid, [baseCommit]);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "935a89c09ad757a9dde2c0257f6f1e379f71816f");
+
+        return repository.getCommit(commitOid).then(function(commit) {
+          ourCommit = commit;
+        });
+      })
+      .then(function() {
+        return fse.writeFile(path.join(repository.workdir(), fileName),
+          theirFileContent);
+      })
+      .then(function() {
+        return repository.refreshIndex();
+      })
+      .then(function(index) {
+        return index.addByPath(fileName)
+          .then(function() {
+            return index.write();
+          })
+          .then(function() {
+            return index.writeTree();
+          });
+      })
+      .then(function(oid) {
+        assert.equal(oid.toString(),
+          "d1a894a9a4a8c820eb66c82cdd7e6b76c8f713cb");
+
+        return repository.createCommit(theirBranch.name(), theirSignature,
+          theirSignature, "lol big bobs :poop:", oid, [baseCommit]);
+      })
+      .then(function(commitOid) {
+        assert.equal(commitOid.toString(),
+          "bebb9ec2e0684c7cb7c1e1601c7d5a8f52b8b123");
+
+        return repository.getCommit(commitOid).then(function(commit) {
+          theirCommit = commit;
+        });
+      })
+      .then(function() {
+        return NodeGit.Reference.lookup(repository, "HEAD")
+          .then(function(head) {
+            return head.symbolicSetTarget(ourBranch.name(), "");
+          });
+      })
+      .then(function() {
+        return NodeGit.Merge.commits(repository, ourCommit, theirCommit, null);
+      })
+      .then(function(index) {
+        assert(index.hasConflicts());
+        var conflicts = index.entries().filter(e => e.path === fileName);
+        var base = conflicts.find(e => NodeGit.Index.entryStage(e) === 1);
+        var ours = conflicts.find(e => NodeGit.Index.entryStage(e) === 2);
+        var theirs = conflicts.find(e => NodeGit.Index.entryStage(e) === 3);
+        return NodeGit.Merge.fileFromIndex
+          (repository, base, ours, theirs, null);
+      })
+      .then(function(result) {
+        assert.equal(result.path, fileName);
+        const diff = "<<<<<<< " + fileName + "\n" +
+          ourFileContent +
+          "=======\n" +
+          theirFileContent +
+          ">>>>>>> " + fileName + "\n";
+        assert.equal(result.ptr.substring(0, result.len), diff);
+      });
+  });
 });
