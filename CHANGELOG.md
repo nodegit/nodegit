@@ -1,6 +1,16 @@
 # Change Log
 
-## <a name="v0-28-0-alpha.12" href="#v0-28-0-alpha-11">v0.28.0-alpha.12</a> [(2022-02-08)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.12)
+## <a name="v0-28-0-alpha.13" href="#v0-28-0-alpha-13">v0.28.0-alpha.13</a> [(2022-03-22)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.13)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.12...v0.28.0-alpha.13)
+
+#### Summary of changes
+- Partially fix issue with building for Electron
+
+#### Merged PRs into NodeGit
+- [Fix electron build](https://github.com/nodegit/nodegit/pull/1901)
+
+## <a name="v0-28-0-alpha.12" href="#v0-28-0-alpha-12">v0.28.0-alpha.12</a> [(2022-03-18)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.12)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.11...v0.28.0-alpha.12)
 
