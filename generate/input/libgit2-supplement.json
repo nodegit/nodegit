@@ -1104,7 +1104,7 @@
       [
         "git_apply_options",
         {
-          "type": "sctruct",
+          "type": "struct",
           "fields": [
             {
               "type": "unsigned int",
