@@ -3605,7 +3605,24 @@
           "ignore": true
         },
         "push_negotiation": {
-          "ignore": true
+          "args": [
+            {
+              "name": "updates",
+              "cType": "const git_push_update **",
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitPushUpdate",
+              "arrayLengthArgumentName": "len"
+            },
+            {
+              "name": "len",
+              "ctype": "size_t"
+            },
+            {
+              "name": "payload",
+              "ctype": "void *"
+            }
+          ]
         },
         "sideband_progress": {
           "ignore": false
