@@ -9,6 +9,7 @@
   "targets": [
     {
       "target_name": "acquireOpenSSL",
+        "type": "none",
         "conditions": [
         ["<(is_electron) == 1 and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
           "actions": [{
@@ -23,6 +24,7 @@
     },
     {
       "target_name": "configureLibssh2",
+      "type": "none",
       "actions": [{
         "action_name": "configure",
         "action": ["node", "utils/configureLibssh2.js"],
