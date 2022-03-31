@@ -10,7 +10,7 @@
     {
       "target_name": "acquireOpenSSL",
         "conditions": [
-        ["<(is_electron) == 1 and OS != 'linux' and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
+        ["<(is_electron) == 1 and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
           "actions": [{
             "action_name": "acquire",
             "action": ["node", "utils/acquireOpenSSL.js", "<(macOS_deployment_target)"],
@@ -110,8 +110,8 @@
                   "<(electron_openssl_root)/include"
                 ],
                 "libraries": [
-                  "<(electron_openssl_root)/lib/libcrypto.a",
-                  "<(electron_openssl_root)/lib/libssl.a"
+                  "<(electron_openssl_root)/lib/libssl.a",
+                  "<(electron_openssl_root)/lib/libcrypto.a"
                 ]
               }]
             ],
@@ -168,21 +168,23 @@
             "<!(krb5-config gssapi --libs)"
           ]
         }],
-        [
-          "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
-            "cflags": [
-              "-std=c++14"
-            ]
-          }
-        ],
-        [
-          "OS.endswith('bsd') or (<(is_electron) == 1 and OS=='linux') or <(is_IBMi) == 1", {
-            "libraries": [
-              "-lcrypto",
-              "-lssl"
-            ],
-          }
-        ],
+        ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "cflags": [
+            "-std=c++14"
+          ],
+          "conditions": [
+            ["<(is_electron) == 1", {
+              "include_dirs": [
+                "<(electron_openssl_root)/include"
+              ],
+              "libraries": [
+                # this order is signifcant on centos7 apparently...
+                "<(electron_openssl_root)/lib/libssl.a",
+                "<(electron_openssl_root)/lib/libcrypto.a"
+              ]
+            }]
+          ],
+        }],
         [
           "<(is_IBMi) == 1", {
             "include_dirs": [

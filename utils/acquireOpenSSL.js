@@ -16,6 +16,7 @@ const pipeline = promisify(stream.pipeline);
 
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
 const vendorPath = path.resolve(__dirname, "..", "vendor");
+const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
 
 const getOpenSSLSourceUrl = (version) => `https://www.openssl.org/source/openssl-${version}.tar.gz`;
@@ -27,7 +28,7 @@ class HashVerify extends stream.Transform {
     this.expected = expected;
     this.hash = crypto.createHash(algorithm);
   }
-  
+
   _transform(chunk, encoding, callback) {
     this.hash.update(chunk, encoding);
     callback(null, chunk);
@@ -40,28 +41,97 @@ class HashVerify extends stream.Transform {
   }
 }
 
+// currently this only needs to be done on linux
+const applyOpenSSLPatches = async (buildCwd) => {
+  try {
+    for(const patchFilename of await fse.readdir(opensslPatchPath)) {
+      if(patchFilename.split('.').pop() == 'patch') {
+        console.log(`applying ${patchFilename}`);
+        await execPromise(`patch -up0 -i ${path.join(patchPath, patchFilename)}`, {
+          cwd: buildCwd
+        }, { pipeOutput: true });
+      }
+    }
+  } catch(e) {
+    console.log("Patch application failed: ", e);
+    return;
+  }
+}
+
 const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
-  const triplet = process.arch === 'x64'
-    ? 'darwin64-x86_64-cc'
-    : 'darwin64-arm64-cc';
+  const arguments = [
+    process.arch === 'x64' ? 'darwin64-x86_64-cc' : 'darwin64-arm64-cc',
+    // speed up ecdh on little-endian platform with 128bit int support
+    'enable-ec_nistp_64_gcc_128',
+    // compile static library
+    'no-shared',
+    // disable ssl2, ssl3, and compression
+    'no-ssl2',
+    'no-ssl3',
+    'no-comp',
+    //set build/install directory
+    `--prefix="${extractPath}"`,
+    `--openssldir="${extractPath}"`,
+    //set macos version requirement
+    `-mmacosx-version-min=${macOsDeploymentTarget}`
+  ];
 
-  await execPromise(`./Configure ${
-    triplet
-  } no-shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp --prefix="${
-    extractPath
-  }" --openssldir="${extractPath}" -mmacosx-version-min=${macOsDeploymentTarget}`, {
+  await execPromise(`./Configure ${arguments.join(' ')}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await execPromise("make", {
+  // only build the libraries, not the tests/fuzzer or apps
+  await execPromise('make build_libs', {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await execPromise("make test", {
+  await execPromise('make test', {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await execPromise("make install", {
+  await execPromise('make install_sw', {
+    cwd: buildCwd,
+    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
+  }, { pipeOutput: true });
+};
+
+const buildLinux = async (buildCwd) => {
+  const arguments = [
+    'linux-x86_64',
+    // Electron(at least on centos7) imports the libcups library at runtime, which has a
+    // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
+    // To fix this we need to remove hide all the internal openssl symbols to prevent them
+    // from being overridden, this only affects shared libraries, which in this case
+    // is nodegit
+    '-fvisibility=hidden',
+    // compile static library
+    'no-shared',
+    // disable ssl2, ssl3, and compression
+    'no-ssl2',
+    'no-ssl3',
+    'no-comp',
+    //set build/install directory
+    `--prefix="${extractPath}"`,
+    `--openssldir="${extractPath}"`
+  ];
+  await execPromise(`./Configure ${arguments.join(" ")}`, {
+    cwd: buildCwd
+  }, { pipeOutput: true });
+
+  await applyOpenSSLPatches(buildCwd);
+
+  // only build the libraries, not the tests/fuzzer or apps
+  await execPromise("make build_libs", {
+    cwd: buildCwd
+  }, { pipeOutput: true });
+
+  //TODO: uncomment
+  // await execPromise("make test", {
+  //   cwd: buildCwd
+  // }, { pipeOutput: true });
+
+  //only install software, not the docs
+  await execPromise("make install_sw", {
     cwd: buildCwd,
     maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
   }, { pipeOutput: true });
@@ -80,7 +150,7 @@ const buildWin32 = async (buildCwd) => {
   } catch {
     throw new Error(`vcvarsall.bat not found at ${vcvarsallPath}`);
   }
-  
+
   const vcTarget = vcvarsallArch === "x64" ? "VC-WIN64A" : "VC-WIN32";
   await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vcvarsallArch} ${vcTarget}`, {
     cwd: buildCwd,
@@ -128,13 +198,8 @@ const makeOnStreamDownloadProgress = () => {
 };
 
 const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) => {
-  if (process.platform !== "darwin" && process.platform !== "win32") {
-    console.log(`Skipping OpenSSL build, not required on ${process.platform}`);
-    return;
-  }
-
   await removeOpenSSLIfOudated(openSSLVersion);
-  
+
   try {
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL build, dir exists");
@@ -148,7 +213,7 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
 
   const downloadStream = got.stream(openSSLUrl);
   downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
-  
+
   await pipeline(
     downloadStream,
     new HashVerify("sha256", openSSLSha256),
@@ -162,6 +227,8 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
 
   if (process.platform === "darwin") {
     await buildDarwin(buildCwd, macOsDeploymentTarget);
+  } else if (process.platform === "linux") {
+    await buildLinux(buildCwd);
   } else if (process.platform === "win32") {
     await buildWin32(buildCwd);
   } else {
@@ -172,11 +239,6 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
 }
 
 const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) => {
-  if (process.platform !== "darwin" && process.platform !== "win32") {
-    console.log(`Skipping OpenSSL download, not required on ${process.platform}`);
-    return;
-  }
-
   try {
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL download, dir exists");
@@ -185,7 +247,7 @@ const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) =
 
   const downloadStream = got.stream(downloadBinUrl);
   downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
-  
+
   const pipelineSteps = [
     downloadStream,
     maybeDownloadSha256 ? new HashVerify("sha256", maybeDownloadSha256) : null,
