@@ -114,24 +114,23 @@ const buildLinux = async (buildCwd) => {
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`
   ];
-  await execPromise(`./Configure ${arguments.join(" ")}`, {
+  await execPromise(`./Configure ${arguments.join(' ')}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
   await applyOpenSSLPatches(buildCwd);
 
   // only build the libraries, not the tests/fuzzer or apps
-  await execPromise("make build_libs", {
+  await execPromise('make build_libs', {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  //TODO: uncomment
-  // await execPromise("make test", {
-  //   cwd: buildCwd
-  // }, { pipeOutput: true });
+  await execPromise('make test', {
+    cwd: buildCwd
+  }, { pipeOutput: true });
 
   //only install software, not the docs
-  await execPromise("make install_sw", {
+  await execPromise('make install_sw', {
     cwd: buildCwd,
     maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
   }, { pipeOutput: true });
