@@ -1,4 +1,4 @@
-openssl doesn't have any sort of gaurd around this section of code other than
+openssl doesn't have any sort of guard around this section of code other than
 checking if we're compiling an elf binary on gnu linux. the syscall wrapper
 `getentropy` is only available on glibc >= 2.25 which is a problem if we want
 to support platforms like centos7 which ships with glibc 2.17. Attempting to
@@ -9,7 +9,7 @@ theres no way to configure for it, hence this patch.
 Note further that centos7 doesn't have this function or the syscall it wraps
 so the symbol lookup will fail and it will fallback to reading from /dev/random.
 hence this patch just fixes compilation.
-JZA
+author: JZA
 --- crypto/rand/rand_unix.c
 +++ crypto/rand/rand_unix.c
 @@ -372,7 +372,7 @@ static ssize_t syscall_random(void *buf, size_t buflen)

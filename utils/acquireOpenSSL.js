@@ -61,15 +61,15 @@ const applyOpenSSLPatches = async (buildCwd) => {
 const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
   const arguments = [
     process.arch === 'x64' ? 'darwin64-x86_64-cc' : 'darwin64-arm64-cc',
-    // speed up ecdh on little-endian platform with 128bit int support
+    // speed up ecdh on little-endian platforms with 128bit int support
     'enable-ec_nistp_64_gcc_128',
-    // compile static library
+    // compile static libraries
     'no-shared',
     // disable ssl2, ssl3, and compression
     'no-ssl2',
     'no-ssl3',
     'no-comp',
-    //set build/install directory
+    //set install directory
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`,
     //set macos version requirement
@@ -100,17 +100,16 @@ const buildLinux = async (buildCwd) => {
     'linux-x86_64',
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
-    // To fix this we need to remove hide all the internal openssl symbols to prevent them
-    // from being overridden, this only affects shared libraries, which in this case
-    // is nodegit
+    // To fix this we need to hide all the openssl symbols to prevent them from being overridden
+    // by the runtime linker.
     '-fvisibility=hidden',
-    // compile static library
+    // compile static libraries
     'no-shared',
     // disable ssl2, ssl3, and compression
     'no-ssl2',
     'no-ssl3',
     'no-comp',
-    //set build/install directory
+    //set install directory
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`
   ];
