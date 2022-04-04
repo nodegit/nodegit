@@ -1,4 +1,3 @@
-#include <git2/oid.h>
 {% each fields|fieldsInfo as field %}
   {% if not field.ignore %}
     {% if field.isCallbackFunction %}

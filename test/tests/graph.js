@@ -61,4 +61,18 @@ describe("Graph", function() {
         assert(~result.message.indexOf("object not found - no match for id"));
       });
   });
+
+  it("can tell if a commit is reachable from any of a list of commits", function() {
+    return Graph.reachableFromAny(
+      this.repository,
+      "32789a79e71fbc9e04d3eff7425e1771eb595150",
+      [
+        "1729c73906bb8467f4095c2f4044083016b4dfde",
+        "e0aeedcff0584ebe00aed2c03c8ecd10839df908"
+      ]
+    )
+      .then(function(result) {
+        assert.equal(result, 0);
+      });
+  });
 });

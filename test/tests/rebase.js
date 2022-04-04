@@ -2528,7 +2528,6 @@ describe("Rebase", function() {
         assert.fail("should throw");
       })
       .catch((error) => {
-        console.log(error);
         assert(error.errno === NodeGit.Error.CODE.ITEROVER);
         assert.strictEqual(rebase.finish(ourSignature), 0);
         return NodeGit.Commit.extractSignature(

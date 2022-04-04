@@ -49,12 +49,31 @@
 
   v8::Local<v8::Array> tmp_{{ name }} = v8::Local<v8::Array>::Cast(info[{{ jsArg }}]);
   from_{{ name }} = ({{ cType }})malloc(tmp_{{ name }}->Length() * sizeof({{ cType|unPointer }}));
-      for (unsigned int i = 0; i < tmp_{{ name }}->Length(); i++) {
+  for (unsigned int i = 0; i < tmp_{{ name }}->Length(); i++) {
     {%--
       // FIXME: should recursively call convertFromv8.
     --%}
-      from_{{ name }}[i] = {%if not cType|isDoublePointer %}*{%endif%}Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(Nan::To<v8::Object>(Nan::Get(tmp_{{ name }}, Nan::New(static_cast<double>(i))).ToLocalChecked()).ToLocalChecked())->GetValue();
+    const v8::Local<v8::Value> arrayVal = Nan::Get(tmp_{{ name }},i).ToLocalChecked();
+    {%if arrayElementCppClassName == 'GitOid'%}
+      if (arrayVal->IsString()) {
+        // Try and parse in a string to a git_oid
+        Nan::Utf8String oidString(Nan::To<v8::String>(arrayVal).ToLocalChecked());
+
+        if (git_oid_fromstr(&from_{{ name }}[i], (const char *) strdup(*oidString)) != GIT_OK) {
+          if (git_error_last()) {
+            return Nan::ThrowError(git_error_last()->message);
+          } else {
+            return Nan::ThrowError("Unknown Error");
+          }
+        }
       }
+      else {
+        git_oid_cpy(&from_{{ name }}[i], Nan::ObjectWrap::Unwrap<GitOid>(Nan::To<v8::Object>(arrayVal).ToLocalChecked())->GetValue());
+      }
+    {%else%}
+      from_{{ name }}[i] = Nan::ObjectWrap::Unwrap<{{ arrayElementCppClassName }}>(Nan::To<v8::Object>(arrayVal).ToLocalChecked())->GetValue();
+    {%endif%}
+  }
   {%elsif cppClassName == 'Function'%}
   {%elsif cppClassName == 'Buffer'%}
 
