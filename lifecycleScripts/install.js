@@ -29,7 +29,7 @@ module.exports = function install() {
   }
 
   return new Promise(function(resolve, reject) {
-    var spawnedNodePreGyp = spawn(nodePreGyp, args, {
+    var spawnedNodePreGyp = spawn("npx", [nodePreGyp].concat(args), {
       env: Object.assign({}, process.env, {
         npm_config_node_gyp: path.join(__dirname, "..", "node_modules",
           "node-gyp", "bin", "node-gyp.js")
