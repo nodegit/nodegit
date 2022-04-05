@@ -248,6 +248,8 @@
         "libgit2/src/signature.h",
         "libgit2/src/streams/socket.c",
         "libgit2/src/streams/socket.h",
+        "libgit2/src/streams/openssl_legacy.c",
+        "libgit2/src/streams/openssl_legacy.h",
         "libgit2/src/sortedcache.c",
         "libgit2/src/sortedcache.h",
         "libgit2/src/stash.c",

@@ -29,10 +29,20 @@ before(function() {
       return exec("git clone " + url + " " + workdirPath);
     })
     .then(function() {
+      //to checkout the longpaths-checkout branch
+      if(process.platform === "win32") {
+        return exec("git config core.longpaths true", {cwd: workdirPath});
+      }
+      return Promise.resolve();
+    })
+    .then(function() {
       return exec("git checkout rev-walk", {cwd: workdirPath});
     })
     .then(function() {
       return exec("git checkout checkout-test", {cwd: workdirPath});
+    })
+    .then(function() {
+      return exec("git checkout longpaths-checkout", {cwd: workdirPath});
     })
     .then(function() {
       return exec("git checkout master", {cwd: workdirPath});
