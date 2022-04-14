@@ -362,15 +362,15 @@ describe("Repository", function() {
     return this.constRepository.statistics()
     .then(function(analysisReport) {
 
-      assert.equal(analysisReport.repositorySize.commits.count, 992);
-      assert.equal(analysisReport.repositorySize.commits.size, 265544);
-      assert.equal(analysisReport.repositorySize.trees.count, 2416);
-      assert.equal(analysisReport.repositorySize.trees.size, 1188325);
-      assert.equal(analysisReport.repositorySize.trees.entries, 32571);
-      assert.equal(analysisReport.repositorySize.blobs.count, 4149);
-      assert.equal(analysisReport.repositorySize.blobs.size, 48489622);
+      assert.equal(analysisReport.repositorySize.commits.count, 993);
+      assert.equal(analysisReport.repositorySize.commits.size, 265772);
+      assert.equal(analysisReport.repositorySize.trees.count, 2418);
+      assert.equal(analysisReport.repositorySize.trees.size, 1189264);
+      assert.equal(analysisReport.repositorySize.trees.entries, 32590);
+      assert.equal(analysisReport.repositorySize.blobs.count, 4150);
+      assert.equal(analysisReport.repositorySize.blobs.size, 48489634);
       assert.equal(analysisReport.repositorySize.annotatedTags.count, 1);
-      assert.equal(analysisReport.repositorySize.references.count, 8);
+      assert.equal(analysisReport.repositorySize.references.count, 9);
 
       assert.equal(analysisReport.biggestObjects.commits.maxSize, 956);
       assert.equal(analysisReport.biggestObjects.commits.maxParents, 2);
@@ -382,7 +382,7 @@ describe("Repository", function() {
 
       assert.equal(analysisReport.biggestCheckouts.numDirectories, 128);
       assert.equal(analysisReport.biggestCheckouts.maxPathDepth, 10);
-      assert.equal(analysisReport.biggestCheckouts.maxPathLength, 107);
+      assert.equal(analysisReport.biggestCheckouts.maxPathLength, 277);
       assert.equal(analysisReport.biggestCheckouts.numFiles, 514);
       assert.equal(analysisReport.biggestCheckouts.totalFileSize, 5160886);
       assert.equal(analysisReport.biggestCheckouts.numSymlinks, 2);
