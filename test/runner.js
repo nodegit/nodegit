@@ -36,6 +36,12 @@ before(function() {
       return Promise.resolve();
     })
     .then(function() {
+      return exec(`git config --global --add safe.directory ${workdirPath}`);
+    })
+    .then(function() {
+      return exec(`git config --global --add safe.directory ${constworkdir}`);
+    })
+    .then(function() {
       return exec("git checkout rev-walk", {cwd: workdirPath});
     })
     .then(function() {
