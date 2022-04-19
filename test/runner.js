@@ -11,7 +11,8 @@ var constWorkdirPath = local("repos/constworkdir");
 before(function() {
   this.timeout(350000);
 
-  var url = "https://github.com/nodegit/test";
+  var testUrl = "https://github.com/nodegit/test";
+  var constTestUrl = "https://github.com/nodegit/test-frozen";
   return fse.remove(local("repos"))
     .then(function() {
       fse.remove(local("home"))
@@ -23,10 +24,10 @@ before(function() {
       return exec("git init " + local("repos", "empty"));
     })
     .then(function() {
-      return exec("git clone " + url + " " + constWorkdirPath);
+      return exec("git clone " + constTestUrl + " " + constWorkdirPath);
     })
     .then(function() {
-      return exec("git clone " + url + " " + workdirPath);
+      return exec("git clone " + testUrl + " " + workdirPath);
     })
     .then(function() {
       //to checkout the longpaths-checkout branch
@@ -34,12 +35,6 @@ before(function() {
         return exec("git config core.longpaths true", {cwd: workdirPath});
       }
       return Promise.resolve();
-    })
-    .then(function() {
-      return exec(`git config --global --add safe.directory ${workdirPath}`);
-    })
-    .then(function() {
-      return exec(`git config --global --add safe.directory ${constworkdir}`);
     })
     .then(function() {
       return exec("git checkout rev-walk", {cwd: workdirPath});
@@ -66,6 +61,12 @@ before(function() {
     .then(function() {
       return fse.writeFile(local("home", ".gitconfig"),
         "[user]\n  name = John Doe\n  email = johndoe@example.com");
+    })
+    .then(function() {
+      return exec(`git config --global --add safe.directory ${workdirPath}`);
+    })
+    .then(function() {
+      return exec(`git config --global --add safe.directory ${constWorkdirPath}`);
     });
 });
 
