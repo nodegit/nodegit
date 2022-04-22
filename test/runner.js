@@ -8,6 +8,31 @@ var NodeGit = require('..');
 var workdirPath = local("repos/workdir");
 var constWorkdirPath = local("repos/constworkdir");
 
+const testRepos = [
+  "repos/bare",
+  "repos/blameRepo",
+  "repos/cherrypick",
+  "repos/clone",
+  "repos/constworkdir",
+  "repos/convenientLineTest",
+  "repos/empty",
+  "repos/index",
+  "repos/index",
+  "repos/merge",
+  "repos/merge-head",
+  "repos/new",
+  "repos/newrepo",
+  "repos/nonrepo",
+  "repos/rebase",
+  "repos/renamedFileRepo",
+  "repos/revertRepo",
+  "repos/stagingRepo",
+  "repos/submodule",
+  "repos/submodule/nodegittest/",
+  "repos/tree/",
+  "repos/workdir",
+];
+
 before(function() {
   this.timeout(350000);
 
@@ -62,12 +87,12 @@ before(function() {
       return fse.writeFile(local("home", ".gitconfig"),
         "[user]\n  name = John Doe\n  email = johndoe@example.com");
     })
-    .then(function() {
-      return exec(`git config --global --add safe.directory ${workdirPath}`);
+    .then( async function() {
+      //mark all test repos as safe
+      for(let repo of testRepos) {
+        await exec(`git config --global --add safe.directory ${local(repo)}`);
+      }
     })
-    .then(function() {
-      return exec(`git config --global --add safe.directory ${constWorkdirPath}`);
-    });
 });
 
 beforeEach(function() {
