@@ -1104,7 +1104,7 @@
       [
         "git_apply_options",
         {
-          "type": "sctruct",
+          "type": "struct",
           "fields": [
             {
               "type": "unsigned int",
@@ -1452,53 +1452,6 @@
         "git_off_t",
         {
           "type": "enum"
-        }
-      ],
-      [
-        "git_rebase_options",
-        {
-          "type": "struct",
-          "fields": [
-            {
-              "type": "unsigned int",
-              "name": "version"
-            },
-            {
-              "type": "int",
-              "name": "quiet"
-            },
-            {
-              "type": "const char *",
-              "name": "rewrite_notes_ref"
-            },
-            {
-              "type": "git_checkout_options",
-              "name": "checkout_options"
-            },
-            {
-              "type": "git_merge_options",
-              "name": "merge_options"
-            },
-            {
-              "type": "git_commit_signing_cb",
-              "name": "signing_cb"
-            },
-            {
-              "type": "void *",
-              "name": "payload"
-            },
-            {
-              "type": "int",
-              "name": "inmemory"
-            }
-          ],
-          "used": {
-            "needs": [
-              "git_rebase_init_options",
-              "git_checkout_init_options",
-              "git_merge_init_options"
-            ]
-          }
         }
       ],
       [

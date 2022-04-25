@@ -14,6 +14,7 @@ describe("Checkout", function() {
   var readMePath = local("../repos/workdir/" + readMeName);
   var packageJsonPath = local("../repos/workdir/" + packageJsonName);
   var checkoutBranchName = "checkout-test";
+  var longpathBranchName = "longpaths-checkout";
 
   beforeEach(function() {
     var test = this;
@@ -33,6 +34,52 @@ describe("Checkout", function() {
 
       assert.ok(~packageContent.indexOf("\"ejs\": \"~1.0.0\","));
     });
+  });
+
+  it("can checkout a branch with a long file path", function() {
+    var test = this;
+
+    return (function () {
+      if(process.platform === "win32") {
+        return test.repository.config()
+        .then(function(config) {
+          return config.setBool("core.longpaths", true);
+        });
+      }
+
+      return Promise.resolve();
+    })()
+      .then(function() {
+        return test.repository.checkoutBranch(longpathBranchName);
+      })
+      .then(function() {
+        return test.repository.getStatus();
+      })
+      .then(function(statuses) {
+        assert.equal(statuses.length, 0);
+      });
+  });
+
+  it("cannot checkout long path file if core.longpaths is not set on win32", function() {
+    var test = this;
+
+    if (process.platform !== "win32") {
+      this.skip();
+    }
+
+    return test.repository.config()
+      .then(function(config) {
+        config.setBool("core.longpaths", false);
+      })
+      .then(function () {
+        return test.repository.checkoutBranch(longpathBranchName);
+      })
+      .then(function() {
+        assert.fail();
+      })
+      .catch(function(err) {
+        assert(~err.message.indexOf("path too long"));
+      });
   });
 
   it("can force checkout a single file", function() {

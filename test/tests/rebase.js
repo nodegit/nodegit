@@ -1874,7 +1874,7 @@ describe("Rebase", function() {
         })
         .then(function(commitOid) {
           assert.equal(commitOid.toString(),
-          "24250fe6bd8a782ec1aaca8b2c9a2456a90517ed");
+          "617cd03370dd799f372e9dcfcd0b097aede1bd7f");
 
           // git_rebase_operation_current returns the index of the rebase
           // operation that was last applied, so after the first operation, it
@@ -1891,13 +1891,13 @@ describe("Rebase", function() {
         .then(function(commit) {
           // verify that the "ours" branch has moved to the correct place
           assert.equal(commit.id().toString(),
-          "24250fe6bd8a782ec1aaca8b2c9a2456a90517ed");
+          "617cd03370dd799f372e9dcfcd0b097aede1bd7f");
 
           return Promise.all([
             commit.parent(0),
             NodeGit.Commit.extractSignature(
               repository,
-              "24250fe6bd8a782ec1aaca8b2c9a2456a90517ed",
+              "617cd03370dd799f372e9dcfcd0b097aede1bd7f",
               "moose-sig"
             )
           ]);
@@ -2416,7 +2416,7 @@ describe("Rebase", function() {
         });
       });
 
-      
+
   it("rebase signs correctly if rebaseOptions are re-used", function () {
     const ourFileName = "ourNewFile.txt";
     const theirFileName = "theirNewFile.txt";
@@ -2434,7 +2434,7 @@ describe("Rebase", function() {
 
     let rebase;
     let newCommitOid;
-    
+
     const rebaseOptions = {
       signingCb: () => ({
         code: NodeGit.Error.CODE.OK,
@@ -2442,7 +2442,7 @@ describe("Rebase", function() {
         signedData: "A moose was here."
       })
     };
-          
+
     const repository = this.repository;
 
     // Create two commits on master
@@ -2521,7 +2521,7 @@ describe("Rebase", function() {
       .then((_newCommitOid) => {
         newCommitOid = _newCommitOid;
         assert.strictEqual(newCommitOid.toString(),
-          "89ad8168264267bcc50ee60ade3bc3804f55aa72");
+          "9909e435b52322a71dc341d747b29c392a34c745");
         return rebase.next();
       })
       .then(() => {

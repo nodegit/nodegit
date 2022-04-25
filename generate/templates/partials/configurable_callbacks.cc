@@ -84,14 +84,25 @@
           return;
         }
 
+        {% each field.args|callbackArgsInfo as arg %}
+        {% if arg.cppClassName == "Array" %}
+          v8::Local<v8::Array> _{{arg.name}}_array = Nan::New<v8::Array>(baton->{{ arg.arrayLengthArgumentName }});
+          for(uint32_t i = 0; i < _{{arg.name}}_array->Length(); i++) {
+            Nan::Set(_{{arg.name}}_array, i, {{arg.arrayElementCppClassName}}::New(baton->{{arg.name}}[i], false));
+          }
+        {% endif %}
+        {% endeach %}
+
         {% if field.args|callbackArgsCount == 0 %}
-          v8::Local<Value> *argv = NULL;
+          v8::Local<v8::Value> *argv = NULL;
         {% else %}
-          v8::Local<Value> argv[{{ field.args|callbackArgsCount }}] = {
+          v8::Local<v8::Value> argv[{{ field.args|callbackArgsCount }}] = {
             {% each field.args|callbackArgsInfo as arg %}
             {% if not arg.firstArg %},{% endif %}
             {% if arg.isEnum %}
               Nan::New((int)baton->{{ arg.name }})
+            {% elsif arg.cppClassName == "Array" %}
+              _{{arg.name}}_array
             {% elsif arg.isLibgitType %}
               {{ arg.cppClassName }}::New(baton->{{ arg.name }}, false)
             {% elsif arg.cType == "size_t" %}
@@ -133,18 +144,22 @@
             }
             else if (!result->IsNull() && !result->IsUndefined()) {
               {% if _return.isOutParam %}
-              {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
-              wrapper->selfFreeing = false;
+                {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
+                wrapper->selfFreeing = false;
 
-              *baton->{{ _return.name }} = wrapper->GetValue();
-              baton->result = {{ field.return.success }};
+                {% if _return.cppClassName == "GitOid" %}
+                  git_oid_cpy(baton->{{ _return.name }}, wrapper->GetValue());
+                {% else %}
+                  *baton->{{ _return.name }} = wrapper->GetValue();
+                {% endif %}
+                baton->result = {{ field.return.success }};
               {% else %}
-              if (result->IsNumber()) {
-                baton->result = Nan::To<int>(result).FromJust();
-              }
-              else {
-                baton->result = baton->defaultResult;
-              }
+                if (result->IsNumber()) {
+                  baton->result = Nan::To<int>(result).FromJust();
+                }
+                else {
+                  baton->result = baton->defaultResult;
+                }
               {% endif %}
             }
             else {
@@ -169,18 +184,22 @@
               }
               else if (!result->IsNull() && !result->IsUndefined()) {
                 {% if _return.isOutParam %}
-                {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
-                wrapper->selfFreeing = false;
+                  {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
+                  wrapper->selfFreeing = false;
 
-                *baton->{{ _return.name }} = wrapper->GetValue();
-                baton->result = {{ field.return.success }};
+                  {% if _return.cppClassName == "GitOid" %}
+                    git_oid_cpy(baton->{{ _return.name }}, wrapper->GetValue());
+                  {% else %}
+                    *baton->{{ _return.name }} = wrapper->GetValue();
+                  {% endif %}
+                  baton->result = {{ field.return.success }};
                 {% else %}
-                if (result->IsNumber()) {
-                  baton->result = Nan::To<int>(result).FromJust();
-                }
-                else{
-                  baton->result = baton->defaultResult;
-                }
+                  if (result->IsNumber()) {
+                    baton->result = Nan::To<int>(result).FromJust();
+                  }
+                  else {
+                    baton->result = baton->defaultResult;
+                  }
                 {% endif %}
               }
               else {

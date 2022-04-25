@@ -79,7 +79,7 @@
     "lint": "jshint lib test/tests test/utils lifecycleScripts",
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",
     "mocha": "mocha --expose-gc test/runner test/tests --timeout 15000",
-    "mochaDebug": "mocha --expose-gc --debug-brk test/runner test/tests --timeout 15000",
+    "mochaDebug": "mocha --expose-gc --inspect-brk test/runner test/tests --timeout 15000",
     "postinstall": "node lifecycleScripts/postinstall",
     "rebuild": "node generate && node-gyp configure build",
     "rebuildDebug": "node generate && node-gyp configure --debug build",

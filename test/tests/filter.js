@@ -220,7 +220,7 @@ describe("Filter", function() {
 
     it("should apply filter when check succeeds", function() {
       var test = this;
-      var applied = true;
+      var applied = false;
 
       return Registry.register(filterName, {
         apply: function() {

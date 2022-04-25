@@ -69,9 +69,9 @@ NAN_METHOD(ConvenientHunk::JSNewFunction) {
   info.GetReturnValue().Set(info.This());
 }
 
-Local<Value> ConvenientHunk::New(void *raw) {
+Local<v8::Value> ConvenientHunk::New(void *raw) {
   Nan::EscapableHandleScope scope;
-  Local<Value> argv[1] = { Nan::New<External>((void *)raw) };
+  Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
   nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   Local<Function> constructor_template = nodegitContext->GetFromPersistent("ConvenientHunk::Template").As<Function>();
   return scope.Escape(Nan::NewInstance(constructor_template, 1, argv).ToLocalChecked());

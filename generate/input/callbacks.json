@@ -135,19 +135,40 @@
       "throttle": 100
     }
   },
-  "git_commit_signing_cb": {
+  "git_commit_create_cb": {
     "args": [
       {
-        "name": "signature",
-        "cType": "git_buf *"
+        "name": "out",
+        "cType": "git_oid *",
+        "isReturn": true
       },
       {
-        "name": "signature_field",
-        "cType": "git_buf *"
+        "name": "author",
+        "cType": "const git_signature *"
       },
       {
-        "name": "commit_content",
+        "name": "committer",
+        "cType": "const git_signature *"
+      },
+      {
+        "name": "message_encoding",
         "cType": "const char *"
+      },
+      {
+        "name": "message",
+        "cType": "const char *"
+      },
+      {
+        "name": "tree",
+        "cType": "const git_tree *"
+      },
+      {
+        "name": "parent_count",
+        "cType": "size_t"
+      },
+      {
+        "name": "parents",
+        "cType": "const git_oid * []"
       },
       {
         "name": "payload",
@@ -625,6 +646,27 @@
       "success": 0,
       "error": -1,
       "cancel": -1
+    }
+  },
+  "git_remote_ready_cb": {
+    "args": [
+      {
+        "name": "remote",
+        "cType": "git_remote *"
+      },
+      {
+        "name": "direction",
+        "cType": "int"
+      },
+      {
+        "name": "payload",
+        "cType": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "success": 0,
+      "error": -1
     }
   },
   "git_repository_create_cb": {
