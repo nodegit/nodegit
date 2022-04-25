@@ -47,7 +47,7 @@ const applyOpenSSLPatches = async (buildCwd) => {
     for (const patchFilename of await fse.readdir(opensslPatchPath)) {
       if (patchFilename.split(".").pop() === "patch") {
         console.log(`applying ${patchFilename}`);
-        await execPromise(`patch -up0 -i ${path.join(patchPath, patchFilename)}`, {
+        await execPromise(`patch -up0 -i ${path.join(opensslPatchPath, patchFilename)}`, {
           cwd: buildCwd
         }, { pipeOutput: true });
       }
