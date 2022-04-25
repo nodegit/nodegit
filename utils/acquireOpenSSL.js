@@ -44,8 +44,8 @@ class HashVerify extends stream.Transform {
 // currently this only needs to be done on linux
 const applyOpenSSLPatches = async (buildCwd) => {
   try {
-    for(const patchFilename of await fse.readdir(opensslPatchPath)) {
-      if(patchFilename.split('.').pop() == 'patch') {
+    for (const patchFilename of await fse.readdir(opensslPatchPath)) {
+      if (patchFilename.split(".").pop() === "patch") {
         console.log(`applying ${patchFilename}`);
         await execPromise(`patch -up0 -i ${path.join(patchPath, patchFilename)}`, {
           cwd: buildCwd
@@ -60,36 +60,36 @@ const applyOpenSSLPatches = async (buildCwd) => {
 
 const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
   const arguments = [
-    process.arch === 'x64' ? 'darwin64-x86_64-cc' : 'darwin64-arm64-cc',
+    process.arch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc",
     // speed up ecdh on little-endian platforms with 128bit int support
-    'enable-ec_nistp_64_gcc_128',
+    "enable-ec_nistp_64_gcc_128",
     // compile static libraries
-    'no-shared',
+    "no-shared",
     // disable ssl2, ssl3, and compression
-    'no-ssl2',
-    'no-ssl3',
-    'no-comp',
-    //set install directory
+    "no-ssl2",
+    "no-ssl3",
+    "no-comp",
+    // set install directory
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`,
-    //set macos version requirement
+    // set macos version requirement
     `-mmacosx-version-min=${macOsDeploymentTarget}`
   ];
 
-  await execPromise(`./Configure ${arguments.join(' ')}`, {
+  await execPromise(`./Configure ${arguments.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
   // only build the libraries, not the tests/fuzzer or apps
-  await execPromise('make build_libs', {
+  await execPromise("make build_libs", {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await execPromise('make test', {
+  await execPromise("make test", {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await execPromise('make install_sw', {
+  await execPromise("make install_sw", {
     cwd: buildCwd,
     maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
   }, { pipeOutput: true });
@@ -97,39 +97,39 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 
 const buildLinux = async (buildCwd) => {
   const arguments = [
-    'linux-x86_64',
+    "linux-x86_64",
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
     // To fix this we need to hide all the openssl symbols to prevent them from being overridden
     // by the runtime linker.
-    '-fvisibility=hidden',
+    "-fvisibility=hidden",
     // compile static libraries
-    'no-shared',
+    "no-shared",
     // disable ssl2, ssl3, and compression
-    'no-ssl2',
-    'no-ssl3',
-    'no-comp',
-    //set install directory
+    "no-ssl2",
+    "no-ssl3",
+    "no-comp",
+    // set install directory
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`
   ];
-  await execPromise(`./Configure ${arguments.join(' ')}`, {
+  await execPromise(`./Configure ${arguments.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
   await applyOpenSSLPatches(buildCwd);
 
   // only build the libraries, not the tests/fuzzer or apps
-  await execPromise('make build_libs', {
+  await execPromise("make build_libs", {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await execPromise('make test', {
+  await execPromise("make test", {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  //only install software, not the docs
-  await execPromise('make install_sw', {
+  // only install software, not the docs
+  await execPromise("make install_sw", {
     cwd: buildCwd,
     maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
   }, { pipeOutput: true });
