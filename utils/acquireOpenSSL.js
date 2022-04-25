@@ -54,7 +54,7 @@ const applyOpenSSLPatches = async (buildCwd) => {
     }
   } catch(e) {
     console.log("Patch application failed: ", e);
-    return;
+    throw e;
   }
 }
 
