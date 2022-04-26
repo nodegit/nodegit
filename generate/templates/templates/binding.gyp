@@ -3,6 +3,7 @@
     "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))",
     "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
     "electron_openssl_root%": "<!(node ./utils/getElectronOpenSSLRoot.js <(module_root_dir))",
+    "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
     "macOS_deployment_target": "10.11"
   },
 
@@ -175,14 +176,20 @@
             "-std=c++14"
           ],
           "conditions": [
-            ["<(is_electron) == 1", {
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ],
               "libraries": [
-                # this order is signifcant on centos7 apparently...
+                # this order is significant on centos7 apparently...
                 "<(electron_openssl_root)/lib/libssl.a",
                 "<(electron_openssl_root)/lib/libcrypto.a"
+              ]
+            }],
+            ["<(is_electron) == 1 and <(electron_openssl_static) != 1", {
+              "libraries": [
+                "-lcrypto",
+                "-lssl"
               ]
             }]
           ],

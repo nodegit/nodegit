@@ -25,9 +25,11 @@ module.exports = function retrieveExternalDependencies() {
       newEnv[key] = process.env[key];
     });
 
-    let cpArgs = `--with-libssl-prefix=${opensslVendorDirectory}`;
+    let cpArgs = process.env.NODEGIT_OPENSSL_STATIC_LINK === '1'
+      ? ` --with-libssl-prefix=${opensslVendorDirectory}`
+      : '';
     cp.exec(
-      `${libssh2ConfigureScript} ${cpArgs}`,
+      `${libssh2ConfigureScript}${cpArgs}`,
       {
         cwd: libssh2VendorDirectory,
         env: newEnv

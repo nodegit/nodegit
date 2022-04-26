@@ -11,6 +11,7 @@
     "is_clang%": 0,
     "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
     "electron_openssl_root%": "<!(node ../utils/getElectronOpenSSLRoot.js <(module_root_dir))",
+    "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
   },
   "targets": [
     {
@@ -362,7 +363,7 @@
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
           "conditions": [
-            ["<(is_electron) == 1", {
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ]
@@ -622,7 +623,7 @@
       "conditions": [
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
           "conditions": [
-            ["<(is_electron) == 1", {
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ]
@@ -702,7 +703,7 @@
         }],
         ["OS=='linux'", {
           "conditions": [
-            ["<(is_electron) == 1", {
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
               "include_dirs": ["<(electron_openssl_root)/include"]
             }]
           ],
