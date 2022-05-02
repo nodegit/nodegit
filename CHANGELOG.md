@@ -1,5 +1,17 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.14" href="#v0-28-0-alpha-14">v0.28.0-alpha.14</a> [(2022-05-02)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.14)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.13...v0.28.0-alpha.14)
+
+#### Summary of changes
+- Allow statically linking OpenSSL on Linux
+- Update libgit2 to 1.3.1
+
+#### Merged PRs into NodeGit
+- [Statically compile OpenSSL on linux for electron](https://github.com/nodegit/nodegit/pull/1905)
+- [Upgrade libgit2 to 1.3.1](https://github.com/nodegit/nodegit/pull/1894)
+
 ## <a name="v0-28-0-alpha.13" href="#v0-28-0-alpha-13">v0.28.0-alpha.13</a> [(2022-03-22)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.13)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.12...v0.28.0-alpha.13)
