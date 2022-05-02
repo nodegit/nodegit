@@ -11,6 +11,7 @@
     "is_clang%": 0,
     "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
     "electron_openssl_root%": "<!(node ../utils/getElectronOpenSSLRoot.js <(module_root_dir))",
+    "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
   },
   "targets": [
     {
@@ -338,36 +339,36 @@
           ]
         }],
         ["OS=='mac'", {
-            "conditions": [
-              ["<(is_electron) == 1", {
-                "include_dirs": [
-                  "<(electron_openssl_root)/include"
-                ]
-              }]
-            ],
-            "defines": [
-                "GIT_SECURE_TRANSPORT",
-                "GIT_USE_STAT_MTIMESPEC",
-                "GIT_REGEX_REGCOMP_L",
-                "GIT_USE_ICONV"
-            ],
-            "sources": [
-                "libgit2/src/streams/stransport.c",
-                "libgit2/src/streams/stransport.h"
-            ],
-            "libraries": [
-              "-liconv",
-            ],
-            "link_settings": {
-                "xcode_settings": {
-                    "OTHER_LDFLAGS": [
-                        "-framework Security",
-                        "-framework CoreFoundation"
-                    ],
-                }
-            }
+          "defines": [
+              "GIT_SECURE_TRANSPORT",
+              "GIT_USE_STAT_MTIMESPEC",
+              "GIT_REGEX_REGCOMP_L",
+              "GIT_USE_ICONV"
+          ],
+          "sources": [
+              "libgit2/src/streams/stransport.c",
+              "libgit2/src/streams/stransport.h"
+          ],
+          "libraries": [
+            "-liconv",
+          ],
+          "link_settings": {
+              "xcode_settings": {
+                  "OTHER_LDFLAGS": [
+                      "-framework Security",
+                      "-framework CoreFoundation"
+                  ],
+              }
+          }
         }],
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "conditions": [
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
+              "include_dirs": [
+                "<(electron_openssl_root)/include"
+              ]
+            }]
+          ],
           "dependencies": [
             "ntlmclient"
           ],
@@ -620,10 +621,14 @@
         ]
       },
       "conditions": [
-        ["OS=='mac' and <(is_electron) == 1", {
-          "include_dirs": [
-            "<(electron_openssl_root)/include",
-          ]
+        ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "conditions": [
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
+              "include_dirs": [
+                "<(electron_openssl_root)/include"
+              ]
+            }]
+          ],
         }],
         ["OS=='win'", {
           "conditions": [
@@ -682,10 +687,12 @@
         "UNICODE_BUILTIN"
       ],
       "conditions": [
-        ["OS=='mac' and <(is_electron) == 1", {
-          "include_dirs": ["<(electron_openssl_root)/include"]
-        }],
         ["OS=='mac'", {
+          "conditions": [
+            ["<(is_electron) == 1", {
+              "include_dirs": ["<(electron_openssl_root)/include"]
+            }]
+          ],
           "sources": [
             "libgit2/deps/ntlmclient/crypt_commoncrypto.c",
             "libgit2/deps/ntlmclient/crypt_commoncrypto.h"
@@ -695,6 +702,11 @@
           ]
         }],
         ["OS=='linux'", {
+          "conditions": [
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
+              "include_dirs": ["<(electron_openssl_root)/include"]
+            }]
+          ],
           "sources": [
             "libgit2/deps/ntlmclient/crypt_openssl.c",
             "libgit2/deps/ntlmclient/crypt_openssl.h"

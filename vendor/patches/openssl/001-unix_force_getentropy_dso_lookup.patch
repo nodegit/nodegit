@@ -1,0 +1,23 @@
+openssl doesn't have any sort of guard around this section of code other than
+checking if we're compiling an elf binary on gnu linux. the syscall wrapper
+`getentropy` is only available on glibc >= 2.25 which is a problem if we want
+to support platforms like centos7 which ships with glibc 2.17. Attempting to
+load this code on centos7 causes a runtime "undefined symbol error since glibc
+doesn't provide it.
+luckily openssl provides a backup lookup method in form of a dlopen call but
+theres no way to configure for it, hence this patch.
+Note further that centos7 doesn't have this function or the syscall it wraps
+so the symbol lookup will fail and it will fallback to reading from /dev/random.
+hence this patch just fixes compilation.
+author: JZA
+--- crypto/rand/rand_unix.c
++++ crypto/rand/rand_unix.c
+@@ -372,7 +372,7 @@ static ssize_t syscall_random(void *buf, size_t buflen)
+      * Note: Sometimes getentropy() can be provided but not implemented
+      * internally. So we need to check errno for ENOSYS
+      */
+-#  if defined(__GNUC__) && __GNUC__>=2 && defined(__ELF__) && !defined(__hpux)
++#  if defined(__GNUC__) && __GNUC__>=2 && defined(__ELF__) && !defined(__hpux) && 0
+     extern int getentropy(void *buffer, size_t length) __attribute__((weak));
+ 
+     if (getentropy != NULL) {

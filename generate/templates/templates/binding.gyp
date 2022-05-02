@@ -3,14 +3,16 @@
     "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))",
     "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
     "electron_openssl_root%": "<!(node ./utils/getElectronOpenSSLRoot.js <(module_root_dir))",
+    "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
     "macOS_deployment_target": "10.11"
   },
 
   "targets": [
     {
       "target_name": "acquireOpenSSL",
+        "type": "none",
         "conditions": [
-        ["<(is_electron) == 1 and OS != 'linux' and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
+        ["<(is_electron) == 1 and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
           "actions": [{
             "action_name": "acquire",
             "action": ["node", "utils/acquireOpenSSL.js", "<(macOS_deployment_target)"],
@@ -23,6 +25,7 @@
     },
     {
       "target_name": "configureLibssh2",
+      "type": "none",
       "actions": [{
         "action_name": "configure",
         "action": ["node", "utils/configureLibssh2.js"],
@@ -110,8 +113,8 @@
                   "<(electron_openssl_root)/include"
                 ],
                 "libraries": [
-                  "<(electron_openssl_root)/lib/libcrypto.a",
-                  "<(electron_openssl_root)/lib/libssl.a"
+                  "<(electron_openssl_root)/lib/libssl.a",
+                  "<(electron_openssl_root)/lib/libcrypto.a"
                 ]
               }]
             ],
@@ -168,21 +171,29 @@
             "<!(krb5-config gssapi --libs)"
           ]
         }],
-        [
-          "OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
-            "cflags": [
-              "-std=c++14"
-            ]
-          }
-        ],
-        [
-          "OS.endswith('bsd') or (<(is_electron) == 1 and OS=='linux') or <(is_IBMi) == 1", {
-            "libraries": [
-              "-lcrypto",
-              "-lssl"
-            ],
-          }
-        ],
+        ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "cflags": [
+            "-std=c++14"
+          ],
+          "conditions": [
+            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
+              "include_dirs": [
+                "<(electron_openssl_root)/include"
+              ],
+              "libraries": [
+                # this order is significant on centos7 apparently...
+                "<(electron_openssl_root)/lib/libssl.a",
+                "<(electron_openssl_root)/lib/libcrypto.a"
+              ]
+            }],
+            ["<(is_electron) == 1 and <(electron_openssl_static) != 1", {
+              "libraries": [
+                "-lcrypto",
+                "-lssl"
+              ]
+            }]
+          ],
+        }],
         [
           "<(is_IBMi) == 1", {
             "include_dirs": [

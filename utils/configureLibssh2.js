@@ -2,6 +2,7 @@ var cp = require("child_process");
 var fse = require("fs-extra");
 var path = require("path");
 
+const opensslVendorDirectory = path.resolve(__dirname, "..", "vendor", "openssl");
 const libssh2VendorDirectory = path.resolve(__dirname, "..", "vendor", "libssh2");
 const libssh2ConfigureScript = path.join(libssh2VendorDirectory, "configure");
 const libssh2StaticConfigDirectory  = path.resolve(__dirname, "..", "vendor", "static_config", "libssh2");
@@ -24,8 +25,11 @@ module.exports = function retrieveExternalDependencies() {
       newEnv[key] = process.env[key];
     });
 
+    let cpArgs = process.env.NODEGIT_OPENSSL_STATIC_LINK === '1'
+      ? ` --with-libssl-prefix=${opensslVendorDirectory}`
+      : '';
     cp.exec(
-      libssh2ConfigureScript,
+      `${libssh2ConfigureScript}${cpArgs}`,
       {
         cwd: libssh2VendorDirectory,
         env: newEnv
