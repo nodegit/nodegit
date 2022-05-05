@@ -23,6 +23,15 @@ NAN_METHOD(GitLibgit2::Opts)
       to = Nan::New<Number>(option_value);
       break;
     }
+    // GET int
+    case GIT_OPT_GET_OWNER_VALIDATION: {
+      int option_value;
+      if (git_libgit2_opts(from_option, &option_value)) {
+        return Nan::ThrowError("git_libgit2_opts failed");
+      }
+      to = Nan::New<Number>(option_value);
+      break;
+    }
     // GET unsigned long
     case GIT_OPT_GET_WINDOWS_SHAREMODE: {
       unsigned long option_value;
@@ -75,7 +84,8 @@ NAN_METHOD(GitLibgit2::Opts)
     case GIT_OPT_ENABLE_FSYNC_GITDIR:
     case GIT_OPT_ENABLE_STRICT_HASH_VERIFICATION:
     case GIT_OPT_ENABLE_UNSAVED_INDEX_SAFETY:
-    case GIT_OPT_DISABLE_PACK_KEEP_FILE_CHECKS: {
+    case GIT_OPT_DISABLE_PACK_KEEP_FILE_CHECKS:
+    case GIT_OPT_SET_OWNER_VALIDATION: {
       if (info.Length() < 2 || !info[1]->IsNumber()) {
         return Nan::ThrowError("Number option is required.");
       }
