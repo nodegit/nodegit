@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.15" href="#v0-28-0-alpha-15">v0.28.0-alpha.15</a> [(2022-05-05)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.15)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.14...v0.28.0-alpha.15)
+
+#### Summary of changes
+- Expose `GIT_OPT_GET_OWNER_VALIDATION` and `GIT_OPT_SET_OWNER_VALIDATION`
+
+#### Merged PRs into NodeGit
+- [Expose get/set owner validation opts](https://github.com/nodegit/nodegit/pull/1910)
+
 ## <a name="v0-28-0-alpha.14" href="#v0-28-0-alpha-14">v0.28.0-alpha.14</a> [(2022-05-02)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.14)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.13...v0.28.0-alpha.14)
