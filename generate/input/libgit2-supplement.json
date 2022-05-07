@@ -82,6 +82,138 @@
     },
     "git_note_iterator": {
       "decl": "git_iterator"
+    },
+    "git_checkout_options": {
+      "decl": [
+        "unsigned int version",
+        "unsigned int checkout_strategy",
+        "int disable_filters",
+        "unsigned int dir_mode",
+        "unsigned int file_mode",
+        "int file_open_flags",
+        "unsigned int notify_flags",
+        "git_checkout_notify_cb notify_cb",
+        "void * notify_payload",
+        "git_checkout_progress_cb progress_cb",
+        "void * progress_payload",
+        "git_strarray paths",
+        "git_tree * baseline",
+        "git_index * baseline_index",
+        "const char * target_directory",
+        "const char * ancestor_label",
+        "const char * our_label",
+        "const char * their_label",
+        "git_checkout_perfdata_cb perfdata_cb",
+        "void * perfdata_payload",
+        "git_strarray disabled_filters"
+      ],
+      "fields": [
+        {
+          "type": "unsigned int",
+          "name": "version",
+          "comments": " The version "
+        },
+        {
+          "type": "unsigned int",
+          "name": "checkout_strategy",
+          "comments": " default will be a safe checkout "
+        },
+        {
+          "type": "int",
+          "name": "disable_filters",
+          "comments": " don't apply filters like CRLF conversion "
+        },
+        {
+          "type": "unsigned int",
+          "name": "dir_mode",
+          "comments": " default is 0755 "
+        },
+        {
+          "type": "unsigned int",
+          "name": "file_mode",
+          "comments": " default is 0644 or 0755 as dictated by blob "
+        },
+        {
+          "type": "int",
+          "name": "file_open_flags",
+          "comments": " default is O_CREAT | O_TRUNC | O_WRONLY "
+        },
+        {
+          "type": "unsigned int",
+          "name": "notify_flags",
+          "comments": " see `git_checkout_notify_t` above "
+        },
+        {
+          "type": "git_checkout_notify_cb",
+          "name": "notify_cb",
+          "comments": " Optional callback to get notifications on specific file states.\n "
+        },
+        {
+          "type": "void *",
+          "name": "notify_payload",
+          "comments": " Payload passed to notify_cb "
+        },
+        {
+          "type": "git_checkout_progress_cb",
+          "name": "progress_cb",
+          "comments": " Optional callback to notify the consumer of checkout progress. "
+        },
+        {
+          "type": "void *",
+          "name": "progress_payload",
+          "comments": " Payload passed to progress_cb "
+        },
+        {
+          "type": "git_strarray",
+          "name": "paths",
+          "comments": " A list of wildmatch patterns or paths.\n\n By default, all paths are processed. If you pass an array of wildmatch\n patterns, those will be used to filter which paths should be taken into\n account.\n\n Use GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH to treat as a simple list."
+        },
+        {
+          "type": "git_tree *",
+          "name": "baseline",
+          "comments": " The expected content of the working directory; defaults to HEAD.\n\n If the working directory does not match this baseline information,\n that will produce a checkout conflict."
+        },
+        {
+          "type": "git_index *",
+          "name": "baseline_index",
+          "comments": " Like `baseline` above, though expressed as an index.  This\n option overrides `baseline`."
+        },
+        {
+          "type": "const char *",
+          "name": "target_directory",
+          "comments": " alternative checkout path to workdir "
+        },
+        {
+          "type": "const char *",
+          "name": "ancestor_label",
+          "comments": " the name of the common ancestor side of conflicts "
+        },
+        {
+          "type": "const char *",
+          "name": "our_label",
+          "comments": " the name of the \"our\" side of conflicts "
+        },
+        {
+          "type": "const char *",
+          "name": "their_label",
+          "comments": " the name of the \"their\" side of conflicts "
+        },
+        {
+          "type": "git_checkout_perfdata_cb",
+          "name": "perfdata_cb",
+          "comments": " Optional callback to notify the consumer of performance data. "
+        },
+        {
+          "type": "void *",
+          "name": "perfdata_payload",
+          "comments": " Payload passed to perfdata_cb "
+        },
+        {
+          "type": "git_strarray",
+          "name": "disabled_filters",
+          "comments": " A list filters to disable during checkout."
+        }
+      ]
     }
   },
   "new" : {
