@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.16" href="#v0-28-0-alpha-16">v0.28.0-alpha.16</a> [(2022-05-09)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.16)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.15...v0.28.0-alpha.16)
+
+#### Summary of changes
+- Allow disabling specific filters during checkout
+
+#### Merged PRs into NodeGit
+- [Allow disabling specific filters during checkout](https://github.com/nodegit/nodegit/pull/1911)
+
 ## <a name="v0-28-0-alpha.15" href="#v0-28-0-alpha-15">v0.28.0-alpha.15</a> [(2022-05-05)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.15)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.14...v0.28.0-alpha.15)
