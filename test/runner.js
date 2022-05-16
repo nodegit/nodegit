@@ -34,6 +34,7 @@ const testRepos = [
 ];
 
 before(function() {
+  console.log("Node Process ID:", process.pid);
   this.timeout(350000);
 
   var testUrl = "https://github.com/nodegit/test";

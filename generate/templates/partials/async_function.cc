@@ -98,7 +98,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       baton->{{arg.name}} = ({{ arg.cType }})malloc(sizeof({{ arg.cType|replace '*' '' }}));
       {%if arg.cppClassName == "GitBuf" %}
         baton->{{arg.name}}->ptr = NULL;
-        baton->{{arg.name}}->size = baton->{{arg.name}}->asize = 0;
+        baton->{{arg.name}}->size = baton->{{arg.name}}->reserved = 0;
       {%endif%}
     {%endif%}
   {%endeach%}
