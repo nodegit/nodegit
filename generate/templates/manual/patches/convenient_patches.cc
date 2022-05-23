@@ -13,6 +13,19 @@ NAN_METHOD(GitPatch::ConvenientFromDiff) {
   baton->error = NULL;
 
   baton->diff = Nan::ObjectWrap::Unwrap<GitDiff>(Nan::To<v8::Object>(info[0]).ToLocalChecked())->GetValue();
+
+  if (info[1]->IsArray()) {
+    v8::Local<v8::Context> context = Nan::GetCurrentContext();
+    const v8::Local<v8::Array> indexesArray = info[1].As<v8::Array>();
+    const uint32_t numIndexes = indexesArray->Length();
+
+    for (uint32_t i = 0; i < numIndexes; ++i) {
+      v8::Local<v8::Value> value = indexesArray->Get(context, i).ToLocalChecked();
+      int idx = value.As<v8::Number>()->Value();
+      baton->indexes.push_back(idx);
+    }
+  }
+
   baton->out = new std::vector<PatchData *>;
   baton->out->reserve(git_diff_num_deltas(baton->diff));
 
@@ -37,37 +50,73 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
 
   std::vector<git_patch *> patchesToBeFreed;
 
-  for (std::size_t i = 0; i < git_diff_num_deltas(baton->diff); ++i) {
-    git_patch *nextPatch;
-    int result = git_patch_from_diff(&nextPatch, baton->diff, i);
+  if (baton->indexes.size() > 0) {
+    for (int idx : baton->indexes) {
+      git_patch *nextPatch;
+      int result = git_patch_from_diff(&nextPatch, baton->diff, idx);
 
-    if (result) {
-      while (!patchesToBeFreed.empty())
-      {
-        git_patch_free(patchesToBeFreed.back());
-        patchesToBeFreed.pop_back();
+      if (result) {
+        while (!patchesToBeFreed.empty())
+        {
+          git_patch_free(patchesToBeFreed.back());
+          patchesToBeFreed.pop_back();
+        }
+
+        while (!baton->out->empty()) {
+          PatchDataFree(baton->out->back());
+          baton->out->pop_back();
+        }
+
+        baton->error_code = result;
+
+        if (git_error_last() != NULL) {
+          baton->error = git_error_dup(git_error_last());
+        }
+
+        delete baton->out;
+        baton->out = NULL;
+
+        return;
       }
 
-      while (!baton->out->empty()) {
-        PatchDataFree(baton->out->back());
-        baton->out->pop_back();
+      if (nextPatch != NULL) {
+        baton->out->push_back(createFromRaw(nextPatch));
+        patchesToBeFreed.push_back(nextPatch);
       }
-
-      baton->error_code = result;
-
-      if (git_error_last() != NULL) {
-        baton->error = git_error_dup(git_error_last());
-      }
-
-      delete baton->out;
-      baton->out = NULL;
-
-      return;
     }
+  } else {
+    for (std::size_t i = 0; i < git_diff_num_deltas(baton->diff); ++i) {
+      git_patch *nextPatch;
+      int result = git_patch_from_diff(&nextPatch, baton->diff, i);
 
-    if (nextPatch != NULL) {
-      baton->out->push_back(createFromRaw(nextPatch));
-      patchesToBeFreed.push_back(nextPatch);
+      if (result) {
+        while (!patchesToBeFreed.empty())
+        {
+          git_patch_free(patchesToBeFreed.back());
+          patchesToBeFreed.pop_back();
+        }
+
+        while (!baton->out->empty()) {
+          PatchDataFree(baton->out->back());
+          baton->out->pop_back();
+        }
+
+        baton->error_code = result;
+
+        if (git_error_last() != NULL) {
+          baton->error = git_error_dup(git_error_last());
+        }
+
+        delete baton->out;
+        baton->out = NULL;
+
+        return;
+      }
+
+      if (nextPatch != NULL) {
+        baton->out->push_back(createFromRaw(nextPatch));
+        patchesToBeFreed.push_back(nextPatch);
+      }
     }
   }
 
