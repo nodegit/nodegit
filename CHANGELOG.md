@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.17" href="#v0-28-0-alpha-17">v0.28.0-alpha.17</a> [(2022-05-24)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.17)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.16...v0.28.0-alpha.17)
+
+#### Summary of changes
+- Enable nanosecond precision for file operations
+
+#### Merged PRs into NodeGit
+- [Enable GIT_USE_NSEC](https://github.com/nodegit/nodegit/pull/1912)
+
 ## <a name="v0-28-0-alpha.16" href="#v0-28-0-alpha-16">v0.28.0-alpha.16</a> [(2022-05-09)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.16)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.15...v0.28.0-alpha.16)
