@@ -1,5 +1,17 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.18" href="#v0-28-0-alpha-18">v0.28.0-alpha.18</a> [(2022-05-27)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.18)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.17...v0.28.0-alpha.18)
+
+#### Summary of changes
+- Allow fetching partial patches from diff
+- Fix nanosecond comparison typo
+
+#### Merged PRs into NodeGit
+- [Improve Diff.patches to allow an index array](https://github.com/nodegit/nodegit/pull/1916)
+- [Bring in GIT_USE_NSEC fix](https://github.com/nodegit/nodegit/pull/1917)
+
 ## <a name="v0-28-0-alpha.17" href="#v0-28-0-alpha-17">v0.28.0-alpha.17</a> [(2022-05-24)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.17)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.16...v0.28.0-alpha.17)
