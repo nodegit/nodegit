@@ -674,6 +674,10 @@
             "type": "git_diff *"
           },
           {
+            "name": "indexes",
+            "type": "std::vector<int>"
+          },
+          {
             "name": "out",
             "type": "std::vector<PatchData*> *"
           }
