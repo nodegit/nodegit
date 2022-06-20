@@ -112,4 +112,13 @@ describe("Tree", function() {
         );
       });
   });
+
+  it("get all paths from a tree", async function () {
+    const tree = await this.commit.getTree();
+    const paths = await tree.getAllFilepaths();
+    assert.equal(paths.length, 512);
+    assert.equal(paths[0], ".gitignore");
+    assert.equal(paths[511], "wscript");
+  });
+
 });
