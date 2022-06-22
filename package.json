@@ -40,7 +40,7 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.8",
     "fs-extra": "^7.0.0",
-    "got": "^10.7.0",
+    "got": "^11.8.5",
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
     "nan": "^2.15.0",
@@ -57,8 +57,8 @@
     "istanbul": "^0.4.5",
     "js-beautify": "~1.5.10",
     "jshint": "^2.10.0",
-    "lcov-result-merger": "^3.1.0",
-    "mocha": "^5.2.0",
+    "lcov-result-merger": "^3.3.0",
+    "mocha": "^10.0.0",
     "walk": "^2.3.9"
   },
   "binary": {
