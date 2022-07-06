@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Install Dependencies for Ubuntu
         # git >= 2.18 required for actions/checkout git support
-        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget
+        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang-8 lld-8 libssl-dev libkrb5-dev libc++-dev wget
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
@@ -29,6 +29,9 @@ jobs:
           CC: clang
           CXX: clang++
         run: |
+          update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 100
+          update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100
+          update-alternatives --install /usr/bin/ld ld /usr/bin/lld-8 100
           mkdir ~/python
           cd ~/python
           wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz
@@ -65,10 +68,17 @@ jobs:
           CXX: clang++
           npm_config_clang: 1
           GYP_DEFINES: use_obsolete_asm=true
+          AR: "/usr/lib/llvm-8/bin/llvm-ar"
+          NM: "/usr/lib/llvm-8/bin/llvm-nm"
+          # ranlib is not needed, and doesn't support .bc files in .a
+          RANLIB: /bin/true
         # There is a race condition in node/generate that needs to be fixed
         # Node 16 changed the logic it uses to select it's UID which means to make node run as root and not 1001, we need to chwon the current directory. More Details:
         # https://stackoverflow.com/questions/70298238/getting-eaccess-when-running-npm-8-as-root
         run: |
+          update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 100
+          update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100
+          update-alternatives --install /usr/bin/ld ld /usr/bin/lld-8 100
           chown root.root -R .
           npm set unsafe-perm true
           node utils/retry npm install
