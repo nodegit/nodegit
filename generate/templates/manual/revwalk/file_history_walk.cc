@@ -33,18 +33,19 @@ public:
     }
   }
 
-  v8::Local<v8::Value> toJavascript() {
+  v8::Local<v8::Value> toJavascript(v8::Local<v8::Function> GitCommitTemplate, v8::Local<v8::Function> GitRepositoryTemplate) {
     v8::Local<v8::Object> historyEntry = Nan::New<v8::Object>();
     v8::Local<v8::Array> owners = Nan::New<Array>(0);
     Nan::Set(
       owners,
       Nan::New<v8::Number>(owners->Length()),
       Nan::To<v8::Object>(GitRepository::New(
+        GitRepositoryTemplate,
         git_commit_owner(commit),
         true
       )).ToLocalChecked()
     );
-    Nan::Set(historyEntry, Nan::New("commit").ToLocalChecked(), GitCommit::New(commit, true, owners));
+    Nan::Set(historyEntry, Nan::New("commit").ToLocalChecked(), GitCommit::New(GitCommitTemplate, commit, true, owners));
     commit = NULL;
     Nan::Set(historyEntry, Nan::New("status").ToLocalChecked(), Nan::New<Number>(type));
     Nan::Set(historyEntry, Nan::New("isMergeCommit").ToLocalChecked(), Nan::New(isMergeCommit));
@@ -455,9 +456,11 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
   if (baton->out != NULL) {
     const unsigned int size = baton->out->size();
     v8::Local<v8::Array> result = Nan::New<v8::Array>(size);
+    v8::Local<v8::Function> git_commit_template = GitCommit::GetTemplate();
+    v8::Local<v8::Function> git_repository_template = GitRepository::GetTemplate();
     for (unsigned int i = 0; i < size; i++) {
       FileHistoryEvent *batonResult = static_cast<FileHistoryEvent *>(baton->out->at(i));
-      Nan::Set(result, Nan::New(i), batonResult->toJavascript());
+      Nan::Set(result, Nan::New(i), batonResult->toJavascript(git_commit_template, git_repository_template));
       delete batonResult;
     }
 

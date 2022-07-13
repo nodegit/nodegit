@@ -72,8 +72,9 @@ void GitRemote::ReferenceListWorker::HandleOKCallback()
   {
     unsigned int size = baton->out->size();
     Local<Array> result = Nan::New<Array>(size);
+    v8::Local<v8::Function> constructor_template = GitRemoteHead::GetTemplate();
     for (unsigned int i = 0; i < size; i++) {
-      Nan::Set(result, Nan::New<Number>(i), GitRemoteHead::New(baton->out->at(i), true));
+      Nan::Set(result, Nan::New<Number>(i), GitRemoteHead::New(constructor_template, baton->out->at(i), true));
     }
 
     delete baton->out;
