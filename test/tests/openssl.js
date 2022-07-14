@@ -34,27 +34,26 @@ var subprocess = require("child_process");
 
 describe("OpenSSL", function () {
   /***
-   * Note that the {"macOS_deployment_target": "10.11"} is currently the target in the gyp binding(s) file;
+   * @note - darwin 10.15, v1.1.1l builds are failing. However, v1.1.1p are succeeding, so it's defined as 1.1.1p, and is
+   * set to `skip` until project maintainers can elect to either remove, use, or evaluate for another time.
+   *
+   * @note - the {"macOS_deployment_target": "10.11"} is currently the target in the gyp binding(s) file;
    */
-  if (process.argv.includes("--force-open-ssl-unit-testing")) {
-    it( "darwin 10.15, openSSL v1.1.1p acquireOpenSSL successfully executes", function () {
-      function execute () {
-        try {
-          subprocess.execFileSync("node", [ path.join(process.cwd(), "utils", "acquireOpenSSL.js"), "10.15" ], {
-            shell: false, encoding: "utf-8", env: process.env, cwd: process.cwd(), stdio: "ignore"
-          });
+  it.skip( "darwin 10.15, openSSL v1.1.1p acquireOpenSSL successfully executes", function () {
+    function execute () {
+      try {
+        subprocess.execFileSync("node", [ path.join(process.cwd(), "utils", "acquireOpenSSL.js"), "10.15" ], {
+          shell: false, encoding: "utf-8", env: process.env, cwd: process.cwd(), stdio: "ignore"
+        });
 
-          return 0;
-        } catch (exception) {
-          console.trace(exception);
+        return 0;
+      } catch (exception) {
+        console.trace(exception);
 
-          return 1;
-        }
+        return 1;
       }
+    }
 
-      assert(execute() === 0);
-    } );
-  } else {
-    it.skip("darwin 10.15, openSSL v1.1.1p acquireOpenSSL");
-  }
+    assert(execute() === 0);
+  });
 });
