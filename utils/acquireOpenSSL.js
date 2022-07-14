@@ -5,7 +5,6 @@ const fse = require("fs-extra");
 const fsNonPromise = require("fs");
 const { promises: fs } = fsNonPromise;
 const path = require("path");
-const got = require("got");
 const { performance } = require("perf_hooks");
 const { promisify } = require("util");
 const stream = require("stream");
@@ -210,9 +209,11 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
 
   try {
     await fs.stat(extractPath);
-    console.log("Skipping OpenSSL build, dir exists");
+    console.log("Skipping OpenSSL build, dir exists", `(${path.relative(process.cwd(), extractPath)})`);
     return;
   } catch {}
+
+  var { got } = await import("got");
 
   const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
   const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
@@ -263,6 +264,7 @@ const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) =
     return;
   } catch {}
 
+  var { got } = await import("got");
   const downloadStream = got.stream(downloadBinUrl);
   downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
 
@@ -297,7 +299,7 @@ const acquireOpenSSL = async () => {
       }
     }
 
-    await buildOpenSSLIfNecessary("1.1.1l", macOsDeploymentTarget);
+    await buildOpenSSLIfNecessary("1.1.1p", macOsDeploymentTarget);
   } catch (err) {
     console.error("Acquire failed: ", err);
     process.exit(1);
@@ -305,3 +307,4 @@ const acquireOpenSSL = async () => {
 };
 
 acquireOpenSSL();
+
