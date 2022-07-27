@@ -1067,9 +1067,7 @@
       "file": "git2/stash.h",
       "functions": [
         "git_stash_save",
-        "git_stash_save_with_opts",
         "git_stash_apply_progress_cb",
-        "git_stash_save_options_init",
         "git_stash_apply_options_init",
         "git_stash_apply",
         "git_stash_cb",
@@ -21915,65 +21913,6 @@
       "comments": "",
       "group": "stash"
     },
-    "git_stash_save_with_opts": {
-      "type": "function",
-      "file": "git2/stash.h",
-      "line": 67,
-      "lineto": 72,
-      "args": [
-        {
-          "name": "out",
-          "type": "git_oid *",
-          "comment": "Object id of the commit containing the stashed state.\n This commit is also the target of the direct reference refs/stash."
-        },
-        {
-          "name": "repo",
-          "type": "git_repository *",
-          "comment": "The owning repository."
-        },
-        {
-          "name": "opts",
-          "type": "git_stash_save_options *",
-          "comment": "dee dee doo doo"
-        }
-      ],
-      "argline": "git_oid *out, git_repository *repo, git_stash_save_options *opts",
-      "sig": "git_oid *::git_repository *::git_stash_save_options*",
-      "return": {
-        "type": "int",
-        "comment": " 0 on success, GIT_ENOTFOUND where there's nothing to stash,\n or error code."
-      },
-      "description": "<p>Save the local modifications to a new stash.</p>\n",
-      "comments": "",
-      "group": "stash"
-    },
-    "git_stash_save_options_init": {
-      "type": "function",
-      "file": "git2/stash.h",
-      "line": 156,
-      "lineto": 157,
-      "args": [
-        {
-          "name": "opts",
-          "type": "git_stash_save_options *",
-          "comment": "The `git_stash_save_options` struct to initialize."
-        },
-        {
-          "name": "version",
-          "type": "unsigned int",
-          "comment": "The struct version; pass `GIT_STASH_SAVE_OPTIONS_VERSION`."
-        }
-      ],
-      "argline": "git_stash_save_options *opts, unsigned int version",
-      "sig": "git_stash_save_options *::unsigned int",
-      "return": {
-        "type": "int",
-        "comment": " Zero on success; -1 on failure."
-      },
-      "description": "<p>Initialize git_stash_save_options structure</p>\n",
-      "comments": "<p>Initializes a <code>git_stash_save_options</code> with default values. Equivalent to creating an instance with <code>GIT_STASH_SAVE_OPTIONS_INIT</code>.</p>\n",
-      "group": "stash"
-    },
     "git_stash_apply_options_init": {
       "type": "function",
       "file": "git2/stash.h",
@@ -34824,7 +34763,6 @@
             "git_revwalk_push",
             "git_stash_cb",
             "git_stash_save",
-            "git_stash_save_with_opts",
             "git_tag_annotation_create",
             "git_tag_create",
             "git_tag_create_from_buffer",
@@ -36592,7 +36530,6 @@
             "git_stash_foreach",
             "git_stash_pop",
             "git_stash_save",
-            "git_stash_save_with_opts",
             "git_status_file",
             "git_status_foreach",
             "git_status_foreach_ext",
@@ -37390,7 +37327,6 @@
             "git_signature_new",
             "git_signature_now",
             "git_stash_save",
-            "git_stash_save_with_opts",
             "git_tag_annotation_create",
             "git_tag_create",
             "git_transaction_set_symbolic_target",
@@ -37494,61 +37430,6 @@
         "used": {
           "returns": [],
           "needs": []
-        }
-      }
-    ],
-    [
-      "git_stash_save_options",
-      {
-        "decl": [
-          "unsigned int version",
-          "const git_signature *stasher",
-          "const char *message",
-          "uint32_t flags",
-          "git_strarray paths"
-        ],
-        "type": "struct",
-        "value": "git_stash_save_options",
-        "file": "git2/stash.h",
-        "line": 126,
-        "lineto": 138,
-        "block": "unsigned int version\nconst git_signature *stasher\nconst char *message\nuint32_t flags\ngit_strarray paths",
-        "tdef": "typedef",
-        "description": " bebebebebeeb",
-        "comments": "<p>Initialize with <code>GIT_STASH_SAVE_OPTIONS_INIT</code>. Alternatively, you can use <code>git_stash_save_options_init</code>.</p>\n",
-        "fields": [
-          {
-            "type": "unsigned int",
-            "name": "version",
-            "comments": ""
-          },
-          {
-            "type": "const git_signature *",
-            "name": "stasher",
-            "comments": ""
-          },
-          {
-            "type": "const char *",
-            "name": "message",
-            "comments": ""
-          },
-          {
-            "type": "uint32_t",
-            "name": "flags",
-            "comments": ""
-          },
-          {
-            "type": "git_strarray",
-            "name": "paths",
-            "comments": ""
-          }
-        ],
-        "used": {
-          "returns": [],
-          "needs": [
-            "git_stash_save_with_opts",
-            "git_stash_save_options_init"
-          ]
         }
       }
     ],
@@ -37729,14 +37610,13 @@
           "GIT_STASH_DEFAULT",
           "GIT_STASH_KEEP_INDEX",
           "GIT_STASH_INCLUDE_UNTRACKED",
-          "GIT_STASH_INCLUDE_IGNORED",
-          "GIT_STASH_KEEP_ALL"
+          "GIT_STASH_INCLUDE_IGNORED"
         ],
         "type": "enum",
         "file": "git2/stash.h",
         "line": 25,
         "lineto": 48,
-        "block": "GIT_STASH_DEFAULT\nGIT_STASH_KEEP_INDEX\nGIT_STASH_INCLUDE_UNTRACKED\nGIT_STASH_INCLUDE_IGNORED\nGIT_STASH_KEEP_ALL",
+        "block": "GIT_STASH_DEFAULT\nGIT_STASH_KEEP_INDEX\nGIT_STASH_INCLUDE_UNTRACKED\nGIT_STASH_INCLUDE_IGNORED",
         "tdef": "typedef",
         "description": " Stash flags",
         "comments": "",
@@ -37764,12 +37644,6 @@
             "name": "GIT_STASH_INCLUDE_IGNORED",
             "comments": "<p>All ignored files are also stashed and then cleaned up from\n the working directory</p>\n",
             "value": 4
-          },
-          {
-            "type": "int",
-            "name": "GIT_STASH_KEEP_ALL",
-            "comments": "<p>All changes in the index and working directory are left intact</p>\n",
-            "value": 8
           }
         ],
         "used": {
@@ -40238,13 +40112,11 @@
       "stash",
       [
         "git_stash_apply",
-        "git_stash_save_options_init",
         "git_stash_apply_options_init",
         "git_stash_drop",
         "git_stash_foreach",
         "git_stash_pop",
-        "git_stash_save",
-        "git_stash_save_with_opts"
+        "git_stash_save"
       ]
     ],
     [
