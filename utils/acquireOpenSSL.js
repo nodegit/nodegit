@@ -42,10 +42,10 @@ class HashVerify extends stream.Transform {
 }
 
 // currently this only needs to be done on linux
-const applyOpenSSLPatches = async (buildCwd) => {
+const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
   try {
     for (const patchFilename of await fse.readdir(opensslPatchPath)) {
-      if (patchFilename.split(".").pop() === "patch") {
+      if (patchFilename.split(".").pop() === "patch" && patchFilename.split("-")[1] === operatingSystem) {
         console.log(`applying ${patchFilename}`);
         await execPromise(`patch -up0 -i ${path.join(opensslPatchPath, patchFilename)}`, {
           cwd: buildCwd
@@ -79,6 +79,8 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
   await execPromise(`./Configure ${arguments.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
+
+  await applyOpenSSLPatches(buildCwd, "linux");
 
   // only build the libraries, not the tests/fuzzer or apps
   await execPromise("make build_libs", {
@@ -117,7 +119,7 @@ const buildLinux = async (buildCwd) => {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await applyOpenSSLPatches(buildCwd);
+  await applyOpenSSLPatches(buildCwd, "linux");
 
   // only build the libraries, not the tests/fuzzer or apps
   await execPromise("make build_libs", {
@@ -136,6 +138,8 @@ const buildLinux = async (buildCwd) => {
 };
 
 const buildWin32 = async (buildCwd) => {
+  await applyOpenSSLPatches(buildCwd, "win32");
+
   const vcvarsallArch = process.arch === "x64" ? "x64" : "x86";
   const programFilesPath = (vcvarsallArch === "x64"
     ? process.env["ProgramFiles(x86)"]
