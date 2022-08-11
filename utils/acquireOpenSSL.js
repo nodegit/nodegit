@@ -80,7 +80,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await applyOpenSSLPatches(buildCwd, "linux");
+  await applyOpenSSLPatches(buildCwd, "darwin");
 
   // only build the libraries, not the tests/fuzzer or apps
   await execPromise("make build_libs", {
@@ -138,8 +138,6 @@ const buildLinux = async (buildCwd) => {
 };
 
 const buildWin32 = async (buildCwd) => {
-  await applyOpenSSLPatches(buildCwd, "win32");
-
   const vcvarsallArch = process.arch === "x64" ? "x64" : "x86";
   const programFilesPath = (vcvarsallArch === "x64"
     ? process.env["ProgramFiles(x86)"]

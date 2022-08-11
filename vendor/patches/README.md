@@ -7,7 +7,7 @@ Patches will be applied from 000 to 999
 
 `<number 3 digits>-<operating system>-<description>.patch`
 
-Operating system is either "win32", "darwin", or "linux".
+Operating system is either "darwin" or "linux".
 
 ### Content
 
