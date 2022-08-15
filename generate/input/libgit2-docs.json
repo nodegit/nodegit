@@ -200,11 +200,12 @@
       "file": "git2/common.h",
       "functions": [
         "git_libgit2_version",
+        "git_libgit2_prerelease",
         "git_libgit2_features",
         "git_libgit2_opts"
       ],
       "meta": {},
-      "lines": 469
+      "lines": 480
     },
     {
       "file": "git2/config.h",
@@ -315,7 +316,7 @@
         "git_blame_init_options"
       ],
       "meta": {},
-      "lines": 897
+      "lines": 899
     },
     {
       "file": "git2/describe.h",
@@ -385,11 +386,12 @@
       "functions": [
         "git_error_last",
         "git_error_clear",
+        "git_error_set",
         "git_error_set_str",
         "git_error_set_oom"
       ],
       "meta": {},
-      "lines": 161
+      "lines": 175
     },
     {
       "file": "git2/filter.h",
@@ -1097,7 +1099,7 @@
         "git_status_should_ignore"
       ],
       "meta": {},
-      "lines": 445
+      "lines": 448
     },
     {
       "file": "git2/strarray.h",
@@ -1190,7 +1192,7 @@
       "file": "git2/sys/transport.h",
       "functions": [],
       "meta": {},
-      "lines": 284
+      "lines": 288
     },
     {
       "file": "git2/tag.h",
@@ -1358,7 +1360,7 @@
       "group": "annotated",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_annotated_commit_from_ref-1"
+          "ex/v1.5.0/checkout.html#git_annotated_commit_from_ref-1"
         ]
       }
     },
@@ -1491,12 +1493,12 @@
       "group": "annotated",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_annotated_commit_id-2"
+          "ex/v1.5.0/checkout.html#git_annotated_commit_id-2"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_annotated_commit_id-1",
-          "ex/v1.4.3/merge.html#git_annotated_commit_id-2",
-          "ex/v1.4.3/merge.html#git_annotated_commit_id-3"
+          "ex/v1.5.0/merge.html#git_annotated_commit_id-1",
+          "ex/v1.5.0/merge.html#git_annotated_commit_id-2",
+          "ex/v1.5.0/merge.html#git_annotated_commit_id-3"
         ]
       }
     },
@@ -1523,9 +1525,9 @@
       "group": "annotated",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_annotated_commit_ref-3",
-          "ex/v1.4.3/checkout.html#git_annotated_commit_ref-4",
-          "ex/v1.4.3/checkout.html#git_annotated_commit_ref-5"
+          "ex/v1.5.0/checkout.html#git_annotated_commit_ref-3",
+          "ex/v1.5.0/checkout.html#git_annotated_commit_ref-4",
+          "ex/v1.5.0/checkout.html#git_annotated_commit_ref-5"
         ]
       }
     },
@@ -1552,7 +1554,7 @@
       "group": "annotated",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_annotated_commit_free-6"
+          "ex/v1.5.0/checkout.html#git_annotated_commit_free-6"
         ]
       }
     },
@@ -2104,7 +2106,7 @@
       "group": "blame",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_blame_get_hunk_byline-1"
+          "ex/v1.5.0/blame.html#git_blame_get_hunk_byline-1"
         ]
       }
     },
@@ -2146,7 +2148,7 @@
       "group": "blame",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_blame_file-2"
+          "ex/v1.5.0/blame.html#git_blame_file-2"
         ]
       }
     },
@@ -2210,7 +2212,7 @@
       "group": "blame",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_blame_free-3"
+          "ex/v1.5.0/blame.html#git_blame_free-3"
         ]
       }
     },
@@ -2247,10 +2249,10 @@
       "group": "blob",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_blob_lookup-4"
+          "ex/v1.5.0/blame.html#git_blob_lookup-4"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_blob_lookup-1"
+          "ex/v1.5.0/general.html#git_blob_lookup-1"
         ]
       }
     },
@@ -2314,10 +2316,10 @@
       "group": "blob",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_blob_free-5"
+          "ex/v1.5.0/blame.html#git_blob_free-5"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_blob_free-2"
+          "ex/v1.5.0/general.html#git_blob_free-2"
         ]
       }
     },
@@ -2388,13 +2390,13 @@
       "group": "blob",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_blob_rawcontent-6"
+          "ex/v1.5.0/blame.html#git_blob_rawcontent-6"
         ],
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_blob_rawcontent-1"
+          "ex/v1.5.0/cat-file.html#git_blob_rawcontent-1"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_blob_rawcontent-3"
+          "ex/v1.5.0/general.html#git_blob_rawcontent-3"
         ]
       }
     },
@@ -2421,14 +2423,14 @@
       "group": "blob",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_blob_rawsize-7"
+          "ex/v1.5.0/blame.html#git_blob_rawsize-7"
         ],
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_blob_rawsize-2"
+          "ex/v1.5.0/cat-file.html#git_blob_rawsize-2"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_blob_rawsize-4",
-          "ex/v1.4.3/general.html#git_blob_rawsize-5"
+          "ex/v1.5.0/general.html#git_blob_rawsize-4",
+          "ex/v1.5.0/general.html#git_blob_rawsize-5"
         ]
       }
     },
@@ -2817,7 +2819,7 @@
       "group": "branch",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_branch_create_from_annotated-7"
+          "ex/v1.5.0/checkout.html#git_branch_create_from_annotated-7"
         ]
       }
     },
@@ -2963,7 +2965,7 @@
         "comment": " 0 on success, GIT_EINVALIDSPEC or an error code."
       },
       "description": "<p>Move/rename an existing local branch reference.</p>\n",
-      "comments": "<p>The new branch name will be checked for validity. See <code>git_tag_create()</code> for rules about valid names.</p>\n\n<p>Note that if the move succeeds, the old reference object will not + be valid anymore, and should be freed immediately by the user using + <code>git_reference_free()</code>.</p>\n",
+      "comments": "<p>The new branch name will be checked for validity. See <code>git_tag_create()</code> for rules about valid names.</p>\n\n<p>Note that if the move succeeds, the old reference object will not be valid anymore, and should be freed immediately by the user using <code>git_reference_free()</code>.</p>\n",
       "group": "branch"
     },
     "git_branch_lookup": {
@@ -3031,7 +3033,7 @@
       "group": "branch",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_branch_name-4"
+          "ex/v1.5.0/merge.html#git_branch_name-4"
         ]
       }
     },
@@ -3311,11 +3313,11 @@
       "group": "buf",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_buf_dispose-1",
-          "ex/v1.4.3/diff.html#git_buf_dispose-2"
+          "ex/v1.5.0/diff.html#git_buf_dispose-1",
+          "ex/v1.5.0/diff.html#git_buf_dispose-2"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_buf_dispose-1"
+          "ex/v1.5.0/tag.html#git_buf_dispose-1"
         ]
       }
     },
@@ -3438,10 +3440,10 @@
       "group": "checkout",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_checkout_tree-8"
+          "ex/v1.5.0/checkout.html#git_checkout_tree-8"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_checkout_tree-5"
+          "ex/v1.5.0/merge.html#git_checkout_tree-5"
         ]
       }
     },
@@ -3648,18 +3650,18 @@
       "group": "commit",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_commit_lookup-9"
+          "ex/v1.5.0/checkout.html#git_commit_lookup-9"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_lookup-6",
-          "ex/v1.4.3/general.html#git_commit_lookup-7",
-          "ex/v1.4.3/general.html#git_commit_lookup-8"
+          "ex/v1.5.0/general.html#git_commit_lookup-6",
+          "ex/v1.5.0/general.html#git_commit_lookup-7",
+          "ex/v1.5.0/general.html#git_commit_lookup-8"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_lookup-1"
+          "ex/v1.5.0/log.html#git_commit_lookup-1"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_commit_lookup-6"
+          "ex/v1.5.0/merge.html#git_commit_lookup-6"
         ]
       }
     },
@@ -3723,20 +3725,20 @@
       "group": "commit",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_commit_free-10"
+          "ex/v1.5.0/checkout.html#git_commit_free-10"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_free-9",
-          "ex/v1.4.3/general.html#git_commit_free-10",
-          "ex/v1.4.3/general.html#git_commit_free-11",
-          "ex/v1.4.3/general.html#git_commit_free-12",
-          "ex/v1.4.3/general.html#git_commit_free-13"
+          "ex/v1.5.0/general.html#git_commit_free-9",
+          "ex/v1.5.0/general.html#git_commit_free-10",
+          "ex/v1.5.0/general.html#git_commit_free-11",
+          "ex/v1.5.0/general.html#git_commit_free-12",
+          "ex/v1.5.0/general.html#git_commit_free-13"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_free-2",
-          "ex/v1.4.3/log.html#git_commit_free-3",
-          "ex/v1.4.3/log.html#git_commit_free-4",
-          "ex/v1.4.3/log.html#git_commit_free-5"
+          "ex/v1.5.0/log.html#git_commit_free-2",
+          "ex/v1.5.0/log.html#git_commit_free-3",
+          "ex/v1.5.0/log.html#git_commit_free-4",
+          "ex/v1.5.0/log.html#git_commit_free-5"
         ]
       }
     },
@@ -3763,10 +3765,10 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_id-14"
+          "ex/v1.5.0/general.html#git_commit_id-14"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_id-6"
+          "ex/v1.5.0/log.html#git_commit_id-6"
         ]
       }
     },
@@ -3793,8 +3795,8 @@
       "group": "commit",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_owner-7",
-          "ex/v1.4.3/log.html#git_commit_owner-8"
+          "ex/v1.5.0/log.html#git_commit_owner-7",
+          "ex/v1.5.0/log.html#git_commit_owner-8"
         ]
       }
     },
@@ -3843,21 +3845,21 @@
       "group": "commit",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_commit_message-3",
-          "ex/v1.4.3/cat-file.html#git_commit_message-4"
+          "ex/v1.5.0/cat-file.html#git_commit_message-3",
+          "ex/v1.5.0/cat-file.html#git_commit_message-4"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_message-15",
-          "ex/v1.4.3/general.html#git_commit_message-16",
-          "ex/v1.4.3/general.html#git_commit_message-17"
+          "ex/v1.5.0/general.html#git_commit_message-15",
+          "ex/v1.5.0/general.html#git_commit_message-16",
+          "ex/v1.5.0/general.html#git_commit_message-17"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_message-9",
-          "ex/v1.4.3/log.html#git_commit_message-10",
-          "ex/v1.4.3/log.html#git_commit_message-11"
+          "ex/v1.5.0/log.html#git_commit_message-9",
+          "ex/v1.5.0/log.html#git_commit_message-10",
+          "ex/v1.5.0/log.html#git_commit_message-11"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_commit_message-2"
+          "ex/v1.5.0/tag.html#git_commit_message-2"
         ]
       }
     },
@@ -3950,8 +3952,8 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_time-18",
-          "ex/v1.4.3/general.html#git_commit_time-19"
+          "ex/v1.5.0/general.html#git_commit_time-18",
+          "ex/v1.5.0/general.html#git_commit_time-19"
         ]
       }
     },
@@ -4000,13 +4002,13 @@
       "group": "commit",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_commit_committer-5"
+          "ex/v1.5.0/cat-file.html#git_commit_committer-5"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_committer-20"
+          "ex/v1.5.0/general.html#git_commit_committer-20"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_committer-12"
+          "ex/v1.5.0/log.html#git_commit_committer-12"
         ]
       }
     },
@@ -4033,15 +4035,15 @@
       "group": "commit",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_commit_author-6"
+          "ex/v1.5.0/cat-file.html#git_commit_author-6"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_author-21",
-          "ex/v1.4.3/general.html#git_commit_author-22"
+          "ex/v1.5.0/general.html#git_commit_author-21",
+          "ex/v1.5.0/general.html#git_commit_author-22"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_author-13",
-          "ex/v1.4.3/log.html#git_commit_author-14"
+          "ex/v1.5.0/log.html#git_commit_author-13",
+          "ex/v1.5.0/log.html#git_commit_author-14"
         ]
       }
     },
@@ -4159,11 +4161,11 @@
       "group": "commit",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_tree-15",
-          "ex/v1.4.3/log.html#git_commit_tree-16",
-          "ex/v1.4.3/log.html#git_commit_tree-17",
-          "ex/v1.4.3/log.html#git_commit_tree-18",
-          "ex/v1.4.3/log.html#git_commit_tree-19"
+          "ex/v1.5.0/log.html#git_commit_tree-15",
+          "ex/v1.5.0/log.html#git_commit_tree-16",
+          "ex/v1.5.0/log.html#git_commit_tree-17",
+          "ex/v1.5.0/log.html#git_commit_tree-18",
+          "ex/v1.5.0/log.html#git_commit_tree-19"
         ]
       }
     },
@@ -4190,7 +4192,7 @@
       "group": "commit",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_commit_tree_id-7"
+          "ex/v1.5.0/cat-file.html#git_commit_tree_id-7"
         ]
       }
     },
@@ -4217,14 +4219,14 @@
       "group": "commit",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_commit_parentcount-8"
+          "ex/v1.5.0/cat-file.html#git_commit_parentcount-8"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_parentcount-23"
+          "ex/v1.5.0/general.html#git_commit_parentcount-23"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_parentcount-20",
-          "ex/v1.4.3/log.html#git_commit_parentcount-21"
+          "ex/v1.5.0/log.html#git_commit_parentcount-20",
+          "ex/v1.5.0/log.html#git_commit_parentcount-21"
         ]
       }
     },
@@ -4261,11 +4263,11 @@
       "group": "commit",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_parent-24"
+          "ex/v1.5.0/general.html#git_commit_parent-24"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_parent-22",
-          "ex/v1.4.3/log.html#git_commit_parent-23"
+          "ex/v1.5.0/log.html#git_commit_parent-22",
+          "ex/v1.5.0/log.html#git_commit_parent-23"
         ]
       }
     },
@@ -4297,10 +4299,10 @@
       "group": "commit",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_commit_parent_id-9"
+          "ex/v1.5.0/cat-file.html#git_commit_parent_id-9"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_commit_parent_id-24"
+          "ex/v1.5.0/log.html#git_commit_parent_id-24"
         ]
       }
     },
@@ -4478,7 +4480,7 @@
       "group": "commit",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_commit_create-7"
+          "ex/v1.5.0/merge.html#git_commit_create-7"
         ]
       }
     },
@@ -4545,13 +4547,13 @@
       "group": "commit",
       "examples": {
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_commit_create_v-1"
+          "ex/v1.5.0/commit.html#git_commit_create_v-1"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_commit_create_v-25"
+          "ex/v1.5.0/general.html#git_commit_create_v-25"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_commit_create_v-1"
+          "ex/v1.5.0/init.html#git_commit_create_v-1"
         ]
       }
     },
@@ -4775,11 +4777,27 @@
       "comments": "",
       "group": "libgit2"
     },
+    "git_libgit2_prerelease": {
+      "type": "function",
+      "file": "git2/common.h",
+      "line": 133,
+      "lineto": 133,
+      "args": [],
+      "argline": "",
+      "sig": "",
+      "return": {
+        "type": "const char *",
+        "comment": " the name of the prerelease state or NULL"
+      },
+      "description": "<p>Return the prerelease state of the libgit2 library currently being\n used.  For nightly builds during active development, this will be\n &quot;alpha&quot;.  Releases may have a &quot;beta&quot; or release candidate (&quot;rc1&quot;,\n &quot;rc2&quot;, etc) prerelease.  For a final release, this function returns\n NULL.</p>\n",
+      "comments": "",
+      "group": "libgit2"
+    },
     "git_libgit2_features": {
       "type": "function",
       "file": "git2/common.h",
-      "line": 174,
-      "lineto": 174,
+      "line": 185,
+      "lineto": 185,
       "args": [],
       "argline": "",
       "sig": "",
@@ -4794,8 +4812,8 @@
     "git_libgit2_opts": {
       "type": "function",
       "file": "git2/common.h",
-      "line": 469,
-      "lineto": 469,
+      "line": 480,
+      "lineto": 480,
       "args": [
         {
           "name": "option",
@@ -4836,8 +4854,8 @@
       "group": "config",
       "examples": {
         "config.c": [
-          "ex/v1.4.3/config.html#git_config_entry_free-1",
-          "ex/v1.4.3/config.html#git_config_entry_free-2"
+          "ex/v1.5.0/config.html#git_config_entry_free-1",
+          "ex/v1.5.0/config.html#git_config_entry_free-2"
         ]
       }
     },
@@ -4860,7 +4878,7 @@
         "comment": " 0 if a global configuration file has been found. Its path will be stored in `out`."
       },
       "description": "<p>Locate the path to the global configuration file</p>\n",
-      "comments": "<p>The user or global configuration file is usually located in <code>$HOME/.gitconfig</code>.</p>\n\n<p>This method will try to guess the full path to that file, if the file exists. The returned path may be used on any <code>git_config</code> call to load the global configuration file.</p>\n\n<p>This method will not guess the path to the xdg compatible config file (.config/git/config).</p>\n",
+      "comments": "<p>The user or global configuration file is usually located in <code>$HOME/.gitconfig</code>.</p>\n\n<p>This method will try to guess the full path to that file, if the file exists. The returned path may be used on any <code>git_config</code> call to load the global configuration file.</p>\n\n<p>This method will not guess the path to the xdg compatible config file (<code>.config/git/config</code>).</p>\n",
       "group": "config"
     },
     "git_config_find_xdg": {
@@ -4904,7 +4922,7 @@
         "comment": " 0 if a system configuration file has been\n\tfound. Its path will be stored in `out`."
       },
       "description": "<p>Locate the path to the system configuration file</p>\n",
-      "comments": "<p>If /etc/gitconfig doesn&#39;t exist, it will look for %PROGRAMFILES%.</p>\n",
+      "comments": "<p>If <code>/etc/gitconfig</code> doesn&#39;t exist, it will look for <code>%PROGRAMFILES%</code>.</p>\n",
       "group": "config"
     },
     "git_config_find_programdata": {
@@ -4926,7 +4944,7 @@
         "comment": " 0 if a ProgramData configuration file has been\n\tfound. Its path will be stored in `out`."
       },
       "description": "<p>Locate the path to the configuration file in ProgramData</p>\n",
-      "comments": "<p>Look for the file in %PROGRAMDATA% used by portable git.</p>\n",
+      "comments": "<p>Look for the file in <code>%PROGRAMDATA%</code> used by portable git.</p>\n",
       "group": "config"
     },
     "git_config_open_default": {
@@ -5043,7 +5061,7 @@
       "group": "config",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_config_open_ondisk-26"
+          "ex/v1.5.0/general.html#git_config_open_ondisk-26"
         ]
       }
     },
@@ -5156,11 +5174,11 @@
       "group": "config",
       "examples": {
         "config.c": [
-          "ex/v1.4.3/config.html#git_config_free-3"
+          "ex/v1.5.0/config.html#git_config_free-3"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_config_free-27",
-          "ex/v1.4.3/general.html#git_config_free-28"
+          "ex/v1.5.0/general.html#git_config_free-27",
+          "ex/v1.5.0/general.html#git_config_free-28"
         ]
       }
     },
@@ -5197,7 +5215,7 @@
       "group": "config",
       "examples": {
         "config.c": [
-          "ex/v1.4.3/config.html#git_config_get_entry-4"
+          "ex/v1.5.0/config.html#git_config_get_entry-4"
         ]
       }
     },
@@ -5234,8 +5252,8 @@
       "group": "config",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_config_get_int32-29",
-          "ex/v1.4.3/general.html#git_config_get_int32-30"
+          "ex/v1.5.0/general.html#git_config_get_int32-29",
+          "ex/v1.5.0/general.html#git_config_get_int32-30"
         ]
       }
     },
@@ -5368,8 +5386,8 @@
       "group": "config",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_config_get_string-31",
-          "ex/v1.4.3/general.html#git_config_get_string-32"
+          "ex/v1.5.0/general.html#git_config_get_string-31",
+          "ex/v1.5.0/general.html#git_config_get_string-32"
         ]
       }
     },
@@ -5508,7 +5526,7 @@
         "comment": " 0 or an error code. GIT_ITEROVER if the iteration has completed"
       },
       "description": "<p>Return the current entry and advance the iterator</p>\n",
-      "comments": "<p>The pointers returned by this function are valid until the iterator is freed.</p>\n",
+      "comments": "<p>The pointers returned by this function are valid until the next call to <code>git_config_next</code> or until the iterator is freed.</p>\n",
       "group": "config"
     },
     "git_config_iterator_free": {
@@ -5662,7 +5680,7 @@
       "group": "config",
       "examples": {
         "config.c": [
-          "ex/v1.4.3/config.html#git_config_set_string-5"
+          "ex/v1.5.0/config.html#git_config_set_string-5"
         ]
       }
     },
@@ -6897,8 +6915,8 @@
     "giterr_last": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 450,
-      "lineto": 450,
+      "line": 452,
+      "lineto": 452,
       "args": [],
       "argline": "",
       "sig": "",
@@ -6913,8 +6931,8 @@
     "giterr_clear": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 462,
-      "lineto": 462,
+      "line": 464,
+      "lineto": 464,
       "args": [],
       "argline": "",
       "sig": "",
@@ -6929,8 +6947,8 @@
     "giterr_set_str": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 474,
-      "lineto": 474,
+      "line": 476,
+      "lineto": 476,
       "args": [
         {
           "name": "error_class",
@@ -6956,8 +6974,8 @@
     "giterr_set_oom": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 486,
-      "lineto": 486,
+      "line": 488,
+      "lineto": 488,
       "args": [],
       "argline": "",
       "sig": "",
@@ -6972,8 +6990,8 @@
     "git_object__size": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 576,
-      "lineto": 576,
+      "line": 578,
+      "lineto": 578,
       "args": [
         {
           "name": "type",
@@ -6994,8 +7012,8 @@
     "git_remote_is_valid_name": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 597,
-      "lineto": 597,
+      "line": 599,
+      "lineto": 599,
       "args": [
         {
           "name": "remote_name",
@@ -7016,8 +7034,8 @@
     "git_reference_is_valid_name": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 641,
-      "lineto": 641,
+      "line": 643,
+      "lineto": 643,
       "args": [
         {
           "name": "refname",
@@ -7038,8 +7056,8 @@
     "git_oid_iszero": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 778,
-      "lineto": 778,
+      "line": 780,
+      "lineto": 780,
       "args": [
         {
           "name": "id",
@@ -7060,8 +7078,8 @@
     "git_oidarray_free": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 802,
-      "lineto": 802,
+      "line": 804,
+      "lineto": 804,
       "args": [
         {
           "name": "array",
@@ -7109,8 +7127,8 @@
     "git_strarray_free": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 883,
-      "lineto": 883,
+      "line": 885,
+      "lineto": 885,
       "args": [
         {
           "name": "array",
@@ -7131,8 +7149,8 @@
     "git_blame_init_options": {
       "type": "function",
       "file": "git2/deprecated.h",
-      "line": 897,
-      "lineto": 897,
+      "line": 899,
+      "lineto": 899,
       "args": [
         {
           "name": "opts",
@@ -7183,7 +7201,7 @@
       "group": "describe",
       "examples": {
         "describe.c": [
-          "ex/v1.4.3/describe.html#git_describe_options_init-1"
+          "ex/v1.5.0/describe.html#git_describe_options_init-1"
         ]
       }
     },
@@ -7215,7 +7233,7 @@
       "group": "describe",
       "examples": {
         "describe.c": [
-          "ex/v1.4.3/describe.html#git_describe_format_options_init-2"
+          "ex/v1.5.0/describe.html#git_describe_format_options_init-2"
         ]
       }
     },
@@ -7252,7 +7270,7 @@
       "group": "describe",
       "examples": {
         "describe.c": [
-          "ex/v1.4.3/describe.html#git_describe_commit-3"
+          "ex/v1.5.0/describe.html#git_describe_commit-3"
         ]
       }
     },
@@ -7289,7 +7307,7 @@
       "group": "describe",
       "examples": {
         "describe.c": [
-          "ex/v1.4.3/describe.html#git_describe_workdir-4"
+          "ex/v1.5.0/describe.html#git_describe_workdir-4"
         ]
       }
     },
@@ -7326,7 +7344,7 @@
       "group": "describe",
       "examples": {
         "describe.c": [
-          "ex/v1.4.3/describe.html#git_describe_format-5"
+          "ex/v1.5.0/describe.html#git_describe_format-5"
         ]
       }
     },
@@ -7429,11 +7447,11 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_free-3"
+          "ex/v1.5.0/diff.html#git_diff_free-3"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_diff_free-25",
-          "ex/v1.4.3/log.html#git_diff_free-26"
+          "ex/v1.5.0/log.html#git_diff_free-25",
+          "ex/v1.5.0/log.html#git_diff_free-26"
         ]
       }
     },
@@ -7480,11 +7498,11 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_tree_to_tree-4"
+          "ex/v1.5.0/diff.html#git_diff_tree_to_tree-4"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_diff_tree_to_tree-27",
-          "ex/v1.4.3/log.html#git_diff_tree_to_tree-28"
+          "ex/v1.5.0/log.html#git_diff_tree_to_tree-27",
+          "ex/v1.5.0/log.html#git_diff_tree_to_tree-28"
         ]
       }
     },
@@ -7531,7 +7549,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_tree_to_index-5"
+          "ex/v1.5.0/diff.html#git_diff_tree_to_index-5"
         ]
       }
     },
@@ -7573,7 +7591,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_index_to_workdir-6"
+          "ex/v1.5.0/diff.html#git_diff_index_to_workdir-6"
         ]
       }
     },
@@ -7615,7 +7633,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_tree_to_workdir-7"
+          "ex/v1.5.0/diff.html#git_diff_tree_to_workdir-7"
         ]
       }
     },
@@ -7657,7 +7675,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_tree_to_workdir_with_index-8"
+          "ex/v1.5.0/diff.html#git_diff_tree_to_workdir_with_index-8"
         ]
       }
     },
@@ -7758,7 +7776,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_find_similar-9"
+          "ex/v1.5.0/diff.html#git_diff_find_similar-9"
         ]
       }
     },
@@ -7785,7 +7803,7 @@
       "group": "diff",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_diff_num_deltas-29"
+          "ex/v1.5.0/log.html#git_diff_num_deltas-29"
         ]
       }
     },
@@ -7972,10 +7990,10 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_print-10"
+          "ex/v1.5.0/diff.html#git_diff_print-10"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_diff_print-30"
+          "ex/v1.5.0/log.html#git_diff_print-30"
         ]
       }
     },
@@ -8260,7 +8278,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_from_buffer-11"
+          "ex/v1.5.0/diff.html#git_diff_from_buffer-11"
         ]
       }
     },
@@ -8292,7 +8310,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_get_stats-12"
+          "ex/v1.5.0/diff.html#git_diff_get_stats-12"
         ]
       }
     },
@@ -8400,7 +8418,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_stats_to_buf-13"
+          "ex/v1.5.0/diff.html#git_diff_stats_to_buf-13"
         ]
       }
     },
@@ -8427,7 +8445,7 @@
       "group": "diff",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_diff_stats_free-14"
+          "ex/v1.5.0/diff.html#git_diff_stats_free-14"
         ]
       }
     },
@@ -8507,25 +8525,25 @@
       "group": "error",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_error_last-11",
-          "ex/v1.4.3/checkout.html#git_error_last-12",
-          "ex/v1.4.3/checkout.html#git_error_last-13",
-          "ex/v1.4.3/checkout.html#git_error_last-14"
+          "ex/v1.5.0/checkout.html#git_error_last-11",
+          "ex/v1.5.0/checkout.html#git_error_last-12",
+          "ex/v1.5.0/checkout.html#git_error_last-13",
+          "ex/v1.5.0/checkout.html#git_error_last-14"
         ],
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_error_last-2"
+          "ex/v1.5.0/commit.html#git_error_last-2"
         ],
         "config.c": [
-          "ex/v1.4.3/config.html#git_error_last-6",
-          "ex/v1.4.3/config.html#git_error_last-7",
-          "ex/v1.4.3/config.html#git_error_last-8"
+          "ex/v1.5.0/config.html#git_error_last-6",
+          "ex/v1.5.0/config.html#git_error_last-7",
+          "ex/v1.5.0/config.html#git_error_last-8"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_error_last-33"
+          "ex/v1.5.0/general.html#git_error_last-33"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_error_last-8",
-          "ex/v1.4.3/merge.html#git_error_last-9"
+          "ex/v1.5.0/merge.html#git_error_last-8",
+          "ex/v1.5.0/merge.html#git_error_last-9"
         ]
       }
     },
@@ -8545,11 +8563,38 @@
       "comments": "",
       "group": "error"
     },
+    "git_error_set": {
+      "type": "function",
+      "file": "git2/errors.h",
+      "line": 151,
+      "lineto": 152,
+      "args": [
+        {
+          "name": "error_class",
+          "type": "int",
+          "comment": "One of the `git_error_t` enum above describing the\n                    general subsystem that is responsible for the error."
+        },
+        {
+          "name": "fmt",
+          "type": "const char *",
+          "comment": "The `printf`-style format string; subsequent arguments must\n            be the arguments for the format string."
+        }
+      ],
+      "argline": "int error_class, const char *fmt",
+      "sig": "int::const char *",
+      "return": {
+        "type": "void",
+        "comment": null
+      },
+      "description": "<p>Set the error message string for this thread, using <code>printf</code>-style\n formatting.</p>\n",
+      "comments": "<p>This function is public so that custom ODB backends and the like can relay an error message through libgit2.  Most regular users of libgit2 will never need to call this function -- actually, calling it in most circumstances (for example, calling from within a callback function) will just end up having the value overwritten by libgit2 internals.</p>\n\n<p>This error message is stored in thread-local storage and only applies to the particular thread that this libgit2 call is made from.</p>\n",
+      "group": "error"
+    },
     "git_error_set_str": {
       "type": "function",
       "file": "git2/errors.h",
-      "line": 150,
-      "lineto": 150,
+      "line": 164,
+      "lineto": 164,
       "args": [
         {
           "name": "error_class",
@@ -8559,7 +8604,7 @@
         {
           "name": "string",
           "type": "const char *",
-          "comment": "The formatted error message to keep"
+          "comment": "The error message to keep"
         }
       ],
       "argline": "int error_class, const char *string",
@@ -8568,15 +8613,15 @@
         "type": "int",
         "comment": " 0 on success or -1 on failure"
       },
-      "description": "<p>Set the error message string for this thread.</p>\n",
-      "comments": "<p>This function is public so that custom ODB backends and the like can relay an error message through libgit2.  Most regular users of libgit2 will never need to call this function -- actually, calling it in most circumstances (for example, calling from within a callback function) will just end up having the value overwritten by libgit2 internals.</p>\n\n<p>This error message is stored in thread-local storage and only applies to the particular thread that this libgit2 call is made from.</p>\n",
+      "description": "<p>Set the error message string for this thread.  This function is like\n <code>git_error_set</code> but takes a static string instead of a <code>printf</code>-style\n format.</p>\n",
+      "comments": "",
       "group": "error"
     },
     "git_error_set_oom": {
       "type": "function",
       "file": "git2/errors.h",
-      "line": 161,
-      "lineto": 161,
+      "line": 175,
+      "lineto": 175,
       "args": [],
       "argline": "",
       "sig": "",
@@ -8960,7 +9005,7 @@
       "group": "libgit2",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_libgit2_init-34"
+          "ex/v1.5.0/general.html#git_libgit2_init-34"
         ]
       }
     },
@@ -9244,19 +9289,19 @@
       "group": "index",
       "examples": {
         "add.c": [
-          "ex/v1.4.3/add.html#git_index_free-1"
+          "ex/v1.5.0/add.html#git_index_free-1"
         ],
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_index_free-3"
+          "ex/v1.5.0/commit.html#git_index_free-3"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_index_free-35"
+          "ex/v1.5.0/general.html#git_index_free-35"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_index_free-2"
+          "ex/v1.5.0/init.html#git_index_free-2"
         ],
         "ls-files.c": [
-          "ex/v1.4.3/ls-files.html#git_index_free-1"
+          "ex/v1.5.0/ls-files.html#git_index_free-1"
         ]
       }
     },
@@ -9430,10 +9475,10 @@
       "group": "index",
       "examples": {
         "add.c": [
-          "ex/v1.4.3/add.html#git_index_write-2"
+          "ex/v1.5.0/add.html#git_index_write-2"
         ],
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_index_write-4"
+          "ex/v1.5.0/commit.html#git_index_write-4"
         ]
       }
     },
@@ -9536,13 +9581,13 @@
       "group": "index",
       "examples": {
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_index_write_tree-5"
+          "ex/v1.5.0/commit.html#git_index_write_tree-5"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_index_write_tree-3"
+          "ex/v1.5.0/init.html#git_index_write_tree-3"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_index_write_tree-10"
+          "ex/v1.5.0/merge.html#git_index_write_tree-10"
         ]
       }
     },
@@ -9601,10 +9646,10 @@
       "group": "index",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_index_entrycount-36"
+          "ex/v1.5.0/general.html#git_index_entrycount-36"
         ],
         "ls-files.c": [
-          "ex/v1.4.3/ls-files.html#git_index_entrycount-2"
+          "ex/v1.5.0/ls-files.html#git_index_entrycount-2"
         ]
       }
     },
@@ -9658,10 +9703,10 @@
       "group": "index",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_index_get_byindex-37"
+          "ex/v1.5.0/general.html#git_index_get_byindex-37"
         ],
         "ls-files.c": [
-          "ex/v1.4.3/ls-files.html#git_index_get_byindex-3"
+          "ex/v1.5.0/ls-files.html#git_index_get_byindex-3"
         ]
       }
     },
@@ -9698,7 +9743,7 @@
       "group": "index",
       "examples": {
         "ls-files.c": [
-          "ex/v1.4.3/ls-files.html#git_index_get_bypath-4"
+          "ex/v1.5.0/ls-files.html#git_index_get_bypath-4"
         ]
       }
     },
@@ -10047,7 +10092,7 @@
       "group": "index",
       "examples": {
         "add.c": [
-          "ex/v1.4.3/add.html#git_index_add_all-3"
+          "ex/v1.5.0/add.html#git_index_add_all-3"
         ]
       }
     },
@@ -10126,7 +10171,7 @@
       "group": "index",
       "examples": {
         "add.c": [
-          "ex/v1.4.3/add.html#git_index_update_all-4"
+          "ex/v1.5.0/add.html#git_index_update_all-4"
         ]
       }
     },
@@ -10345,7 +10390,7 @@
       "group": "index",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_index_has_conflicts-11"
+          "ex/v1.5.0/merge.html#git_index_has_conflicts-11"
         ]
       }
     },
@@ -10377,7 +10422,7 @@
       "group": "index",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_index_conflict_iterator_new-12"
+          "ex/v1.5.0/merge.html#git_index_conflict_iterator_new-12"
         ]
       }
     },
@@ -10419,7 +10464,7 @@
       "group": "index",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_index_conflict_next-13"
+          "ex/v1.5.0/merge.html#git_index_conflict_next-13"
         ]
       }
     },
@@ -10446,7 +10491,7 @@
       "group": "index",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_index_conflict_iterator_free-14"
+          "ex/v1.5.0/merge.html#git_index_conflict_iterator_free-14"
         ]
       }
     },
@@ -10992,7 +11037,7 @@
       "group": "merge",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_merge_analysis-15"
+          "ex/v1.5.0/merge.html#git_merge_analysis-15"
         ]
       }
     },
@@ -11081,10 +11126,10 @@
       "group": "merge",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_merge_base-31"
+          "ex/v1.5.0/log.html#git_merge_base-31"
         ],
         "rev-parse.c": [
-          "ex/v1.4.3/rev-parse.html#git_merge_base-1"
+          "ex/v1.5.0/rev-parse.html#git_merge_base-1"
         ]
       }
     },
@@ -11475,11 +11520,11 @@
         "comment": " 0 on success or error code"
       },
       "description": "<p>Merges the given commit(s) into HEAD, writing the results into the working\n directory.  Any changes are staged for commit and any conflicts are written\n to the index.  Callers should inspect the repository&#39;s index after this\n completes, resolve any conflicts and prepare a commit.</p>\n",
-      "comments": "<p>For compatibility with git, the repository is put into a merging state. Once the commit is done (or if the uses wishes to abort), you should clear this state by calling <code>git_repository_state_cleanup()</code>.</p>\n",
+      "comments": "<p>For compatibility with git, the repository is put into a merging state. Once the commit is done (or if the user wishes to abort), you should clear this state by calling <code>git_repository_state_cleanup()</code>.</p>\n",
       "group": "merge",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_merge-16"
+          "ex/v1.5.0/merge.html#git_merge-16"
         ]
       }
     },
@@ -12176,10 +12221,10 @@
       "group": "object",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_object_lookup-32"
+          "ex/v1.5.0/log.html#git_object_lookup-32"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_object_lookup-17"
+          "ex/v1.5.0/merge.html#git_object_lookup-17"
         ]
       }
     },
@@ -12285,27 +12330,27 @@
       "group": "object",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_object_id-8",
-          "ex/v1.4.3/blame.html#git_object_id-9",
-          "ex/v1.4.3/blame.html#git_object_id-10",
-          "ex/v1.4.3/blame.html#git_object_id-11"
+          "ex/v1.5.0/blame.html#git_object_id-8",
+          "ex/v1.5.0/blame.html#git_object_id-9",
+          "ex/v1.5.0/blame.html#git_object_id-10",
+          "ex/v1.5.0/blame.html#git_object_id-11"
         ],
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_object_id-10",
-          "ex/v1.4.3/cat-file.html#git_object_id-11"
+          "ex/v1.5.0/cat-file.html#git_object_id-10",
+          "ex/v1.5.0/cat-file.html#git_object_id-11"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_object_id-33",
-          "ex/v1.4.3/log.html#git_object_id-34",
-          "ex/v1.4.3/log.html#git_object_id-35",
-          "ex/v1.4.3/log.html#git_object_id-36"
+          "ex/v1.5.0/log.html#git_object_id-33",
+          "ex/v1.5.0/log.html#git_object_id-34",
+          "ex/v1.5.0/log.html#git_object_id-35",
+          "ex/v1.5.0/log.html#git_object_id-36"
         ],
         "rev-parse.c": [
-          "ex/v1.4.3/rev-parse.html#git_object_id-2",
-          "ex/v1.4.3/rev-parse.html#git_object_id-3",
-          "ex/v1.4.3/rev-parse.html#git_object_id-4",
-          "ex/v1.4.3/rev-parse.html#git_object_id-5",
-          "ex/v1.4.3/rev-parse.html#git_object_id-6"
+          "ex/v1.5.0/rev-parse.html#git_object_id-2",
+          "ex/v1.5.0/rev-parse.html#git_object_id-3",
+          "ex/v1.5.0/rev-parse.html#git_object_id-4",
+          "ex/v1.5.0/rev-parse.html#git_object_id-5",
+          "ex/v1.5.0/rev-parse.html#git_object_id-6"
         ]
       }
     },
@@ -12337,7 +12382,7 @@
       "group": "object",
       "examples": {
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_object_short_id-3"
+          "ex/v1.5.0/tag.html#git_object_short_id-3"
         ]
       }
     },
@@ -12364,12 +12409,12 @@
       "group": "object",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_object_type-12",
-          "ex/v1.4.3/cat-file.html#git_object_type-13",
-          "ex/v1.4.3/cat-file.html#git_object_type-14"
+          "ex/v1.5.0/cat-file.html#git_object_type-12",
+          "ex/v1.5.0/cat-file.html#git_object_type-13",
+          "ex/v1.5.0/cat-file.html#git_object_type-14"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_object_type-4"
+          "ex/v1.5.0/tag.html#git_object_type-4"
         ]
       }
     },
@@ -12418,36 +12463,36 @@
       "group": "object",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_object_free-12",
-          "ex/v1.4.3/blame.html#git_object_free-13",
-          "ex/v1.4.3/blame.html#git_object_free-14",
-          "ex/v1.4.3/blame.html#git_object_free-15"
+          "ex/v1.5.0/blame.html#git_object_free-12",
+          "ex/v1.5.0/blame.html#git_object_free-13",
+          "ex/v1.5.0/blame.html#git_object_free-14",
+          "ex/v1.5.0/blame.html#git_object_free-15"
         ],
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_object_free-15"
+          "ex/v1.5.0/cat-file.html#git_object_free-15"
         ],
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_object_free-6"
+          "ex/v1.5.0/commit.html#git_object_free-6"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_object_free-38"
+          "ex/v1.5.0/general.html#git_object_free-38"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_object_free-37"
+          "ex/v1.5.0/log.html#git_object_free-37"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_object_free-18"
+          "ex/v1.5.0/merge.html#git_object_free-18"
         ],
         "rev-parse.c": [
-          "ex/v1.4.3/rev-parse.html#git_object_free-7",
-          "ex/v1.4.3/rev-parse.html#git_object_free-8",
-          "ex/v1.4.3/rev-parse.html#git_object_free-9"
+          "ex/v1.5.0/rev-parse.html#git_object_free-7",
+          "ex/v1.5.0/rev-parse.html#git_object_free-8",
+          "ex/v1.5.0/rev-parse.html#git_object_free-9"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_object_free-5",
-          "ex/v1.4.3/tag.html#git_object_free-6",
-          "ex/v1.4.3/tag.html#git_object_free-7",
-          "ex/v1.4.3/tag.html#git_object_free-8"
+          "ex/v1.5.0/tag.html#git_object_free-5",
+          "ex/v1.5.0/tag.html#git_object_free-6",
+          "ex/v1.5.0/tag.html#git_object_free-7",
+          "ex/v1.5.0/tag.html#git_object_free-8"
         ]
       }
     },
@@ -12474,14 +12519,14 @@
       "group": "object",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_object_type2string-16",
-          "ex/v1.4.3/cat-file.html#git_object_type2string-17",
-          "ex/v1.4.3/cat-file.html#git_object_type2string-18",
-          "ex/v1.4.3/cat-file.html#git_object_type2string-19"
+          "ex/v1.5.0/cat-file.html#git_object_type2string-16",
+          "ex/v1.5.0/cat-file.html#git_object_type2string-17",
+          "ex/v1.5.0/cat-file.html#git_object_type2string-18",
+          "ex/v1.5.0/cat-file.html#git_object_type2string-19"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_object_type2string-39",
-          "ex/v1.4.3/general.html#git_object_type2string-40"
+          "ex/v1.5.0/general.html#git_object_type2string-39",
+          "ex/v1.5.0/general.html#git_object_type2string-40"
         ]
       }
     },
@@ -12724,10 +12769,10 @@
       "group": "odb",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_odb_free-20"
+          "ex/v1.5.0/cat-file.html#git_odb_free-20"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_odb_free-41"
+          "ex/v1.5.0/general.html#git_odb_free-41"
         ]
       }
     },
@@ -12764,10 +12809,10 @@
       "group": "odb",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_odb_read-21"
+          "ex/v1.5.0/cat-file.html#git_odb_read-21"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_odb_read-42"
+          "ex/v1.5.0/general.html#git_odb_read-42"
         ]
       }
     },
@@ -13070,7 +13115,7 @@
       "group": "odb",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_odb_write-43"
+          "ex/v1.5.0/general.html#git_odb_write-43"
         ]
       }
     },
@@ -13444,10 +13489,10 @@
       "group": "odb",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_odb_object_free-22"
+          "ex/v1.5.0/cat-file.html#git_odb_object_free-22"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_odb_object_free-44"
+          "ex/v1.5.0/general.html#git_odb_object_free-44"
         ]
       }
     },
@@ -13496,7 +13541,7 @@
       "group": "odb",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_odb_object_data-45"
+          "ex/v1.5.0/general.html#git_odb_object_data-45"
         ]
       }
     },
@@ -13523,10 +13568,10 @@
       "group": "odb",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_odb_object_size-23"
+          "ex/v1.5.0/cat-file.html#git_odb_object_size-23"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_odb_object_size-46"
+          "ex/v1.5.0/general.html#git_odb_object_size-46"
         ]
       }
     },
@@ -13553,7 +13598,7 @@
       "group": "odb",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_odb_object_type-47"
+          "ex/v1.5.0/general.html#git_odb_object_type-47"
         ]
       }
     },
@@ -13831,14 +13876,14 @@
       "group": "oid",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_oid_fromstr-48",
-          "ex/v1.4.3/general.html#git_oid_fromstr-49",
-          "ex/v1.4.3/general.html#git_oid_fromstr-50",
-          "ex/v1.4.3/general.html#git_oid_fromstr-51",
-          "ex/v1.4.3/general.html#git_oid_fromstr-52",
-          "ex/v1.4.3/general.html#git_oid_fromstr-53",
-          "ex/v1.4.3/general.html#git_oid_fromstr-54",
-          "ex/v1.4.3/general.html#git_oid_fromstr-55"
+          "ex/v1.5.0/general.html#git_oid_fromstr-48",
+          "ex/v1.5.0/general.html#git_oid_fromstr-49",
+          "ex/v1.5.0/general.html#git_oid_fromstr-50",
+          "ex/v1.5.0/general.html#git_oid_fromstr-51",
+          "ex/v1.5.0/general.html#git_oid_fromstr-52",
+          "ex/v1.5.0/general.html#git_oid_fromstr-53",
+          "ex/v1.5.0/general.html#git_oid_fromstr-54",
+          "ex/v1.5.0/general.html#git_oid_fromstr-55"
         ]
       }
     },
@@ -13956,18 +14001,18 @@
       "group": "oid",
       "examples": {
         "fetch.c": [
-          "ex/v1.4.3/fetch.html#git_oid_fmt-1",
-          "ex/v1.4.3/fetch.html#git_oid_fmt-2"
+          "ex/v1.5.0/fetch.html#git_oid_fmt-1",
+          "ex/v1.5.0/fetch.html#git_oid_fmt-2"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_oid_fmt-56",
-          "ex/v1.4.3/general.html#git_oid_fmt-57",
-          "ex/v1.4.3/general.html#git_oid_fmt-58",
-          "ex/v1.4.3/general.html#git_oid_fmt-59",
-          "ex/v1.4.3/general.html#git_oid_fmt-60"
+          "ex/v1.5.0/general.html#git_oid_fmt-56",
+          "ex/v1.5.0/general.html#git_oid_fmt-57",
+          "ex/v1.5.0/general.html#git_oid_fmt-58",
+          "ex/v1.5.0/general.html#git_oid_fmt-59",
+          "ex/v1.5.0/general.html#git_oid_fmt-60"
         ],
         "ls-remote.c": [
-          "ex/v1.4.3/ls-remote.html#git_oid_fmt-1"
+          "ex/v1.5.0/ls-remote.html#git_oid_fmt-1"
         ]
       }
     },
@@ -14053,8 +14098,8 @@
       "group": "oid",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_oid_tostr_s-19",
-          "ex/v1.4.3/merge.html#git_oid_tostr_s-20"
+          "ex/v1.5.0/merge.html#git_oid_tostr_s-19",
+          "ex/v1.5.0/merge.html#git_oid_tostr_s-20"
         ]
       }
     },
@@ -14091,25 +14136,25 @@
       "group": "oid",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_oid_tostr-16",
-          "ex/v1.4.3/blame.html#git_oid_tostr-17"
+          "ex/v1.5.0/blame.html#git_oid_tostr-16",
+          "ex/v1.5.0/blame.html#git_oid_tostr-17"
         ],
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_oid_tostr-24",
-          "ex/v1.4.3/cat-file.html#git_oid_tostr-25",
-          "ex/v1.4.3/cat-file.html#git_oid_tostr-26",
-          "ex/v1.4.3/cat-file.html#git_oid_tostr-27",
-          "ex/v1.4.3/cat-file.html#git_oid_tostr-28"
+          "ex/v1.5.0/cat-file.html#git_oid_tostr-24",
+          "ex/v1.5.0/cat-file.html#git_oid_tostr-25",
+          "ex/v1.5.0/cat-file.html#git_oid_tostr-26",
+          "ex/v1.5.0/cat-file.html#git_oid_tostr-27",
+          "ex/v1.5.0/cat-file.html#git_oid_tostr-28"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_oid_tostr-38",
-          "ex/v1.4.3/log.html#git_oid_tostr-39"
+          "ex/v1.5.0/log.html#git_oid_tostr-38",
+          "ex/v1.5.0/log.html#git_oid_tostr-39"
         ],
         "rev-parse.c": [
-          "ex/v1.4.3/rev-parse.html#git_oid_tostr-10",
-          "ex/v1.4.3/rev-parse.html#git_oid_tostr-11",
-          "ex/v1.4.3/rev-parse.html#git_oid_tostr-12",
-          "ex/v1.4.3/rev-parse.html#git_oid_tostr-13"
+          "ex/v1.5.0/rev-parse.html#git_oid_tostr-10",
+          "ex/v1.5.0/rev-parse.html#git_oid_tostr-11",
+          "ex/v1.5.0/rev-parse.html#git_oid_tostr-12",
+          "ex/v1.5.0/rev-parse.html#git_oid_tostr-13"
         ]
       }
     },
@@ -14141,9 +14186,9 @@
       "group": "oid",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_oid_cpy-18",
-          "ex/v1.4.3/blame.html#git_oid_cpy-19",
-          "ex/v1.4.3/blame.html#git_oid_cpy-20"
+          "ex/v1.5.0/blame.html#git_oid_cpy-18",
+          "ex/v1.5.0/blame.html#git_oid_cpy-19",
+          "ex/v1.5.0/blame.html#git_oid_cpy-20"
         ]
       }
     },
@@ -14310,10 +14355,10 @@
       "group": "oid",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_oid_is_zero-21"
+          "ex/v1.5.0/blame.html#git_oid_is_zero-21"
         ],
         "fetch.c": [
-          "ex/v1.4.3/fetch.html#git_oid_is_zero-3"
+          "ex/v1.5.0/fetch.html#git_oid_is_zero-3"
         ]
       }
     },
@@ -15063,7 +15108,7 @@
       "group": "patch",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_patch_from_buffers-15"
+          "ex/v1.5.0/diff.html#git_patch_from_buffers-15"
         ]
       }
     },
@@ -15090,7 +15135,7 @@
       "group": "patch",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_patch_free-16"
+          "ex/v1.5.0/diff.html#git_patch_free-16"
         ]
       }
     },
@@ -15373,7 +15418,7 @@
       "group": "patch",
       "examples": {
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_patch_to_buf-17"
+          "ex/v1.5.0/diff.html#git_patch_to_buf-17"
         ]
       }
     },
@@ -15405,7 +15450,7 @@
       "group": "pathspec",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_pathspec_new-40"
+          "ex/v1.5.0/log.html#git_pathspec_new-40"
         ]
       }
     },
@@ -15432,7 +15477,7 @@
       "group": "pathspec",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_pathspec_free-41"
+          "ex/v1.5.0/log.html#git_pathspec_free-41"
         ]
       }
     },
@@ -15580,7 +15625,7 @@
       "group": "pathspec",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_pathspec_match_tree-42"
+          "ex/v1.5.0/log.html#git_pathspec_match_tree-42"
         ]
       }
     },
@@ -16704,14 +16749,14 @@
       "group": "reference",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_reference_lookup-15",
-          "ex/v1.4.3/checkout.html#git_reference_lookup-16"
+          "ex/v1.5.0/checkout.html#git_reference_lookup-15",
+          "ex/v1.5.0/checkout.html#git_reference_lookup-16"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_reference_lookup-61"
+          "ex/v1.5.0/general.html#git_reference_lookup-61"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_lookup-21"
+          "ex/v1.5.0/merge.html#git_reference_lookup-21"
         ]
       }
     },
@@ -16780,7 +16825,7 @@
       "group": "reference",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_dwim-22"
+          "ex/v1.5.0/merge.html#git_reference_dwim-22"
         ]
       }
     },
@@ -16931,7 +16976,7 @@
       "group": "reference",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_create-23"
+          "ex/v1.5.0/merge.html#git_reference_create-23"
         ]
       }
     },
@@ -17010,7 +17055,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_reference_target-62"
+          "ex/v1.5.0/general.html#git_reference_target-62"
         ]
       }
     },
@@ -17059,10 +17104,10 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_reference_symbolic_target-63"
+          "ex/v1.5.0/general.html#git_reference_symbolic_target-63"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_symbolic_target-24"
+          "ex/v1.5.0/merge.html#git_reference_symbolic_target-24"
         ]
       }
     },
@@ -17089,7 +17134,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_reference_type-64"
+          "ex/v1.5.0/general.html#git_reference_type-64"
         ]
       }
     },
@@ -17116,10 +17161,10 @@
       "group": "reference",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_reference_name-17"
+          "ex/v1.5.0/checkout.html#git_reference_name-17"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_name-25"
+          "ex/v1.5.0/merge.html#git_reference_name-25"
         ]
       }
     },
@@ -17247,7 +17292,7 @@
       "group": "reference",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_set_target-26"
+          "ex/v1.5.0/merge.html#git_reference_set_target-26"
         ]
       }
     },
@@ -17370,7 +17415,7 @@
       "group": "reference",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_reference_list-65"
+          "ex/v1.5.0/general.html#git_reference_list-65"
         ]
       }
     },
@@ -17488,23 +17533,23 @@
       "group": "reference",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_reference_free-18",
-          "ex/v1.4.3/checkout.html#git_reference_free-19",
-          "ex/v1.4.3/checkout.html#git_reference_free-20"
+          "ex/v1.5.0/checkout.html#git_reference_free-18",
+          "ex/v1.5.0/checkout.html#git_reference_free-19",
+          "ex/v1.5.0/checkout.html#git_reference_free-20"
         ],
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_reference_free-7"
+          "ex/v1.5.0/commit.html#git_reference_free-7"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_reference_free-66"
+          "ex/v1.5.0/general.html#git_reference_free-66"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_free-27",
-          "ex/v1.4.3/merge.html#git_reference_free-28",
-          "ex/v1.4.3/merge.html#git_reference_free-29"
+          "ex/v1.5.0/merge.html#git_reference_free-27",
+          "ex/v1.5.0/merge.html#git_reference_free-28",
+          "ex/v1.5.0/merge.html#git_reference_free-29"
         ],
         "status.c": [
-          "ex/v1.4.3/status.html#git_reference_free-1"
+          "ex/v1.5.0/status.html#git_reference_free-1"
         ]
       }
     },
@@ -17806,7 +17851,7 @@
       "group": "reference",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_reference_is_remote-21"
+          "ex/v1.5.0/checkout.html#git_reference_is_remote-21"
         ]
       }
     },
@@ -17924,7 +17969,7 @@
       "group": "reference",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_reference_peel-30"
+          "ex/v1.5.0/merge.html#git_reference_peel-30"
         ]
       }
     },
@@ -17978,7 +18023,7 @@
       "group": "reference",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_reference_shorthand-2"
+          "ex/v1.5.0/status.html#git_reference_shorthand-2"
         ]
       }
     },
@@ -18302,7 +18347,7 @@
       "group": "remote",
       "examples": {
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_create-1"
+          "ex/v1.5.0/remote.html#git_remote_create-1"
         ]
       }
     },
@@ -18440,10 +18485,10 @@
       "group": "remote",
       "examples": {
         "fetch.c": [
-          "ex/v1.4.3/fetch.html#git_remote_create_anonymous-4"
+          "ex/v1.5.0/fetch.html#git_remote_create_anonymous-4"
         ],
         "ls-remote.c": [
-          "ex/v1.4.3/ls-remote.html#git_remote_create_anonymous-2"
+          "ex/v1.5.0/ls-remote.html#git_remote_create_anonymous-2"
         ]
       }
     },
@@ -18507,16 +18552,16 @@
       "group": "remote",
       "examples": {
         "fetch.c": [
-          "ex/v1.4.3/fetch.html#git_remote_lookup-5"
+          "ex/v1.5.0/fetch.html#git_remote_lookup-5"
         ],
         "ls-remote.c": [
-          "ex/v1.4.3/ls-remote.html#git_remote_lookup-3"
+          "ex/v1.5.0/ls-remote.html#git_remote_lookup-3"
         ],
         "push.c": [
-          "ex/v1.4.3/push.html#git_remote_lookup-1"
+          "ex/v1.5.0/push.html#git_remote_lookup-1"
         ],
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_lookup-2"
+          "ex/v1.5.0/remote.html#git_remote_lookup-2"
         ]
       }
     },
@@ -18614,7 +18659,7 @@
       "group": "remote",
       "examples": {
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_url-3"
+          "ex/v1.5.0/remote.html#git_remote_url-3"
         ]
       }
     },
@@ -18641,7 +18686,7 @@
       "group": "remote",
       "examples": {
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_pushurl-4"
+          "ex/v1.5.0/remote.html#git_remote_pushurl-4"
         ]
       }
     },
@@ -18678,7 +18723,7 @@
       "group": "remote",
       "examples": {
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_set_url-5"
+          "ex/v1.5.0/remote.html#git_remote_set_url-5"
         ]
       }
     },
@@ -18715,7 +18760,7 @@
       "group": "remote",
       "examples": {
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_set_pushurl-6"
+          "ex/v1.5.0/remote.html#git_remote_set_pushurl-6"
         ]
       }
     },
@@ -18973,7 +19018,7 @@
       "group": "remote",
       "examples": {
         "ls-remote.c": [
-          "ex/v1.4.3/ls-remote.html#git_remote_ls-4"
+          "ex/v1.5.0/ls-remote.html#git_remote_ls-4"
         ]
       }
     },
@@ -19066,14 +19111,14 @@
       "group": "remote",
       "examples": {
         "fetch.c": [
-          "ex/v1.4.3/fetch.html#git_remote_free-6",
-          "ex/v1.4.3/fetch.html#git_remote_free-7"
+          "ex/v1.5.0/fetch.html#git_remote_free-6",
+          "ex/v1.5.0/fetch.html#git_remote_free-7"
         ],
         "ls-remote.c": [
-          "ex/v1.4.3/ls-remote.html#git_remote_free-5"
+          "ex/v1.5.0/ls-remote.html#git_remote_free-5"
         ],
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_free-7"
+          "ex/v1.5.0/remote.html#git_remote_free-7"
         ]
       }
     },
@@ -19105,10 +19150,10 @@
       "group": "remote",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_remote_list-22"
+          "ex/v1.5.0/checkout.html#git_remote_list-22"
         ],
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_list-8"
+          "ex/v1.5.0/remote.html#git_remote_list-8"
         ]
       }
     },
@@ -19194,7 +19239,7 @@
       "group": "push",
       "examples": {
         "push.c": [
-          "ex/v1.4.3/push.html#git_push_options_init-2"
+          "ex/v1.5.0/push.html#git_push_options_init-2"
         ]
       }
     },
@@ -19268,7 +19313,7 @@
       "group": "remote",
       "examples": {
         "ls-remote.c": [
-          "ex/v1.4.3/ls-remote.html#git_remote_connect-6"
+          "ex/v1.5.0/ls-remote.html#git_remote_connect-6"
         ]
       }
     },
@@ -19448,7 +19493,7 @@
       "group": "remote",
       "examples": {
         "fetch.c": [
-          "ex/v1.4.3/fetch.html#git_remote_fetch-8"
+          "ex/v1.5.0/fetch.html#git_remote_fetch-8"
         ]
       }
     },
@@ -19512,7 +19557,7 @@
       "group": "remote",
       "examples": {
         "push.c": [
-          "ex/v1.4.3/push.html#git_remote_push-3"
+          "ex/v1.5.0/push.html#git_remote_push-3"
         ]
       }
     },
@@ -19539,7 +19584,7 @@
       "group": "remote",
       "examples": {
         "fetch.c": [
-          "ex/v1.4.3/fetch.html#git_remote_stats-9"
+          "ex/v1.5.0/fetch.html#git_remote_stats-9"
         ]
       }
     },
@@ -19657,7 +19702,7 @@
       "group": "remote",
       "examples": {
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_rename-9"
+          "ex/v1.5.0/remote.html#git_remote_rename-9"
         ]
       }
     },
@@ -19716,7 +19761,7 @@
       "group": "remote",
       "examples": {
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_remote_delete-10"
+          "ex/v1.5.0/remote.html#git_remote_delete-10"
         ]
       }
     },
@@ -19775,7 +19820,7 @@
       "group": "repository",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_repository_open-67"
+          "ex/v1.5.0/general.html#git_repository_open-67"
         ]
       }
     },
@@ -19908,7 +19953,7 @@
       "group": "repository",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_repository_open_ext-43"
+          "ex/v1.5.0/log.html#git_repository_open_ext-43"
         ]
       }
     },
@@ -19962,10 +20007,10 @@
       "group": "repository",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_repository_free-68"
+          "ex/v1.5.0/general.html#git_repository_free-68"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_repository_free-4"
+          "ex/v1.5.0/init.html#git_repository_free-4"
         ]
       }
     },
@@ -20002,7 +20047,7 @@
       "group": "repository",
       "examples": {
         "init.c": [
-          "ex/v1.4.3/init.html#git_repository_init-5"
+          "ex/v1.5.0/init.html#git_repository_init-5"
         ]
       }
     },
@@ -20066,7 +20111,7 @@
       "group": "repository",
       "examples": {
         "init.c": [
-          "ex/v1.4.3/init.html#git_repository_init_ext-6"
+          "ex/v1.5.0/init.html#git_repository_init_ext-6"
         ]
       }
     },
@@ -20098,11 +20143,11 @@
       "group": "repository",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_repository_head-31",
-          "ex/v1.4.3/merge.html#git_repository_head-32"
+          "ex/v1.5.0/merge.html#git_repository_head-31",
+          "ex/v1.5.0/merge.html#git_repository_head-32"
         ],
         "status.c": [
-          "ex/v1.4.3/status.html#git_repository_head-3"
+          "ex/v1.5.0/status.html#git_repository_head-3"
         ]
       }
     },
@@ -20286,10 +20331,10 @@
       "group": "repository",
       "examples": {
         "init.c": [
-          "ex/v1.4.3/init.html#git_repository_path-7"
+          "ex/v1.5.0/init.html#git_repository_path-7"
         ],
         "status.c": [
-          "ex/v1.4.3/status.html#git_repository_path-4"
+          "ex/v1.5.0/status.html#git_repository_path-4"
         ]
       }
     },
@@ -20316,7 +20361,7 @@
       "group": "repository",
       "examples": {
         "init.c": [
-          "ex/v1.4.3/init.html#git_repository_workdir-8"
+          "ex/v1.5.0/init.html#git_repository_workdir-8"
         ]
       }
     },
@@ -20397,7 +20442,7 @@
       "group": "repository",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_repository_is_bare-5"
+          "ex/v1.5.0/status.html#git_repository_is_bare-5"
         ]
       }
     },
@@ -20451,7 +20496,7 @@
       "group": "repository",
       "examples": {
         "config.c": [
-          "ex/v1.4.3/config.html#git_repository_config-9"
+          "ex/v1.5.0/config.html#git_repository_config-9"
         ]
       }
     },
@@ -20483,8 +20528,8 @@
       "group": "repository",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_repository_config_snapshot-69",
-          "ex/v1.4.3/general.html#git_repository_config_snapshot-70"
+          "ex/v1.5.0/general.html#git_repository_config_snapshot-69",
+          "ex/v1.5.0/general.html#git_repository_config_snapshot-70"
         ]
       }
     },
@@ -20516,10 +20561,10 @@
       "group": "repository",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_repository_odb-29"
+          "ex/v1.5.0/cat-file.html#git_repository_odb-29"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_repository_odb-71"
+          "ex/v1.5.0/general.html#git_repository_odb-71"
         ]
       }
     },
@@ -20578,22 +20623,22 @@
       "group": "repository",
       "examples": {
         "add.c": [
-          "ex/v1.4.3/add.html#git_repository_index-5"
+          "ex/v1.5.0/add.html#git_repository_index-5"
         ],
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_repository_index-8"
+          "ex/v1.5.0/commit.html#git_repository_index-8"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_repository_index-72"
+          "ex/v1.5.0/general.html#git_repository_index-72"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_repository_index-9"
+          "ex/v1.5.0/init.html#git_repository_index-9"
         ],
         "ls-files.c": [
-          "ex/v1.4.3/ls-files.html#git_repository_index-5"
+          "ex/v1.5.0/ls-files.html#git_repository_index-5"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_repository_index-33"
+          "ex/v1.5.0/merge.html#git_repository_index-33"
         ]
       }
     },
@@ -20669,7 +20714,7 @@
       "group": "repository",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_repository_state_cleanup-34"
+          "ex/v1.5.0/merge.html#git_repository_state_cleanup-34"
         ]
       }
     },
@@ -20807,7 +20852,7 @@
       "group": "repository",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_repository_set_head-23"
+          "ex/v1.5.0/checkout.html#git_repository_set_head-23"
         ]
       }
     },
@@ -20866,7 +20911,7 @@
       "group": "repository",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_repository_set_head_detached_from_annotated-24"
+          "ex/v1.5.0/checkout.html#git_repository_set_head_detached_from_annotated-24"
         ]
       }
     },
@@ -20915,10 +20960,10 @@
       "group": "repository",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_repository_state-25"
+          "ex/v1.5.0/checkout.html#git_repository_state-25"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_repository_state-35"
+          "ex/v1.5.0/merge.html#git_repository_state-35"
         ]
       }
     },
@@ -21302,22 +21347,22 @@
       "group": "revparse",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_revparse_single-22"
+          "ex/v1.5.0/blame.html#git_revparse_single-22"
         ],
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_revparse_single-30"
+          "ex/v1.5.0/cat-file.html#git_revparse_single-30"
         ],
         "describe.c": [
-          "ex/v1.4.3/describe.html#git_revparse_single-6"
+          "ex/v1.5.0/describe.html#git_revparse_single-6"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_revparse_single-44"
+          "ex/v1.5.0/log.html#git_revparse_single-44"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_revparse_single-9",
-          "ex/v1.4.3/tag.html#git_revparse_single-10",
-          "ex/v1.4.3/tag.html#git_revparse_single-11",
-          "ex/v1.4.3/tag.html#git_revparse_single-12"
+          "ex/v1.5.0/tag.html#git_revparse_single-9",
+          "ex/v1.5.0/tag.html#git_revparse_single-10",
+          "ex/v1.5.0/tag.html#git_revparse_single-11",
+          "ex/v1.5.0/tag.html#git_revparse_single-12"
         ]
       }
     },
@@ -21359,7 +21404,7 @@
       "group": "revparse",
       "examples": {
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_revparse_ext-9"
+          "ex/v1.5.0/commit.html#git_revparse_ext-9"
         ]
       }
     },
@@ -21396,14 +21441,14 @@
       "group": "revparse",
       "examples": {
         "blame.c": [
-          "ex/v1.4.3/blame.html#git_revparse-23"
+          "ex/v1.5.0/blame.html#git_revparse-23"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_revparse-45"
+          "ex/v1.5.0/log.html#git_revparse-45"
         ],
         "rev-parse.c": [
-          "ex/v1.4.3/rev-parse.html#git_revparse-14",
-          "ex/v1.4.3/rev-parse.html#git_revparse-15"
+          "ex/v1.5.0/rev-parse.html#git_revparse-14",
+          "ex/v1.5.0/rev-parse.html#git_revparse-15"
         ]
       }
     },
@@ -21435,11 +21480,11 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_revwalk_new-73"
+          "ex/v1.5.0/general.html#git_revwalk_new-73"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_revwalk_new-46",
-          "ex/v1.4.3/log.html#git_revwalk_new-47"
+          "ex/v1.5.0/log.html#git_revwalk_new-46",
+          "ex/v1.5.0/log.html#git_revwalk_new-47"
         ]
       }
     },
@@ -21493,10 +21538,10 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_revwalk_push-74"
+          "ex/v1.5.0/general.html#git_revwalk_push-74"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_revwalk_push-48"
+          "ex/v1.5.0/log.html#git_revwalk_push-48"
         ]
       }
     },
@@ -21550,7 +21595,7 @@
       "group": "revwalk",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_revwalk_push_head-49"
+          "ex/v1.5.0/log.html#git_revwalk_push_head-49"
         ]
       }
     },
@@ -21582,7 +21627,7 @@
       "group": "revwalk",
       "examples": {
         "log.c": [
-          "ex/v1.4.3/log.html#git_revwalk_hide-50"
+          "ex/v1.5.0/log.html#git_revwalk_hide-50"
         ]
       }
     },
@@ -21717,10 +21762,10 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_revwalk_next-75"
+          "ex/v1.5.0/general.html#git_revwalk_next-75"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_revwalk_next-51"
+          "ex/v1.5.0/log.html#git_revwalk_next-51"
         ]
       }
     },
@@ -21752,11 +21797,11 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_revwalk_sorting-76"
+          "ex/v1.5.0/general.html#git_revwalk_sorting-76"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_revwalk_sorting-52",
-          "ex/v1.4.3/log.html#git_revwalk_sorting-53"
+          "ex/v1.5.0/log.html#git_revwalk_sorting-52",
+          "ex/v1.5.0/log.html#git_revwalk_sorting-53"
         ]
       }
     },
@@ -21832,10 +21877,10 @@
       "group": "revwalk",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_revwalk_free-77"
+          "ex/v1.5.0/general.html#git_revwalk_free-77"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_revwalk_free-54"
+          "ex/v1.5.0/log.html#git_revwalk_free-54"
         ]
       }
     },
@@ -21936,8 +21981,8 @@
       "group": "signature",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_signature_new-78",
-          "ex/v1.4.3/general.html#git_signature_new-79"
+          "ex/v1.5.0/general.html#git_signature_new-78",
+          "ex/v1.5.0/general.html#git_signature_new-79"
         ]
       }
     },
@@ -21974,7 +22019,7 @@
       "group": "signature",
       "examples": {
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_signature_now-36"
+          "ex/v1.5.0/merge.html#git_signature_now-36"
         ]
       }
     },
@@ -22006,13 +22051,13 @@
       "group": "signature",
       "examples": {
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_signature_default-10"
+          "ex/v1.5.0/commit.html#git_signature_default-10"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_signature_default-10"
+          "ex/v1.5.0/init.html#git_signature_default-10"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_signature_default-13"
+          "ex/v1.5.0/tag.html#git_signature_default-13"
         ]
       }
     },
@@ -22093,17 +22138,17 @@
       "group": "signature",
       "examples": {
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_signature_free-11"
+          "ex/v1.5.0/commit.html#git_signature_free-11"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_signature_free-80",
-          "ex/v1.4.3/general.html#git_signature_free-81"
+          "ex/v1.5.0/general.html#git_signature_free-80",
+          "ex/v1.5.0/general.html#git_signature_free-81"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_signature_free-11"
+          "ex/v1.5.0/init.html#git_signature_free-11"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_signature_free-14"
+          "ex/v1.5.0/tag.html#git_signature_free-14"
         ]
       }
     },
@@ -22302,8 +22347,8 @@
     "git_status_options_init": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 274,
-      "lineto": 276,
+      "line": 277,
+      "lineto": 279,
       "args": [
         {
           "name": "opts",
@@ -22329,8 +22374,8 @@
     "git_status_foreach": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 314,
-      "lineto": 317,
+      "line": 317,
+      "lineto": 320,
       "args": [
         {
           "name": "repo",
@@ -22359,15 +22404,15 @@
       "group": "status",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_status_foreach-6"
+          "ex/v1.5.0/status.html#git_status_foreach-6"
         ]
       }
     },
     "git_status_foreach_ext": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 338,
-      "lineto": 342,
+      "line": 341,
+      "lineto": 345,
       "args": [
         {
           "name": "repo",
@@ -22401,15 +22446,15 @@
       "group": "status",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_status_foreach_ext-7"
+          "ex/v1.5.0/status.html#git_status_foreach_ext-7"
         ]
       }
     },
     "git_status_file": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 370,
-      "lineto": 373,
+      "line": 373,
+      "lineto": 376,
       "args": [
         {
           "name": "status_flags",
@@ -22438,15 +22483,15 @@
       "group": "status",
       "examples": {
         "add.c": [
-          "ex/v1.4.3/add.html#git_status_file-6"
+          "ex/v1.5.0/add.html#git_status_file-6"
         ]
       }
     },
     "git_status_list_new": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 388,
-      "lineto": 391,
+      "line": 391,
+      "lineto": 394,
       "args": [
         {
           "name": "out",
@@ -22475,16 +22520,16 @@
       "group": "status",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_status_list_new-8",
-          "ex/v1.4.3/status.html#git_status_list_new-9"
+          "ex/v1.5.0/status.html#git_status_list_new-8",
+          "ex/v1.5.0/status.html#git_status_list_new-9"
         ]
       }
     },
     "git_status_list_entrycount": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 402,
-      "lineto": 403,
+      "line": 405,
+      "lineto": 406,
       "args": [
         {
           "name": "statuslist",
@@ -22503,16 +22548,16 @@
       "group": "status",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_status_list_entrycount-10",
-          "ex/v1.4.3/status.html#git_status_list_entrycount-11"
+          "ex/v1.5.0/status.html#git_status_list_entrycount-10",
+          "ex/v1.5.0/status.html#git_status_list_entrycount-11"
         ]
       }
     },
     "git_status_byindex": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 414,
-      "lineto": 416,
+      "line": 417,
+      "lineto": 419,
       "args": [
         {
           "name": "statuslist",
@@ -22536,20 +22581,20 @@
       "group": "status",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_status_byindex-12",
-          "ex/v1.4.3/status.html#git_status_byindex-13",
-          "ex/v1.4.3/status.html#git_status_byindex-14",
-          "ex/v1.4.3/status.html#git_status_byindex-15",
-          "ex/v1.4.3/status.html#git_status_byindex-16",
-          "ex/v1.4.3/status.html#git_status_byindex-17"
+          "ex/v1.5.0/status.html#git_status_byindex-12",
+          "ex/v1.5.0/status.html#git_status_byindex-13",
+          "ex/v1.5.0/status.html#git_status_byindex-14",
+          "ex/v1.5.0/status.html#git_status_byindex-15",
+          "ex/v1.5.0/status.html#git_status_byindex-16",
+          "ex/v1.5.0/status.html#git_status_byindex-17"
         ]
       }
     },
     "git_status_list_free": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 423,
-      "lineto": 424,
+      "line": 426,
+      "lineto": 427,
       "args": [
         {
           "name": "statuslist",
@@ -22568,15 +22613,15 @@
       "group": "status",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_status_list_free-18"
+          "ex/v1.5.0/status.html#git_status_list_free-18"
         ]
       }
     },
     "git_status_should_ignore": {
       "type": "function",
       "file": "git2/status.h",
-      "line": 442,
-      "lineto": 445,
+      "line": 445,
+      "lineto": 448,
       "args": [
         {
           "name": "ignored",
@@ -22627,17 +22672,17 @@
       "group": "strarray",
       "examples": {
         "checkout.c": [
-          "ex/v1.4.3/checkout.html#git_strarray_dispose-26"
+          "ex/v1.5.0/checkout.html#git_strarray_dispose-26"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_strarray_dispose-82"
+          "ex/v1.5.0/general.html#git_strarray_dispose-82"
         ],
         "remote.c": [
-          "ex/v1.4.3/remote.html#git_strarray_dispose-11",
-          "ex/v1.4.3/remote.html#git_strarray_dispose-12"
+          "ex/v1.5.0/remote.html#git_strarray_dispose-11",
+          "ex/v1.5.0/remote.html#git_strarray_dispose-12"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_strarray_dispose-15"
+          "ex/v1.5.0/tag.html#git_strarray_dispose-15"
         ]
       }
     },
@@ -22814,7 +22859,7 @@
       "group": "submodule",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_submodule_foreach-19"
+          "ex/v1.5.0/status.html#git_submodule_foreach-19"
         ]
       }
     },
@@ -22986,7 +23031,7 @@
       "group": "submodule",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_submodule_name-20"
+          "ex/v1.5.0/status.html#git_submodule_name-20"
         ]
       }
     },
@@ -23013,7 +23058,7 @@
       "group": "submodule",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_submodule_path-21"
+          "ex/v1.5.0/status.html#git_submodule_path-21"
         ]
       }
     },
@@ -23558,7 +23603,7 @@
       "group": "submodule",
       "examples": {
         "status.c": [
-          "ex/v1.4.3/status.html#git_submodule_status-22"
+          "ex/v1.5.0/status.html#git_submodule_status-22"
         ]
       }
     },
@@ -23622,7 +23667,7 @@
       "group": "tag",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_tag_lookup-83"
+          "ex/v1.5.0/general.html#git_tag_lookup-83"
         ]
       }
     },
@@ -23686,7 +23731,7 @@
       "group": "tag",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_tag_free-84"
+          "ex/v1.5.0/general.html#git_tag_free-84"
         ]
       }
     },
@@ -23762,7 +23807,7 @@
       "group": "tag",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_tag_target-85"
+          "ex/v1.5.0/general.html#git_tag_target-85"
         ]
       }
     },
@@ -23789,7 +23834,7 @@
       "group": "tag",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tag_target_id-31"
+          "ex/v1.5.0/cat-file.html#git_tag_target_id-31"
         ]
       }
     },
@@ -23816,10 +23861,10 @@
       "group": "tag",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tag_target_type-32"
+          "ex/v1.5.0/cat-file.html#git_tag_target_type-32"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tag_target_type-86"
+          "ex/v1.5.0/general.html#git_tag_target_type-86"
         ]
       }
     },
@@ -23846,13 +23891,13 @@
       "group": "tag",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tag_name-33"
+          "ex/v1.5.0/cat-file.html#git_tag_name-33"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tag_name-87"
+          "ex/v1.5.0/general.html#git_tag_name-87"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_tag_name-16"
+          "ex/v1.5.0/tag.html#git_tag_name-16"
         ]
       }
     },
@@ -23879,7 +23924,7 @@
       "group": "tag",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tag_tagger-34"
+          "ex/v1.5.0/cat-file.html#git_tag_tagger-34"
         ]
       }
     },
@@ -23906,14 +23951,14 @@
       "group": "tag",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tag_message-35",
-          "ex/v1.4.3/cat-file.html#git_tag_message-36"
+          "ex/v1.5.0/cat-file.html#git_tag_message-35",
+          "ex/v1.5.0/cat-file.html#git_tag_message-36"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tag_message-88"
+          "ex/v1.5.0/general.html#git_tag_message-88"
         ],
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_tag_message-17"
+          "ex/v1.5.0/tag.html#git_tag_message-17"
         ]
       }
     },
@@ -23970,7 +24015,7 @@
       "group": "tag",
       "examples": {
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_tag_create-18"
+          "ex/v1.5.0/tag.html#git_tag_create-18"
         ]
       }
     },
@@ -24101,7 +24146,7 @@
       "group": "tag",
       "examples": {
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_tag_create_lightweight-19"
+          "ex/v1.5.0/tag.html#git_tag_create_lightweight-19"
         ]
       }
     },
@@ -24133,7 +24178,7 @@
       "group": "tag",
       "examples": {
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_tag_delete-20"
+          "ex/v1.5.0/tag.html#git_tag_delete-20"
         ]
       }
     },
@@ -24197,7 +24242,7 @@
       "group": "tag",
       "examples": {
         "tag.c": [
-          "ex/v1.4.3/tag.html#git_tag_list_match-21"
+          "ex/v1.5.0/tag.html#git_tag_list_match-21"
         ]
       }
     },
@@ -24615,17 +24660,17 @@
       "group": "tree",
       "examples": {
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_tree_lookup-12"
+          "ex/v1.5.0/commit.html#git_tree_lookup-12"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tree_lookup-89",
-          "ex/v1.4.3/general.html#git_tree_lookup-90"
+          "ex/v1.5.0/general.html#git_tree_lookup-89",
+          "ex/v1.5.0/general.html#git_tree_lookup-90"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_tree_lookup-12"
+          "ex/v1.5.0/init.html#git_tree_lookup-12"
         ],
         "merge.c": [
-          "ex/v1.4.3/merge.html#git_tree_lookup-37"
+          "ex/v1.5.0/merge.html#git_tree_lookup-37"
         ]
       }
     },
@@ -24689,25 +24734,25 @@
       "group": "tree",
       "examples": {
         "commit.c": [
-          "ex/v1.4.3/commit.html#git_tree_free-13"
+          "ex/v1.5.0/commit.html#git_tree_free-13"
         ],
         "diff.c": [
-          "ex/v1.4.3/diff.html#git_tree_free-18",
-          "ex/v1.4.3/diff.html#git_tree_free-19"
+          "ex/v1.5.0/diff.html#git_tree_free-18",
+          "ex/v1.5.0/diff.html#git_tree_free-19"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tree_free-91",
-          "ex/v1.4.3/general.html#git_tree_free-92"
+          "ex/v1.5.0/general.html#git_tree_free-91",
+          "ex/v1.5.0/general.html#git_tree_free-92"
         ],
         "init.c": [
-          "ex/v1.4.3/init.html#git_tree_free-13"
+          "ex/v1.5.0/init.html#git_tree_free-13"
         ],
         "log.c": [
-          "ex/v1.4.3/log.html#git_tree_free-55",
-          "ex/v1.4.3/log.html#git_tree_free-56",
-          "ex/v1.4.3/log.html#git_tree_free-57",
-          "ex/v1.4.3/log.html#git_tree_free-58",
-          "ex/v1.4.3/log.html#git_tree_free-59"
+          "ex/v1.5.0/log.html#git_tree_free-55",
+          "ex/v1.5.0/log.html#git_tree_free-56",
+          "ex/v1.5.0/log.html#git_tree_free-57",
+          "ex/v1.5.0/log.html#git_tree_free-58",
+          "ex/v1.5.0/log.html#git_tree_free-59"
         ]
       }
     },
@@ -24778,10 +24823,10 @@
       "group": "tree",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tree_entrycount-37"
+          "ex/v1.5.0/cat-file.html#git_tree_entrycount-37"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tree_entrycount-93"
+          "ex/v1.5.0/general.html#git_tree_entrycount-93"
         ]
       }
     },
@@ -24813,7 +24858,7 @@
       "group": "tree",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_tree_entry_byname-94"
+          "ex/v1.5.0/general.html#git_tree_entry_byname-94"
         ]
       }
     },
@@ -24845,10 +24890,10 @@
       "group": "tree",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tree_entry_byindex-38"
+          "ex/v1.5.0/cat-file.html#git_tree_entry_byindex-38"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tree_entry_byindex-95"
+          "ex/v1.5.0/general.html#git_tree_entry_byindex-95"
         ]
       }
     },
@@ -24983,11 +25028,11 @@
       "group": "tree",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tree_entry_name-39"
+          "ex/v1.5.0/cat-file.html#git_tree_entry_name-39"
         ],
         "general.c": [
-          "ex/v1.4.3/general.html#git_tree_entry_name-96",
-          "ex/v1.4.3/general.html#git_tree_entry_name-97"
+          "ex/v1.5.0/general.html#git_tree_entry_name-96",
+          "ex/v1.5.0/general.html#git_tree_entry_name-97"
         ]
       }
     },
@@ -25014,7 +25059,7 @@
       "group": "tree",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tree_entry_id-40"
+          "ex/v1.5.0/cat-file.html#git_tree_entry_id-40"
         ]
       }
     },
@@ -25041,7 +25086,7 @@
       "group": "tree",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tree_entry_type-41"
+          "ex/v1.5.0/cat-file.html#git_tree_entry_type-41"
         ]
       }
     },
@@ -25068,7 +25113,7 @@
       "group": "tree",
       "examples": {
         "cat-file.c": [
-          "ex/v1.4.3/cat-file.html#git_tree_entry_filemode-42"
+          "ex/v1.5.0/cat-file.html#git_tree_entry_filemode-42"
         ]
       }
     },
@@ -25154,7 +25199,7 @@
       "group": "tree",
       "examples": {
         "general.c": [
-          "ex/v1.4.3/general.html#git_tree_entry_to_object-98"
+          "ex/v1.5.0/general.html#git_tree_entry_to_object-98"
         ]
       }
     },
@@ -26390,8 +26435,8 @@
     "git_headlist_cb": {
       "type": "callback",
       "file": "git2/deprecated.h",
-      "line": 847,
-      "lineto": 847,
+      "line": 849,
+      "lineto": 849,
       "args": [
         {
           "name": "rhead",
@@ -31972,7 +32017,7 @@
           "GIT_ERROR_FILESYSTEM",
           "GIT_ERROR_PATCH",
           "GIT_ERROR_WORKTREE",
-          "GIT_ERROR_SHA1",
+          "GIT_ERROR_SHA",
           "GIT_ERROR_HTTP",
           "GIT_ERROR_INTERNAL"
         ],
@@ -31980,7 +32025,7 @@
         "file": "git2/errors.h",
         "line": 76,
         "lineto": 113,
-        "block": "GIT_ERROR_NONE\nGIT_ERROR_NOMEMORY\nGIT_ERROR_OS\nGIT_ERROR_INVALID\nGIT_ERROR_REFERENCE\nGIT_ERROR_ZLIB\nGIT_ERROR_REPOSITORY\nGIT_ERROR_CONFIG\nGIT_ERROR_REGEX\nGIT_ERROR_ODB\nGIT_ERROR_INDEX\nGIT_ERROR_OBJECT\nGIT_ERROR_NET\nGIT_ERROR_TAG\nGIT_ERROR_TREE\nGIT_ERROR_INDEXER\nGIT_ERROR_SSL\nGIT_ERROR_SUBMODULE\nGIT_ERROR_THREAD\nGIT_ERROR_STASH\nGIT_ERROR_CHECKOUT\nGIT_ERROR_FETCHHEAD\nGIT_ERROR_MERGE\nGIT_ERROR_SSH\nGIT_ERROR_FILTER\nGIT_ERROR_REVERT\nGIT_ERROR_CALLBACK\nGIT_ERROR_CHERRYPICK\nGIT_ERROR_DESCRIBE\nGIT_ERROR_REBASE\nGIT_ERROR_FILESYSTEM\nGIT_ERROR_PATCH\nGIT_ERROR_WORKTREE\nGIT_ERROR_SHA1\nGIT_ERROR_HTTP\nGIT_ERROR_INTERNAL",
+        "block": "GIT_ERROR_NONE\nGIT_ERROR_NOMEMORY\nGIT_ERROR_OS\nGIT_ERROR_INVALID\nGIT_ERROR_REFERENCE\nGIT_ERROR_ZLIB\nGIT_ERROR_REPOSITORY\nGIT_ERROR_CONFIG\nGIT_ERROR_REGEX\nGIT_ERROR_ODB\nGIT_ERROR_INDEX\nGIT_ERROR_OBJECT\nGIT_ERROR_NET\nGIT_ERROR_TAG\nGIT_ERROR_TREE\nGIT_ERROR_INDEXER\nGIT_ERROR_SSL\nGIT_ERROR_SUBMODULE\nGIT_ERROR_THREAD\nGIT_ERROR_STASH\nGIT_ERROR_CHECKOUT\nGIT_ERROR_FETCHHEAD\nGIT_ERROR_MERGE\nGIT_ERROR_SSH\nGIT_ERROR_FILTER\nGIT_ERROR_REVERT\nGIT_ERROR_CALLBACK\nGIT_ERROR_CHERRYPICK\nGIT_ERROR_DESCRIBE\nGIT_ERROR_REBASE\nGIT_ERROR_FILESYSTEM\nGIT_ERROR_PATCH\nGIT_ERROR_WORKTREE\nGIT_ERROR_SHA\nGIT_ERROR_HTTP\nGIT_ERROR_INTERNAL",
         "tdef": "typedef",
         "description": " Error classes ",
         "comments": "",
@@ -32185,7 +32230,7 @@
           },
           {
             "type": "int",
-            "name": "GIT_ERROR_SHA1",
+            "name": "GIT_ERROR_SHA",
             "comments": "",
             "value": 33
           },
@@ -32219,8 +32264,8 @@
         ],
         "type": "enum",
         "file": "git2/common.h",
-        "line": 128,
-        "lineto": 151,
+        "line": 139,
+        "lineto": 162,
         "block": "GIT_FEATURE_THREADS\nGIT_FEATURE_HTTPS\nGIT_FEATURE_SSH\nGIT_FEATURE_NSEC",
         "tdef": "typedef",
         "description": " Combinations of these values describe the features with which libgit2\n was compiled",
@@ -33434,8 +33479,8 @@
         ],
         "type": "enum",
         "file": "git2/common.h",
-        "line": 182,
-        "lineto": 220,
+        "line": 193,
+        "lineto": 231,
         "block": "GIT_OPT_GET_MWINDOW_SIZE\nGIT_OPT_SET_MWINDOW_SIZE\nGIT_OPT_GET_MWINDOW_MAPPED_LIMIT\nGIT_OPT_SET_MWINDOW_MAPPED_LIMIT\nGIT_OPT_GET_SEARCH_PATH\nGIT_OPT_SET_SEARCH_PATH\nGIT_OPT_SET_CACHE_OBJECT_LIMIT\nGIT_OPT_SET_CACHE_MAX_SIZE\nGIT_OPT_ENABLE_CACHING\nGIT_OPT_GET_CACHED_MEMORY\nGIT_OPT_GET_TEMPLATE_PATH\nGIT_OPT_SET_TEMPLATE_PATH\nGIT_OPT_SET_SSL_CERT_LOCATIONS\nGIT_OPT_SET_USER_AGENT\nGIT_OPT_ENABLE_STRICT_OBJECT_CREATION\nGIT_OPT_ENABLE_STRICT_SYMBOLIC_REF_CREATION\nGIT_OPT_SET_SSL_CIPHERS\nGIT_OPT_GET_USER_AGENT\nGIT_OPT_ENABLE_OFS_DELTA\nGIT_OPT_ENABLE_FSYNC_GITDIR\nGIT_OPT_GET_WINDOWS_SHAREMODE\nGIT_OPT_SET_WINDOWS_SHAREMODE\nGIT_OPT_ENABLE_STRICT_HASH_VERIFICATION\nGIT_OPT_SET_ALLOCATOR\nGIT_OPT_ENABLE_UNSAVED_INDEX_SAFETY\nGIT_OPT_GET_PACK_MAX_OBJECTS\nGIT_OPT_SET_PACK_MAX_OBJECTS\nGIT_OPT_DISABLE_PACK_KEEP_FILE_CHECKS\nGIT_OPT_ENABLE_HTTP_EXPECT_CONTINUE\nGIT_OPT_GET_MWINDOW_FILE_LIMIT\nGIT_OPT_SET_MWINDOW_FILE_LIMIT\nGIT_OPT_SET_ODB_PACKED_PRIORITY\nGIT_OPT_SET_ODB_LOOSE_PRIORITY\nGIT_OPT_GET_EXTENSIONS\nGIT_OPT_SET_EXTENSIONS\nGIT_OPT_GET_OWNER_VALIDATION\nGIT_OPT_SET_OWNER_VALIDATION",
         "tdef": "typedef",
         "description": " Global library options",
@@ -37765,8 +37810,8 @@
         ],
         "type": "enum",
         "file": "git2/sys/transport.h",
-        "line": 279,
-        "lineto": 284,
+        "line": 283,
+        "lineto": 288,
         "block": "GIT_SERVICE_UPLOADPACK_LS\nGIT_SERVICE_UPLOADPACK\nGIT_SERVICE_RECEIVEPACK_LS\nGIT_SERVICE_RECEIVEPACK",
         "tdef": "typedef",
         "description": " Actions that the smart transport can ask a subtransport to perform ",
@@ -38082,8 +38127,8 @@
         "type": "struct",
         "value": "git_status_entry",
         "file": "git2/status.h",
-        "line": 292,
-        "lineto": 296,
+        "line": 295,
+        "lineto": 299,
         "block": "git_status_t status\ngit_diff_delta * head_to_index\ngit_diff_delta * index_to_workdir",
         "tdef": "typedef",
         "description": " A status entry, providing the differences between the file as it exists\n in HEAD and the index, and providing the differences between the index\n and the working directory.",
@@ -38284,7 +38329,7 @@
         "value": "git_status_options",
         "file": "git2/status.h",
         "line": 222,
-        "lineto": 259,
+        "lineto": 262,
         "block": "unsigned int version\ngit_status_show_t show\nunsigned int flags\ngit_strarray pathspec\ngit_tree * baseline\nuint16_t rename_threshold",
         "tdef": "typedef",
         "description": " Options to control how `git_status_foreach_ext()` will issue callbacks.",
@@ -38298,12 +38343,12 @@
           {
             "type": "git_status_show_t",
             "name": "show",
-            "comments": " The `show` value is one of the `git_status_show_t` constants that\n control which files to scan and in what order."
+            "comments": " The `show` value is one of the `git_status_show_t` constants that\n control which files to scan and in what order. The default is\n `GIT_STATUS_SHOW_INDEX_AND_WORKDIR`."
           },
           {
             "type": "unsigned int",
             "name": "flags",
-            "comments": " The `flags` value is an OR'ed combination of the\n `git_status_opt_t` values above."
+            "comments": " The `flags` value is an OR'ed combination of the\n `git_status_opt_t` values above. The default is\n `GIT_STATUS_OPT_DEFAULTS`, which matches git's default\n behavior."
           },
           {
             "type": "git_strarray",
@@ -39878,6 +39923,7 @@
       [
         "git_error_clear",
         "git_error_last",
+        "git_error_set",
         "git_error_set_oom",
         "git_error_set_str"
       ]
@@ -39996,6 +40042,7 @@
         "git_libgit2_features",
         "git_libgit2_init",
         "git_libgit2_opts",
+        "git_libgit2_prerelease",
         "git_libgit2_shutdown",
         "git_libgit2_version"
       ]
@@ -40682,119 +40729,119 @@
   "examples": [
     [
       "add.c",
-      "ex/v1.4.3/add.html"
+      "ex/v1.5.0/add.html"
     ],
     [
       "args.c",
-      "ex/v1.4.3/args.html"
+      "ex/v1.5.0/args.html"
     ],
     [
       "blame.c",
-      "ex/v1.4.3/blame.html"
+      "ex/v1.5.0/blame.html"
     ],
     [
       "cat-file.c",
-      "ex/v1.4.3/cat-file.html"
+      "ex/v1.5.0/cat-file.html"
     ],
     [
       "checkout.c",
-      "ex/v1.4.3/checkout.html"
+      "ex/v1.5.0/checkout.html"
     ],
     [
       "clone.c",
-      "ex/v1.4.3/clone.html"
+      "ex/v1.5.0/clone.html"
     ],
     [
       "commit.c",
-      "ex/v1.4.3/commit.html"
+      "ex/v1.5.0/commit.html"
     ],
     [
       "common.c",
-      "ex/v1.4.3/common.html"
+      "ex/v1.5.0/common.html"
     ],
     [
       "config.c",
-      "ex/v1.4.3/config.html"
+      "ex/v1.5.0/config.html"
     ],
     [
       "describe.c",
-      "ex/v1.4.3/describe.html"
+      "ex/v1.5.0/describe.html"
     ],
     [
       "diff.c",
-      "ex/v1.4.3/diff.html"
+      "ex/v1.5.0/diff.html"
     ],
     [
       "fetch.c",
-      "ex/v1.4.3/fetch.html"
+      "ex/v1.5.0/fetch.html"
     ],
     [
       "for-each-ref.c",
-      "ex/v1.4.3/for-each-ref.html"
+      "ex/v1.5.0/for-each-ref.html"
     ],
     [
       "general.c",
-      "ex/v1.4.3/general.html"
+      "ex/v1.5.0/general.html"
     ],
     [
       "index-pack.c",
-      "ex/v1.4.3/index-pack.html"
+      "ex/v1.5.0/index-pack.html"
     ],
     [
       "init.c",
-      "ex/v1.4.3/init.html"
+      "ex/v1.5.0/init.html"
     ],
     [
       "lg2.c",
-      "ex/v1.4.3/lg2.html"
+      "ex/v1.5.0/lg2.html"
     ],
     [
       "log.c",
-      "ex/v1.4.3/log.html"
+      "ex/v1.5.0/log.html"
     ],
     [
       "ls-files.c",
-      "ex/v1.4.3/ls-files.html"
+      "ex/v1.5.0/ls-files.html"
     ],
     [
       "ls-remote.c",
-      "ex/v1.4.3/ls-remote.html"
+      "ex/v1.5.0/ls-remote.html"
     ],
     [
       "merge.c",
-      "ex/v1.4.3/merge.html"
+      "ex/v1.5.0/merge.html"
     ],
     [
       "push.c",
-      "ex/v1.4.3/push.html"
+      "ex/v1.5.0/push.html"
     ],
     [
       "remote.c",
-      "ex/v1.4.3/remote.html"
+      "ex/v1.5.0/remote.html"
     ],
     [
       "rev-list.c",
-      "ex/v1.4.3/rev-list.html"
+      "ex/v1.5.0/rev-list.html"
     ],
     [
       "rev-parse.c",
-      "ex/v1.4.3/rev-parse.html"
+      "ex/v1.5.0/rev-parse.html"
     ],
     [
       "show-index.c",
-      "ex/v1.4.3/show-index.html"
+      "ex/v1.5.0/show-index.html"
     ],
     [
       "stash.c",
-      "ex/v1.4.3/stash.html"
+      "ex/v1.5.0/stash.html"
     ],
     [
       "status.c",
-      "ex/v1.4.3/status.html"
+      "ex/v1.5.0/status.html"
     ],
     [
       "tag.c",
-      "ex/v1.4.3/tag.html"
+      "ex/v1.5.0/tag.html"
     ]
   ]
 }
