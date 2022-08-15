@@ -321,12 +321,12 @@
             4013,
           ],
           "sources": [
+            "libgit2/src/libgit2/git2.rc",
             "libgit2/src/libgit2/transports/winhttp.c",
             "libgit2/src/util/allocators/win32_leakcheck.c",
             "libgit2/src/util/win32/dir.c",
             "libgit2/src/util/win32/error.c",
             "libgit2/src/util/win32/findfile.c",
-            "libgit2/src/util/win32/git2.rc",
             "libgit2/src/util/win32/map.c",
             "libgit2/src/util/win32/path_w32.c",
             "libgit2/src/util/win32/posix_w32.c",
