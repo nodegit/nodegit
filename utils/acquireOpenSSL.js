@@ -45,7 +45,8 @@ class HashVerify extends stream.Transform {
 const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
   try {
     for (const patchFilename of await fse.readdir(opensslPatchPath)) {
-      if (patchFilename.split(".").pop() === "patch" && patchFilename.split("-")[1] === operatingSystem) {
+      const patchTarget = patchFilename.split("-")[1];
+      if (patchFilename.split(".").pop() === "patch" && (patchTarget === operatingSystem || patchTarget === "all")) {
         console.log(`applying ${patchFilename}`);
         await execPromise(`patch -up0 -i ${path.join(opensslPatchPath, patchFilename)}`, {
           cwd: buildCwd
