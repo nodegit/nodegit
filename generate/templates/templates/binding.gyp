@@ -7,32 +7,6 @@
     "macOS_deployment_target": "10.11"
   },
 
-  'target_defaults': {
-    'default_configuration': 'Debug',
-    'configurations': {
-      'Debug': {
-        'defines': [ 'DEBUG', '_DEBUG' ],
-      },
-      'Release': {
-        'defines': [ 'NDEBUG' ],
-        'cflags': [ '-flto' ],
-        'xcode_settings': {
-          'LLVM_LTO': 'YES'
-        },
-        'msvs_settings': {
-          'VCCLCompilerTool': {
-            'WholeProgramOptimization': 'true'
-          },
-          'VCLibrarianTool': {
-          },
-          'VCLinkerTool': {
-            'LinkTimeCodeGeneration': 1
-          }
-        }
-      }
-    }
-  },
-
   "targets": [
     {
       "target_name": "acquireOpenSSL",
