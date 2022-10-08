@@ -22,7 +22,33 @@ catch (ex) {
   rawApi = require("../build/Debug/nodegit.node");
 }
 
-var promisify = fn => fn && util.promisify(fn); // jshint ignore:line
+var promisify = function promisify(fn) {
+  return function (...args) {
+    var that = this;
+    const stackTrace = {};
+    Error.captureStackTrace(stackTrace);
+    return new Promise(function (resolve, reject) {
+      if (!fn) {
+        return resolve();
+      }
+      args.push(function (err, result) {
+        if (err) {
+          const wrappedErr = new Error(err.message);
+          const stackList = stackTrace.stack.split('\n');
+          for (const k in err) {
+            wrappedErr[k] = err[k];
+          }
+          stackList[0] += ' ' + err.message;
+          wrappedErr.stack = stackList.slice(0, 1).concat(stackList.slice(3)).join('\n');
+          return reject(wrappedErr);
+        }
+        resolve(result);
+      });
+      fn.call(that, ...args);
+    });
+  }
+}; // jshint ignore:line
+
 
 // For disccussion on why `cloneDeep` is required, see:
 // https://github.com/facebook/jest/issues/3552
