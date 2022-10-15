@@ -121,7 +121,7 @@ Configurable{{ cppClassName }}::Configurable{{ cppClassName }}(nodegit::Context 
     this->raw = new {{ cType }};
   {% else %}
     {{ cType }}{% if isExtendedStruct %}_extended{% endif %} wrappedValue = {{ cType|upper }}_INIT;
-    this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}{% if isExtendedStruct %}_extended{% endif %}));
+    this->raw = ({{ cType }}*) new {{ cType }}{% if isExtendedStruct %}_extended{% endif %};
     memcpy(this->raw, &wrappedValue, sizeof({{ cType }}{% if isExtendedStruct %}_extended{% endif %}));
   {% endif %}
 }
@@ -132,7 +132,7 @@ Configurable{{ cppClassName }}::~Configurable{{ cppClassName }}() {
       {% if field.cppClassName == 'GitStrarray' %}
         if (this->raw->{{ field.name }}.count) {
           for (size_t i = 0; i < this->raw->{{ field.name }}.count; ++i) {
-            delete this->raw->{{ field.name }}.strings[i];
+            free(this->raw->{{ field.name }}.strings[i]);
           }
           delete[] this->raw->{{ field.name }}.strings;
         }

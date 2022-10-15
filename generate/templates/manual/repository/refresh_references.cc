@@ -244,10 +244,10 @@ public:
   }
 
   ~RefreshedRefModel() {
-    if (fullName != NULL) { delete[] fullName; }
-    if (message != NULL) { delete[] message; }
+    if (fullName != NULL) { free(fullName); }
+    if (message != NULL) { free(message); }
     delete[] sha;
-    if (shorthand != NULL) { delete[] shorthand; }
+    if (shorthand != NULL) { free(shorthand); }
     if (tagOdbBuffer != NULL) { delete[] tagOdbBuffer; }
   }
 
@@ -344,8 +344,8 @@ public:
   }
 
   ~UpstreamModel() {
-    if (downstreamFullName != NULL) { delete[] downstreamFullName; }
-    if (upstreamFullName != NULL) { delete[] upstreamFullName; }
+    if (downstreamFullName != NULL) { free(downstreamFullName); }
+    if (upstreamFullName != NULL) { free(upstreamFullName); }
   }
 
   char *downstreamFullName;
@@ -375,7 +375,7 @@ public:
       delete upstreamInfo.back();
       upstreamInfo.pop_back();
     }
-    if (headRefFullName != NULL) { delete[] headRefFullName; }
+    if (headRefFullName != NULL) { free(headRefFullName); }
     if (cherrypick != NULL) { delete cherrypick; }
     if (merge != NULL) { delete merge; }
   }
@@ -573,7 +573,7 @@ void GitRepository::RefreshReferencesWorker::Execute()
     if (isRemote) {
       char *remoteNameOfRef = getRemoteNameOfReference(reference);
       bool isFromExistingRemote = gitStrArrayContains(&remoteNames, remoteNameOfRef);
-      delete[] remoteNameOfRef;
+      free(remoteNameOfRef);
       if (!isFromExistingRemote) {
         git_reference_free(reference);
         continue;
