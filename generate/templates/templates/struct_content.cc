@@ -118,10 +118,10 @@ Configurable{{ cppClassName }}::Configurable{{ cppClassName }}(nodegit::Context 
   : nodegit::ConfigurableClassWrapper<{{ cppClassName }}Traits>(nodegitContext)
 {
   {% if ignoreInit == true %}
-    this->raw = new {{ cType }};
+    this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}));
   {% else %}
     {{ cType }}{% if isExtendedStruct %}_extended{% endif %} wrappedValue = {{ cType|upper }}_INIT;
-    this->raw = ({{ cType }}*) new {{ cType }}{% if isExtendedStruct %}_extended{% endif %};
+    this->raw = ({{ cType }}*) malloc(sizeof({{ cType }}{% if isExtendedStruct %}_extended{% endif %}));
     memcpy(this->raw, &wrappedValue, sizeof({{ cType }}{% if isExtendedStruct %}_extended{% endif %}));
   {% endif %}
 }
@@ -134,10 +134,10 @@ Configurable{{ cppClassName }}::~Configurable{{ cppClassName }}() {
           for (size_t i = 0; i < this->raw->{{ field.name }}.count; ++i) {
             free(this->raw->{{ field.name }}.strings[i]);
           }
-          delete[] this->raw->{{ field.name }}.strings;
+          free(this->raw->{{ field.name }}.strings);
         }
       {% elsif field.cppClassName == 'String' %}
-        delete this->raw->{{ field.name }};
+        free((void*)this->raw->{{ field.name }});
       {% endif %}
     {% endif %}
   {% endeach %}
