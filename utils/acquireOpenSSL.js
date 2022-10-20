@@ -65,6 +65,10 @@ const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
 }
 
 const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
+  if (!macOsDeploymentTarget) {
+    throw new Error("Expected macOsDeploymentTarget to be specified");
+  }
+
   const arguments = [
     process.arch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc",
     // speed up ecdh on little-endian platforms with 128bit int support
@@ -143,9 +147,12 @@ const buildLinux = async (buildCwd) => {
   }, { pipeOutput: true });
 };
 
-const buildWin32 = async (buildCwd) => {
-  const vcvarsallArch = process.arch === "x64" ? "x64" : "x86";
-  const programFilesPath = (vcvarsallArch === "x64"
+const buildWin32 = async (buildCwd, vsBuildArch) => {
+  if (!vsBuildArch) {
+    throw new Error("Expected vsBuildArch to be specified");
+  }
+
+  const programFilesPath = (process.arch === "x64"
     ? process.env["ProgramFiles(x86)"]
     : process.env.ProgramFiles) || "C:\\Program Files";
   const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
@@ -157,8 +164,24 @@ const buildWin32 = async (buildCwd) => {
     throw new Error(`vcvarsall.bat not found at ${vcvarsallPath}`);
   }
 
-  const vcTarget = vcvarsallArch === "x64" ? "VC-WIN64A" : "VC-WIN32";
-  await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vcvarsallArch} ${vcTarget}`, {
+  let vcTarget;
+  switch (vsBuildArch) {
+    case "x64": {
+      vcTarget = "VC-WIN64A";
+      break;
+    }
+
+    case "x86": {
+      vcTarget = "VC-WIN32";
+      break;
+    }
+      
+    default: {
+      throw new Error(`Unknown vsBuildArch: ${vsBuildArch}`);
+    }
+  }
+
+  await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vsBuildArch} ${vcTarget}`, {
     cwd: buildCwd,
     maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
   }, { pipeOutput: true });
@@ -203,7 +226,11 @@ const makeOnStreamDownloadProgress = () => {
   };
 };
 
-const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) => {
+const buildOpenSSLIfNecessary = async ({
+  macOsDeploymentTarget,
+  openSSLVersion,
+  vsBuildArch
+}) => {
   if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL build, not required on ${process.platform}`);
     return;
@@ -246,7 +273,7 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
   } else if (process.platform === "linux") {
     await buildLinux(buildCwd);
   } else if (process.platform === "win32") {
-    await buildWin32(buildCwd);
+    await buildWin32(buildCwd, vsBuildArch);
   } else {
     throw new Error(`Unknown platform: ${process.platform}`);
   }
@@ -290,7 +317,9 @@ const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) =
 
 const getOpenSSLPackageName = () => {
   let arch = process.arch;
-  if (process.platform === "win32" && process.arch === "ia32") {
+  if (process.platform === "win32" && (
+    process.arch === "ia32" || process.env.NODEGIT_VS_BUILD_ARCH === "x86"
+  )) {
     arch = "x86";
   }
 
@@ -322,7 +351,19 @@ const acquireOpenSSL = async () => {
       }
     }
 
-    await buildOpenSSLIfNecessary(OPENSSL_VERSION, macOsDeploymentTarget);
+    let vsBuildArch;
+    if (process.platform === "win32") {
+      vsBuildArch = process.env.NODEGIT_VS_BUILD_ARCH || (process.arch === "x64" ? "x64" : "x86");
+      if (!["x64", "x86"].includes(vsBuildArch)) {
+        throw new Error(`Invalid vsBuildArch: ${vsBuildArch}`);
+      }
+    }
+
+    await buildOpenSSLIfNecessary({
+      openSSLVersion: OPENSSL_VERSION,
+      macOsDeploymentTarget,
+      vsBuildArch
+    });
     if (process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
       await buildPackage();
     }
