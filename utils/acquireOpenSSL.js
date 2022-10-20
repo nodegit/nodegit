@@ -42,10 +42,11 @@ class HashVerify extends stream.Transform {
 }
 
 // currently this only needs to be done on linux
-const applyOpenSSLPatches = async (buildCwd) => {
+const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
   try {
     for (const patchFilename of await fse.readdir(opensslPatchPath)) {
-      if (patchFilename.split(".").pop() === "patch") {
+      const patchTarget = patchFilename.split("-")[1];
+      if (patchFilename.split(".").pop() === "patch" && (patchTarget === operatingSystem || patchTarget === "all")) {
         console.log(`applying ${patchFilename}`);
         await execPromise(`patch -up0 -i ${path.join(opensslPatchPath, patchFilename)}`, {
           cwd: buildCwd
@@ -79,6 +80,8 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
   await execPromise(`./Configure ${arguments.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
+
+  await applyOpenSSLPatches(buildCwd, "darwin");
 
   // only build the libraries, not the tests/fuzzer or apps
   await execPromise("make build_libs", {
@@ -117,7 +120,7 @@ const buildLinux = async (buildCwd) => {
     cwd: buildCwd
   }, { pipeOutput: true });
 
-  await applyOpenSSLPatches(buildCwd);
+  await applyOpenSSLPatches(buildCwd, "linux");
 
   // only build the libraries, not the tests/fuzzer or apps
   await execPromise("make build_libs", {

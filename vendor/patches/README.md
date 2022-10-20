@@ -5,7 +5,9 @@ Patches will be applied from 000 to 999
 
 ### Naming Convention
 
-`<number 3 digits>-<description>.patch`
+`<number 3 digits>-<operating system>-<description>.patch`
+
+Operating system is either "darwin", "linux", or "all".
 
 ### Content
 
