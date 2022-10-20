@@ -1448,6 +1448,13 @@
     "diff_format_email_options": {
       "ignore": true
     },
+    "diff_line": {
+      "dependencies": [
+        "../include/functions/free.h"
+      ],
+      "selfFreeing": true,
+      "freeFunctionName": "git_diff_line_free"
+    },
     "diff_perfdata": {
       "selfFreeing": true,
       "cDependencies": [
