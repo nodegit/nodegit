@@ -20,6 +20,10 @@ const vendorPath = path.resolve(__dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
 
+const pathsToIncludeForPackage = [
+  "bin", "include", "lib"
+];
+
 const getOpenSSLSourceUrl = (version) => `https://www.openssl.org/source/openssl-${version}.tar.gz`;
 const getOpenSSLSourceSha256Url = (version) => `${getOpenSSLSourceUrl(version)}.sha256`;
 
@@ -200,12 +204,12 @@ const makeOnStreamDownloadProgress = () => {
 };
 
 const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) => {
-  if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== 'linux') {
+  if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL build, not required on ${process.platform}`);
     return;
   }
 
-  if (process.platform === 'linux' && process.env.NODEGIT_OPENSSL_STATIC_LINK !== '1') {
+  if (process.platform === "linux" && process.env.NODEGIT_OPENSSL_STATIC_LINK !== "1") {
     console.log(`Skipping OpenSSL build, NODEGIT_OPENSSL_STATIC_LINK !== 1`);
     return;
   }
@@ -239,7 +243,7 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
 
   if (process.platform === "darwin") {
     await buildDarwin(buildCwd, macOsDeploymentTarget);
-  } else if (process.platform === "linux" && process.env.NODEGIT_OPENSSL_STATIC_LINK === '1') {
+  } else if (process.platform === "linux") {
     await buildLinux(buildCwd);
   } else if (process.platform === "win32") {
     await buildWin32(buildCwd);
@@ -251,12 +255,12 @@ const buildOpenSSLIfNecessary = async (openSSLVersion, macOsDeploymentTarget) =>
 }
 
 const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) => {
-  if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== 'linux') {
+  if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL download, not required on ${process.platform}`);
     return;
   }
 
-  if (process.platform === 'linux' && process.env.NODEGIT_OPENSSL_STATIC_LINK !== '1') {
+  if (process.platform === "linux" && process.env.NODEGIT_OPENSSL_STATIC_LINK !== "1") {
     console.log(`Skipping OpenSSL download, NODEGIT_OPENSSL_STATIC_LINK !== 1`);
     return;
   }
@@ -284,6 +288,23 @@ const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) =
   console.log("Download finished.");
 }
 
+const getOpenSSLPackageName = () => {
+  let arch = process.arch;
+  if (process.platform === "win32" && process.arch === "ia32") {
+    arch = "x86";
+  }
+
+  return `openssl-${OPENSSL_VERSION}-${process.platform}-${arch}.tar.gz`;
+}
+
+const buildPackage = async () => {
+  await pipeline(
+    tar.pack(extractPath, { entries: pathsToIncludeForPackage }),
+    zlib.createGzip(),
+    fsNonPromise.createWriteStream(getOpenSSLPackageName())
+  );
+};
+
 const acquireOpenSSL = async () => {
   try {
     const maybeDownloadBinUrl = process.env.npm_config_openssl_bin_url;
@@ -302,10 +323,24 @@ const acquireOpenSSL = async () => {
     }
 
     await buildOpenSSLIfNecessary(OPENSSL_VERSION, macOsDeploymentTarget);
+    if (process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
+      await buildPackage();
+    }
   } catch (err) {
     console.error("Acquire failed: ", err);
     process.exit(1);
   }
 };
 
-acquireOpenSSL();
+module.exports = {
+  acquireOpenSSL,
+  getOpenSSLPackageName,
+  OPENSSL_VERSION
+};
+
+if (require.main === module) {
+  acquireOpenSSL().catch((error) => {
+    console.error("Acquire OpenSSL failed: ", error);
+    process.exit(1);
+  });
+}
