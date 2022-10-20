@@ -14,7 +14,7 @@ Contains blame, empty, nonrepo, and workdir test repositories.
 Unit tests for NodeGit.
 
 #### /utils
-Test utilities with garbage collector, index, and repository setup, that can be used in tests.
+Test utilities with garbage collector, index, optionally acquiring openssl, and repository setup, that can be used in tests.
 
 
 ## Note
