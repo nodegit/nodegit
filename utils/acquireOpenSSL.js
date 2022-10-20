@@ -14,6 +14,8 @@ const zlib = require("zlib");
 
 const pipeline = promisify(stream.pipeline);
 
+const packageJson = require('../package.json')
+
 const OPENSSL_VERSION = "1.1.1q";
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
 const vendorPath = path.resolve(__dirname, "..", "vendor");
@@ -326,6 +328,8 @@ const getOpenSSLPackageName = () => {
   return `openssl-${OPENSSL_VERSION}-${process.platform}-${arch}.tar.gz`;
 }
 
+const getOpenSSLPackageUrl = () => `${packageJson.binary.host}${getOpenSSLPackageName()}`;
+
 const buildPackage = async () => {
   await pipeline(
     tar.pack(extractPath, {
@@ -345,10 +349,18 @@ const buildPackage = async () => {
 
 const acquireOpenSSL = async () => {
   try {
-    const maybeDownloadBinUrl = process.env.npm_config_openssl_bin_url;
-    if (maybeDownloadBinUrl) {
-      const maybeDownloadSha256 = process.env.npm_config_openssl_bin_sha256;
-      await downloadOpenSSLIfNecessary(maybeDownloadBinUrl, maybeDownloadSha256);
+    const downloadBinUrl = process.env.npm_config_openssl_bin_url || getOpenSSLPackageUrl();
+    if (downloadBinUrl !== 'skip' && !process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
+      let maybeDownloadSha256;
+      if (process.env.npm_config_openssl_bin_sha256 !== 'skip') {
+        if (process.env.npm_config_openssl_bin_sha256) {
+          maybeDownloadSha256 = process.env.npm_config_openssl_bin_sha256;
+        } else {
+          maybeDownloadSha256 = (await got(`${getOpenSSLPackageUrl()}.sha256`)).body.trim();
+        }
+      }
+
+      await downloadOpenSSLIfNecessary(downloadBinUrl, maybeDownloadSha256);
       return;
     }
 
