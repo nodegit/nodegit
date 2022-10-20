@@ -21,7 +21,7 @@ const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
 
 const pathsToIncludeForPackage = [
-  "bin", "include", "lib"
+  "include", "lib"
 ];
 
 const getOpenSSLSourceUrl = (version) => `https://www.openssl.org/source/openssl-${version}.tar.gz`;
@@ -328,7 +328,16 @@ const getOpenSSLPackageName = () => {
 
 const buildPackage = async () => {
   await pipeline(
-    tar.pack(extractPath, { entries: pathsToIncludeForPackage }),
+    tar.pack(extractPath, {
+      entries: pathsToIncludeForPackage,
+      ignore: (name) => {
+        // Ignore pkgconfig files
+        return path.extname(name) === ".pc"
+          || path.basename(name) === "pkgconfig";
+      },
+      dmode: 0755,
+      fmode: 0644
+    }),
     zlib.createGzip(),
     fsNonPromise.createWriteStream(getOpenSSLPackageName())
   );
