@@ -178,6 +178,33 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
       baton->result = result;
 
     {%endif%}
+
+  {%each args|argsInfo as arg %}
+    {%if not arg.isSelf %}
+      {%if not arg.payloadFor %}
+        {%if not arg.isCallbackFunction %}
+          {%if not arg.isStructType %}
+            {%if not arg.payloadFor %}
+              {%if not arg.isStructType %}
+                {%if not arg.isReturn %}
+                  {%if not arg.isPayload %}
+                    {%if arg.name %}
+                      {%if arg.cppClassName == 'String'%}
+                        free((void*)baton->{{ arg.name }});
+                      {%endif%}
+                      {%if arg.cppClassName == 'Wrapper'%}
+                        free((void*)baton->{{ arg.name }});
+                      {%endif%}
+                    {%endif%}
+                  {%endif%}
+                {%endif%}
+              {%endif%}
+            {%endif%}
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endif%}
+  {%endeach%}
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
@@ -201,6 +228,17 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
   {%each args|argsInfo as arg %}
     {%if arg.shouldAlloc %}
       {%if not arg.isCppClassStringOrArray %}
+        {%if arg.cppClassName == "GitBuf" %}
+        {%else%}
+          {%if arg | isOid %}
+            if (baton->{{ arg.name}}NeedsFree) {
+              baton->{{ arg.name}}NeedsFree = false;
+              free((void*)baton->{{ arg.name }});
+            }
+          {%else%}
+            free((void*)baton->{{ arg.name }});
+          {%endif%}
+        {%endif%}
       {%elsif arg | isOid %}
         if (baton->{{ arg.name}}NeedsFree) {
           baton->{{ arg.name}}NeedsFree = false;
@@ -346,6 +384,13 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     {%each args|argsInfo as arg %}
       {%if arg.shouldAlloc %}
         {%if not arg.isCppClassStringOrArray %}
+          {%if arg.cppClassName == "GitBuf" %}
+          {%else%}
+            {%if arg | isOid %}
+            {%else%}
+              free((void*)baton->{{ arg.name }});
+            {%endif%}
+          {%endif%}
         {%elsif arg | isOid %}
           if (baton->{{ arg.name}}NeedsFree) {
             baton->{{ arg.name}}NeedsFree = false;

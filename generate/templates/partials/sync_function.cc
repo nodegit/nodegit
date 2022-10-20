@@ -95,9 +95,18 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
     {%each args|argsInfo as arg %}
       {%if arg | isOid %}
-      if (info[{{ arg.jsArg }}]->IsString()) {
-        free((void *)from_{{ arg.name }});
-      }
+        if (info[{{ arg.jsArg }}]->IsString()) {
+          free((void *)from_{{ arg.name }});
+        }
+      {%else%}
+        {%if not arg.isReturn %}
+          {%if arg.cppClassName == 'String'%}
+            free((void *)from_{{ arg.name }});
+          {%endif%}
+          {%if arg.cppClassName == 'Wrapper'%}
+            free((void *)from_{{ arg.name }});
+          {%endif%}
+        {%endif%}
       {%endif%}
     {%endeach%}
 

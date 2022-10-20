@@ -291,6 +291,8 @@ void GitRevwalk::FileHistoryWalkWorker::Execute()
 
       if (fileHistoryEvent->type != GIT_DELTA_UNMODIFIED) {
         baton->out->push_back(fileHistoryEvent);
+      } else {
+        delete fileHistoryEvent;
       }
 
       git_commit_free(currentCommit);
