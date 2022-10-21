@@ -311,6 +311,19 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         Nan::Set(result, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), v8ConversionSlot);
       {%endif%}
     {%endeach%}
+
+    {%each args|argsInfo as arg %}
+      {%if not arg.shouldAlloc %}
+        {%if arg.ownedByThis|and arg.dupFunction|and arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
+          // We need to free duplicated memory we are responsible for that we obtained from libgit2 because
+          // nodegit duplicates it again when calling the wrapper
+          if(baton->{{ arg.name }} != NULL) {
+            {{ arg.freeFunctionName }}(baton->{{ arg.name }});
+          }
+        {%endif%}
+      {%endif%}
+    {%endeach%}
+
     {%if .|returnsCount == 1 %}
       v8::Local<v8::Value> result = v8ConversionSlot;
     {%endif%}
