@@ -74,7 +74,7 @@ const loopingCheckoutHead = async function(repoPath, repo, times) {
   let iteration = 0;
   for (let i = 0; true; i = ++i%2) {
     const newText = (i == 0) ? text0 : text1;
-    const jsRelativeFilePahts = await changeDirExtFiles(repoPath, "js", newText);  // jshint ignore:line
+    const jsRelativeFilePahts = await changeDirExtFiles(repoPath, "js", newText);  // eslint-disable-line
     let checkoutOpts = {
       checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE,
       paths: jsRelativeFilePahts

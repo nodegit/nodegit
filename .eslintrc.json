@@ -1,0 +1,8 @@
+{
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "globalReturn": true
+    }
+  }
+}

@@ -290,7 +290,7 @@ describe("Blob", function() {
           return commitFile(
             test.repository,
             newFileName,
-            "this\nis\nfun\guys",
+            "this\nis\nfun\nguys",
             "added LF ending file"
           );
         })
@@ -334,7 +334,7 @@ describe("Blob", function() {
           return commitFile(
             test.repository,
             newFileName,
-            "this\nis\nfun\guys",
+            "this\nis\nfun\nguys",
             "added LF ending file"
           );
         })
@@ -498,7 +498,7 @@ describe("Blob", function() {
           return commitFile(
             test.repository,
             newFileName,
-            "this\nis\nfun\guys",
+            "this\nis\nfun\nguys",
             "added LF ending file"
           );
         })
@@ -538,7 +538,7 @@ describe("Blob", function() {
           return commitFile(
             test.repository,
             newFileName,
-            "this\nis\nfun\guys",
+            "this\nis\nfun\nguys",
             "added LF ending file"
           );
         })

@@ -64,9 +64,9 @@ if (Worker) {
     });
 
     for (let i = 0; i < 5; ++i) {
-      it(`can kill worker thread while in use #${i}`, function(done) { // jshint ignore:line
+      it(`can kill worker thread while in use #${i}`, function(done) { // eslint-disable-line
         const workerPath = local("../utils/worker.js");
-        const worker = new Worker(workerPath, { 
+        const worker = new Worker(workerPath, {
           workerData: {
             clonePath,
             url: "https://github.com/nodegit/test.git"
@@ -142,7 +142,7 @@ if (Worker) {
     // This tests that while calling filter's apply callbacks and the worker
     // is terminated, node exits gracefully. To make sure we terminate the
     // worker during a checkout, continuous checkouts will be running in a loop.
-    it("can kill worker thread while doing a checkout and exit gracefully", function(done) { // jshint ignore:line
+    it("can kill worker thread while doing a checkout and exit gracefully", function(done) { // eslint-disable-line
       const workerPath = local("../utils/worker_checkout.js");
       const worker = new Worker(workerPath, {
         workerData: {
@@ -177,7 +177,7 @@ if (Worker) {
 
     // This tests that after calling filter's apply callbacks and the worker
     // is terminated, there will be no memory leaks.
-    it("can track objects to free on context shutdown after multiple checkouts", function(done) { // jshint ignore:line
+    it("can track objects to free on context shutdown after multiple checkouts", function(done) { // eslint-disable-line
       let testOk;
       const workerPath = local("../utils/worker_context_aware_checkout.js");
       const worker = new Worker(workerPath, {

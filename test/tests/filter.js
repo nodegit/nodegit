@@ -333,7 +333,7 @@ describe("Filter", function() {
         });
     });
 
-    it("can run sync callback on checkout without deadlocking", function() { // jshint ignore:line
+    it("can run sync callback on checkout without deadlocking", function() { // eslint-disable-line
       var test = this;
       var syncCallbackResult = 1;
 
@@ -369,7 +369,7 @@ describe("Filter", function() {
     // To activate when reverting workaround.
     // 'Checkout.head' and 'Submodule.lookup' do work with the repo locked.
     // They should work together without deadlocking.
-    it.skip("can run async callback on checkout without deadlocking", function() { // jshint ignore:line
+    it.skip("can run async callback on checkout without deadlocking", function() { // eslint-disable-line
       var test = this;
       var submoduleNameIn = "vendor/libgit2";
       var asyncCallbackResult = "";
@@ -716,9 +716,9 @@ describe("Filter", function() {
           );
         })
         .then(function(list) {
-          /* jshint ignore:start */
+          /* eslint-disable */
           return list.applyToData(new String("garbo garbo garbo garbo"));
-          /* jshint ignore:end */
+          /* eslint-enable */
         })
         .then(function(content) {
           assert.equal(content, message);

@@ -6,6 +6,7 @@
 /lib/
 /test/
 /vendor/Release/
+/vendor/openssl/
 
 !/include
 !/src

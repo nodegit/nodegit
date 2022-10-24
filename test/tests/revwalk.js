@@ -26,13 +26,12 @@ describe("Revwalk", function() {
       })
       .then(function(commit) {
         test.commit = commit;
+      })
+      .then(function() {
+        test.walker = test.repository.createRevWalk();
+        test.walker.sorting(NodeGit.Revwalk.SORT.TIME);
+        test.walker.push(test.commit.id());
       });
-  });
-
-  beforeEach(function() {
-    this.walker = this.repository.createRevWalk();
-    this.walker.sorting(NodeGit.Revwalk.SORT.TIME);
-    this.walker.push(this.commit.id());
   });
 
   it("can create a walker", function() {

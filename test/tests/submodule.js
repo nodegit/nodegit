@@ -106,6 +106,40 @@ describe("Submodule", function() {
       });
   });
 
+  it("can run sync callback without deadlocking", function() {
+    var repo = this.workdirRepository;
+    var submodules = [];
+    var submoduleCallback = function(submodule, name, payload) {
+      var submoduleName = submodule.name();
+      assert.equal(submoduleName, name);
+      submodules.push(name);
+    };
+
+    return Submodule.foreach(repo, submoduleCallback).then(function() {
+      assert.equal(submodules.length, 1);
+    });
+  });
+
+  // 'Submodule.foreach' and 'Submodule.lookup' do work with the repo locked.
+  // They should work together without deadlocking.
+  it("can run async callback without deadlocking", function() {
+    var repo = this.workdirRepository;
+    var submodules = [];
+    var submoduleCallback = function(submodule, name, payload) {
+      var owner = submodule.owner();
+
+      return Submodule.lookup(owner, name)
+        .then(function(submodule) {
+          assert.equal(submodule.name(), name);
+          submodules.push(name);
+        });
+    };
+
+    return Submodule.foreach(repo, submoduleCallback).then(function() {
+      assert.equal(submodules.length, 1);
+    });
+  });
+
   it("can setup and finalize submodule add", function() {
     this.timeout(30000);
 
@@ -156,39 +190,5 @@ describe("Submodule", function() {
         assert.equal(entries[0].path, ".gitmodules");
         assert.equal(entries[1].path, submodulePath);
       });
-  });
-
-  it("can run sync callback without deadlocking", function() {
-    var repo = this.workdirRepository;
-    var submodules = [];
-    var submoduleCallback = function(submodule, name, payload) {
-      var submoduleName = submodule.name();
-      assert.equal(submoduleName, name);
-      submodules.push(name);
-    };
-
-    return Submodule.foreach(repo, submoduleCallback).then(function() {
-      assert.equal(submodules.length, 1);
-    });
-  });
-
-  // 'Submodule.foreach' and 'Submodule.lookup' do work with the repo locked.
-  // They should work together without deadlocking.
-  it("can run async callback without deadlocking", function() {
-    var repo = this.workdirRepository;
-    var submodules = [];
-    var submoduleCallback = function(submodule, name, payload) {
-      var owner = submodule.owner();
-
-      return Submodule.lookup(owner, name)
-        .then(function(submodule) {
-          assert.equal(submodule.name(), name);
-          submodules.push(name);
-        });
-    };
-
-    return Submodule.foreach(repo, submoduleCallback).then(function() {
-      assert.equal(submodules.length, 1);
-    });
   });
 });
