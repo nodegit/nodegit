@@ -436,10 +436,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
 
   {%each args|argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}
-      {%if arg.freeFunctionName %}
-      {%elsif not arg.isConst%}
-        free((void *)baton->{{ arg.name }});
-      {%endif%}
     {%elsif arg | isOid %}
       if (baton->{{ arg.name}}NeedsFree) {
         baton->{{ arg.name}}NeedsFree = false;
