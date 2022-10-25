@@ -472,6 +472,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     callback->Call(2, argv, async_resource);
 
     delete baton->out;
+    delete baton;
     return;
   }
 
@@ -494,6 +495,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
     }
 
     free((void *)baton->error);
+    delete baton;
     return;
   }
 
@@ -505,6 +507,7 @@ void GitRevwalk::FileHistoryWalkWorker::HandleOKCallback()
       err
     };
     callback->Call(1, argv, async_resource);
+    delete baton;
     return;
   }
 
