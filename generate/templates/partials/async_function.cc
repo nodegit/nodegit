@@ -182,15 +182,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   {%each args|argsInfo as arg %}
     {%if not arg.isSelf %}
       {%if not arg.payloadFor %}
-        {%if arg.cppClassName == 'GitStrarray' %}
-          {%if not arg.isReturn %}
+        {%if not arg.isReturn %}
+          {%if arg.cppClassName == 'GitStrarray' %}
             {{ arg.freeFunctionName }}((git_strarray*)baton->{{ arg.name }});
             free((void*)baton->{{ arg.name }});
-          {%endif%}
-        {%elsif not arg.isCallbackFunction %}
-          {%if not arg.isStructType %}
+          {%elsif arg.cppClassName == 'Array' %}
+            free((void*)baton->{{ arg.name }});
+          {%elsif not arg.isCallbackFunction %}
             {%if not arg.isStructType %}
-              {%if not arg.isReturn %}
+              {%if not arg.isStructType %}
                 {%if not arg.isPayload %}
                   {%if arg.name %}
                     {%if arg.cppClassName == 'String'%}
