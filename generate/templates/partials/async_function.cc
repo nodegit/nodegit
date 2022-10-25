@@ -182,19 +182,22 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
   {%each args|argsInfo as arg %}
     {%if not arg.isSelf %}
       {%if not arg.payloadFor %}
-        {%if not arg.isCallbackFunction %}
+        {%if arg.cppClassName == 'GitStrarray' %}
+          {%if not arg.isReturn %}
+            {{ arg.freeFunctionName }}((git_strarray*)baton->{{ arg.name }});
+            free((void*)baton->{{ arg.name }});
+          {%endif%}
+        {%elsif not arg.isCallbackFunction %}
           {%if not arg.isStructType %}
-            {%if not arg.payloadFor %}
-              {%if not arg.isStructType %}
-                {%if not arg.isReturn %}
-                  {%if not arg.isPayload %}
-                    {%if arg.name %}
-                      {%if arg.cppClassName == 'String'%}
-                        free((void*)baton->{{ arg.name }});
-                      {%endif%}
-                      {%if arg.cppClassName == 'Wrapper'%}
-                        free((void*)baton->{{ arg.name }});
-                      {%endif%}
+            {%if not arg.isStructType %}
+              {%if not arg.isReturn %}
+                {%if not arg.isPayload %}
+                  {%if arg.name %}
+                    {%if arg.cppClassName == 'String'%}
+                      free((void*)baton->{{ arg.name }});
+                    {%endif%}
+                    {%if arg.cppClassName == 'Wrapper'%}
+                      free((void*)baton->{{ arg.name }});
                     {%endif%}
                   {%endif%}
                 {%endif%}
@@ -313,6 +316,13 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     {%endeach%}
 
     {%each args|argsInfo as arg %}
+      {%if arg.shouldAlloc|and arg.isReturn|and arg.cppClassName == 'Array' %}
+        {%if arg.cType == 'git_strarray *' %}
+          // We need to free the strarray
+          {{ arg.freeFunctionName }}(baton->{{ arg.name }});
+          free((void *)baton->{{ arg.name }});
+        {%endif%}
+      {%endif%}
       {%if not arg.shouldAlloc %}
         {%if arg.ownedByThis|and arg.dupFunction|and arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
           // We need to free duplicated memory we are responsible for that we obtained from libgit2 because
