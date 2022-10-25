@@ -2034,6 +2034,10 @@
       }
     },
     "index_entry": {
+      "dependencies": [
+        "../include/functions/free.h"
+      ],
+      "freeFunctionName": "git_index_entry_free",
       "isReturnable": true,
       "hasConstructor": true,
       "ignoreInit": true
