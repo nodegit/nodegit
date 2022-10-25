@@ -14,6 +14,7 @@ const zlib = require("zlib");
 
 const pipeline = promisify(stream.pipeline);
 
+const OPENSSL_VERSION = "1.1.1q";
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
 const vendorPath = path.resolve(__dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
@@ -300,7 +301,7 @@ const acquireOpenSSL = async () => {
       }
     }
 
-    await buildOpenSSLIfNecessary("1.1.1l", macOsDeploymentTarget);
+    await buildOpenSSLIfNecessary(OPENSSL_VERSION, macOsDeploymentTarget);
   } catch (err) {
     console.error("Acquire failed: ", err);
     process.exit(1);
