@@ -28,7 +28,8 @@ NAN_METHOD(GitCommit::ExtractSignature)
   if (info[1]->IsString()) {
     Nan::Utf8String oidString(Nan::To<v8::String>(info[1]).ToLocalChecked());
     baton->commit_id = (git_oid *)malloc(sizeof(git_oid));
-    if (git_oid_fromstr(baton->commit_id, (const char *)strdup(*oidString)) != GIT_OK) {
+    string str = string(*oidString);
+    if (git_oid_fromstr(baton->commit_id, str.c_str()) != GIT_OK) {
       free(baton->commit_id);
 
       if (git_error_last()) {
