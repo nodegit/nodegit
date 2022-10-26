@@ -64,7 +64,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
               );
 
               if (!conversionResult.result) {
-                delete[] baton->{{ arg.name }};
+                // TODO free previously allocated memory
+                free(baton->{{ arg.name }});
+                delete baton;
                 return Nan::ThrowError(Nan::New(conversionResult.error).ToLocalChecked());
               }
 
@@ -77,6 +79,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {
             auto conversionResult = Configurable{{ arg.cppClassName }}::fromJavascript(nodegitContext, info[{{ arg.jsArg }}]);
             if (!conversionResult.result) {
+              delete baton;
               return Nan::ThrowError(Nan::New(conversionResult.error).ToLocalChecked());
             }
 
