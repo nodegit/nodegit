@@ -92,6 +92,46 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       } // lock master scope end
     {%endif%}
 
+    {%each args|argsInfo as arg %}
+      {%if not arg.isSelf %}
+        {%if not arg.payloadFor %}
+          {%if not arg.isReturn %}
+            {%if arg.cppClassName == 'GitStrarray' %}
+              {{ arg.freeFunctionName }}((git_strarray*)from_{{ arg.name }});
+              free((void*)from_{{ arg.name }});
+            {%elsif arg.cppClassName == 'Array' %}
+              free((void*)from_{{ arg.name }});
+            {%endif%}
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
+
+    {%each args|argsInfo as arg %}
+      {%if arg.shouldAlloc|and arg.isReturn|and arg.cppClassName == 'Array' %}
+        {%if arg.cType == 'git_strarray *' %}
+          // We need to free the strarray
+          {{ arg.freeFunctionName }}(from_{{ arg.name }});
+          free((void *)from_{{ arg.name }});
+        {%endif%}
+      {%endif%}
+      {%if not arg.shouldAlloc %}
+        {%if arg.ownedByThis|and arg.dupFunction|and arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
+          // We need to free duplicated memory we are responsible for that we obtained from libgit2 because
+          // nodegit duplicates it again when calling the wrapper
+          if(from_{{ arg.name }} != NULL) {
+            {{ arg.freeFunctionName }}(from_{{ arg.name }});
+          }
+        {%endif%}
+      {%elsif arg.isReturn %}
+        {%if not arg.selfFreeing %}
+          {%if arg.cppClassName == "GitBuf" %}
+          {%else%}
+            free((void *)from_{{ arg.name }});
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
 
     {%each args|argsInfo as arg %}
       {%if arg | isOid %}
