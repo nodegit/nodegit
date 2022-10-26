@@ -334,6 +334,13 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
             {{ arg.freeFunctionName }}(baton->{{ arg.name }});
           }
         {%endif%}
+      {%elsif arg.isReturn %}
+        {%if not arg.selfFreeing %}
+          {%if arg.cppClassName == "GitBuf" %}
+          {%else%}
+            free((void *)baton->{{ arg.name }});
+          {%endif%}
+        {%endif%}
       {%endif%}
     {%endeach%}
 
