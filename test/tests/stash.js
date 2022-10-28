@@ -257,4 +257,74 @@ describe("Stash", function() {
         assert.equal(fileContentB, content);
       });
   });
+
+  it("can partial stash the workdir and pop it", function() {
+    const repo = this.repository;
+    
+    const fileName1 = "README.md";
+    const fileName2 = "install.js";
+    const fileName3 = "LICENSE";
+
+    const fileContentA = "Hi. It's me. I'm the dog. My name is the dog.";
+    const fileContentB = "Everyone likes me. I'm cute.";
+
+    let oldContentA;
+    let oldContentB;
+    let oldContentC;
+
+    const filePath1 = path.join(repo.workdir(), fileName1);
+    const filePath2 = path.join(repo.workdir(), fileName2);
+    const filePath3 = path.join(repo.workdir(), fileName3);
+
+    const options = {
+      flags: 0,
+      message: "stast test",
+      paths: [fileName1, fileName2]
+    };
+
+    return fse.readFile(filePath1, "utf-8")
+      .then((content) => {
+        oldContentA = content;
+        return fse.readFile(filePath2, "utf-8");
+      })
+      .then((content) => {
+        oldContentB = content;
+        return fse.readFile(filePath3, "utf-8");
+      })
+      .then((content) => {
+        oldContentC = content;
+        return fse.writeFile(filePath1, fileContentA);
+      })
+      .then(() => fse.writeFile(filePath2, fileContentB))
+      .then(() => repo.defaultSignature())
+      .then((signature) => {
+        options.stasher = signature;
+        return Stash.saveWithOpts(repo, options);
+      })
+      .then(() => fse.readFile(filePath1, "utf-8"))
+      .then((content) => {
+        assert.equal(oldContentA, content);
+        return fse.readFile(filePath2, "utf-8");
+      })
+      .then((content) => {
+        assert.equal(oldContentB, content);
+        return fse.readFile(filePath3, "utf-8");
+      })
+      .then((content) => {
+        assert.equal(oldContentC, content);
+        return Stash.pop(repo, 0);
+      })
+      .then(() => fse.readFile(filePath1, "utf-8"))
+      .then((content) => {
+        assert.equal(fileContentA, content);
+        return fse.readFile(filePath2, "utf-8");
+      })
+      .then((content) => {
+        assert.equal(fileContentB, content);
+        return fse.readFile(filePath3, "utf-8");
+      })
+      .then((content) => {
+        assert.equal(oldContentC, content);
+      });
+  });
 });
