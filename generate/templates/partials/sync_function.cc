@@ -115,15 +115,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           free((void *)from_{{ arg.name }});
         {%endif%}
       {%endif%}
-      {%if not arg.shouldAlloc %}
-        {%if arg.ownedByThis|and arg.dupFunction|and arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
-          // We need to free duplicated memory we are responsible for that we obtained from libgit2 because
-          // nodegit duplicates it again when calling the wrapper
-          if(from_{{ arg.name }} != NULL) {
-            {{ arg.freeFunctionName }}(from_{{ arg.name }});
-          }
-        {%endif%}
-      {%elsif arg.isReturn %}
+      {%if arg.shouldAlloc|and arg.isReturn %}
         {%if not arg.selfFreeing %}
           {%if arg.cppClassName == "GitBuf" %}
           {%else%}
