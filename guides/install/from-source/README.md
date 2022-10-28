@@ -67,7 +67,7 @@ npm install nodegit --msvs_version=2013
 ### Electron and OpenSSL ###
 A local version of OpenSSL is required when building for Electron on Windows and macOS. This is due to Electron using BoringSSL, as we are not able to link to it like we are OpenSSL in Node. Additionally, OpenSSL can be statically linked on Linux by setting the `NODEGIT_OPENSSL_STATIC_LINK` environment variable to `1`.
 
-`acquireOpenSSL.js` will attempt to download and build OpenSSL locally. On macOS, this should Just Work(tm). On Windows, things are a little trickier.
+`acquireOpenSSL.js` will attempt to download OpenSSL prebuilts from S3. If preferred, it can also be built locally by setting the environment variable `npm_config_openssl_bin_url=skip`. On macOS, this should Just Work(tm). On Windows, things are a little trickier.
 
 - We rely on the Visual Studio dev tools to be installed, specifically `vcvarsall.bat` to provide access to the tools. If this is not in the default location for VS2017, you'll need to `npm config set vcvarsall_path <path>` or set the environment variable `npm_config_vcvarsall_path` pointing to it.
 - See [Compilation and Installation](https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows) regarding required dependencies, specifically `Perl` (Strawberry Perl is known to work) and `NASM`. Make sure they're on the PATH.
