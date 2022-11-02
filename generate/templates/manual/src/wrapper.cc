@@ -22,7 +22,7 @@ void Wrapper::InitializeComponent(Local<v8::Object> target, nodegit::Context *no
   Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
   Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->InstanceTemplate()->SetInternalFieldCount(2);
   tpl->SetClassName(Nan::New("Wrapper").ToLocalChecked());
 
   Nan::SetPrototypeMethod(tpl, "toBuffer", ToBuffer, nodegitExternal);

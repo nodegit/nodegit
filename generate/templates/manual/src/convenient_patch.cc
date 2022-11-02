@@ -136,7 +136,7 @@ void ConvenientPatch::InitializeComponent(Local<v8::Object> target, nodegit::Con
   Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
   Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->InstanceTemplate()->SetInternalFieldCount(2);
   tpl->SetClassName(Nan::New("ConvenientPatch").ToLocalChecked());
 
   Nan::SetPrototypeMethod(tpl, "hunks", Hunks, nodegitExternal);

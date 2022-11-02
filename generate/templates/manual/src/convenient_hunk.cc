@@ -39,7 +39,7 @@ void ConvenientHunk::InitializeComponent(Local<v8::Object> target, nodegit::Cont
   Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
   Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  tpl->InstanceTemplate()->SetInternalFieldCount(2);
   tpl->SetClassName(Nan::New("ConvenientHunk").ToLocalChecked());
 
   Nan::SetPrototypeMethod(tpl, "size", Size, nodegitExternal);
