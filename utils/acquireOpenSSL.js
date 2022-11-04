@@ -290,7 +290,11 @@ const buildOpenSSLIfNecessary = async ({
   console.log("Build finished.");
 }
 
-const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) => {
+const downloadOpenSSLIfNecessary = async ({
+  downloadBinUrl,
+  maybeDownloadSha256,
+  maybeDownloadSha256Url
+}) => {
   if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL download, not required on ${process.platform}`);
     return;
@@ -306,6 +310,10 @@ const downloadOpenSSLIfNecessary = async (downloadBinUrl, maybeDownloadSha256) =
     console.log("Skipping OpenSSL download, dir exists");
     return;
   } catch {}
+  
+  if (maybeDownloadSha256Url) {
+    maybeDownloadSha256 = (await got(maybeDownloadSha256Url)).body.trim();
+  }
 
   const downloadStream = got.stream(downloadBinUrl);
   downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
@@ -370,16 +378,16 @@ const acquireOpenSSL = async () => {
   try {
     const downloadBinUrl = process.env.npm_config_openssl_bin_url || getOpenSSLPackageUrl();
     if (downloadBinUrl !== 'skip' && !process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
-      let maybeDownloadSha256;
+      const downloadOptions = { downloadBinUrl };
       if (process.env.npm_config_openssl_bin_sha256 !== 'skip') {
         if (process.env.npm_config_openssl_bin_sha256) {
-          maybeDownloadSha256 = process.env.npm_config_openssl_bin_sha256;
+          downloadOptions.maybeDownloadSha256 = process.env.npm_config_openssl_bin_sha256;
         } else {
-          maybeDownloadSha256 = (await got(`${getOpenSSLPackageUrl()}.sha256`)).body.trim();
+          downloadOptions.maybeDownloadSha256Url = `${getOpenSSLPackageUrl()}.sha256`;
         }
       }
 
-      await downloadOpenSSLIfNecessary(downloadBinUrl, maybeDownloadSha256);
+      await downloadOpenSSLIfNecessary(downloadOptions);
       return;
     }
 
