@@ -376,8 +376,9 @@ const buildPackage = async () => {
 
 const acquireOpenSSL = async () => {
   try {
-    const downloadBinUrl = process.env.npm_config_openssl_bin_url || getOpenSSLPackageUrl();
-    if (downloadBinUrl !== 'skip' && !process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
+    const downloadBinUrl = process.env.npm_config_openssl_bin_url
+      || (['win32', 'darwin'].includes(process.platform) ? getOpenSSLPackageUrl() : undefined);
+    if (downloadBinUrl && downloadBinUrl !== 'skip' && !process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
       const downloadOptions = { downloadBinUrl };
       if (process.env.npm_config_openssl_bin_sha256 !== 'skip') {
         if (process.env.npm_config_openssl_bin_sha256) {
