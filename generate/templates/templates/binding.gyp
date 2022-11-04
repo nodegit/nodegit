@@ -1,9 +1,14 @@
 {
   "variables": {
+    "variables": {
+      "target%": "none",
+    },
     "is_electron%": "<!(node ./utils/isBuildingForElectron.js <(node_root_dir))",
     "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
     "electron_openssl_root%": "<!(node ./utils/getElectronOpenSSLRoot.js <(module_root_dir))",
     "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
+    "cxx_version%": "<!(node ./utils/defaultCxxStandard.js <(target))",
+    "has_cxxflags%": "<!(node -p \"process.env.CXXFLAGS ? 1 : 0\")",
     "macOS_deployment_target": "10.11"
   },
 
@@ -122,7 +127,7 @@
               "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
               "MACOSX_DEPLOYMENT_TARGET": "<(macOS_deployment_target)",
               'CLANG_CXX_LIBRARY': 'libc++',
-              'CLANG_CXX_LANGUAGE_STANDARD':'c++14',
+              'CLANG_CXX_LANGUAGE_STANDARD':'c++<(cxx_version)',
 
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
@@ -150,6 +155,7 @@
             "msvs_settings": {
               "VCCLCompilerTool": {
                 "AdditionalOptions": [
+                  "/std:c++<(cxx_version)",
                   "/EHsc"
                 ]
               },
@@ -172,10 +178,12 @@
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
-          "cflags": [
-            "-std=c++14"
-          ],
           "conditions": [
+            ["<(has_cxxflags) == 0", {
+              "cflags_cc": [
+                "-std=c++<(cxx_version)"
+              ],
+            }],
             ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
               "include_dirs": [
                 "<(electron_openssl_root)/include"
