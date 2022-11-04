@@ -6,7 +6,7 @@ void PromiseCompletion::InitializeComponent(nodegit::Context *nodegitContext) {
   Nan::HandleScope scope;
   v8::Local<v8::Value> nodegitExternal = Nan::New<v8::External>(nodegitContext);
   v8::Local<v8::FunctionTemplate> newTemplate = Nan::New<v8::FunctionTemplate>(New, nodegitExternal);
-  newTemplate->InstanceTemplate()->SetInternalFieldCount(1);
+  newTemplate->InstanceTemplate()->SetInternalFieldCount(2);
 
   nodegitContext->SaveToPersistent(
     "PromiseCompletion::Template",

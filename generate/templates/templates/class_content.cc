@@ -48,7 +48,7 @@ using namespace node;
     v8::Local<v8::External> nodegitExternal = Nan::New<v8::External>(nodegitContext);
     v8::Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
 
-    tpl->InstanceTemplate()->SetInternalFieldCount(1);
+    tpl->InstanceTemplate()->SetInternalFieldCount(2);
     tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
 
     {% each functions as function %}
