@@ -1,5 +1,27 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.19" href="#v0-28-0-alpha-19">v0.28.0-alpha.19</a> [(2022-11-08)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.19)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.18...v0.28.0-alpha.19)
+
+#### Summary of changes
+- OpenSSL bump
+- OpenSSL binaries will be automatically downloaded when building for Electron on Windows and macOS
+- Crash fix on Electron 18+ due to Nan bug
+- Partial stash support
+
+#### Merged PRs into NodeGit
+- [Allow overriding C++ standard](https://github.com/nodegit/nodegit/pull/1953)
+- [Bump OpenSSL to 1.1.1s](https://github.com/nodegit/nodegit/pull/1952)
+- [Fix intermittent crash on Electron 18+](https://github.com/nodegit/nodegit/pull/1951)
+- [type is a call](https://github.com/nodegit/nodegit/pull/1942)
+- [Fix leak in agent](https://github.com/nodegit/nodegit/pull/1947)
+- [Default to using precompiled OpenSSL for Electron](https://github.com/nodegit/nodegit/pull/1949)
+- [Partial stash support](https://github.com/nodegit/nodegit/pull/1948)
+- [Switch CI to macOS-11](https://github.com/nodegit/nodegit/pull/1950)
+- [Preemptively Patch OpenSSL 1.1.1q](https://github.com/nodegit/nodegit/pull/1928)
+- [Add getAllFilepaths function in tree object](https://github.com/nodegit/nodegit/pull/1919)
+
 ## <a name="v0-28-0-alpha.18" href="#v0-28-0-alpha-18">v0.28.0-alpha.18</a> [(2022-05-27)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.18)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.17...v0.28.0-alpha.18)

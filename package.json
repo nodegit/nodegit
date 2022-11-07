@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.28.0-alpha.18",
+  "version": "0.28.0-alpha.19",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
