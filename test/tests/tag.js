@@ -591,6 +591,42 @@ describe("Tag", function() {
     });
   });
 
+  it("will show a deprecation warning if createWithSignature use oid instead object", function() {
+    var targetCommit;
+    const name = "created-signed-tag-annotationCreate";
+    const repository = this.repository;
+    const signature = Signature.create(
+      "Shaggy Rogers",
+      "shaggy@mystery.com",
+      987654321,
+      90
+    );
+    const message = "I'm a teapot";
+    const signingCallback = () => ({
+      code: NodeGit.Error.CODE.ERROR
+    });
+
+
+    return repository.getCommit(commitPointedTo).then((commit) => {
+      targetCommit = commit;
+      return Tag.createWithSignature(
+        repository,
+        name,
+        targetCommit.id(),
+        signature,
+        message,
+        1,
+        signingCallback
+      );
+    }).then(function() {
+        assert.fail("Should not have been able to create tag");
+      }, function(error) {
+        if (error && error.errno === NodeGit.Error.CODE.ERROR) {
+          return;
+        }
+        throw error;
+      });
+  });
 
   it("can create a new signed tag with Tag.annotationCreate", function() {
     var targetCommit;
