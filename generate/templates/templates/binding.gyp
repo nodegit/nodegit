@@ -9,7 +9,9 @@
     "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
     "cxx_version%": "<!(node ./utils/defaultCxxStandard.js <(target))",
     "has_cxxflags%": "<!(node -p \"process.env.CXXFLAGS ? 1 : 0\")",
-    "macOS_deployment_target": "10.11"
+    "macOS_deployment_target": "10.11",
+    # https://github.com/nodejs/node-gyp/issues/2673
+    'openssl_fips': '',
   },
 
   "targets": [
