@@ -3142,10 +3142,10 @@
             },
             {
               "name": "parents",
-              "cType": "const git_oid **",
+              "cType": "const git_commit **",
               "cppClassName": "Array",
               "jsClassName": "Array",
-              "arrayElementCppClassName": "GitOid",
+              "arrayElementCppClassName": "GitCommit",
               "arrayLengthArgumentName": "parent_count"
             },
             {
