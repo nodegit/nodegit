@@ -46,7 +46,7 @@ module.exports = function install() {
       }
     })
     .then(function() {
-      // Is we're using NodeGit from a package manager then let's clean up after
+      // If we're using NodeGit from a package manager then let's clean up after
       // ourselves when we install successfully.
       if (!buildFlags.mustBuild) {
         // We can't remove the source files yet because apparently the
