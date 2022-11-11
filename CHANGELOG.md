@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.20" href="#v0-28-0-alpha-20">v0.28.0-alpha.20</a> [(2022-11-11)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.20)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.19...v0.28.0-alpha.20)
+
+#### Summary of changes
+- Fix electron build issues
+
+#### Merged PRs into NodeGit
+- [Fix electron build issues](https://github.com/nodegit/nodegit/pull/1955)
+
 ## <a name="v0-28-0-alpha.19" href="#v0-28-0-alpha-19">v0.28.0-alpha.19</a> [(2022-11-08)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.19)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.18...v0.28.0-alpha.19)
