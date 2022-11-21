@@ -322,8 +322,8 @@ describe("Tag", function() {
     it(
       "can create a tag with a signature and extract the signature",
       function() {
-        const targetOid = Oid.fromString(commitPointedTo);
-        const otherTargetOid = Oid.fromString(commitPointedTo2);
+        var targetCommit;
+        var otherTargetCommit;
         const name = "created-signed-tag-annotationCreate";
         const repository = this.repository;
         const signature = Signature.create(
@@ -359,14 +359,19 @@ describe("Tag", function() {
         let oid;
         let object;
 
-        return repository.odb()
-        .then((odbResult) => {
+        return repository.getCommit(commitPointedTo).then((commit) => {
+          targetCommit = commit;
+          return repository.getCommit(commitPointedTo2);
+        }).then((commit) => {
+          otherTargetCommit = commit;
+          return repository.odb();
+        }).then((odbResult) => {
           odb = odbResult;
 
           return Tag.createWithSignature(
             repository,
             name,
-            targetOid,
+            targetCommit,
             signature,
             message,
             1,
@@ -409,7 +414,7 @@ describe("Tag", function() {
           return Tag.createWithSignature(
             repository,
             name,
-            targetOid,
+            targetCommit,
             signature,
             message,
             1,
@@ -421,7 +426,7 @@ describe("Tag", function() {
           return Tag.createWithSignature(
             repository,
             name,
-            otherTargetOid,
+            otherTargetCommit,
             signature,
             message,
             0,
@@ -442,8 +447,8 @@ describe("Tag", function() {
     );
 
     it("can optionally skip the signing process", function() {
-      const targetOid = Oid.fromString(commitPointedTo);
-      const otherTargetOid = Oid.fromString(commitPointedTo2);
+      var targetCommit;
+      var otherTargetCommit;
       const name = "created-signed-tag-annotationCreate";
       const repository = this.repository;
       const signature = Signature.create(
@@ -461,14 +466,19 @@ describe("Tag", function() {
       let oid;
       let object;
 
-      return repository.odb()
-      .then((odbResult) => {
+      return repository.getCommit(commitPointedTo).then((commit) => {
+        targetCommit = commit;
+        return repository.getCommit(commitPointedTo2);
+      }).then((commit) => {
+        otherTargetCommit = commit;
+        return repository.odb();
+      }).then((odbResult) => {
         odb = odbResult;
 
         return Tag.createWithSignature(
           repository,
           name,
-          targetOid,
+          targetCommit,
           signature,
           message,
           1,
@@ -514,7 +524,7 @@ describe("Tag", function() {
         return Tag.createWithSignature(
           repository,
           name,
-          targetOid,
+          targetCommit,
           signature,
           message,
           1,
@@ -526,7 +536,7 @@ describe("Tag", function() {
         return Tag.createWithSignature(
           repository,
           name,
-          otherTargetOid,
+          otherTargetCommit,
           signature,
           message,
           0,
@@ -544,7 +554,7 @@ describe("Tag", function() {
     });
 
     it("will throw if signing callback returns an error code", function() {
-      const targetOid = Oid.fromString(commitPointedTo);
+      var targetCommit;
       const name = "created-signed-tag-annotationCreate";
       const repository = this.repository;
       const signature = Signature.create(
@@ -559,16 +569,18 @@ describe("Tag", function() {
       });
 
 
-      return Tag.createWithSignature(
-        repository,
-        name,
-        targetOid,
-        signature,
-        message,
-        1,
-        signingCallback
-      )
-        .then(function() {
+      return repository.getCommit(commitPointedTo).then((commit) => {
+        targetCommit = commit;
+        return Tag.createWithSignature(
+          repository,
+          name,
+          targetCommit,
+          signature,
+          message,
+          1,
+          signingCallback
+        );
+      }).then(function() {
           assert.fail("Should not have been able to create tag");
         }, function(error) {
           if (error && error.errno === NodeGit.Error.CODE.ERROR) {
@@ -579,16 +591,54 @@ describe("Tag", function() {
     });
   });
 
+  it("will show a deprecation warning if createWithSignature use oid instead object", function() {
+    var targetCommit;
+    const name = "created-signed-tag-annotationCreate";
+    const repository = this.repository;
+    const signature = Signature.create(
+      "Shaggy Rogers",
+      "shaggy@mystery.com",
+      987654321,
+      90
+    );
+    const message = "I'm a teapot";
+    const signingCallback = () => ({
+      code: NodeGit.Error.CODE.ERROR
+    });
+
+
+    return repository.getCommit(commitPointedTo).then((commit) => {
+      targetCommit = commit;
+      return Tag.createWithSignature(
+        repository,
+        name,
+        targetCommit.id(),
+        signature,
+        message,
+        1,
+        signingCallback
+      );
+    }).then(function() {
+        assert.fail("Should not have been able to create tag");
+      }, function(error) {
+        if (error && error.errno === NodeGit.Error.CODE.ERROR) {
+          return;
+        }
+        throw error;
+      });
+  });
 
   it("can create a new signed tag with Tag.annotationCreate", function() {
-    var oid = Oid.fromString(commitPointedTo);
+    var targetCommit;
     var name = "created-signed-tag-annotationCreate";
     var repository = this.repository;
     var signature = null;
     var odb = null;
 
-    return Signature.default(repository)
-      .then(function(signatureResult) {
+    return repository.getCommit(commitPointedTo).then((commit) => {
+      targetCommit = commit;
+      return Signature.default(repository);
+    }).then(function(signatureResult) {
         signature = signatureResult;
         return repository.odb();
       })
@@ -597,7 +647,7 @@ describe("Tag", function() {
       })
       .then(function() {
         return Tag.annotationCreate(
-          repository, name, oid, signature, tagMessage);
+          repository, name, targetCommit, signature, tagMessage);
       })
       .then(function(oid) {
         return odb.read(oid);
