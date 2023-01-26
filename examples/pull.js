@@ -7,25 +7,25 @@ var repository;
 
 // Open a repository that needs to be fetched and fast-forwarded
 nodegit.Repository.open(path.resolve(__dirname, repoDir))
-  .then(function(repo) {
+  .then(function (repo) {
     repository = repo;
 
     return repository.fetchAll({
       callbacks: {
-        credentials: function(url, userName) {
+        credentials: function (url, userName) {
           return nodegit.Cred.sshKeyFromAgent(userName);
         },
-        certificateCheck: function() {
+        certificateCheck: function () {
           return 0;
-        }
-      }
+        },
+      },
     });
   })
   // Now that we're finished fetching, go ahead and merge our local branch
   // with the new one
-  .then(function() {
+  .then(function () {
     return repository.mergeBranches("master", "origin/master");
   })
-  .done(function() {
+  .done(function () {
     console.log("Done!");
   });

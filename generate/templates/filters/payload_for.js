@@ -1,4 +1,4 @@
-module.exports = function(fields, payloadForField) {
+module.exports = function (fields, payloadForField) {
   fields = fields || [];
 
   var result = fields.filter(function (field) {
@@ -7,8 +7,7 @@ module.exports = function(fields, payloadForField) {
 
   if (result.length > 0) {
     return result[0].name;
-  }
-  else {
+  } else {
     return "";
   }
 };

@@ -3,7 +3,7 @@ var path = require("path");
 var local = path.join.bind(path, __dirname);
 var fse = require("fs-extra");
 
-describe("Tree", function() {
+describe("Tree", function () {
   var NodeGit = require("../../");
   var RepoUtils = require("../utils/repository_setup");
 
@@ -11,30 +11,32 @@ describe("Tree", function() {
   var existingPath = local("../repos/workdir");
   var oid = "5716e9757886eaf38d51c86b192258c960d9cfea";
 
-  beforeEach(function() {
+  beforeEach(function () {
     var test = this;
     return RepoUtils.createRepository(repoPath)
-      .then(function(repo) {
+      .then(function (repo) {
         test.repository = repo;
-      }).then(function() {
+      })
+      .then(function () {
         return NodeGit.Repository.open(existingPath);
-      }).then(function(repository) {
+      })
+      .then(function (repository) {
         test.existingRepo = repository;
         return repository.getCommit(oid);
-      }).then(function(commit) {
+      })
+      .then(function (commit) {
         test.commit = commit;
       });
   });
 
-  after(function() {
+  after(function () {
     return fse.remove(repoPath);
   });
 
-  it("gets an entry by name",
-  function() {
-    return this.commit.getTree().then(function(tree) {
+  it("gets an entry by name", function () {
+    return this.commit.getTree().then(function (tree) {
       var entry = tree.entryByName("README.md");
-        assert(entry);
+      assert(entry);
     });
   });
 
@@ -43,21 +45,22 @@ describe("Tree", function() {
     var update = new NodeGit.TreeUpdate();
     update.action = NodeGit.Tree.UPDATE.REMOVE;
     update.path = "README.md";
-    return this.commit.getTree().then(function(tree) {
+    return this.commit
+      .getTree()
+      .then(function (tree) {
         return tree.createUpdated(repo, 1, [update]);
       })
-      .then(function(treeOid) {
+      .then(function (treeOid) {
         return repo.getTree(treeOid);
       })
-      .then(function(updatedTree) {
+      .then(function (updatedTree) {
         assert.throws(function () {
           updatedTree.entryByName("README.md");
         });
       });
   });
 
-  it("walks its entries and returns the same entries on both progress and end",
-  function() {
+  it("walks its entries and returns the same entries on both progress and end", function () {
     var repo = this.repository;
     var file1 = "test.txt";
     var file2 = "foo/bar.txt";
@@ -66,22 +69,22 @@ describe("Tree", function() {
     var endEntries;
 
     return RepoUtils.commitFileToRepo(repo, file1, "")
-      .then(function(commit) {
+      .then(function (commit) {
         return RepoUtils.commitFileToRepo(repo, file2, "", commit);
       })
-      .then(function(commit) {
+      .then(function (commit) {
         return commit.getTree();
       })
-      .then(function(tree) {
+      .then(function (tree) {
         assert(tree);
 
         return new Promise(function (resolve, reject) {
           var walker = tree.walk();
 
-          walker.on("entry", function(entry) {
+          walker.on("entry", function (entry) {
             progressEntries.push(entry);
           });
-          walker.on("end", function(entries) {
+          walker.on("end", function (entries) {
             endEntries = entries;
             resolve();
           });
@@ -90,7 +93,7 @@ describe("Tree", function() {
           walker.start();
         });
       })
-      .then(function() {
+      .then(function () {
         assert(progressEntries.length);
         assert(endEntries && endEntries.length);
 
@@ -101,15 +104,9 @@ describe("Tree", function() {
         var progressFilePaths = progressEntries.map(getEntryPath);
         var endFilePaths = endEntries.map(getEntryPath);
 
-        assert.deepEqual(
-          expectedPaths, progressFilePaths,
-          "progress entry paths do not match expected paths"
-        );
+        assert.deepEqual(expectedPaths, progressFilePaths, "progress entry paths do not match expected paths");
 
-        assert.deepEqual(
-          expectedPaths, endFilePaths,
-          "end entry paths do not match expected paths"
-        );
+        assert.deepEqual(expectedPaths, endFilePaths, "end entry paths do not match expected paths");
       });
   });
 
@@ -120,5 +117,4 @@ describe("Tree", function() {
     assert.equal(paths[0], ".gitignore");
     assert.equal(paths[511], "wscript");
   });
-
 });

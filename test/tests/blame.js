@@ -3,7 +3,7 @@ var RepoUtils = require("../utils/repository_setup");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
 
-describe("Blame", function() {
+describe("Blame", function () {
   var NodeGit = require("../../");
 
   var Blame = NodeGit.Blame;
@@ -12,25 +12,19 @@ describe("Blame", function() {
   var fileName = "foobar.js";
   var repoPath = local("../repos/blameRepo");
 
-  beforeEach(function() {
+  beforeEach(function () {
     test = this;
 
-    return RepoUtils.createRepository(repoPath)
-      .then(function(repository) {
-        test.repository = repository;
+    return RepoUtils.createRepository(repoPath).then(function (repository) {
+      test.repository = repository;
 
-        return RepoUtils.commitFileToRepo(
-          repository,
-          fileName,
-          "line1\nline2\nline3"
-        );
-      });
+      return RepoUtils.commitFileToRepo(repository, fileName, "line1\nline2\nline3");
+    });
   });
 
-  it("can initialize blame without options", function() {
-    return Blame.file(test.repository, fileName)
-      .then(function(blame) {
-        assert(blame);
-      });
+  it("can initialize blame without options", function () {
+    return Blame.file(test.repository, fileName).then(function (blame) {
+      assert(blame);
+    });
   });
 });

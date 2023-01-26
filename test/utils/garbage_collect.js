@@ -4,7 +4,7 @@ function garbageCollect() {
   var terminatingIterations = 3;
   var usedBeforeGC = Number.MAX_VALUE;
   var nondecreasingIterations = 0;
-  for ( ; ; ) {
+  for (;;) {
     global.gc();
     var usedAfterGC = process.memoryUsage().heapUsed;
     if (usedAfterGC >= usedBeforeGC) {

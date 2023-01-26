@@ -13,7 +13,7 @@ description: Learning NodeGit
 - [From source](install/from-source)
 - [Electron](install/electron/)
 
-***
+---
 
 ## Repository
 
@@ -22,7 +22,7 @@ description: Learning NodeGit
 - [Opening](repositories/)
 - [Initializing](repositories/initializing)
 
-***
+---
 
 ## Cloning
 

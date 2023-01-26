@@ -16,24 +16,22 @@ var repoUrl = "https://github.com/" + repoOwner + "/" + repoName + ".git";
 var opts = {
   fetchOpts: {
     callbacks: {
-      credentials: function() {
+      credentials: function () {
         return nodegit.Cred.userpassPlaintextNew(token, "x-oauth-basic");
       },
-      certificateCheck: function() {
+      certificateCheck: function () {
         return 0;
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
-fse.remove(path).then(function() {
-  nodegit.Clone(repoUrl, path, opts)
-    .done(function(repo) {
-      if (repo instanceof nodegit.Repository) {
-        console.info("We cloned the repo!");
-      }
-      else {
-        console.error("Something borked :(");
-      }
-    });
+fse.remove(path).then(function () {
+  nodegit.Clone(repoUrl, path, opts).done(function (repo) {
+    if (repo instanceof nodegit.Repository) {
+      console.info("We cloned the repo!");
+    } else {
+      console.error("Something borked :(");
+    }
+  });
 });

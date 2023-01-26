@@ -1,34 +1,17 @@
 {
   "blob": {
-    "functions": [
-      "createFrombuffer",
-      "isBinary",
-      "lookup",
-      "rawcontent",
-      "rawsize"
-    ]
+    "functions": ["createFrombuffer", "isBinary", "lookup", "rawcontent", "rawsize"]
   },
   "clone": {
-    "functions": [
-      "initOptions"
-    ]
+    "functions": ["initOptions"]
   },
   "commit": {
-    "functions": [
-      "parentCount",
-      "parentId",
-      "treeId"
-    ]
+    "functions": ["parentCount", "parentId", "treeId"]
   },
   "diff": {
-    "functions": [
-      "getDelta",
-      "numDeltas"
-    ]
+    "functions": ["getDelta", "numDeltas"]
   },
   "object": {
-    "functions": [
-      "type"
-    ]
+    "functions": ["type"]
   }
 }

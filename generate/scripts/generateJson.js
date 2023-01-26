@@ -10,13 +10,13 @@ module.exports = function generateJson() {
   var helpers = require("./helpers");
   _ = require("lodash");
   // libgit2's docs aren't complete so we'll add in what they're missing here
-  libgit2.types.forEach(function(type) {
+  libgit2.types.forEach(function (type) {
     if (supplement.types[type[0]]) {
       _.merge(type[1], supplement.types[type[0]]);
     }
   });
 
-  libgit2.groups.forEach(function(group) {
+  libgit2.groups.forEach(function (group) {
     if (supplement.groups[group[0]]) {
       Array.prototype.push.apply(group[1], supplement.groups[group[0]]);
     }
@@ -32,16 +32,18 @@ module.exports = function generateJson() {
   var enums = [];
 
   // reduce all of the groups into a hashmap and a name array for easy lookup
-  var groups = libgit2.groups.reduce(function(memo, group) {
+  var groups = libgit2.groups.reduce(function (memo, group) {
     var groupName = group[0];
 
     // Some functions are in the wrong group so we can't just ignore them.
     // We have to completely remove them from one group and manually add them
     // into the other.
-    var functionNames = group[1].filter(function(fnName) {
-      return !supplement.remove[groupName] ||
+    var functionNames = group[1].filter(function (fnName) {
+      return (
+        !supplement.remove[groupName] ||
         !supplement.remove[groupName].functions ||
-        !~supplement.remove[groupName].functions.indexOf(fnName);
+        !~supplement.remove[groupName].functions.indexOf(fnName)
+      );
     });
 
     // If we've already found some functions for this group lets add the new
@@ -57,56 +59,53 @@ module.exports = function generateJson() {
     return memo;
   }, {});
 
-
   // Split each type from the array into classes/structs and enums
   // each entry is of type ['name', {definingobject}]
-  libgit2.types.forEach(function(current) {
+  libgit2.types.forEach(function (current) {
     current[1].typeName = current[0];
 
     // just log these out to a file for fun
     if (current[1].type === "enum") {
       enums.push(current[1]);
-    }
-    else {
+    } else {
       types.push(current[1]);
     }
   });
 
   var previous = "";
-  enums = _(enums).sortBy("name").reduce(function(enumMemo, enumerable) {
-    if (previous == enumerable.typeName) {
-      if (process.env.BUILD_ONLY) {
-        console.warn('Duplicate definition for enum ' + enumerable.typeName +
-          ". skipped.");
+  enums = _(enums)
+    .sortBy("name")
+    .reduce(function (enumMemo, enumerable) {
+      if (previous == enumerable.typeName) {
+        if (process.env.BUILD_ONLY) {
+          console.warn("Duplicate definition for enum " + enumerable.typeName + ". skipped.");
+        }
+      } else if (!enumerable.fields) {
+        if (process.env.BUILD_ONLY) {
+          console.warn("Incomplete definition for enum " + enumerable.typeName + ". skipped.");
+        }
+      } else {
+        enumMemo[enumerable.typeName] = {
+          typeName: enumerable.typeName.replace(/^git_/, "").replace(/_t$/, ""),
+          type: "enum",
+          cType: enumerable.typeName,
+          isMask: /_t$/.test(enumerable.typeName),
+          values: enumerable.fields.map(function (field) {
+            return {
+              name: field.name,
+              value: field.value,
+            };
+          }),
+        };
       }
-    }
-    else if (!enumerable.fields) {
-      if (process.env.BUILD_ONLY) {
-        console.warn('Incomplete definition for enum ' + enumerable.typeName +
-          ". skipped.");
-      }
-    }
-    else {
-      enumMemo[enumerable.typeName] = {
-        typeName: enumerable.typeName.replace(/^git_/, "").replace(/_t$/, ""),
-        type: "enum",
-        cType: enumerable.typeName,
-        isMask: (/_t$/).test(enumerable.typeName),
-        values: enumerable.fields.map(function(field) {
-          return {
-            name: field.name,
-            value: field.value
-          }
-        })
-      };
-    }
 
-    previous = enumerable.typeName;
-    return enumMemo;
-  }, {}).valueOf();
+      previous = enumerable.typeName;
+      return enumMemo;
+    }, {})
+    .valueOf();
 
   // decorate the definitions with required data to build the C++ files
-  types.forEach(function(typeDef) {
+  types.forEach(function (typeDef) {
     var typeName = typeDef.typeName;
     typeDef.cType = typeName;
     typeName = typeName.replace("git_", "");
@@ -131,7 +130,7 @@ module.exports = function generateJson() {
     }
 
     groupDef = {
-      functions: groupDef
+      functions: groupDef,
     };
 
     groupDef.type = "class";
@@ -169,7 +168,7 @@ module.exports = function generateJson() {
       }
     };
 
-    var addSelfReferentialField = function(prop){
+    var addSelfReferentialField = function (prop) {
       if (helpers.isSelfReferential(prop.type)) {
         prop.isSelfReferential = true;
         def.isExtendedStruct = true;
@@ -180,7 +179,6 @@ module.exports = function generateJson() {
     def.fields.forEach(addSelfReferentialField);
     def.functions.forEach(addDependencies);
 
-
     Object.keys(dependencies).forEach(function (dependencyFilename) {
       def.dependencies.push("../include/" + dependencyFilename + ".h");
     });
@@ -188,20 +186,19 @@ module.exports = function generateJson() {
     // Additionally provide a friendly name to the actual filename.
     def.name = path.basename(def.filename, ".h");
 
-    def.functions.forEach(function(fn) {
+    def.functions.forEach(function (fn) {
       fn.cppClassName = def.cppClassName;
     });
   });
   // Process enums
-  _(enums).forEach(function(enumerable) {
-    output.some(function(obj) {
+  _(enums).forEach(function (enumerable) {
+    for (const obj of output) {
       if (enumerable.typeName.indexOf(obj.typeName) == 0) {
-          enumerable.owner = obj.jsClassName;
+        enumerable.owner = obj.jsClassName;
+      } else if (enumerable.owner) {
+        break;
       }
-      else if (enumerable.owner) {
-        return true;
-      }
-    });
+    }
 
     var override = descriptor.enums[enumerable.typeName] || {};
 
@@ -212,7 +209,7 @@ module.exports = function generateJson() {
       .replace(/^_/, "")
       .toUpperCase();
 
-    enumerable.values.forEach(function(value) {
+    enumerable.values.forEach(function (value) {
       value.JsName = value.name
         .replace(/^GIT_/, "")
         .replace(override.removeString || "", "")
@@ -237,7 +234,6 @@ module.exports = function generateJson() {
   if (process.argv[2] != "--documentation") {
     helpers.filterDocumentation(output);
   }
-
 
   utils.writeLocalFile("output/idefs.json", output);
 };

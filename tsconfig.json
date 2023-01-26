@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "jsx": "preserve",
+    // Check JS files too
+    "allowJs": true,
+    "checkJs": true,
+    // Used for temp builds
+    "outDir": "build"
+  },
+  "exclude": [
+    "build",
+    "coverage",
+    "dist",
+    "generate",
+    "include",
+    "lib/enums.js",
+    "lib/nodegit.js",
+    "node_modules",
+    "src",
+    "test",
+    "vendor"
+  ]
+}

@@ -8,7 +8,7 @@ module.exports = function generateMissingTests() {
   var output = {};
 
   function findMissingTest(idef) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve) {
       var testFilePath = path.join(testFilesPath, idef.filename + ".js");
       var result = {};
 
@@ -23,25 +23,22 @@ module.exports = function generateMissingTests() {
         functionIgnores = functionIgnores || [];
         file = file || "";
 
-        idef.fields.forEach(function(field) {
-          if (file.indexOf(field.jsFunctionName) < 0
-            && fieldIgnores.indexOf(field.jsFunctionName < 0)) {
-                fieldsResult.push(field.jsFunctionName);
-              }
+        idef.fields.forEach(function (field) {
+          if (file.indexOf(field.jsFunctionName) < 0 && fieldIgnores.indexOf(field.jsFunctionName < 0)) {
+            fieldsResult.push(field.jsFunctionName);
+          }
         });
 
         result.fields = fieldsResult;
 
-        idef.functions.forEach(function(fn) {
-          if (file.indexOf(fn.jsFunctionName) < 0
-            && functionIgnores.indexOf(fn.jsFunctionName) < 0) {
-                functionsResult.push(fn.jsFunctionName);
-              }
+        idef.functions.forEach(function (fn) {
+          if (file.indexOf(fn.jsFunctionName) < 0 && functionIgnores.indexOf(fn.jsFunctionName) < 0) {
+            functionsResult.push(fn.jsFunctionName);
+          }
         });
 
         result.functions = functionsResult;
-      }
-      else {
+      } else {
         result.testFileMissing = false;
         result.testFilePath = testFilePath;
       }
@@ -49,22 +46,21 @@ module.exports = function generateMissingTests() {
       output[idef.filename] = result;
       resolve();
     });
-  };
+  }
 
   const idefs = require("../output/idefs");
-  var promises = idefs.map(function(idef) {
+  var promises = idefs.map(function (idef) {
     return findMissingTest(idef);
   });
 
   Promise.all(promises).then(
-    function() {
+    function () {
       utils.writeLocalFile("/output/missing-tests.json", output);
     },
-    function(fail) {
+    function (fail) {
       console.error(fail);
     }
   );
-
 };
 
 if (require.main === module) {

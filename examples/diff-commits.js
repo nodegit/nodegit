@@ -6,13 +6,10 @@ const path = require("path");
 // similar to doing `git show`.
 
 (async () => {
-  const repo = await nodegit.Repository.open(path.resolve(__dirname, "../.git"))
+  const repo = await nodegit.Repository.open(path.resolve(__dirname, "../.git"));
   const commit = await repo.getCommit("59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5");
   console.log("commit " + commit.sha());
-  console.log(
-    "Author:", commit.author().name() +
-    " <" + commit.author().email() + ">"
-  );
+  console.log("Author:", commit.author().name() + " <" + commit.author().email() + ">");
   console.log("Date:", commit.date());
   console.log("\n    " + commit.message());
 
@@ -23,17 +20,10 @@ const path = require("path");
       const hunks = await patch.hunks();
       for (const hunk of hunks) {
         const lines = await hunk.lines();
-        console.log(
-          "diff",
-          patch.oldFile().path(),
-          patch.newFile().path()
-        );
+        console.log("diff", patch.oldFile().path(), patch.newFile().path());
         console.log(hunk.header().trim());
         for (const line of lines) {
-          console.log(
-            String.fromCharCode(line.origin()) +
-            line.content().trim()
-          );
+          console.log(String.fromCharCode(line.origin()) + line.content().trim());
         }
       }
     }

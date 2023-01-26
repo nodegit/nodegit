@@ -10,6 +10,7 @@
 //
 //     node git_profanity_check some/repo/.git
 //
+// eslint-disable-next-line node/shebang
 var git = require("../../");
 
 var curses = ["put", "curse", "words", "here"];
@@ -28,32 +29,32 @@ else {
   // Set repo branch
   if (process.argv.length < 4) {
     console.log("No branch passed as argument, defaulting to master.");
-  }
-  else {
+  } else {
     branch = process.argv[3];
   }
 }
 
 // Open repository.
 git.Repo.open(path)
-.then(function(repo) {
-  // Open branch, default to master.
-  return repo.getBranchCommit(branch);
-}).then(function(firstCommit) {
-  // Iterate history
-  var history = firstCommit.history();
+  .then(function (repo) {
+    // Open branch, default to master.
+    return repo.getBranchCommit(branch);
+  })
+  .then(function (firstCommit) {
+    // Iterate history
+    var history = firstCommit.history();
 
-  // Iterate over every commit message and test for words.
-  history.on("commit", function(commit) {
-    var message = commit.message();
+    // Iterate over every commit message and test for words.
+    history.on("commit", function (commit) {
+      var message = commit.message();
 
-    if (reCurse.test(message)) {
-      console.log("Curse detected in commit", commit.sha());
-      console.log("=> ", message);
-      return;
-    }
+      if (reCurse.test(message)) {
+        console.log("Curse detected in commit", commit.sha());
+        console.log("=> ", message);
+        return;
+      }
+    });
+
+    // Start history iteration.
+    history.start();
   });
-
-  // Start history iteration.
-  history.start();
-});

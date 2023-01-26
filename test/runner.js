@@ -1,9 +1,10 @@
 var fse = require("fs-extra");
 var path = require("path");
 var local = path.join.bind(path, __dirname);
-var exec = require('../utils/execPromise');
+var exec = require("../utils/execPromise");
 
-var NodeGit = require('..');
+// eslint-disable-next-line no-unused-vars
+var NodeGit = require("..");
 
 var workdirPath = local("repos/workdir");
 var constWorkdirPath = local("repos/constworkdir");
@@ -33,81 +34,80 @@ const testRepos = [
   "repos/workdir",
 ];
 
-before(function() {
+before(function () {
   this.timeout(350000);
 
   var testUrl = "https://github.com/nodegit/test";
   var constTestUrl = "https://github.com/nodegit/test-frozen";
-  return fse.remove(local("repos"))
-    .then(function() {
-      fse.remove(local("home"))
+  return fse
+    .remove(local("repos"))
+    .then(function () {
+      fse.remove(local("home"));
     })
-    .then(function() {
+    .then(function () {
       fse.mkdir(local("repos"));
     })
-    .then(function() {
+    .then(function () {
       return exec("git init " + local("repos", "empty"));
     })
-    .then(function() {
+    .then(function () {
       return exec("git clone " + constTestUrl + " " + constWorkdirPath);
     })
-    .then(function() {
+    .then(function () {
       return exec("git clone " + testUrl + " " + workdirPath);
     })
-    .then(function() {
+    .then(function () {
       //to checkout the longpaths-checkout branch
-      if(process.platform === "win32") {
-        return exec("git config core.longpaths true", {cwd: workdirPath});
+      if (process.platform === "win32") {
+        return exec("git config core.longpaths true", { cwd: workdirPath });
       }
       return Promise.resolve();
     })
-    .then(function() {
-      return exec("git checkout rev-walk", {cwd: workdirPath});
+    .then(function () {
+      return exec("git checkout rev-walk", { cwd: workdirPath });
     })
-    .then(function() {
-      return exec("git checkout checkout-test", {cwd: workdirPath});
+    .then(function () {
+      return exec("git checkout checkout-test", { cwd: workdirPath });
     })
-    .then(function() {
-      return exec("git checkout longpaths-checkout", {cwd: workdirPath});
+    .then(function () {
+      return exec("git checkout longpaths-checkout", { cwd: workdirPath });
     })
-    .then(function() {
-      return exec("git checkout master", {cwd: workdirPath});
+    .then(function () {
+      return exec("git checkout master", { cwd: workdirPath });
     })
-    .then(function() {
+    .then(function () {
       return fse.mkdir(local("repos", "nonrepo"));
     })
-    .then(function() {
-      return fse.writeFile(local("repos", "nonrepo", "file.txt"),
-        "This is a bogus file");
+    .then(function () {
+      return fse.writeFile(local("repos", "nonrepo", "file.txt"), "This is a bogus file");
     })
-    .then(function() {
+    .then(function () {
       return fse.mkdir(local("home"));
     })
-    .then(function() {
-      return fse.writeFile(local("home", ".gitconfig"),
-        "[user]\n  name = John Doe\n  email = johndoe@example.com");
+    .then(function () {
+      return fse.writeFile(local("home", ".gitconfig"), "[user]\n  name = John Doe\n  email = johndoe@example.com");
     })
-    .then( async function() {
+    .then(async function () {
       //mark all test repos as safe
-      for(let repo of testRepos) {
+      for (const repo of testRepos) {
         await exec(`git config --global --add safe.directory ${local(repo)}`);
       }
-    })
+    });
 });
 
-beforeEach(function() {
+beforeEach(function () {
   this.timeout(4000);
-  return exec("git clean -xdf", {cwd: workdirPath})
-  .then(function() {
-    return exec("git checkout master", {cwd: workdirPath});
-  })
-  .then(function() {
-    return exec("git reset --hard", {cwd: workdirPath});
-  });
+  return exec("git clean -xdf", { cwd: workdirPath })
+    .then(function () {
+      return exec("git checkout master", { cwd: workdirPath });
+    })
+    .then(function () {
+      return exec("git reset --hard", { cwd: workdirPath });
+    });
 });
 
-afterEach(function(done) {
-  process.nextTick(function() {
+afterEach(function (done) {
+  process.nextTick(function () {
     if (global.gc) {
       global.gc();
     }

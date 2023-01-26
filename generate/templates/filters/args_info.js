@@ -1,17 +1,11 @@
-var bannedCppClassNames = [
-  "Buffer",
-  "Function",
-  "GitBuf",
-  "GitStrarray",
-  "Wrapper"
-];
+var bannedCppClassNames = ["Buffer", "Function", "GitBuf", "GitStrarray", "Wrapper"];
 
-module.exports = function(args) {
+module.exports = function (args) {
   var result = [],
-      cArg,
-      jsArg;
+    cArg,
+    jsArg;
 
-  for(cArg = 0, jsArg = 0; cArg < args.length; cArg++) {
+  for (cArg = 0, jsArg = 0; cArg < args.length; cArg++) {
     var arg = args[cArg];
 
     if (!arg.isReturn && !arg.isSelf) {
@@ -28,13 +22,13 @@ module.exports = function(args) {
     arg.isCppClassStringOrArray = ~["String", "Array"].indexOf(arg.cppClassName);
     arg.isConst = ~arg.cType.indexOf("const ");
 
-    arg.isUnwrappable = !arg.isStructType && arg.isLibgitType && !arg.isEnum &&
-      !bannedCppClassNames.includes(arg.cppClassName);
+    arg.isUnwrappable =
+      !arg.isStructType && arg.isLibgitType && !arg.isEnum && !bannedCppClassNames.includes(arg.cppClassName);
 
     // if we have a callback then we also need the corresponding payload for that callback
     if (arg.isCallbackFunction) {
-      var payload = args.filter(function(payload) {
-        return payload.payloadFor == arg.name || payload.payloadFor == '*';
+      var payload = args.filter(function (payload) {
+        return payload.payloadFor == arg.name || payload.payloadFor == "*";
       })[0];
 
       if (payload) {

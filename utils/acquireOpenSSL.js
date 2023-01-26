@@ -14,7 +14,7 @@ const zlib = require("zlib");
 
 const pipeline = promisify(stream.pipeline);
 
-const packageJson = require('../package.json')
+const packageJson = require("../package.json");
 
 const OPENSSL_VERSION = "1.1.1s";
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
@@ -22,9 +22,7 @@ const vendorPath = path.resolve(__dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
 
-const pathsToIncludeForPackage = [
-  "include", "lib"
-];
+const pathsToIncludeForPackage = ["include", "lib"];
 
 const getOpenSSLSourceUrl = (version) => `https://www.openssl.org/source/openssl-${version}.tar.gz`;
 const getOpenSSLSourceSha256Url = (version) => `${getOpenSSLSourceUrl(version)}.sha256`;
@@ -50,9 +48,7 @@ class HashVerify extends stream.Transform {
 
 const makeHashVerifyOnFinal = (expected) => (digest) => {
   const digestOk = digest === expected;
-  return digestOk
-    ? null
-    : new Error(`Digest not OK: ${digest} !== ${this.expected}`);
+  return digestOk ? null : new Error(`Digest not OK: ${digest} !== ${this.expected}`);
 };
 
 // currently this only needs to be done on linux
@@ -62,23 +58,27 @@ const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
       const patchTarget = patchFilename.split("-")[1];
       if (patchFilename.split(".").pop() === "patch" && (patchTarget === operatingSystem || patchTarget === "all")) {
         console.log(`applying ${patchFilename}`);
-        await execPromise(`patch -up0 -i ${path.join(opensslPatchPath, patchFilename)}`, {
-          cwd: buildCwd
-        }, { pipeOutput: true });
+        await execPromise(
+          `patch -up0 -i ${path.join(opensslPatchPath, patchFilename)}`,
+          {
+            cwd: buildCwd,
+          },
+          { pipeOutput: true }
+        );
       }
     }
-  } catch(e) {
+  } catch (e) {
     console.log("Patch application failed: ", e);
     throw e;
   }
-}
+};
 
 const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
   if (!macOsDeploymentTarget) {
     throw new Error("Expected macOsDeploymentTarget to be specified");
   }
 
-  const arguments = [
+  const buildArgs = [
     process.arch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc",
     // speed up ecdh on little-endian platforms with 128bit int support
     "enable-ec_nistp_64_gcc_128",
@@ -92,32 +92,48 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`,
     // set macos version requirement
-    `-mmacosx-version-min=${macOsDeploymentTarget}`
+    `-mmacosx-version-min=${macOsDeploymentTarget}`,
   ];
 
-  await execPromise(`./Configure ${arguments.join(" ")}`, {
-    cwd: buildCwd
-  }, { pipeOutput: true });
+  await execPromise(
+    `./Configure ${buildArgs.join(" ")}`,
+    {
+      cwd: buildCwd,
+    },
+    { pipeOutput: true }
+  );
 
   await applyOpenSSLPatches(buildCwd, "darwin");
 
   // only build the libraries, not the tests/fuzzer or apps
-  await execPromise("make build_libs", {
-    cwd: buildCwd
-  }, { pipeOutput: true });
+  await execPromise(
+    "make build_libs",
+    {
+      cwd: buildCwd,
+    },
+    { pipeOutput: true }
+  );
 
-  await execPromise("make test", {
-    cwd: buildCwd
-  }, { pipeOutput: true });
+  await execPromise(
+    "make test",
+    {
+      cwd: buildCwd,
+    },
+    { pipeOutput: true }
+  );
 
-  await execPromise("make install_sw", {
-    cwd: buildCwd,
-    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
-  }, { pipeOutput: true });
+  await execPromise(
+    "make install_sw",
+    {
+      cwd: buildCwd,
+      maxBuffer: 10 * 1024 * 1024, // we should really just use spawn
+    },
+    { pipeOutput: true }
+  );
 };
 
 const buildLinux = async (buildCwd) => {
-  const arguments = [
+  const buildArgs = [
     "linux-x86_64",
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
@@ -132,28 +148,44 @@ const buildLinux = async (buildCwd) => {
     "no-comp",
     // set install directory
     `--prefix="${extractPath}"`,
-    `--openssldir="${extractPath}"`
+    `--openssldir="${extractPath}"`,
   ];
-  await execPromise(`./Configure ${arguments.join(" ")}`, {
-    cwd: buildCwd
-  }, { pipeOutput: true });
+  await execPromise(
+    `./Configure ${buildArgs.join(" ")}`,
+    {
+      cwd: buildCwd,
+    },
+    { pipeOutput: true }
+  );
 
   await applyOpenSSLPatches(buildCwd, "linux");
 
   // only build the libraries, not the tests/fuzzer or apps
-  await execPromise("make build_libs", {
-    cwd: buildCwd
-  }, { pipeOutput: true });
+  await execPromise(
+    "make build_libs",
+    {
+      cwd: buildCwd,
+    },
+    { pipeOutput: true }
+  );
 
-  await execPromise("make test", {
-    cwd: buildCwd
-  }, { pipeOutput: true });
+  await execPromise(
+    "make test",
+    {
+      cwd: buildCwd,
+    },
+    { pipeOutput: true }
+  );
 
   // only install software, not the docs
-  await execPromise("make install_sw", {
-    cwd: buildCwd,
-    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
-  }, { pipeOutput: true });
+  await execPromise(
+    "make install_sw",
+    {
+      cwd: buildCwd,
+      maxBuffer: 10 * 1024 * 1024, // we should really just use spawn
+    },
+    { pipeOutput: true }
+  );
 };
 
 const buildWin32 = async (buildCwd, vsBuildArch) => {
@@ -161,12 +193,11 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
     throw new Error("Expected vsBuildArch to be specified");
   }
 
-  const programFilesPath = (process.arch === "x64"
-    ? process.env["ProgramFiles(x86)"]
-    : process.env.ProgramFiles) || "C:\\Program Files";
-  const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
-    programFilesPath
-  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
+  const programFilesPath =
+    (process.arch === "x64" ? process.env["ProgramFiles(x86)"] : process.env.ProgramFiles) || "C:\\Program Files";
+  const vcvarsallPath =
+    process.env.npm_config_vcvarsall_path ||
+    `${programFilesPath}\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
   try {
     await fs.stat(vcvarsallPath);
   } catch {
@@ -184,16 +215,20 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
       vcTarget = "VC-WIN32";
       break;
     }
-      
+
     default: {
       throw new Error(`Unknown vsBuildArch: ${vsBuildArch}`);
     }
   }
 
-  await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vsBuildArch} ${vcTarget}`, {
-    cwd: buildCwd,
-    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
-  }, { pipeOutput: true });
+  await execPromise(
+    `"${win32BatPath}" "${vcvarsallPath}" ${vsBuildArch} ${vcTarget}`,
+    {
+      cwd: buildCwd,
+      maxBuffer: 10 * 1024 * 1024, // we should really just use spawn
+    },
+    { pipeOutput: true }
+  );
 };
 
 const removeOpenSSLIfOudated = async (openSSLVersion) => {
@@ -230,16 +265,12 @@ const makeOnStreamDownloadProgress = () => {
     const currentTime = performance.now();
     if (currentTime - lastReport > 1 * 1000) {
       lastReport = currentTime;
-      console.log(`progress: ${transferred}/${total} (${(percent * 100).toFixed(2)}%)`)
+      console.log(`progress: ${transferred}/${total} (${(percent * 100).toFixed(2)}%)`);
     }
   };
 };
 
-const buildOpenSSLIfNecessary = async ({
-  macOsDeploymentTarget,
-  openSSLVersion,
-  vsBuildArch
-}) => {
+const buildOpenSSLIfNecessary = async ({ macOsDeploymentTarget, openSSLVersion, vsBuildArch }) => {
   if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL build, not required on ${process.platform}`);
     return;
@@ -256,7 +287,9 @@ const buildOpenSSLIfNecessary = async ({
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL build, dir exists");
     return;
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
   const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
@@ -288,13 +321,9 @@ const buildOpenSSLIfNecessary = async ({
   }
 
   console.log("Build finished.");
-}
+};
 
-const downloadOpenSSLIfNecessary = async ({
-  downloadBinUrl,
-  maybeDownloadSha256,
-  maybeDownloadSha256Url
-}) => {
+const downloadOpenSSLIfNecessary = async ({ downloadBinUrl, maybeDownloadSha256, maybeDownloadSha256Url }) => {
   if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL download, not required on ${process.platform}`);
     return;
@@ -309,8 +338,10 @@ const downloadOpenSSLIfNecessary = async ({
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL download, dir exists");
     return;
-  } catch {}
-  
+  } catch {
+    // ignore
+  }
+
   if (maybeDownloadSha256Url) {
     maybeDownloadSha256 = (await got(maybeDownloadSha256Url)).body.trim();
   }
@@ -320,49 +351,43 @@ const downloadOpenSSLIfNecessary = async ({
 
   const pipelineSteps = [
     downloadStream,
-    maybeDownloadSha256
-      ? new HashVerify("sha256", makeHashVerifyOnFinal(maybeDownloadSha256))
-      : null,
+    maybeDownloadSha256 ? new HashVerify("sha256", makeHashVerifyOnFinal(maybeDownloadSha256)) : null,
     zlib.createGunzip(),
-    tar.extract(extractPath)
-  ].filter(step => step !== null);
-  await pipeline(
-    ...pipelineSteps
-  );
+    tar.extract(extractPath),
+  ].filter((step) => step !== null);
+  await pipeline(...pipelineSteps);
 
   console.log(`OpenSSL download + extract complete${maybeDownloadSha256 ? ": SHA256 OK." : "."}`);
   console.log("Download finished.");
-}
+};
 
 const getOpenSSLPackageName = () => {
   let arch = process.arch;
-  if (process.platform === "win32" && (
-    process.arch === "ia32" || process.env.NODEGIT_VS_BUILD_ARCH === "x86"
-  )) {
+  if (process.platform === "win32" && (process.arch === "ia32" || process.env.NODEGIT_VS_BUILD_ARCH === "x86")) {
     arch = "x86";
   }
 
   return `openssl-${OPENSSL_VERSION}-${process.platform}-${arch}.tar.gz`;
-}
+};
 
 const getOpenSSLPackageUrl = () => `${packageJson.binary.host}${getOpenSSLPackageName()}`;
 
 const buildPackage = async () => {
-  let resolve, reject;
-  const promise = new Promise((_resolve, _reject) => {
+  let resolve;
+  const promise = new Promise((_resolve) => {
     resolve = _resolve;
-    reject = _reject;
   });
   await pipeline(
     tar.pack(extractPath, {
       entries: pathsToIncludeForPackage,
       ignore: (name) => {
         // Ignore pkgconfig files
-        return path.extname(name) === ".pc"
-          || path.basename(name) === "pkgconfig";
+        return path.extname(name) === ".pc" || path.basename(name) === "pkgconfig";
       },
+      // eslint-disable-next-line no-octal
       dmode: 0755,
-      fmode: 0644
+      // eslint-disable-next-line no-octal
+      fmode: 0644,
     }),
     zlib.createGzip(),
     new HashVerify("sha256", (digest) => {
@@ -376,11 +401,12 @@ const buildPackage = async () => {
 
 const acquireOpenSSL = async () => {
   try {
-    const downloadBinUrl = process.env.npm_config_openssl_bin_url
-      || (['win32', 'darwin'].includes(process.platform) ? getOpenSSLPackageUrl() : undefined);
-    if (downloadBinUrl && downloadBinUrl !== 'skip' && !process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
+    const downloadBinUrl =
+      process.env.npm_config_openssl_bin_url ||
+      (["win32", "darwin"].includes(process.platform) ? getOpenSSLPackageUrl() : undefined);
+    if (downloadBinUrl && downloadBinUrl !== "skip" && !process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
       const downloadOptions = { downloadBinUrl };
-      if (process.env.npm_config_openssl_bin_sha256 !== 'skip') {
+      if (process.env.npm_config_openssl_bin_sha256 !== "skip") {
         if (process.env.npm_config_openssl_bin_sha256) {
           downloadOptions.maybeDownloadSha256 = process.env.npm_config_openssl_bin_sha256;
         } else {
@@ -411,7 +437,7 @@ const acquireOpenSSL = async () => {
     await buildOpenSSLIfNecessary({
       openSSLVersion: OPENSSL_VERSION,
       macOsDeploymentTarget,
-      vsBuildArch
+      vsBuildArch,
     });
     if (process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
       await buildPackage();
@@ -425,7 +451,7 @@ const acquireOpenSSL = async () => {
 module.exports = {
   acquireOpenSSL,
   getOpenSSLPackageName,
-  OPENSSL_VERSION
+  OPENSSL_VERSION,
 };
 
 if (require.main === module) {

@@ -1,0 +1,36 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:mocha/recommended",
+    "plugin:node/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "plugins": ["prettier", "mocha", "node"],
+  "rules": {
+    "array-callback-return": "error",
+    "prettier/prettier": "warn",
+    "mocha/no-setup-in-describe": "warn",
+    "no-process-exit": "warn",
+    "no-shadow": "warn",
+    "no-unused-vars": [
+      "error",
+      // allow unused vars starting with _
+      {
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "node/no-missing-require": "warn",
+    "prefer-const": "warn"
+  }
+}

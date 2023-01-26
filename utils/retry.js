@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const { spawn } = require("child_process");
 
 const [, , cmd, ...args] = process.argv;
 if (!cmd) {
@@ -14,19 +14,19 @@ const once = (fn) => {
 
     runOnce = true;
     fn(...args);
-  }
+  };
 };
 
 const retry = (numRetries = 3) => {
   const child = spawn(cmd, args, {
-    shell: process.platform === 'win32',
-    stdio: [0, 'pipe', 'pipe']
+    shell: process.platform === "win32",
+    stdio: [0, "pipe", "pipe"],
   });
 
   child.setMaxListeners(0);
 
-  child.stdout.setEncoding('utf8');
-  child.stderr.setEncoding('utf8');
+  child.stdout.setEncoding("utf8");
+  child.stderr.setEncoding("utf8");
 
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
@@ -42,10 +42,10 @@ const retry = (numRetries = 3) => {
       process.exit(status);
     }
   });
-  const onClose = status => cleanupAndExit(null, status);
+  const onClose = (status) => cleanupAndExit(null, status);
 
-  child.on('close', onClose);
-  child.on('error', cleanupAndExit);
+  child.on("close", onClose);
+  child.on("error", cleanupAndExit);
 };
 
 retry();

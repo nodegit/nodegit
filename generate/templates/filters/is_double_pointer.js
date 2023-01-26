@@ -1,3 +1,3 @@
-module.exports = function(cType) {
+module.exports = function (cType) {
   return /\s*\*\*\s*/.test(cType);
 };
