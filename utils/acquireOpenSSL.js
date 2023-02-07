@@ -16,7 +16,7 @@ const pipeline = promisify(stream.pipeline);
 
 const packageJson = require('../package.json')
 
-const OPENSSL_VERSION = "1.1.1s";
+const OPENSSL_VERSION = "1.1.1t";
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
 const vendorPath = path.resolve(__dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
