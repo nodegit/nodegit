@@ -97,7 +97,7 @@ jobs:
     strategy:
       matrix:
         node: [12, 14, 16]
-    runs-on: macOS-11
+    runs-on: macOS-12
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
     steps:
