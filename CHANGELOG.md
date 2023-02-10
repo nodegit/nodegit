@@ -1,5 +1,19 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.21" href="#v0-28-0-alpha-21">v0.28.0-alpha.21</a> [(2023-02-10)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.21)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.20...v0.28.0-alpha.21)
+
+#### Summary of changes
+- Update OpenSSL to 1.1.1t
+- Update got + other packages with security vulnerabilities
+- Fix tag.createWithSignature function definition
+
+#### Merged PRs into NodeGit
+- [Bump OpenSSL to 1.1.1t](https://github.com/nodegit/nodegit/pull/1971)
+- [Update got + other locked package versions](https://github.com/nodegit/nodegit/pull/1969)
+- [Fix tag createWithSignature function](https://github.com/nodegit/nodegit/pull/1945)
+
 ## <a name="v0-28-0-alpha.20" href="#v0-28-0-alpha-20">v0.28.0-alpha.20</a> [(2022-11-11)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.20)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.19...v0.28.0-alpha.20)
