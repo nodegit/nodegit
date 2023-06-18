@@ -361,8 +361,7 @@ describe("Merge", function() {
     });
   });
 
-  it("can merge --no-ff a non-fast-forward using the convenience method",
-    function() {
+  function mergeUnrelatedChanges(repository, head) {
     var initialFileName = "initialFile.txt";
     var ourFileName = "ourNewFile.txt";
     var theirFileName = "theirNewFile.txt";
@@ -376,7 +375,6 @@ describe("Merge", function() {
     var theirSignature = NodeGit.Signature.create
     ("Greg Abbott", "Gregggg@IllTollYourFace.us", 123456789, 60);
 
-    var repository = this.repository;
     var initialCommit;
     var ourCommit;
     var theirCommit;
@@ -413,15 +411,17 @@ describe("Merge", function() {
       return repository.getCommit(commitOid).then(function(commit) {
         initialCommit = commit;
       }).then(function() {
-        return repository.createBranch(ourBranchName, commitOid)
+        return repository.createBranch(theirBranchName, commitOid)
         .then(function(branch) {
-          ourBranch = branch;
-          return repository.createBranch(theirBranchName, commitOid);
+          theirBranch = branch;
+          if (!head) {
+            return repository.createBranch(ourBranchName, commitOid)
+            .then(function(branch) {
+              ourBranch = branch;
+            });
+          }
         });
       });
-    })
-    .then(function(branch) {
-      theirBranch = branch;
     })
     .then(function() {
       return fse.writeFile(path.join(repository.workdir(), ourFileName),
@@ -442,8 +442,8 @@ describe("Merge", function() {
     .then(function(oid) {
       assert.equal(oid.toString(),
       "af60aa06b3537f75b427f6268a130c842c84a137");
-
-      return repository.createCommit(ourBranch.name(), ourSignature,
+      var branch = ourBranch ? "refs/heads/" + ourBranchName : "HEAD";
+      return repository.createCommit(branch, ourSignature,
         ourSignature, "we made a commit", oid, [initialCommit]);
     })
     .then(function(commitOid) {
@@ -486,19 +486,26 @@ describe("Merge", function() {
       });
     })
     .then(function() {
+      var branch = ourBranch ? ourBranchName : "HEAD";
       var opts = {checkoutStrategy: NodeGit.Checkout.STRATEGY.FORCE};
-      return repository.checkoutBranch(ourBranchName, opts);
+      return repository.checkoutBranch(branch, opts);
     })
     .then(function() {
+      var branch = ourBranch ? ourBranchName : "HEAD";
       return repository.mergeBranches(
-        ourBranchName,
+        branch,
         theirBranchName,
         ourSignature,
         NodeGit.Merge.PREFERENCE.NO_FASTFORWARD);
     })
     .then(function(commitId) {
-      assert.equal(commitId.toString(),
-      "96d6f1d0704eb3ef9121a13348d17c1d672c28aa");
+      if (head) {
+        assert.equal(commitId.toString(),
+        "4a21e4f93ec1900bc3446a9867906d5982f18172");
+      } else {
+        assert.equal(commitId.toString(),
+        "96d6f1d0704eb3ef9121a13348d17c1d672c28aa");
+      }
     })
     .then(function() {
       return repository.getStatus();
@@ -507,6 +514,18 @@ describe("Merge", function() {
       // make sure we didn't change the index
       assert.equal(statuses.length, 0);
     });
+  }
+
+  it("can merge --no-ff a non-fast-forward " +
+      "using the convenience method updating HEAD",
+    function() {
+      return mergeUnrelatedChanges(this.repository, true);
+  });
+
+  it("can merge --no-ff a non-fast-forward " +
+      "using the convenience method without updating HEAD",
+    function() {
+      return mergeUnrelatedChanges(this.repository, false);
   });
 
   it(
@@ -1609,6 +1628,103 @@ describe("Merge", function() {
           NodeGit.Repository.STATE.NONE);
         // verify the convenience method
         assert.ok(repository.isDefaultState());
+      });
+  });
+
+  it("merging to HEAD with convenience method leaves clean index", function() {
+    var repository = this.repository;
+    var name = "test.txt";
+    var name2 = "test2.txt";
+    var fileName = path.resolve(repository.workdir(), name);
+    var fileName2 = path.resolve(repository.workdir(), name2);
+    var index;
+    var head;
+    var left;
+    var leftBranch;
+    return fse.writeFile(fileName, "A")
+      .then(function() {
+        return repository.refreshIndex();
+      })
+      .then(function(idx) {
+        index = idx;
+        return index.addByPath(name);
+      })
+      .then(function() {
+        return index.writeTree();
+      })
+      .then(function(oid) {
+        return repository.createCommit("HEAD",
+          NodeGit.Signature.default(repository),
+          NodeGit.Signature.default(repository),
+          "message", oid, []);
+      })
+      .then(function(oid) {
+        head = oid;
+        return fse.writeFile(fileName, "B");
+      })
+      .then(function() {
+        return repository.refreshIndex();
+      })
+      .then(function(idx) {
+        index = idx;
+        return index.addByPath(name);
+      })
+      .then(function() {
+        return index.writeTree();
+      })
+      .then(function(oid) {
+        return repository.createCommit("HEAD",
+          NodeGit.Signature.default(repository),
+          NodeGit.Signature.default(repository),
+          "left", oid, [ head ]);
+      })
+      .then(function(_left) {
+        left = _left;
+        return repository.getCommit(left);
+      })
+      .then(function(commit) {
+        return NodeGit.Branch.create(repository, "leftBranch", commit, false);
+      })
+      .then(function(branch) {
+        leftBranch = branch;
+        return repository.getCommit(head);
+      })
+      .then(function(commit) {
+        return NodeGit.Reset.reset(
+          repository, commit, NodeGit.Reset.TYPE.HARD, {});
+      })
+      .then(function() {
+        return fse.writeFile(fileName2, "C");
+      })
+      .then(function() {
+        return repository.refreshIndex();
+      })
+      .then(function(idx) {
+        index = idx;
+        return index.addByPath(name2);
+      })
+      .then(function() {
+        return index.write();
+      })
+      .then(function() {
+        return index.writeTree();
+      })
+      .then(function(oid) {
+        return repository.createCommit("HEAD",
+          NodeGit.Signature.default(repository),
+          NodeGit.Signature.default(repository),
+          "right", oid, [ head ]);
+      })
+      .then(function(commit) {
+        return repository.mergeBranches(
+          "master", leftBranch,
+          NodeGit.Signature.default(repository), null, null);
+      })
+      .then(function() {
+        return repository.getStatus();
+      })
+      .then(function(statuses) {
+        assert.equal(statuses.length, 0);
       });
   });
 
