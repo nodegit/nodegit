@@ -3,12 +3,12 @@
 /examples/
 /generate/
 /guides/
-/lib/
 /test/
-/vendor/Release/
 
-!/include
-!/src
+# FIGMA: we never want npm installs to build from source. Exclude these 10k+ files from the package.
+/vendor/
+/include/
+/src/
 
 .astylerc
 .editorconfig

@@ -1,42 +1,31 @@
 on:
   push:
     branches:
-      - master
-      - backport/*
+      - jfirebaugh
     tags:
       - v*.*.*
   pull_request:
 
 name: Testing
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   linux-tests:
     name: "Linux Tests"
     strategy:
+      fail-fast: false
       matrix:
-        node: [16] # 18+ requires GLIBC 2.28+
+        node: [18, 20]
     runs-on: ubuntu-latest
-    container: ubuntu:16.04
+    container: ubuntu:20.04
     steps:
       - name: Install Dependencies for Ubuntu
-        # git >= 2.18 required for actions/checkout git support
-        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget
+        run: apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-
-      - name: Setup python 3.6
-        env:
-          CC: clang
-          CXX: clang++
-        run: |
-          mkdir ~/python
-          cd ~/python
-          wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz
-          tar -xvf Python-3.6.15.tgz
-          cd Python-3.6.15
-          ./configure
-          make
-          make install
 
       - name: Setup Environment
         run: |
@@ -49,12 +38,10 @@ jobs:
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js
-        # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
@@ -72,7 +59,7 @@ jobs:
         # https://stackoverflow.com/questions/70298238/getting-eaccess-when-running-npm-8-as-root
         run: |
           chown root.root -R .
-          npm set unsafe-perm true
+          npm set unsafe-perm true || true
           node utils/retry npm install
 
       - name: Test
@@ -82,12 +69,15 @@ jobs:
           ssh-add ~/.ssh_tests/id_rsa
           node utils/retry npm test
 
+      - name: configure aws credentials
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::060562746757:role/nodegit-repository
+          aws-region: us-west-2
+
       - name: Deploy
         if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
         run: |
           npm install -g @mapbox/node-pre-gyp aws-sdk
           node lifecycleScripts/clean
@@ -97,9 +87,11 @@ jobs:
   macos-tests:
     name: "macOS Tests"
     strategy:
+      fail-fast: false
       matrix:
-        node: [16, 18, 20]
-    runs-on: macOS-12
+        node: [18, 20]
+        os: [macOS-12, macos-13-xlarge]
+    runs-on: ${{ matrix.os }}
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
     steps:
@@ -140,74 +132,17 @@ jobs:
           ssh-add ~/.ssh_tests/id_rsa
           node utils/retry npm test
 
+      - name: configure aws credentials
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::060562746757:role/nodegit-repository
+          aws-region: us-west-2
+
       - name: Deploy
         if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
         run: |
           npm install -g @mapbox/node-pre-gyp aws-sdk
           node lifecycleScripts/clean
           node-pre-gyp package
           node-pre-gyp publish
-
-  windows-tests:
-    name: Windows Tests
-    strategy:
-      matrix:
-        node: [16, 18, 20]
-        arch: [x86, x64]
-    runs-on: windows-2019
-    steps:
-      - name: Setup Environment
-        run: |
-          git config --file C:\ProgramData\Git\config core.autocrlf input
-          git config --system core.autocrlf input
-          git config --global core.autocrlf input
-          git config --global user.name "John Doe"
-          git config --global user.email johndoe@example.com
-
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        with:
-          node-version: ${{ matrix.node }}
-          check-latest: true
-          architecture: ${{ matrix.arch }}
-
-      - name: Install
-        run: npm install
-
-      - name: Test
-        env:
-          GIT_SSH: ${{ github.workspace }}\vendor\plink.exe
-        run: |
-          powershell -command "Start-Process ${{ github.workspace }}\vendor\pageant.exe ${{ github.workspace }}\vendor\private.ppk"
-          node utils/retry npm test
-
-      # You're probably wondering why this isn't a single `run: |` step, it certainly is for *nix,
-      # but it's not, because the CI runner for windows doesn't wait for each step as listed here
-      # and it treats each additional step past the first as an orphaned process.
-      - name: Deploy (Dependencies)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: npm install -g @mapbox/node-pre-gyp aws-sdk
-
-      - name: Deploy (Clean)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: node lifecycleScripts\clean
-
-      - name: Deploy (Package)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: node-pre-gyp package
-
-      - name: Deploy (Publish)
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: node-pre-gyp publish
