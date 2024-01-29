@@ -49,10 +49,12 @@ jobs:
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      - uses: actions/checkout@v2
+      # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
+      - uses: actions/checkout@v3
 
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
+        uses: actions/setup-node@v3
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
@@ -112,10 +114,10 @@ jobs:
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
@@ -166,16 +168,16 @@ jobs:
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: implausible/setup-node@feature/expose-architecture-override
+        uses: actions/setup-node@v4
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
-          node-arch: ${{ matrix.arch }}
+          architecture: ${{ matrix.arch }}
 
       - name: Install
         run: npm install
