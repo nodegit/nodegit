@@ -14,7 +14,7 @@ jobs:
     name: "Linux Tests"
     strategy:
       matrix:
-        node: [12, 14, 16]
+        node: [16] # 18+ requires GLIBC 2.28+
     runs-on: ubuntu-latest
     container: ubuntu:16.04
     steps:
@@ -96,7 +96,7 @@ jobs:
     name: "macOS Tests"
     strategy:
       matrix:
-        node: [12, 14, 16]
+        node: [16, 18, 20]
     runs-on: macOS-12
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
@@ -154,7 +154,7 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [12, 14, 16]
+        node: [16, 18, 20]
         arch: [x86, x64]
     runs-on: windows-2019
     steps:
