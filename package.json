@@ -38,7 +38,7 @@
     "node": ">= 16"
   },
   "dependencies": {
-    "@axosoft/nan": "^2.18.0-gk.1",
+    "@axosoft/nan": "^2.18.0-gk.2",
     "@mapbox/node-pre-gyp": "^1.0.8",
     "fs-extra": "^7.0.0",
     "got": "^11.8.6",
