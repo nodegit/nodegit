@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.22" href="#v0-28-0-alpha-22">v0.28.0-alpha.22</a> [(2024-02-05)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.22)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.21...v0.28.0-alpha.22)
+
+#### Summary of changes
+- Compatibility with Electron 28
+
+#### Merged PRs into NodeGit
+- [Fix electron 28 build failure](https://github.com/nodegit/nodegit/pull/1988)
+- [Bump node-gyp to 10.0.1](https://github.com/nodegit/nodegit/pull/1989)
+
 ## <a name="v0-28-0-alpha.21" href="#v0-28-0-alpha-21">v0.28.0-alpha.21</a> [(2023-02-10)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.21)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.20...v0.28.0-alpha.21)
