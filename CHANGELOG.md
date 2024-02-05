@@ -6,6 +6,7 @@
 
 #### Summary of changes
 - Compatibility with Electron 28
+- NodeGit now requires Node 16+
 
 #### Merged PRs into NodeGit
 - [Fix electron 28 build failure](https://github.com/nodegit/nodegit/pull/1988)
