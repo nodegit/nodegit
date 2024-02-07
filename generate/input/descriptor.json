@@ -2696,7 +2696,18 @@
         },
         "git_oid_fromstrp": {
           "isAsync": false,
-          "jsFunctionName": "fromString"
+          "jsFunctionName": "fromString",
+          "args": {
+            "out": {
+              "isReturn": true
+            },
+            "str": {
+              "shouldAlloc": false
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_oid_nfmt": {
           "ignore": true

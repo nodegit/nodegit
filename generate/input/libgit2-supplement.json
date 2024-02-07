@@ -667,6 +667,25 @@
         },
         "group": "index_reuc_entry"
       },
+      "git_oid_fromstrp": {
+        "type": "function",
+        "file": "oid.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_oid *"
+          },
+          {
+            "name": "str",
+            "type": "const char *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "isAsync": false,
+        "group": "oid"
+      },
       "git_patch_convenient_from_diff": {
         "args": [
           {
@@ -1150,6 +1169,12 @@
         "merge_file_result",
         [
           "git_merge_file_result_free"
+        ]
+      ],
+      [
+        "oid",
+        [
+          "git_oid_fromstrp"
         ]
       ],
       [
