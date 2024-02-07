@@ -22,7 +22,7 @@ git_buf *GitBufConverter::Convert(Local<v8::Value> val) {
 
     memcpy(memory, v8String.c_str(), stringLength);
 
-    result->asize = stringLength;
+    result->reserved = stringLength;
     result->size = stringLength;
     result->ptr = reinterpret_cast<char *>(memory);
     return result;

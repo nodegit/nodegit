@@ -70,6 +70,10 @@
       "owner": "Object",
       "removeString": "OBJ_"
     },
+    "oid": {
+      "JsName": "TYPE",
+      "owner": "Oid"
+    },
     "proxy": {
       "JsName": "PROXY",
       "isMask": false
@@ -158,6 +162,9 @@
           "return": {
             "isErrorCode": true
           }
+        },
+        "git_apply_options_init": {
+          "ignore": true
         }
       }
     },
@@ -3399,6 +3406,12 @@
             "isErrorCode": true
           }
         },
+        "git_remote_connect_ext": {
+          "isAsync": true
+        },
+        "git_remote_connect_options_init": {
+          "ignore": true
+        },
         "git_remote_disconnect": {
           "isAsync": true,
           "return": {
@@ -3596,6 +3609,11 @@
         }
       }
     },
+    "remote_connect_options": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ]
+    },
     "remote_callbacks": {
       "fields": {
         "completion": {
@@ -3686,9 +3704,6 @@
             }
           },
           "isAsync": false
-        },
-        "git_repository_init_init_options": {
-          "ignore": true
         },
         "git_repository_init_options_init": {
           "ignore": true

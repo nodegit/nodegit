@@ -77,6 +77,7 @@
         "libgit2/src/libgit2/fetchhead.c",
         "libgit2/src/libgit2/filter.c",
         "libgit2/src/libgit2/graph.c",
+        "libgit2/src/libgit2/grafts.c",
         "libgit2/src/libgit2/hashsig.c",
         "libgit2/src/libgit2/ident.c",
         "libgit2/src/libgit2/idxmap.c",
@@ -245,6 +246,8 @@
           "sources": [
             "libgit2/src/libgit2/streams/tls.c",
             "libgit2/src/libgit2/transports/auth.c",
+            "libgit2/src/libgit2/transports/auth_gssapi.c",
+            "libgit2/src/libgit2/transports/auth_ntlmclient.c",
             "libgit2/src/libgit2/transports/http.c",
           ],
           "cflags": [
