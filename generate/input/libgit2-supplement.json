@@ -1014,44 +1014,6 @@
         },
         "group": "status_list"
       },
-      "git_stash_save_options_init": {
-        "file": "git2/stash.h",
-        "args": [
-          {
-            "name": "opts",
-            "type": "git_stash_save_options *"
-          },
-          {
-            "name": "version",
-            "type": "unsigned int"
-          }
-        ],
-        "return": {
-          "type": "int"
-        },
-        "group": "stash"
-      },
-      "git_stash_save_with_opts": {
-        "file": "git2/stash.h",
-        "args": [
-          {
-            "name": "out",
-            "type": "git_oid *"
-          },
-          {
-            "name": "repo",
-            "type": "git_repository *"
-          },
-          {
-            "name": "opts",
-            "type": "git_stash_save_options *"
-          }
-        ],
-        "return": {
-          "type": "int"
-        },
-        "group": "stash"
-      },
       "git_tree_get_all_filepaths": {
         "args": [
           {
@@ -1276,13 +1238,6 @@
           "git_revwalk_commit_walk",
           "git_revwalk_fast_walk",
           "git_revwalk_file_history_walk"
-        ]
-      ],
-      [
-        "stash",
-        [
-          "git_stash_save_options_init",
-          "git_stash_save_with_opts"
         ]
       ],
       [
@@ -1895,73 +1850,6 @@
             "needs": [
               "git_stash_apply_init_options",
               "git_checkout_init_options"
-            ]
-          }
-        }
-      ],
-      [
-        "git_stash_flags",
-        {
-          "type": "enum",
-          "fields": [
-            {
-              "type": "unsigned int",
-              "name": "GIT_STASH_DEFAULT",
-              "value": 0
-            },
-            {
-              "type": "unsigned int",
-              "name": "GIT_STASH_KEEP_INDEX",
-              "value": 1
-            },
-            {
-              "type": "unsigned int",
-              "name": "GIT_STASH_INCLUDE_UNTRACKED",
-              "value": 2
-            },
-            {
-              "type": "unsigned int",
-              "name": "GIT_STASH_INCLUDE_IGNORED",
-              "value": 4
-            },
-            {
-              "type": "unsigned int",
-              "name": "GIT_STASH_KEEP_ALL",
-              "value": 8
-            }
-          ]
-        }
-      ],
-      [
-        "git_stash_save_options",
-        {
-          "type": "struct",
-          "fields": [
-            {
-              "type": "unsigned int",
-              "name": "version"
-            },
-            {
-              "type": "const git_signature *",
-              "name": "stasher"
-            },
-            {
-              "type": "const char *",
-              "name": "message"
-            },
-            {
-              "type": "uint32_t",
-              "name": "flags"
-            },
-            {
-              "type": "git_strarray",
-              "name": "paths"
-            }
-          ],
-          "used": {
-            "needs": [
-              "git_stash_save_with_opts",
-              "git_stash_save_options_init"
             ]
           }
         }
