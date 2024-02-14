@@ -109,7 +109,7 @@ describe("Reference", function() {
       })
       .then(function(reflog) {
         var refEntryMessage = reflog
-          .entryByIndex(reflog.entrycount() - 1)
+          .entryByIndex(0)
           .message();
         // The reflog should have the message passed to
         // the rename

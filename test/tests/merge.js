@@ -1592,7 +1592,7 @@ describe("Merge", function() {
       })
       .then(function(commitOid) {
         assert.equal(commitOid.toString(),
-          "03ba156a7a1660f179b6b2dbc6a542fcf88d022d");
+          "8221726e3f96e3d3e0258f655e107383dc3c7335");
 
         // merge isn't cleaned up automatically
         assert.ok(fse.existsSync(path.join(repoGitPath, "MERGE_HEAD")));
