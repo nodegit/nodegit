@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.23" href="#v0-28-0-alpha-23">v0.28.0-alpha.23</a> [(2024-02-14)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.23)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.22...v0.28.0-alpha.23)
+
+#### Summary of changes
+- Bump libgit2 to 1.7.2
+
+#### Merged PRs into NodeGit
+- [Bump libgit2 to 1.7.2](https://github.com/nodegit/nodegit/pull/1990)
+
 ## <a name="v0-28-0-alpha.22" href="#v0-28-0-alpha-22">v0.28.0-alpha.22</a> [(2024-02-05)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.22)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.21...v0.28.0-alpha.22)
