@@ -283,6 +283,13 @@
             "GIT_WINHTTP",
             "GIT_IO_WSAPOLL"
           ],
+          "conditions": [
+            ["<(is_electron) == 1", {
+              "include_dirs": [
+                "<(electron_openssl_root)/include"
+              ]
+            }]
+          ],
           "msvs_settings": {
             "VCLinkerTool": {
               "AdditionalDependencies": [
@@ -304,9 +311,6 @@
                     "/MACHINE:x86",
                   ],
                 },
-              }],
-              ["<(is_electron) == 1", {
-                "include_dirs": ["<(electron_openssl_root)/include"]
               }]
             ],
           },
