@@ -1,5 +1,17 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.24" href="#v0-28-0-alpha-24">v0.28.0-alpha.24</a> [(2024-02-20)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.24)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.23...v0.28.0-alpha.24)
+
+#### Summary of changes
+- Use Collision Detection SHA1 implementation
+- Fix win32 Electron build due to incorrect OpenSSL include path
+
+#### Merged PRs into NodeGit
+- [Use builtin SHA1 for libgit compilation](https://github.com/nodegit/nodegit/pull/1992)
+- [Ensure OpenSSL root included in win32 Electron builds](https://github.com/nodegit/nodegit/pull/1991)
+
 ## <a name="v0-28-0-alpha.23" href="#v0-28-0-alpha-23">v0.28.0-alpha.23</a> [(2024-02-14)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.23)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.22...v0.28.0-alpha.23)
