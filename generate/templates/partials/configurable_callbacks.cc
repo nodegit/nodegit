@@ -87,8 +87,9 @@
         {% each field.args|callbackArgsInfo as arg %}
         {% if arg.cppClassName == "Array" %}
           v8::Local<v8::Array> _{{arg.name}}_array = Nan::New<v8::Array>(baton->{{ arg.arrayLengthArgumentName }});
+          v8::Local<v8::Function> constructor_template = {{arg.arrayElementCppClassName}}::GetTemplate();
           for(uint32_t i = 0; i < _{{arg.name}}_array->Length(); i++) {
-            Nan::Set(_{{arg.name}}_array, i, {{arg.arrayElementCppClassName}}::New(baton->{{arg.name}}[i], false));
+            Nan::Set(_{{arg.name}}_array, i, {{arg.arrayElementCppClassName}}::New(constructor_template, baton->{{arg.name}}[i], false));
           }
         {% endif %}
         {% endeach %}
