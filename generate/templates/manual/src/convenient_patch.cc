@@ -27,8 +27,10 @@ void PatchDataFree(PatchData *patch) {
       free((void *)line->content);
       free((void *)line);
     }
+    delete hunk->lines;
     delete hunk;
   }
+  delete patch->hunks;
   delete patch;
 }
 

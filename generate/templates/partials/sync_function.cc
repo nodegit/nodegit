@@ -92,12 +92,53 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       } // lock master scope end
     {%endif%}
 
+    {%each args|argsInfo as arg %}
+      {%if not arg.isSelf %}
+        {%if not arg.payloadFor %}
+          {%if not arg.isReturn %}
+            {%if arg.cppClassName == 'GitStrarray' %}
+              {{ arg.freeFunctionName }}((git_strarray*)from_{{ arg.name }});
+              free((void*)from_{{ arg.name }});
+            {%elsif arg.cppClassName == 'Array' %}
+              free((void*)from_{{ arg.name }});
+            {%endif%}
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
+
+    {%each args|argsInfo as arg %}
+      {%if arg.shouldAlloc|and arg.isReturn|and arg.cppClassName == 'Array' %}
+        {%if arg.cType == 'git_strarray *' %}
+          // We need to free the strarray
+          {{ arg.freeFunctionName }}(from_{{ arg.name }});
+          free((void *)from_{{ arg.name }});
+        {%endif%}
+      {%endif%}
+      {%if arg.shouldAlloc|and arg.isReturn %}
+        {%if not arg.selfFreeing %}
+          {%if arg.cppClassName == "GitBuf" %}
+          {%else%}
+            free((void *)from_{{ arg.name }});
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
 
     {%each args|argsInfo as arg %}
       {%if arg | isOid %}
-      if (info[{{ arg.jsArg }}]->IsString()) {
-        free((void *)from_{{ arg.name }});
-      }
+        if (info[{{ arg.jsArg }}]->IsString()) {
+          free((void *)from_{{ arg.name }});
+        }
+      {%else%}
+        {%if not arg.isReturn %}
+          {%if arg.cppClassName == 'String'%}
+            free((void *)from_{{ arg.name }});
+          {%endif%}
+          {%if arg.cppClassName == 'Wrapper'%}
+            free((void *)from_{{ arg.name }});
+          {%endif%}
+        {%endif%}
       {%endif%}
     {%endeach%}
 

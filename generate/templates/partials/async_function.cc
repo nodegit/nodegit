@@ -64,7 +64,9 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
               );
 
               if (!conversionResult.result) {
-                delete[] baton->{{ arg.name }};
+                // TODO free previously allocated memory
+                free(baton->{{ arg.name }});
+                delete baton;
                 return Nan::ThrowError(Nan::New(conversionResult.error).ToLocalChecked());
               }
 
@@ -77,6 +79,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {
             auto conversionResult = Configurable{{ arg.cppClassName }}::fromJavascript(nodegitContext, info[{{ arg.jsArg }}]);
             if (!conversionResult.result) {
+              delete baton;
               return Nan::ThrowError(Nan::New(conversionResult.error).ToLocalChecked());
             }
 
@@ -178,6 +181,36 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
       baton->result = result;
 
     {%endif%}
+
+  {%each args|argsInfo as arg %}
+    {%if not arg.isSelf %}
+      {%if not arg.payloadFor %}
+        {%if not arg.isReturn %}
+          {%if arg.cppClassName == 'GitStrarray' %}
+            {{ arg.freeFunctionName }}((git_strarray*)baton->{{ arg.name }});
+            free((void*)baton->{{ arg.name }});
+          {%elsif arg.cppClassName == 'Array' %}
+            free((void*)baton->{{ arg.name }});
+          {%elsif not arg.isCallbackFunction %}
+            {%if not arg.isStructType %}
+              {%if not arg.isStructType %}
+                {%if not arg.isPayload %}
+                  {%if arg.name %}
+                    {%if arg.cppClassName == 'String'%}
+                      free((void*)baton->{{ arg.name }});
+                    {%endif%}
+                    {%if arg.cppClassName == 'Wrapper'%}
+                      free((void*)baton->{{ arg.name }});
+                    {%endif%}
+                  {%endif%}
+                {%endif%}
+              {%endif%}
+            {%endif%}
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endif%}
+  {%endeach%}
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
@@ -201,6 +234,17 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
   {%each args|argsInfo as arg %}
     {%if arg.shouldAlloc %}
       {%if not arg.isCppClassStringOrArray %}
+        {%if arg.cppClassName == "GitBuf" %}
+        {%else%}
+          {%if arg | isOid %}
+            if (baton->{{ arg.name}}NeedsFree) {
+              baton->{{ arg.name}}NeedsFree = false;
+              free((void*)baton->{{ arg.name }});
+            }
+          {%else%}
+            free((void*)baton->{{ arg.name }});
+          {%endif%}
+        {%endif%}
       {%elsif arg | isOid %}
         if (baton->{{ arg.name}}NeedsFree) {
           baton->{{ arg.name}}NeedsFree = false;
@@ -273,6 +317,33 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         Nan::Set(result, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), v8ConversionSlot);
       {%endif%}
     {%endeach%}
+
+    {%each args|argsInfo as arg %}
+      {%if arg.shouldAlloc|and arg.isReturn|and arg.cppClassName == 'Array' %}
+        {%if arg.cType == 'git_strarray *' %}
+          // We need to free the strarray
+          {{ arg.freeFunctionName }}(baton->{{ arg.name }});
+          free((void *)baton->{{ arg.name }});
+        {%endif%}
+      {%endif%}
+      {%if not arg.shouldAlloc %}
+        {%if arg.ownedByThis|and arg.dupFunction|and arg.freeFunctionName|and arg.isReturn|and arg.selfFreeing %}
+          // We need to free duplicated memory we are responsible for that we obtained from libgit2 because
+          // nodegit duplicates it again when calling the wrapper
+          if(baton->{{ arg.name }} != NULL) {
+            {{ arg.freeFunctionName }}(baton->{{ arg.name }});
+          }
+        {%endif%}
+      {%elsif arg.isReturn %}
+        {%if not arg.selfFreeing %}
+          {%if arg.cppClassName == "GitBuf" %}
+          {%else%}
+            free((void *)baton->{{ arg.name }});
+          {%endif%}
+        {%endif%}
+      {%endif%}
+    {%endeach%}
+
     {%if .|returnsCount == 1 %}
       v8::Local<v8::Value> result = v8ConversionSlot;
     {%endif%}
@@ -346,6 +417,13 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     {%each args|argsInfo as arg %}
       {%if arg.shouldAlloc %}
         {%if not arg.isCppClassStringOrArray %}
+          {%if arg.cppClassName == "GitBuf" %}
+          {%else%}
+            {%if arg | isOid %}
+            {%else%}
+              free((void*)baton->{{ arg.name }});
+            {%endif%}
+          {%endif%}
         {%elsif arg | isOid %}
           if (baton->{{ arg.name}}NeedsFree) {
             baton->{{ arg.name}}NeedsFree = false;
@@ -368,10 +446,6 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
 
   {%each args|argsInfo as arg %}
     {%if arg.isCppClassStringOrArray %}
-      {%if arg.freeFunctionName %}
-      {%elsif not arg.isConst%}
-        free((void *)baton->{{ arg.name }});
-      {%endif%}
     {%elsif arg | isOid %}
       if (baton->{{ arg.name}}NeedsFree) {
         baton->{{ arg.name}}NeedsFree = false;
