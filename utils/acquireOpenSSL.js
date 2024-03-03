@@ -16,7 +16,7 @@ const pipeline = promisify(stream.pipeline);
 
 const packageJson = require('../package.json')
 
-const OPENSSL_VERSION = "1.1.1t";
+const OPENSSL_VERSION = "1.1.1w";
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
 const vendorPath = path.resolve(__dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
@@ -118,7 +118,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 
 const buildLinux = async (buildCwd) => {
   const arguments = [
-    "linux-x86_64",
+    process.arch === "x64" ? "linux-x86_64" : "linux-aarch64",
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
     // To fix this we need to hide all the openssl symbols to prevent them from being overridden
@@ -161,12 +161,12 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
     throw new Error("Expected vsBuildArch to be specified");
   }
 
-  const programFilesPath = (process.arch === "x64"
+  const programFilesPath = (process.arch === "x64" || process.arch === "arm64"
     ? process.env["ProgramFiles(x86)"]
     : process.env.ProgramFiles) || "C:\\Program Files";
   const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
     programFilesPath
-  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
+  }\\Microsoft Visual Studio\\2019\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
   try {
     await fs.stat(vcvarsallPath);
   } catch {
@@ -177,6 +177,11 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
   switch (vsBuildArch) {
     case "x64": {
       vcTarget = "VC-WIN64A";
+      break;
+    }
+
+    case "x64_arm64": {
+      vcTarget = "VC-WIN64-ARM";
       break;
     }
 
@@ -252,30 +257,38 @@ const buildOpenSSLIfNecessary = async ({
 
   await removeOpenSSLIfOudated(openSSLVersion);
 
-  try {
-    await fs.stat(extractPath);
-    console.log("Skipping OpenSSL build, dir exists");
-    return;
-  } catch {}
-
-  const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
-  const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
-
-  const openSSLSha256 = (await got(openSSLSha256Url)).body.trim();
-
-  const downloadStream = got.stream(openSSLUrl);
-  downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
-
-  await pipeline(
-    downloadStream,
-    new HashVerify("sha256", makeHashVerifyOnFinal(openSSLSha256)),
-    zlib.createGunzip(),
-    tar.extract(extractPath)
-  );
-
-  console.log(`OpenSSL ${openSSLVersion} download + extract complete: SHA256 OK.`);
-
   const buildCwd = path.join(extractPath, `openssl-${openSSLVersion}`);
+
+  if (!fsNonPromise.existsSync(buildCwd)) {
+    /*
+    try {
+      console.log(' check if exist: '+extractPath)
+      await fs.stat(extractPath);
+      console.log("Skipping OpenSSL build, dir exists");
+      return;
+    } catch {}
+    */
+    const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
+    console.log('downloading '+openSSLUrl)
+    const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
+
+    const openSSLSha256 = (await got(openSSLSha256Url)).body.trim();
+
+    const downloadStream = got.stream(openSSLUrl);
+    downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
+
+    await pipeline(
+      downloadStream,
+      new HashVerify("sha256", makeHashVerifyOnFinal(openSSLSha256)),
+      zlib.createGunzip(),
+      tar.extract(extractPath)
+    );
+
+    console.log(`OpenSSL ${openSSLVersion} download + extract complete: SHA256 OK.`);
+  } else {
+    console.log(`OpenSSL ${openSSLVersion} already downloaded`)
+  }
+ 
 
   if (process.platform === "darwin") {
     await buildDarwin(buildCwd, macOsDeploymentTarget);
@@ -308,12 +321,16 @@ const downloadOpenSSLIfNecessary = async ({
   try {
     await fs.stat(extractPath);
     console.log("Skipping OpenSSL download, dir exists");
+    throw new Error("Skipping OpenSSL download, dir exists");
     return;
   } catch {}
   
+
   if (maybeDownloadSha256Url) {
     maybeDownloadSha256 = (await got(maybeDownloadSha256Url)).body.trim();
   }
+
+  console.log('downloadBinUrl='+downloadBinUrl)
 
   const downloadStream = got.stream(downloadBinUrl);
   downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
@@ -388,8 +405,12 @@ const acquireOpenSSL = async () => {
         }
       }
 
-      await downloadOpenSSLIfNecessary(downloadOptions);
-      return;
+      try {
+        await downloadOpenSSLIfNecessary(downloadOptions);
+        return;
+      } catch (err) {
+        console.log('Binary download failed, try to build from source')
+      }
     }
 
     let macOsDeploymentTarget;
@@ -402,8 +423,8 @@ const acquireOpenSSL = async () => {
 
     let vsBuildArch;
     if (process.platform === "win32") {
-      vsBuildArch = process.env.NODEGIT_VS_BUILD_ARCH || (process.arch === "x64" ? "x64" : "x86");
-      if (!["x64", "x86"].includes(vsBuildArch)) {
+      vsBuildArch = process.env.NODEGIT_VS_BUILD_ARCH || (process.arch === "x64" ? "x64" : process.arch == "arm64" ? "x64_arm64": "x86");
+      if (!["x64", "x86", "x64_arm64"].includes(vsBuildArch)) {
         throw new Error(`Invalid vsBuildArch: ${vsBuildArch}`);
       }
     }
