@@ -51,6 +51,8 @@ void GitRepository::GetRemotesWorker::Execute()
     if (giterr_last() != NULL) {
       baton->error = git_error_dup(giterr_last());
     }
+
+    git_repository_free(repo);
     delete baton->out;
     baton->out = NULL;
     return;
@@ -82,6 +84,9 @@ void GitRepository::GetRemotesWorker::Execute()
 
     baton->out->push_back(remote);
   }
+
+  git_strarray_free(&remote_names);
+  git_repository_free(repo);
 }
 
 void GitRepository::GetRemotesWorker::HandleErrorCallback() {
