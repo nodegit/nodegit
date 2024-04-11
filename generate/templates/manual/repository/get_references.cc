@@ -61,7 +61,6 @@ void GitRepository::GetReferencesWorker::Execute()
       }
 
       git_strarray_free(&reference_names);
-      git_repository_free(repo);
       delete baton->out;
       baton->out = NULL;
       return;
