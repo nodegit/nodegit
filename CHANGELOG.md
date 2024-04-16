@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.25" href="#v0-28-0-alpha-25">v0.28.0-alpha.25</a> [(2024-04-15)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.25)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.24...v0.28.0-alpha.25)
+
+#### Summary of changes
+- Fix use-after-free in getReferences
+
+#### Merged PRs into NodeGit
+- [Don't free the given repo on error in getReferences and getRemotes](https://github.com/nodegit/nodegit/pull/1995)
+
 ## <a name="v0-28-0-alpha.24" href="#v0-28-0-alpha-24">v0.28.0-alpha.24</a> [(2024-02-20)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.24)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.23...v0.28.0-alpha.24)
