@@ -79,6 +79,8 @@ void GitRepository::GetReferencesWorker::Execute()
       baton->out->push_back(reference);
     }
   }
+
+  git_strarray_free(&reference_names);
 }
 
 void GitRepository::GetReferencesWorker::HandleErrorCallback() {
