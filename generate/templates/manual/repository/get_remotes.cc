@@ -71,7 +71,6 @@ void GitRepository::GetRemotesWorker::Execute()
       }
 
       git_strarray_free(&remote_names);
-      git_repository_free(repo);
       delete baton->out;
       baton->out = NULL;
       return;
