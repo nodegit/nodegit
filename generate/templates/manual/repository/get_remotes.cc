@@ -29,11 +29,7 @@ void GitRepository::GetRemotesWorker::Execute()
 {
   giterr_clear();
 
-  git_repository *repo;
-  {
-    nodegit::LockMaster lockMaster(true, baton->repo);
-    baton->error_code = git_repository_open(&repo, git_repository_workdir(baton->repo));
-  }
+  git_repository *repo = baton->repo;
 
   if (baton->error_code != GIT_OK) {
     if (giterr_last() != NULL) {
@@ -52,7 +48,6 @@ void GitRepository::GetRemotesWorker::Execute()
       baton->error = git_error_dup(giterr_last());
     }
 
-    git_repository_free(repo);
     delete baton->out;
     baton->out = NULL;
     return;
@@ -86,7 +81,6 @@ void GitRepository::GetRemotesWorker::Execute()
   }
 
   git_strarray_free(&remote_names);
-  git_repository_free(repo);
 }
 
 void GitRepository::GetRemotesWorker::HandleErrorCallback() {
