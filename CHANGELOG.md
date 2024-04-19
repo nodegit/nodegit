@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.26" href="#v0-28-0-alpha-25">v0.28.0-alpha.26</a> [(2024-04-19)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.26)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.25...v0.28.0-alpha.26)
+
+#### Summary of changes
+- Fix use-after-free in getRemotes
+
+#### Merged PRs into NodeGit
+- [Fix double-free introduced trying to fix other double-free](https://github.com/nodegit/nodegit/pull/1996)
+
 ## <a name="v0-28-0-alpha.25" href="#v0-28-0-alpha-25">v0.28.0-alpha.25</a> [(2024-04-15)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.25)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.24...v0.28.0-alpha.25)
