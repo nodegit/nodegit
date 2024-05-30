@@ -1,7 +1,7 @@
 {
-  "name": "nodegit",
+  "name": "@readme/nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.28.0-alpha.26",
+  "version": "1.0.0-alpha.6",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -26,10 +26,7 @@
     }
   ],
   "main": "lib/nodegit.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/nodegit/nodegit.git"
-  },
+  "repository": "github:readmeio/nodegit",
   "directories": {
     "build": "./build",
     "lib": "./lib"
@@ -39,17 +36,16 @@
   },
   "dependencies": {
     "@axosoft/nan": "^2.18.0-gk.2",
-    "@mapbox/node-pre-gyp": "^1.0.8",
     "fs-extra": "^7.0.0",
     "got": "^11.8.6",
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
     "node-gyp": "^10.0.1",
+    "node-gyp-build": "^4.8.1",
     "ramda": "^0.25.0",
     "tar-fs": "^2.1.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1095.0",
     "cheerio": "^1.0.0-rc.2",
     "clean-for-publish": "~1.0.2",
     "combyne": "~0.8.1",
@@ -61,11 +57,6 @@
     "mocha": "^5.2.0",
     "walk": "^2.3.9"
   },
-  "binary": {
-    "module_name": "nodegit",
-    "module_path": "./build/Release/",
-    "host": "https://axonodegit.s3.amazonaws.com/nodegit/nodegit/"
-  },
   "scripts": {
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
     "coveralls": "cat ./test/coverage/merged.lcov | coveralls",
@@ -74,7 +65,7 @@
     "generateJson": "node generate/scripts/generateJson",
     "generateMissingTests": "node generate/scripts/generateMissingTests",
     "generateNativeCode": "node generate/scripts/generateNativeCode",
-    "install": "node lifecycleScripts/preinstall && node lifecycleScripts/install",
+    "install": "node lifecycleScripts/preinstall.js && node-gyp-build",
     "installDebug": "BUILD_DEBUG=true npm install",
     "lint": "jshint lib test/tests test/utils lifecycleScripts",
     "mergecov": "lcov-result-merger 'test/**/*.info' 'test/coverage/merged.lcov' && ./lcov-1.10/bin/genhtml test/coverage/merged.lcov --output-directory test/coverage/report",

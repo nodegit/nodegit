@@ -1,0 +1,83 @@
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+jobs:
+  build:
+    # TODO: should we run the tests, or can we assume that a v* tag ought to
+    # get published?
+    name: build
+    strategy:
+      matrix:
+        node: [20]
+        os:
+          - name: darwin
+            architecture: arm64
+            host: macos-14
+
+          - name: linux
+            architecture: x86-64
+            host: ubuntu-20.04
+    env:
+      CC: clang
+      CXX: clang++
+      npm_config_clang: 1
+      GYP_DEFINES: use_obsolete_asm=true
+    runs-on: ${{ matrix.os.host }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          check-latest: true
+      - name: Prebuildify
+        run: |
+          [[ $(uname -o) == *Linux ]] && \
+            sudo apt-get update && \
+            sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3
+          npm ci
+          npx prebuildify --napi --strip -t "$(node --version | tr -d 'v')"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-${{ runner.os }}-${{ runner.arch }}
+          path: prebuilds
+          retention-days: 14
+
+  # https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-github-actions
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build]
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          check-latest: true
+          registry-url: "https://registry.npmjs.org"
+          scope: "readme"
+      - name: download built libraries
+        id: download
+        uses: actions/download-artifact@v4
+        with:
+          path: prebuilds
+      - name: copy libs
+        run: |
+          set -x
+          find ${{ steps.download.outputs.download-path }}
+          mv ${{ steps.download.outputs.download-path }}/*/* ./prebuilds
+          find ./prebuilds
+      - name: npm install
+        run: npm ci
+      - name: publish
+        run: |
+          (cat "$NPM_CONFIG_USERCONFIG" || true) && echo "token: ${NODE_AUTH_TOKEN:0:10}" && npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

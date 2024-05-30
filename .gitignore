@@ -47,3 +47,6 @@ jsconfig.json
 
 test/id_rsa
 test/nodegit-test-rsa
+
+gibberish
+prebuilds

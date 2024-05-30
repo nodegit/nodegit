@@ -1,26 +1,13 @@
 var _ = require("lodash");
 var util = require("util");
+var path = require("path");
 var worker;
 
 try {
   worker = require("worker_threads");
 } catch (e) {}
 
-var rawApi;
-
-// Attempt to load the production release first, if it fails fall back to the
-// debug release.
-try {
-  rawApi = require("../build/Release/nodegit.node");
-}
-catch (ex) {
-  /* istanbul ignore next */
-  if (ex.code !== "MODULE_NOT_FOUND") {
-    throw ex;
-  }
-
-  rawApi = require("../build/Debug/nodegit.node");
-}
+var rawApi = require("node-gyp-build")(path.join(__dirname, ".."));
 
 var promisify = fn => fn && util.promisify(fn); // jshint ignore:line
 

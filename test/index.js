@@ -3,7 +3,7 @@ var path = require("path");
 var fs = require('fs');
 
 var bin = "./node_modules/.bin/istanbul";
-var cov = "cover --report=lcov --dir=test/coverage/js _mocha --".split(" ");
+var cov = "cover --report=lcov --dir=test/coverage/js node_modules/.bin/_mocha --".split(" ");
 
 if (process.platform === 'win32') {
   bin = "./node_modules/mocha/bin/mocha";

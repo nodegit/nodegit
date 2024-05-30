@@ -6,15 +6,16 @@
 
 **Stable (libgit2@v0.28.3): 0.28.3**
 
-## Have a problem? Come chat with us! ##
+## Have a problem? Come chat with us!
 
 Visit [slack.libgit2.org](http://slack.libgit2.org/) to sign up, then join us in #nodegit.
 
-## Maintained by ##
-Tyler Ang-Wanek [@twwanek](http://twitter.com/twwanek) with help from tons of
-[awesome contributors](https://github.com/nodegit/nodegit/contributors)!
+## Maintained by
 
-### Alumni Maintainers ###
+Readme
+
+### Alumni Maintainers
+
 Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
 John Haley [@johnhaley81](http://twitter.com/johnhaley81),
 Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp),
@@ -22,16 +23,16 @@ Steve Smith [@orderedlist](https://twitter.com/orderedlist),
 Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), and
 Nick Kallen [@nk](http://twitter.com/nk)
 
-## API Documentation. ##
+## API Documentation.
 
 [http://www.nodegit.org/](http://www.nodegit.org/)
 
-## Getting started. ##
+## Getting started.
 
 NodeGit will work on most systems out-of-the-box without any native
 dependencies.
 
-``` bash
+```bash
 npm install nodegit
 ```
 
@@ -41,7 +42,7 @@ libstdc++-4.9.
 
 In Ubuntu:
 
-``` sh
+```sh
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 sudo apt-get update
 sudo apt-get install libstdc++-4.9-dev
@@ -49,7 +50,7 @@ sudo apt-get install libstdc++-4.9-dev
 
 In Travis:
 
-``` yaml
+```yaml
 addons:
   apt:
     sources:
@@ -60,64 +61,66 @@ addons:
 
 In CircleCI:
 
-``` yaml
-  dependencies:
-    pre:
-      - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-      - sudo apt-get update
-      - sudo apt-get install -y libstdc++-4.9-dev
+```yaml
+dependencies:
+  pre:
+    - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+    - sudo apt-get update
+    - sudo apt-get install -y libstdc++-4.9-dev
 ```
 
-If you receive errors about *lifecycleScripts* preinstall/install you probably miss *libssl-dev*
+If you receive errors about _lifecycleScripts_ preinstall/install you probably miss _libssl-dev_
 In Ubuntu:
+
 ```
 sudo apt-get install libssl-dev
 ```
 
 You will need the following libraries installed on your linux machine:
-  - libpcre
-  - libpcreposix
-  - libkrb5
-  - libk5crypto
-  - libcom_err
+
+- libpcre
+- libpcreposix
+- libkrb5
+- libk5crypto
+- libcom_err
 
 When building locally, you will also need development packages for kerberos and pcre, so both of these utilities must be present on your machine:
-  - pcre-config
-  - krb5-config
 
+- pcre-config
+- krb5-config
 
 If you are still encountering problems while installing, you should try the
 [Building from source](http://www.nodegit.org/guides/install/from-source/)
 instructions.
 
-## API examples. ##
+## API examples.
 
-### Cloning a repository and reading a file: ###
+### Cloning a repository and reading a file:
 
-``` javascript
+```javascript
 var Git = require("nodegit");
 
 // Clone a given repository into the `./tmp` folder.
 Git.Clone("https://github.com/nodegit/nodegit", "./tmp")
   // Look up this known commit.
-  .then(function(repo) {
+  .then(function (repo) {
     // Use a known commit sha from this repository.
     return repo.getCommit("59b20b8d5c6ff8d09518454d4dd8b7b30f095ab5");
   })
   // Look up a specific file within that commit.
-  .then(function(commit) {
+  .then(function (commit) {
     return commit.getEntry("README.md");
   })
   // Get the blob contents from the file.
-  .then(function(entry) {
+  .then(function (entry) {
     // Patch the blob to contain a reference to the entry.
-    return entry.getBlob().then(function(blob) {
+    return entry.getBlob().then(function (blob) {
       blob.entry = entry;
       return blob;
     });
   })
   // Display information about the blob.
-  .then(function(blob) {
+  .then(function (blob) {
     // Show the path, sha, and filesize in bytes.
     console.log(blob.entry.path() + blob.entry.sha() + blob.rawsize() + "b");
 
@@ -127,23 +130,24 @@ Git.Clone("https://github.com/nodegit/nodegit", "./tmp")
     // Show the entire file.
     console.log(String(blob));
   })
-  .catch(function(err) { console.log(err); });
-
+  .catch(function (err) {
+    console.log(err);
+  });
 ```
 
-### Emulating git log: ###
+### Emulating git log:
 
-``` javascript
+```javascript
 var Git = require("nodegit");
 
 // Open the repository directory.
 Git.Repository.open("tmp")
   // Open the master branch.
-  .then(function(repo) {
+  .then(function (repo) {
     return repo.getMasterCommit();
   })
   // Display information about commits on master.
-  .then(function(firstCommitOnMaster) {
+  .then(function (firstCommitOnMaster) {
     // Create a new history event emitter.
     var history = firstCommitOnMaster.history();
 
@@ -151,7 +155,7 @@ Git.Repository.open("tmp")
     var count = 0;
 
     // Listen for commit events from the history.
-    history.on("commit", function(commit) {
+    history.on("commit", function (commit) {
       // Disregard commits past 9.
       if (++count >= 9) {
         return;
@@ -180,10 +184,10 @@ Git.Repository.open("tmp")
 
 For more examples, check the `examples/` folder.
 
-## Unit tests. ##
+## Unit tests.
 
-You will need to build locally before running the tests.  See above.
+You will need to build locally before running the tests. See above.
 
-``` bash
+```bash
 npm test
 ```

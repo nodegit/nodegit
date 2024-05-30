@@ -7,207 +7,79 @@ on:
       - v*.*.*
   pull_request:
 
-name: Testing
-
 jobs:
-  linux-tests:
-    name: "Linux Tests"
-    strategy:
-      matrix:
-        node: [16] # 18+ requires GLIBC 2.28+
-    runs-on: ubuntu-latest
-    container: ubuntu:16.04
+  linux-test:
+    name: "test on linux"
+    env:
+      CC: clang
+      CXX: clang++
+      npm_config_clang: 1
+      GYP_DEFINES: use_obsolete_asm=true
+      DEBIAN_FRONTEND: "noninteractive"
+    runs-on: ubuntu-20.04
+    container: ubuntu:20.04
     steps:
-      - name: Install Dependencies for Ubuntu
-        # git >= 2.18 required for actions/checkout git support
-        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-
-      - name: Setup python 3.6
-        env:
-          CC: clang
-          CXX: clang++
+      - name: prerequisites
         run: |
-          mkdir ~/python
-          cd ~/python
-          wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz
-          tar -xvf Python-3.6.15.tgz
-          cd Python-3.6.15
-          ./configure
-          make
-          make install
-
-      - name: Setup Environment
+          apt-get update
+          apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          check-latest: true
+      - name: Test
         run: |
+          set -xe
           mkdir ~/.ssh_tests
           chmod 700 ~/.ssh_tests
           printf "%b" "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh_tests/config
           printf "%b" "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBkHMoNRRkHYNE7EnQLdFxMgVcqGgNPYDhrWiLMlYuzpmEcUnhwW3zNaIa4J2JlGkRNgYZVia1Ic1V3koJPE3YO2+exAfJBIPeb6O1qDADc2hFFHzd28wmHKUkO61yzo2ZjDQfaEVtjN39Yiy19AbddN3bzNrgvuQT574fa6Rghl2RfecKYO77iHA1RGXIFc8heXVIUuUV/jHjb56WqoHH8vyt1DqUz89oyiHq8Cku0qzKN80COheZPseA1EvT0zlIgbXBxwijN4xRmvInK0fB5Kc9r3kddH2tT7V09bOFJsvGQaQmQ1WFTCqjpBFw1CHKcbfPLOxbLpVIR9gyx03R\n" > ~/.ssh_tests/id_rsa.pub
           printf "%b" "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAwZBzKDUUZB2DROxJ0C3RcTIFXKhoDT2A4a1oizJWLs6ZhHFJ\n4cFt8zWiGuCdiZRpETYGGVYmtSHNVd5KCTxN2DtvnsQHyQSD3m+jtagwA3NoRRR8\n3dvMJhylJDutcs6NmYw0H2hFbYzd/WIstfQG3XTd28za4L7kE+e+H2ukYIZdkX3n\nCmDu+4hwNURlyBXPIXl1SFLlFf4x42+elqqBx/L8rdQ6lM/PaMoh6vApLtKsyjfN\nAjoXmT7HgNRL09M5SIG1wccIozeMUZryJytHweSnPa95HXR9rU+1dPWzhSbLxkGk\nJkNVhUwqo6QRcNQhynG3zyzsWy6VSEfYMsdN0QIDAQABAoIBABsZNPYBEFy/wPvq\nNJ8/et3lCdkh/oc0ABIYK9Wo82XUKKvhDF3drZ3p+UrX/VYgf+EX9hyf8gVTuSJ3\nX1gRqDhIgeTxPsHGrwt6B6pL5ITnKEbbimuo9Ni1E+2RqUO0ZSCE/1sSRv4CRaXO\nk8HZawif7ttxv4bNUrLys6xEbpvQlOMzgs4s/OBB/XMEqnFRGPJeeTy8bkOWyTwl\nLj06nq2brs4qK4eijI/MoGy1CD8JCpL4gG39GPTXd8GpudXmdelDn1E0t9nhL6Se\naOMaiPhy7kBJD4wZ//WZTSR1XyjNBH3DGkNZxPIWcX+wJFyNoLbSbVSda/7Dtvp3\nCPfiNhECgYEA/+3JswSzcVEANNF5OLZ76x+TODkZ9T6YF4SR8/uJjNViWgUpX7vw\nmyXF+2AwzNaotbBKmNG619BcUeMmQB76c+UiMLeJuJcT/Jj0xmEUopHonGqEIcvg\nHg6cafE1is7d+l669bfjitlx+3muF2CYnylSN1LWHxIITVUj3BmcWqUCgYEAwZ45\nWdaHfK7G6GjI7liDQT4ZlslA8dmLv2Jl2ExBBMoY3m3Sre428z2ZFa4O/nsBYP0a\nDxgYmX20fQGcbPugKdCYHc7HkKbMU1GwiVCGpDYZCm2gJKTvam3dYNaiAfq5DyhP\nzDCZNJ5rrSMprXsuRv2O4c5u8qtJ5ByaOJBjOr0CgYBMlkAxzkpUssS5CaaZDiLv\nLbfEr3HRLjYdc5KpzLBQ8NpJzhmfiIJsK1Wf8B0qb2J1XJg2Oy0KwFOgPbWIoryY\nSg19Pq98Cdn1UWCOrSabr8ZIaKe55WTgGcc8/O3k6BsNfaO9PJZfSssNUlCCtml1\n18u+uo9RJPhPDBd7Gj7r8QKBgFraxWy7t24xkZMDgK4fiM/3tQhFvhz/CY2wPbxG\n5Ae8UfkmLcOCUfTIReqfd9fAnsAFZNIKa5izHRu/wsh9NwYIJSlvm8PsEVtTrPRy\nfgvWet+i24/2eYZGsag8b19gaLCNKQzXDT1czYg8RNVsRSX427BoLzXeXNkW9uNu\nFbI9AoGAV2kxcdcKS4BtNHKPeGgV87dM0DWhQaAtEXEIcQquFtba0lAXioGHg8U4\nzeiugl4Qzchwk5qd3wnZ4SOhx0s16/5gQDlnkbjFR6EREUnvLRwV92zBXUTOGIkh\nZ7Z4rcgUKlVAaHT3OHN/lTyqJG/ib+K4wZhbztl/ox+JUFsvD98=\n-----END RSA PRIVATE KEY-----\n" > ~/.ssh_tests/id_rsa
+          ls ~/.ssh_tests
           chmod 600 ~/.ssh_tests/id_rsa*
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-      - uses: actions/checkout@v3
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh_tests/id_rsa
 
-      - name: Use Node.js
-        # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-        uses: actions/setup-node@v3
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+          npm install
+          npm test
+
+  mac-test:
+    name: "macOS tests"
+    env:
+      CC: clang
+      CXX: clang++
+      npm_config_clang: 1
+      GYP_DEFINES: use_obsolete_asm=true
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
         with:
-          node-version: ${{ matrix.node }}
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
           check-latest: true
-
-      - name: Install
-        env:
-          CC: clang
-          CXX: clang++
-          npm_config_clang: 1
-          GYP_DEFINES: use_obsolete_asm=true
-        # There is a race condition in node/generate that needs to be fixed
-        # Node 16 changed the logic it uses to select it's UID which means to make node run as root and not 1001, we need to chwon the current directory. More Details:
-        # https://stackoverflow.com/questions/70298238/getting-eaccess-when-running-npm-8-as-root
-        run: |
-          chown root.root -R .
-          npm set unsafe-perm true
-          node utils/retry npm install
-
       - name: Test
         run: |
-          set -e
-          eval `ssh-agent -s`
-          ssh-add ~/.ssh_tests/id_rsa
-          node utils/retry npm test
-
-      - name: Deploy
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: |
-          npm install -g @mapbox/node-pre-gyp aws-sdk
-          node lifecycleScripts/clean
-          node-pre-gyp package
-          node-pre-gyp publish
-
-  macos-tests:
-    name: "macOS Tests"
-    strategy:
-      matrix:
-        node: [16, 18, 20]
-    runs-on: macOS-12
-  # This is mostly the same as the Linux steps, waiting for anchor support
-  # https://github.com/actions/runner/issues/1182
-    steps:
-      - name: Setup Environment
-        run: |
+          set -xe
           mkdir ~/.ssh_tests
           chmod 700 ~/.ssh_tests
           printf "%b" "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh_tests/config
           printf "%b" "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBkHMoNRRkHYNE7EnQLdFxMgVcqGgNPYDhrWiLMlYuzpmEcUnhwW3zNaIa4J2JlGkRNgYZVia1Ic1V3koJPE3YO2+exAfJBIPeb6O1qDADc2hFFHzd28wmHKUkO61yzo2ZjDQfaEVtjN39Yiy19AbddN3bzNrgvuQT574fa6Rghl2RfecKYO77iHA1RGXIFc8heXVIUuUV/jHjb56WqoHH8vyt1DqUz89oyiHq8Cku0qzKN80COheZPseA1EvT0zlIgbXBxwijN4xRmvInK0fB5Kc9r3kddH2tT7V09bOFJsvGQaQmQ1WFTCqjpBFw1CHKcbfPLOxbLpVIR9gyx03R\n" > ~/.ssh_tests/id_rsa.pub
           printf "%b" "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAwZBzKDUUZB2DROxJ0C3RcTIFXKhoDT2A4a1oizJWLs6ZhHFJ\n4cFt8zWiGuCdiZRpETYGGVYmtSHNVd5KCTxN2DtvnsQHyQSD3m+jtagwA3NoRRR8\n3dvMJhylJDutcs6NmYw0H2hFbYzd/WIstfQG3XTd28za4L7kE+e+H2ukYIZdkX3n\nCmDu+4hwNURlyBXPIXl1SFLlFf4x42+elqqBx/L8rdQ6lM/PaMoh6vApLtKsyjfN\nAjoXmT7HgNRL09M5SIG1wccIozeMUZryJytHweSnPa95HXR9rU+1dPWzhSbLxkGk\nJkNVhUwqo6QRcNQhynG3zyzsWy6VSEfYMsdN0QIDAQABAoIBABsZNPYBEFy/wPvq\nNJ8/et3lCdkh/oc0ABIYK9Wo82XUKKvhDF3drZ3p+UrX/VYgf+EX9hyf8gVTuSJ3\nX1gRqDhIgeTxPsHGrwt6B6pL5ITnKEbbimuo9Ni1E+2RqUO0ZSCE/1sSRv4CRaXO\nk8HZawif7ttxv4bNUrLys6xEbpvQlOMzgs4s/OBB/XMEqnFRGPJeeTy8bkOWyTwl\nLj06nq2brs4qK4eijI/MoGy1CD8JCpL4gG39GPTXd8GpudXmdelDn1E0t9nhL6Se\naOMaiPhy7kBJD4wZ//WZTSR1XyjNBH3DGkNZxPIWcX+wJFyNoLbSbVSda/7Dtvp3\nCPfiNhECgYEA/+3JswSzcVEANNF5OLZ76x+TODkZ9T6YF4SR8/uJjNViWgUpX7vw\nmyXF+2AwzNaotbBKmNG619BcUeMmQB76c+UiMLeJuJcT/Jj0xmEUopHonGqEIcvg\nHg6cafE1is7d+l669bfjitlx+3muF2CYnylSN1LWHxIITVUj3BmcWqUCgYEAwZ45\nWdaHfK7G6GjI7liDQT4ZlslA8dmLv2Jl2ExBBMoY3m3Sre428z2ZFa4O/nsBYP0a\nDxgYmX20fQGcbPugKdCYHc7HkKbMU1GwiVCGpDYZCm2gJKTvam3dYNaiAfq5DyhP\nzDCZNJ5rrSMprXsuRv2O4c5u8qtJ5ByaOJBjOr0CgYBMlkAxzkpUssS5CaaZDiLv\nLbfEr3HRLjYdc5KpzLBQ8NpJzhmfiIJsK1Wf8B0qb2J1XJg2Oy0KwFOgPbWIoryY\nSg19Pq98Cdn1UWCOrSabr8ZIaKe55WTgGcc8/O3k6BsNfaO9PJZfSssNUlCCtml1\n18u+uo9RJPhPDBd7Gj7r8QKBgFraxWy7t24xkZMDgK4fiM/3tQhFvhz/CY2wPbxG\n5Ae8UfkmLcOCUfTIReqfd9fAnsAFZNIKa5izHRu/wsh9NwYIJSlvm8PsEVtTrPRy\nfgvWet+i24/2eYZGsag8b19gaLCNKQzXDT1czYg8RNVsRSX427BoLzXeXNkW9uNu\nFbI9AoGAV2kxcdcKS4BtNHKPeGgV87dM0DWhQaAtEXEIcQquFtba0lAXioGHg8U4\nzeiugl4Qzchwk5qd3wnZ4SOhx0s16/5gQDlnkbjFR6EREUnvLRwV92zBXUTOGIkh\nZ7Z4rcgUKlVAaHT3OHN/lTyqJG/ib+K4wZhbztl/ox+JUFsvD98=\n-----END RSA PRIVATE KEY-----\n" > ~/.ssh_tests/id_rsa
+          ls ~/.ssh_tests
           chmod 600 ~/.ssh_tests/id_rsa*
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        with:
-          node-version: ${{ matrix.node }}
-          check-latest: true
-
-      - name: Install
-        env:
-          CC: clang
-          CXX: clang++
-          npm_config_clang: 1
-          GYP_DEFINES: use_obsolete_asm=true
-        # There is a race condition in node/generate that needs to be fixed
-        run: node utils/retry npm install
-
-      - name: Test
-        run: |
-          set -e
-          eval `ssh-agent -s`
+          eval "$(ssh-agent -s)"
           ssh-add ~/.ssh_tests/id_rsa
-          node utils/retry npm test
 
-      - name: Deploy
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: |
-          npm install -g @mapbox/node-pre-gyp aws-sdk
-          node lifecycleScripts/clean
-          node-pre-gyp package
-          node-pre-gyp publish
-
-  windows-tests:
-    name: Windows Tests
-    strategy:
-      matrix:
-        node: [16, 18, 20]
-        arch: [x86, x64]
-    runs-on: windows-2019
-    steps:
-      - name: Setup Environment
-        run: |
-          git config --file C:\ProgramData\Git\config core.autocrlf input
-          git config --system core.autocrlf input
-          git config --global core.autocrlf input
-          git config --global user.name "John Doe"
-          git config --global user.email johndoe@example.com
-
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        with:
-          node-version: ${{ matrix.node }}
-          check-latest: true
-          architecture: ${{ matrix.arch }}
-
-      - name: Install
-        run: npm install
-
-      - name: Test
-        env:
-          GIT_SSH: ${{ github.workspace }}\vendor\plink.exe
-        run: |
-          powershell -command "Start-Process ${{ github.workspace }}\vendor\pageant.exe ${{ github.workspace }}\vendor\private.ppk"
-          node utils/retry npm test
-
-      # You're probably wondering why this isn't a single `run: |` step, it certainly is for *nix,
-      # but it's not, because the CI runner for windows doesn't wait for each step as listed here
-      # and it treats each additional step past the first as an orphaned process.
-      - name: Deploy (Dependencies)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: npm install -g @mapbox/node-pre-gyp aws-sdk
-
-      - name: Deploy (Clean)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: node lifecycleScripts\clean
-
-      - name: Deploy (Package)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: node-pre-gyp package
-
-      - name: Deploy (Publish)
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: node-pre-gyp publish
+          npm install
+          npm test
