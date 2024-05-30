@@ -1,7 +1,7 @@
 {
   "name": "@readme/nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
