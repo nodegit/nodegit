@@ -40,17 +40,46 @@ jobs:
             sudo apt-get update && \
             sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3
           npm ci
-          npx prebuildify --napi --strip -t "$(node --version | tr -d 'v')"
+          npx prebuildify --napi --strip --tag-libc -t "$(node --version | tr -d 'v')"
       - uses: actions/upload-artifact@v4
         with:
           name: prebuild-${{ runner.os }}-${{ runner.arch }}
-          path: prebuilds
+          path: ./prebuilds
+          retention-days: 14
+
+  cross-compile:
+    name: "cross compile linux/arm"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - name: build linux glibc arm
+        run: |
+          docker build --platform=linux/arm64 --tag nodegit-linux-glibc-arm64 -f scripts/Dockerfile.debian .
+          docker create --platform=linux/arm64 --name nodegit-linux-glibc-arm64 nodegit-linux-glibc-arm64
+          docker cp "nodegit-linux-glibc-arm64:/app/prebuilds" .
+      - name: build linux musl x64
+        run: |
+          docker build --platform=linux/amd64 --tag nodegit-linux-musl-amd64 -f scripts/Dockerfile.alpine .
+          docker create --platform=linux/amd64 --name nodegit-linux-musl-amd64 nodegit-linux-musl-amd64
+          docker cp "nodegit-linux-musl-amd64:/app/prebuilds" .
+      - name: build linux musl arm
+        run: |
+          docker build --platform=linux/arm64 --tag nodegit-linux-musl-arm64 -f scripts/Dockerfile.alpine .
+          docker create --platform=linux/arm64 --name nodegit-linux-musl-arm64 nodegit-linux-musl-arm64
+          docker cp "nodegit-linux-musl-arm64:/app/prebuilds" .
+      - name: "list the generated files"
+        run: find prebuilds
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-linux-arm64
+          path: ./prebuilds
           retention-days: 14
 
   # https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-github-actions
   publish:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build, cross-compile]
     permissions:
       id-token: write
     steps:
@@ -71,13 +100,19 @@ jobs:
       - name: copy libs
         run: |
           set -x
+          mkdir -p prebuilds/linux-arm64
+          mkdir -p prebuilds/linux-x64
+          mkdir -p prebuilds/darwin-arm64
           find ${{ steps.download.outputs.download-path }}
-          mv ${{ steps.download.outputs.download-path }}/*/* ./prebuilds
+          mv ${{ steps.download.outputs.download-path}}/prebuild-Linux-X64/linux-x64/* ./prebuilds/linux-x64/
+          mv ${{ steps.download.outputs.download-path}}/prebuild-linux-arm64/linux-arm64/* ./prebuilds/linux-arm64/
+          mv ${{ steps.download.outputs.download-path}}/prebuild-linux-arm64/linux-x64/* ./prebuilds/linux-x64/
+          mv ${{ steps.download.outputs.download-path}}/prebuild-macOS-ARM64/darwin-arm64/* ./prebuilds/darwin-arm64/
           find ./prebuilds
       - name: npm install
         run: npm ci
       - name: publish
         run: |
-          (cat "$NPM_CONFIG_USERCONFIG" || true) && echo "token: ${NODE_AUTH_TOKEN:0:10}" && npm publish --provenance --access public
+          (cat "$NPM_CONFIG_USERCONFIG" || true) && npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,14 @@
+FROM node:20.11.1-bullseye
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV LC_ALL en_US.UTF-8
+ENV LANG ${LC_ALL}
+
+RUN apt-get update -y && \
+  apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3
+
+ADD . /app
+WORKDIR /app
+
+RUN npm ci && \
+  npx prebuildify --napi --strip --tag-libc -t "$(node --version | tr -d 'v')"
