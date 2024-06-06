@@ -1,6 +1,16 @@
 # Change Log
 
-## <a name="v0-28-0-alpha.26" href="#v0-28-0-alpha-25">v0.28.0-alpha.26</a> [(2024-04-19)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.26)
+## <a name="v0-28-0-alpha.27" href="#v0-28-0-alpha-27">v0.28.0-alpha.27</a> [(2024-06-06)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.27)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.26...v0.28.0-alpha.27)
+
+#### Summary of changes
+- Build on Electron 29+
+
+#### Merged PRs into NodeGit
+- [Fix build failure on electron 29+](https://github.com/nodegit/nodegit/pull/1998)
+
+## <a name="v0-28-0-alpha.26" href="#v0-28-0-alpha-26">v0.28.0-alpha.26</a> [(2024-04-19)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.26)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.25...v0.28.0-alpha.26)
 
