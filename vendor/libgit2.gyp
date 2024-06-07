@@ -13,6 +13,31 @@
     "electron_openssl_root%": "<!(node ../utils/getElectronOpenSSLRoot.js <(module_root_dir))",
     "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
   },
+  'target_defaults': {
+    'default_configuration': 'Debug',
+    'configurations': {
+      'Debug': {
+        'defines': [ 'DEBUG', '_DEBUG' ],
+      },
+      'Release': {
+        'defines': [ 'NDEBUG' ],
+        'cflags': [ '-flto' ],
+        'xcode_settings': {
+          'LLVM_LTO': 'YES'
+        },
+        'msvs_settings': {
+          'VCCLCompilerTool': {
+            'WholeProgramOptimization': 'true'
+          },
+          'VCLibrarianTool': {
+          },
+          'VCLinkerTool': {
+            'LinkTimeCodeGeneration': 1
+          }
+        }
+      }
+    }
+  },
   "targets": [
     {
       "target_name": "libgit2",
