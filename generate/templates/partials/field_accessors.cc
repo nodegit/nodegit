@@ -55,6 +55,7 @@
 
       {% elsif field.cppClassName == 'String' %}
         if (wrapper->GetValue()->{{ field.name }}) {
+          free((void*)wrapper->GetValue()->{{ field.name }});
         }
 
         Nan::Utf8String str(value);
