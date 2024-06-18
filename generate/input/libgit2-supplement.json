@@ -1693,6 +1693,11 @@
               "name": "push_update_reference"
             },
             {
+              "type": "git_push_negotiation",
+              "name": "push_negotiation",
+              "isCallback": true
+            },
+            {
               "type": "void *",
               "name": "payload"
             },
