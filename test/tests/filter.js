@@ -766,7 +766,7 @@ describe("Filter", function() {
           return commit.getTree();
         })
         .then(function(tree) {
-          return tree.entryByPath("README.md");
+          return tree.getEntry("README.md");
         })
         .then(function(entry) {
           return test.repository.getBlob(entry.id());
