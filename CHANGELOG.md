@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.28" href="#v0-28-0-alpha-28">v0.28.0-alpha.28</a> [(2024-07-01)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.28)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.27...v0.28.0-alpha.28)
+
+#### Summary of changes
+- Build on Electron 31+
+
+#### Merged PRs into NodeGit
+- [Bump nan again for electron 31](https://github.com/nodegit/nodegit/pull/2000)
+
 ## <a name="v0-28-0-alpha.27" href="#v0-28-0-alpha-27">v0.28.0-alpha.27</a> [(2024-06-06)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.27)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.26...v0.28.0-alpha.27)
