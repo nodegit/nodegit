@@ -1,7 +1,7 @@
 {
   "name": "@readme/nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -35,7 +35,7 @@
     "node": ">= 16"
   },
   "dependencies": {
-    "@axosoft/nan": "^2.18.0-gk.2",
+    "@axosoft/nan": "^2.20.0-gk.1",
     "fs-extra": "^7.0.0",
     "got": "^11.8.6",
     "json5": "^2.1.0",
