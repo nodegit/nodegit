@@ -1455,6 +1455,13 @@
     "diff_format_email_options": {
       "ignore": true
     },
+    "diff_line": {
+      "dependencies": [
+        "../include/functions/free.h"
+      ],
+      "selfFreeing": true,
+      "freeFunctionName": "git_diff_line_free"
+    },
     "diff_perfdata": {
       "selfFreeing": true,
       "cDependencies": [
@@ -1881,11 +1888,19 @@
         "git_index_free": {
           "ignore": true
         },
+        "git_index_get_byindex": {
+          "return": {
+            "ownedByThis": true
+          }
+        },
         "git_index_get_bypath": {
           "args": {
             "stage": {
               "isOptional": true
             }
+          },
+          "return": {
+            "ownedByThis": true
           }
         },
         "git_index_new": {
@@ -2034,6 +2049,12 @@
       }
     },
     "index_entry": {
+      "dependencies": [
+        "../include/functions/copy.h",
+        "../include/functions/free.h"
+      ],
+      "freeFunctionName": "git_index_entry_free",
+      "dupFunction": "git_index_entry_dup",
       "isReturnable": true,
       "hasConstructor": true,
       "ignoreInit": true
