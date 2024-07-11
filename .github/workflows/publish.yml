@@ -13,12 +13,17 @@ jobs:
       matrix:
         node: [20]
         os:
+          # macos-14 is arm64 (m1)
           - name: darwin
-            architecture: arm64
             host: macos-14
 
+          # macos-13 is x86
+          - name: mac-x64
+            host: macos-13
+
+          # ubuntu-20.04 is x86. Still no arm linux runners yet
+          # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
           - name: linux
-            architecture: x86-64
             host: ubuntu-20.04
     env:
       CC: clang
@@ -108,6 +113,7 @@ jobs:
           mv ${{ steps.download.outputs.download-path}}/prebuild-linux-arm64/linux-arm64/* ./prebuilds/linux-arm64/
           mv ${{ steps.download.outputs.download-path}}/prebuild-linux-arm64/linux-x64/* ./prebuilds/linux-x64/
           mv ${{ steps.download.outputs.download-path}}/prebuild-macOS-ARM64/darwin-arm64/* ./prebuilds/darwin-arm64/
+          mv ${{ steps.download.outputs.download-path}}/prebuild-macOS-X64/darwin-x64/* ./prebuilds/darwin-x64/
           find ./prebuilds
       - name: npm install
         run: npm ci
