@@ -341,6 +341,18 @@ describe("Revwalk", function() {
       });
   });
 
+  it("regression test for libgit2 #4102", function() {
+    this.walker.sorting(NodeGit.Revwalk.SORT.TOPOLOGICAL);
+    this.walker.pushRange("32789a7..c82fb07");
+    return this.walker.next()
+      .then(function(commit) {
+        return Promise.reject(new Error("shouldn't be able to iterate"));
+      })
+      .catch(function(err) {
+        assert.equal(err.errno, NodeGit.Error.CODE.ITEROVER);
+      });
+  });
+
   it("does not leak", function() {
     var test = this;
 
