@@ -1,5 +1,45 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.28" href="#v0-28-0-alpha-28">v0.28.0-alpha.28</a> [(2024-07-01)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.28)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.27...v0.28.0-alpha.28)
+
+#### Summary of changes
+- Build on Electron 31+
+
+#### Merged PRs into NodeGit
+- [Bump nan again for electron 31](https://github.com/nodegit/nodegit/pull/2000)
+
+## <a name="v0-28-0-alpha.27" href="#v0-28-0-alpha-27">v0.28.0-alpha.27</a> [(2024-06-06)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.27)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.26...v0.28.0-alpha.27)
+
+#### Summary of changes
+- Build on Electron 29+
+
+#### Merged PRs into NodeGit
+- [Fix build failure on electron 29+](https://github.com/nodegit/nodegit/pull/1998)
+
+## <a name="v0-28-0-alpha.26" href="#v0-28-0-alpha-26">v0.28.0-alpha.26</a> [(2024-04-19)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.26)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.25...v0.28.0-alpha.26)
+
+#### Summary of changes
+- Fix use-after-free in getRemotes
+
+#### Merged PRs into NodeGit
+- [Fix double-free introduced trying to fix other double-free](https://github.com/nodegit/nodegit/pull/1996)
+
+## <a name="v0-28-0-alpha.25" href="#v0-28-0-alpha-25">v0.28.0-alpha.25</a> [(2024-04-15)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.25)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.24...v0.28.0-alpha.25)
+
+#### Summary of changes
+- Fix use-after-free in getReferences
+
+#### Merged PRs into NodeGit
+- [Don't free the given repo on error in getReferences and getRemotes](https://github.com/nodegit/nodegit/pull/1995)
+
 ## <a name="v0-28-0-alpha.24" href="#v0-28-0-alpha-24">v0.28.0-alpha.24</a> [(2024-02-20)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.24)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.23...v0.28.0-alpha.24)
