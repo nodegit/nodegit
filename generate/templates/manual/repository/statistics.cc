@@ -206,13 +206,6 @@ struct OdbObjectsData
   static constexpr uint32_t kUnreachable = 0;
 
   struct CommitInfo {
-    CommitInfo() = default;
-    ~CommitInfo() = default;
-    CommitInfo(const CommitInfo &other) = delete;
-    CommitInfo(CommitInfo &&other) = default;
-    CommitInfo& operator=(const CommitInfo &other) = delete;
-    CommitInfo& operator=(CommitInfo &&other) = default;
-
     std::string oidTree {};
     size_t size {0};
     std::vector<std::string> parents {};
@@ -222,13 +215,6 @@ struct OdbObjectsData
   };
 
   struct TreeInfoAndStats {
-    TreeInfoAndStats() = default;
-    ~TreeInfoAndStats() = default;
-    TreeInfoAndStats(const TreeInfoAndStats &other) = delete;
-    TreeInfoAndStats(TreeInfoAndStats &&other) = default;
-    TreeInfoAndStats& operator=(const TreeInfoAndStats &other) = delete;
-    TreeInfoAndStats& operator=(TreeInfoAndStats &&other) = default;
-
     size_t size {0};
     size_t numEntries {0};
     std::vector<std::string> entryBlobs {};
@@ -241,13 +227,6 @@ struct OdbObjectsData
   };
 
   struct BlobInfo {
-    BlobInfo() = default;
-    ~BlobInfo() = default;
-    BlobInfo(const BlobInfo &other) = delete;
-    BlobInfo(BlobInfo &&other) = default;
-    BlobInfo& operator=(const BlobInfo &other) = delete;
-    BlobInfo& operator=(BlobInfo &&other) = default;
-
     size_t size {0};
     // number of sources from which a blob can be reached:
     // a tree's entry, or a tag
@@ -256,13 +235,6 @@ struct OdbObjectsData
 
   struct TagInfo {
     static constexpr uint32_t kUnsetDepth = 0;
-
-    TagInfo() = default;
-    ~TagInfo() = default;
-    TagInfo(const TagInfo &other) = delete;
-    TagInfo(TagInfo &&other) = default;
-    TagInfo& operator=(const TagInfo &other) = delete;
-    TagInfo& operator=(TagInfo &&other) = default;
 
     std::string oidTarget {};
     git_object_t typeTarget {GIT_OBJECT_INVALID};
