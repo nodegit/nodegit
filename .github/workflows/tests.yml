@@ -18,9 +18,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20]
+        node: [18, 20, 22]
     runs-on: ubuntu-latest
-    container: ubuntu:20.04
+    container: ubuntu:22.10
     steps:
       - name: Install Dependencies for Ubuntu
         run: apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3
@@ -89,7 +89,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20]
+        node: [18, 20, 22]
         os: [macOS-12, macos-13-xlarge]
     runs-on: ${{ matrix.os }}
   # This is mostly the same as the Linux steps, waiting for anchor support
