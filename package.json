@@ -1,7 +1,7 @@
 {
   "name": "@figma/nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.28.0-figma.7",
+  "version": "0.28.0-figma.8",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
