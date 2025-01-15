@@ -1,7 +1,7 @@
 {
   "name": "@figma/nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.28.0-figma.6",
+  "version": "0.28.0-figma.7",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -38,13 +38,13 @@
     "node": ">= 16"
   },
   "dependencies": {
-    "@axosoft/nan": "^2.18.0-gk.2",
+    "@axosoft/nan": "^2.20.0-gk.1",
     "@mapbox/node-pre-gyp": "^1.0.8",
     "fs-extra": "^7.0.0",
     "got": "^11.8.6",
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
-    "node-gyp": "^10.0.1",
+    "node-gyp": "^11.0.0",
     "ramda": "^0.25.0",
     "tar-fs": "^2.1.1"
   },

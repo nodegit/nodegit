@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20]
+        node: [18, 20, 22]
     runs-on: ubuntu-latest
     container: ubuntu:20.04
     steps:
@@ -89,8 +89,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20]
-        os: [macOS-12, macos-13-xlarge]
+        node: [18, 20, 22]
+        os: [macos-13-xlarge]
     runs-on: ${{ matrix.os }}
   # This is mostly the same as the Linux steps, waiting for anchor support
   # https://github.com/actions/runner/issues/1182
