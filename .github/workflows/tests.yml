@@ -14,29 +14,12 @@ jobs:
     name: "Linux Tests"
     strategy:
       matrix:
-        node: [16] # 18+ requires GLIBC 2.28+
-    runs-on: ubuntu-latest
-    container: ubuntu:16.04
+        node: [16, 18, 20, 22]
+      fail-fast: false
+    runs-on: ubuntu-20.04
     steps:
       - name: Install Dependencies for Ubuntu
-        # git >= 2.18 required for actions/checkout git support
-        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-
-      - name: Setup python 3.6
-        env:
-          CC: clang
-          CXX: clang++
-        run: |
-          mkdir ~/python
-          cd ~/python
-          wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz
-          tar -xvf Python-3.6.15.tgz
-          cd Python-3.6.15
-          ./configure
-          make
-          make install
+        run: sudo apt-get update && sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget zlib1g-dev
 
       - name: Setup Environment
         run: |
@@ -49,31 +32,20 @@ jobs:
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.6"
 
       - name: Use Node.js
-        # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-        uses: actions/setup-node@v3
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
 
       - name: Install
-        env:
-          CC: clang
-          CXX: clang++
-          npm_config_clang: 1
-          GYP_DEFINES: use_obsolete_asm=true
-        # There is a race condition in node/generate that needs to be fixed
-        # Node 16 changed the logic it uses to select it's UID which means to make node run as root and not 1001, we need to chwon the current directory. More Details:
-        # https://stackoverflow.com/questions/70298238/getting-eaccess-when-running-npm-8-as-root
-        run: |
-          chown root.root -R .
-          npm set unsafe-perm true
-          node utils/retry npm install
+        run: npm install
 
       - name: Test
         run: |
@@ -98,10 +70,11 @@ jobs:
     name: "macOS Tests"
     strategy:
       matrix:
-        node: [16, 18, 20]
-    runs-on: macOS-12
-  # This is mostly the same as the Linux steps, waiting for anchor support
-  # https://github.com/actions/runner/issues/1182
+        node: [16, 18, 20, 22]
+      fail-fast: false
+    runs-on: macOS-13
+    # This is mostly the same as the Linux steps, waiting for anchor support
+    # https://github.com/actions/runner/issues/1182
     steps:
       - name: Setup Environment
         run: |
@@ -118,20 +91,12 @@ jobs:
 
       - name: Use Node.js
         uses: actions/setup-node@v4
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
 
       - name: Install
-        env:
-          CC: clang
-          CXX: clang++
-          npm_config_clang: 1
-          GYP_DEFINES: use_obsolete_asm=true
-        # There is a race condition in node/generate that needs to be fixed
-        run: node utils/retry npm install
+        run: npm install
 
       - name: Test
         run: |
@@ -156,8 +121,9 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [16, 18, 20]
+        node: [16, 18, 20, 22]
         arch: [x86, x64]
+      fail-fast: false
     runs-on: windows-2019
     steps:
       - name: Setup Environment
@@ -172,8 +138,6 @@ jobs:
 
       - name: Use Node.js
         uses: actions/setup-node@v4
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
