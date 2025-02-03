@@ -14,29 +14,28 @@ jobs:
     name: "Linux Tests"
     strategy:
       matrix:
-        node: [16] # 18+ requires GLIBC 2.28+
-    runs-on: ubuntu-latest
-    container: ubuntu:16.04
+        node: [16, 18, 20]
+    runs-on: ubuntu-20.04
     steps:
-      - name: Install Dependencies for Ubuntu
-        # git >= 2.18 required for actions/checkout git support
-        run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      # - name: Install Dependencies for Ubuntu
+      #   # git >= 2.18 required for actions/checkout git support
+      #   run: apt-get update && apt-get install -y software-properties-common && add-apt-repository -y ppa:git-core/ppa && apt-get update && apt-get install -y git build-essential clang libssl-dev libkrb5-dev libc++-dev wget zlib1g-dev
+      #   env:
+      #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
-      - name: Setup python 3.6
-        env:
-          CC: clang
-          CXX: clang++
-        run: |
-          mkdir ~/python
-          cd ~/python
-          wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz
-          tar -xvf Python-3.6.15.tgz
-          cd Python-3.6.15
-          ./configure
-          make
-          make install
+      # - name: Setup python 3.6
+      #   env:
+      #     CC: clang
+      #     CXX: clang++
+      #   run: |
+      #     mkdir ~/python
+      #     cd ~/python
+      #     wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz
+      #     tar -xvf Python-3.6.15.tgz
+      #     cd Python-3.6.15
+      #     ./configure
+      #     make
+      #     make install
 
       - name: Setup Environment
         run: |
@@ -49,12 +48,14 @@ jobs:
           git config --global user.name "John Doe"
           git config --global user.email johndoe@example.com
 
-      # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.6"
 
       - name: Use Node.js
-        # v4 requires node 20, which won't run due to GLIBC 2.28+ requirement
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
@@ -99,9 +100,9 @@ jobs:
     strategy:
       matrix:
         node: [16, 18, 20]
-    runs-on: macOS-12
-  # This is mostly the same as the Linux steps, waiting for anchor support
-  # https://github.com/actions/runner/issues/1182
+    runs-on: macOS-13
+    # This is mostly the same as the Linux steps, waiting for anchor support
+    # https://github.com/actions/runner/issues/1182
     steps:
       - name: Setup Environment
         run: |
