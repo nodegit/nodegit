@@ -14,9 +14,9 @@
     {% elsif cppClassName == 'GitBuf' %}
     {%-- Print nothing --%}
     {%else%}
-    if ((info.Length() - 1) > {{ jsArg }} && info[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
-      {%endif%}
+      if ((info.Length() - 1) > {{ jsArg }} && info[{{ jsArg }}]->Is{{ cppClassName|cppToV8 }}()) {
     {%endif%}
+  {%endif%}
   {%if cppClassName == 'String'%}
 
   Nan::Utf8String {{ name }}(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
@@ -58,8 +58,8 @@
       if (arrayVal->IsString()) {
         // Try and parse in a string to a git_oid
         Nan::Utf8String oidString(Nan::To<v8::String>(arrayVal).ToLocalChecked());
-
-        if (git_oid_fromstr(&from_{{ name }}[i], (const char *) strdup(*oidString)) != GIT_OK) {
+        string str = string(*oidString);
+        if (git_oid_fromstr(&from_{{ name }}[i], str.c_str()) != GIT_OK) {
           if (git_error_last()) {
             return Nan::ThrowError(git_error_last()->message);
           } else {
@@ -90,8 +90,8 @@
     // Try and parse in a string to a git_oid
     Nan::Utf8String oidString(Nan::To<v8::String>(info[{{ jsArg }}]).ToLocalChecked());
     git_oid *oidOut = (git_oid *)malloc(sizeof(git_oid));
-
-    if (git_oid_fromstr(oidOut, (const char *) strdup(*oidString)) != GIT_OK) {
+    string str = string(*oidString);
+    if (git_oid_fromstr(oidOut, str.c_str()) != GIT_OK) {
       free(oidOut);
 
       if (git_error_last()) {
