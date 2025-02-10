@@ -1020,11 +1020,13 @@ int RepoAnalysis::storeAndCountRefs()
     }
 
     // obtain peeled oid of the reference
-    const git_oid *oid_ref {nullptr};
+    bool found_oid = false;
+    git_oid oid_ref;
     switch (git_reference_type(ref))
     {
       case GIT_REFERENCE_DIRECT:
-        oid_ref = git_reference_target(ref);
+        git_oid_cpy(&oid_ref, git_reference_target(ref));
+        found_oid = true;
         break;
 
       case GIT_REFERENCE_SYMBOLIC:
@@ -1035,7 +1037,8 @@ int RepoAnalysis::storeAndCountRefs()
           git_strarray_dispose(&ref_list);
           return errorCode;
         }
-        oid_ref = git_reference_target(ref_resolved);
+        git_oid_cpy(&oid_ref, git_reference_target(ref_resolved));
+        found_oid = true;
         git_reference_free(ref_resolved);
       }
         break;
@@ -1045,17 +1048,17 @@ int RepoAnalysis::storeAndCountRefs()
     }
 
     // store object's oid and type
-    if (oid_ref != nullptr)
+    if (found_oid)
     {
       git_object *target {nullptr};
-      if ((errorCode = git_object_lookup(&target, m_repo, oid_ref, GIT_OBJECT_ANY)) != GIT_OK) {
+      if ((errorCode = git_object_lookup(&target, m_repo, &oid_ref, GIT_OBJECT_ANY)) != GIT_OK) {
         git_reference_free(ref);
         git_strarray_dispose(&ref_list);
         return errorCode;
       }
 
       m_peeledRefs.emplace(std::make_pair(
-        std::string(reinterpret_cast<const char *>(oid_ref->id), GIT_OID_RAWSZ),
+        std::string(reinterpret_cast<const char *>(oid_ref.id), GIT_OID_RAWSZ),
         git_object_type(target)));
 
       git_object_free(target);
