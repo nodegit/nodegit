@@ -336,6 +336,20 @@ var Helpers = {
     }
 
     var argOverrides = fnOverrides.args || {};
+    // loop over all the argument names explicitly written in descriptor.json
+    Object.keys(argOverrides).forEach(function(argOverride) {
+      // see if the argument names match a name in the C function
+      var found = fnDef.args.some(function(arg) {
+        return arg.name === argOverride;
+      });
+      if (!found) {
+        console.log(
+          "Found non-matching argument named %s in descriptor.json for C function %s",
+          argOverride,
+          fnDef.cFunctionName
+        );
+      }
+    });
     fnDef.args.forEach(function(arg) {
       Helpers.decorateArg(arg, fnDef.args, typeDef, fnDef, argOverrides[arg.name] || {}, enums);
 
