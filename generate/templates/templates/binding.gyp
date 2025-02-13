@@ -152,7 +152,8 @@
               }]
             ],
             "defines": [
-              "_HAS_EXCEPTIONS=1"
+              "_HAS_EXCEPTIONS=1",
+              "NOMINMAX=1"
             ],
             "msvs_settings": {
               "VCCLCompilerTool": {
