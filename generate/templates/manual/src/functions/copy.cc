@@ -4,6 +4,8 @@
 #include "git2.h"
 #include "git2/diff.h"
 
+#include<iostream>
+
 const git_error *git_error_dup(const git_error *arg) {
   git_error *result = (git_error *)malloc(sizeof(git_error));
   result->klass = arg->klass;
@@ -34,4 +36,12 @@ git_remote_head *git_remote_head_dup(const git_remote_head *src) {
     ? strdup(src->symref_target)
     : NULL;
   return dest;
+}
+
+void git_index_entry_dup(git_index_entry **dest, const git_index_entry *src) {
+  *dest = (git_index_entry *)malloc(sizeof(git_index_entry));
+  memcpy(*dest, src, sizeof(git_index_entry));
+  (*dest)->path = src->path
+    ? strdup(src->path)
+    : NULL;
 }

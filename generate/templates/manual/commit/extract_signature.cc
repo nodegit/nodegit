@@ -28,7 +28,9 @@ NAN_METHOD(GitCommit::ExtractSignature)
   if (info[1]->IsString()) {
     Nan::Utf8String oidString(Nan::To<v8::String>(info[1]).ToLocalChecked());
     baton->commit_id = (git_oid *)malloc(sizeof(git_oid));
-    if (git_oid_fromstr(baton->commit_id, (const char *)strdup(*oidString)) != GIT_OK) {
+    baton->commit_idNeedsFree = true;
+    string str = string(*oidString);
+    if (git_oid_fromstr(baton->commit_id, str.c_str()) != GIT_OK) {
       free(baton->commit_id);
 
       if (git_error_last()) {
@@ -39,6 +41,7 @@ NAN_METHOD(GitCommit::ExtractSignature)
     }
   } else {
     baton->commit_id = Nan::ObjectWrap::Unwrap<GitOid>(Nan::To<v8::Object>(info[1]).ToLocalChecked())->GetValue();
+    baton->commit_idNeedsFree = false;
   }
 
   // baton->field
@@ -95,6 +98,10 @@ void GitCommit::ExtractSignatureWorker::HandleErrorCallback() {
 
   git_buf_dispose(&baton->signature);
   git_buf_dispose(&baton->signed_data);
+
+  if (baton->commit_idNeedsFree) {
+    free(baton->commit_id);
+  }
 
   free(baton->field);
 
@@ -154,9 +161,11 @@ void GitCommit::ExtractSignatureWorker::HandleOKCallback()
   git_buf_dispose(&baton->signature);
   git_buf_dispose(&baton->signed_data);
 
-  if (baton->field != NULL) {
-    free((void *)baton->field);
+  if (baton->commit_idNeedsFree) {
+    free(baton->commit_id);
   }
+
+  free(baton->field);
 
   delete baton;
 }

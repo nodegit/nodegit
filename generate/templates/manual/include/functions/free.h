@@ -8,5 +8,7 @@
 #define NODEGIT_FREE_FUNCTIONS
 
 void git_remote_head_free(git_remote_head *remote_head);
+void git_diff_line_free(const git_diff_line *diff_line);
+void git_index_entry_free(const git_index_entry *index_entry);
 
 #endif

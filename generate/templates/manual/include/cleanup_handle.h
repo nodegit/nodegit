@@ -5,6 +5,12 @@
 #include <memory>
 #include <string>
 
+extern "C" {
+  #include <git2.h>
+  #include <git2/sys/filter.h>
+}
+
+
 namespace nodegit {
   class CleanupHandle {
   public:
@@ -14,6 +20,12 @@ namespace nodegit {
 
   class FilterRegistryCleanupHandles : public CleanupHandle {
   public:
+    ~FilterRegistryCleanupHandles() {
+      for(std::map<std::string, std::shared_ptr<CleanupHandle>>::iterator iter = registeredFilters.begin(); iter != registeredFilters.end(); ++iter) {
+        std::string filtername =  iter->first;
+        git_filter_unregister(filtername.c_str());
+      }
+    }
     std::map<std::string, std::shared_ptr<CleanupHandle>> registeredFilters;
   };
 }

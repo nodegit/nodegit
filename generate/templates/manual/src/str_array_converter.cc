@@ -25,11 +25,9 @@ git_strarray *StrArrayConverter::Convert(v8::Local<v8::Value> val) {
 }
 
 git_strarray * StrArrayConverter::AllocStrArray(const size_t count) {
-  const size_t size = sizeof(git_strarray) + (sizeof(char*) * count);
-  uint8_t* memory = reinterpret_cast<uint8_t*>(malloc(size));
-  git_strarray *result = reinterpret_cast<git_strarray *>(memory);
+  git_strarray *result = (git_strarray *)malloc(sizeof(git_strarray));
+  result->strings =  (char **)malloc(sizeof(char*) * count);
   result->count = count;
-  result->strings = reinterpret_cast<char**>(memory + sizeof(git_strarray));
   return result;
 }
 

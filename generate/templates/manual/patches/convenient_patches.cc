@@ -156,6 +156,7 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
     }
 
     delete baton->out;
+    delete baton;
 
     Local<v8::Value> argv[2] = {
       Nan::Null(),
@@ -185,8 +186,6 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
     }
 
     free((void *)baton->error);
-
-    return;
   }
 
   if (baton->error_code < 0) {
@@ -197,9 +196,15 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
       err
     };
     callback->Call(1, argv, async_resource);
-
-    return;
   }
+  while (!baton->out->empty()) {
+    PatchDataFree(baton->out->back());
+    baton->out->pop_back();
+  }
+
+  delete baton->out;
+
+  delete baton;
 
   Nan::Call(*callback, 0, NULL);
 }
