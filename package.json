@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.28.0-alpha.28",
+  "version": "0.28.0-alpha.30",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -38,7 +38,7 @@
     "node": ">= 16"
   },
   "dependencies": {
-    "@axosoft/nan": "^2.20.0-gk.1",
+    "@axosoft/nan": "^2.22.0-gk.1",
     "@mapbox/node-pre-gyp": "^1.0.8",
     "fs-extra": "^7.0.0",
     "got": "^11.8.6",
@@ -54,11 +54,11 @@
     "clean-for-publish": "~1.0.2",
     "combyne": "~0.8.1",
     "coveralls": "^3.0.2",
-    "istanbul": "^0.4.5",
     "js-beautify": "~1.5.10",
     "jshint": "^2.10.0",
     "lcov-result-merger": "^3.1.0",
     "mocha": "^5.2.0",
+    "nyc": "^17.1.0",
     "walk": "^2.3.9"
   },
   "binary": {
