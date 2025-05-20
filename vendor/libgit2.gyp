@@ -141,6 +141,7 @@
         "libgit2/src/libgit2/streams/openssl_legacy.c",
         "libgit2/src/libgit2/streams/registry.c",
         "libgit2/src/libgit2/streams/socket.c",
+        "libgit2/src/libgit2/streams/tls.c",
         "libgit2/src/libgit2/submodule.c",
         "libgit2/src/libgit2/sysdir.c",
         "libgit2/src/libgit2/tag.c",
@@ -148,9 +149,11 @@
         "libgit2/src/libgit2/trailer.c",
         "libgit2/src/libgit2/transaction.c",
         "libgit2/src/libgit2/transport.c",
+        "libgit2/src/libgit2/transports/auth.c",
         "libgit2/src/libgit2/transports/credential.c",
         "libgit2/src/libgit2/transports/credential_helpers.c",
         "libgit2/src/libgit2/transports/git.c",
+        "libgit2/src/libgit2/transports/http.c",
         "libgit2/src/libgit2/transports/httpclient.c",
         "libgit2/src/libgit2/transports/httpparser.c",
         "libgit2/src/libgit2/transports/local.c",
@@ -256,11 +259,8 @@
             "GIT_IO_POLL" # theres a chance this breaks bsd
           ],
           "sources": [
-            "libgit2/src/libgit2/streams/tls.c",
-            "libgit2/src/libgit2/transports/auth.c",
             "libgit2/src/libgit2/transports/auth_gssapi.c",
             "libgit2/src/libgit2/transports/auth_ntlmclient.c",
-            "libgit2/src/libgit2/transports/http.c",
           ],
           "cflags": [
             "<!(krb5-config gssapi --cflags)"
@@ -292,7 +292,8 @@
         }],
         ["OS=='win'", {
           "defines": [
-            "GIT_WINHTTP",
+            "GIT_WIN32", 
+            "GIT_SCHANNEL",
             "GIT_IO_WSAPOLL"
           ],
           "conditions": [
@@ -339,9 +340,8 @@
             4013,
           ],
           "sources": [
-            # "libgit2/src/libgit2/streams/schannel.c",
-            "libgit2/src/libgit2/transports/winhttp.c",
-            "libgit2/src/util/allocators/win32_leakcheck.c",
+            "libgit2/src/libgit2/streams/schannel.c",
+            "libgit2/src/libgit2/transports/auth_sspi.c",
             "libgit2/src/util/win32/dir.c",
             "libgit2/src/util/win32/error.c",
             "libgit2/src/util/win32/map.c",
@@ -354,7 +354,7 @@
             "libgit2/src/util/win32/w32_buffer.c",
             "libgit2/src/util/win32/w32_leakcheck.c",
             "libgit2/src/util/win32/w32_util.c",
-          ],
+          ]
         }, {
           "libraries": [
             "-lpthread",

@@ -169,9 +169,9 @@
               }
             },
             "libraries": [
-              "winhttp.lib",
               "crypt32.lib",
-              "rpcrt4.lib"
+              "rpcrt4.lib",
+              "secur32.lib"
             ]
           }
         ],
