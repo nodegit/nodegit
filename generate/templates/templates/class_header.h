@@ -20,6 +20,7 @@
 
 extern "C" {
 #include <git2.h>
+#include <git2/sys/errors.h>
 {%each cDependencies as dependency %}
 #include <{{ dependency }}>
 {%endeach%}
