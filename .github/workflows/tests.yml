@@ -14,7 +14,7 @@ jobs:
     name: "Linux Tests"
     strategy:
       matrix:
-        node: [16, 18, 20, 22]
+        node: [20, 22, 24]
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:
@@ -71,7 +71,7 @@ jobs:
     name: "macOS Tests"
     strategy:
       matrix:
-        node: [16, 18, 20, 22]
+        node: [20, 22, 24]
       fail-fast: false
     runs-on: macOS-13
     # This is mostly the same as the Linux steps, waiting for anchor support
@@ -122,7 +122,7 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [16, 18, 20, 22]
+        node: [20, 22, 24]
         arch: [x86, x64]
       fail-fast: false
     runs-on: windows-2019
