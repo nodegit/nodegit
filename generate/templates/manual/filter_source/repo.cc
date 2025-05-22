@@ -42,7 +42,7 @@ void GitFilterSource::RepoWorker::Execute() {
 
   if (baton->error_code == GIT_OK) {
     baton->out = repo;
-  } else if (git_error_last() != NULL) {
+  } else if (git_error_last()->klass != GIT_ERROR_NONE) {
     baton->error = git_error_dup(git_error_last());
   }
 }

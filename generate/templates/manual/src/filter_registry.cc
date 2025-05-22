@@ -99,7 +99,7 @@ void GitFilterRegistry::RegisterWorker::Execute() {
     int result = git_filter_register(baton->filter_name, baton->filter, baton->filter_priority);
     baton->error_code = result;
 
-    if (result != GIT_OK && git_error_last() != NULL) {
+    if (result != GIT_OK && git_error_last()->klass != GIT_ERROR_NONE) {
       baton->error = git_error_dup(git_error_last());
     }
   }
@@ -204,7 +204,7 @@ void GitFilterRegistry::UnregisterWorker::Execute() {
     int result = git_filter_unregister(baton->filter_name);
     baton->error_code = result;
 
-    if (result != GIT_OK && git_error_last() != NULL) {
+    if (result != GIT_OK && git_error_last()->klass != GIT_ERROR_NONE) {
       baton->error = git_error_dup(git_error_last());
     }
   }

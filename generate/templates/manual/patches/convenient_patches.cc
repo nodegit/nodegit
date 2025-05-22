@@ -69,7 +69,7 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
 
         baton->error_code = result;
 
-        if (git_error_last() != NULL) {
+        if (git_error_last()->klass != GIT_ERROR_NONE) {
           baton->error = git_error_dup(git_error_last());
         }
 
@@ -103,7 +103,7 @@ void GitPatch::ConvenientFromDiffWorker::Execute() {
 
         baton->error_code = result;
 
-        if (git_error_last() != NULL) {
+        if (git_error_last()->klass != GIT_ERROR_NONE) {
           baton->error = git_error_dup(git_error_last());
         }
 

@@ -1808,7 +1808,7 @@ void GitRepository::StatisticsWorker::Execute()
   RepoAnalysis *repoAnalysis = static_cast<RepoAnalysis *>(baton->out);
   if ((baton->error_code = repoAnalysis->Analyze()) != GIT_OK)
   {
-    if (git_error_last() != NULL) {
+    if (git_error_last()->klass != GIT_ERROR_NONE) {
       baton->error = git_error_dup(git_error_last());
     }
 

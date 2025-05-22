@@ -60,11 +60,7 @@
         Nan::Utf8String oidString(Nan::To<v8::String>(arrayVal).ToLocalChecked());
 
         if (git_oid_fromstr(&from_{{ name }}[i], (const char *) strdup(*oidString)) != GIT_OK) {
-          if (git_error_last()) {
-            return Nan::ThrowError(git_error_last()->message);
-          } else {
-            return Nan::ThrowError("Unknown Error");
-          }
+          return Nan::ThrowError(git_error_last()->message);
         }
       }
       else {
@@ -94,7 +90,7 @@
     if (git_oid_fromstr(oidOut, (const char *) strdup(*oidString)) != GIT_OK) {
       free(oidOut);
 
-      if (git_error_last()) {
+      if (git_error_last()->klass != GIT_ERROR_NONE) {
         return Nan::ThrowError(git_error_last()->message);
       } else {
         return Nan::ThrowError("Unknown Error");

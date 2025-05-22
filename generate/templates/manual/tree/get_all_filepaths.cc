@@ -67,7 +67,7 @@ void GitTree::GetAllFilepathsWorker::Execute()
   std::string buffer;
   buffer.reserve(4096);
   baton->error_code = TreeFilepathsHelpers::iterateTreePaths(baton->repo, baton->tree, baton->out, &buffer);
-  if (baton->error_code != GIT_OK && git_error_last() != NULL) {
+  if (baton->error_code != GIT_OK && git_error_last()->klass != GIT_ERROR_NONE) {
     baton->error = git_error_dup(git_error_last());
   }
 }

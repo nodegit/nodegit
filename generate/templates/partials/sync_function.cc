@@ -79,7 +79,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%endif%}
       {%endeach%}
 
-        if (git_error_last()) {
+        if (git_error_last()->klass != GIT_ERROR_NONE) {
           return Nan::ThrowError(git_error_last()->message);
         } else {
           return Nan::ThrowError("Unknown Error");
