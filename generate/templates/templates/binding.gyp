@@ -22,7 +22,7 @@
         ["<(is_electron) == 1 and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
           "actions": [{
             "action_name": "acquire",
-            "action": ["node", "utils/acquireOpenSSL.js", "<(macOS_deployment_target)"],
+            "action": ["node", "utils/acquireOpenSSL.mjs", "<(macOS_deployment_target)"],
             "inputs": [""],
             "outputs": ["vendor/openssl"],
             "message": "Acquiring OpenSSL binaries and headers"
