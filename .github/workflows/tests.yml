@@ -14,9 +14,9 @@ jobs:
     name: "Linux Tests"
     strategy:
       matrix:
-        node: [16, 18, 20, 22]
+        node: [20, 22, 24]
       fail-fast: false
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Install Dependencies for Ubuntu
         run: sudo apt-get update && sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget zlib1g-dev
@@ -37,7 +37,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.6"
+          python-version: "3.11"
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -71,7 +71,7 @@ jobs:
     name: "macOS Tests"
     strategy:
       matrix:
-        node: [16, 18, 20, 22]
+        node: [20, 22, 24]
       fail-fast: false
     runs-on: macOS-13
     # This is mostly the same as the Linux steps, waiting for anchor support
@@ -122,8 +122,11 @@ jobs:
     name: Windows Tests
     strategy:
       matrix:
-        node: [16, 18, 20, 22]
+        node: [20, 22, 24]
         arch: [x86, x64]
+        exclude:
+        - node: 24
+          arch: x86
       fail-fast: false
     runs-on: windows-2019
     steps:

@@ -31,7 +31,7 @@ NAN_METHOD(GitCommit::ExtractSignature)
     if (git_oid_fromstr(baton->commit_id, (const char *)strdup(*oidString)) != GIT_OK) {
       free(baton->commit_id);
 
-      if (git_error_last()) {
+      if (git_error_last()->klass != GIT_ERROR_NONE) {
         return Nan::ThrowError(git_error_last()->message);
       } else {
         return Nan::ThrowError("Unknown Error");
@@ -79,7 +79,7 @@ void GitCommit::ExtractSignatureWorker::Execute()
     (const char *)baton->field
   );
 
-  if (baton->error_code != GIT_OK && git_error_last() != NULL) {
+  if (baton->error_code != GIT_OK) {
     baton->error = git_error_dup(git_error_last());
   }
 }
