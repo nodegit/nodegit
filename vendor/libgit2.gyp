@@ -464,8 +464,8 @@
         ".",
         "libssh2/include",
       ],
-      "hard_dependencies": [
-        "../binding.gyp:configureLibssh2"
+      "dependencies": [
+        "./libssh2.gyp:configureLibssh2"
       ],
       "direct_dependent_settings": {
         "include_dirs": [
