@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.32" href="#v0-28-0-alpha-32">v0.28.0-alpha.32</a> [(2025-05-28)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.32)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.31...v0.28.0-alpha.32)
+
+#### Summary of Changes
+ - fix windows build on electron
+
+#### Merged PRs into NodeGit
+- [fix electron dependencies again](https://github.com/nodegit/nodegit/pull/2020)
+
 ## <a name="v0-28-0-alpha.31" href="#v0-28-0-alpha-31">v0.28.0-alpha.31</a> [(2025-05-27)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.31)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.30...v0.28.0-alpha.31)
