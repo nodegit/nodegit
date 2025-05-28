@@ -242,13 +242,15 @@
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
           "conditions": [
             ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
+              "dependencies": [
+                "./libssh2.gyp:acquireOpenSSL",
+              ],
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ]
             }]
           ],
           "dependencies": [
-            "./libssh2.gyp:acquireOpenSSL",
             "ntlmclient"
           ],
           "include_dirs": [
@@ -299,6 +301,9 @@
           ],
           "conditions": [
             ["<(is_electron) == 1", {
+              "dependencies": [
+                "./libssh2.gyp:acquireOpenSSL",
+              ],
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ]
