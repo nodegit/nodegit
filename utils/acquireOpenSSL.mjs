@@ -12,7 +12,7 @@ import { promisify } from "util";
 
 const pipeline = promisify(stream.pipeline);
 
-import packageJson from '../package.json' assert { type: "json" };
+import packageJson from '../package.json' with { type: "json" };
 
 const OPENSSL_VERSION = "1.1.1t";
 const win32BatPath = path.join(import.meta.dirname, "build-openssl.bat");

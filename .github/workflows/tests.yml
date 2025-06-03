@@ -128,7 +128,7 @@ jobs:
         - node: 24
           arch: x86
       fail-fast: false
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Setup Environment
         run: |
