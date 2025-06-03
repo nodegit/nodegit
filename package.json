@@ -45,7 +45,7 @@
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
     "node-gyp": "^11.2.0",
-    "tar-fs": "^3.0.8"
+    "tar-fs": "^3.0.9"
   },
   "devDependencies": {
     "aws-sdk": "^2.1095.0",
