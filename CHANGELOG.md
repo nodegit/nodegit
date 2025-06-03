@@ -1,5 +1,16 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.33" href="#v0-28-0-alpha-33">v0.28.0-alpha.33</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.33)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.32...v0.28.0-alpha.33)
+
+#### Summary of Changes
+ - fix non-standard import assertion
+ - update tar-fs
+
+#### Merged PRs into NodeGit
+- [Fix Invalid Import Assertion, Bump tar-fs](https://github.com/nodegit/nodegit/pull/2022)
+
 ## <a name="v0-28-0-alpha.32" href="#v0-28-0-alpha-32">v0.28.0-alpha.32</a> [(2025-05-28)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.32)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.31...v0.28.0-alpha.32)
