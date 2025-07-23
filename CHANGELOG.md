@@ -1,5 +1,15 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.34" href="#v0-28-0-alpha-34">v0.28.0-alpha.34</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.34)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.33...v0.28.0-alpha.34)
+
+#### Summary of Changes
+ - Empty release to fix downstream issues
+
+#### Merged PRs into NodeGit
+- None
+
 ## <a name="v0-28-0-alpha.33" href="#v0-28-0-alpha-33">v0.28.0-alpha.33</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.33)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.32...v0.28.0-alpha.33)
