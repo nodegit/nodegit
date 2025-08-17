@@ -1,20 +1,18 @@
-const crypto = require("crypto");
-const execPromise = require("./execPromise");
-// for fs.remove. replace with fs.rm after dropping v12 support
-const fse = require("fs-extra");
-const fsNonPromise = require("fs");
-const { promises: fs } = fsNonPromise;
-const path = require("path");
-const got = require("got");
-const { performance } = require("perf_hooks");
-const { promisify } = require("util");
-const stream = require("stream");
-const tar = require("tar-fs");
-const zlib = require("zlib");
+import crypto from "crypto";
+import execPromise from "./execPromise.js";
+import got from "got";
+import path from "path";
+import stream from "stream";
+import tar from "tar-fs";
+import zlib from "zlib";
+import { createWriteStream, promises as fs } from "fs";
+import { performance } from "perf_hooks";
+import { fileURLToPath } from 'url';
+import { promisify } from "util";
 
 const pipeline = promisify(stream.pipeline);
 
-const packageJson = require('../package.json')
+import packageJson from '../package.json' with { type: "json" };
 
 const OPENSSL_VERSION = "1.1.1w";
 const win32BatPath = path.join(__dirname, "build-openssl.bat");
@@ -58,7 +56,7 @@ const makeHashVerifyOnFinal = (expected) => (digest) => {
 // currently this only needs to be done on linux
 const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
   try {
-    for (const patchFilename of await fse.readdir(opensslPatchPath)) {
+    for (const patchFilename of await fs.readdir(opensslPatchPath)) {
       const patchTarget = patchFilename.split("-")[1];
       if (patchFilename.split(".").pop() === "patch" && (patchTarget === operatingSystem || patchTarget === "all")) {
         console.log(`applying ${patchFilename}`);
@@ -78,7 +76,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     throw new Error("Expected macOsDeploymentTarget to be specified");
   }
 
-  const arguments = [
+  const configureArgs = [
     process.arch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc",
     // speed up ecdh on little-endian platforms with 128bit int support
     "enable-ec_nistp_64_gcc_128",
@@ -95,7 +93,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     `-mmacosx-version-min=${macOsDeploymentTarget}`
   ];
 
-  await execPromise(`./Configure ${arguments.join(" ")}`, {
+  await execPromise(`./Configure ${configureArgs.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
@@ -117,7 +115,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 };
 
 const buildLinux = async (buildCwd) => {
-  const arguments = [
+  const configureArgs = [
     process.arch === "x64" ? "linux-x86_64" : "linux-aarch64",
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
@@ -134,7 +132,7 @@ const buildLinux = async (buildCwd) => {
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`
   ];
-  await execPromise(`./Configure ${arguments.join(" ")}`, {
+  await execPromise(`./Configure ${configureArgs.join(" ")}`, {
     cwd: buildCwd
   }, { pipeOutput: true });
 
@@ -189,7 +187,7 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
       vcTarget = "VC-WIN32";
       break;
     }
-      
+
     default: {
       throw new Error(`Unknown vsBuildArch: ${vsBuildArch}`);
     }
@@ -222,7 +220,7 @@ const removeOpenSSLIfOudated = async (openSSLVersion) => {
     }
 
     console.log("Removing outdated OpenSSL at: ", extractPath);
-    await fse.remove(extractPath);
+    await fs.rm(extractPath, { recursive: true, force: true });
     console.log("Outdated OpenSSL removed.");
   } catch (err) {
     console.log("Remove outdated OpenSSL failed: ", err);
@@ -288,7 +286,7 @@ const buildOpenSSLIfNecessary = async ({
   } else {
     console.log(`OpenSSL ${openSSLVersion} already downloaded`)
   }
- 
+
 
   if (process.platform === "darwin") {
     await buildDarwin(buildCwd, macOsDeploymentTarget);
@@ -324,7 +322,7 @@ const downloadOpenSSLIfNecessary = async ({
     throw new Error("Skipping OpenSSL download, dir exists");
     return;
   } catch {}
-  
+
 
   if (maybeDownloadSha256Url) {
     maybeDownloadSha256 = (await got(maybeDownloadSha256Url)).body.trim();
@@ -378,14 +376,14 @@ const buildPackage = async () => {
         return path.extname(name) === ".pc"
           || path.basename(name) === "pkgconfig";
       },
-      dmode: 0755,
-      fmode: 0644
+      dmode: 0o0755,
+      fmode: 0o0644
     }),
     zlib.createGzip(),
     new HashVerify("sha256", (digest) => {
       resolve(digest);
     }),
-    fsNonPromise.createWriteStream(getOpenSSLPackageName())
+    createWriteStream(getOpenSSLPackageName())
   );
   const digest = await promise;
   await fs.writeFile(`${getOpenSSLPackageName()}.sha256`, digest);
@@ -443,15 +441,12 @@ const acquireOpenSSL = async () => {
   }
 };
 
-module.exports = {
-  acquireOpenSSL,
-  getOpenSSLPackageName,
-  OPENSSL_VERSION
-};
-
-if (require.main === module) {
-  acquireOpenSSL().catch((error) => {
+if (process.argv[1] === import.meta.filename) {
+  try {
+    await acquireOpenSSL();
+  }
+  catch(error) {
     console.error("Acquire OpenSSL failed: ", error);
     process.exit(1);
-  });
+  };
 }

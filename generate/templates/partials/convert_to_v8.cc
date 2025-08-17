@@ -28,7 +28,7 @@
       {% if isCppClassIntType %}
         element = Nan::New<{{ cppClassName }}>(({{ parsedClassName }}){{= parsedName =}}[i]);
       {% else %}
-      element = Nan::New<{{ cppClassName }}>({% if needsDereference %}*{% endif %}{{= parsedName =}}[i]);
+        element = Nan::New<{{ cppClassName }}>({% if needsDereference %}*{% endif %}{{= parsedName =}}[i]);
       {% endif %}
       Nan::Set(tmpArray, Nan::New<Number>(i), element);
     }
@@ -49,7 +49,19 @@
   {% if size %}
     v8::Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}}->{{ size }});
     for (unsigned int i = 0; i < {{= parsedName =}}->{{ size }}; i++) {
-      Nan::Set(tmpArray, Nan::New<Number>(i), Nan::New<v8::String>({{= parsedName =}}->{{ key }}[i]).ToLocalChecked());
+      v8::Local<v8::Value> element;
+      {% if arrayElementCppClassName %}
+        element = {{ arrayElementCppClassName }}::New(
+          {{ cType|asElementPointer parsedName }}->{{ key }}[i],
+          {{ selfFreeing|toBool }}
+          {% if hasOwner %}
+            , owners
+          {% endif %}
+        );
+      {% else %}
+        element = Nan::New<v8::String>({{= parsedName =}}->{{ key }}[i]).ToLocalChecked();
+      {% endif %}
+      Nan::Set(tmpArray, Nan::New<Number>(i), element);
     }
   {% else %}
     v8::Local<Array> tmpArray = Nan::New<Array>({{= parsedName =}});

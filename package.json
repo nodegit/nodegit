@@ -1,7 +1,7 @@
 {
   "name": "nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "0.28.0-alpha.30",
+  "version": "0.28.0-alpha.34",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -35,29 +35,26 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">= 16"
+    "node": ">= 20"
   },
   "dependencies": {
     "@axosoft/nan": "^2.22.0-gk.1",
-    "@mapbox/node-pre-gyp": "^1.0.8",
+    "@mapbox/node-pre-gyp": "^2.0.0",
     "fs-extra": "^7.0.0",
-    "got": "^11.8.6",
+    "got": "^14.4.7",
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
-    "node-gyp": "^10.0.1",
-    "ramda": "^0.25.0",
-    "tar-fs": "^2.1.1"
+    "node-gyp": "^11.2.0",
+    "tar-fs": "^3.0.9"
   },
   "devDependencies": {
     "aws-sdk": "^2.1095.0",
-    "cheerio": "^1.0.0-rc.2",
     "clean-for-publish": "~1.0.2",
     "combyne": "~0.8.1",
-    "coveralls": "^3.0.2",
     "js-beautify": "~1.5.10",
     "jshint": "^2.10.0",
     "lcov-result-merger": "^3.1.0",
-    "mocha": "^5.2.0",
+    "mocha": "^11.4.0",
     "nyc": "^17.1.0",
     "walk": "^2.3.9"
   },
@@ -68,7 +65,6 @@
   },
   "scripts": {
     "cov": "npm run cppcov && npm run filtercov && npm run mergecov",
-    "coveralls": "cat ./test/coverage/merged.lcov | coveralls",
     "cppcov": "mkdir -p test/coverage/cpp && ./lcov-1.10/bin/lcov --gcov-tool /usr/bin/gcov-4.9 --capture --directory build/Release/obj.target/nodegit/src --output-file test/coverage/cpp/lcov_full.info",
     "filtercov": "./lcov-1.10/bin/lcov --extract test/coverage/cpp/lcov_full.info $(pwd)/src/* $(pwd)/src/**/* $(pwd)/include/* $(pwd)/include/**/* --output-file test/coverage/cpp/lcov.info && rm test/coverage/cpp/lcov_full.info",
     "generateJson": "node generate/scripts/generateJson",

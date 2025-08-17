@@ -1,5 +1,58 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.34" href="#v0-28-0-alpha-34">v0.28.0-alpha.34</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.34)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.33...v0.28.0-alpha.34)
+
+#### Summary of Changes
+ - Empty release to fix downstream issues
+
+#### Merged PRs into NodeGit
+- None
+
+## <a name="v0-28-0-alpha.33" href="#v0-28-0-alpha-33">v0.28.0-alpha.33</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.33)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.32...v0.28.0-alpha.33)
+
+#### Summary of Changes
+ - fix non-standard import assertion
+ - update tar-fs
+
+#### Merged PRs into NodeGit
+- [Fix Invalid Import Assertion, Bump tar-fs](https://github.com/nodegit/nodegit/pull/2022)
+
+## <a name="v0-28-0-alpha.32" href="#v0-28-0-alpha-32">v0.28.0-alpha.32</a> [(2025-05-28)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.32)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.31...v0.28.0-alpha.32)
+
+#### Summary of Changes
+ - fix windows build on electron
+
+#### Merged PRs into NodeGit
+- [fix electron dependencies again](https://github.com/nodegit/nodegit/pull/2020)
+
+## <a name="v0-28-0-alpha.31" href="#v0-28-0-alpha-31">v0.28.0-alpha.31</a> [(2025-05-27)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.31)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.30...v0.28.0-alpha.31)
+
+#### Summary of Changes
+- bump libgit2 from v1.7.2 to v1.8.4
+- update several npm dependencies for deprecations and vulnerabilities
+
+#### Merged PRs into NodeGit
+- [Dependency/Process Updates](https://github.com/nodegit/nodegit/pull/2019)
+- [Bump libgit2 to 1.8.4, CI Updates](https://github.com/nodegit/nodegit/pull/2018)
+
+## <a name="v0-28-0-alpha.30" href="#v0-28-0-alpha-30">v0.28.0-alpha.30</a> [(2025-02-13)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.30)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.29...v0.28.0-alpha.30)
+
+#### Summary of Changes
+- Fix windows build
+
+#### Merged PRs into NodeGit
+- [define NOMINMAX on windows](https://github.com/nodegit/nodegit/pull/2016)
+
 ## <a name="v0-28-0-alpha.29" href="#v0-28-0-alpha-29">v0.28.0-alpha.29</a> [(2025-02-11)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.29)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.28...v0.28.0-alpha.29)
