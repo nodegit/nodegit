@@ -160,9 +160,8 @@
                 "<(electron_openssl_root)/include"
               ],
               "libraries": [
-                # this order is significant on centos7 apparently...
-                "<(electron_openssl_root)/lib/libssl.a",
-                "<(electron_openssl_root)/lib/libcrypto.a"
+                "<(electron_openssl_root)/lib64/libssl.a",
+                "<(electron_openssl_root)/lib64/libcrypto.a"
               ]
             }],
             ["<(is_electron) == 1 and <(electron_openssl_static) != 1", {
