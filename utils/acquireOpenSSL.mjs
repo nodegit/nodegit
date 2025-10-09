@@ -14,7 +14,7 @@ const pipeline = promisify(stream.pipeline);
 
 import packageJson from '../package.json' with { type: "json" };
 
-const OPENSSL_VERSION = "1.1.1t";
+const OPENSSL_VERSION = "3.0.18";
 const win32BatPath = path.join(import.meta.dirname, "build-openssl.bat");
 const vendorPath = path.resolve(import.meta.dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
@@ -56,6 +56,8 @@ const makeHashVerifyOnFinal = (expected) => (digest) => {
 // currently this only needs to be done on linux
 const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
   try {
+    await fs.access(opensslPatchPath);
+
     for (const patchFilename of await fs.readdir(opensslPatchPath)) {
       const patchTarget = patchFilename.split("-")[1];
       if (patchFilename.split(".").pop() === "patch" && (patchTarget === operatingSystem || patchTarget === "all")) {
@@ -66,6 +68,11 @@ const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
       }
     }
   } catch(e) {
+    if (e.code === "ENOENT") {
+      // no patches to apply
+      return;
+    }
+
     console.log("Patch application failed: ", e);
     throw e;
   }
@@ -121,7 +128,7 @@ const buildLinux = async (buildCwd) => {
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
     // To fix this we need to hide all the openssl symbols to prevent them from being overridden
     // by the runtime linker.
-    "-fvisibility=hidden",
+    // "-fvisibility=hidden",
     // compile static libraries
     "no-shared",
     // disable ssl2, ssl3, and compression
@@ -259,7 +266,7 @@ const buildOpenSSLIfNecessary = async ({
   const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
   const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
 
-  const openSSLSha256 = (await got(openSSLSha256Url)).body.trim();
+  const openSSLSha256 = (await got(openSSLSha256Url)).body.trim().split(' ')[0];
 
   const downloadStream = got.stream(openSSLUrl);
   downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
