@@ -30,7 +30,9 @@ module.exports = function install() {
 
   return new Promise(function(resolve, reject) {
     const gypPath = path.join(__dirname, "..", "node_modules", "node-gyp", "bin", "node-gyp.js");
-    var spawnedNodePreGyp = spawn(nodePreGyp, args, {
+
+    const nodePreGypPath = path.resolve(path.join(__dirname, "..", "node_modules", "@mapbox", "node-pre-gyp", "bin", nodePreGyp));
+    var spawnedNodePreGyp = spawn(nodePreGypPath, args, {
       env: {
         ...process.env,
         npm_config_node_gyp: gypPath

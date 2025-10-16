@@ -19,6 +19,26 @@ const vendorPath = path.resolve(import.meta.dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
 
+const convertArch = (archStr) => {
+  const convertedArch = {
+    'ia32': 'x86',
+    'x86': 'x86',
+    'x64': 'x64',
+    'arm64': 'arm64'
+  }[archStr];
+
+  if (!convertedArch) {
+    throw new Error('unsupported architecture');
+  }
+
+  return convertedArch;
+}
+
+const hostArch = convertArch(process.arch);
+const targetArch = process.env.npm_config_arch
+  ? convertArch(process.env.npm_config_arch)
+  : hostArch;
+
 const pathsToIncludeForPackage = [
   "include", "lib"
 ];
@@ -82,8 +102,10 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     throw new Error("Expected macOsDeploymentTarget to be specified");
   }
 
+  const buildConfig = targetArch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc";
+
   const configureArgs = [
-    process.arch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc",
+    buildConfig,
     // speed up ecdh on little-endian platforms with 128bit int support
     "enable-ec_nistp_64_gcc_128",
     // compile static libraries
@@ -107,7 +129,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 
   await applyOpenSSLPatches(buildCwd, "darwin");
 
-  // only build the libraries, not the tests/fuzzer or apps
+  // only build the libraries, not the fuzzer or apps
   await execPromise("make build_libs", {
     cwd: buildCwd
   }, { pipeOutput: true });
@@ -123,8 +145,10 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 };
 
 const buildLinux = async (buildCwd) => {
+  const buildConfig = targetArch === "x64" ? "linux-x86_64" : "linux-aarch64";
+
   const configureArgs = [
-    "linux-x86_64",
+    buildConfig,
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
     // To fix this we need to hide all the openssl symbols to prevent them from being overridden
@@ -146,7 +170,7 @@ const buildLinux = async (buildCwd) => {
 
   await applyOpenSSLPatches(buildCwd, "linux");
 
-  // only build the libraries, not the tests/fuzzer or apps
+  // only build the libraries, not the fuzzer or apps
   await execPromise("make build_libs", {
     cwd: buildCwd
   }, { pipeOutput: true });
@@ -230,6 +254,11 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
 
     case "x86": {
       vcTarget = "VC-WIN32";
+      break;
+    }
+
+    case "arm64": {
+      vcTarget = "VC-WIN64-ARM";
       break;
     }
       
@@ -382,15 +411,8 @@ const downloadOpenSSLIfNecessary = async ({
   console.log("Download finished.");
 }
 
-export const getOpenSSLPackageName = () => {
-  let arch = process.arch;
-  if (process.platform === "win32" && (
-    process.arch === "ia32" || process.env.NODEGIT_VS_BUILD_ARCH === "x86"
-  )) {
-    arch = "x86";
-  }
-
-  return `openssl-${OPENSSL_VERSION}-${process.platform}-${arch}.tar.gz`;
+const getOpenSSLPackageName = () => {
+  return `openssl-${OPENSSL_VERSION}-${process.platform}-${targetArch}.tar.gz`;
 }
 
 export const getOpenSSLPackagePath = () => path.join(import.meta.dirname, getOpenSSLPackageName());
@@ -450,18 +472,10 @@ const acquireOpenSSL = async () => {
       }
     }
 
-    let vsBuildArch;
-    if (process.platform === "win32") {
-      vsBuildArch = process.env.NODEGIT_VS_BUILD_ARCH || (process.arch === "x64" ? "x64" : "x86");
-      if (!["x64", "x86"].includes(vsBuildArch)) {
-        throw new Error(`Invalid vsBuildArch: ${vsBuildArch}`);
-      }
-    }
-
     await buildOpenSSLIfNecessary({
       openSSLVersion: OPENSSL_VERSION,
       macOsDeploymentTarget,
-      vsBuildArch
+      vsBuildArch: process.platform === "win32" ? targetArch : undefined
     });
     if (process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
       await buildPackage();
