@@ -399,7 +399,7 @@ const acquireOpenSSL = async () => {
 
     let macOsDeploymentTarget;
     if (process.platform === "darwin") {
-      macOsDeploymentTarget = process.argv[2];
+      macOsDeploymentTarget = process.argv[2] ?? process.env.OPENSSL_MACOS_DEPLOYMENT_TARGET
       if (!macOsDeploymentTarget || !macOsDeploymentTarget.match(/\d+\.\d+/)) {
         throw new Error(`Invalid macOsDeploymentTarget: ${macOsDeploymentTarget}`);
       }
