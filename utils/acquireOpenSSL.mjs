@@ -171,7 +171,7 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
     : process.env.ProgramFiles) || "C:\\Program Files";
   const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
     programFilesPath
-  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
+  }\\Microsoft Visual Studio\\2019\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
   try {
     await fs.stat(vcvarsallPath);
   } catch {
