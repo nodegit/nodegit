@@ -9,8 +9,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-13, windows-2022]
-        arch: [x64, arm64]
+        include:
+          - os: windows-latest
+            arch: x64
+          # - os: windows-latest
+          #   arch: arm64
+          - os: macos-15
+            arch: x64
+          - os: macos-15-intel
+            arch: arm64
       fail-fast: false
 
     steps:
@@ -21,12 +28,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          architecture: ${{ matrix.arch }}
+
+      - name: Install Toolchain
+        if: matrix.os == 'windows-latest' && matrix.arch == 'arm64'
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >
+            mingw-w64-aarch64-toolchain
+            mingw-w64-aarch64-cmake
+            mingw-w64-aarch64-ninja
 
       - name: Install dependencies
         run: npm install
 
       - name: Build OpenSSL packages
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
         run: node utils/acquireOpenSSL.js
 
       - name: Push OpenSSL package to S3
