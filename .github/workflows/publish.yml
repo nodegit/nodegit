@@ -15,16 +15,19 @@ jobs:
         os:
           # macos-14 is arm64 (m1)
           - name: darwin
-            host: macos-14
+            host: macos-13-arm64
 
           # macos-13 is x86
           - name: mac-x64
-            host: macos-13
+            host: macos-13-intel
 
-          # ubuntu-20.04 is x86. Still no arm linux runners yet
+          # ubuntu-22.04 is x86. Still no arm linux runners yet
           # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
           - name: linux
-            host: ubuntu-20.04
+            host: ubuntu-22.04
+
+          - name: linux-arm
+            host: ubuntu-22.04-arm
     env:
       CC: clang
       CXX: clang++
@@ -32,10 +35,10 @@ jobs:
       GYP_DEFINES: use_obsolete_asm=true
     runs-on: ${{ matrix.os.host }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           check-latest: true
@@ -43,7 +46,8 @@ jobs:
         run: |
           [[ $(uname -o) == *Linux ]] && \
             sudo apt-get update && \
-            sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3
+            sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3 zlib1g-dev
+
           npm ci
           npx prebuildify --napi --strip --tag-libc -t "$(node --version | tr -d 'v')"
       - uses: actions/upload-artifact@v4
@@ -54,15 +58,10 @@ jobs:
 
   cross-compile:
     name: "cross compile linux/arm"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: docker/setup-qemu-action@v3
-      - name: build linux glibc arm
-        run: |
-          docker build --platform=linux/arm64 --tag nodegit-linux-glibc-arm64 -f scripts/Dockerfile.debian .
-          docker create --platform=linux/arm64 --name nodegit-linux-glibc-arm64 nodegit-linux-glibc-arm64
-          docker cp "nodegit-linux-glibc-arm64:/app/prebuilds" .
       - name: build linux musl x64
         run: |
           docker build --platform=linux/amd64 --tag nodegit-linux-musl-amd64 -f scripts/Dockerfile.alpine .
@@ -87,16 +86,16 @@ jobs:
     needs: [build, cross-compile]
     permissions:
       id-token: write
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           check-latest: true
           registry-url: "https://registry.npmjs.org"
-          scope: "readme"
       - name: download built libraries
         id: download
         uses: actions/download-artifact@v4
@@ -117,8 +116,9 @@ jobs:
           find ./prebuilds
       - name: npm install
         run: npm ci
+
+      # this works without a token because this repo is configured via OIDC
+      # https://docs.npmjs.com/trusted-publishers
       - name: publish
         run: |
-          (cat "$NPM_CONFIG_USERCONFIG" || true) && npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish --provenance --access public

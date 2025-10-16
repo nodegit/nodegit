@@ -23,10 +23,10 @@ jobs:
         run: |
           apt-get update
           apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3 zlib1g-dev
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           check-latest: true
@@ -58,10 +58,10 @@ jobs:
       GYP_DEFINES: use_obsolete_asm=true
     runs-on: macos-13
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           check-latest: true
