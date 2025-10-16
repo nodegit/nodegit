@@ -14,9 +14,9 @@ jobs:
             arch: x64
           # - os: windows-latest
           #   arch: arm64
-          - os: macos-15-intel
+          - os: macos-13
             arch: x64
-          - os: macos-15
+          - os: macos-14
             arch: arm64
       fail-fast: false
 
@@ -45,11 +45,11 @@ jobs:
       - name: Build OpenSSL packages
         env:
           TARGET_ARCH: ${{ matrix.arch }}
-        run: node utils/acquireOpenSSL.js
+        run: node utils/acquireOpenSSL.mjs
 
       - name: Push OpenSSL package to S3
         env:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
           AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: node utils/uploadOpenSSL.js
+        run: node utils/uploadOpenSSL.mjs
