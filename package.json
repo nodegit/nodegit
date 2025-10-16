@@ -59,6 +59,7 @@
     "walk": "^2.3.9"
   },
   "binary": {
+    "bucket_name": "axonodegit",
     "module_name": "nodegit",
     "module_path": "./build/Release/",
     "host": "https://axonodegit.s3.amazonaws.com/nodegit/nodegit/"
