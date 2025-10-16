@@ -16,39 +16,7 @@
 
   "targets": [
     {
-      "target_name": "acquireOpenSSL",
-        "type": "none",
-        "conditions": [
-        ["<(is_electron) == 1 and <!(node -p \"process.env.npm_config_openssl_dir ? 0 : 1\")", {
-          "actions": [{
-            "action_name": "acquire",
-            "action": ["node", "utils/acquireOpenSSL.js", "<(macOS_deployment_target)"],
-            "inputs": [""],
-            "outputs": ["vendor/openssl"],
-            "message": "Acquiring OpenSSL binaries and headers"
-          }]
-        }]
-      ]
-    },
-    {
-      "target_name": "configureLibssh2",
-      "type": "none",
-      "actions": [{
-        "action_name": "configure",
-        "action": ["node", "utils/configureLibssh2.js"],
-        "inputs": [""],
-        "outputs": [""]
-      }],
-      "hard_dependencies": [
-        "acquireOpenSSL"
-      ]
-    },
-    {
       "target_name": "nodegit",
-
-      "hard_dependencies": [
-        "configureLibssh2"
-      ],
 
       "dependencies": [
         "vendor/libgit2.gyp:libgit2"
@@ -152,7 +120,8 @@
               }]
             ],
             "defines": [
-              "_HAS_EXCEPTIONS=1"
+              "_HAS_EXCEPTIONS=1",
+              "NOMINMAX=1"
             ],
             "msvs_settings": {
               "VCCLCompilerTool": {
@@ -168,9 +137,9 @@
               }
             },
             "libraries": [
-              "winhttp.lib",
               "crypt32.lib",
-              "rpcrt4.lib"
+              "rpcrt4.lib",
+              "secur32.lib"
             ]
           }
         ],

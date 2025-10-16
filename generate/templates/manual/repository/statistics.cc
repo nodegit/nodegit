@@ -206,13 +206,6 @@ struct OdbObjectsData
   static constexpr uint32_t kUnreachable = 0;
 
   struct CommitInfo {
-    CommitInfo() = default;
-    ~CommitInfo() = default;
-    CommitInfo(const CommitInfo &other) = delete;
-    CommitInfo(CommitInfo &&other) = default;
-    CommitInfo& operator=(const CommitInfo &other) = delete;
-    CommitInfo& operator=(CommitInfo &&other) = default;
-
     std::string oidTree {};
     size_t size {0};
     std::vector<std::string> parents {};
@@ -222,13 +215,6 @@ struct OdbObjectsData
   };
 
   struct TreeInfoAndStats {
-    TreeInfoAndStats() = default;
-    ~TreeInfoAndStats() = default;
-    TreeInfoAndStats(const TreeInfoAndStats &other) = delete;
-    TreeInfoAndStats(TreeInfoAndStats &&other) = default;
-    TreeInfoAndStats& operator=(const TreeInfoAndStats &other) = delete;
-    TreeInfoAndStats& operator=(TreeInfoAndStats &&other) = default;
-
     size_t size {0};
     size_t numEntries {0};
     std::vector<std::string> entryBlobs {};
@@ -241,13 +227,6 @@ struct OdbObjectsData
   };
 
   struct BlobInfo {
-    BlobInfo() = default;
-    ~BlobInfo() = default;
-    BlobInfo(const BlobInfo &other) = delete;
-    BlobInfo(BlobInfo &&other) = default;
-    BlobInfo& operator=(const BlobInfo &other) = delete;
-    BlobInfo& operator=(BlobInfo &&other) = default;
-
     size_t size {0};
     // number of sources from which a blob can be reached:
     // a tree's entry, or a tag
@@ -256,13 +235,6 @@ struct OdbObjectsData
 
   struct TagInfo {
     static constexpr uint32_t kUnsetDepth = 0;
-
-    TagInfo() = default;
-    ~TagInfo() = default;
-    TagInfo(const TagInfo &other) = delete;
-    TagInfo(TagInfo &&other) = default;
-    TagInfo& operator=(const TagInfo &other) = delete;
-    TagInfo& operator=(TagInfo &&other) = default;
 
     std::string oidTarget {};
     git_object_t typeTarget {GIT_OBJECT_INVALID};
@@ -1048,11 +1020,13 @@ int RepoAnalysis::storeAndCountRefs()
     }
 
     // obtain peeled oid of the reference
-    const git_oid *oid_ref {nullptr};
+    bool found_oid = false;
+    git_oid oid_ref;
     switch (git_reference_type(ref))
     {
       case GIT_REFERENCE_DIRECT:
-        oid_ref = git_reference_target(ref);
+        git_oid_cpy(&oid_ref, git_reference_target(ref));
+        found_oid = true;
         break;
 
       case GIT_REFERENCE_SYMBOLIC:
@@ -1063,7 +1037,8 @@ int RepoAnalysis::storeAndCountRefs()
           git_strarray_dispose(&ref_list);
           return errorCode;
         }
-        oid_ref = git_reference_target(ref_resolved);
+        git_oid_cpy(&oid_ref, git_reference_target(ref_resolved));
+        found_oid = true;
         git_reference_free(ref_resolved);
       }
         break;
@@ -1073,17 +1048,17 @@ int RepoAnalysis::storeAndCountRefs()
     }
 
     // store object's oid and type
-    if (oid_ref != nullptr)
+    if (found_oid)
     {
       git_object *target {nullptr};
-      if ((errorCode = git_object_lookup(&target, m_repo, oid_ref, GIT_OBJECT_ANY)) != GIT_OK) {
+      if ((errorCode = git_object_lookup(&target, m_repo, &oid_ref, GIT_OBJECT_ANY)) != GIT_OK) {
         git_reference_free(ref);
         git_strarray_dispose(&ref_list);
         return errorCode;
       }
 
       m_peeledRefs.emplace(std::make_pair(
-        std::string(reinterpret_cast<const char *>(oid_ref->id), GIT_OID_RAWSZ),
+        std::string(reinterpret_cast<const char *>(oid_ref.id), GIT_OID_RAWSZ),
         git_object_type(target)));
 
       git_object_free(target);
@@ -1833,7 +1808,7 @@ void GitRepository::StatisticsWorker::Execute()
   RepoAnalysis *repoAnalysis = static_cast<RepoAnalysis *>(baton->out);
   if ((baton->error_code = repoAnalysis->Analyze()) != GIT_OK)
   {
-    if (git_error_last() != NULL) {
+    if (git_error_last()->klass != GIT_ERROR_NONE) {
       baton->error = git_error_dup(git_error_last());
     }
 

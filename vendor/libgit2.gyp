@@ -22,8 +22,11 @@
         "GIT_SSH",
         "GIT_SSH_MEMORY_CREDENTIALS",
         "LIBGIT2_NO_FEATURES_H",
+        "GIT_HTTPPARSER_HTTPPARSER",
         "GIT_SHA1_COLLISIONDETECT",
         "GIT_SHA256_OPENSSL",
+        "GIT_SSH_LIBSSH2",
+        "GIT_SSH_LIBSSH2_MEMORY_CREDENTIALS",
         "GIT_USE_NSEC",
         "GIT_HTTPS",
         # Node's util.h may be accidentally included so use this to guard
@@ -55,13 +58,14 @@
         "libgit2/src/libgit2/commit_list.c",
         "libgit2/src/libgit2/config.c",
         "libgit2/src/libgit2/config_cache.c",
-        "libgit2/src/libgit2/config_entries.c",
         "libgit2/src/libgit2/config_file.c",
+        "libgit2/src/libgit2/config_list.c",
         "libgit2/src/libgit2/config_mem.c",
         "libgit2/src/libgit2/config_parse.c",
         "libgit2/src/libgit2/config_snapshot.c",
         "libgit2/src/libgit2/crlf.c",
         "libgit2/src/libgit2/delta.c",
+        "libgit2/src/libgit2/describe.c",
         "libgit2/src/libgit2/diff.c",
         "libgit2/src/libgit2/diff_driver.c",
         "libgit2/src/libgit2/diff_file.c",
@@ -72,12 +76,11 @@
         "libgit2/src/libgit2/diff_tform.c",
         "libgit2/src/libgit2/diff_xdiff.c",
         "libgit2/src/libgit2/email.c",
-        "libgit2/src/libgit2/errors.c",
         "libgit2/src/libgit2/fetch.c",
         "libgit2/src/libgit2/fetchhead.c",
         "libgit2/src/libgit2/filter.c",
-        "libgit2/src/libgit2/graph.c",
         "libgit2/src/libgit2/grafts.c",
+        "libgit2/src/libgit2/graph.c",
         "libgit2/src/libgit2/hashsig.c",
         "libgit2/src/libgit2/ident.c",
         "libgit2/src/libgit2/idxmap.c",
@@ -127,32 +130,39 @@
         "libgit2/src/libgit2/revert.c",
         "libgit2/src/libgit2/revparse.c",
         "libgit2/src/libgit2/revwalk.c",
+        "libgit2/src/libgit2/settings.c",
         "libgit2/src/libgit2/signature.c",
         "libgit2/src/libgit2/stash.c",
         "libgit2/src/libgit2/status.c",
         "libgit2/src/libgit2/strarray.c",
         "libgit2/src/libgit2/streams/mbedtls.c",
         "libgit2/src/libgit2/streams/openssl.c",
+        # "libgit2/src/libgit2/streams/openssl_dynamic.c",
         "libgit2/src/libgit2/streams/openssl_legacy.c",
         "libgit2/src/libgit2/streams/registry.c",
         "libgit2/src/libgit2/streams/socket.c",
+        "libgit2/src/libgit2/streams/tls.c",
         "libgit2/src/libgit2/submodule.c",
         "libgit2/src/libgit2/sysdir.c",
         "libgit2/src/libgit2/tag.c",
-        "libgit2/src/libgit2/threadstate.c",
         "libgit2/src/libgit2/trace.c",
         "libgit2/src/libgit2/trailer.c",
         "libgit2/src/libgit2/transaction.c",
         "libgit2/src/libgit2/transport.c",
+        "libgit2/src/libgit2/transports/auth.c",
         "libgit2/src/libgit2/transports/credential.c",
         "libgit2/src/libgit2/transports/credential_helpers.c",
         "libgit2/src/libgit2/transports/git.c",
+        "libgit2/src/libgit2/transports/http.c",
         "libgit2/src/libgit2/transports/httpclient.c",
+        "libgit2/src/libgit2/transports/httpparser.c",
         "libgit2/src/libgit2/transports/local.c",
         "libgit2/src/libgit2/transports/smart.c",
         "libgit2/src/libgit2/transports/smart_pkt.c",
         "libgit2/src/libgit2/transports/smart_protocol.c",
         "libgit2/src/libgit2/transports/ssh.c",
+        # "libgit2/src/libgit2/transports/ssh_exec.c",
+        "libgit2/src/libgit2/transports/ssh_libssh2.c",
         "libgit2/src/libgit2/tree-cache.c",
         "libgit2/src/libgit2/tree.c",
         "libgit2/src/libgit2/worktree.c",
@@ -168,6 +178,7 @@
         "libgit2/src/util/allocators/stdalloc.c",
         "libgit2/src/util/custom_tls.c",
         "libgit2/src/util/date.c",
+        "libgit2/src/util/errors.c",
         "libgit2/src/util/filebuf.c",
         "libgit2/src/util/fs_path.c",
         "libgit2/src/util/futils.c",
@@ -185,6 +196,7 @@
         "libgit2/src/util/runtime.c",
         "libgit2/src/util/sortedcache.c",
         "libgit2/src/util/str.c",
+        "libgit2/src/util/strlist.c",
         "libgit2/src/util/strmap.c",
         "libgit2/src/util/thread.c",
         "libgit2/src/util/tsort.c",
@@ -230,6 +242,9 @@
         ["OS=='mac' or OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
           "conditions": [
             ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
+              "dependencies": [
+                "./libssh2.gyp:acquireOpenSSL",
+              ],
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ]
@@ -247,11 +262,8 @@
             "GIT_IO_POLL" # theres a chance this breaks bsd
           ],
           "sources": [
-            "libgit2/src/libgit2/streams/tls.c",
-            "libgit2/src/libgit2/transports/auth.c",
             "libgit2/src/libgit2/transports/auth_gssapi.c",
             "libgit2/src/libgit2/transports/auth_ntlmclient.c",
-            "libgit2/src/libgit2/transports/http.c",
           ],
           "cflags": [
             "<!(krb5-config gssapi --cflags)"
@@ -283,11 +295,15 @@
         }],
         ["OS=='win'", {
           "defines": [
-            "GIT_WINHTTP",
+            "GIT_WIN32", 
+            "GIT_SCHANNEL",
             "GIT_IO_WSAPOLL"
           ],
           "conditions": [
             ["<(is_electron) == 1", {
+              "dependencies": [
+                "./libssh2.gyp:acquireOpenSSL",
+              ],
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ]
@@ -330,26 +346,28 @@
             4013,
           ],
           "sources": [
-            "libgit2/src/libgit2/transports/winhttp.c",
-            "libgit2/src/util/allocators/win32_leakcheck.c",
+            "libgit2/src/libgit2/streams/schannel.c",
+            "libgit2/src/libgit2/transports/auth_sspi.c",
             "libgit2/src/util/win32/dir.c",
             "libgit2/src/util/win32/error.c",
             "libgit2/src/util/win32/map.c",
             "libgit2/src/util/win32/path_w32.c",
             "libgit2/src/util/win32/posix_w32.c",
             "libgit2/src/util/win32/precompiled.c",
+            "libgit2/src/util/win32/process.c",
             "libgit2/src/util/win32/thread.c",
             "libgit2/src/util/win32/utf-conv.c",
             "libgit2/src/util/win32/w32_buffer.c",
             "libgit2/src/util/win32/w32_leakcheck.c",
             "libgit2/src/util/win32/w32_util.c",
-          ],
+          ]
         }, {
           "libraries": [
             "-lpthread",
           ],
           "sources": [
             "libgit2/src/util/unix/map.c",
+            "libgit2/src/util/unix/process.c",
             "libgit2/src/util/unix/pthread.c",
             "libgit2/src/util/unix/realpath.c",
           ],
@@ -452,8 +470,8 @@
         ".",
         "libssh2/include",
       ],
-      "hard_dependencies": [
-        "../binding.gyp:configureLibssh2"
+      "dependencies": [
+        "./libssh2.gyp:configureLibssh2"
       ],
       "direct_dependent_settings": {
         "include_dirs": [

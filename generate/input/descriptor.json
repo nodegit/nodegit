@@ -799,6 +799,16 @@
         }
       }
     },
+    "commitarray": {
+      "fields": {
+        "commits": {
+          "ignore": true
+        },
+        "count": {
+          "ignore": true
+        }
+      }
+    },
     "config": {
       "selfFreeing": true,
       "functions": {
@@ -1063,6 +1073,7 @@
       "selfFreeing": true
     },
     "config_iterator": {
+      "needsForwardDeclaration": false,
       "selfFreeing": true,
       "fields": {
         "backend": {
@@ -1126,6 +1137,12 @@
           }
         }
       }
+    },
+    "config_backend_memory_options": {
+      "selfFreeing": true,
+      "cDependencies": [
+        "git2/sys/config.h"
+      ]
     },
     "credential": {
       "needsForwardDeclaration": false,
@@ -1508,6 +1525,9 @@
           "JsName": "ERROR"
         }
       }
+    },
+    "email_create_options": {
+      "hasConstructor": true
     },
     "fetch": {
       "functions": {
@@ -3657,12 +3677,31 @@
       "isSingleton": true,
       "dependencies": [
         "git2/sys/repository.h",
+        "../include/commit.h",
         "../include/submodule.h",
         "../include/remote.h"
       ],
       "functions": {
         "git_repository__cleanup": {
           "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
+        },
+        "git_repository_commit_parents": {
+          "isAsync": true,
+          "args": {
+            "commits": {
+              "shouldAlloc": true,
+              "selfFreeing": true,
+              "isReturn": true,
+              "cppClassName": "Array",
+              "jsClassName": "Array",
+              "arrayElementCppClassName": "GitCommit",
+              "size": "count",
+              "key": "commits"
+            }
+          },
           "return": {
             "isErrorCode": true
           }
@@ -4021,6 +4060,11 @@
           }
         }
       }
+    },
+    "stash_save_options": {
+      "dependencies": [
+        "../include/str_array_converter.h"
+      ]
     },
     "stdalloc": {
       "ignore": true

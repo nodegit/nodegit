@@ -162,14 +162,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 
     {% if return.isResultOrError %}
       baton->error_code = result;
-      if (result < GIT_OK && git_error_last() != NULL) {
+      if (result < GIT_OK && git_error_last()->klass != GIT_ERROR_NONE) {
         baton->error = git_error_dup(git_error_last());
       }
 
     {% elsif return.isErrorCode %}
       baton->error_code = result;
 
-      if (result != GIT_OK && git_error_last() != NULL) {
+      if (result != GIT_OK && git_error_last()->klass != GIT_ERROR_NONE) {
         baton->error = git_error_dup(git_error_last());
       }
 

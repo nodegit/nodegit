@@ -2,8 +2,13 @@ var fork = require("child_process").fork;
 var path = require("path");
 var fs = require('fs');
 
-var bin = "./node_modules/.bin/istanbul";
-var cov = "cover --report=lcov --dir=test/coverage/js node_modules/.bin/_mocha --".split(" ");
+var bin = "./node_modules/.bin/nyc";
+var cov = [
+  "--reporter=lcov",
+  "--reporter=text-summary",
+  "--report-dir=test/coverage/js",
+  "mocha"
+]
 
 if (process.platform === 'win32') {
   bin = "./node_modules/mocha/bin/mocha";

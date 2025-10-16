@@ -41,6 +41,7 @@
 .DS_STORE
 .idea
 .clangd
+.nyc_output/
 
 .vscode
 jsconfig.json

@@ -1407,6 +1407,40 @@
         }
       ],
       [
+        "git_commit_create_options",
+         {
+          "decl": [
+            "unsigned int version",
+            "unsigned int allow_empty_commit : 1",
+            "const git_signature *author",
+            "const git_signature *committer",
+            "const char *message_encoding"
+          ],
+          "fields": [
+            {
+              "name": "version",
+              "type": "unsigned int"
+            },
+            {
+              "name": "allow_empty_commit",
+              "type": "unsigned int"
+            },
+            {
+              "name": "author",
+              "type": "const git_signature *"
+            },
+            {
+              "name": "committer",
+              "type": "const git_signature *"
+            },
+            {
+              "name": "message_encoding",
+              "type": "const char *"
+            }
+          ]
+        }
+      ],
+      [
         "git_describe_format_options",
         {
           "type": "struct",
