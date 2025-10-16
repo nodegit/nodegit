@@ -45,6 +45,7 @@ jobs:
       - name: Build OpenSSL packages
         env:
           TARGET_ARCH: ${{ matrix.arch }}
+          NODEGIT_OPENSSL_BUILD_PACKAGE: 1
         run: node utils/acquireOpenSSL.mjs
 
       - name: Push OpenSSL package to S3
