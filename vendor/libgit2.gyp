@@ -324,6 +324,13 @@
                     "/MACHINE:X64",
                   ],
                 },
+              }],
+              ["target_arch=='arm64'", {
+                "VCLibrarianTool": {
+                  "AdditionalOptions": [
+                    "/MACHINE:ARM64",
+                  ],
+                },
               }, {
                 "VCLibrarianTool": {
                   "AdditionalOptions": [
