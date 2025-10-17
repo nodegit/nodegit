@@ -26,7 +26,10 @@
     }
   ],
   "main": "lib/nodegit.js",
-  "repository": "github:readmeio/nodegit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/readmeio/nodegit.git"
+  },
   "directories": {
     "build": "./build",
     "lib": "./lib"

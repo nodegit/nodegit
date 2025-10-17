@@ -13,7 +13,7 @@ if (targetSpecified) {
   }
 } else {
   const abiVersion = Number.parseInt(process.versions.modules) ?? 0;
-  // Node 18 === 108
+  // Node 18 === 108, Node 20 === 115
   if (abiVersion >= 131) {
     cxxStandard = '20';
   } else if (abiVersion >= 108) {
