@@ -9,5 +9,5 @@ node -v
 npm -v # (or yarn -v)
 node -e "console.log(process.platform)"
 node -e "console.log(require('os').release())"
-node -e "console.log(console.log(process.arch))"
+node -e "console.log(process.arch)"
 ```
