@@ -29,6 +29,29 @@ describe("Index", function() {
     this.index.clear();
   });
 
+  it("can create a new index and add entries", function(){
+
+    var index = NodeGit.Index.create();
+    //create file entry
+    var fileContent = new Buffer("first file content", "binary");
+    var newFileOid = NodeGit.Blob.createFromBuffer(this.repository,
+       fileContent,
+        fileContent.length);
+    var fileEntry = new NodeGit.IndexEntry();
+    fileEntry.path = "sub/folder/firstfile.txt";
+    fileEntry.id = newFileOid;
+    fileEntry.mode = NodeGit.TreeEntry.FILEMODE.BLOB;
+    fileEntry.ctime.seconds = new Date().getTime();
+    fileEntry.mtime.seconds = new Date().getTime();
+    //add entry to index
+    index.add(fileEntry);
+    //check index has entry
+    assert.equal(1, index.entries().length, "Index should contain entry");
+    //check for conflicts, which there of course should definitely not be
+    //  considering this is a new index, and we've only added 1 entry
+    assert.equal(false,index.hasConflicts(), "Index should not have conflicts");
+  });
+
   it("can get the index of a repo and examine entries", function() {
     var entries = this.index.entries();
 
