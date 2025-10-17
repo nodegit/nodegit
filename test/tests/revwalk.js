@@ -351,6 +351,30 @@ describe("Revwalk", function() {
     });
   });
 
+  it("can call getEntry on historyEntry commits", function() {
+    var magicShas = [
+      "fcf877cf01cf5ca2127da86ead0deae74b3cd60b",
+      "fcf877cf01cf5ca2127da86ead0deae74b3cd60b",
+      "fcf877cf01cf5ca2127da86ead0deae74b3cd60b",
+      "89b093fc4e80c78bdc2266fba6599468b3b3b634",
+      "e55d74acc3f802a40450ae7f09b29d3e5f2ef23f",
+      "41048b7509be1b58519f79a18482844ed2cc4571",
+      "41048b7509be1b58519f79a18482844ed2cc4571"
+    ];
+
+    return this.walker.fileHistoryWalk("include/functions/copy.h", 500)
+      .then(function(results) {
+        return Promise.all(results.map(function(result) {
+          return result.commit.getEntry("package.json");
+        }));
+      })
+      .then(function(entries) {
+        entries.forEach(function(entry, index) {
+          assert.equal(entry.sha(), magicShas[index]);
+        });
+      });
+  });
+
   // This test requires forcing garbage collection, so mocha needs to be run
   // via node rather than npm, with a la `node --expose-gc [pathtohmoca]
   // [testglob]`
