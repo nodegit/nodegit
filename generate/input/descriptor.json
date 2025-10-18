@@ -2602,9 +2602,11 @@
           "ignore": true
         },
         "git_odb_read": {
+          "isAsync": true,
           "cppFunctionName": "OdbRead",
           "args": {
-            "out": {
+            "obj": {
+              "isReturn": true,
               "ownedByThis": true
             }
           }
