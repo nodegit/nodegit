@@ -216,7 +216,7 @@
       ]
     }
   },
-  "new" : {
+  "new": {
     "functions": {
       "git_libgit2_opts": {
         "type": "function",
@@ -225,6 +225,33 @@
         "isAsync": false,
         "isPrototypeMethod": false,
         "group": "libgit2"
+      },
+      "git_blame_file": {
+        "type": "function",
+        "file": "blame.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_blame **"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "path",
+            "type": "const char *"
+          },
+          {
+            "name": "options",
+            "type": "git_blame_options *"
+          }
+        ],
+        "group": "blame",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
       },
       "git_clone": {
         "isManual": true,
@@ -1299,6 +1326,62 @@
         }
       ],
       [
+        "git_blame_hunk",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "lines_in_hunk",
+              "type": "int"
+            },
+            {
+              "name": "final_commit_id",
+              "type": "git_oid"
+            },
+            {
+              "name": "final_start_line_number",
+              "type": "size_t"
+            },
+            {
+              "name": "final_signature",
+              "type": "git_signature *"
+            },
+            {
+              "name": "final_committer",
+              "type": "git_signature *"
+            },
+            {
+              "name": "orig_commit_id",
+              "type": "git_oid"
+            },
+            {
+              "name": "orig_path",
+              "type": "const char *"
+            },
+            {
+              "name": "orig_start_line_number",
+              "type": "size_t"
+            },
+            {
+              "name": "orig_signature",
+              "type": "git_signature *"
+            },
+            {
+              "name": "orig_committer",
+              "type": "git_signature *"
+            },
+            {
+              "name": "summary",
+              "type": "const char *"
+            },
+            {
+              "name": "boundary",
+              "type": "char"
+            }
+          ]
+        }
+      ],
+      [
         "git_blob_filter_options",
         {
           "type": "struct",
@@ -1383,7 +1466,7 @@
       ],
       [
         "git_commit_create_options",
-         {
+        {
           "decl": [
             "unsigned int version",
             "unsigned int allow_empty_commit : 1",
@@ -2138,5 +2221,28 @@
       ]
     }
   },
-  "groups": {}
+  "groups": {
+    "blame": [
+      "git_blame_file"
+    ],
+    "note": [
+      "git_note_author",
+      "git_note_commit_create",
+      "git_note_commit_iterator_new",
+      "git_note_commit_read",
+      "git_note_commit_remove",
+      "git_note_committer",
+      "git_note_create",
+      "git_note_default_ref",
+      "git_note_foreach",
+      "git_note_free",
+      "git_note_id",
+      "git_note_iterator_free",
+      "git_note_iterator_new",
+      "git_note_message",
+      "git_note_next",
+      "git_note_read",
+      "git_note_remove"
+    ]
+  }
 }
