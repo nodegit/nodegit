@@ -27,8 +27,12 @@ module.exports = function prepareForBuild() {
     .then(function() {
       if (buildFlags.isGitRepo) {
         var submodules = require(local("submodules"));
+        var applyPatches = require(local("patches/applyPatches"));
         var generate = require(local("../generate"));
         return submodules()
+          .then(function() {
+            return applyPatches();
+          })
           .then(function() {
             return generate();
           });

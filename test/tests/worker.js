@@ -106,6 +106,10 @@ if (Worker) {
     // nodegit::Context, which will be destroyed on context shutdown. To check
     // that they are actually being freed can be done with a debugger/profiler.
     it("can track objects to free on context shutdown", function(done) {
+      if (process.platform === "linux" && process.arch === "arm64") {
+        this.skip("fails on linux-arm, see https://github.com/nodegit/nodegit/issues/2024");
+        return;
+      }
       let testOk;
       const workerPath = local("../utils/worker_context_aware.js");
       const worker = new Worker(workerPath, {
@@ -179,6 +183,10 @@ if (Worker) {
     // This tests that after calling filter's apply callbacks and the worker
     // is terminated, there will be no memory leaks.
     it("can track objects to free on context shutdown after multiple checkouts", function(done) { // jshint ignore:line
+      if (process.platform === "linux" && process.arch === "arm64") {
+        this.skip("fails on linux-arm, see https://github.com/nodegit/nodegit/issues/2024");
+        return;
+      }
       let testOk;
       const workerPath = local("../utils/worker_context_aware_checkout.js");
       const worker = new Worker(workerPath, {

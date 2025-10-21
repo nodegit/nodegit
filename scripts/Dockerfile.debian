@@ -1,4 +1,4 @@
-FROM node:20.11.1-bullseye
+FROM node:${NODE_VERSION}-bullseye
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL en_US.UTF-8
@@ -11,4 +11,4 @@ ADD . /app
 WORKDIR /app
 
 RUN npm ci && \
-  npx prebuildify --napi --strip --tag-libc -t "$(node --version | tr -d 'v')"
+  npx prebuildify --strip --napi=false --tag-libc -t "$(node --version | tr -d 'v')"

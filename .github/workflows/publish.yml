@@ -11,7 +11,7 @@ jobs:
     name: build
     strategy:
       matrix:
-        node: [20]
+        node: [20, 22]
         os:
           # macos-14 is arm64 (m1)
           - name: darwin
@@ -41,7 +41,7 @@ jobs:
           submodules: true
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
           check-latest: true
       - name: Prebuildify
         run: |
@@ -50,10 +50,11 @@ jobs:
             sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3 zlib1g-dev
 
           npm ci
-          npx prebuildify --napi --strip --tag-libc -t "$(node --version | tr -d 'v')"
+          # does the JOBS=2 speed things up? not sure
+          JOBS=2 npx prebuildify --strip --napi=false --tag-libc -t "$(node --version | tr -d 'v')"
       - uses: actions/upload-artifact@v4
         with:
-          name: prebuild-${{ runner.os }}-${{ runner.arch }}
+          name: prebuild-${{ runner.os }}-${{ runner.arch }}-node${{ matrix.node }}
           path: ./prebuilds
           retention-days: 14
 
@@ -61,37 +62,43 @@ jobs:
   cross-compile-musl-amd64:
     name: "cross compile linux/amd64-musl"
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node: [20, 22]
     steps:
       - uses: actions/checkout@v5
       - uses: docker/setup-qemu-action@v3
       - name: build linux musl amd64
         run: |
-          docker build --platform=linux/amd64 --tag nodegit-linux-musl-amd64 -f scripts/Dockerfile.alpine .
-          docker create --platform=linux/amd64 --name nodegit-linux-musl-amd64 nodegit-linux-musl-amd64
-          docker cp "nodegit-linux-musl-amd64:/app/prebuilds" .
+          docker build --platform=linux/amd64 --build-arg NODE_VERSION=${{ matrix.node }} --tag nodegit-linux-musl-amd64-node${{ matrix.node }} -f scripts/Dockerfile.alpine .
+          docker create --platform=linux/amd64 --name nodegit-linux-musl-amd64-node${{ matrix.node }} nodegit-linux-musl-amd64-node${{ matrix.node }}
+          docker cp "nodegit-linux-musl-amd64-node${{ matrix.node }}:/app/prebuilds" .
       - name: "list the generated files"
         run: find prebuilds
       - uses: actions/upload-artifact@v4
         with:
-          name: prebuild-linux-musl-amd64
+          name: prebuild-linux-musl-amd64-node${{ matrix.node }}
           path: ./prebuilds
           retention-days: 14
 
   cross-compile-musl-arm64:
     name: "build linux/arm64-musl"
     runs-on: ubuntu-22.04-arm
+    strategy:
+      matrix:
+        node: [20, 22]
     steps:
       - uses: actions/checkout@v5
       - name: build linux musl arm64
         run: |
-          docker build --platform=linux/arm64 --tag nodegit-linux-musl-arm64 -f scripts/Dockerfile.alpine .
-          docker create --platform=linux/arm64 --name nodegit-linux-musl-arm64 nodegit-linux-musl-arm64
-          docker cp "nodegit-linux-musl-arm64:/app/prebuilds" .
+          docker build --platform=linux/arm64 --build-arg NODE_VERSION=${{ matrix.node }} --tag nodegit-linux-musl-arm64-node${{ matrix.node }} -f scripts/Dockerfile.alpine .
+          docker create --platform=linux/arm64 --name nodegit-linux-musl-arm64-node${{ matrix.node }} nodegit-linux-musl-arm64-node${{ matrix.node }}
+          docker cp "nodegit-linux-musl-arm64-node${{ matrix.node }}:/app/prebuilds" .
       - name: "list the generated files"
         run: find prebuilds
       - uses: actions/upload-artifact@v4
         with:
-          name: prebuild-linux-musl-arm64
+          name: prebuild-linux-musl-arm64-node${{ matrix.node }}
           path: ./prebuilds
           retention-days: 14
 
@@ -108,7 +115,7 @@ jobs:
           submodules: true
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
           check-latest: true
           registry-url: "https://registry.npmjs.org"
       # for the publish step, we need a version of npm that supports OIDC (>=
@@ -128,12 +135,19 @@ jobs:
           mkdir -p prebuilds/darwin-arm64
           mkdir -p prebuilds/darwin-x64
           find ${{ steps.download.outputs.download-path }}
-          mv ${{ steps.download.outputs.download-path }}/prebuild-Linux-X64/linux-x64/* ./prebuilds/linux-x64/
-          mv ${{ steps.download.outputs.download-path }}/prebuild-Linux-ARM64/linux-arm64/* ./prebuilds/linux-arm64/
-          mv ${{ steps.download.outputs.download-path }}/prebuild-linux-musl-amd64/linux-x64/* ./prebuilds/linux-x64/
-          mv ${{ steps.download.outputs.download-path }}/prebuild-linux-musl-arm64/linux-arm64/* ./prebuilds/linux-arm64/
-          mv ${{ steps.download.outputs.download-path }}/prebuild-macOS-ARM64/darwin-arm64/* ./prebuilds/darwin-arm64/
-          mv ${{ steps.download.outputs.download-path }}/prebuild-macOS-X64/darwin-x64/* ./prebuilds/darwin-x64/
+          # Copy Node 20 and 22 prebuilds for each platform
+          mv ${{ steps.download.outputs.download-path }}/prebuild-Linux-X64-node20/linux-x64/* ./prebuilds/linux-x64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-Linux-X64-node22/linux-x64/* ./prebuilds/linux-x64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-Linux-ARM64-node20/linux-arm64/* ./prebuilds/linux-arm64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-Linux-ARM64-node22/linux-arm64/* ./prebuilds/linux-arm64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-linux-musl-amd64-node20/linux-x64/* ./prebuilds/linux-x64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-linux-musl-amd64-node22/linux-x64/* ./prebuilds/linux-x64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-linux-musl-arm64-node20/linux-arm64/* ./prebuilds/linux-arm64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-linux-musl-arm64-node22/linux-arm64/* ./prebuilds/linux-arm64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-macOS-ARM64-node20/darwin-arm64/* ./prebuilds/darwin-arm64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-macOS-ARM64-node22/darwin-arm64/* ./prebuilds/darwin-arm64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-macOS-X64-node20/darwin-x64/* ./prebuilds/darwin-x64/ 2>/dev/null || true
+          mv ${{ steps.download.outputs.download-path }}/prebuild-macOS-X64-node22/darwin-x64/* ./prebuilds/darwin-x64/ 2>/dev/null || true
           find ./prebuilds
       - name: npm install
         run: npm ci

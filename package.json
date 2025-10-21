@@ -1,7 +1,7 @@
 {
   "name": "@readme/nodegit",
   "description": "Node.js libgit2 asynchronous native bindings",
-  "version": "1.2.0",
+  "version": "2.0.3",
   "homepage": "http://nodegit.org",
   "keywords": [
     "libgit2",
@@ -12,6 +12,10 @@
   "license": "MIT",
   "author": "Tim Branyen (@tbranyen)",
   "contributors": [
+    {
+      "name": "Bill Mill",
+      "email": "bill@billmill.org"
+    },
     {
       "name": "John Haley",
       "email": "john@haley.io"

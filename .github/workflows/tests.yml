@@ -9,7 +9,7 @@ on:
 
 jobs:
   linux-test:
-    name: "test on linux"
+    name: "test node ${{ matrix.node-version }} on linux"
     env:
       CC: clang
       CXX: clang++
@@ -18,6 +18,9 @@ jobs:
       DEBIAN_FRONTEND: "noninteractive"
     runs-on: ubuntu-22.04
     container: ubuntu:22.04
+    strategy:
+      matrix:
+        node-version: [20, 22]
     steps:
       - name: prerequisites
         run: |
@@ -28,7 +31,7 @@ jobs:
           submodules: true
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           check-latest: true
       - name: Test
         run: |
@@ -50,21 +53,66 @@ jobs:
           npm test
 
   mac-test:
-    name: "macOS tests"
+    name: "test node ${{ matrix.node-version }} on macOS"
     env:
       CC: clang
       CXX: clang++
       npm_config_clang: 1
       GYP_DEFINES: use_obsolete_asm=true
-    runs-on: macos-13
+    runs-on: macos-26
+    strategy:
+      matrix:
+        node-version: [20, 22]
     steps:
       - uses: actions/checkout@v5
         with:
           submodules: true
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           check-latest: true
+      - name: Test
+        run: |
+          set -xe
+          mkdir ~/.ssh_tests
+          chmod 700 ~/.ssh_tests
+          printf "%b" "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh_tests/config
+          cat test/id_rsa.pub > ~/.ssh_tests/id_rsa.pub
+          cat test/id_rsa.enc | base64 -d > ~/.ssh_tests/id_rsa
+          chmod 600 ~/.ssh_tests/id_rsa*
+          git config --global user.name "John Doe"
+          git config --global user.email johndoe@example.com
+
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh_tests/id_rsa
+
+          npm install
+          npm test
+
+  linux-arm-test:
+    name: "test node ${{ matrix.node-version }} on linux-arm"
+    env:
+      CC: clang
+      CXX: clang++
+      npm_config_clang: 1
+      GYP_DEFINES: use_obsolete_asm=true
+      CXXFLAGS: -std=c++17
+    runs-on: ubuntu-22.04-arm
+    strategy:
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3 zlib1g-dev
       - name: Test
         run: |
           set -xe

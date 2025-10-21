@@ -1,4 +1,5 @@
-FROM node:20.11.1-alpine3.19
+ARG NODE_VERSION=20
+FROM node:${NODE_VERSION}-alpine3.19
 
 RUN apk add build-base git krb5-dev libgit2-dev libssh-dev pkgconfig python3 tzdata
 
@@ -10,4 +11,4 @@ ADD . /app
 WORKDIR /app
 
 RUN npm ci && \
-  npx prebuildify --napi --strip --tag-libc -t "$(node --version | tr -d 'v')"
+  npx prebuildify --strip --napi=false --tag-libc -t "$(node --version | tr -d 'v')"
