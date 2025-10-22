@@ -13,16 +13,16 @@ jobs:
       matrix:
         node: [20, 22]
         os:
-          # macos-14 is arm64 (m1)
+          # https://github.com/actions/runner-images#available-images
           - name: darwin
-            host: macos-14
+            host: macos-26 #arm64
 
-          # macos-13 is x86
+          # macos-15-intel is the last intel image and will go out of service
+          # in fall 2027
           - name: mac-x64
-            host: macos-13
+            host: macos-15-intel
 
-          # ubuntu-22.04 is x86. Still no arm linux runners yet
-          # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
+          # ubuntu-22.04 is x86
           - name: linux
             host: ubuntu-22.04
 
@@ -50,7 +50,6 @@ jobs:
             sudo apt-get install -y software-properties-common git build-essential clang libssl-dev libkrb5-dev libc++-dev wget python3 zlib1g-dev
 
           npm ci
-          # does the JOBS=2 speed things up? not sure
           JOBS=2 npx prebuildify --strip --napi=false --tag-libc -t "$(node --version | tr -d 'v')"
       - uses: actions/upload-artifact@v4
         with:

@@ -1,6 +1,7 @@
 FROM node:${NODE_VERSION}-bullseye
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV JOBS="2"
 ENV LC_ALL en_US.UTF-8
 ENV LANG ${LC_ALL}
 

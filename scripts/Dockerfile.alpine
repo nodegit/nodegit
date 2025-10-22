@@ -6,6 +6,7 @@ RUN apk add build-base git krb5-dev libgit2-dev libssh-dev pkgconfig python3 tzd
 # Ensure C++17 is used explicitly for Node.js 20 and define POSIX features
 ENV CXXFLAGS="-std=c++17 -D_GNU_SOURCE"
 ENV CFLAGS="-std=c17 -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L"
+ENV JOBS="2"
 
 ADD . /app
 WORKDIR /app

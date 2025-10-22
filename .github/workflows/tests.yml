@@ -49,20 +49,21 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh_tests/id_rsa
 
-          npm install
+          JOBS=2 npm install
           npm test
 
   mac-test:
-    name: "test node ${{ matrix.node-version }} on macOS"
+    name: "test node ${{ matrix.node-version }} on ${{ matrix.runner }}"
     env:
       CC: clang
       CXX: clang++
       npm_config_clang: 1
       GYP_DEFINES: use_obsolete_asm=true
-    runs-on: macos-26
     strategy:
       matrix:
         node-version: [20, 22]
+        runner: ["macos-26", "macos-15-intel"]
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -86,7 +87,7 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh_tests/id_rsa
 
-          npm install
+          JOBS=2 npm install
           npm test
 
   linux-arm-test:
@@ -128,5 +129,5 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh_tests/id_rsa
 
-          npm install
+          JOBS=2 npm install
           npm test
