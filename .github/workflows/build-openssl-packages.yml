@@ -46,6 +46,7 @@ jobs:
         env:
           TARGET_ARCH: ${{ matrix.arch }}
           NODEGIT_OPENSSL_BUILD_PACKAGE: 1
+          OPENSSL_MACOS_DEPLOYMENT_TARGET: "11.0"
         run: node utils/acquireOpenSSL.mjs
 
       - name: Push OpenSSL package to S3
