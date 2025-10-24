@@ -7,7 +7,6 @@ import tar from "tar-fs";
 import zlib from "zlib";
 import { createWriteStream, promises as fs } from "fs";
 import { performance } from "perf_hooks";
-import { fileURLToPath } from 'url';
 import { promisify } from "util";
 
 const pipeline = promisify(stream.pipeline);
@@ -168,17 +167,59 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
     throw new Error("Expected vsBuildArch to be specified");
   }
 
-  const programFilesPath = (process.arch === "x64"
-    ? process.env["ProgramFiles(x86)"]
-    : process.env.ProgramFiles) || "C:\\Program Files";
-  const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
-    programFilesPath
-  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
-  try {
-    await fs.stat(vcvarsallPath);
-  } catch {
-    throw new Error(`vcvarsall.bat not found at ${vcvarsallPath}`);
+  const exists = (filePath) => fs.stat(filePath).then(() => true).catch(() => false);
+
+  let vcvarsallPath = undefined;
+
+  if (process.env.npm_config_vcvarsall_path && await exists(process.env.npm_config_vcvarsall_path)) {
+    vcvarsallPath = process.env.npm_config_vcvarsall_path;
+  } else {
+    const potentialMsvsPaths = [];
+
+    // GYP_MSVS_OVERRIDE_PATH is set by node-gyp so this should cover most cases
+    if (process.env.GYP_MSVS_OVERRIDE_PATH) {
+      potentialMsvsPaths.push(process.env.GYP_MSVS_OVERRIDE_PATH);
+    }
+
+    const packageTypes = ["BuildTools", "Community", "Professional", "Enterprise"];
+    const versions = ["2022", "2019"]
+
+    const computePossiblePaths = (parentPath) => {
+      let possiblePaths = []
+      for (const packageType of packageTypes) {
+        for (const version of versions) {
+          possiblePaths.push(path.join(parentPath, version, packageType));
+        }
+      }
+
+      return possiblePaths;
+    }
+    
+    if (process.env["ProgramFiles(x86)"]) {
+      const parentPath  = path.join(process.env["ProgramFiles(x86)"], 'Microsoft Visual Studio');
+      potentialMsvsPaths.push(...computePossiblePaths(parentPath));
+    }
+
+    if (process.env.ProgramFiles) {
+      const parentPath  = path.join(process.env.ProgramFiles, 'Microsoft Visual Studio');
+      potentialMsvsPaths.push(...computePossiblePaths(parentPath));
+    }
+
+    for (const potentialPath of potentialMsvsPaths) {
+      const wholePath = path.join(potentialPath, 'VC', 'Auxiliary', 'Build', 'vcvarsall.bat');
+      console.log("checking", wholePath);
+      if (await exists(wholePath)) {
+        vcvarsallPath = wholePath;
+        break;
+      }
+    }
+
+    if (!vcvarsallPath) {
+      throw new Error(`vcvarsall.bat not found`);
+    }
   }
+
+  console.log('using', vcvarsallPath);
 
   let vcTarget;
   switch (vsBuildArch) {
@@ -401,7 +442,7 @@ const acquireOpenSSL = async () => {
 
     let macOsDeploymentTarget;
     if (process.platform === "darwin") {
-      macOsDeploymentTarget = process.argv[2];
+      macOsDeploymentTarget = process.argv[2] ?? process.env.OPENSSL_MACOS_DEPLOYMENT_TARGET
       if (!macOsDeploymentTarget || !macOsDeploymentTarget.match(/\d+\.\d+/)) {
         throw new Error(`Invalid macOsDeploymentTarget: ${macOsDeploymentTarget}`);
       }
