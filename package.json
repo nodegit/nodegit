@@ -44,7 +44,6 @@
   "dependencies": {
     "@axosoft/nan": "^2.22.0-gk.1",
     "fs-extra": "^7.0.0",
-    "got": "^14.4.7",
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
     "node-gyp": "^11.2.0",
@@ -54,6 +53,7 @@
   "devDependencies": {
     "clean-for-publish": "~1.0.2",
     "combyne": "~0.8.1",
+    "got": "^14.4.7",
     "js-beautify": "~1.5.10",
     "jshint": "^2.10.0",
     "lcov-result-merger": "^3.1.0",
