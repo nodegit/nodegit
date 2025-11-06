@@ -93,6 +93,8 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     "no-ssl2",
     "no-ssl3",
     "no-comp",
+    // disable tty ui since it fails a bunch of tests on GHA runners and we're just gonna link anyways
+    "no-ui-console",
     // set install directory
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`,
