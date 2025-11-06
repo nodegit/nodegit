@@ -14,9 +14,9 @@ jobs:
             arch: x64
           # - os: windows-latest
           #   arch: arm64
-          - os: macos-13
+          - os: macos-15
             arch: x64
-          - os: macos-14
+          - os: macos-15-intel
             arch: arm64
       fail-fast: false
 
