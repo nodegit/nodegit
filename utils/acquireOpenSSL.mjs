@@ -382,7 +382,7 @@ const downloadOpenSSLIfNecessary = async ({
   console.log("Download finished.");
 }
 
-const getOpenSSLPackageName = () => {
+export const getOpenSSLPackageName = () => {
   let arch = process.arch;
   if (process.platform === "win32" && (
     process.arch === "ia32" || process.env.NODEGIT_VS_BUILD_ARCH === "x86"
@@ -392,6 +392,8 @@ const getOpenSSLPackageName = () => {
 
   return `openssl-${OPENSSL_VERSION}-${process.platform}-${arch}.tar.gz`;
 }
+
+export const getOpenSSLPackagePath = () => path.join(import.meta.dirname, getOpenSSLPackageName());
 
 const getOpenSSLPackageUrl = () => `${packageJson.binary.host}${getOpenSSLPackageName()}`;
 
@@ -416,7 +418,7 @@ const buildPackage = async () => {
     new HashVerify("sha256", (digest) => {
       resolve(digest);
     }),
-    createWriteStream(getOpenSSLPackageName())
+    createWriteStream(getOpenSSLPackagePath())
   );
   const digest = await promise;
   await fs.writeFile(`${getOpenSSLPackageName()}.sha256`, digest);
@@ -477,5 +479,5 @@ if (process.argv[1] === import.meta.filename) {
   catch(error) {
     console.error("Acquire OpenSSL failed: ", error);
     process.exit(1);
-  };
+  }
 }
