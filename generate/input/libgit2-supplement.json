@@ -216,7 +216,7 @@
       ]
     }
   },
-  "new" : {
+  "new": {
     "functions": {
       "git_libgit2_opts": {
         "type": "function",
@@ -225,6 +225,33 @@
         "isAsync": false,
         "isPrototypeMethod": false,
         "group": "libgit2"
+      },
+      "git_blame_file": {
+        "type": "function",
+        "file": "blame.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_blame **"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "path",
+            "type": "const char *"
+          },
+          {
+            "name": "options",
+            "type": "git_blame_options *"
+          }
+        ],
+        "group": "blame",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
       },
       "git_clone": {
         "isManual": true,
@@ -667,24 +694,399 @@
         },
         "group": "index_reuc_entry"
       },
-      "git_oid_fromstrp": {
+      "git_note_author": {
         "type": "function",
-        "file": "oid.h",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "note",
+            "type": "const git_note *"
+          }
+        ],
+        "return": {
+          "type": "const git_signature *"
+        },
+        "group": "note"
+      },
+      "git_note_commit_create": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "notes_commit_out",
+            "type": "git_oid *"
+          },
+          {
+            "name": "notes_blob_out",
+            "type": "git_oid *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "parent",
+            "type": "git_commit *"
+          },
+          {
+            "name": "author",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "committer",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "oid",
+            "type": "const git_oid *"
+          },
+          {
+            "name": "note",
+            "type": "const char *"
+          },
+          {
+            "name": "allow_note_overwrite",
+            "type": "int"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_commit_iterator_new": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_note_iterator **"
+          },
+          {
+            "name": "notes_commit",
+            "type": "git_commit *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_commit_read": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_note **"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "notes_commit",
+            "type": "git_commit *"
+          },
+          {
+            "name": "oid",
+            "type": "const git_oid *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_commit_remove": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "notes_commit_out",
+            "type": "git_oid *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "notes_commit",
+            "type": "git_commit *"
+          },
+          {
+            "name": "author",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "committer",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "oid",
+            "type": "const git_oid *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_committer": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "note",
+            "type": "const git_note *"
+          }
+        ],
+        "return": {
+          "type": "const git_signature *"
+        },
+        "group": "note"
+      },
+      "git_note_create": {
+        "type": "function",
+        "file": "note.h",
         "args": [
           {
             "name": "out",
             "type": "git_oid *"
           },
           {
-            "name": "str",
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "notes_ref",
+            "type": "const char *"
+          },
+          {
+            "name": "author",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "committer",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "oid",
+            "type": "const git_oid *"
+          },
+          {
+            "name": "note",
+            "type": "const char *"
+          },
+          {
+            "name": "force",
+            "type": "int"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_default_ref": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_buf *"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_foreach": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "notes_ref",
+            "type": "const char *"
+          },
+          {
+            "name": "note_cb",
+            "type": "git_note_foreach_cb"
+          },
+          {
+            "name": "payload",
+            "type": "void *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_free": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "note",
+            "type": "git_note *"
+          }
+        ],
+        "return": {
+          "type": "void"
+        },
+        "group": "note"
+      },
+      "git_note_id": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "note",
+            "type": "const git_note *"
+          }
+        ],
+        "return": {
+          "type": "const git_oid *"
+        },
+        "group": "note"
+      },
+      "git_note_iterator_free": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "it",
+            "type": "git_note_iterator *"
+          }
+        ],
+        "return": {
+          "type": "void"
+        },
+        "group": "note"
+      },
+      "git_note_iterator_new": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_note_iterator **"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "notes_ref",
             "type": "const char *"
           }
         ],
         "return": {
           "type": "int"
         },
-        "isAsync": false,
-        "group": "oid"
+        "group": "note"
+      },
+      "git_note_message": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "note",
+            "type": "const git_note *"
+          }
+        ],
+        "return": {
+          "type": "const char *"
+        },
+        "group": "note"
+      },
+      "git_note_next": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "note_id",
+            "type": "git_oid *"
+          },
+          {
+            "name": "annotated_id",
+            "type": "git_oid *"
+          },
+          {
+            "name": "it",
+            "type": "git_note_iterator *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_read": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_note **"
+          },
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "notes_ref",
+            "type": "const char *"
+          },
+          {
+            "name": "oid",
+            "type": "const git_oid *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
+      },
+      "git_note_remove": {
+        "type": "function",
+        "file": "note.h",
+        "args": [
+          {
+            "name": "repo",
+            "type": "git_repository *"
+          },
+          {
+            "name": "notes_ref",
+            "type": "const char *"
+          },
+          {
+            "name": "author",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "committer",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "oid",
+            "type": "const git_oid *"
+          }
+        ],
+        "return": {
+          "type": "int"
+        },
+        "group": "note"
       },
       "git_patch_convenient_from_diff": {
         "args": [
@@ -1172,12 +1574,6 @@
         ]
       ],
       [
-        "oid",
-        [
-          "git_oid_fromstrp"
-        ]
-      ],
-      [
         "odb_object",
         [
           "git_odb_object_data",
@@ -1324,6 +1720,62 @@
         }
       ],
       [
+        "git_blame_hunk",
+        {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "lines_in_hunk",
+              "type": "int"
+            },
+            {
+              "name": "final_commit_id",
+              "type": "git_oid"
+            },
+            {
+              "name": "final_start_line_number",
+              "type": "size_t"
+            },
+            {
+              "name": "final_signature",
+              "type": "git_signature *"
+            },
+            {
+              "name": "final_committer",
+              "type": "git_signature *"
+            },
+            {
+              "name": "orig_commit_id",
+              "type": "git_oid"
+            },
+            {
+              "name": "orig_path",
+              "type": "const char *"
+            },
+            {
+              "name": "orig_start_line_number",
+              "type": "size_t"
+            },
+            {
+              "name": "orig_signature",
+              "type": "git_signature *"
+            },
+            {
+              "name": "orig_committer",
+              "type": "git_signature *"
+            },
+            {
+              "name": "summary",
+              "type": "const char *"
+            },
+            {
+              "name": "boundary",
+              "type": "char"
+            }
+          ]
+        }
+      ],
+      [
         "git_blob_filter_options",
         {
           "type": "struct",
@@ -1408,7 +1860,7 @@
       ],
       [
         "git_commit_create_options",
-         {
+        {
           "decl": [
             "unsigned int version",
             "unsigned int allow_empty_commit : 1",
@@ -2163,5 +2615,28 @@
       ]
     }
   },
-  "groups": {}
+  "groups": {
+    "blame": [
+      "git_blame_file"
+    ],
+    "note": [
+      "git_note_author",
+      "git_note_commit_create",
+      "git_note_commit_iterator_new",
+      "git_note_commit_read",
+      "git_note_commit_remove",
+      "git_note_committer",
+      "git_note_create",
+      "git_note_default_ref",
+      "git_note_foreach",
+      "git_note_free",
+      "git_note_id",
+      "git_note_iterator_free",
+      "git_note_iterator_new",
+      "git_note_message",
+      "git_note_next",
+      "git_note_read",
+      "git_note_remove"
+    ]
+  }
 }
