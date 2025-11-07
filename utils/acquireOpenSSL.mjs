@@ -7,14 +7,13 @@ import tar from "tar-fs";
 import zlib from "zlib";
 import { createWriteStream, promises as fs } from "fs";
 import { performance } from "perf_hooks";
-import { fileURLToPath } from 'url';
 import { promisify } from "util";
 
 const pipeline = promisify(stream.pipeline);
 
 import packageJson from '../package.json' with { type: "json" };
 
-const OPENSSL_VERSION = "1.1.1t";
+const OPENSSL_VERSION = "3.0.18";
 const win32BatPath = path.join(import.meta.dirname, "build-openssl.bat");
 const vendorPath = path.resolve(import.meta.dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
@@ -56,6 +55,8 @@ const makeHashVerifyOnFinal = (expected) => (digest) => {
 // currently this only needs to be done on linux
 const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
   try {
+    await fs.access(opensslPatchPath);
+
     for (const patchFilename of await fs.readdir(opensslPatchPath)) {
       const patchTarget = patchFilename.split("-")[1];
       if (patchFilename.split(".").pop() === "patch" && (patchTarget === operatingSystem || patchTarget === "all")) {
@@ -66,6 +67,11 @@ const applyOpenSSLPatches = async (buildCwd, operatingSystem) => {
       }
     }
   } catch(e) {
+    if (e.code === "ENOENT") {
+      // no patches to apply
+      return;
+    }
+
     console.log("Patch application failed: ", e);
     throw e;
   }
@@ -86,6 +92,8 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     "no-ssl2",
     "no-ssl3",
     "no-comp",
+    // disable tty ui since it fails a bunch of tests on GHA runners and we're just gonna link anyways
+    "no-ui-console",
     // set install directory
     `--prefix="${extractPath}"`,
     `--openssldir="${extractPath}"`,
@@ -121,7 +129,7 @@ const buildLinux = async (buildCwd) => {
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
     // To fix this we need to hide all the openssl symbols to prevent them from being overridden
     // by the runtime linker.
-    "-fvisibility=hidden",
+    // "-fvisibility=hidden",
     // compile static libraries
     "no-shared",
     // disable ssl2, ssl3, and compression
@@ -159,17 +167,59 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
     throw new Error("Expected vsBuildArch to be specified");
   }
 
-  const programFilesPath = (process.arch === "x64"
-    ? process.env["ProgramFiles(x86)"]
-    : process.env.ProgramFiles) || "C:\\Program Files";
-  const vcvarsallPath = process.env.npm_config_vcvarsall_path || `${
-    programFilesPath
-  }\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat`;
-  try {
-    await fs.stat(vcvarsallPath);
-  } catch {
-    throw new Error(`vcvarsall.bat not found at ${vcvarsallPath}`);
+  const exists = (filePath) => fs.stat(filePath).then(() => true).catch(() => false);
+
+  let vcvarsallPath = undefined;
+
+  if (process.env.npm_config_vcvarsall_path && await exists(process.env.npm_config_vcvarsall_path)) {
+    vcvarsallPath = process.env.npm_config_vcvarsall_path;
+  } else {
+    const potentialMsvsPaths = [];
+
+    // GYP_MSVS_OVERRIDE_PATH is set by node-gyp so this should cover most cases
+    if (process.env.GYP_MSVS_OVERRIDE_PATH) {
+      potentialMsvsPaths.push(process.env.GYP_MSVS_OVERRIDE_PATH);
+    }
+
+    const packageTypes = ["BuildTools", "Community", "Professional", "Enterprise"];
+    const versions = ["2022", "2019"]
+
+    const computePossiblePaths = (parentPath) => {
+      let possiblePaths = []
+      for (const packageType of packageTypes) {
+        for (const version of versions) {
+          possiblePaths.push(path.join(parentPath, version, packageType));
+        }
+      }
+
+      return possiblePaths;
+    }
+    
+    if (process.env["ProgramFiles(x86)"]) {
+      const parentPath  = path.join(process.env["ProgramFiles(x86)"], 'Microsoft Visual Studio');
+      potentialMsvsPaths.push(...computePossiblePaths(parentPath));
+    }
+
+    if (process.env.ProgramFiles) {
+      const parentPath  = path.join(process.env.ProgramFiles, 'Microsoft Visual Studio');
+      potentialMsvsPaths.push(...computePossiblePaths(parentPath));
+    }
+
+    for (const potentialPath of potentialMsvsPaths) {
+      const wholePath = path.join(potentialPath, 'VC', 'Auxiliary', 'Build', 'vcvarsall.bat');
+      console.log("checking", wholePath);
+      if (await exists(wholePath)) {
+        vcvarsallPath = wholePath;
+        break;
+      }
+    }
+
+    if (!vcvarsallPath) {
+      throw new Error(`vcvarsall.bat not found`);
+    }
   }
+
+  console.log('using', vcvarsallPath);
 
   let vcTarget;
   switch (vsBuildArch) {
@@ -259,7 +309,7 @@ const buildOpenSSLIfNecessary = async ({
   const openSSLUrl = getOpenSSLSourceUrl(openSSLVersion);
   const openSSLSha256Url = getOpenSSLSourceSha256Url(openSSLVersion);
 
-  const openSSLSha256 = (await got(openSSLSha256Url)).body.trim();
+  const openSSLSha256 = (await got(openSSLSha256Url)).body.trim().split(' ')[0];
 
   const downloadStream = got.stream(openSSLUrl);
   downloadStream.on("downloadProgress", makeOnStreamDownloadProgress());
@@ -332,7 +382,7 @@ const downloadOpenSSLIfNecessary = async ({
   console.log("Download finished.");
 }
 
-const getOpenSSLPackageName = () => {
+export const getOpenSSLPackageName = () => {
   let arch = process.arch;
   if (process.platform === "win32" && (
     process.arch === "ia32" || process.env.NODEGIT_VS_BUILD_ARCH === "x86"
@@ -342,6 +392,8 @@ const getOpenSSLPackageName = () => {
 
   return `openssl-${OPENSSL_VERSION}-${process.platform}-${arch}.tar.gz`;
 }
+
+export const getOpenSSLPackagePath = () => path.join(import.meta.dirname, getOpenSSLPackageName());
 
 const getOpenSSLPackageUrl = () => `${packageJson.binary.host}${getOpenSSLPackageName()}`;
 
@@ -366,7 +418,7 @@ const buildPackage = async () => {
     new HashVerify("sha256", (digest) => {
       resolve(digest);
     }),
-    createWriteStream(getOpenSSLPackageName())
+    createWriteStream(getOpenSSLPackagePath())
   );
   const digest = await promise;
   await fs.writeFile(`${getOpenSSLPackageName()}.sha256`, digest);
@@ -392,7 +444,7 @@ const acquireOpenSSL = async () => {
 
     let macOsDeploymentTarget;
     if (process.platform === "darwin") {
-      macOsDeploymentTarget = process.argv[2];
+      macOsDeploymentTarget = process.argv[2] ?? process.env.OPENSSL_MACOS_DEPLOYMENT_TARGET
       if (!macOsDeploymentTarget || !macOsDeploymentTarget.match(/\d+\.\d+/)) {
         throw new Error(`Invalid macOsDeploymentTarget: ${macOsDeploymentTarget}`);
       }
@@ -427,5 +479,5 @@ if (process.argv[1] === import.meta.filename) {
   catch(error) {
     console.error("Acquire OpenSSL failed: ", error);
     process.exit(1);
-  };
+  }
 }

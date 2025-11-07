@@ -9,8 +9,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-13, windows-2022]
-        arch: [x64, arm64]
+        include:
+          - os: windows-latest
+            arch: x64
+          # - os: windows-latest
+          #   arch: arm64
+          - os: macos-15
+            arch: x64
+          - os: macos-15-intel
+            arch: arm64
       fail-fast: false
 
     steps:
@@ -21,17 +28,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          architecture: ${{ matrix.arch }}
+
+      - name: Install Toolchain
+        if: matrix.os == 'windows-latest' && matrix.arch == 'arm64'
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >
+            mingw-w64-aarch64-toolchain
+            mingw-w64-aarch64-cmake
+            mingw-w64-aarch64-ninja
 
       - name: Install dependencies
         run: npm install
 
       - name: Build OpenSSL packages
-        run: node utils/acquireOpenSSL.js
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
+          NODEGIT_OPENSSL_BUILD_PACKAGE: 1
+          OPENSSL_MACOS_DEPLOYMENT_TARGET: "11.0"
+        run: node utils/acquireOpenSSL.mjs
 
       - name: Push OpenSSL package to S3
         env:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
           AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: node utils/uploadOpenSSL.js
+        run: node utils/uploadOpenSSL.mjs
