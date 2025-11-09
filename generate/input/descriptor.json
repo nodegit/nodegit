@@ -4592,6 +4592,7 @@
           }
         },
         "git_tree_entry_byid": {
+          "jsFunctionName": "_entryById",
           "return": {
             "ownedByThis": true
           }
@@ -4609,6 +4610,7 @@
           }
         },
         "git_tree_entry_bypath": {
+          "jsFunctionName": "_entryByPath",
           "isAsync": true,
           "args": {
             "out": {
