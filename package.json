@@ -48,6 +48,7 @@
     "lodash": "^4.17.14",
     "node-gyp": "^11.2.0",
     "node-gyp-build": "^4.8.1",
+    "tar": "^7.5.2",
     "tar-fs": "^3.0.9"
   },
   "devDependencies": {
