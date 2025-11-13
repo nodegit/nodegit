@@ -430,7 +430,7 @@ const downloadOpenSSLIfNecessary = async ({
   console.log("Download finished.");
 }
 
-const getOpenSSLPackageName = () => {
+export const getOpenSSLPackageName = () => {
   return `openssl-${OPENSSL_VERSION}-${process.platform}-${targetArch}.tar.gz`;
 }
 

@@ -41,6 +41,7 @@ jobs:
 
       - name: Push OpenSSL package to S3
         env:
+          npm_config_arch: ${{ matrix.arch }}
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
           AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
