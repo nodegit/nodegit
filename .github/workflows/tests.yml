@@ -123,7 +123,7 @@ jobs:
     strategy:
       matrix:
         node: [20, 22, 24]
-        arch: [x86, x64]
+        arch: [x86, x64, arm64]
         exclude:
         - node: 24
           arch: x86
@@ -141,16 +141,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Use Node.js
+        if: matrix.arch == 'x86'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
-          architecture: ${{ matrix.arch }}
+          architecture: x86
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        if: matrix.arch != 'x86'
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
 
       - name: Install
+        env:
+          npm_config_arch: ${{ matrix.arch == 'x86' && 'ia32' || matrix.arch }}
         run: npm install
 
       - name: Test
+        if: matrix.arch != 'arm64'
         env:
           GIT_SSH: ${{ github.workspace }}\vendor\plink.exe
         run: |
@@ -170,7 +181,7 @@ jobs:
 
       - name: Deploy (Package)
         if: startsWith(github.ref, 'refs/tags/v')
-        run: node-pre-gyp package
+        run: node-pre-gyp package --target_arch=${{ matrix.arch }}
 
       - name: Deploy (Publish)
         if: startsWith(github.ref, 'refs/tags/v')
@@ -178,4 +189,4 @@ jobs:
           node_pre_gyp_bucket: ${{ secrets.node_pre_gyp_bucket }}
           AWS_ACCESS_KEY_ID: ${{ secrets.node_pre_gyp_accessKeyId }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.node_pre_gyp_secretAccessKey }}
-        run: node-pre-gyp publish
+        run: node-pre-gyp publish --target_arch=${{ matrix.arch }}
