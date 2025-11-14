@@ -157,7 +157,7 @@ jobs:
 
       - name: Install
         env:
-          npm_config_arch: ${{ matrix.arch }}
+          npm_config_arch: ${{ matrix.arch == 'x86' && 'ia32' || matrix.arch }}
         run: npm install
 
       - name: Test
