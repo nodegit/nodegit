@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { spawn } from "child_process";
 import execPromise from "./execPromise.js";
 import got from "got";
 import path from "path";
@@ -18,6 +19,28 @@ const win32BatPath = path.join(import.meta.dirname, "build-openssl.bat");
 const vendorPath = path.resolve(import.meta.dirname, "..", "vendor");
 const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
+
+const exists = (filePath) => fs.stat(filePath).then(() => true).catch(() => false);
+
+const convertArch = (archStr) => {
+  const convertedArch = {
+    'ia32': 'x86',
+    'x86': 'x86',
+    'x64': 'x64',
+    'arm64': 'arm64'
+  }[archStr];
+
+  if (!convertedArch) {
+    throw new Error('unsupported architecture');
+  }
+
+  return convertedArch;
+}
+
+const hostArch = convertArch(process.arch);
+const targetArch = process.env.npm_config_arch
+  ? convertArch(process.env.npm_config_arch)
+  : hostArch;
 
 const pathsToIncludeForPackage = [
   "include", "lib"
@@ -82,8 +105,10 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
     throw new Error("Expected macOsDeploymentTarget to be specified");
   }
 
+  const buildConfig = targetArch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc";
+
   const configureArgs = [
-    process.arch === "x64" ? "darwin64-x86_64-cc" : "darwin64-arm64-cc",
+    buildConfig,
     // speed up ecdh on little-endian platforms with 128bit int support
     "enable-ec_nistp_64_gcc_128",
     // compile static libraries
@@ -107,7 +132,7 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 
   await applyOpenSSLPatches(buildCwd, "darwin");
 
-  // only build the libraries, not the tests/fuzzer or apps
+  // only build the libraries, not the fuzzer or apps
   await execPromise("make build_libs", {
     cwd: buildCwd
   }, { pipeOutput: true });
@@ -123,8 +148,10 @@ const buildDarwin = async (buildCwd, macOsDeploymentTarget) => {
 };
 
 const buildLinux = async (buildCwd) => {
+  const buildConfig = targetArch === "x64" ? "linux-x86_64" : "linux-aarch64";
+
   const configureArgs = [
-    "linux-x86_64",
+    buildConfig,
     // Electron(at least on centos7) imports the libcups library at runtime, which has a
     // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
     // To fix this we need to hide all the openssl symbols to prevent them from being overridden
@@ -146,7 +173,7 @@ const buildLinux = async (buildCwd) => {
 
   await applyOpenSSLPatches(buildCwd, "linux");
 
-  // only build the libraries, not the tests/fuzzer or apps
+  // only build the libraries, not the fuzzer or apps
   await execPromise("make build_libs", {
     cwd: buildCwd
   }, { pipeOutput: true });
@@ -162,13 +189,7 @@ const buildLinux = async (buildCwd) => {
   }, { pipeOutput: true });
 };
 
-const buildWin32 = async (buildCwd, vsBuildArch) => {
-  if (!vsBuildArch) {
-    throw new Error("Expected vsBuildArch to be specified");
-  }
-
-  const exists = (filePath) => fs.stat(filePath).then(() => true).catch(() => false);
-
+const buildWin32 = async (buildCwd) => {
   let vcvarsallPath = undefined;
 
   if (process.env.npm_config_vcvarsall_path && await exists(process.env.npm_config_vcvarsall_path)) {
@@ -219,29 +240,57 @@ const buildWin32 = async (buildCwd, vsBuildArch) => {
     }
   }
 
-  console.log('using', vcvarsallPath);
-
   let vcTarget;
-  switch (vsBuildArch) {
-    case "x64": {
+  switch (targetArch) {
+    case "x64":
       vcTarget = "VC-WIN64A";
       break;
-    }
 
-    case "x86": {
+    case "x86":
       vcTarget = "VC-WIN32";
       break;
-    }
-      
-    default: {
-      throw new Error(`Unknown vsBuildArch: ${vsBuildArch}`);
-    }
+
+    case "arm64":
+      vcTarget = "VC-WIN64-ARM";
+      break;
   }
 
-  await execPromise(`"${win32BatPath}" "${vcvarsallPath}" ${vsBuildArch} ${vcTarget}`, {
-    cwd: buildCwd,
-    maxBuffer: 10 * 1024 * 1024 // we should really just use spawn
-  }, { pipeOutput: true });
+  let vsBuildArch = hostArch === targetArch
+    ? hostArch
+    : `${hostArch}_${targetArch}`;
+
+  console.log("Using vcvarsall.bat at: ", vcvarsallPath);
+  console.log("Using vsBuildArch: ", vsBuildArch);
+  console.log("Using vcTarget: ", vcTarget);
+
+  await new Promise((resolve, reject) => {
+    const buildProcess = spawn(`"${win32BatPath}" "${vcvarsallPath}" ${vsBuildArch} ${vcTarget}`, {
+      cwd: buildCwd,
+      shell: process.platform === "win32",
+      env: {
+        ...process.env,
+        NODEGIT_SKIP_TESTS: targetArch !== hostArch ? "1" : undefined
+      }
+    });
+
+    buildProcess.stdout.on("data", function(data) {
+      console.info(data.toString().trim());
+    });
+
+    buildProcess.stderr.on("data", function(data) {
+      console.error(data.toString().trim());
+    });
+
+    buildProcess.on("close", function(code) {
+      if (!code) {
+        resolve();
+      } else {
+        reject(code);
+      }
+    });
+  });
+
+  
 };
 
 const removeOpenSSLIfOudated = async (openSSLVersion) => {
@@ -285,8 +334,7 @@ const makeOnStreamDownloadProgress = () => {
 
 const buildOpenSSLIfNecessary = async ({
   macOsDeploymentTarget,
-  openSSLVersion,
-  vsBuildArch
+  openSSLVersion
 }) => {
   if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL build, not required on ${process.platform}`);
@@ -330,7 +378,7 @@ const buildOpenSSLIfNecessary = async ({
   } else if (process.platform === "linux") {
     await buildLinux(buildCwd);
   } else if (process.platform === "win32") {
-    await buildWin32(buildCwd, vsBuildArch);
+    await buildWin32(buildCwd);
   } else {
     throw new Error(`Unknown platform: ${process.platform}`);
   }
@@ -383,14 +431,7 @@ const downloadOpenSSLIfNecessary = async ({
 }
 
 export const getOpenSSLPackageName = () => {
-  let arch = process.arch;
-  if (process.platform === "win32" && (
-    process.arch === "ia32" || process.env.NODEGIT_VS_BUILD_ARCH === "x86"
-  )) {
-    arch = "x86";
-  }
-
-  return `openssl-${OPENSSL_VERSION}-${process.platform}-${arch}.tar.gz`;
+  return `openssl-${OPENSSL_VERSION}-${process.platform}-${targetArch}.tar.gz`;
 }
 
 export const getOpenSSLPackagePath = () => path.join(import.meta.dirname, getOpenSSLPackageName());
@@ -450,18 +491,9 @@ const acquireOpenSSL = async () => {
       }
     }
 
-    let vsBuildArch;
-    if (process.platform === "win32") {
-      vsBuildArch = process.env.NODEGIT_VS_BUILD_ARCH || (process.arch === "x64" ? "x64" : "x86");
-      if (!["x64", "x86"].includes(vsBuildArch)) {
-        throw new Error(`Invalid vsBuildArch: ${vsBuildArch}`);
-      }
-    }
-
     await buildOpenSSLIfNecessary({
       openSSLVersion: OPENSSL_VERSION,
-      macOsDeploymentTarget,
-      vsBuildArch
+      macOsDeploymentTarget
     });
     if (process.env.NODEGIT_OPENSSL_BUILD_PACKAGE) {
       await buildPackage();

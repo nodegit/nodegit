@@ -315,13 +315,22 @@
             # Workaround of a strange bug:
             # TargetMachine + static_library + x64 = nothing.
             "conditions": [
-              ["target_arch=='x64'", {
-                "VCLibrarianTool": {
-                  "AdditionalOptions": [
-                    "/MACHINE:X64",
-                  ],
+              [
+                "target_arch=='x64'", {
+                  "VCLibrarianTool": {
+                    "AdditionalOptions": [
+                      "/MACHINE:X64",
+                    ],
+                  },
                 },
-              }, {
+                "target_arch=='arm64'", {
+                  "VCLibrarianTool": {
+                    "AdditionalOptions": [
+                      "/MACHINE:ARM64",
+                    ],
+                  },
+                },
+                {
                 "VCLibrarianTool": {
                   "AdditionalOptions": [
                     "/MACHINE:x86",

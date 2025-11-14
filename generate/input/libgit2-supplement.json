@@ -294,6 +294,54 @@
           "isErrorCode": true
         }
       },
+      "git_email_create_from_diff": {
+        "file": "sys/email.h",
+        "type": "function",
+        "isAsync": true,
+        "group": "email",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_buf *"
+          },
+          {
+            "name": "diff",
+            "type": "git_diff *"
+          },
+          {
+            "name": "patch_idx",
+            "type": "size_t"
+          },
+          {
+            "name": "patch_count",
+            "type": "size_t"
+          },
+          {
+            "name": "commit_id",
+            "type": "const git_oid *"
+          },
+          {
+            "name": "summary",
+            "type": "const char *"
+          },
+          {
+            "name": "body",
+            "type": "const char *"
+          },
+          {
+            "name": "author",
+            "type": "const git_signature *"
+          },
+          {
+            "name": "opts",
+            "type": "git_email_create_options *"
+          }
+        ],
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_diff_get_perfdata": {
         "file": "sys/diff.h",
         "args": [
@@ -2618,6 +2666,9 @@
   "groups": {
     "blame": [
       "git_blame_file"
+    ],
+    "email": [
+      "git_email_create_from_diff"
     ],
     "note": [
       "git_note_author",

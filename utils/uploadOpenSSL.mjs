@@ -19,7 +19,9 @@ export const uploadOpenSSL = async () => {
   const packageName = path.basename(getOpenSSLPackageName());
   const packagePath = getOpenSSLPackagePath();
   console.log(`Uploading ${packagePath} to s3://${pkgJson.binary.bucket_name}/${packageName}`);
-  return uploadBinaryToS3(packageName, pkgJson.binary.bucket_name, packagePath);
+  await uploadBinaryToS3(packageName, pkgJson.binary.bucket_name, packagePath);
+  const sha256PackageName = `${packageName}.sha256`;
+  await uploadBinaryToS3(sha256PackageName, pkgJson.binary.bucket_name, `${packagePath}.sha256`);
 };
 
 if (process.argv[1] === import.meta.filename) {
