@@ -436,7 +436,11 @@ export const getOpenSSLPackageName = () => {
 
 export const getOpenSSLPackagePath = () => path.join(import.meta.dirname, getOpenSSLPackageName());
 
-const getOpenSSLPackageUrl = () => `${packageJson.binary.host}${getOpenSSLPackageName()}`;
+const getOpenSSLPackageUrl = () => {
+  const hostUrl = new URL(packageJson.binary.host);
+  hostUrl.pathname = getOpenSSLPackageName();
+  return hostUrl.toString();
+};
 
 const buildPackage = async () => {
   let resolve, reject;
@@ -462,7 +466,7 @@ const buildPackage = async () => {
     createWriteStream(getOpenSSLPackagePath())
   );
   const digest = await promise;
-  await fs.writeFile(`${getOpenSSLPackageName()}.sha256`, digest);
+  await fs.writeFile(`${getOpenSSLPackagePath()}.sha256`, digest);
 };
 
 const acquireOpenSSL = async () => {
