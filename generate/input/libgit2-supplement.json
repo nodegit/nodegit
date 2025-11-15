@@ -1466,6 +1466,36 @@
           "isErrorCode": true
         }
       },
+      "git_revwalk_first_commit": {
+        "args": [
+          {
+            "name": "timeout",
+            "type": "int"
+          },
+          {
+            "name": "found",
+            "type": "bool"
+          },
+          {
+            "name": "out",
+            "type": "git_oid*"
+          },
+          {
+            "name": "walk",
+            "type": "git_revwalk *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/revwalk/first_commit.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "revwalk",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
       "git_status_list_get_perfdata": {
         "file": "sys/diff.h",
         "args": [
@@ -1706,7 +1736,8 @@
         [
           "git_revwalk_commit_walk",
           "git_revwalk_fast_walk",
-          "git_revwalk_file_history_walk"
+          "git_revwalk_file_history_walk",
+          "git_revwalk_first_commit"
         ]
       ],
       [
