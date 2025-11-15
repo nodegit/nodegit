@@ -1,5 +1,21 @@
 # Change Log
 
+## <a name="v0-28-0-alpha.35" href="#v0-28-0-alpha-35">v0.28.0-alpha.35</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.35)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.34...v0.28.0-alpha.35)
+
+#### Summary of Changes
+ - Bump libgit2 to 1.9.1
+ - Bump OpenSSL to 3.0
+ - Move OpenSSL Packaging to Github Actions
+ - Add arm64 build Support
+
+#### Merged PRs into NodeGit
+- [Bump libgit2 to 1.9.1](https://github.com/nodegit/nodegit/pull/2025)
+- [Bump OpenSSL to 3.0, Move OpenSSL package generation to Github Actions](https://github.com/nodegit/nodegit/pull/2026)
+- [fix: correct macos arch labels](github.com/nodegit/nodegit/pull/2027)
+- [Add Ability to compile for arm64](https://github.com/nodegit/nodegit/pull/2028)
+
 ## <a name="v0-28-0-alpha.34" href="#v0-28-0-alpha-34">v0.28.0-alpha.34</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.34)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.33...v0.28.0-alpha.34)
