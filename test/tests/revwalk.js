@@ -341,6 +341,20 @@ describe("Revwalk", function() {
       });
   });
 
+  it("fileHistoryWalk finds merge commit", function() {
+    var repo = this.repository;
+    return repo.getCommit("8076e2d8e8c2e5de4383d65abcbf4a5b4ea9254d")
+      .then(function(commit){
+        var walker = repo.createRevWalk();
+        walker.push(commit);
+        walker.sorting(Revwalk.SORT.TIME);
+        return walker.fileHistoryWalk("package.json", 1);
+      })
+      .then(function(commits) {
+        assert.equal(commits.length, 1);
+      });
+  });
+
   it("does not leak", function() {
     var test = this;
 
