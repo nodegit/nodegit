@@ -166,7 +166,7 @@ fse.remove(path.resolve(__dirname, repoDir))
   if (index.hasConflicts()) {
     console.log("Conflict time!");
 
-    // if the merge had comflicts, solve them
+    // if the merge had conflicts, solve them
     // (in this case, we simply overwrite the file)
     fse.writeFileSync(
       path.join(repository.workdir(), fileName),
