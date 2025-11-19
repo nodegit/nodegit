@@ -46,7 +46,7 @@
     "lodash": "^4.17.14",
     "node-gyp": "^11.0.0",
     "ramda": "^0.25.0",
-    "tar-fs": "^2.1.1"
+    "tar-fs": "^3.0.9"
   },
   "devDependencies": {
     "aws-sdk": "^2.1095.0",
