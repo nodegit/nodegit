@@ -10,6 +10,8 @@ import { createWriteStream, promises as fs } from "fs";
 import { performance } from "perf_hooks";
 import { promisify } from "util";
 
+import { hostArch, targetArch } from "./buildFlags.js";
+
 const pipeline = promisify(stream.pipeline);
 
 import packageJson from '../package.json' with { type: "json" };
@@ -21,26 +23,6 @@ const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
 
 const exists = (filePath) => fs.stat(filePath).then(() => true).catch(() => false);
-
-const convertArch = (archStr) => {
-  const convertedArch = {
-    'ia32': 'x86',
-    'x86': 'x86',
-    'x64': 'x64',
-    'arm64': 'arm64'
-  }[archStr];
-
-  if (!convertedArch) {
-    throw new Error('unsupported architecture');
-  }
-
-  return convertedArch;
-}
-
-const hostArch = convertArch(process.arch);
-const targetArch = process.env.npm_config_arch
-  ? convertArch(process.env.npm_config_arch)
-  : hostArch;
 
 const pathsToIncludeForPackage = [
   "include", "lib"
@@ -172,10 +154,12 @@ const buildLinux = async (buildCwd) => {
     maxBuffer: 10 * 1024 * 1024
   }, { pipeOutput: true });
 
-  await execPromise("make test", {
-    cwd: buildCwd,
-    maxBuffer: 10 * 1024 * 1024
-  }, { pipeOutput: true });
+  if (hostArch === targetArch) {
+    await execPromise("make test", {
+      cwd: buildCwd,
+      maxBuffer: 10 * 1024 * 1024
+    }, { pipeOutput: true });
+  }
 
   // only install software, not the docs
   await execPromise("make install_sw", {
