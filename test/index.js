@@ -40,6 +40,8 @@ function unencryptKey(fileName) {
     .toString('ascii');
   fs.writeFileSync(path.join(__dirname, fileName), asciiContents, 'utf8');
 }
+
+unencryptKey('private.ppk');
 unencryptKey('id_rsa');
 unencryptKey('nodegit-test-rsa');
 
