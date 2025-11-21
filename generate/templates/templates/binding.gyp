@@ -155,21 +155,28 @@
                 "-std=c++<(cxx_version)"
               ],
             }],
-            ["<(is_electron) == 1 and <(electron_openssl_static) == 1", {
+            ["<(is_electron) == 1", {
+              "conditions": [
+                ["<(electron_openssl_static) == 1", {
+                  "libraries": [
+                    "<(electron_openssl_root)/lib/libssl.a",
+                    "<(electron_openssl_root)/lib/libcrypto.a"
+                  ]
+                }],
+                ["<(electron_openssl_static) != 1", {
+                  "library_dirs": [
+                    "<(electron_openssl_root)/lib"
+                  ],
+                  "libraries": [
+                    "-lcrypto",
+                    "-lssl"
+                  ]
+                }]
+              ],
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ],
-              "libraries": [
-                "<(electron_openssl_root)/lib64/libssl.a",
-                "<(electron_openssl_root)/lib64/libcrypto.a"
-              ]
             }],
-            ["<(is_electron) == 1 and <(electron_openssl_static) != 1", {
-              "libraries": [
-                "-lcrypto",
-                "-lssl"
-              ]
-            }]
           ],
         }],
         [

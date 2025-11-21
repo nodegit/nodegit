@@ -161,11 +161,16 @@ jobs:
         run: npm install
 
       - name: Test
+        # need arm64 runners or an emulator to run tests
         if: matrix.arch != 'arm64'
         env:
           GIT_SSH: ${{ github.workspace }}\vendor\plink.exe
         run: |
-          powershell -command "Start-Process ${{ github.workspace }}\vendor\pageant.exe ${{ github.workspace }}\vendor\private.ppk"
+          $encodedKey = Get-Content -Path test\private.ppk.enc
+          $finalPath = Join-Path -Path $HOME -ChildPath .ssh_tests\private.ppk
+          mkdir ~\.ssh_tests
+          Set-Content -Value $([System.Convert]::FromBase64String($encodedKey)) -Path $finalPath -AsByteStream
+          powershell -command "Start-Process .\vendor\pageant\pageant_${{ matrix.arch }}.exe $finalPath"
           node utils/retry npm test
 
       # You're probably wondering why this isn't a single `run: |` step, it certainly is for *nix,

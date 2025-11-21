@@ -2,6 +2,8 @@ var cp = require("child_process");
 var fse = require("fs-extra");
 var path = require("path");
 
+const { hostArch, targetArch } = require("./buildFlags");
+
 const opensslVendorDirectory = path.resolve(__dirname, "..", "vendor", "openssl");
 const libssh2VendorDirectory = path.resolve(__dirname, "..", "vendor", "libssh2");
 const libssh2ConfigureScript = path.join(libssh2VendorDirectory, "configure");
@@ -19,20 +21,21 @@ module.exports = function retrieveExternalDependencies() {
   }
 
   // Run the `configure` script on Linux
-  return new Promise(function(resolve, reject) {
-    var newEnv = {};
-    Object.keys(process.env).forEach(function(key) {
-      newEnv[key] = process.env[key];
-    });
+  let cpArgs = ` --with-libssl-prefix=${opensslVendorDirectory}`;
 
-    let cpArgs = process.env.NODEGIT_OPENSSL_STATIC_LINK === '1'
-      ? ` --with-libssl-prefix=${opensslVendorDirectory}`
-      : '';
+  const archConfigMap = {
+    'x64': 'x86_64-linux-gnu',
+    'arm64': 'aarch64-linux-gnu'
+  };
+
+  cpArgs += ` --build=${archConfigMap[hostArch]}`;
+  cpArgs += ` --host=${archConfigMap[targetArch]}`;
+
+  return new Promise(function(resolve, reject) {
     cp.exec(
       `${libssh2ConfigureScript}${cpArgs}`,
       {
-        cwd: libssh2VendorDirectory,
-        env: newEnv
+        cwd: libssh2VendorDirectory
       },
       function(err, stdout, stderr) {
         if (err) {

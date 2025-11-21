@@ -10,6 +10,8 @@ import { createWriteStream, promises as fs } from "fs";
 import { performance } from "perf_hooks";
 import { promisify } from "util";
 
+import { hostArch, targetArch } from "./buildFlags.js";
+
 const pipeline = promisify(stream.pipeline);
 
 import packageJson from '../package.json' with { type: "json" };
@@ -21,26 +23,6 @@ const opensslPatchPath = path.join(vendorPath, "patches", "openssl");
 const extractPath = path.join(vendorPath, "openssl");
 
 const exists = (filePath) => fs.stat(filePath).then(() => true).catch(() => false);
-
-const convertArch = (archStr) => {
-  const convertedArch = {
-    'ia32': 'x86',
-    'x86': 'x86',
-    'x64': 'x64',
-    'arm64': 'arm64'
-  }[archStr];
-
-  if (!convertedArch) {
-    throw new Error('unsupported architecture');
-  }
-
-  return convertedArch;
-}
-
-const hostArch = convertArch(process.arch);
-const targetArch = process.env.npm_config_arch
-  ? convertArch(process.env.npm_config_arch)
-  : hostArch;
 
 const pathsToIncludeForPackage = [
   "include", "lib"
@@ -152,20 +134,13 @@ const buildLinux = async (buildCwd) => {
 
   const configureArgs = [
     buildConfig,
-    // Electron(at least on centos7) imports the libcups library at runtime, which has a
-    // dependency on the system libssl/libcrypto which causes symbol conflicts and segfaults.
-    // To fix this we need to hide all the openssl symbols to prevent them from being overridden
-    // by the runtime linker.
-    // "-fvisibility=hidden",
-    // compile static libraries
-    "no-shared",
-    // disable ssl2, ssl3, and compression
-    "no-ssl2",
+    // disable ssl3, and compression
     "no-ssl3",
     "no-comp",
     // set install directory
     `--prefix="${extractPath}"`,
-    `--openssldir="${extractPath}"`
+    `--openssldir="${extractPath}"`,
+    "--libdir=lib",
   ];
   await execPromise(`./Configure ${configureArgs.join(" ")}`, {
     cwd: buildCwd
@@ -175,12 +150,16 @@ const buildLinux = async (buildCwd) => {
 
   // only build the libraries, not the fuzzer or apps
   await execPromise("make build_libs", {
-    cwd: buildCwd
+    cwd: buildCwd,
+    maxBuffer: 10 * 1024 * 1024
   }, { pipeOutput: true });
 
-  await execPromise("make test", {
-    cwd: buildCwd
-  }, { pipeOutput: true });
+  if (hostArch === targetArch) {
+    await execPromise("make test", {
+      cwd: buildCwd,
+      maxBuffer: 10 * 1024 * 1024
+    }, { pipeOutput: true });
+  }
 
   // only install software, not the docs
   await execPromise("make install_sw", {
@@ -341,11 +320,6 @@ const buildOpenSSLIfNecessary = async ({
     return;
   }
 
-  if (process.platform === "linux" && process.env.NODEGIT_OPENSSL_STATIC_LINK !== "1") {
-    console.log(`Skipping OpenSSL build, NODEGIT_OPENSSL_STATIC_LINK !== 1`);
-    return;
-  }
-
   await removeOpenSSLIfOudated(openSSLVersion);
 
   try {
@@ -393,11 +367,6 @@ const downloadOpenSSLIfNecessary = async ({
 }) => {
   if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
     console.log(`Skipping OpenSSL download, not required on ${process.platform}`);
-    return;
-  }
-
-  if (process.platform === "linux" && process.env.NODEGIT_OPENSSL_STATIC_LINK !== "1") {
-    console.log(`Skipping OpenSSL download, NODEGIT_OPENSSL_STATIC_LINK !== 1`);
     return;
   }
 
