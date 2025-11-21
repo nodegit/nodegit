@@ -286,7 +286,7 @@ describe("Commit", function() {
 
   it("can amend commit", function(){
     var commitToAmendId = "315e77328ef596f3bc065d8ac6dd2c72c09de8a5";
-    var expectedAmendedCommitId = "57836e96555243666ea74ea888310cc7c41d4613";
+    var expectedAmendedCommitId = "a41de0d1c3dc169c873dd03bd9240d9f88e60ffc";
     var fileName = "newfile.txt";
     var fileContent = "hello world";
     var newFileName = "newerfile.txt";

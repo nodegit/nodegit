@@ -2445,12 +2445,6 @@
         }
       ],
       [
-        "git_time_t",
-        {
-          "type": "enum"
-        }
-      ],
-      [
         "git_trace_level_t",
         {
           "type": "enum"
