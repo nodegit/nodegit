@@ -1,6 +1,22 @@
 # Change Log
 
-## <a name="v0-28-0-alpha.35" href="#v0-28-0-alpha-35">v0.28.0-alpha.35</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.35)
+## <a name="v0-28-0-alpha.36" href="#v0-28-0-alpha-36">v0.28.0-alpha.36</a> [(2025-11-21)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.36)
+
+[Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.35...v0.28.0-alpha.36)
+
+#### Summary of Changes
+ - Use openssl unconditionally for linux electron builds
+ - Fix cross-compiling libssh2
+ - Fix Windows SSH keys, tests, documentation
+ - Add CI tests and Prebuilts for MacOS arm64
+ - Bump tar-fsa to fix security vulnerabilities
+
+#### Merged PRs into NodeGit
+- [Bump tar-fs from 3.0.9 to 3.1.1](https://github.com/nodegit/nodegit/pull/2034)
+- [Use custom electron for non-static builds on linux and fix cross-compilation](https://github.com/nodegit/nodegit/pull/2033)
+- [add macos arm64 tests and prebuilts](https://github.com/nodegit/nodegit/pull/2030)
+
+## <a name="v0-28-0-alpha.35" href="#v0-28-0-alpha-35">v0.28.0-alpha.35</a> [(2025-11-14)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.35)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.34...v0.28.0-alpha.35)
 
@@ -16,7 +32,7 @@
 - [fix: correct macos arch labels](github.com/nodegit/nodegit/pull/2027)
 - [Add Ability to compile for arm64](https://github.com/nodegit/nodegit/pull/2028)
 
-## <a name="v0-28-0-alpha.34" href="#v0-28-0-alpha-34">v0.28.0-alpha.34</a> [(2025-06-03)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.34)
+## <a name="v0-28-0-alpha.34" href="#v0-28-0-alpha-34">v0.28.0-alpha.34</a> [(2025-07-23)](https://github.com/nodegit/nodegit/releases/tag/v0.28.0-alpha.34)
 
 [Full Changelog](https://github.com/nodegit/nodegit/compare/v0.28.0-alpha.33...v0.28.0-alpha.34)
 
