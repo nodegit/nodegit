@@ -25,7 +25,8 @@ var cTypeMappings = {
   "uint32_t": "Number",
   "uint64_t": "Number",
   "double": "Number",
-  "git_object_size_t": "Number"
+  "git_object_size_t": "Number",
+  "git_time_t": "Number",
 }
 
 var collisionMappings = {

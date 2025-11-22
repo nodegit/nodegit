@@ -72,10 +72,9 @@ jobs:
     strategy:
       matrix:
         node: [20, 22, 24]
+        arch: [x64, arm64]
       fail-fast: false
-    runs-on: macOS-13
-    # This is mostly the same as the Linux steps, waiting for anchor support
-    # https://github.com/actions/runner/issues/1182
+    runs-on: ${{ matrix.arch == 'x64' && 'macos-15-intel' || 'macos-15' }}
     steps:
       - uses: actions/checkout@v4
 
