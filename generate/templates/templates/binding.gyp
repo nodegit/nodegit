@@ -56,7 +56,7 @@
       "include_dirs": [
         "vendor/libv8-convert",
         "vendor/libssh2/include",
-        "<!(node -e \"require('@axosoft/nan')\")"
+        "<!(node -e \"require('nan')\")"
       ],
 
       "cflags": [

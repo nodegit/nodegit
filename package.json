@@ -38,12 +38,12 @@
     "node": ">= 20"
   },
   "dependencies": {
-    "@axosoft/nan": "^2.22.0-gk.1",
     "@mapbox/node-pre-gyp": "^2.0.0",
     "fs-extra": "^7.0.0",
     "got": "^14.4.7",
     "json5": "^2.1.0",
     "lodash": "^4.17.14",
+    "nan": "^2.23.1",
     "node-gyp": "^11.2.0",
     "tar-fs": "^3.0.9"
   },
