@@ -181,7 +181,7 @@ describe("TreeEntry", function() {
     return leakTest(NodeGit.TreeEntry, function() {
       return test.commit.getTree()
         .then(function(tree) {
-          return tree.entryByPath("example");
+          return tree.getEntry("example");
         });
     });
   });
