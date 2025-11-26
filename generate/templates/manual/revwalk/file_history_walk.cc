@@ -31,6 +31,14 @@ public:
     if (commit != NULL) {
       git_commit_free(commit);
     }
+
+    if(from != NULL) {
+      free((void *)from);
+    }
+
+    if(to != NULL) {
+      free((void *)to);
+    }
   }
 
   v8::Local<v8::Value> toJavascript() {

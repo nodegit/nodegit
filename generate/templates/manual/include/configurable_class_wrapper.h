@@ -40,7 +40,7 @@ namespace nodegit {
 
     virtual ~ConfigurableClassWrapper() {
       if (raw != nullptr) {
-        delete raw;
+        free(raw);
         raw = nullptr;
       }
     }
