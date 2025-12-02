@@ -88,15 +88,18 @@ void GitRepository::GetSubmodulesWorker::HandleOKCallback()
   {
     unsigned int size = baton->out->size();
     Local<Array> result = Nan::New<Array>(size);
+    v8::Local<v8::Function> git_submodule_template = GitSubmodule::GetTemplate();
+    v8::Local<v8::Function> git_repository_template = GitRepository::GetTemplate();
     for (unsigned int i = 0; i < size; i++) {
       git_submodule *submodule = baton->out->at(i);
       Nan::Set(
         result,
         Nan::New<Number>(i),
         GitSubmodule::New(
+          git_submodule_template,
           submodule,
           true,
-          Nan::To<v8::Object>(GitRepository::New(git_submodule_owner(submodule), true)).ToLocalChecked()
+          Nan::To<v8::Object>(GitRepository::New(git_repository_template, git_submodule_owner(submodule), true)).ToLocalChecked()
         )
       );
     }

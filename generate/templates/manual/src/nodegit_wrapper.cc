@@ -87,7 +87,7 @@ template<typename Traits>
 void NodeGitWrapper<Traits>::SetNativeOwners(v8::Local<v8::Object> owners) {
   assert(owners->IsArray() || owners->IsObject());
   Nan::HandleScope scope;
-  std::unique_ptr< std::vector<nodegit::TrackerWrap*> > trackerOwners = 
+  std::unique_ptr< std::vector<nodegit::TrackerWrap*> > trackerOwners =
     std::make_unique< std::vector<nodegit::TrackerWrap*> >();
 
   if (owners->IsArray()) {
@@ -124,6 +124,37 @@ v8::Local<v8::Value> NodeGitWrapper<Traits>::New(const typename Traits::cType *r
       owner.IsEmpty() ? 2 : 3, // passing an empty handle as part of the arguments causes a crash
       argv
     ).ToLocalChecked());
+}
+
+template<typename Traits>
+v8::Local<v8::Value> NodeGitWrapper<Traits>::New(v8::Local<v8::Function> constructorTemplate, const typename Traits::cType *raw, bool selfFreeing, v8::Local<v8::Object> owner) {
+  Nan::EscapableHandleScope scope;
+  Local<v8::Value> argv[3] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing), owner };
+  return scope.Escape(
+    Nan::NewInstance(
+      constructorTemplate,
+      3,
+      argv
+    ).ToLocalChecked());
+}
+
+template<typename Traits>
+v8::Local<v8::Value> NodeGitWrapper<Traits>::New(v8::Local<v8::Function> constructorTemplate, const typename Traits::cType *raw, bool selfFreeing) {
+  Nan::EscapableHandleScope scope;
+  Local<v8::Value> argv[2] = { Nan::New<External>((void *)raw), Nan::New(selfFreeing) };
+  return scope.Escape(
+    Nan::NewInstance(
+      constructorTemplate,
+      2,
+      argv
+    ).ToLocalChecked());
+}
+
+template<typename Traits>
+v8::Local<v8::Function> NodeGitWrapper<Traits>::GetTemplate() {
+  return nodegit::Context::GetCurrentContext()->GetFromPersistent(
+    std::string(Traits::className()) + "::Template"
+  ).As<v8::Function>();
 }
 
 template<typename Traits>

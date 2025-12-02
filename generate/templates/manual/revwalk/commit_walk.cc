@@ -45,12 +45,14 @@ public:
   CommitModel &operator=(const CommitModel &) = delete;
   CommitModel &operator=(CommitModel &&) = delete;
 
-  v8::Local<v8::Value> toJavascript() {
+  v8::Local<v8::Value> toJavascript(v8::Local<v8::Function> GitCommitTemplate, v8::Local<v8::Function> GitRepositoryTemplate) {
     if (!fetchSignature) {
       v8::Local<v8::Value> commitObject = GitCommit::New(
+        GitCommitTemplate,
         commit,
         true,
         Nan::To<v8::Object>(GitRepository::New(
+          GitRepositoryTemplate,
           git_commit_owner(commit),
           true
         )).ToLocalChecked()
@@ -232,12 +234,14 @@ void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
     std::vector<CommitModel *> *out = static_cast<std::vector<CommitModel *> *>(baton->out);
     const unsigned int size = out->size();
     Local<Array> result = Nan::New<Array>(size);
+    v8::Local<v8::Function> git_commit_template = GitCommit::GetTemplate();
+    v8::Local<v8::Function> git_repository_template = GitRepository::GetTemplate();
     for (unsigned int i = 0; i < size; i++) {
       CommitModel *commitModel = out->at(i);
       Nan::Set(
         result,
         Nan::New<Number>(i),
-        commitModel->toJavascript()
+        commitModel->toJavascript(git_commit_template, git_repository_template)
       );
       delete commitModel;
     }
