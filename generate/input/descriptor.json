@@ -2620,7 +2620,19 @@
           "ignore": true
         },
         "git_odb_hash": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "oid": {
+              "isReturn": true
+            },
+            "data": {
+              "cppClassName": "Wrapper",
+              "jsClassName": "Buffer"
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_odb_hashfile": {
           "isAsync": true,
@@ -3791,7 +3803,21 @@
           "ignore": true
         },
         "git_repository_hashfile": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true
+            },
+            "repo": {
+              "isSelf": true
+            },
+            "as_path": {
+              "isOptional": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_repository_ident": {
           "args": {
