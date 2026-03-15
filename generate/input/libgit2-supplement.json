@@ -1508,6 +1508,70 @@
           "type": "int",
           "isErrorCode": true
         }
+      },
+      "git_mempack_create": {
+        "_wraps": "git_mempack_new (renamed to 'create' for JS convention)",
+        "args": [
+          {
+            "name": "out",
+            "type": "git_odb_backend **"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/mempack/create.cc",
+        "isAsync": true,
+        "isPrototypeMethod": false,
+        "group": "mempack",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
+      "git_mempack_reset": {
+        "args": [
+          {
+            "name": "backend",
+            "type": "git_odb_backend *"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/mempack/reset.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "mempack",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
+      },
+      "git_odb_add_mempack_backend": {
+        "_wraps": "git_odb_add_backend (specialized for Mempack backends only)",
+        "args": [
+          {
+            "name": "odb",
+            "type": "git_odb *"
+          },
+          {
+            "name": "backend",
+            "type": "git_odb_backend *"
+          },
+          {
+            "name": "priority",
+            "type": "int"
+          }
+        ],
+        "type": "function",
+        "isManual": true,
+        "cFile": "generate/templates/manual/odb/add_backend.cc",
+        "isAsync": true,
+        "isPrototypeMethod": true,
+        "group": "odb",
+        "return": {
+          "type": "int",
+          "isErrorCode": true
+        }
       }
     },
     "groups": [
@@ -1734,6 +1798,13 @@
           "git_tree_entry_name",
           "git_tree_entry_to_object",
           "git_tree_entry_type"
+        ]
+      ],
+      [
+        "mempack",
+        [
+          "git_mempack_create",
+          "git_mempack_reset"
         ]
       ]
     ],
@@ -2682,6 +2753,9 @@
       "git_note_next",
       "git_note_read",
       "git_note_remove"
+    ],
+    "odb": [
+      "git_odb_add_mempack_backend"
     ]
   }
 }

@@ -26,6 +26,7 @@
     }
   ],
   "main": "lib/nodegit.js",
+  "types": "lib/nodegit.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/nodegit/nodegit.git"
@@ -39,6 +40,7 @@
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^2.0.0",
+    "@types/nodegit": "0.26.7",
     "fs-extra": "^7.0.0",
     "got": "^14.4.7",
     "json5": "^2.1.0",

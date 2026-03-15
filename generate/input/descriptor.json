@@ -1914,7 +1914,10 @@
           }
         },
         "git_index_new": {
-          "ignore": true
+          "isAsync": true,
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_index_open": {
           "isAsync": true,
@@ -2264,7 +2267,36 @@
       }
     },
     "mempack": {
-      "ignore": true
+      "cType": "git_odb_backend",
+      "cppClassName": "GitMempack",
+      "jsClassName": "Mempack",
+      "selfFreeing": false,
+      "cDependencies": [
+        "git2/sys/mempack.h"
+      ],
+      "functions": {
+        "git_mempack_new": {
+          "ignore": true
+        },
+        "git_mempack_dump": {
+          "ignore": true
+        },
+        "git_mempack_reset": {
+          "args": {
+            "backend": {
+              "ignore": false,
+              "isSelf": true
+            }
+          }
+        },
+        "git_mempack_create": {
+          "args": {
+            "out": {
+              "ignore": false
+            }
+          }
+        }
+      }
     },
     "merge": {
       "functions": {
@@ -2529,12 +2561,22 @@
     },
     "odb": {
       "selfFreeing": true,
+      "dependencies": [
+        "../include/mempack.h"
+      ],
       "functions": {
         "git_odb_add_alternate": {
           "ignore": true
         },
         "git_odb_add_backend": {
           "ignore": true
+        },
+        "git_odb_add_mempack_backend": {
+          "args": {
+            "backend": {
+              "ignore": false
+            }
+          }
         },
         "git_odb_add_disk_alternate": {
           "isAsync": true,
@@ -2578,7 +2620,19 @@
           "ignore": true
         },
         "git_odb_hash": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "oid": {
+              "isReturn": true
+            },
+            "data": {
+              "cppClassName": "Wrapper",
+              "jsClassName": "Buffer"
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_odb_hashfile": {
           "isAsync": true,
@@ -3749,7 +3803,21 @@
           "ignore": true
         },
         "git_repository_hashfile": {
-          "ignore": true
+          "isAsync": true,
+          "args": {
+            "out": {
+              "isReturn": true
+            },
+            "repo": {
+              "isSelf": true
+            },
+            "as_path": {
+              "isOptional": true
+            }
+          },
+          "return": {
+            "isErrorCode": true
+          }
         },
         "git_repository_ident": {
           "args": {
