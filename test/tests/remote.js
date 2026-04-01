@@ -243,6 +243,57 @@ describe("Remote", function() {
       });
   });
 
+  it("can negotiate push", function() {
+    var repo = this.repository;
+    var wasCalled = false;
+
+    return Remote.create(repo, "bare", bareReposPath)
+      .then(function(remote) {
+        var fetchOpts = {
+          callbacks: {
+            pushNegotiation: function(update_list, len) {
+              wasCalled = true;
+              return NodeGit.Error.CODE.OK;
+            }
+          }
+        };
+
+        var ref = "refs/heads/master";
+        var refs = [ref + ":" + ref];
+
+        return remote.push(refs, fetchOpts)
+        .then(function(res) {
+          assert.ok(wasCalled);
+        });
+      });
+  });
+
+  it("can reject push during negotiation", function() {
+    var repo = this.repository;
+
+    return Remote.create(repo, "bare", bareReposPath)
+      .then(function(remote) {
+        var fetchOpts = {
+          callbacks: {
+            pushNegotiation: function(update_list, len) {
+              return NodeGit.Error.CODE.ERROR;
+            }
+          }
+        };
+
+        var ref = "refs/heads/master";
+        var refs = [ref + ":" + ref];
+
+        return remote.push(refs, fetchOpts);
+      })
+      .then(function() {
+        assert.fail("push should not succeed");
+      })
+      .catch(function(err) {
+        assert.notEqual(err.code, "ERR_ASSERTION");
+      });
+  });
+
   it("can get the default branch of a remote", function() {
     var remoteCallbacks = {
       certificateCheck: () => 0
