@@ -47,6 +47,15 @@
     "node-gyp": "^11.2.0",
     "tar-fs": "^3.0.9"
   },
+  "overrides": {
+    "mocha": {
+      "diff": "^8.0.3",
+      "serialize-javascript": "^7.0.4"
+    },
+    "jshint": {
+      "minimatch": "3.1.5"
+    }
+  },
   "devDependencies": {
     "aws-sdk": "^2.1095.0",
     "clean-for-publish": "~1.0.2",
