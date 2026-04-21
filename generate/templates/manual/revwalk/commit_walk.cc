@@ -139,11 +139,11 @@ NAN_METHOD(GitRevwalk::CommitWalk) {
   } else {
     baton->returnPlainObjects = false;
   }
-  baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
+  baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.Holder())->GetValue();
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   CommitWalkWorker *worker = new CommitWalkWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRevwalk>("commitWalk", info.This());
+  worker->Reference<GitRevwalk>("commitWalk", info.Holder());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

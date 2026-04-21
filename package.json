@@ -43,7 +43,7 @@
     "got": "^14.4.7",
     "json5": "^2.1.0",
     "lodash": "^4.18.1",
-    "nan": "^2.23.1",
+    "nan": "axosoft/nan#v2.26.2-axosoft.0",
     "node-gyp": "^11.2.0",
     "tar-fs": "^3.0.9"
   },

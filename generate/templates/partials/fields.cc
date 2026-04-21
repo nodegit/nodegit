@@ -5,7 +5,7 @@
       v8::Local<v8::Value> v8ConversionSlot;
 
       {% if field | isFixedLengthString %}
-      char* {{ field.name }} = (char *)Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue()->{{ field.name }};
+      char* {{ field.name }} = (char *)Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder())->GetValue()->{{ field.name }};
       {% else %}
         {% if field.cType|isArrayType %}
           {{ field.cType|arrayTypeToPlainType }} *{{ field.name }} =
@@ -21,7 +21,7 @@
             {% endif %}
           {% endif %}
         {% endif %}
-        Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue()->{{ field.name }};
+        Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder())->GetValue()->{{ field.name }};
       {% endif %}
 
       {% partial convertToV8 field %}

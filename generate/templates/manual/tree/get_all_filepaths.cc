@@ -43,14 +43,14 @@ NAN_METHOD(GitTree::GetAllFilepaths)
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->tree = Nan::ObjectWrap::Unwrap<GitTree>(info.This())->GetValue();
+  baton->tree = Nan::ObjectWrap::Unwrap<GitTree>(info.Holder())->GetValue();
   baton->out = new std::vector<std::string>;
   baton->repo = git_tree_owner(baton->tree);
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   GetAllFilepathsWorker *worker = new GetAllFilepathsWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitTree>("tree", info.This());
+  worker->Reference<GitTree>("tree", info.Holder());
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
 

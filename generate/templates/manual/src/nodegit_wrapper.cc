@@ -79,8 +79,8 @@ NAN_METHOD(NodeGitWrapper<Traits>::JSNewFunction) {
     );
   }
 
-  instance->Wrap(info.This());
-  info.GetReturnValue().Set(info.This());
+  instance->Wrap(info.Holder());
+  info.GetReturnValue().Set(info.Holder());
 }
 
 template<typename Traits>

@@ -23,7 +23,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-        baton->{{ arg.name }} = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This())->GetValue();
+        baton->{{ arg.name }} = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.Holder())->GetValue();
       {%elsif arg.isCallbackFunction %}
         if (!info[{{ arg.jsArg }}]->IsFunction()) {
           baton->{{ arg.name }} = NULL;
@@ -110,7 +110,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-        worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info.This());
+        worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info.Holder());
       {%elsif not arg.isCallbackFunction %}
         {%if  arg.isUnwrappable %}
           {% if arg.cppClassName == "Array" %}

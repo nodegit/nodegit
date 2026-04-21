@@ -64,9 +64,9 @@ NAN_METHOD(ConvenientHunk::JSNewFunction) {
    }
 
   ConvenientHunk* object = new ConvenientHunk(static_cast<HunkData *>(Local<External>::Cast(info[0])->Value()));
-  object->Wrap(info.This());
+  object->Wrap(info.Holder());
 
-  info.GetReturnValue().Set(info.This());
+  info.GetReturnValue().Set(info.Holder());
 }
 
 Local<v8::Value> ConvenientHunk::New(void *raw) {
@@ -87,7 +87,7 @@ size_t ConvenientHunk::GetSize() {
 
 NAN_METHOD(ConvenientHunk::Size) {
   Local<v8::Value> to;
-  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetSize());
+  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetSize());
   info.GetReturnValue().Set(to);
 }
 
@@ -98,14 +98,14 @@ NAN_METHOD(ConvenientHunk::Lines) {
 
   LinesBaton *baton = new LinesBaton();
 
-  baton->hunk = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue();
+  baton->hunk = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetValue();
   baton->lines = new std::vector<git_diff_line *>;
   baton->lines->reserve(baton->hunk->numLines);
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   LinesWorker *worker = new LinesWorker(baton, callback);
 
-  worker->Reference<ConvenientHunk>("hunk", info.This());
+  worker->Reference<ConvenientHunk>("hunk", info.Holder());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
@@ -160,39 +160,39 @@ void ConvenientHunk::LinesWorker::HandleOKCallback() {
 
 NAN_METHOD(ConvenientHunk::OldStart) {
   Local<v8::Value> to;
-  int old_start = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.old_start;
+  int old_start = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetValue()->hunk.old_start;
   info.GetReturnValue().Set(Nan::New<Number>(old_start));
 }
 
 
 NAN_METHOD(ConvenientHunk::OldLines) {
   Local<v8::Value> to;
-  int old_lines = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.old_lines;
+  int old_lines = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetValue()->hunk.old_lines;
   info.GetReturnValue().Set(Nan::New<Number>(old_lines));
 }
 
 NAN_METHOD(ConvenientHunk::NewStart) {
   Local<v8::Value> to;
-  int new_start = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.new_start;
+  int new_start = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetValue()->hunk.new_start;
   info.GetReturnValue().Set(Nan::New<Number>(new_start));
 }
 
 NAN_METHOD(ConvenientHunk::NewLines) {
   Local<v8::Value> to;
-  int new_lines = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.new_lines;
+  int new_lines = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetValue()->hunk.new_lines;
   info.GetReturnValue().Set(Nan::New<Number>(new_lines));
 }
 
 NAN_METHOD(ConvenientHunk::HeaderLen) {
   Local<v8::Value> to;
-  size_t header_len = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.header_len;
+  size_t header_len = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetValue()->hunk.header_len;
   info.GetReturnValue().Set(Nan::New<Number>(header_len));
 }
 
 NAN_METHOD(ConvenientHunk::Header) {
   Local<v8::Value> to;
 
-  char *header = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.This())->GetValue()->hunk.header;
+  char *header = Nan::ObjectWrap::Unwrap<ConvenientHunk>(info.Holder())->GetValue()->hunk.header;
   if (header) {
     to = Nan::New<String>(header).ToLocalChecked();
   } else {

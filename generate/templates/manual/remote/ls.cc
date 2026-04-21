@@ -9,12 +9,12 @@ NAN_METHOD(GitRemote::ReferenceList)
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->out = new std::vector<git_remote_head*>;
-  baton->remote = Nan::ObjectWrap::Unwrap<GitRemote>(info.This())->GetValue();
+  baton->remote = Nan::ObjectWrap::Unwrap<GitRemote>(info.Holder())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   ReferenceListWorker *worker = new ReferenceListWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRemote>("remote", info.This());
+  worker->Reference<GitRemote>("remote", info.Holder());
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
   return;

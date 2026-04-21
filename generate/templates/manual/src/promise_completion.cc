@@ -57,8 +57,8 @@ bool PromiseCompletion::ForwardIfPromise(v8::Local<v8::Value> result, nodegit::A
 // creates a new instance of PromiseCompletion, wrapped in a v8 object
 NAN_METHOD(PromiseCompletion::New) {
   PromiseCompletion *promiseCompletion = new PromiseCompletion();
-  promiseCompletion->Wrap(info.This());
-  info.GetReturnValue().Set(info.This());
+  promiseCompletion->Wrap(info.Holder());
+  info.GetReturnValue().Set(info.Holder());
 }
 
 // sets up a Promise to forward the promise result via the baton and callback
@@ -107,7 +107,7 @@ void PromiseCompletion::CallCallback(bool isFulfilled, const Nan::FunctionCallba
     resultOfPromise = info[0];
   }
 
-  PromiseCompletion *promiseCompletion = ObjectWrap::Unwrap<PromiseCompletion>(Nan::To<v8::Object>(info.This()).ToLocalChecked());
+  PromiseCompletion *promiseCompletion = ObjectWrap::Unwrap<PromiseCompletion>(Nan::To<v8::Object>(info.Holder()).ToLocalChecked());
 
   (*promiseCompletion->callback)(isFulfilled, promiseCompletion->baton, resultOfPromise);
 }

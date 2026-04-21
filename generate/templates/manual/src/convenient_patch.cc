@@ -170,9 +170,9 @@ NAN_METHOD(ConvenientPatch::JSNewFunction) {
    }
 
   ConvenientPatch* object = new ConvenientPatch(static_cast<PatchData *>(Local<External>::Cast(info[0])->Value()));
-  object->Wrap(info.This());
+  object->Wrap(info.Holder());
 
-  info.GetReturnValue().Set(info.This());
+  info.GetReturnValue().Set(info.Holder());
 }
 
 Local<v8::Value> ConvenientPatch::New(void *raw) {
@@ -214,14 +214,14 @@ NAN_METHOD(ConvenientPatch::Hunks) {
 
   HunksBaton *baton = new HunksBaton();
 
-  baton->patch = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetValue();
+  baton->patch = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetValue();
   baton->hunks = new std::vector<HunkData *>;
   baton->hunks->reserve(baton->patch->numHunks);
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
   HunksWorker *worker = new HunksWorker(baton, callback);
 
-  worker->Reference<ConvenientPatch>("patch", info.This());
+  worker->Reference<ConvenientPatch>("patch", info.Holder());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);
@@ -300,7 +300,7 @@ NAN_METHOD(ConvenientPatch::LineStats) {
 
   Local<v8::Value> to;
   Local<Object> toReturn = Nan::New<Object>();
-  ConvenientLineStats stats = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetLineStats();
+  ConvenientLineStats stats = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetLineStats();
 
   to = Nan::New<Number>(stats.context);
   Nan::Set(toReturn, Nan::New("total_context").ToLocalChecked(), to);
@@ -315,7 +315,7 @@ NAN_METHOD(ConvenientPatch::LineStats) {
 NAN_METHOD(ConvenientPatch::Size) {
   Local<v8::Value> to;
 
-  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetNumHunks());
+  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetNumHunks());
 
   info.GetReturnValue().Set(to);
 }
@@ -325,7 +325,7 @@ NAN_METHOD(ConvenientPatch::OldFile) {
 
   Local<v8::Value> to;
   git_diff_file *old_file = (git_diff_file *)malloc(sizeof(git_diff_file));
-  *old_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetOldFile();
+  *old_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetOldFile();
 
   to = GitDiffFile::New(old_file, true);
 
@@ -337,7 +337,7 @@ NAN_METHOD(ConvenientPatch::NewFile) {
 
   Local<v8::Value> to;
   git_diff_file *new_file = (git_diff_file *)malloc(sizeof(git_diff_file));
-  *new_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetNewFile();
+  *new_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetNewFile();
   if (new_file != NULL) {
     to = GitDiffFile::New(new_file, true);
   } else {
@@ -349,7 +349,7 @@ NAN_METHOD(ConvenientPatch::NewFile) {
 
 NAN_METHOD(ConvenientPatch::Status) {
   Local<v8::Value> to;
-  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus());
+  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus());
   info.GetReturnValue().Set(to);
 }
 
@@ -357,67 +357,67 @@ NAN_METHOD(ConvenientPatch::IsUnmodified) {
   Nan::EscapableHandleScope scope;
 
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_UNMODIFIED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_UNMODIFIED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsAdded) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_ADDED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_ADDED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsDeleted) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_DELETED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_DELETED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsModified) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_MODIFIED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_MODIFIED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsRenamed) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_RENAMED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_RENAMED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsCopied) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_COPIED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_COPIED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsIgnored) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_IGNORED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_IGNORED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsUntracked) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_UNTRACKED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_UNTRACKED);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsTypeChange) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_TYPECHANGE);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_TYPECHANGE);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsUnreadable) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_UNREADABLE);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_UNREADABLE);
   info.GetReturnValue().Set(to);
 }
 
 NAN_METHOD(ConvenientPatch::IsConflicted) {
   Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.This())->GetStatus() == GIT_DELTA_CONFLICTED);
+  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_CONFLICTED);
   info.GetReturnValue().Set(to);
 }
 

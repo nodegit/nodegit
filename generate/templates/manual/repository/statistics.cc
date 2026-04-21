@@ -1781,13 +1781,13 @@ NAN_METHOD(GitRepository::Statistics)
 
    baton->error_code = GIT_OK;
    baton->error = NULL;
-   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
+   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.Holder())->GetValue();
    baton->out = static_cast<void *>(new RepoAnalysis(baton->repo));
    
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   StatisticsWorker *worker = new StatisticsWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRepository>("repo", info.This());
+  worker->Reference<GitRepository>("repo", info.Holder());
   nodegit::Context *nodegitContext =
     reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

@@ -214,12 +214,12 @@ NAN_METHOD(GitRevwalk::FileHistoryWalk)
   baton->max_count = Nan::To<unsigned int>(info[1]).FromJust();
   baton->out = new std::vector<void *>;
   baton->out->reserve(baton->max_count);
-  baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.This())->GetValue();
+  baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.Holder())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   FileHistoryWalkWorker *worker = new FileHistoryWalkWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRevwalk>("fileHistoryWalk", info.This());
+  worker->Reference<GitRevwalk>("fileHistoryWalk", info.Holder());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

@@ -18,7 +18,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%partial convertFromV8 arg %}
         {%if arg.saveArg %}
           v8::Local<Object> {{ arg.name }}(Nan::To<v8::Object>(info[{{ arg.jsArg }}]).ToLocalChecked());
-          {{ cppClassName }} *thisObj = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
+          {{ cppClassName }} *thisObj = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder());
 
           thisObj->{{ cppFunctionName }}_{{ arg.name }}.Reset({{ arg.name }});
         {%endif%}
@@ -28,7 +28,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
   {%-- Inside a free call, if the value is already free'd don't do it again.--%}
   {%if cppFunctionName == "Free" %}
-    if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->GetValue() != NULL) {
+    if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder())->GetValue() != NULL) {
   {%endif%}
 
   git_error_clear();
@@ -41,7 +41,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {%if not arg.isReturn%}
             ,
             {%if arg.isSelf %}
-              Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This())->GetValue()
+              Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.Holder())->GetValue()
             {%else%}
               from_{{ arg.name }}
             {%endif%}
@@ -57,7 +57,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {%if not arg.shouldAlloc %}&{%endif%}
         {%endif%}
         {%if arg.isSelf %}
-          Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.This())->GetValue()
+          Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.Holder())->GetValue()
         {%elsif arg.isReturn %}
           {{ arg.name }}
         {%else%}
@@ -88,7 +88,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
 
     {%if cppFunctionName == "Free" %}
-        Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This())->ClearValue();
+        Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder())->ClearValue();
       } // lock master scope end
     {%endif%}
 

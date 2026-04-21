@@ -39,9 +39,9 @@ NAN_METHOD(Wrapper::JSNewFunction) {
   }
 
   Wrapper* object = new Wrapper(External::Cast(*info[0])->Value());
-  object->Wrap(info.This());
+  object->Wrap(info.Holder());
 
-  info.GetReturnValue().Set(info.This());
+  info.GetReturnValue().Set(info.Holder());
 }
 
 Local<v8::Value> Wrapper::New(const void *raw) {
@@ -74,7 +74,7 @@ NAN_METHOD(Wrapper::ToBuffer) {
   Local<v8::Value> constructorArgs[1] = { Nan::New(len) };
   Local<Object> nodeBuffer = Nan::NewInstance(bufferConstructor, 1, constructorArgs).ToLocalChecked();
 
-  std::memcpy(node::Buffer::Data(nodeBuffer), Nan::ObjectWrap::Unwrap<Wrapper>(info.This())->GetValue(), len);
+  std::memcpy(node::Buffer::Data(nodeBuffer), Nan::ObjectWrap::Unwrap<Wrapper>(info.Holder())->GetValue(), len);
 
   info.GetReturnValue().Set(nodeBuffer);
 }

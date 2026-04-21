@@ -16,13 +16,13 @@ NAN_METHOD(GitFilterSource::Repo) {
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->src = Nan::ObjectWrap::Unwrap<GitFilterSource>(info.This())->GetValue();
+  baton->src = Nan::ObjectWrap::Unwrap<GitFilterSource>(info.Holder())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   RepoWorker *worker = new RepoWorker(baton, callback, cleanupHandles);
 
-  worker->Reference<GitFilterSource>("src", info.This());
+  worker->Reference<GitFilterSource>("src", info.Holder());
 
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

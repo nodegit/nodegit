@@ -416,12 +416,12 @@ NAN_METHOD(GitRepository::RefreshReferences)
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->out = (void *)new RefreshReferencesData();
-  baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.This())->GetValue();
+  baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.Holder())->GetValue();
 
   Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRepository>("repo", info.This());
+  worker->Reference<GitRepository>("repo", info.Holder());
   worker->Reference("signatureType", signatureType);
   nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
   nodegitContext->QueueWorker(worker);

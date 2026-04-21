@@ -2,7 +2,7 @@
   {% if not field.ignore %}
     NAN_GETTER({{ cppClassName }}::Get{{ field.cppFunctionName }}) {
 
-      {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
+      {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder());
 
       {% if field.isEnum %}
         info.GetReturnValue().Set(Nan::New((int)wrapper->GetValue()->{{ field.name }}));
@@ -24,7 +24,7 @@
     }
 
     NAN_SETTER({{ cppClassName }}::Set{{ field.cppFunctionName }}) {
-      {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.This());
+      {{ cppClassName }} *wrapper = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder());
 
       {% if field.isEnum %}
         if (value->IsNumber()) {
