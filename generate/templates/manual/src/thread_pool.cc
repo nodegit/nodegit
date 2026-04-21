@@ -657,9 +657,6 @@ namespace nodegit {
 
   // NOTE this should theoretically never be triggered during a cleanup operation
   void ThreadPoolImpl::RunLoopCallbacks() {
-    Nan::HandleScope scope;
-    v8::Local<v8::Context> context = Nan::GetCurrentContext();
-    node::CallbackScope callbackScope(context->GetIsolate(), Nan::New<v8::Object>(), {0, 0});
 
     std::unique_lock<std::mutex> lock(*jsThreadCallbackMutex);
     // get the next callback to run
@@ -718,10 +715,6 @@ namespace nodegit {
 
       orchestratorJobCondition.notify_all();
     }
-
-    Nan::HandleScope scope;
-    v8::Local<v8::Context> context = Nan::GetCurrentContext();
-    node::CallbackScope callbackScope(context->GetIsolate(), Nan::New<v8::Object>(), {0, 0});
 
     while (cancelledJobs.size()) {
       std::shared_ptr<Orchestrator::Job> cancelledJob = cancelledJobs.front();

@@ -101,9 +101,7 @@ NAN_MODULE_INIT(init) {
     , Nan::GetFunction(Nan::New<v8::FunctionTemplate>(GetNumberOfTrackedObjects)).ToLocalChecked()
   );
 
-  Nan::HandleScope scope;
-  Local<Context> context = Nan::GetCurrentContext();
-  Isolate *isolate = context->GetIsolate();
+  Isolate *isolate = v8::Isolate::GetCurrent();
   nodegit::Context *nodegitContext = new nodegit::Context(isolate);
 
   Wrapper::InitializeComponent(target, nodegitContext);
