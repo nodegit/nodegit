@@ -183,6 +183,17 @@ Local<v8::Value> ConvenientPatch::New(void *raw) {
   return scope.Escape(Nan::NewInstance(constructor_template, 1, argv).ToLocalChecked());
 }
 
+Local<v8::Value> ConvenientPatch::New(v8::Local<v8::Function> constructorTemplate, void *raw) {
+  Nan::EscapableHandleScope scope;
+  Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
+  return scope.Escape(Nan::NewInstance(constructorTemplate, 1, argv).ToLocalChecked());
+}
+
+v8::Local<v8::Function> ConvenientPatch::GetTemplate() {
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+  return nodegitContext->GetFromPersistent("ConvenientPatch::Template").As<Function>();
+}
+
 ConvenientLineStats ConvenientPatch::GetLineStats() {
   return this->patch->lineStats;
 }
@@ -280,8 +291,9 @@ void ConvenientPatch::HunksWorker::HandleOKCallback() {
   unsigned int size = baton->hunks->size();
   Local<Array> result = Nan::New<Array>(size);
 
+  v8::Local<v8::Function> constructor_template = ConvenientHunk::GetTemplate();
   for(unsigned int i = 0; i < size; ++i) {
-    Nan::Set(result, Nan::New<Number>(i), ConvenientHunk::New(baton->hunks->at(i)));
+    Nan::Set(result, Nan::New<Number>(i), ConvenientHunk::New(constructor_template, baton->hunks->at(i)));
   }
 
   delete baton->hunks;

@@ -109,15 +109,18 @@ void GitRepository::GetReferencesWorker::HandleOKCallback()
   {
     unsigned int size = baton->out->size();
     Local<Array> result = Nan::New<Array>(size);
+    v8::Local<v8::Function> git_refs_template = GitRefs::GetTemplate();
+    v8::Local<v8::Function> git_repository_template = GitRepository::GetTemplate();
     for (unsigned int i = 0; i < size; i++) {
       git_reference *reference = baton->out->at(i);
       Nan::Set(
         result,
         Nan::New<Number>(i),
         GitRefs::New(
+          git_refs_template,
           reference,
           true,
-          Nan::To<v8::Object>(GitRepository::New(git_reference_owner(reference), true)).ToLocalChecked()
+          Nan::To<v8::Object>(GitRepository::New(git_repository_template, git_reference_owner(reference), true)).ToLocalChecked()
         )
       );
     }
