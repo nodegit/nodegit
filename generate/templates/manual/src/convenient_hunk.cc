@@ -77,6 +77,17 @@ Local<v8::Value> ConvenientHunk::New(void *raw) {
   return scope.Escape(Nan::NewInstance(constructor_template, 1, argv).ToLocalChecked());
 }
 
+Local<v8::Value> ConvenientHunk::New(v8::Local<v8::Function> constructorTemplate, void *raw) {
+  Nan::EscapableHandleScope scope;
+  Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
+  return scope.Escape(Nan::NewInstance(constructorTemplate, 1, argv).ToLocalChecked());
+}
+
+v8::Local<v8::Function> ConvenientHunk::GetTemplate() {
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+  return nodegitContext->GetFromPersistent("ConvenientHunk::Template").As<Function>();
+}
+
 HunkData *ConvenientHunk::GetValue() {
   return this->hunk;
 }
