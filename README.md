@@ -11,10 +11,13 @@
 Visit [slack.libgit2.org](http://slack.libgit2.org/) to sign up, then join us in #nodegit.
 
 ## Maintained by ##
-Tyler Ang-Wanek [@twwanek](http://twitter.com/twwanek) with help from tons of
+Alex Aveillán [@AlexaXs](http://github.com/AlexaXs) with help from tons of
 [awesome contributors](https://github.com/nodegit/nodegit/contributors)!
 
 ### Alumni Maintainers ###
+Ian Hattendorf [@ianhattendorf](http://github.com/ianhattendorf),
+John Alden [@zawata](http://github.com/zawata),
+Tyler Ang-Wanek [@twwanek](http://twitter.com/twwanek),
 Tim Branyen [@tbranyen](http://twitter.com/tbranyen),
 John Haley [@johnhaley81](http://twitter.com/johnhaley81),
 Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp),
