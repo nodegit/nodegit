@@ -948,6 +948,30 @@
       "throttle": 100
     }
   },
+  "git_push_negotiation": {
+    "args": [
+      {
+        "name": "updates",
+        "type": "const git_push_update **"
+      },
+      {
+        "name": "len",
+        "type": "size_t"
+      },
+      {
+        "name": "payload",
+        "type": "void *"
+      }
+    ],
+    "return": {
+      "type": "int",
+      "noResults": 0,
+      "success": 0,
+      "error": -1,
+      "cancel": -1,
+      "throttle": 100
+    }
+  },
   "git_transport_cb": {
     "args": [
       {
