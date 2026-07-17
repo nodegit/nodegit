@@ -145,11 +145,11 @@
             else if (!result->IsNull() && !result->IsUndefined()) {
               {% if _return.isOutParam %}
                 {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
-                wrapper->selfFreeing = false;
 
                 {% if _return.cppClassName == "GitOid" %}
                   git_oid_cpy(baton->{{ _return.name }}, wrapper->GetValue());
                 {% else %}
+                  wrapper->selfFreeing = false;
                   *baton->{{ _return.name }} = wrapper->GetValue();
                 {% endif %}
                 baton->result = {{ field.return.success }};
@@ -185,11 +185,11 @@
               else if (!result->IsNull() && !result->IsUndefined()) {
                 {% if _return.isOutParam %}
                   {{ _return.cppClassName }}* wrapper = Nan::ObjectWrap::Unwrap<{{ _return.cppClassName }}>(Nan::To<v8::Object>(result).ToLocalChecked());
-                  wrapper->selfFreeing = false;
 
                   {% if _return.cppClassName == "GitOid" %}
                     git_oid_cpy(baton->{{ _return.name }}, wrapper->GetValue());
                   {% else %}
+                    wrapper->selfFreeing = false;
                     *baton->{{ _return.name }} = wrapper->GetValue();
                   {% endif %}
                   baton->result = {{ field.return.success }};
