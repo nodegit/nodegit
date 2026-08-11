@@ -155,6 +155,29 @@ describe("Checkout", function() {
     });
   });
 
+  it("can checkout a branch with a name that conflicts with a tag", function() {
+    var test = this;
+    var commit;
+
+    return test.repository.getHeadCommit()
+    .then(function(headCommit) {
+      commit = headCommit;
+      return test.repository.createLightweightTag(commit.sha(), "conflict");
+    })
+    .then(function() {
+      return test.repository.createBranch("conflict", commit);
+    })
+    .then(function() {
+      return test.repository.checkoutBranch("conflict");
+    })
+    .then(function() {
+      return test.repository.head();
+    })
+    .then(function(ref) {
+      assert.equal(ref.name(), "refs/heads/conflict");
+    });
+  });
+
   it("can checkout an index with conflicts", function() {
     const test = this;
 
