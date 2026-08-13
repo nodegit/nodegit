@@ -10,12 +10,19 @@ describe("Tree", function() {
   var repoPath = local("../repos/tree");
   var existingPath = local("../repos/workdir");
   var oid = "5716e9757886eaf38d51c86b192258c960d9cfea";
+  var file1 = "test.txt";
+  var file2 = "foo/bar.txt";
 
   beforeEach(function() {
     var test = this;
     return RepoUtils.createRepository(repoPath)
       .then(function(repo) {
         test.repository = repo;
+        return RepoUtils.commitFileToRepo(repo, file1, "");
+      }).then(function(commit) {
+        return RepoUtils.commitFileToRepo(test.repository, file2, "", commit);
+      }).then(function(commit) {
+        test.repositoryCommit = commit;
       }).then(function() {
         return NodeGit.Repository.open(existingPath);
       }).then(function(repository) {
@@ -30,12 +37,28 @@ describe("Tree", function() {
     return fse.remove(repoPath);
   });
 
+  it("gets an entry by id",
+  function(done) {
+    this.commit.getTree().then(function(tree) {
+      var entry = tree.entryById("6cb45ba5d32532bf0d1310dc31ca4f20f59964bc");
+        assert(entry);
+    }).done(done);
+  });
+
   it("gets an entry by name",
   function() {
     return this.commit.getTree().then(function(tree) {
       var entry = tree.entryByName("README.md");
         assert(entry);
     });
+  });
+
+  it("gets an entry by path",
+  function(done) {
+    this.commit.getTree().then(function(tree) {
+      var entry = tree.getEntry(file2);
+        assert(entry);
+    }).done(done);
   });
 
   it("updates a tree", function () {
@@ -58,20 +81,13 @@ describe("Tree", function() {
 
   it("walks its entries and returns the same entries on both progress and end",
   function() {
-    var repo = this.repository;
-    var file1 = "test.txt";
-    var file2 = "foo/bar.txt";
+    var commit = this.repositoryCommit;
+
     var expectedPaths = [file1, file2];
     var progressEntries = [];
     var endEntries;
 
-    return RepoUtils.commitFileToRepo(repo, file1, "")
-      .then(function(commit) {
-        return RepoUtils.commitFileToRepo(repo, file2, "", commit);
-      })
-      .then(function(commit) {
-        return commit.getTree();
-      })
+    return commit.getTree()
       .then(function(tree) {
         assert(tree);
 
