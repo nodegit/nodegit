@@ -61,7 +61,7 @@ describe("Branch", function() {
 
     return repo.getBranch("master")
       .then(function(branch) {
-        assert.ok(branch.isHead());
+        assert.strictEqual(branch.isHead(), true);
       });
   });
 
