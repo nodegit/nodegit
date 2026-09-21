@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <nan.h>
+#include <napi.h>
 
 #include "lock_master.h"
 #include "nodegit.h"
@@ -29,9 +29,9 @@ namespace nodegit {
 
       void Done();
 
-      Nan::AsyncResource *GetAsyncResource();
+      Napi::AsyncContext *GetAsyncResource();
 
-      void SetCallbackError(v8::Local<v8::Value> error);
+      void SetCallbackError(Napi::Value error);
 
     protected:
       void ExecuteAsyncPerform(AsyncCallback asyncCallback, AsyncCallback asyncCancelCb, CompletionCallback onCompletion);
@@ -40,8 +40,8 @@ namespace nodegit {
       void SignalCompletion();
       void WaitForCompletion();
 
-      Nan::AsyncResource *asyncResource;
-      Nan::Global<v8::Value> &callbackErrorHandle;
+      Napi::AsyncContext *asyncResource;
+      Napi::Reference<Napi::Value> &callbackErrorHandle;
       ThreadPool::Callback onCompletion;
       std::unique_ptr<std::mutex> completedMutex;
       std::condition_variable completedCondition;
@@ -60,7 +60,7 @@ namespace nodegit {
         : defaultResult(defaultResult) {
       }
 
-      ResultT ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::AsyncCallback asyncCancelCb, AsyncBaton::CompletionCallback onCompletion = nullptr) {
+      ResultT ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::AsyncCallback asyncCancelCb, CompletionCallback onCompletion = nullptr) {
         result = 0;
         ExecuteAsyncPerform(asyncCallback, asyncCancelCb, onCompletion);
         return result;
@@ -69,7 +69,7 @@ namespace nodegit {
 
   class AsyncBatonWithNoResult : public AsyncBaton {
     public:
-      void ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::AsyncCallback asyncCancelCb, AsyncBaton::CompletionCallback onCompletion = nullptr) {
+      void ExecuteAsync(AsyncBaton::AsyncCallback asyncCallback, AsyncBaton::AsyncCallback asyncCancelCb, CompletionCallback onCompletion = nullptr) {
         ExecuteAsyncPerform(asyncCallback, asyncCancelCb, onCompletion);
       }
   };

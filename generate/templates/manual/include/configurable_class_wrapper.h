@@ -2,7 +2,7 @@
 #define CALLER_CONFIGURABLE_CLASS_WRAPPER_H
 
 #include <memory>
-#include <nan.h>
+#include <napi.h>
 #include <string>
 
 #include "cleanup_handle.h"

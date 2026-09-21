@@ -7,26 +7,27 @@
 /*
  * @param Repository callback
  */
-NAN_METHOD(GitFilterSource::Repo) {
-  if (!info[info.Length() - 1]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+Napi::Value GitFilterSource::Repo(const Napi::CallbackInfo& info) {
+  if (!info[info.Length() - 1].IsFunction()) {
+    Napi::Error::New(info.Env(), "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
   }
 
   RepoBaton *baton = new RepoBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->src = Nan::ObjectWrap::Unwrap<GitFilterSource>(info.Holder())->GetValue();
+  baton->src = NodeGitWrapper<GitFilterSourceTraits>::Unwrap<GitFilterSource>(info.This().As<Napi::Object>())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[info.Length() - 1].As<Napi::Function>()));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   RepoWorker *worker = new RepoWorker(baton, callback, cleanupHandles);
 
-  worker->Reference<GitFilterSource>("src", info.Holder());
+  worker->Reference<GitFilterSource>("src", info.This().As<Napi::Object>());
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   nodegitContext->QueueWorker(worker);
-  return;
+  return info.Env().Undefined();
 }
 
 nodegit::LockMaster GitFilterSource::RepoWorker::AcquireLocks() {
@@ -62,44 +63,42 @@ void GitFilterSource::RepoWorker::HandleErrorCallback() {
 }
 
 void GitFilterSource::RepoWorker::HandleOKCallback() {
+  Napi::Env env = GetAsyncResource()->Env();
   if (baton->error_code == GIT_OK) {
-    v8::Local<v8::Value> to;
+    Napi::Value to;
 
     if (baton->out != NULL) {
       to = GitRepository::New(baton->out, true);
     } else {
-      to = Nan::Null();
+      to = env.Null();
     }
 
-    v8::Local<v8::Value> argv[2] = {Nan::Null(), to};
-    callback->Call(2, argv, async_resource);
+    Napi::Value argv[2] = {env.Null(), to};
+    CallCallback(argv, 2);
   } else {
     if (baton->error) {
-      v8::Local<v8::Object> err;
+      Napi::Object err;
       if (baton->error->message) {
-        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
+        err = Napi::Error::New(env, baton->error->message).Value();
       } else {
-        err = Nan::To<v8::Object>(Nan::Error("Method repo has thrown an error.")).ToLocalChecked();
+        err = Napi::Error::New(env, "Method repo has thrown an error.").Value();
       }
-      Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(),
-               Nan::New("FilterSource.repo").ToLocalChecked());
-      v8::Local<v8::Value> argv[1] = {err};
-      callback->Call(1, argv, async_resource);
+      err.Set("errno", Napi::Number::New(env, baton->error_code));
+      err.Set("errorFunction", Napi::String::New(env, "FilterSource.repo"));
+      Napi::Value argv[1] = {err};
+      CallCallback(argv, 1);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
-      v8::Local<v8::Object> err =
-          Nan::To<v8::Object>(Nan::Error("Method repo has thrown an error.")).ToLocalChecked();
-      Nan::Set(err, Nan::New("errno").ToLocalChecked(),
-               Nan::New(baton->error_code));
-      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(),
-               Nan::New("FilterSource.repo").ToLocalChecked());
-      v8::Local<v8::Value> argv[1] = {err};
-      callback->Call(1, argv, async_resource);
+      Napi::Object err =
+          Napi::Error::New(env, "Method repo has thrown an error.").Value();
+      err.Set("errno", Napi::Number::New(env, baton->error_code));
+      err.Set("errorFunction", Napi::String::New(env, "FilterSource.repo"));
+      Napi::Value argv[1] = {err};
+      CallCallback(argv, 1);
     } else {
-      callback->Call(0, NULL, async_resource);
+      CallCallback(nullptr, 0);
     }
   }
 

@@ -834,7 +834,7 @@ public:
   RepoAnalysis& operator=(RepoAnalysis &&other) = delete;
 
   int Analyze();
-  v8::Local<v8::Object> StatisticsToJS() const;
+  Napi::Object StatisticsToJS(Napi::Env env) const;
 
 private:
   // stage 1 methods: store data from repository (with threads)
@@ -861,10 +861,10 @@ private:
   OdbObjectsData::iterTagInfo calculateTagDepth(const std::string &oidTag);
   // methods to return the statistics calculated
   void fillOutStatistics();
-  v8::Local<v8::Object> repositorySizeToJS() const;
-  v8::Local<v8::Object> biggestObjectsToJS() const;
-  v8::Local<v8::Object> historyStructureToJS() const;
-  v8::Local<v8::Object> biggestCheckoutsToJS() const;
+  Napi::Object repositorySizeToJS(Napi::Env env) const;
+  Napi::Object biggestObjectsToJS(Napi::Env env) const;
+  Napi::Object historyStructureToJS(Napi::Env env) const;
+  Napi::Object biggestCheckoutsToJS(Napi::Env env) const;
 
   git_repository *m_repo {nullptr};
   Statistics m_statistics {};
@@ -913,21 +913,21 @@ int RepoAnalysis::Analyze()
 /**
  * RepoAnalysis::StatisticsToJS
  */
-v8::Local<v8::Object> RepoAnalysis::StatisticsToJS() const
+Napi::Object RepoAnalysis::StatisticsToJS(Napi::Env env) const
 {
-  v8::Local<v8::Object> result = Nan::New<Object>();
+  Napi::Object result = Napi::Object::New(env);
 
-  v8::Local<v8::Object> repositorySize = repositorySizeToJS();
-  Nan::Set(result, Nan::New("repositorySize").ToLocalChecked(), repositorySize);
+  Napi::Object repositorySize = repositorySizeToJS(env);
+  result.Set("repositorySize", repositorySize);
 
-  v8::Local<v8::Object> biggestObjects = biggestObjectsToJS();
-  Nan::Set(result, Nan::New("biggestObjects").ToLocalChecked(), biggestObjects);
+  Napi::Object biggestObjects = biggestObjectsToJS(env);
+  result.Set("biggestObjects", biggestObjects);
 
-  v8::Local<v8::Object> historyStructure = historyStructureToJS();
-  Nan::Set(result, Nan::New("historyStructure").ToLocalChecked(), historyStructure);
+  Napi::Object historyStructure = historyStructureToJS(env);
+  result.Set("historyStructure", historyStructure);
 
-  v8::Local<v8::Object> biggestCheckouts = biggestCheckoutsToJS();
-  Nan::Set(result, Nan::New("biggestCheckouts").ToLocalChecked(), biggestCheckouts);
+  Napi::Object biggestCheckouts = biggestCheckoutsToJS(env);
+  result.Set("biggestCheckouts", biggestCheckouts);
 
   return result;
 }
@@ -1666,42 +1666,42 @@ void RepoAnalysis::fillOutStatistics()
 /**
  * RepoAnalysis::repositorySizeToJS
  */
-v8::Local<v8::Object> RepoAnalysis::repositorySizeToJS() const
+Napi::Object RepoAnalysis::repositorySizeToJS(Napi::Env env) const
 {
-  v8::Local<v8::Object> commits = Nan::New<Object>();
-  Nan::Set(commits, Nan::New("count").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.commits.count));
-  Nan::Set(commits, Nan::New("size").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.commits.size));
+  Napi::Object commits = Napi::Object::New(env);
+  commits.Set("count",
+    Napi::Number::New(env, m_statistics.repositorySize.commits.count));
+  commits.Set("size",
+    Napi::Number::New(env, m_statistics.repositorySize.commits.size));
 
-  v8::Local<v8::Object> trees = Nan::New<Object>();
-  Nan::Set(trees, Nan::New("count").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.trees.count));
-  Nan::Set(trees, Nan::New("size").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.trees.size));
-  Nan::Set(trees, Nan::New("entries").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.trees.entries));
+  Napi::Object trees = Napi::Object::New(env);
+  trees.Set("count",
+    Napi::Number::New(env, m_statistics.repositorySize.trees.count));
+  trees.Set("size",
+    Napi::Number::New(env, m_statistics.repositorySize.trees.size));
+  trees.Set("entries",
+    Napi::Number::New(env, m_statistics.repositorySize.trees.entries));
 
-  v8::Local<v8::Object> blobs = Nan::New<Object>();
-  Nan::Set(blobs, Nan::New("count").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.blobs.count));
-  Nan::Set(blobs, Nan::New("size").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.blobs.size));
+  Napi::Object blobs = Napi::Object::New(env);
+  blobs.Set("count",
+    Napi::Number::New(env, m_statistics.repositorySize.blobs.count));
+  blobs.Set("size",
+    Napi::Number::New(env, m_statistics.repositorySize.blobs.size));
 
-  v8::Local<v8::Object> annotatedTags = Nan::New<Object>();
-  Nan::Set(annotatedTags, Nan::New("count").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.annotatedTags.count));
+  Napi::Object annotatedTags = Napi::Object::New(env);
+  annotatedTags.Set("count",
+    Napi::Number::New(env, m_statistics.repositorySize.annotatedTags.count));
 
-  v8::Local<v8::Object> references = Nan::New<Object>();
-  Nan::Set(references, Nan::New("count").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.repositorySize.references.count));
+  Napi::Object references = Napi::Object::New(env);
+  references.Set("count",
+    Napi::Number::New(env, m_statistics.repositorySize.references.count));
 
-  v8::Local<v8::Object> result = Nan::New<Object>();
-  Nan::Set(result, Nan::New("commits").ToLocalChecked(), commits);
-  Nan::Set(result, Nan::New("trees").ToLocalChecked(), trees);
-  Nan::Set(result, Nan::New("blobs").ToLocalChecked(), blobs);
-  Nan::Set(result, Nan::New("annotatedTags").ToLocalChecked(), annotatedTags);
-  Nan::Set(result, Nan::New("references").ToLocalChecked(), references);
+  Napi::Object result = Napi::Object::New(env);
+  result.Set("commits", commits);
+  result.Set("trees", trees);
+  result.Set("blobs", blobs);
+  result.Set("annotatedTags", annotatedTags);
+  result.Set("references", references);
 
   return result;
 }
@@ -1709,26 +1709,26 @@ v8::Local<v8::Object> RepoAnalysis::repositorySizeToJS() const
 /**
  * RepoAnalysis::biggestObjectsToJS
  */
-v8::Local<v8::Object> RepoAnalysis::biggestObjectsToJS() const
+Napi::Object RepoAnalysis::biggestObjectsToJS(Napi::Env env) const
 {
-  v8::Local<v8::Object> commits = Nan::New<Object>();
-  Nan::Set(commits, Nan::New("maxSize").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestObjects.commits.maxSize));
-  Nan::Set(commits, Nan::New("maxParents").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestObjects.commits.maxParents));
+  Napi::Object commits = Napi::Object::New(env);
+  commits.Set("maxSize",
+    Napi::Number::New(env, m_statistics.biggestObjects.commits.maxSize));
+  commits.Set("maxParents",
+    Napi::Number::New(env, m_statistics.biggestObjects.commits.maxParents));
 
-  v8::Local<v8::Object> trees = Nan::New<Object>();
-  Nan::Set(trees, Nan::New("maxEntries").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestObjects.trees.maxEntries));
+  Napi::Object trees = Napi::Object::New(env);
+  trees.Set("maxEntries",
+    Napi::Number::New(env, m_statistics.biggestObjects.trees.maxEntries));
 
-  v8::Local<v8::Object> blobs = Nan::New<Object>();
-  Nan::Set(blobs, Nan::New("maxSize").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestObjects.blobs.maxSize));
+  Napi::Object blobs = Napi::Object::New(env);
+  blobs.Set("maxSize",
+    Napi::Number::New(env, m_statistics.biggestObjects.blobs.maxSize));
 
-  v8::Local<v8::Object> result = Nan::New<Object>();
-  Nan::Set(result, Nan::New("commits").ToLocalChecked(), commits);
-  Nan::Set(result, Nan::New("trees").ToLocalChecked(), trees);
-  Nan::Set(result, Nan::New("blobs").ToLocalChecked(), blobs);
+  Napi::Object result = Napi::Object::New(env);
+  result.Set("commits", commits);
+  result.Set("trees", trees);
+  result.Set("blobs", blobs);
 
   return result;
 }
@@ -1736,13 +1736,13 @@ v8::Local<v8::Object> RepoAnalysis::biggestObjectsToJS() const
 /**
  * RepoAnalysis::historyStructureToJS
  */
-v8::Local<v8::Object> RepoAnalysis::historyStructureToJS() const
+Napi::Object RepoAnalysis::historyStructureToJS(Napi::Env env) const
 {
-  v8::Local<v8::Object> result = Nan::New<Object>();
-  Nan::Set(result, Nan::New("maxDepth").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.historyStructure.maxDepth));
-  Nan::Set(result, Nan::New("maxTagDepth").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.historyStructure.maxTagDepth));
+  Napi::Object result = Napi::Object::New(env);
+  result.Set("maxDepth",
+    Napi::Number::New(env, m_statistics.historyStructure.maxDepth));
+  result.Set("maxTagDepth",
+    Napi::Number::New(env, m_statistics.historyStructure.maxTagDepth));
 
   return result;
 }
@@ -1750,48 +1750,49 @@ v8::Local<v8::Object> RepoAnalysis::historyStructureToJS() const
 /**
  * RepoAnalysis::biggestCheckoutsToJS
  */
-v8::Local<v8::Object> RepoAnalysis::biggestCheckoutsToJS() const
+Napi::Object RepoAnalysis::biggestCheckoutsToJS(Napi::Env env) const
 {
-  v8::Local<v8::Object> result = Nan::New<Object>();
-  Nan::Set(result, Nan::New("numDirectories").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestCheckouts.numDirectories));
-  Nan::Set(result, Nan::New("maxPathDepth").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestCheckouts.maxPathDepth));
-  Nan::Set(result, Nan::New("maxPathLength").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestCheckouts.maxPathLength));
-  Nan::Set(result, Nan::New("numFiles").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestCheckouts.numFiles));
-  Nan::Set(result, Nan::New("totalFileSize").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestCheckouts.totalFileSize));
-  Nan::Set(result, Nan::New("numSymlinks").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestCheckouts.numSymlinks));
-  Nan::Set(result, Nan::New("numSubmodules").ToLocalChecked(),
-    Nan::New<Number>(m_statistics.biggestCheckouts.numSubmodules));
+  Napi::Object result = Napi::Object::New(env);
+  result.Set("numDirectories",
+    Napi::Number::New(env, m_statistics.biggestCheckouts.numDirectories));
+  result.Set("maxPathDepth",
+    Napi::Number::New(env, m_statistics.biggestCheckouts.maxPathDepth));
+  result.Set("maxPathLength",
+    Napi::Number::New(env, m_statistics.biggestCheckouts.maxPathLength));
+  result.Set("numFiles",
+    Napi::Number::New(env, m_statistics.biggestCheckouts.numFiles));
+  result.Set("totalFileSize",
+    Napi::Number::New(env, m_statistics.biggestCheckouts.totalFileSize));
+  result.Set("numSymlinks",
+    Napi::Number::New(env, m_statistics.biggestCheckouts.numSymlinks));
+  result.Set("numSubmodules",
+    Napi::Number::New(env, m_statistics.biggestCheckouts.numSubmodules));
 
   return result;
 }
 
-NAN_METHOD(GitRepository::Statistics)
+Napi::Value GitRepository::Statistics(const Napi::CallbackInfo& info)
 {
-  if (!info[info.Length() - 1]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+  Napi::Env env = info.Env();
+  if (!info[info.Length() - 1].IsFunction()) {
+    Napi::Error::New(env, "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
   StatisticsBaton* baton = new StatisticsBaton();
 
    baton->error_code = GIT_OK;
    baton->error = NULL;
-   baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.Holder())->GetValue();
+   baton->repo = NodeGitWrapper<GitRepositoryTraits>::Unwrap<GitRepository>(info.This().As<Napi::Object>())->GetValue();
    baton->out = static_cast<void *>(new RepoAnalysis(baton->repo));
-   
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
+
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[info.Length() - 1].As<Napi::Function>()));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   StatisticsWorker *worker = new StatisticsWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRepository>("repo", info.Holder());
-  nodegit::Context *nodegitContext =
-    reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  worker->Reference<GitRepository>("repo", info.This().As<Napi::Object>());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   nodegitContext->QueueWorker(worker);
-  return;
+  return env.Undefined();
 }
 
 nodegit::LockMaster GitRepository::StatisticsWorker::AcquireLocks()
@@ -1837,35 +1838,36 @@ void GitRepository::StatisticsWorker::HandleErrorCallback()
 
 void GitRepository::StatisticsWorker::HandleOKCallback()
 {
+  Napi::Env env = GetAsyncResource()->Env();
   if (baton->out != NULL)
   {
     RepoAnalysis *repoAnalysis = static_cast<RepoAnalysis *>(baton->out);
-    Local<v8::Object> result = repoAnalysis->StatisticsToJS();
+    Napi::Object result = repoAnalysis->StatisticsToJS(env);
 
     delete repoAnalysis;
 
-    Local<v8::Value> argv[2] = {
-      Nan::Null(),
+    Napi::Value argv[2] = {
+      env.Null(),
       result
     };
-    callback->Call(2, argv, async_resource);
+    CallCallback(argv, 2);
   }
   else if (baton->error)
   {
-    Local<v8::Object> err;
+    Napi::Object err;
 
     if (baton->error->message) {
-      err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
+      err = Napi::Error::New(env, baton->error->message).Value();
     } else {
-      err = Nan::To<v8::Object>(Nan::Error("Method statistics has thrown an error.")).ToLocalChecked();
+      err = Napi::Error::New(env, "Method statistics has thrown an error.").Value();
     }
-    Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("GitRepository.statistics").ToLocalChecked());
-    Local<v8::Value> argv[1] = {
+    err.Set("errno", Napi::Number::New(env, baton->error_code));
+    err.Set("errorFunction", Napi::String::New(env, "GitRepository.statistics"));
+    Napi::Value argv[1] = {
       err
     };
 
-    callback->Call(1, argv, async_resource);
+    CallCallback(argv, 1);
 
     if (baton->error->message) {
       free((void *)baton->error->message);
@@ -1875,17 +1877,17 @@ void GitRepository::StatisticsWorker::HandleOKCallback()
   }
   else if (baton->error_code < 0)
   {
-    Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method statistics has thrown an error.")).ToLocalChecked();
-    Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("GitRepository.statistics").ToLocalChecked());
-    Local<v8::Value> argv[1] = {
+    Napi::Object err = Napi::Error::New(env, "Method statistics has thrown an error.").Value();
+    err.Set("errno", Napi::Number::New(env, baton->error_code));
+    err.Set("errorFunction", Napi::String::New(env, "GitRepository.statistics"));
+    Napi::Value argv[1] = {
       err
     };
-    callback->Call(1, argv, async_resource);
+    CallCallback(argv, 1);
   }
   else
   {
-    callback->Call(0, NULL, async_resource);
+    CallCallback(nullptr, 0);
   }
 
   delete baton;

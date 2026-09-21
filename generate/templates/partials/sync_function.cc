@@ -1,7 +1,8 @@
 
 {%partial doc .%}
-NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
-  Nan::EscapableHandleScope scope;
+Napi::Value {{ cppClassName }}::{{ cppFunctionName }}(const Napi::CallbackInfo& info) {
+  Napi::EscapableHandleScope scope(info.Env());
+  Napi::Env env = info.Env();
   {%partial guardArguments .%}
 
   {%each .|returnsInfo 'true' as _return %}
@@ -17,10 +18,10 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%if not arg.isReturn %}
         {%partial convertFromV8 arg %}
         {%if arg.saveArg %}
-          v8::Local<Object> {{ arg.name }}(Nan::To<v8::Object>(info[{{ arg.jsArg }}]).ToLocalChecked());
-          {{ cppClassName }} *thisObj = Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder());
+          Napi::Object {{ arg.name }} = info[{{ arg.jsArg }}].As<Napi::Object>();
+          {{ cppClassName }} *thisObj = NodeGitWrapper<{{ cppClassName }}Traits>::Unwrap<{{ cppClassName }}>(info.This().As<Napi::Object>());
 
-          thisObj->{{ cppFunctionName }}_{{ arg.name }}.Reset({{ arg.name }});
+          thisObj->{{ cppFunctionName }}_{{ arg.name }} = Napi::Persistent({{ arg.name }});
         {%endif%}
       {%endif%}
     {%endif%}
@@ -28,7 +29,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
 
   {%-- Inside a free call, if the value is already free'd don't do it again.--%}
   {%if cppFunctionName == "Free" %}
-    if (Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder())->GetValue() != NULL) {
+    if (NodeGitWrapper<{{ cppClassName }}Traits>::Unwrap<{{ cppClassName }}>(info.This().As<Napi::Object>())->GetValue() != NULL) {
   {%endif%}
 
   git_error_clear();
@@ -41,7 +42,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {%if not arg.isReturn%}
             ,
             {%if arg.isSelf %}
-              Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.Holder())->GetValue()
+              NodeGitWrapper<{{ arg.cppClassName }}Traits>::Unwrap<{{ arg.cppClassName }}>(info.This().As<Napi::Object>())->GetValue()
             {%else%}
               from_{{ arg.name }}
             {%endif%}
@@ -57,7 +58,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {%if not arg.shouldAlloc %}&{%endif%}
         {%endif%}
         {%if arg.isSelf %}
-          Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.Holder())->GetValue()
+          NodeGitWrapper<{{ arg.cppClassName }}Traits>::Unwrap<{{ arg.cppClassName }}>(info.This().As<Napi::Object>())->GetValue()
         {%elsif arg.isReturn %}
           {{ arg.name }}
         {%else%}
@@ -71,7 +72,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       if (result != GIT_OK) {
       {%each args|argsInfo as arg %}
         {%if arg | isOid %}
-          if (info[{{ arg.jsArg }}]->IsString()) {
+          if (info[{{ arg.jsArg }}].IsString()) {
             free((void *)from_{{ arg.name }});
           }
         {%elsif arg.shouldAlloc %}
@@ -80,51 +81,58 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
       {%endeach%}
 
         if (git_error_last()->klass != GIT_ERROR_NONE) {
-          return Nan::ThrowError(git_error_last()->message);
+          Napi::Error::New(info.Env(), git_error_last()->message).ThrowAsJavaScriptException();
+          return info.Env().Undefined();
         } else {
-          return Nan::ThrowError("Unknown Error");
+          Napi::Error::New(info.Env(), "Unknown Error").ThrowAsJavaScriptException();
+          return info.Env().Undefined();
         }
       } // lock master scope end
     {%endif%}
 
     {%if cppFunctionName == "Free" %}
-        Nan::ObjectWrap::Unwrap<{{ cppClassName }}>(info.Holder())->ClearValue();
+        NodeGitWrapper<{{ cppClassName }}Traits>::Unwrap<{{ cppClassName }}>(info.This().As<Napi::Object>())->ClearValue();
       } // lock master scope end
+    {%endif%}
+    {%if cFunctionName == "git_branch_delete" %}
+      if (result == GIT_OK) {
+        NodeGitWrapper<GitRefsTraits>::Unwrap<GitRefs>(info[0].As<Napi::Object>())->ClearValue();
+      }
     {%endif%}
 
 
     {%each args|argsInfo as arg %}
       {%if arg | isOid %}
-      if (info[{{ arg.jsArg }}]->IsString()) {
+      if (info[{{ arg.jsArg }}].IsString()) {
         free((void *)from_{{ arg.name }});
       }
       {%endif%}
     {%endeach%}
 
     {%if not .|returnsCount %}
-      return info.GetReturnValue().Set(scope.Escape(Nan::Undefined()));
+      return scope.Escape(info.Env().Undefined());
     {%else%}
       {%if return.cType | isPointer %}
         // null checks on pointers
         if (!result) {
-          return info.GetReturnValue().Set(scope.Escape(Nan::Undefined()));
+          return scope.Escape(info.Env().Undefined());
         }
       {%endif%}
 
-      v8::Local<v8::Value> v8ConversionSlot;
+      Napi::Value v8ConversionSlot;
       {%if .|returnsCount > 1 %}
-        v8::Local<Object> toReturn = Nan::New<Object>();
+        Napi::Object toReturn = Napi::Object::New(info.Env());
       {%endif%}
       {%each .|returnsInfo as _return %}
         {%partial convertToV8 _return %}
         {%if .|returnsCount > 1 %}
-          Nan::Set(toReturn, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), v8ConversionSlot);
+          toReturn.Set("{{ _return.returnNameOrName }}", v8ConversionSlot);
         {%endif%}
       {%endeach%}
       {%if .|returnsCount == 1 %}
-        return info.GetReturnValue().Set(scope.Escape(v8ConversionSlot));
+        return scope.Escape(v8ConversionSlot);
       {%else%}
-        return info.GetReturnValue().Set(scope.Escape(toReturn));
+        return scope.Escape(toReturn);
       {%endif%}
     {%endif%}
   }

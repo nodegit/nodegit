@@ -5,27 +5,28 @@
 #ifndef WRAPPER_H
 #define WRAPPER_H
 
-#include <v8.h>
-#include <node.h>
+#include <napi.h>
 
-#include "nan.h"
 #include "context.h"
 
-using namespace node;
-using namespace v8;
-
-class Wrapper : public Nan::ObjectWrap {
+class Wrapper : public Napi::ObjectWrap<Wrapper> {
   public:
-    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+    static Napi::FunctionReference constructor;
+
+    static void InitializeComponent(Napi::Env env, Napi::Object exports, nodegit::Context *nodegitContext);
+
+    // Factory used by the generated classes (and the base Wrapper) to wrap a raw
+    // libgit2 pointer in a JS object. Mirrors the old `Wrapper::New(raw)`.
+    static Napi::Object New(Napi::Env env, const void *raw);
 
     void *GetValue();
-    static v8::Local<v8::Value> New(const void *raw);
+
+    // Constructed via `constructor.New({ External(raw) })`; extracts the raw pointer.
+    // Must be public: Napi::ObjectWrap's ConstructorCallbackWrapper news the type.
+    Wrapper(const Napi::CallbackInfo &info);
 
   private:
-    Wrapper(void *raw);
-
-    static NAN_METHOD(JSNewFunction);
-    static NAN_METHOD(ToBuffer);
+    Napi::Value ToBuffer(const Napi::CallbackInfo &info);
 
     void *raw;
 };

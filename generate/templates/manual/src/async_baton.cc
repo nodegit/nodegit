@@ -22,11 +22,11 @@ namespace nodegit {
     onCompletion();
   }
 
-  Nan::AsyncResource *AsyncBaton::GetAsyncResource() {
+  Napi::AsyncContext *AsyncBaton::GetAsyncResource() {
     return asyncResource;
   }
 
-  void AsyncBaton::SetCallbackError(v8::Local<v8::Value> error) {
+  void AsyncBaton::SetCallbackError(Napi::Value error) {
     callbackErrorHandle.Reset(error);
   }
 

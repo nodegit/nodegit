@@ -1,13 +1,13 @@
-#define SET_ON_OBJECT(obj, field, data) Nan::Set(obj, Nan::New(field).ToLocalChecked(), data)
+#define SET_ON_OBJECT(obj, field, data) obj.Set(field, data)
 
-v8::Local<v8::Object> signatureToJavascript(const git_signature *signature) {
-  v8::Local<v8::Object> signatureObject = Nan::New<v8::Object>();
-  SET_ON_OBJECT(signatureObject, "name", Nan::New(signature->name).ToLocalChecked());
-  SET_ON_OBJECT(signatureObject, "email", Nan::New(signature->email).ToLocalChecked());
-  SET_ON_OBJECT(signatureObject, "date", Nan::New<v8::Number>(signature->when.time * 1000));
+Napi::Object signatureToJavascript(Napi::Env env, const git_signature *signature) {
+  Napi::Object signatureObject = Napi::Object::New(env);
+  SET_ON_OBJECT(signatureObject, "name", Napi::String::New(env, signature->name));
+  SET_ON_OBJECT(signatureObject, "email", Napi::String::New(env, signature->email));
+  SET_ON_OBJECT(signatureObject, "date", Napi::Number::New(env, signature->when.time * 1000));
   std::stringstream fullSignature;
   fullSignature << signature->name << " <" << signature << ">";
-  SET_ON_OBJECT(signatureObject, "full", Nan::New(fullSignature.str()).ToLocalChecked());
+  SET_ON_OBJECT(signatureObject, "full", Napi::String::New(env, fullSignature.str()));
   return signatureObject;
 }
 
@@ -45,45 +45,45 @@ public:
   CommitModel &operator=(const CommitModel &) = delete;
   CommitModel &operator=(CommitModel &&) = delete;
 
-  v8::Local<v8::Value> toJavascript() {
+  Napi::Value toJavascript(Napi::Env env) {
     if (!fetchSignature) {
-      v8::Local<v8::Value> commitObject = GitCommit::New(
+      Napi::Value commitObject = GitCommit::New(
         commit,
         true,
-        Nan::To<v8::Object>(GitRepository::New(
+        GitRepository::New(
           git_commit_owner(commit),
           true
-        )).ToLocalChecked()
+        ).As<Napi::Object>()
       );
       commit = NULL;
       return commitObject;
     }
 
-    v8::Local<v8::Object> commitModel = Nan::New<v8::Object>();
-    SET_ON_OBJECT(commitModel, "sha", Nan::New(git_oid_tostr_s(git_commit_id(commit))).ToLocalChecked());
-    SET_ON_OBJECT(commitModel, "message", Nan::New(git_commit_message(commit)).ToLocalChecked());
-    SET_ON_OBJECT(commitModel, "author", signatureToJavascript(git_commit_author(commit)));
-    SET_ON_OBJECT(commitModel, "committer", signatureToJavascript(git_commit_committer(commit)));
+    Napi::Object commitModel = Napi::Object::New(env);
+    SET_ON_OBJECT(commitModel, "sha", Napi::String::New(env, git_oid_tostr_s(git_commit_id(commit))));
+    SET_ON_OBJECT(commitModel, "message", Napi::String::New(env, git_commit_message(commit)));
+    SET_ON_OBJECT(commitModel, "author", signatureToJavascript(env, git_commit_author(commit)));
+    SET_ON_OBJECT(commitModel, "committer", signatureToJavascript(env, git_commit_committer(commit)));
 
     size_t parentCount = parentIds.size();
-    v8::Local<v8::Array> parents = Nan::New<v8::Array>(parentCount);
+    Napi::Array parents = Napi::Array::New(env, parentCount);
     for (size_t parentIndex = 0; parentIndex < parentCount; ++parentIndex) {
-      Nan::Set(parents, Nan::New<v8::Number>(parentIndex), Nan::New(parentIds[parentIndex]).ToLocalChecked());
+      parents.Set(parentIndex, Napi::String::New(env, parentIds[parentIndex]));
     }
     SET_ON_OBJECT(commitModel, "parents", parents);
 
     if (signature.size != 0 || signedData.size != 0) {
-      v8::Local<v8::Object> gpgSignature = Nan::New<v8::Object>();
+      Napi::Object gpgSignature = Napi::Object::New(env);
       if (signature.size != 0) {
-        SET_ON_OBJECT(gpgSignature, "signature", Nan::New(signature.ptr).ToLocalChecked());
+        SET_ON_OBJECT(gpgSignature, "signature", Napi::String::New(env, signature.ptr));
       } else {
-        SET_ON_OBJECT(gpgSignature, "signature", Nan::Null());
+        SET_ON_OBJECT(gpgSignature, "signature", env.Null());
       }
 
       if (signedData.size != 0) {
-        SET_ON_OBJECT(gpgSignature, "signedData", Nan::New(signedData.ptr).ToLocalChecked());
+        SET_ON_OBJECT(gpgSignature, "signedData", Napi::String::New(env, signedData.ptr));
       } else {
-        SET_ON_OBJECT(gpgSignature, "signedData", Nan::Null());
+        SET_ON_OBJECT(gpgSignature, "signedData", env.Null());
       }
 
       SET_ON_OBJECT(commitModel, "gpgSignature", gpgSignature);
@@ -107,47 +107,51 @@ private:
   std::vector<std::string> parentIds;
 };
 
-NAN_METHOD(GitRevwalk::CommitWalk) {
-  if (info.Length() == 0 || !info[0]->IsNumber()) {
-    return Nan::ThrowError("Max count is required and must be a number.");
+Napi::Value GitRevwalk::CommitWalk(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  if (info.Length() == 0 || !info[0].IsNumber()) {
+    Napi::Error::New(env, "Max count is required and must be a number.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
-  if (info.Length() >= 3 && !info[1]->IsNull() && !info[1]->IsUndefined() && !info[1]->IsObject()) {
-    return Nan::ThrowError("Options must be an object, null, or undefined.");
+  if (info.Length() >= 3 && !info[1].IsNull() && !info[1].IsUndefined() && !info[1].IsObject()) {
+    Napi::Error::New(env, "Options must be an object, null, or undefined.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
-  if (!info[info.Length() - 1]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+  if (!info[info.Length() - 1].IsFunction()) {
+    Napi::Error::New(env, "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
   CommitWalkBaton* baton = new CommitWalkBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->max_count = Nan::To<unsigned int>(info[0]).FromJust();
+  baton->max_count = info[0].As<Napi::Number>().Uint32Value();
   std::vector<CommitModel *> *out = new std::vector<CommitModel *>;
   out->reserve(baton->max_count);
   baton->out = static_cast<void *>(out);
-  if (info.Length() == 3 && info[1]->IsObject()) {
-    v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
-    v8::Local<v8::String> propName = Nan::New("returnPlainObjects").ToLocalChecked();
-    if (Nan::Has(options, propName).FromJust()) {
-      baton->returnPlainObjects = Nan::Get(options, propName).ToLocalChecked()->IsTrue();
+  if (info.Length() == 3 && info[1].IsObject()) {
+    Napi::Object options = info[1].As<Napi::Object>();
+    if (options.Has("returnPlainObjects")) {
+      Napi::Value propValue = options.Get("returnPlainObjects");
+      baton->returnPlainObjects = propValue.IsBoolean() && propValue.As<Napi::Boolean>().Value();
     } else {
       baton->returnPlainObjects = false;
     }
   } else {
     baton->returnPlainObjects = false;
   }
-  baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.Holder())->GetValue();
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
+  baton->walk = NodeGitWrapper<GitRevwalkTraits>::Unwrap<GitRevwalk>(info.This().As<Napi::Object>())->GetValue();
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[info.Length() - 1].As<Napi::Function>()));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   CommitWalkWorker *worker = new CommitWalkWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRevwalk>("commitWalk", info.Holder());
+  worker->Reference<GitRevwalk>("commitWalk", info.This().As<Napi::Object>());
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   nodegitContext->QueueWorker(worker);
-  return;
+  return env.Undefined();
 }
 
 nodegit::LockMaster GitRevwalk::CommitWalkWorker::AcquireLocks() {
@@ -228,47 +232,44 @@ void GitRevwalk::CommitWalkWorker::HandleErrorCallback() {
 }
 
 void GitRevwalk::CommitWalkWorker::HandleOKCallback() {
+  Napi::Env env = GetAsyncResource()->Env();
   if (baton->out != NULL) {
     std::vector<CommitModel *> *out = static_cast<std::vector<CommitModel *> *>(baton->out);
     const unsigned int size = out->size();
-    Local<Array> result = Nan::New<Array>(size);
+    Napi::Array result = Napi::Array::New(env, size);
     for (unsigned int i = 0; i < size; i++) {
       CommitModel *commitModel = out->at(i);
-      Nan::Set(
-        result,
-        Nan::New<Number>(i),
-        commitModel->toJavascript()
-      );
+      result.Set(i, commitModel->toJavascript(env));
       delete commitModel;
     }
 
     delete out;
 
-    Local<v8::Value> argv[2] = {
-      Nan::Null(),
+    Napi::Value argv[2] = {
+      env.Null(),
       result
     };
-    callback->Call(2, argv, async_resource);
+    CallCallback(argv, 2);
   } else if (baton->error) {
-    Local<v8::Value> argv[1] = {
-      Nan::Error(baton->error->message)
+    Napi::Value argv[1] = {
+      Napi::Error::New(env, baton->error->message).Value()
     };
-    callback->Call(1, argv, async_resource);
+    CallCallback(argv, 1);
     if (baton->error->message) {
       free((void *)baton->error->message);
     }
 
     free((void *)baton->error);
   } else if (baton->error_code < 0) {
-    Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Revwalk commitWalk has thrown an error.")).ToLocalChecked();
-    Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.commitWalk").ToLocalChecked());
-    Local<v8::Value> argv[1] = {
+    Napi::Object err = Napi::Error::New(env, "Revwalk commitWalk has thrown an error.").Value();
+    err.Set("errno", Napi::Number::New(env, baton->error_code));
+    err.Set("errorFunction", Napi::String::New(env, "Revwalk.commitWalk"));
+    Napi::Value argv[1] = {
       err
     };
-    callback->Call(1, argv, async_resource);
+    CallCallback(argv, 1);
   } else {
-    callback->Call(0, NULL, async_resource);
+    CallCallback(nullptr, 0);
   }
 
   delete baton;

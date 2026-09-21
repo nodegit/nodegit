@@ -1,50 +1,89 @@
 #ifndef TRACKERWRAP_H
 #define TRACKERWRAP_H
 
-#include <nan.h>
+#include <napi.h>
 #include <memory>
 #include <vector>
 
 namespace nodegit {
-  // Base class used to track wrapped objects, so that we can
-  // free the objects that were not freed at the time of context
-  // closing (because their WeakCallback didn't trigger. See
-  // https://github.com/nodejs/help/issues/3297).
-  // Implementation based on node.js's class RefTracker (napi).
-  class TrackerWrap : public Nan::ObjectWrap {
+  /**
+   * \class TrackerWrap
+   *
+   * Common ObjectWrap base for every nodegit wrapper object. We intentionally
+   * use a SINGLE wrap type (`Napi::ObjectWrap<TrackerWrap>`) rather than
+   * `Napi::ObjectWrap<T>` per generated class. This lets us unwrap *any*
+   * wrapped object back to its `TrackerWrap*` generically, which the
+   * ownership-graph cleanup (`TrackerWrapTrees`) depends on: a borrowed struct
+   * records its owner as a `TrackerWrap*`, but the owner may be a completely
+   * different generated class. With a per-class `ObjectWrap<T>` that generic
+   * unwrap would be impossible.
+   *
+   * `cppClass` is always laid out so that `TrackerWrap` is its primary base, so
+   * `static_cast<cppClass*>(TrackerWrap*)` is a no-op offset adjustment and is
+   * safe to use when retrieving a strongly typed wrapper from a generic unwrap.
+   */
+  class TrackerWrap : public Napi::ObjectWrap<TrackerWrap> {
   public:
-    TrackerWrap() = default;
-    virtual ~TrackerWrap() = default;
+    // Required by Napi::ObjectWrap<T>; never invoked as a JS constructor
+    // directly, only as the most-derived base ctor of a generated wrapper.
+    TrackerWrap(const Napi::CallbackInfo& info);
+    virtual ~TrackerWrap();
+
+    virtual void DestroyNative() {}
+
     TrackerWrap(const TrackerWrap &other) = delete;
     TrackerWrap(TrackerWrap &&other) = delete;
     TrackerWrap& operator=(const TrackerWrap &other) = delete;
     TrackerWrap& operator=(TrackerWrap &&other) = delete;
 
-    // aliases:
-    // 'TrackerList': used in functionality related to a list.
-    // 'TrackerWrap' used in functionality not related to a list.
-    using TrackerList = TrackerWrap;
+    // Intrusive-list head. Deliberately NOT a TrackerWrap: that derives from
+    // Napi::ObjectWrap (which has no default ctor), while this sentinel must be
+    // default-constructible as a plain member of Context.
+    struct TrackerList {
+      TrackerWrap *head = nullptr;
+      TrackerWrap *tail = nullptr;
+    };
 
-    // Links 'this' right after 'listStart'
+    // Links this tracker into the list starting at `listStart`.
     inline void Link(TrackerList* listStart) {
-      m_prev = listStart;
-      m_next = listStart->m_next;
-      if (m_next != nullptr) {
-        m_next->m_prev = this;
+      if (listStart == nullptr) {
+        return;
       }
-      listStart->m_next = this;
+
+      m_list = listStart;
+      m_prev = nullptr;
+      m_next = listStart->head;
+      if (listStart->head != nullptr) {
+        listStart->head->m_prev = this;
+      }
+      else {
+        listStart->tail = this;
+      }
+      listStart->head = this;
     }
 
-    // Unlinks itself from the list it's linked to
+    // Unlinks this tracker from its list and returns it.
     inline TrackerWrap* Unlink() {
+      if (m_list != nullptr) {
+        if (m_list->head == this) {
+          m_list->head = m_next;
+        }
+        if (m_list->tail == this) {
+          m_list->tail = m_prev;
+        }
+      }
+
       if (m_prev != nullptr) {
         m_prev->m_next = m_next;
       }
+
       if (m_next != nullptr) {
         m_next->m_prev = m_prev;
       }
-      m_prev = nullptr;
-      m_next = nullptr;
+
+      m_next = m_prev = nullptr;
+      m_list = nullptr;
+
       return this;
     }
 
@@ -56,18 +95,14 @@ namespace nodegit {
       return m_owners.get();
     }
 
-    // Unlinks and returns the first item of 'listStart'
     static TrackerWrap* UnlinkFirst(TrackerList *listStart);
-
-    // Returns number of items following 'listStart'
     static int SizeFromList(TrackerList *listStart);
-
-    // Deletes items following 'listStart', but not 'listStart' itself
     static void DeleteFromList(TrackerList *listStart);
 
   private:
-    TrackerList* m_next {};
-    TrackerList* m_prev {};
+    TrackerWrap* m_next {};
+    TrackerWrap* m_prev {};
+    TrackerList* m_list {};
     // m_owners will store pointers to native objects
     std::unique_ptr< std::vector<TrackerWrap*> > m_owners {};
   };

@@ -1,5 +1,6 @@
 #include "../include/tracker_wrap.h"
 
+#include <cassert>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -21,12 +22,17 @@ namespace {
     TrackerWrapTreeNode& operator=(const TrackerWrapTreeNode &other) = delete;
     TrackerWrapTreeNode& operator=(TrackerWrapTreeNode &&other) = delete;
 
-    inline const std::unordered_set<TrackerWrapTreeNode *>& Children() const;
+    inline const std::unordered_set<nodegit::TrackerWrap *>& Children() const;
     inline nodegit::TrackerWrap* TrackerWrap();
-    inline void AddChild(TrackerWrapTreeNode *child);
+    inline void AddChild(nodegit::TrackerWrap *child);
 
   private:
-    std::unordered_set<TrackerWrapTreeNode *> m_children {};
+    // Children are stored by their TrackerWrap* KEY (not by node pointer).
+    // A child may have several parents, so it can be freed by another parent's
+    // subtree walk before this parent is visited; keying by TrackerWrap* lets
+    // the walk re-resolve (and skip) already-freed children via the map without
+    // dereferencing freed memory.
+    std::unordered_set<nodegit::TrackerWrap *> m_children {};
     nodegit::TrackerWrap *m_trackerWrap {};
   };
 
@@ -35,7 +41,10 @@ namespace {
    * Frees the memory of the TrackerWrap pointer it holds.
    */
   TrackerWrapTreeNode::~TrackerWrapTreeNode() {
-    delete m_trackerWrap;
+    if (m_trackerWrap != nullptr) {
+      m_trackerWrap->Unlink();
+      m_trackerWrap->DestroyNative();
+    }
   }
 
   /**
@@ -43,7 +52,7 @@ namespace {
    * 
    * Returns a reference to the children nodes of this.
    */
-  const std::unordered_set<TrackerWrapTreeNode *>& TrackerWrapTreeNode::Children() const {
+  const std::unordered_set<nodegit::TrackerWrap *>& TrackerWrapTreeNode::Children() const {
     return m_children;
   }
 
@@ -59,7 +68,7 @@ namespace {
   /**
    * TrackerWrapTreeNode::AddChild()
    */
-  void TrackerWrapTreeNode::AddChild(TrackerWrapTreeNode *child) {
+  void TrackerWrapTreeNode::AddChild(nodegit::TrackerWrap *child) {
     m_children.insert(child);
   }
 
@@ -89,13 +98,14 @@ namespace {
   private:
     void addNode(nodegit::TrackerWrap *trackerWrap);
     void addParentNode(nodegit::TrackerWrap *owner, TrackerWrapTreeNode *child);
-    void deleteTree(TrackerWrapTreeNode *node);
+    void deleteTree(nodegit::TrackerWrap *trackerWrap);
     void freeAllTreesChildrenFirst();
 
     using TrackerWrapTreeNodeMap = std::unordered_map<nodegit::TrackerWrap*, std::unique_ptr<TrackerWrapTreeNode>>;
 
     TrackerWrapTreeNodeMap m_mapTrackerWrapNode {};
-    std::vector<TrackerWrapTreeNode *> m_roots {};
+    // Roots are stored by TrackerWrap* key for the same reason children are.
+    std::vector<nodegit::TrackerWrap *> m_roots {};
   };
 
   /**
@@ -141,7 +151,7 @@ namespace {
     // if trackerWrap has no owners, add it as a root node
     const std::vector<nodegit::TrackerWrap*> *owners = trackerWrap->GetTrackerWrapOwners();
     if (owners == nullptr) {
-      m_roots.push_back(addedNode);
+      m_roots.push_back(trackerWrap);
     }
     else {
       // add addedNode's parents and link them with this child
@@ -171,7 +181,7 @@ namespace {
     TrackerWrapTreeNode *addedParentNode = addedParentNodeIter->second.get();
 
     // links parent to child
-    addedParentNode->AddChild(child);
+    addedParentNode->AddChild(child->TrackerWrap());
   }
 
   /**
@@ -180,22 +190,33 @@ namespace {
    * Deletes the tree from the node passed as a parameter
    * in a children-first way and recursively.
    * 
-   * \param node node from where to delete all its children and itself.
+   * \param trackerWrap TrackerWrap key from where to delete all its children and itself.
    */
-  void TrackerWrapTrees::deleteTree(TrackerWrapTreeNode *node)
+  void TrackerWrapTrees::deleteTree(nodegit::TrackerWrap *trackerWrap)
   {
-    // delete all node's children first
-    const std::unordered_set<TrackerWrapTreeNode *> &children = node->Children();
-    for (TrackerWrapTreeNode *child : children) {
-      // check that child hasn't been removed previously by another parent
-      if (m_mapTrackerWrapNode.find(child->TrackerWrap()) != m_mapTrackerWrapNode.end()) {
-        deleteTree(child);
-      }
+    auto nodeIter = m_mapTrackerWrapNode.find(trackerWrap);
+    if (nodeIter == m_mapTrackerWrapNode.end()) {
+      // Already freed while walking another parent's subtree.
+      return;
+    }
+
+    TrackerWrapTreeNode *node = nodeIter->second.get();
+
+    // Copy the child keys before recursing: the map is mutated by the
+    // recursive calls, and a reference into the node's set could not be held
+    // across erases.
+    const std::unordered_set<nodegit::TrackerWrap *> &children = node->Children();
+    std::vector<nodegit::TrackerWrap *> childKeys(children.begin(), children.end());
+    for (nodegit::TrackerWrap *childKey : childKeys) {
+      // Re-resolve each child through the map: a sibling subtree may already
+      // have freed it (a TrackerWrap can have multiple owners). Never
+      // dereference a possibly-stale node pointer here.
+      deleteTree(childKey);
     }
 
     // then deletes itself from the container, which will
     // actually free 'node' and the TrackerWrap object it holds
-    m_mapTrackerWrapNode.erase(node->TrackerWrap());
+    m_mapTrackerWrapNode.erase(nodeIter);
   }
 
   /**
@@ -204,7 +225,10 @@ namespace {
    * Deletes all the trees held, in a children-first way.
    */
   void TrackerWrapTrees::freeAllTreesChildrenFirst() {
-    for (TrackerWrapTreeNode *root : m_roots) {
+    // A root may be freed while walking an earlier root's subtree, so copy the
+    // keys and rely on deleteTree to skip anything already gone.
+    std::vector<nodegit::TrackerWrap *> roots(m_roots);
+    for (nodegit::TrackerWrap *root : roots) {
       deleteTree(root);
     }
     m_roots.clear();
@@ -213,18 +237,38 @@ namespace {
 
 
 namespace nodegit {
+  TrackerWrap::TrackerWrap(const Napi::CallbackInfo& info)
+    : Napi::ObjectWrap<TrackerWrap>(info) {
+  }
+
+  TrackerWrap::~TrackerWrap() {
+    this->SuppressDestruct();
+    if (this->_ref != nullptr) {
+      napi_delete_reference(this->_env, this->_ref);
+      this->_ref = nullptr;
+    }
+  }
+
   TrackerWrap* TrackerWrap::UnlinkFirst(TrackerList *listStart) {
     assert(listStart != nullptr);
-    return listStart->m_next == nullptr ? nullptr : listStart->m_next->Unlink();
+    if (listStart->head == nullptr) {
+      return nullptr;
+    }
+
+    TrackerWrap *first = listStart->head;
+    listStart->head = first->m_next;
+    if (listStart->head == nullptr) {
+      listStart->tail = nullptr;
+    }
+
+    return first->Unlink();
   }
 
   int TrackerWrap::SizeFromList(TrackerList *listStart) {
     assert(listStart != nullptr);
-    TrackerList *t {listStart};
     int count {0};
-    while (t->m_next != nullptr) {
+    for (TrackerWrap *t = listStart->head; t != nullptr; t = t->m_next) {
       ++count;
-      t = t->m_next;
     }
     return count;
   }

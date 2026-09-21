@@ -33,28 +33,29 @@ int iterateTreePaths(git_repository *repo, git_tree *tree, std::vector<std::stri
 
 } // end anonymous namespace
 
-NAN_METHOD(GitTree::GetAllFilepaths)
+Napi::Value GitTree::GetAllFilepaths(const Napi::CallbackInfo& info)
 {
-  if (!info[info.Length() - 1]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+  if (!info[info.Length() - 1].IsFunction()) {
+    Napi::Error::New(info.Env(), "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
   }
 
   GetAllFilepathsBaton* baton = new GetAllFilepathsBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->tree = Nan::ObjectWrap::Unwrap<GitTree>(info.Holder())->GetValue();
+  baton->tree = NodeGitWrapper<GitTreeTraits>::Unwrap<GitTree>(info.This().As<Napi::Object>())->GetValue();
   baton->out = new std::vector<std::string>;
   baton->repo = git_tree_owner(baton->tree);
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[info.Length() - 1].As<Napi::Function>()));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   GetAllFilepathsWorker *worker = new GetAllFilepathsWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitTree>("tree", info.Holder());
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  worker->Reference<GitTree>("tree", info.This().As<Napi::Object>());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   nodegitContext->QueueWorker(worker);
 
-  return;
+  return info.Env().Undefined();
 }
 
 nodegit::LockMaster GitTree::GetAllFilepathsWorker::AcquireLocks() {
@@ -88,32 +89,33 @@ void GitTree::GetAllFilepathsWorker::HandleErrorCallback() {
 
 void GitTree::GetAllFilepathsWorker::HandleOKCallback()
 {
+  Napi::Env env = GetAsyncResource()->Env();
   if (baton->error_code == GIT_OK) {
     std::vector<std::string> &paths = *(baton->out);
-    v8::Local<v8::Array> result = Nan::New<v8::Array>(paths.size());
+    Napi::Array result = Napi::Array::New(env, paths.size());
     for (unsigned int i = 0; i < paths.size(); i++) {
-      Nan::Set(result, i, Nan::New<v8::String>(paths[i]).ToLocalChecked());
+      result.Set(i, Napi::String::New(env, paths[i]));
     }
 
-    v8::Local<v8::Value> argv[2] = {Nan::Null(), result};
-    callback->Call(2, argv, async_resource);
+    Napi::Value argv[2] = {env.Null(), result};
+    CallCallback(argv, 2);
   }
   else
   {
     if (baton->error)
     {
-      Local<v8::Object> err;
+      Napi::Object err;
       if (baton->error->message) {
-        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
+        err = Napi::Error::New(env, baton->error->message).Value();
       } else {
-        err = Nan::To<v8::Object>(Nan::Error("Method getAllFilepaths has thrown an error.")).ToLocalChecked();
+        err = Napi::Error::New(env, "Method getAllFilepaths has thrown an error.").Value();
       }
-      Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Tree.getAllFilepaths").ToLocalChecked());
-      Local<v8::Value> argv[1] = {
+      err.Set("errno", Napi::Number::New(env, baton->error_code));
+      err.Set("errorFunction", Napi::String::New(env, "Tree.getAllFilepaths"));
+      Napi::Value argv[1] = {
         err
       };
-      callback->Call(1, argv, async_resource);
+      CallCallback(argv, 1);
       if (baton->error->message)
       {
         free((void *)baton->error->message);
@@ -125,30 +127,30 @@ void GitTree::GetAllFilepathsWorker::HandleOKCallback()
     {
       bool callbackFired = false;
       if (!callbackErrorHandle.IsEmpty()) {
-        v8::Local<v8::Value> maybeError = Nan::New(callbackErrorHandle);
-        if (!maybeError->IsNull() && !maybeError->IsUndefined()) {
-          v8::Local<v8::Value> argv[1] = {
+        Napi::Value maybeError = callbackErrorHandle.Value();
+        if (!maybeError.IsNull() && !maybeError.IsUndefined()) {
+          Napi::Value argv[1] = {
             maybeError
           };
-          callback->Call(1, argv, async_resource);
+          CallCallback(argv, 1);
           callbackFired = true;
         }
       }
 
       if (!callbackFired)
       {
-        Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method getAllFilepaths has thrown an error.")).ToLocalChecked();
-        Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-        Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.getAllFilepaths").ToLocalChecked());
-        Local<v8::Value> argv[1] = {
+        Napi::Object err = Napi::Error::New(env, "Method getAllFilepaths has thrown an error.").Value();
+        err.Set("errno", Napi::Number::New(env, baton->error_code));
+        err.Set("errorFunction", Napi::String::New(env, "Revwalk.getAllFilepaths"));
+        Napi::Value argv[1] = {
           err
         };
-        callback->Call(1, argv, async_resource);
+        CallCallback(argv, 1);
       }
     }
     else
     {
-      callback->Call(0, NULL, async_resource);
+      CallCallback(nullptr, 0);
     }
   }
 

@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #include "../include/context.h"
 #include "../include/thread_pool.h"
 
@@ -14,6 +14,12 @@ extern "C" {
 }
 
 using namespace std::placeholders;
+
+namespace {
+  napi_value IgnoreThreadPoolCallback(napi_env env, napi_callback_info info) {
+    return nullptr;
+  }
+}
 
 namespace nodegit {
   class Executor {
@@ -42,12 +48,12 @@ namespace nodegit {
       };
 
       struct WorkTask : Task {
-        WorkTask(ThreadPool::Callback initCallback, Nan::AsyncResource *asyncResource, Nan::Global<v8::Value> *callbackErrorHandle)
+        WorkTask(ThreadPool::Callback initCallback, Napi::AsyncContext *asyncResource, Napi::Reference<Napi::Value> *callbackErrorHandle)
           : Task(WORK), asyncResource(asyncResource), callbackErrorHandle(callbackErrorHandle), callback(initCallback)
         {}
 
-        Nan::AsyncResource *asyncResource;
-        Nan::Global<v8::Value> *callbackErrorHandle;
+        Napi::AsyncContext *asyncResource;
+        Napi::Reference<Napi::Value> *callbackErrorHandle;
         ThreadPool::Callback callback;
       };
 
@@ -110,11 +116,11 @@ namespace nodegit {
       // Returns true if the task running spawned threads within libgit2
       bool IsGitThreaded() { return currentGitThreads > kInitialGitThreads; }
 
-      static Nan::AsyncResource *GetCurrentAsyncResource();
+      static Napi::AsyncContext *GetCurrentAsyncResource();
 
       static const nodegit::Context *GetCurrentContext();
 
-      static Nan::Global<v8::Value> *GetCurrentCallbackErrorHandle();
+      static Napi::Reference<Napi::Value> *GetCurrentCallbackErrorHandle();
 
       static void PostCallbackEvent(ThreadPool::OnPostCallbackFn onPostCallback);
 
@@ -134,8 +140,8 @@ namespace nodegit {
       static void TeardownTLSOnLibgit2ChildThread();
 
     private:
-      Nan::AsyncResource *currentAsyncResource;
-      Nan::Global<v8::Value> *currentCallbackErrorHandle;
+      Napi::AsyncContext *currentAsyncResource;
+      Napi::Reference<Napi::Value> *currentCallbackErrorHandle;
       nodegit::Context *currentContext;
 
       // We need to populate the executor on every thread that libgit2
@@ -201,7 +207,7 @@ namespace nodegit {
     thread.join();
   }
 
-  Nan::AsyncResource *Executor::GetCurrentAsyncResource() {
+  Napi::AsyncContext *Executor::GetCurrentAsyncResource() {
     if (executor) {
       return executor->currentAsyncResource;
     }
@@ -221,7 +227,7 @@ namespace nodegit {
     return nullptr;
   }
 
-  Nan::Global<v8::Value> *Executor::GetCurrentCallbackErrorHandle() {
+  Napi::Reference<Napi::Value> *Executor::GetCurrentCallbackErrorHandle() {
     if (executor) {
       return executor->currentCallbackErrorHandle;
     }
@@ -320,7 +326,7 @@ namespace nodegit {
           // The only thread safe way to pull events from executorEventsQueue
           std::shared_ptr<Executor::Event> TakeEventFromExecutor();
 
-          void ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Nan::AsyncResource *asyncResource, Nan::Global<v8::Value> *callbackErrorHandle);
+          void ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Napi::AsyncContext *asyncResource, Napi::Reference<Napi::Value> *callbackErrorHandle);
 
           void ScheduleShutdownTaskOnExecutor();
 
@@ -443,10 +449,12 @@ namespace nodegit {
 
           queueCallbackOnJSThread(
             [worker]() {
+              Napi::HandleScope scope(worker->GetAsyncResource()->Env());
               worker->WorkComplete();
               worker->Destroy();
             },
             [worker]() {
+              Napi::HandleScope scope(worker->GetAsyncResource()->Env());
               worker->Cancel();
               worker->WorkComplete();
               worker->Destroy();
@@ -487,7 +495,7 @@ namespace nodegit {
     taskCondition.notify_one();
   }
 
-  void Orchestrator::OrchestratorImpl::ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Nan::AsyncResource *asyncResource, Nan::Global<v8::Value> *callbackErrorHandle) {
+  void Orchestrator::OrchestratorImpl::ScheduleWorkTaskOnExecutor(ThreadPool::Callback callback, Napi::AsyncContext *asyncResource, Napi::Reference<Napi::Value> *callbackErrorHandle) {
     std::lock_guard<std::mutex> lock(*taskMutex);
     task.reset(new Executor::WorkTask(callback, asyncResource, callbackErrorHandle));
     taskCondition.notify_one();
@@ -517,7 +525,7 @@ namespace nodegit {
 
   class ThreadPoolImpl {
     public:
-      ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context);
+      ThreadPoolImpl(int numberOfThreads, nodegit::Context *context);
 
       void QueueWorker(nodegit::AsyncWorker *worker);
 
@@ -525,16 +533,19 @@ namespace nodegit {
 
       void QueueCallbackOnJSThread(ThreadPool::Callback callback, ThreadPool::Callback cancelCallback, bool isWork);
 
-      static void RunLoopCallbacks(uv_async_t *handle);
+      static void RunLoopCallbacks(napi_env env, napi_value jsCallback, void *context, void *data);
 
-      void Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle);
+      static void DeleteAsyncCallbackData(napi_env env, void *data, void *hint);
 
+      void Shutdown();
+
+      // Owned by the threadsafe function rather than by ThreadPoolImpl: a callback
+      // already queued on the JavaScript thread outlives the pool that queued it.
       struct AsyncCallbackData {
         AsyncCallbackData(ThreadPoolImpl *pool)
           : pool(pool)
         {}
 
-        std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle;
         ThreadPoolImpl *pool;
       };
 
@@ -575,20 +586,41 @@ namespace nodegit {
       // completion and async callbacks to be performed on the loop
       std::queue<JSThreadCallback> jsThreadCallbackQueue;
       std::unique_ptr<std::mutex> jsThreadCallbackMutex;
-      uv_async_t jsThreadCallbackAsync;
+      napi_env env;
+      napi_threadsafe_function jsThreadCallbackTsfn;
+      AsyncCallbackData *asyncCallbackData;
 
       std::vector<Orchestrator> orchestrators;
   };
 
   // context required to be passed to Orchestrators, but ThreadPoolImpl doesn't need to keep it
-  ThreadPoolImpl::ThreadPoolImpl(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)
+  ThreadPoolImpl::ThreadPoolImpl(int numberOfThreads, nodegit::Context *context)
     : isMarkedForDeletion(false),
       orchestratorJobMutex(new std::mutex),
-      jsThreadCallbackMutex(new std::mutex)
+      jsThreadCallbackMutex(new std::mutex),
+      env(context->Env()),
+      asyncCallbackData(new AsyncCallbackData(this))
   {
-    uv_async_init(loop, &jsThreadCallbackAsync, RunLoopCallbacks);
-    jsThreadCallbackAsync.data = new AsyncCallbackData(this);
-    uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
+    napi_value resourceName;
+    napi_create_string_utf8(env, "nodegit", NAPI_AUTO_LENGTH, &resourceName);
+
+    napi_value jsCallback;
+    napi_create_function(env, "nodegitCallback", NAPI_AUTO_LENGTH, IgnoreThreadPoolCallback, nullptr, &jsCallback);
+
+    napi_create_threadsafe_function(
+      env,
+      jsCallback,
+      nullptr, // async resource
+      resourceName,
+      0, // unlimited queue - jsThreadCallbackQueue is what we actually drain
+      1, // the one reference the pool holds until Shutdown releases it
+      asyncCallbackData, // handed to DeleteAsyncCallbackData
+      DeleteAsyncCallbackData,
+      asyncCallbackData, // handed to RunLoopCallbacks as its `context`
+      RunLoopCallbacks,
+      &jsThreadCallbackTsfn
+    );
+    napi_unref_threadsafe_function(env, jsThreadCallbackTsfn);
 
     workInProgressCount = 0;
 
@@ -605,7 +637,7 @@ namespace nodegit {
     std::lock_guard<std::mutex> lock(*orchestratorJobMutex);
     // there is work on the thread pool - reference the handle so
     // node doesn't terminate
-    uv_ref((uv_handle_t *)&jsThreadCallbackAsync);
+    napi_ref_threadsafe_function(env, jsThreadCallbackTsfn);
     orchestratorJobQueue.emplace(new Orchestrator::AsyncWorkJob(worker));
     workInProgressCount++;
     orchestratorJobCondition.notify_one();
@@ -644,15 +676,19 @@ namespace nodegit {
     // we only trigger RunLoopCallbacks via the jsThreadCallbackAsync handle if the queue
     // was empty.  Otherwise, we depend on RunLoopCallbacks to re-trigger itself
     if (queueWasEmpty) {
-      uv_async_send(&jsThreadCallbackAsync);
+      napi_call_threadsafe_function(jsThreadCallbackTsfn, nullptr, napi_tsfn_nonblocking);
     }
   }
 
-  void ThreadPoolImpl::RunLoopCallbacks(uv_async_t* handle) {
-    auto asyncCallbackData = static_cast<AsyncCallbackData *>(handle->data);
+  void ThreadPoolImpl::RunLoopCallbacks(napi_env env, napi_value jsCallback, void *context, void *data) {
+    AsyncCallbackData *asyncCallbackData = static_cast<AsyncCallbackData *>(context);
     if (asyncCallbackData->pool) {
       asyncCallbackData->pool->RunLoopCallbacks();
     }
+  }
+
+  void ThreadPoolImpl::DeleteAsyncCallbackData(napi_env env, void *data, void *hint) {
+    delete static_cast<AsyncCallbackData *>(data);
   }
 
   // NOTE this should theoretically never be triggered during a cleanup operation
@@ -668,7 +704,7 @@ namespace nodegit {
     lock.lock();
 
     if (!jsThreadCallbackQueue.empty()) {
-      uv_async_send(&jsThreadCallbackAsync);
+      napi_call_threadsafe_function(jsThreadCallbackTsfn, nullptr, napi_tsfn_nonblocking);
     }
 
     // if there is no ongoing work / completion processing, node doesn't need
@@ -677,12 +713,12 @@ namespace nodegit {
       std::lock_guard<std::mutex> orchestratorLock(*orchestratorJobMutex);
       workInProgressCount--;
       if (!workInProgressCount) {
-        uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
+        napi_unref_threadsafe_function(env, jsThreadCallbackTsfn);
       }
     }
   }
 
-  void ThreadPoolImpl::Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {
+  void ThreadPoolImpl::Shutdown() {
     std::queue<std::shared_ptr<Orchestrator::Job>> cancelledJobs;
     std::queue<JSThreadCallback> cancelledCallbacks;
     {
@@ -709,7 +745,7 @@ namespace nodegit {
         // unref the jsThreadCallback for all work in progress
         // it will not be used after this function has completed
         while (workInProgressCount--) {
-          uv_unref((uv_handle_t *)&jsThreadCallbackAsync);
+          napi_unref_threadsafe_function(env, jsThreadCallbackTsfn);
         }
       }
 
@@ -751,18 +787,16 @@ namespace nodegit {
       jsThreadCallbackQueue.pop();
     }
 
-    AsyncCallbackData *asyncCallbackData = static_cast<AsyncCallbackData *>(jsThreadCallbackAsync.data);
-    asyncCallbackData->cleanupHandle.swap(cleanupHandle);
-    asyncCallbackData->pool = nullptr;
+    AsyncCallbackData *callbackData = asyncCallbackData;
+    asyncCallbackData = nullptr;
+    callbackData->pool = nullptr;
 
-    uv_close(reinterpret_cast<uv_handle_t *>(&jsThreadCallbackAsync), [](uv_handle_t *handle) {
-      auto asyncCallbackData = static_cast<AsyncCallbackData *>(handle->data);
-      delete asyncCallbackData;
-    });
+    napi_release_threadsafe_function(jsThreadCallbackTsfn, napi_tsfn_release);
+    jsThreadCallbackTsfn = nullptr;
   }
 
-  ThreadPool::ThreadPool(int numberOfThreads, uv_loop_t *loop, nodegit::Context *context)
-    : impl(new ThreadPoolImpl(numberOfThreads, loop, context))
+  ThreadPool::ThreadPool(int numberOfThreads, nodegit::Context *context)
+    : impl(new ThreadPoolImpl(numberOfThreads, context))
   {}
 
   ThreadPool::~ThreadPool() {}
@@ -775,7 +809,7 @@ namespace nodegit {
     Executor::PostCallbackEvent(onPostCallback);
   }
 
-  Nan::AsyncResource *ThreadPool::GetCurrentAsyncResource() {
+  Napi::AsyncContext *ThreadPool::GetCurrentAsyncResource() {
     return Executor::GetCurrentAsyncResource();
   }
 
@@ -783,12 +817,12 @@ namespace nodegit {
     return Executor::GetCurrentContext();
   }
 
-  Nan::Global<v8::Value> *ThreadPool::GetCurrentCallbackErrorHandle() {
+  Napi::Reference<Napi::Value> *ThreadPool::GetCurrentCallbackErrorHandle() {
     return Executor::GetCurrentCallbackErrorHandle();
   }
 
-  void ThreadPool::Shutdown(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {
-    impl->Shutdown(std::move(cleanupHandle));
+  void ThreadPool::Shutdown() {
+    impl->Shutdown();
   }
 
   void ThreadPool::InitializeGlobal() {

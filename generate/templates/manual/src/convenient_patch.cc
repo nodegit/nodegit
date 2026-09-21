@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #include <string.h>
 
 extern "C" {
@@ -90,7 +90,7 @@ PatchData *createFromRaw(git_patch *raw) {
           !strncmp(
               &line->content[calculatedContentLength - noNewlineStringLength],
               "\n\\ No newline at end of file\n", (std::min)(calculatedContentLength, noNewlineStringLength)
-        )) {
+          )) {
           EOFFlag = true;
         }
       }
@@ -122,65 +122,61 @@ PatchData *createFromRaw(git_patch *raw) {
   return patch;
 }
 
-ConvenientPatch::ConvenientPatch(PatchData *raw) {
-  this->patch = raw;
+ConvenientPatch::ConvenientPatch(const Napi::CallbackInfo& info)
+  : Napi::ObjectWrap<ConvenientPatch>(info) {
+  this->patch = static_cast<PatchData *>(info[0].As<Napi::External<void>>().Data());
 }
 
 ConvenientPatch::~ConvenientPatch() {
   PatchDataFree(this->patch);
 }
 
-void ConvenientPatch::InitializeComponent(Local<v8::Object> target, nodegit::Context *nodegitContext) {
-  Nan::HandleScope scope;
+void ConvenientPatch::InitializeComponent(Napi::Object target, nodegit::Context *nodegitContext) {
+  Napi::Env env = target.Env();
+  Napi::HandleScope scope(env);
 
-  Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
-  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
+  Napi::Function tpl = Napi::Function::New(env, JSNewFunction, "ConvenientPatch");
 
-  tpl->InstanceTemplate()->SetInternalFieldCount(2);
-  tpl->SetClassName(Nan::New("ConvenientPatch").ToLocalChecked());
+  Napi::Object proto = tpl.Get("prototype").As<Napi::Object>();
 
-  Nan::SetPrototypeMethod(tpl, "hunks", Hunks, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "lineStats", LineStats, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "size", Size, nodegitExternal);
+  proto.Set("hunks", Napi::Function::New(env, Hunks, "hunks"));
+  proto.Set("lineStats", Napi::Function::New(env, LineStats, "lineStats"));
+  proto.Set("size", Napi::Function::New(env, Size, "size"));
+  proto.Set("oldFile", Napi::Function::New(env, OldFile, "oldFile"));
+  proto.Set("newFile", Napi::Function::New(env, NewFile, "newFile"));
+  proto.Set("status", Napi::Function::New(env, Status, "status"));
+  proto.Set("isUnmodified", Napi::Function::New(env, IsUnmodified, "isUnmodified"));
+  proto.Set("isAdded", Napi::Function::New(env, IsAdded, "isAdded"));
+  proto.Set("isDeleted", Napi::Function::New(env, IsDeleted, "isDeleted"));
+  proto.Set("isModified", Napi::Function::New(env, IsModified, "isModified"));
+  proto.Set("isRenamed", Napi::Function::New(env, IsRenamed, "isRenamed"));
+  proto.Set("isCopied", Napi::Function::New(env, IsCopied, "isCopied"));
+  proto.Set("isIgnored", Napi::Function::New(env, IsIgnored, "isIgnored"));
+  proto.Set("isUntracked", Napi::Function::New(env, IsUntracked, "isUntracked"));
+  proto.Set("isTypeChange", Napi::Function::New(env, IsTypeChange, "isTypeChange"));
+  proto.Set("isUnreadable", Napi::Function::New(env, IsUnreadable, "isUnreadable"));
+  proto.Set("isConflicted", Napi::Function::New(env, IsConflicted, "isConflicted"));
 
-  Nan::SetPrototypeMethod(tpl, "oldFile", OldFile, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "newFile", NewFile, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "status", Status, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isUnmodified", IsUnmodified, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isAdded", IsAdded, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isDeleted", IsDeleted, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isModified", IsModified, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isRenamed", IsRenamed, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isCopied", IsCopied, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isIgnored", IsIgnored, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isUntracked", IsUntracked, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isTypeChange", IsTypeChange, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isUnreadable", IsUnreadable, nodegitExternal);
-  Nan::SetPrototypeMethod(tpl, "isConflicted", IsConflicted, nodegitExternal);
-
-  Local<Function> constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
-  nodegitContext->SaveToPersistent("ConvenientPatch::Template", constructor_template);
-  Nan::Set(target, Nan::New("ConvenientPatch").ToLocalChecked(), constructor_template);
+  nodegitContext->SaveToPersistent("ConvenientPatch::Template", tpl);
+  target.Set("ConvenientPatch", tpl);
 }
 
-NAN_METHOD(ConvenientPatch::JSNewFunction) {
+Napi::Value ConvenientPatch::JSNewFunction(const Napi::CallbackInfo& info) {
+  if (info.Length() == 0 || !info[0].IsExternal()) {
+    Napi::Error::New(info.Env(), "A new ConvenientPatch cannot be instantiated.").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
+  }
 
-  if (info.Length() == 0 || !info[0]->IsExternal()) {
-       return Nan::ThrowError("A new ConvenientPatch cannot be instantiated.");
-   }
+  new ConvenientPatch(info);
 
-  ConvenientPatch* object = new ConvenientPatch(static_cast<PatchData *>(Local<External>::Cast(info[0])->Value()));
-  object->Wrap(info.Holder());
-
-  info.GetReturnValue().Set(info.Holder());
+  return info.This().As<Napi::Object>();
 }
 
-Local<v8::Value> ConvenientPatch::New(void *raw) {
-  Nan::EscapableHandleScope scope;
-  Local<v8::Value> argv[1] = { Nan::New<External>((void *)raw) };
+Napi::Value ConvenientPatch::New(void *raw) {
+  Napi::Env env = nodegit::Context::GetCurrentContext()->Env();
   nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
-  Local<Function> constructor_template = nodegitContext->GetFromPersistent("ConvenientPatch::Template").As<Function>();
-  return scope.Escape(Nan::NewInstance(constructor_template, 1, argv).ToLocalChecked());
+  Napi::Function constructor_template = nodegitContext->GetFromPersistent("ConvenientPatch::Template").As<Napi::Function>();
+  return constructor_template.New({ Napi::External<void>::New(env, (void *)raw) });
 }
 
 ConvenientLineStats ConvenientPatch::GetLineStats() {
@@ -207,25 +203,26 @@ PatchData *ConvenientPatch::GetValue() {
   return this->patch;
 }
 
-NAN_METHOD(ConvenientPatch::Hunks) {
-  if (info.Length() == 0 || !info[0]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+Napi::Value ConvenientPatch::Hunks(const Napi::CallbackInfo& info) {
+  if (info.Length() == 0 || !info[0].IsFunction()) {
+    Napi::Error::New(info.Env(), "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return info.Env().Undefined();
   }
 
   HunksBaton *baton = new HunksBaton();
 
-  baton->patch = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetValue();
+  baton->patch = Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetValue();
   baton->hunks = new std::vector<HunkData *>;
   baton->hunks->reserve(baton->patch->numHunks);
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[0]));
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[0].As<Napi::Function>()));
   HunksWorker *worker = new HunksWorker(baton, callback);
 
-  worker->Reference<ConvenientPatch>("patch", info.Holder());
+  worker->Reference<ConvenientPatch>("patch", info.This().As<Napi::Object>());
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   nodegitContext->QueueWorker(worker);
-  return;
+  return info.Env().Undefined();
 }
 
 nodegit::LockMaster ConvenientPatch::HunksWorker::AcquireLocks() {
@@ -233,7 +230,6 @@ nodegit::LockMaster ConvenientPatch::HunksWorker::AcquireLocks() {
 }
 
 void ConvenientPatch::HunksWorker::Execute() {
-  // copy hunks
   for (unsigned int i = 0; i < baton->patch->numHunks; ++i) {
     HunkData *hunkData = new HunkData();
     hunkData->numLines = baton->patch->hunks->at(i)->numLines;
@@ -277,148 +273,102 @@ void ConvenientPatch::HunksWorker::HandleErrorCallback() {
 }
 
 void ConvenientPatch::HunksWorker::HandleOKCallback() {
+  Napi::Env env = GetAsyncResource()->Env();
   unsigned int size = baton->hunks->size();
-  Local<Array> result = Nan::New<Array>(size);
+  Napi::Array result = Napi::Array::New(env, size);
 
   for(unsigned int i = 0; i < size; ++i) {
-    Nan::Set(result, Nan::New<Number>(i), ConvenientHunk::New(baton->hunks->at(i)));
+    result.Set(i, ConvenientHunk::New(baton->hunks->at(i)));
   }
 
   delete baton->hunks;
 
-  Local<v8::Value> argv[2] = {
-    Nan::Null(),
+  Napi::Value argv[2] = {
+    env.Null(),
     result
   };
-  callback->Call(2, argv, async_resource);
+  CallCallback(argv, 2);
 
   delete baton;
 }
 
-NAN_METHOD(ConvenientPatch::LineStats) {
-  Nan::EscapableHandleScope scope;
+Napi::Value ConvenientPatch::LineStats(const Napi::CallbackInfo& info) {
+  Napi::Object toReturn = Napi::Object::New(info.Env());
+  ConvenientLineStats stats = Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetLineStats();
 
-  Local<v8::Value> to;
-  Local<Object> toReturn = Nan::New<Object>();
-  ConvenientLineStats stats = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetLineStats();
+  toReturn.Set("total_context", Napi::Number::New(info.Env(), stats.context));
+  toReturn.Set("total_additions", Napi::Number::New(info.Env(), stats.additions));
+  toReturn.Set("total_deletions", Napi::Number::New(info.Env(), stats.deletions));
 
-  to = Nan::New<Number>(stats.context);
-  Nan::Set(toReturn, Nan::New("total_context").ToLocalChecked(), to);
-  to = Nan::New<Number>(stats.additions);
-  Nan::Set(toReturn, Nan::New("total_additions").ToLocalChecked(), to);
-  to = Nan::New<Number>(stats.deletions);
-  Nan::Set(toReturn, Nan::New("total_deletions").ToLocalChecked(), to);
-
-  return info.GetReturnValue().Set(scope.Escape(toReturn));
+  return toReturn;
 }
 
-NAN_METHOD(ConvenientPatch::Size) {
-  Local<v8::Value> to;
-
-  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetNumHunks());
-
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::Size(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetNumHunks());
 }
 
-NAN_METHOD(ConvenientPatch::OldFile) {
-  Nan::EscapableHandleScope scope;
-
-  Local<v8::Value> to;
+Napi::Value ConvenientPatch::OldFile(const Napi::CallbackInfo& info) {
   git_diff_file *old_file = (git_diff_file *)malloc(sizeof(git_diff_file));
-  *old_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetOldFile();
-
-  to = GitDiffFile::New(old_file, true);
-
-  return info.GetReturnValue().Set(to);
+  *old_file = Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetOldFile();
+  return GitDiffFile::New(old_file, true);
 }
 
-NAN_METHOD(ConvenientPatch::NewFile) {
-  Nan::EscapableHandleScope scope;
-
-  Local<v8::Value> to;
+Napi::Value ConvenientPatch::NewFile(const Napi::CallbackInfo& info) {
   git_diff_file *new_file = (git_diff_file *)malloc(sizeof(git_diff_file));
-  *new_file = Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetNewFile();
+  *new_file = Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetNewFile();
   if (new_file != NULL) {
-    to = GitDiffFile::New(new_file, true);
+    return GitDiffFile::New(new_file, true);
   } else {
-    to = Nan::Null();
+    return info.Env().Null();
   }
-
-  return info.GetReturnValue().Set(to);
 }
 
-NAN_METHOD(ConvenientPatch::Status) {
-  Local<v8::Value> to;
-  to = Nan::New<Number>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus());
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::Status(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus());
 }
 
-NAN_METHOD(ConvenientPatch::IsUnmodified) {
-  Nan::EscapableHandleScope scope;
-
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_UNMODIFIED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsUnmodified(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_UNMODIFIED);
 }
 
-NAN_METHOD(ConvenientPatch::IsAdded) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_ADDED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsAdded(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_ADDED);
 }
 
-NAN_METHOD(ConvenientPatch::IsDeleted) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_DELETED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsDeleted(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_DELETED);
 }
 
-NAN_METHOD(ConvenientPatch::IsModified) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_MODIFIED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsModified(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_MODIFIED);
 }
 
-NAN_METHOD(ConvenientPatch::IsRenamed) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_RENAMED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsRenamed(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_RENAMED);
 }
 
-NAN_METHOD(ConvenientPatch::IsCopied) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_COPIED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsCopied(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_COPIED);
 }
 
-NAN_METHOD(ConvenientPatch::IsIgnored) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_IGNORED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsIgnored(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_IGNORED);
 }
 
-NAN_METHOD(ConvenientPatch::IsUntracked) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_UNTRACKED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsUntracked(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_UNTRACKED);
 }
 
-NAN_METHOD(ConvenientPatch::IsTypeChange) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_TYPECHANGE);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsTypeChange(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_TYPECHANGE);
 }
 
-NAN_METHOD(ConvenientPatch::IsUnreadable) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_UNREADABLE);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsUnreadable(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_UNREADABLE);
 }
 
-NAN_METHOD(ConvenientPatch::IsConflicted) {
-  Local<v8::Value> to;
-  to = Nan::New<Boolean>(Nan::ObjectWrap::Unwrap<ConvenientPatch>(info.Holder())->GetStatus() == GIT_DELTA_CONFLICTED);
-  info.GetReturnValue().Set(to);
+Napi::Value ConvenientPatch::IsConflicted(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), Napi::ObjectWrap<ConvenientPatch>::Unwrap(info.This().As<Napi::Object>())->GetStatus() == GIT_DELTA_CONFLICTED);
 }
 
 void ConvenientPatch::Reference() {

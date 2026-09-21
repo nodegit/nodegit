@@ -1,30 +1,33 @@
-NAN_METHOD(GitRevwalk::FastWalk)
+Napi::Value GitRevwalk::FastWalk(const Napi::CallbackInfo& info)
 {
-  if (info.Length() == 0 || !info[0]->IsNumber()) {
-    return Nan::ThrowError("Max count is required and must be a number.");
+  Napi::Env env = info.Env();
+  if (info.Length() == 0 || !info[0].IsNumber()) {
+    Napi::Error::New(env, "Max count is required and must be a number.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
-  if (!info[info.Length() - 1]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+  if (!info[info.Length() - 1].IsFunction()) {
+    Napi::Error::New(env, "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
   FastWalkBaton* baton = new FastWalkBaton();
 
   baton->error_code = GIT_OK;
   baton->error = NULL;
-  baton->max_count = Nan::To<unsigned int>(info[0]).FromJust();
+  baton->max_count = info[0].As<Napi::Number>().Uint32Value();
   baton->out = new std::vector<git_oid*>;
   baton->out->reserve(baton->max_count);
-  baton->walk = Nan::ObjectWrap::Unwrap<GitRevwalk>(info.Holder())->GetValue();
+  baton->walk = NodeGitWrapper<GitRevwalkTraits>::Unwrap<GitRevwalk>(info.This().As<Napi::Object>())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[info.Length() - 1].As<Napi::Function>()));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   FastWalkWorker *worker = new FastWalkWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRevwalk>("fastWalk", info.Holder());
+  worker->Reference<GitRevwalk>("fastWalk", info.This().As<Napi::Object>());
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   nodegitContext->QueueWorker(worker);
-  return;
+  return env.Undefined();
 }
 
 nodegit::LockMaster GitRevwalk::FastWalkWorker::AcquireLocks() {
@@ -94,38 +97,39 @@ void GitRevwalk::FastWalkWorker::HandleErrorCallback() {
 
 void GitRevwalk::FastWalkWorker::HandleOKCallback()
 {
+  Napi::Env env = GetAsyncResource()->Env();
   if (baton->out != NULL)
   {
     unsigned int size = baton->out->size();
-    Local<Array> result = Nan::New<Array>(size);
+    Napi::Array result = Napi::Array::New(env, size);
     for (unsigned int i = 0; i < size; i++) {
-      Nan::Set(result, Nan::New<Number>(i), GitOid::New(baton->out->at(i), true));
+      result.Set(i, GitOid::New(baton->out->at(i), true));
     }
 
     delete baton->out;
 
-    Local<v8::Value> argv[2] = {
-      Nan::Null(),
+    Napi::Value argv[2] = {
+      env.Null(),
       result
     };
-    callback->Call(2, argv, async_resource);
+    CallCallback(argv, 2);
   }
   else
   {
     if (baton->error)
     {
-      Local<v8::Object> err;
+      Napi::Object err;
       if (baton->error->message) {
-        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
+        err = Napi::Error::New(env, baton->error->message).Value();
       } else {
-        err = Nan::To<v8::Object>(Nan::Error("Method fastWalk has thrown an error.")).ToLocalChecked();
+        err = Napi::Error::New(env, "Method fastWalk has thrown an error.").Value();
       }
-      Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
-      Local<v8::Value> argv[1] = {
+      err.Set("errno", Napi::Number::New(env, baton->error_code));
+      err.Set("errorFunction", Napi::String::New(env, "Revwalk.fastWalk"));
+      Napi::Value argv[1] = {
         err
       };
-      callback->Call(1, argv, async_resource);
+      CallCallback(argv, 1);
       if (baton->error->message)
       {
         free((void *)baton->error->message);
@@ -137,30 +141,30 @@ void GitRevwalk::FastWalkWorker::HandleOKCallback()
     {
       bool callbackFired = false;
       if (!callbackErrorHandle.IsEmpty()) {
-        v8::Local<v8::Value> maybeError = Nan::New(callbackErrorHandle);
-        if (!maybeError->IsNull() && !maybeError->IsUndefined()) {
-          v8::Local<v8::Value> argv[1] = {
+        Napi::Value maybeError = callbackErrorHandle.Value();
+        if (!maybeError.IsNull() && !maybeError.IsUndefined()) {
+          Napi::Value argv[1] = {
             maybeError
           };
-          callback->Call(1, argv, async_resource);
+          CallCallback(argv, 1);
           callbackFired = true;
         }
       }
 
       if (!callbackFired)
       {
-        Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method next has thrown an error.")).ToLocalChecked();
-        Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-        Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Revwalk.fastWalk").ToLocalChecked());
-        Local<v8::Value> argv[1] = {
+        Napi::Object err = Napi::Error::New(env, "Method next has thrown an error.").Value();
+        err.Set("errno", Napi::Number::New(env, baton->error_code));
+        err.Set("errorFunction", Napi::String::New(env, "Revwalk.fastWalk"));
+        Napi::Value argv[1] = {
           err
         };
-        callback->Call(1, argv, async_resource);
+        CallCallback(argv, 1);
       }
     }
     else
     {
-      callback->Call(0, NULL, async_resource);
+      CallCallback(nullptr, 0);
     }
   }
 

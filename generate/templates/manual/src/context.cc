@@ -1,43 +1,47 @@
 #include "../include/context.h"
 
 namespace nodegit {
-  std::map<v8::Isolate *, Context *> Context::contexts;
+  thread_local Context *Context::currentContext = nullptr;
 
-  AsyncContextCleanupHandle::AsyncContextCleanupHandle(v8::Isolate *isolate, Context *context)
-    : context(context),
-      handle(node::AddEnvironmentCleanupHook(isolate, AsyncCleanupContext, this))
-  {}
+  AsyncContextCleanupHandle::AsyncContextCleanupHandle(Napi::Env env, Context *context)
+    : context(context)
+  {
+    // napi_add_env_cleanup_hook is N-API, unlike node::AddEnvironmentCleanupHook.
+    napi_add_env_cleanup_hook(env, AsyncCleanupContext, this);
+  }
 
   AsyncContextCleanupHandle::~AsyncContextCleanupHandle() {
     delete context;
-    doneCallback(doneData);
   }
 
-  void AsyncContextCleanupHandle::AsyncCleanupContext(void *data, void(*uvCallback)(void*), void *uvCallbackData) {
+  void AsyncContextCleanupHandle::AsyncCleanupContext(void *data) {
     std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle(static_cast<AsyncContextCleanupHandle *>(data));
-    cleanupHandle->doneCallback = uvCallback;
-    cleanupHandle->doneData = uvCallbackData;
-    // the ordering of std::move and the call to Context::ShutdownThreadPool prohibits
-    // us from referring to context on cleanupHandle if we're also intending to move
-    // the unique_ptr into the method.
-    Context *context = cleanupHandle->context;
-    context->ShutdownThreadPool(std::move(cleanupHandle));
+    Napi::Env env = cleanupHandle->context->Env();
+    Napi::HandleScope scope(env);
+    // N-API's cleanup hook cannot be deferred, so ShutdownThreadPool has to
+    // complete - including joining every worker thread - before we return.
+    // The handle released at the end of this scope owns the Context, so the
+    // thread pool is destroyed only after it is done shutting itself down.
+    cleanupHandle->context->ShutdownThreadPool();
+    cleanupHandle.reset();
   }
 
-  Context::Context(v8::Isolate *isolate)
-    : isolate(isolate)
-    , threadPool(10, node::GetCurrentEventLoop(isolate), this)
+  Context::Context(Napi::Env env)
+    : env(env),
+      threadPool(10, this)
   {
-    Nan::HandleScope scope;
-    v8::Local<v8::Object> storage = Nan::New<v8::Object>();
-    persistentStorage.Reset(storage);
-    contexts[isolate] = this;
-    new AsyncContextCleanupHandle(isolate, this);
+    Napi::Object storage = Napi::Object::New(env);
+    persistentStorage = Napi::Persistent(storage);
+    currentContext = this;
+    new AsyncContextCleanupHandle(env, this);
   }
 
   Context::~Context() {
     nodegit::TrackerWrap::DeleteFromList(&trackerList);
-    contexts.erase(isolate);
+
+    if (currentContext == this) {
+      currentContext = nullptr;
+    }
   }
 
   std::shared_ptr<CleanupHandle> Context::GetCleanupHandle(std::string key) {
@@ -45,15 +49,12 @@ namespace nodegit {
   }
 
   Context *Context::GetCurrentContext() {
-    v8::Isolate *isolate = v8::Isolate::GetCurrent();
-    return contexts[isolate];
+    return currentContext;
   }
 
-  v8::Local<v8::Value> Context::GetFromPersistent(std::string key) {
-    Nan::EscapableHandleScope scope;
-    v8::Local<v8::Object> storage = Nan::New(persistentStorage);
-    Nan::MaybeLocal<v8::Value> value = Nan::Get(storage, Nan::New(key).ToLocalChecked());
-    return scope.Escape(value.ToLocalChecked());
+  Napi::Value Context::GetFromPersistent(std::string key) {
+    Napi::Object storage = persistentStorage.Value();
+    return storage.Get(key);
   }
 
   void Context::QueueWorker(nodegit::AsyncWorker *worker) {
@@ -66,17 +67,16 @@ namespace nodegit {
     return cleanupItem;
   }
 
-  void Context::SaveToPersistent(std::string key, const v8::Local<v8::Value> &value) {
-    Nan::HandleScope scope;
-    v8::Local<v8::Object> storage = Nan::New(persistentStorage);
-    Nan::Set(storage, Nan::New(key).ToLocalChecked(), value);
+  void Context::SaveToPersistent(std::string key, const Napi::Value &value) {
+    Napi::Object storage = persistentStorage.Value();
+    storage.Set(key, value);
   }
 
   void Context::SaveCleanupHandle(std::string key, std::shared_ptr<CleanupHandle> cleanupItem) {
     cleanupHandles[key] = cleanupItem;
   }
 
-  void Context::ShutdownThreadPool(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle) {
-    threadPool.Shutdown(std::move(cleanupHandle));
+  void Context::ShutdownThreadPool() {
+    threadPool.Shutdown();
   }
 }

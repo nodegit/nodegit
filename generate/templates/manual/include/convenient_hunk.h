@@ -1,7 +1,7 @@
 #ifndef CONVENIENTHUNK_H
 #define CONVENIENTHUNK_H
 // generated from class_header.h
-#include <nan.h>
+#include <napi.h>
 #include <string>
 
 #include "async_baton.h"
@@ -23,14 +23,12 @@ struct HunkData {
 
 void HunkDataFree(HunkData *hunk);
 
-using namespace node;
-using namespace v8;
-
-class ConvenientHunk : public Nan::ObjectWrap {
+class ConvenientHunk : public Napi::ObjectWrap<ConvenientHunk> {
   public:
-    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+    ConvenientHunk(const Napi::CallbackInfo& info);
+    static void InitializeComponent (Napi::Object target, nodegit::Context *nodegitContext);
 
-    static v8::Local<v8::Value> New(void *raw);
+    static Napi::Value New(void *raw);
 
     HunkData *GetValue();
     char *GetHeader();
@@ -39,25 +37,26 @@ class ConvenientHunk : public Nan::ObjectWrap {
     void Reference();
     void Unreference();
 
+    ~ConvenientHunk();
+
   private:
-    ConvenientHunk(HunkData *hunk);
     ConvenientHunk(const ConvenientHunk &) = delete;
     ConvenientHunk(ConvenientHunk &&) = delete;
     ConvenientHunk &operator=(const ConvenientHunk &) = delete;
     ConvenientHunk &operator=(ConvenientHunk &&) = delete;
-    ~ConvenientHunk();
 
     HunkData *hunk;
 
-    static NAN_METHOD(JSNewFunction);
-    static NAN_METHOD(Size);
+    static Napi::Value JSNewFunction(const Napi::CallbackInfo& info);
+    static Napi::Value Size(const Napi::CallbackInfo& info);
 
-    static NAN_METHOD(OldStart);
-    static NAN_METHOD(OldLines);
-    static NAN_METHOD(NewStart);
-    static NAN_METHOD(NewLines);
-    static NAN_METHOD(HeaderLen);
-    static NAN_METHOD(Header);
+    static Napi::Value OldStart(const Napi::CallbackInfo& info);
+    static Napi::Value OldLines(const Napi::CallbackInfo& info);
+    static Napi::Value NewStart(const Napi::CallbackInfo& info);
+    static Napi::Value NewLines(const Napi::CallbackInfo& info);
+    static Napi::Value HeaderLen(const Napi::CallbackInfo& info);
+    static Napi::Value Header(const Napi::CallbackInfo& info);
+    static Napi::Value Lines(const Napi::CallbackInfo& info);
 
     struct LinesBaton {
       HunkData *hunk;
@@ -67,7 +66,7 @@ class ConvenientHunk : public Nan::ObjectWrap {
       public:
         LinesWorker(
             LinesBaton *_baton,
-            Nan::Callback *callback
+            Napi::FunctionReference *callback
         ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:ConvenientHunk:Lines")
           , baton(_baton) {};
         LinesWorker(const LinesWorker &) = delete;
@@ -83,7 +82,6 @@ class ConvenientHunk : public Nan::ObjectWrap {
       private:
         LinesBaton *baton;
     };
-    static NAN_METHOD(Lines);
 };
 
 #endif

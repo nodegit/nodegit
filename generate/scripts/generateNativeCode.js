@@ -95,12 +95,20 @@ module.exports = function generateNativeCode() {
     });
   });
 
+  // Convert partials to Combyne templates and register filters.
+  Object.keys(partials).forEach(function(partial) {
+    partials[partial] = combyne(partials[partial]);
+    Object.keys(filters).forEach(function(filter) {
+      partials[partial].registerFilter(filter, filters[filter]);
+    });
+  });
+
   // Attach all partials to select templates.
   Object.keys(partials).forEach(function(partial) {
-    templates.class_header.registerPartial(partial, combyne(partials[partial]));
-    templates.class_content.registerPartial(partial, combyne(partials[partial]));
-    templates.struct_header.registerPartial(partial, combyne(partials[partial]));
-    templates.struct_content.registerPartial(partial, combyne(partials[partial]));
+    templates.class_header.registerPartial(partial, partials[partial]);
+    templates.class_content.registerPartial(partial, partials[partial]);
+    templates.struct_header.registerPartial(partial, partials[partial]);
+    templates.struct_content.registerPartial(partial, partials[partial]);
   });
 
 
@@ -118,7 +126,7 @@ module.exports = function generateNativeCode() {
   const finalSrcDirPath = path.join(__dirname, '../../src');
   const finalIncludeDirPath = path.join(__dirname, '../../include');
 
-  fse.remove(tempDirPath).then(function() {
+  return fse.remove(tempDirPath).then(function() {
     return fse.copy(path.resolve(__dirname, "../templates/manual/include"), tempIncludeDirPath);
   }).then(function() {
     return fse.copy(path.resolve(__dirname, "../templates/manual/src"), tempSrcDirPath);

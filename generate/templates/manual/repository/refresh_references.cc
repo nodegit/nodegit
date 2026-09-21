@@ -129,116 +129,108 @@ public:
     return GIT_OK;
   }
 
-  static void ensureSignatureRegexes() {
+  static void ensureSignatureRegexes(Napi::Env env) {
     if (!signatureRegexesBySignatureType.IsEmpty()) {
       return;
     }
 
-    v8::Local<v8::Array> gpgsigArray = Nan::New<v8::Array>(2),
-      x509Array = Nan::New<v8::Array>(1);
+    Napi::Function regexpCtor = env.Global().Get("RegExp").As<Napi::Function>();
 
-    Nan::Set(
-      gpgsigArray,
-      Nan::New<Number>(0),
-      Nan::New<v8::RegExp>(
-        Nan::New("-----BEGIN PGP SIGNATURE-----[\\s\\S]+?-----END PGP SIGNATURE-----").ToLocalChecked(),
-        static_cast<v8::RegExp::Flags>(v8::RegExp::Flags::kGlobal | v8::RegExp::Flags::kMultiline)
-      ).ToLocalChecked()
+    Napi::Array gpgsigArray = Napi::Array::New(env, 2),
+      x509Array = Napi::Array::New(env, 1);
+
+    gpgsigArray.Set((uint32_t)0,
+      regexpCtor.New({
+        Napi::String::New(env, "-----BEGIN PGP SIGNATURE-----[\\s\\S]+?-----END PGP SIGNATURE-----"),
+        Napi::String::New(env, "gm")
+      })
     );
 
-    Nan::Set(
-      gpgsigArray,
-      Nan::New<Number>(1),
-      Nan::New<v8::RegExp>(
-        Nan::New("-----BEGIN PGP MESSAGE-----[\\s\\S]+?-----END PGP MESSAGE-----").ToLocalChecked(),
-        static_cast<v8::RegExp::Flags>(v8::RegExp::Flags::kGlobal | v8::RegExp::Flags::kMultiline)
-      ).ToLocalChecked()
+    gpgsigArray.Set((uint32_t)1,
+      regexpCtor.New({
+        Napi::String::New(env, "-----BEGIN PGP MESSAGE-----[\\s\\S]+?-----END PGP MESSAGE-----"),
+        Napi::String::New(env, "gm")
+      })
     );
 
-    Nan::Set(
-      x509Array,
-      Nan::New<Number>(0),
-      Nan::New<v8::RegExp>(
-        Nan::New("-----BEGIN SIGNED MESSAGE-----[\\s\\S]+?-----END SIGNED MESSAGE-----").ToLocalChecked(),
-        static_cast<v8::RegExp::Flags>(v8::RegExp::Flags::kGlobal | v8::RegExp::Flags::kMultiline)
-      ).ToLocalChecked()
+    x509Array.Set((uint32_t)0,
+      regexpCtor.New({
+        Napi::String::New(env, "-----BEGIN SIGNED MESSAGE-----[\\s\\S]+?-----END SIGNED MESSAGE-----"),
+        Napi::String::New(env, "gm")
+      })
     );
 
-    v8::Local<v8::Object> result = Nan::New<Object>();
-    Nan::Set(result, Nan::New("gpgsig").ToLocalChecked(), gpgsigArray);
-    Nan::Set(result, Nan::New("x509").ToLocalChecked(), x509Array);
+    Napi::Object result = Napi::Object::New(env);
+    result.Set("gpgsig", gpgsigArray);
+    result.Set("x509", x509Array);
 
-    signatureRegexesBySignatureType.Reset(result);
+    signatureRegexesBySignatureType = Napi::Persistent(result);
   }
 
-  v8::Local<v8::Object> toJavascript(v8::Local<v8::String> signatureType) {
-    v8::Local<v8::Object> result = Nan::New<Object>();
+  Napi::Value toJavascript(Napi::Env env, Napi::Value signatureType) {
+    Napi::Object result = Napi::Object::New(env);
 
-    v8::Local<v8::Value> jsFullName;
+    Napi::Value jsFullName;
     if (fullName == NULL) {
-      jsFullName = Nan::Null();
+      jsFullName = env.Null();
     } else {
-      jsFullName = Nan::New<String>(fullName).ToLocalChecked();
+      jsFullName = Napi::String::New(env, fullName);
     }
-    Nan::Set(result, Nan::New("fullName").ToLocalChecked(), jsFullName);
+    result.Set("fullName", jsFullName);
 
-    v8::Local<v8::Value> jsMessage;
+    Napi::Value jsMessage;
     if (message == NULL) {
-      jsMessage = Nan::Null();
+      jsMessage = env.Null();
     } else {
-      jsMessage = Nan::New<String>(message).ToLocalChecked();
+      jsMessage = Napi::String::New(env, message);
     }
-    Nan::Set(result, Nan::New("message").ToLocalChecked(), jsMessage);
+    result.Set("message", jsMessage);
 
-    Nan::Set(
-      result,
-      Nan::New("sha").ToLocalChecked(),
-      Nan::New<String>(sha).ToLocalChecked()
+    result.Set(
+      "sha",
+      Napi::String::New(env, sha)
     );
 
-    v8::Local<v8::Value> jsShorthand;
+    Napi::Value jsShorthand;
     if (shorthand == NULL) {
-      jsShorthand = Nan::Null();
+      jsShorthand = env.Null();
     } else {
-      jsShorthand = Nan::New<String>(shorthand).ToLocalChecked();
+      jsShorthand = Napi::String::New(env, shorthand);
     }
-    Nan::Set(result, Nan::New("shorthand").ToLocalChecked(), jsShorthand);
+    result.Set("shorthand", jsShorthand);
 
-    v8::Local<v8::Value> jsTagSignature = Nan::Null();
+    Napi::Value jsTagSignature = env.Null();
     if (tagOdbBuffer != NULL && tagOdbBufferLength != 0) {
-      // tagOdbBuffer is already a copy, so we'd like to use NewBuffer instead,
+      // tagOdbBuffer is already a copy, so we'd like to use a non-copying buffer instead,
       // but we were getting segfaults and couldn't easily figure out why. :(
-      // We tried passing the tagOdbBuffer directly to NewBuffer and then nullifying tagOdbBuffer so that
-      // the destructor didn't double free, but that still segfaulted internally in Node.
-      v8::Local<v8::Object> buffer = Nan::CopyBuffer(tagOdbBuffer, tagOdbBufferLength).ToLocalChecked();
-      v8::Local<v8::Value> toStringProp = Nan::Get(buffer, Nan::New("toString").ToLocalChecked()).ToLocalChecked();
-      v8::Local<v8::Object> jsTagOdbObjectString = Nan::To<v8::Object>(Nan::CallAsFunction(Nan::To<v8::Object>(toStringProp).ToLocalChecked(), buffer, 0, NULL).ToLocalChecked()).ToLocalChecked();
+      Napi::Object buffer = Napi::Buffer<char>::Copy(env, tagOdbBuffer, tagOdbBufferLength).As<Napi::Object>();
+      Napi::Value toStringProp = buffer.Get("toString");
+      Napi::Object jsTagOdbObjectString = toStringProp.As<Napi::Function>().Call(buffer, std::vector<napi_value>()).As<Napi::Object>();
 
-      v8::Local<v8::Object> _signatureRegexesBySignatureType = Nan::New(signatureRegexesBySignatureType);
-      v8::Local<v8::Array> signatureRegexes = v8::Local<v8::Array>::Cast(Nan::Get(_signatureRegexesBySignatureType, signatureType).ToLocalChecked());
+      Napi::Object _signatureRegexesBySignatureType = signatureRegexesBySignatureType.Value();
+      Napi::Array signatureRegexes = _signatureRegexesBySignatureType.Get(signatureType).As<Napi::Array>();
 
-      for (uint32_t i = 0; i < signatureRegexes->Length(); ++i) {
-        v8::Local<v8::Value> argv[] = {
-          Nan::Get(signatureRegexes, Nan::New(i)).ToLocalChecked()
-        };
+      for (uint32_t i = 0; i < signatureRegexes.Length(); ++i) {
+        std::vector<napi_value> argv;
+        argv.push_back(signatureRegexes.Get(i));
 
-        v8::Local<v8::Value> matchProp = Nan::Get(jsTagOdbObjectString, Nan::New("match").ToLocalChecked()).ToLocalChecked();
-        v8::Local<v8::Value> match = Nan::CallAsFunction(Nan::To<v8::Object>(matchProp).ToLocalChecked(), jsTagOdbObjectString, 1, argv).ToLocalChecked();
-        if (match->IsArray()) {
-          jsTagSignature = Nan::Get(Nan::To<v8::Object>(match).ToLocalChecked(), 0).ToLocalChecked();
+        Napi::Value matchProp = jsTagOdbObjectString.Get("match");
+        Napi::Value match = matchProp.As<Napi::Function>().Call(jsTagOdbObjectString, argv);
+        if (match.IsArray()) {
+          jsTagSignature = match.As<Napi::Object>().Get((uint32_t)0);
           break;
         }
       }
     }
-    Nan::Set(result, Nan::New("tagSignature").ToLocalChecked(), jsTagSignature);
+    result.Set("tagSignature", jsTagSignature);
 
-    v8::Local<v8::Value> jsType;
+    Napi::Value jsType;
     if (type == NULL) {
-      jsType = Nan::Null();
+      jsType = env.Null();
     } else {
-      jsType = Nan::New<String>(type).ToLocalChecked();
+      jsType = Napi::String::New(env, type);
     }
-    Nan::Set(result, Nan::New("type").ToLocalChecked(), jsType);
+    result.Set("type", jsType);
 
     return result;
   }
@@ -254,10 +246,10 @@ public:
   char *fullName, *message, *sha, *shorthand, *tagOdbBuffer;
   size_t tagOdbBufferLength;
   const char *type;
-  static Nan::Persistent<v8::Object> signatureRegexesBySignatureType;
+  static Napi::ObjectReference signatureRegexesBySignatureType;
 };
 
-Nan::Persistent<v8::Object> RefreshedRefModel::signatureRegexesBySignatureType;
+Napi::ObjectReference RefreshedRefModel::signatureRegexesBySignatureType;
 
 class UpstreamModel {
 public:
@@ -319,27 +311,27 @@ public:
     return true;
   }
 
-  v8::Local<v8::Object> toJavascript() {
-    v8::Local<v8::Object> result = Nan::New<Object>();
+  Napi::Value toJavascript(Napi::Env env) {
+    Napi::Object result = Napi::Object::New(env);
 
-    v8::Local<v8::Value> jsDownstreamFullName;
+    Napi::Value jsDownstreamFullName;
     if (downstreamFullName == NULL) {
-      jsDownstreamFullName = Nan::Null();
+      jsDownstreamFullName = env.Null();
     } else {
-      jsDownstreamFullName = Nan::New<String>(downstreamFullName).ToLocalChecked();
+      jsDownstreamFullName = Napi::String::New(env, downstreamFullName);
     }
-    Nan::Set(result, Nan::New("downstreamFullName").ToLocalChecked(), jsDownstreamFullName);
+    result.Set("downstreamFullName", jsDownstreamFullName);
 
-    v8::Local<v8::Value> jsUpstreamFullName;
+    Napi::Value jsUpstreamFullName;
     if (upstreamFullName == NULL) {
-      jsUpstreamFullName = Nan::Null();
+      jsUpstreamFullName = env.Null();
     } else {
-      jsUpstreamFullName = Nan::New<String>(upstreamFullName).ToLocalChecked();
+      jsUpstreamFullName = Napi::String::New(env, upstreamFullName);
     }
-    Nan::Set(result, Nan::New("upstreamFullName").ToLocalChecked(), jsUpstreamFullName);
+    result.Set("upstreamFullName", jsUpstreamFullName);
 
-    Nan::Set(result, Nan::New("ahead").ToLocalChecked(), Nan::New<Number>(ahead));
-    Nan::Set(result, Nan::New("behind").ToLocalChecked(), Nan::New<Number>(behind));
+    result.Set("ahead", Napi::Number::New(env, ahead));
+    result.Set("behind", Napi::Number::New(env, behind));
     return result;
   }
 
@@ -387,28 +379,30 @@ public:
   RefreshedRefModel *merge;
 };
 
-NAN_METHOD(GitRepository::RefreshReferences)
+Napi::Value GitRepository::RefreshReferences(const Napi::CallbackInfo& info)
 {
-  v8::Local<v8::String> signatureType;
+  Napi::Env env = info.Env();
+  Napi::Value signatureType;
   if (info.Length() == 2) {
-    if (!info[0]->IsString()) {
-      return Nan::ThrowError("Signature type must be \"gpgsig\" or \"x509\".");
+    if (!info[0].IsString()) {
+      Napi::Error::New(env, "Signature type must be \"gpgsig\" or \"x509\".").ThrowAsJavaScriptException();
+      return env.Undefined();
     }
 
-    v8::Local<v8::String> signatureTypeParam = Nan::To<v8::String>(info[0]).ToLocalChecked();
-    if (
-      Nan::Equals(signatureTypeParam, Nan::New("gpgsig").ToLocalChecked()) != Nan::Just(true)
-      && Nan::Equals(signatureTypeParam, Nan::New("x509").ToLocalChecked()) != Nan::Just(true)
-    ) {
-      return Nan::ThrowError("Signature type must be \"gpgsig\" or \"x509\".");
+    Napi::String signatureTypeParam = info[0].As<Napi::String>();
+    std::string signatureTypeStr = signatureTypeParam.Utf8Value();
+    if (signatureTypeStr != "gpgsig" && signatureTypeStr != "x509") {
+      Napi::Error::New(env, "Signature type must be \"gpgsig\" or \"x509\".").ThrowAsJavaScriptException();
+      return env.Undefined();
     }
     signatureType = signatureTypeParam;
   } else {
-    signatureType = Nan::New("gpgsig").ToLocalChecked();
+    signatureType = Napi::String::New(env, "gpgsig");
   }
 
-  if (!info[info.Length() - 1]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+  if (!info[info.Length() - 1].IsFunction()) {
+    Napi::Error::New(env, "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
   RefreshReferencesBaton* baton = new RefreshReferencesBaton();
@@ -416,16 +410,16 @@ NAN_METHOD(GitRepository::RefreshReferences)
   baton->error_code = GIT_OK;
   baton->error = NULL;
   baton->out = (void *)new RefreshReferencesData();
-  baton->repo = Nan::ObjectWrap::Unwrap<GitRepository>(info.Holder())->GetValue();
+  baton->repo = NodeGitWrapper<GitRepositoryTraits>::Unwrap<GitRepository>(info.This().As<Napi::Object>())->GetValue();
 
-  Nan::Callback *callback = new Nan::Callback(Local<Function>::Cast(info[info.Length() - 1]));
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[info.Length() - 1].As<Napi::Function>()));
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
   RefreshReferencesWorker *worker = new RefreshReferencesWorker(baton, callback, cleanupHandles);
-  worker->Reference<GitRepository>("repo", info.Holder());
+  worker->Reference<GitRepository>("repo", info.This().As<Napi::Object>());
   worker->Reference("signatureType", signatureType);
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   nodegitContext->QueueWorker(worker);
-  return;
+  return env.Undefined();
 }
 
 nodegit::LockMaster GitRepository::RefreshReferencesWorker::AcquireLocks() {
@@ -622,70 +616,68 @@ void GitRepository::RefreshReferencesWorker::HandleErrorCallback() {
 
 void GitRepository::RefreshReferencesWorker::HandleOKCallback()
 {
+  Napi::Env env = GetAsyncResource()->Env();
   if (baton->out != NULL)
   {
-    RefreshedRefModel::ensureSignatureRegexes();
+    RefreshedRefModel::ensureSignatureRegexes(env);
     auto refreshData = (RefreshReferencesData *)baton->out;
-    v8::Local<v8::Object> result = Nan::New<Object>();
+    Napi::Object result = Napi::Object::New(env);
 
-    Nan::Set(
-      result,
-      Nan::New("headRefFullName").ToLocalChecked(),
-      Nan::New<String>(refreshData->headRefFullName).ToLocalChecked()
+    result.Set(
+      "headRefFullName",
+      Napi::String::New(env, refreshData->headRefFullName)
     );
 
-    v8::Local<v8::String> signatureType = Nan::To<v8::String>(GetFromPersistent("signatureType")).ToLocalChecked();
+    Napi::Value signatureType = GetFromPersistent("signatureType");
 
     unsigned int numRefs = refreshData->refs.size();
-    v8::Local<v8::Array> refs = Nan::New<v8::Array>(numRefs);
+    Napi::Array refs = Napi::Array::New(env, numRefs);
     for (unsigned int i = 0; i < numRefs; ++i) {
       RefreshedRefModel *refreshedRefModel = refreshData->refs[i];
-      Nan::Set(refs, Nan::New(i), refreshedRefModel->toJavascript(signatureType));
+      refs.Set(i, refreshedRefModel->toJavascript(env, signatureType));
     }
-    Nan::Set(result, Nan::New("refs").ToLocalChecked(), refs);
+    result.Set("refs", refs);
 
     unsigned int numUpstreamInfo = refreshData->upstreamInfo.size();
-    v8::Local<v8::Array> upstreamInfo = Nan::New<v8::Array>(numUpstreamInfo);
+    Napi::Array upstreamInfo = Napi::Array::New(env, numUpstreamInfo);
     for (unsigned int i = 0; i < numUpstreamInfo; ++i) {
       UpstreamModel *upstreamModel = refreshData->upstreamInfo[i];
-      Nan::Set(upstreamInfo, Nan::New(i), upstreamModel->toJavascript());
+      upstreamInfo.Set(i, upstreamModel->toJavascript(env));
     }
-    Nan::Set(result, Nan::New("upstreamInfo").ToLocalChecked(), upstreamInfo);
+    result.Set("upstreamInfo", upstreamInfo);
 
     if (refreshData->cherrypick != NULL) {
-      Nan::Set(
-        result,
-        Nan::New("cherrypick").ToLocalChecked(),
-        refreshData->cherrypick->toJavascript(signatureType)
+      result.Set(
+        "cherrypick",
+        refreshData->cherrypick->toJavascript(env, signatureType)
       );
     } else {
-      Nan::Set(result, Nan::New("cherrypick").ToLocalChecked(), Nan::Null());
+      result.Set("cherrypick", env.Null());
     }
 
     if (refreshData->merge != NULL) {
-      Nan::Set(
-        result,
-        Nan::New("merge").ToLocalChecked(),
-        refreshData->merge->toJavascript(signatureType)
+      result.Set(
+        "merge",
+        refreshData->merge->toJavascript(env, signatureType)
       );
     } else {
-      Nan::Set(result, Nan::New("merge").ToLocalChecked(), Nan::Null());
+      result.Set("merge", env.Null());
     }
 
     delete refreshData;
 
-    Local<v8::Value> argv[2] = {
-      Nan::Null(),
+    Napi::Value argv[2] = {
+      env.Null(),
       result
     };
-    callback->Call(2, argv, async_resource);
+    CallCallback(argv, 2);
   }
   else if (baton->error)
   {
-    Local<v8::Value> argv[1] = {
-      Nan::Error(baton->error->message)
+    Napi::Value argv[1] = {
+      Napi::Error::New(env, baton->error->message).Value()
     };
-    callback->Call(1, argv, async_resource);
+    CallCallback(argv, 1);
     if (baton->error->message)
     {
       free((void *)baton->error->message);
@@ -695,17 +687,17 @@ void GitRepository::RefreshReferencesWorker::HandleOKCallback()
   }
   else if (baton->error_code < 0)
   {
-    Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Repository refreshReferences has thrown an error.")).ToLocalChecked();
-    Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("Repository.refreshReferences").ToLocalChecked());
-    Local<v8::Value> argv[1] = {
+    Napi::Object err = Napi::Error::New(env, "Repository refreshReferences has thrown an error.").Value();
+    err.Set("errno", Napi::Number::New(env, baton->error_code));
+    err.Set("errorFunction", Napi::String::New(env, "Repository.refreshReferences"));
+    Napi::Value argv[1] = {
       err
     };
-    callback->Call(1, argv, async_resource);
+    CallCallback(argv, 1);
   }
   else
   {
-    callback->Call(0, NULL, async_resource);
+    CallCallback(nullptr, 0);
   }
 
   delete baton;

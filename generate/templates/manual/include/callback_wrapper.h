@@ -1,15 +1,12 @@
 #ifndef CALLBACK_WRAPPER_H
 #define CALLBACK_WRAPPER_H
 
-#include <nan.h>
-#include <uv.h>
+#include <napi.h>
+#include <chrono>
 #include <memory>
 
-using namespace v8;
-using namespace node;
-
 class CallbackWrapper {
-  std::unique_ptr<Nan::Callback> jsCallback;
+  std::unique_ptr<Napi::FunctionReference> jsCallback;
 
   // throttling data, used for callbacks that need to be throttled
   uint32_t throttle; // in milliseconds - if > 0, calls to the JS callback will be throttled
@@ -32,11 +29,11 @@ public:
     return jsCallback != nullptr;
   }
 
-  Nan::Callback* GetCallback() {
+  Napi::FunctionReference* GetCallback() {
     return jsCallback.get();
   }
 
-  void SetCallback(std::unique_ptr<Nan::Callback> callback, uint32_t throttle = 0, bool waitForResult = true) {
+  void SetCallback(std::unique_ptr<Napi::FunctionReference> callback, uint32_t throttle = 0, bool waitForResult = true) {
     jsCallback = std::move(callback);
     this->throttle = throttle;
     this->waitForResult = waitForResult;
@@ -50,8 +47,10 @@ public:
     if(!throttle) {
       return false;
     }
-    // throttle if needed
-    uint64_t now = uv_hrtime();
+    // throttle if needed - steady_clock is monotonic, like uv_hrtime()
+    uint64_t now = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      std::chrono::steady_clock::now().time_since_epoch()
+    ).count();
     if(lastCallTime > 0 && now < lastCallTime + throttle * (uint64_t)1000000) {
       // throttled
       return true;

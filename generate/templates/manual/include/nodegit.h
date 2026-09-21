@@ -1,11 +1,13 @@
 #ifndef NODEGIT_H
 #define NODEGIT_H
 
-v8::Local<v8::Value> GetPrivate(v8::Local<v8::Object> object,
-                                    v8::Local<v8::String> key);
+#include <napi.h>
 
-void SetPrivate(v8::Local<v8::Object> object,
-                    v8::Local<v8::String> key,
-                    v8::Local<v8::Value> value);
+Napi::Value GetPrivate(Napi::Object object,
+                       Napi::String key);
+
+void SetPrivate(Napi::Object object,
+                Napi::String key,
+                Napi::Value value);
 
 #endif

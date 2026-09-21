@@ -7,7 +7,8 @@
     "is_IBMi%": "<!(node -p \"os.platform() == 'aix' && os.type() == 'OS400' ? 1 : 0\")",
     "electron_openssl_root%": "<!(node ./utils/getElectronOpenSSLRoot.js <(module_root_dir))",
     "electron_openssl_static%": "<!(node -p \"process.platform !== 'linux' || process.env.NODEGIT_OPENSSL_STATIC_LINK === '1' ? 1 : 0\")",
-    "cxx_version%": "<!(node ./utils/defaultCxxStandard.js <(target))",
+    "host_openssl_lib_dir%": "<!(node ./utils/getHostOpenSSLLibDir.js)",
+    "cxx_version%": "<!(node ./utils/defaultCxxStandard.js <(target) <(node_root_dir))",
     "has_cxxflags%": "<!(node -p \"process.env.CXXFLAGS ? 1 : 0\")",
     "macOS_deployment_target": "10.11",
     # https://github.com/nodejs/node-gyp/issues/2673
@@ -19,7 +20,8 @@
       "target_name": "nodegit",
 
       "dependencies": [
-        "vendor/libgit2.gyp:libgit2"
+        "vendor/libgit2.gyp:libgit2",
+        "<!(node -p \"require('node-addon-api').targets\"):node_addon_api"
       ],
 
       "variables": {
@@ -56,7 +58,17 @@
       "include_dirs": [
         "vendor/libv8-convert",
         "vendor/libssh2/include",
-        "<!(node -e \"require('nan')\")"
+        "<!(node -p \"require('node-addon-api').include_dir\")"
+      ],
+      "cflags!": [
+        "-fno-exceptions"
+      ],
+      "cflags_cc!": [
+        "-fno-exceptions"
+      ],
+      "defines": [
+        "NAPI_VERSION=10",
+        "NAPI_CPP_EXCEPTIONS"
       ],
 
       "cflags": [
@@ -82,6 +94,9 @@
             "libraries": [
               "-liconv",
             ],
+            "cflags_cc": [
+              "-std=c++<(cxx_version)"
+            ],
             "conditions": [
               ["<(is_electron) == 1", {
                 "include_dirs": [
@@ -91,6 +106,15 @@
                   "<(electron_openssl_root)/lib/libssl.a",
                   "<(electron_openssl_root)/lib/libcrypto.a"
                 ]
+              }],
+              ["<(is_electron) != 1 and '<(host_openssl_lib_dir)' != ''", {
+                "library_dirs": [
+                  "<(host_openssl_lib_dir)"
+                ],
+                "libraries": [
+                  "-lcrypto",
+                  "-lssl"
+                ]
               }]
             ],
             "xcode_settings": {
@@ -98,6 +122,7 @@
               "MACOSX_DEPLOYMENT_TARGET": "<(macOS_deployment_target)",
               'CLANG_CXX_LIBRARY': 'libc++',
               'CLANG_CXX_LANGUAGE_STANDARD':'c++<(cxx_version)',
+              'OTHER_CPLUSPLUSFLAGS': ['-fexceptions'],
 
               "WARNING_CFLAGS": [
                 "-Wno-unused-variable",
@@ -176,6 +201,12 @@
               "include_dirs": [
                 "<(electron_openssl_root)/include"
               ],
+            }],
+            ["<(is_electron) != 1", {
+              "libraries": [
+                "-lcrypto",
+                "-lssl"
+              ]
             }],
           ],
         }],

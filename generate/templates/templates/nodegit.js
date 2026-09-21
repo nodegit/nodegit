@@ -91,7 +91,7 @@ _FilterRegistry.unregister = promisify(_FilterRegistry_unregister);
 /* jshint ignore:end */
 
 // Set the exports prototype to the raw API.
-exports.__proto__ = rawApi;
+Object.setPrototypeOf(exports, rawApi);
 
 var importExtension = function(name) {
   try {
@@ -105,9 +105,10 @@ var importExtension = function(name) {
 };
 
 // Load up utils
-rawApi.Utils = {};
-require("./utils/lookup_wrapper");
-require("./utils/shallow_clone");
+rawApi.Utils = {
+  lookupWrapper: require("./utils/lookup_wrapper"),
+  shallowClone: require("./utils/shallow_clone")
+};
 
 // Load up extra types;
 require("./status_file");
@@ -128,8 +129,10 @@ importExtension("filter_registry");
       {% if fn.useAsOnRootProto %}
 
         // Inherit directly from the original {{idef.jsClassName}} object.
-        _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}.__proto__ =
-          _{{ idef.jsClassName }};
+        Object.setPrototypeOf(
+          _{{ idef.jsClassName }}.{{ fn.jsFunctionName }},
+          _{{ idef.jsClassName }}
+        );
 
         // Ensure we're using the correct prototype.
         _{{ idef.jsClassName }}.{{ fn.jsFunctionName }}.prototype =

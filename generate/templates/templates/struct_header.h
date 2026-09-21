@@ -1,7 +1,7 @@
 // generated from struct_header.h
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
-#include <nan.h>
+#include <napi.h>
 #include <string>
 #include <utility>
 
@@ -42,15 +42,22 @@ struct {{ cType }}_extended {
       friend class NodeGitWrapper<{{ cppClassName }}Traits>;
 
     public:
-      {{ cppClassName }}({{ cType }}* raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+      {{ cppClassName }}(const Napi::CallbackInfo& info);
+      static {{ cType }}* DefaultAllocate(Napi::Env env);
       {{ cppClassName }}(const {{ cppClassName }} &) = delete;
       {{ cppClassName }}({{ cppClassName }} &&) = delete;
       {{ cppClassName }} &operator=(const {{ cppClassName }} &) = delete;
       {{ cppClassName }} &operator=({{ cppClassName }} &&) = delete;
-      static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+      static void InitializeComponent (Napi::Object target, nodegit::Context *nodegitContext);
+
+      {% each fields as field %}
+        {% if not field.ignore %}
+          static Napi::Value Get{{ field.cppFunctionName }}(const Napi::CallbackInfo& info);
+          static void Set{{ field.cppFunctionName }}(const Napi::CallbackInfo& info, const Napi::Value& value);
+        {% endif %}
+      {% endeach %}
 
     private:
-      {{ cppClassName }}();
       ~{{ cppClassName }}();
 
       void ConstructFields();
@@ -59,13 +66,9 @@ struct {{ cType }}_extended {
         {% if not field.ignore %}
           {% if not field.isEnum %}
             {% if field.isLibgitType %}
-              Nan::Global<Value> {{ field.name }};
+              Napi::ObjectReference {{ field.name }};
             {% endif %}
           {% endif %}
-
-          static NAN_GETTER(Get{{ field.cppFunctionName }});
-          static NAN_SETTER(Set{{ field.cppFunctionName }});
-
         {% endif %}
       {% endeach %}
   };
@@ -75,7 +78,7 @@ class Configurable{{ cppClassName }} : public nodegit::ConfigurableClassWrapper<
   friend class nodegit::ConfigurableClassWrapper<{{ cppClassName }}Traits>;
 
 public:
-  static v8ConversionResult fromJavascript(nodegit::Context *nodegitContext, v8::Local<v8::Value> input);
+  static v8ConversionResult fromJavascript(nodegit::Context *nodegitContext, Napi::Value input);
   ~Configurable{{ cppClassName }}();
 
   Configurable{{ cppClassName }}(const Configurable{{ cppClassName }} &) = delete;
@@ -97,12 +100,15 @@ public:
 
         static void {{ field.jsFunctionName }}_cancelAsync(void *baton);
         static void {{ field.jsFunctionName }}_async(void *baton);
-        static void {{ field.jsFunctionName }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result);
+        static void {{ field.jsFunctionName }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, Napi::Value result);
         {% if field.return.type == 'void' %}
           class {{ field.name|titleCase }}Baton : public nodegit::AsyncBatonWithNoResult {
           public:
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name }};
+              {% if arg.cppClassName == "GitIndexerProgress" %}
+                git_indexer_progress stats_copy;
+              {% endif %}
             {% endeach %}
 
             {{ field.name|titleCase }}Baton()
@@ -114,6 +120,9 @@ public:
           public:
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name }};
+              {% if arg.cppClassName == "GitIndexerProgress" %}
+                git_indexer_progress stats_copy;
+              {% endif %}
             {% endeach %}
 
             {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
@@ -130,7 +139,7 @@ public:
 private:
   Configurable{{ cppClassName }}(nodegit::Context *nodegitContext);
   Configurable{{ cppClassName }}() = delete;
-  Nan::Global<Value> promiseError;
+  Napi::ObjectReference promiseError;
 
   {% each fields as field %}
     {% if not field.ignore %}
@@ -141,7 +150,7 @@ private:
           {% elsif field.cppClassName == 'GitStrarray' %}
             {%-- We do not need to generate anything here --%}
           {% else %}
-            Nan::Global<Object> {{ field.jsFunctionName }};
+            Napi::ObjectReference {{ field.jsFunctionName }};
           {% endif %}
         {% elsif field.isCallbackFunction %}
           CallbackWrapper {{ field.jsFunctionName }};

@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #include <string.h>
 
 extern "C" {
@@ -42,66 +42,94 @@ using namespace node;
     {% endeach %}
   }
 
-  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext) {
-    Nan::HandleScope scope;
+  {{ cppClassName }}::{{ cppClassName }}(const Napi::CallbackInfo& info)
+    : NodeGitWrapper<{{ cppClassName }}Traits>(info) {
+  }
 
-    v8::Local<v8::External> nodegitExternal = Nan::New<v8::External>(nodegitContext);
-    v8::Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(JSNewFunction, nodegitExternal);
+  {{ cppClassName }}Traits::cType* {{ cppClassName }}::DefaultAllocate(Napi::Env env) {
+    Napi::Error::New(env, "A new {{ cppClassName }} cannot be instantiated.{% if createFunctionName %} Use {{ jsCreateFunctionName }} instead.{% endif %}").ThrowAsJavaScriptException();
+    return nullptr;
+  }
 
-    tpl->InstanceTemplate()->SetInternalFieldCount(2);
-    tpl->SetClassName(Nan::New("{{ jsClassName }}").ToLocalChecked());
+  void {{ cppClassName }}::InitializeComponent(Napi::Object target, nodegit::Context *nodegitContext) {
+    Napi::Env env = target.Env();
+    Napi::HandleScope scope(env);
 
+    Napi::Function tpl = Napi::Function::New(env, JSNewFunction, "{{ jsClassName }}");
+
+    Napi::Object proto = tpl.Get("prototype").As<Napi::Object>();
     {% each functions as function %}
       {% if not function.ignore %}
         {% if function.isPrototypeMethod %}
-          Nan::SetPrototypeMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }}, nodegitExternal);
+          proto.Set("{{ function.jsFunctionName }}", Napi::Function::New(env, {{ function.cppFunctionName }}_thunk, "{{ function.jsFunctionName }}"));
         {% else %}
-          Nan::SetMethod(tpl, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }}, nodegitExternal);
+          tpl.Set("{{ function.jsFunctionName }}", Napi::Function::New(env, {{ function.cppFunctionName }}_thunk, "{{ function.jsFunctionName }}"));
         {% endif %}
       {% endif %}
     {% endeach %}
 
     {% each fields as field %}
       {% if not field.ignore %}
-        Nan::SetPrototypeMethod(tpl, "{{ field.jsFunctionName }}", {{ field.cppFunctionName }}, nodegitExternal);
+        proto.Set("{{ field.jsFunctionName }}", Napi::Function::New(env, {{ field.cppFunctionName }}_thunk, "{{ field.jsFunctionName }}"));
       {% endif %}
     {% endeach %}
 
     InitializeTemplate(tpl);
 
-    v8::Local<Function> constructor_template = Nan::GetFunction(tpl).ToLocalChecked();
-    nodegitContext->SaveToPersistent("{{ cppClassName }}::Template", constructor_template);
-    Nan::Set(target, Nan::New("{{ jsClassName }}").ToLocalChecked(), constructor_template);
+    nodegitContext->SaveToPersistent("{{ cppClassName }}::Template", tpl);
+    target.Set("{{ jsClassName }}", tpl);
   }
+
+  {% each functions as function %}
+    {% if not function.ignore %}
+  Napi::Value {{ cppClassName }}::{{ function.cppFunctionName }}_thunk(const Napi::CallbackInfo& info) {
+    {% if function.isPrototypeMethod %}
+    {{ cppClassName }}* self = static_cast<{{ cppClassName }}*>(nodegit::TrackerWrap::Unwrap(info.This().As<Napi::Object>()));
+    return self->{{ function.cppFunctionName }}(info);
+    {% else %}
+    return {{ cppClassName }}::{{ function.cppFunctionName }}(info);
+    {% endif %}
+  }
+    {% endif %}
+  {% endeach %}
+
+  {% each fields as field %}
+    {% if not field.ignore %}
+  Napi::Value {{ cppClassName }}::{{ field.cppFunctionName }}_thunk(const Napi::CallbackInfo& info) {
+    {{ cppClassName }}* self = static_cast<{{ cppClassName }}*>(nodegit::TrackerWrap::Unwrap(info.This().As<Napi::Object>()));
+    return self->{{ field.cppFunctionName }}(info);
+  }
+    {% endif %}
+  {% endeach %}
 
 {% else %}
 
-  void {{ cppClassName }}::InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext) {
-    Nan::HandleScope scope;
-    Local<External> nodegitExternal = Nan::New<External>(nodegitContext);
+  void {{ cppClassName }}::InitializeComponent(Napi::Object target, nodegit::Context *nodegitContext) {
+    Napi::Env env = target.Env();
+    Napi::HandleScope scope(env);
 
     {% if functions|hasFunctionOnRootProto %}
-      v8::Local<FunctionTemplate> object = Nan::New<FunctionTemplate>({{ functions|getCPPFunctionForRootProto }}, nodegitExternal);
+      Napi::Function object = Napi::Function::New(env, {{ functions|getCPPFunctionForRootProto }}_thunk, "{{ jsClassName }}");
     {% else %}
-      v8::Local<Object> object = Nan::New<Object>();
+      Napi::Object object = Napi::Object::New(env);
     {% endif %}
 
     {% each functions as function %}
       {% if not function.ignore %}
-        Nan::SetMethod(object, "{{ function.jsFunctionName }}", {{ function.cppFunctionName }}, nodegitExternal);
+        object.Set("{{ function.jsFunctionName }}", Napi::Function::New(env, {{ function.cppFunctionName }}_thunk, "{{ function.jsFunctionName }}"));
       {% endif %}
     {% endeach %}
 
-    Nan::Set(
-      target,
-      Nan::New("{{ jsClassName }}").ToLocalChecked(),
-      {% if functions|hasFunctionOnRootProto %}
-        Nan::GetFunction(object).ToLocalChecked()
-      {% else %}
-        object
-      {% endif %}
-    );
+    target.Set("{{ jsClassName }}", object);
   }
+
+  {% each functions as function %}
+    {% if not function.ignore %}
+  Napi::Value {{ cppClassName }}::{{ function.cppFunctionName }}_thunk(const Napi::CallbackInfo& info) {
+    return {{ cppClassName }}::{{ function.cppFunctionName }}(info);
+  }
+    {% endif %}
+  {% endeach %}
 
 {% endif %}
 

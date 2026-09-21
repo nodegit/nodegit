@@ -1,9 +1,11 @@
-
 {%partial doc .%}
-NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
+Napi::Value {{ cppClassName }}::{{ cppFunctionName }}(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  Napi::HandleScope scope(env);
   {%partial guardArguments .%}
-  if (!info[info.Length() - 1]->IsFunction()) {
-    return Nan::ThrowError("Callback is required and must be a Function.");
+  if (!info[info.Length() - 1].IsFunction()) {
+    Napi::Error::New(env, "Callback is required and must be a Function.").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
   {{ cppFunctionName }}Baton* baton = new {{ cppFunctionName }}Baton();
@@ -12,20 +14,26 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   baton->error = NULL;
 
   {%each args|argsInfo as arg %}
+    {%if arg.isReturn %}
+      baton->{{ arg.name }} = NULL;
+    {%endif%}
+  {%endeach%}
+
+  {%each args|argsInfo as arg %}
     {%if arg.globalPayload %}
       {{ cppFunctionName }}_globalPayload* globalPayload = new {{ cppFunctionName }}_globalPayload;
     {%endif%}
   {%endeach%}
 
-  nodegit::Context *nodegitContext = reinterpret_cast<nodegit::Context *>(info.Data().As<External>()->Value());
+  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
   std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> cleanupHandles;
 
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-        baton->{{ arg.name }} = Nan::ObjectWrap::Unwrap<{{ arg.cppClassName }}>(info.Holder())->GetValue();
+        baton->{{ arg.name }} = NodeGitWrapper<{{ arg.cppClassName }}Traits>::Unwrap<{{ arg.cppClassName }}>(info.This().As<Napi::Object>())->GetValue();
       {%elsif arg.isCallbackFunction %}
-        if (!info[{{ arg.jsArg }}]->IsFunction()) {
+        if (!info[{{ arg.jsArg }}].IsFunction()) {
           baton->{{ arg.name }} = NULL;
         {%if arg.payload.globalPayload %}
           globalPayload->{{ arg.name }} = NULL;
@@ -37,10 +45,10 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         else {
           baton->{{ arg.name}} = {{ cppFunctionName }}_{{ arg.name }}_cppCallback;
           {%if arg.payload.globalPayload %}
-            globalPayload->{{ arg.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
+            globalPayload->{{ arg.name }} = new Napi::FunctionReference(Napi::Persistent(info[{{ arg.jsArg }}].As<Napi::Function>()));
           {%else%}
             // NOTE this is a dead path
-            baton->{{ arg.payload.name }} = new Nan::Callback(info[{{ arg.jsArg }}].As<Function>());
+            baton->{{ arg.payload.name }} = new Napi::FunctionReference(Napi::Persistent(info[{{ arg.jsArg }}].As<Napi::Function>()));
           {%endif%}
         }
       {%elsif arg.payloadFor %}
@@ -49,24 +57,25 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%endif%}
       {% elsif arg.isStructType %}
         {% if arg.isOptional %}
-          if (info[{{ arg.jsArg }}]->IsNull() || info[{{ arg.jsArg }}]->IsUndefined()) {
+          if (info[{{ arg.jsArg }}].IsNull() || info[{{ arg.jsArg }}].IsUndefined()) {
             baton->{{ arg.name }} = nullptr;
           } else
         {% endif %}
         {% if arg.cppClassName == 'Array' %}
           {
-            v8::Local<v8::Array> tempArray = v8::Local<v8::Array>::Cast(info[{{ arg.jsArg }}]);
-            baton->{{ arg.name }} = ({{ arg.cType|unPointer }}*)malloc(sizeof({{ arg.cType|unPointer }}) * tempArray->Length());
-            for (uint32_t i = 0; i < tempArray->Length(); ++i) {
+            Napi::Array tempArray = info[{{ arg.jsArg }}].As<Napi::Array>();
+            baton->{{ arg.name }} = ({{ arg.cType|unPointer }}*)malloc(sizeof({{ arg.cType|unPointer }}) * tempArray.Length());
+            for (uint32_t i = 0; i < tempArray.Length(); ++i) {
               auto conversionResult = Configurable{{ arg.arrayElementCppClassName }}::fromJavascript(
                 nodegitContext,
-                Nan::Get(tempArray, i).ToLocalChecked()
+                tempArray.Get(i)
               );
 
               if (!conversionResult.result) {
                 // TODO free previously allocated memory
                 free(baton->{{ arg.name }});
-                return Nan::ThrowError(Nan::New(conversionResult.error).ToLocalChecked());
+                Napi::Error::New(env, conversionResult.error).ThrowAsJavaScriptException();
+                return env.Undefined();
               }
 
               auto convertedObject = conversionResult.result;
@@ -78,7 +87,8 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
           {
             auto conversionResult = Configurable{{ arg.cppClassName }}::fromJavascript(nodegitContext, info[{{ arg.jsArg }}]);
             if (!conversionResult.result) {
-              return Nan::ThrowError(Nan::New(conversionResult.error).ToLocalChecked());
+              Napi::Error::New(env, conversionResult.error).ThrowAsJavaScriptException();
+              return env.Undefined();
             }
 
             auto convertedObject = conversionResult.result;
@@ -91,7 +101,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
         {%if not arg.payloadFor %}
           baton->{{ arg.name }} = from_{{ arg.name }};
           {%if arg | isOid %}
-            baton->{{ arg.name }}NeedsFree = info[{{ arg.jsArg }}]->IsString();
+            baton->{{ arg.name }}NeedsFree = info[{{ arg.jsArg }}].IsString();
           {%endif%}
         {%endif%}
       {%endif%}
@@ -104,18 +114,18 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
     {%endif%}
   {%endeach%}
 
-  Nan::Callback *callback = new Nan::Callback(v8::Local<Function>::Cast(info[info.Length() - 1]));
+  Napi::FunctionReference *callback = new Napi::FunctionReference(Napi::Persistent(info[info.Length() - 1].As<Napi::Function>()));
   {{ cppFunctionName }}Worker *worker = new {{ cppFunctionName }}Worker(baton, callback, cleanupHandles);
 
   {%each args|argsInfo as arg %}
     {%if not arg.isReturn %}
       {%if arg.isSelf %}
-        worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info.Holder());
+        worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info.This().As<Napi::Object>());
       {%elsif not arg.isCallbackFunction %}
         {%if  arg.isUnwrappable %}
           {% if arg.cppClassName == "Array" %}
-            if (info[{{ arg.jsArg }}]->IsArray()) {
-              worker->Reference<{{ arg.arrayElementCppClassName }}>("{{ arg.name }}", info[{{ arg.jsArg }}].As<v8::Array>());
+            if (info[{{ arg.jsArg }}].IsArray()) {
+              worker->Reference<{{ arg.arrayElementCppClassName }}>("{{ arg.name }}", info[{{ arg.jsArg }}].As<Napi::Array>());
             }
           {% else %}
             worker->Reference<{{ arg.cppClassName }}>("{{ arg.name }}", info[{{ arg.jsArg }}]);
@@ -128,7 +138,7 @@ NAN_METHOD({{ cppClassName }}::{{ cppFunctionName }}) {
   {%endeach%}
 
   nodegitContext->QueueWorker(worker);
-  return;
+  return env.Undefined();
 }
 
 nodegit::LockMaster {{ cppClassName }}::{{ cppFunctionName }}Worker::AcquireLocks() {
@@ -182,13 +192,15 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::Execute() {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
+  Napi::Env env = GetAsyncResource()->Env();
+  Napi::HandleScope scope(env);
   if (!GetIsCancelled()) {
-    v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error(ErrorMessage())).ToLocalChecked();
-    Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
-    v8::Local<v8::Value> argv[1] = {
+    Napi::Object err = Napi::Error::New(env, ErrorMessage()).Value();
+    err.Set("errorFunction", Napi::String::New(env, "{{ jsClassName }}.{{ jsFunctionName }}"));
+    Napi::Value argv[1] = {
       err
     };
-    callback->Call(1, argv, async_resource);
+    CallCallback(argv, 1);
   }
 
   if (baton->error) {
@@ -252,6 +264,8 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleErrorCallback() {
 }
 
 void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
+  Napi::Env env = GetAsyncResource()->Env();
+  Napi::HandleScope scope(env);
   {%if return.isResultOrError %}
     if (baton->error_code >= GIT_OK) {
   {%else%}
@@ -259,23 +273,23 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
   {%endif%}
 
   {%if return.isResultOrError %}
-    v8::Local<v8::Value> result = Nan::New<v8::Number>(baton->error_code);
+    Napi::Value result = Napi::Number::New(env, baton->error_code);
 
   {%elsif not .|returnsCount %}
-    v8::Local<v8::Value> result = Nan::Undefined();
+    Napi::Value result = env.Undefined();
   {%else%}
-    v8::Local<v8::Value> v8ConversionSlot;
+    Napi::Value v8ConversionSlot;
     {%if .|returnsCount > 1 %}
-      v8::Local<Object> result = Nan::New<Object>();
+      Napi::Object result = Napi::Object::New(env);
     {%endif%}
     {%each .|returnsInfo 0 1 as _return %}
       {%partial convertToV8 _return %}
       {%if .|returnsCount > 1 %}
-        Nan::Set(result, Nan::New("{{ _return.returnNameOrName }}").ToLocalChecked(), v8ConversionSlot);
+        result.Set("{{ _return.returnNameOrName }}", v8ConversionSlot);
       {%endif%}
     {%endeach%}
     {%if .|returnsCount == 1 %}
-      v8::Local<v8::Value> result = v8ConversionSlot;
+      Napi::Value result = v8ConversionSlot;
     {%endif%}
   {%endif%}
 
@@ -285,9 +299,9 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
         {% if arg.preserveOnThis %}
           {
             {% if args|thisInfo 'isReturn' %}
-              auto objWrap = Nan::ObjectWrap::Unwrap<{{ args|thisInfo 'cppClassName' }}>(result.As<v8::Object>());
+              auto objWrap = NodeGitWrapper<{{ args|thisInfo 'cppClassName' }}Traits>::Unwrap<{{ args|thisInfo 'cppClassName' }}>(result.As<Napi::Object>());
             {% else %}
-              auto objWrap = Nan::ObjectWrap::Unwrap<{{ args|thisInfo 'cppClassName' }}>(GetFromPersistent("{{ args|thisInfo 'name' }}").As<v8::Object>());
+              auto objWrap = NodeGitWrapper<{{ args|thisInfo 'cppClassName' }}Traits>::Unwrap<{{ args|thisInfo 'cppClassName' }}>(GetFromPersistent("{{ args|thisInfo 'name' }}").As<Napi::Object>());
             {% endif %}
             objWrap->SaveCleanupHandle(cleanupHandles["{{ arg.name }}"]);
           }
@@ -296,52 +310,52 @@ void {{ cppClassName }}::{{ cppFunctionName }}Worker::HandleOKCallback() {
     {% endif %}
   {% endeach %}
 
-    v8::Local<v8::Value> argv[2] = {
-      Nan::Null(),
+    Napi::Value argv[2] = {
+      env.Null(),
       result
     };
-    callback->Call(2, argv, async_resource);
+    CallCallback(argv, 2);
   } else {
     if (baton->error) {
-      v8::Local<v8::Object> err;
+      Napi::Object err;
       if (baton->error->message) {
-        err = Nan::To<v8::Object>(Nan::Error(baton->error->message)).ToLocalChecked();
+        err = Napi::Error::New(env, baton->error->message).Value();
       } else {
-        err = Nan::To<v8::Object>(Nan::Error("Method {{ jsFunctionName }} has thrown an error.")).ToLocalChecked();
+        err = Napi::Error::New(env, "Method {{ jsFunctionName }} has thrown an error.").Value();
       }
-      Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-      Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
-      v8::Local<v8::Value> argv[1] = {
+      err.Set("errno", Napi::Number::New(env, baton->error_code));
+      err.Set("errorFunction", Napi::String::New(env, "{{ jsClassName }}.{{ jsFunctionName }}"));
+      Napi::Value argv[1] = {
         err
       };
-      callback->Call(1, argv, async_resource);
+      CallCallback(argv, 1);
       if (baton->error->message)
         free((void *)baton->error->message);
       free((void *)baton->error);
     } else if (baton->error_code < 0) {
       bool callbackFired = false;
       if (!callbackErrorHandle.IsEmpty()) {
-        v8::Local<v8::Value> maybeError = Nan::New(callbackErrorHandle);
-        if (!maybeError->IsNull() && !maybeError->IsUndefined()) {
-          v8::Local<v8::Value> argv[1] = {
+        Napi::Value maybeError = callbackErrorHandle.Value();
+        if (!maybeError.IsNull() && !maybeError.IsUndefined()) {
+          Napi::Value argv[1] = {
             maybeError
           };
-          callback->Call(1, argv, async_resource);
+          CallCallback(argv, 1);
           callbackFired = true;
         }
       }
 
       if (!callbackFired) {
-        v8::Local<v8::Object> err = Nan::To<v8::Object>(Nan::Error("Method {{ jsFunctionName }} has thrown an error.")).ToLocalChecked();
-        Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New(baton->error_code));
-        Nan::Set(err, Nan::New("errorFunction").ToLocalChecked(), Nan::New("{{ jsClassName }}.{{ jsFunctionName }}").ToLocalChecked());
-        v8::Local<v8::Value> argv[1] = {
+        Napi::Object err = Napi::Error::New(env, "Method {{ jsFunctionName }} has thrown an error.").Value();
+        err.Set("errno", Napi::Number::New(env, baton->error_code));
+        err.Set("errorFunction", Napi::String::New(env, "{{ jsClassName }}.{{ jsFunctionName }}"));
+        Napi::Value argv[1] = {
           err
         };
-        callback->Call(1, argv, async_resource);
+        CallCallback(argv, 1);
       }
     } else {
-      callback->Call(0, NULL, async_resource);
+      CallCallback(nullptr, 0);
     }
 
     {%each args|argsInfo as arg %}

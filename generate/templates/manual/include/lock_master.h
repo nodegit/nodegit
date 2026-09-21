@@ -2,6 +2,7 @@
 #define LOCK_MASTER_H
 
 #include <git2.h>
+#include <napi.h>
 
 namespace nodegit {
   class LockMasterImpl;
@@ -92,7 +93,7 @@ namespace nodegit {
     };
 
     static void InitializeGlobal();
-    static void InitializeContext();
+    static void InitializeContext(Napi::Env env);
   };
 
 

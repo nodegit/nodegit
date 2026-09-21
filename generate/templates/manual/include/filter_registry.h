@@ -1,88 +1,108 @@
-#ifndef GITFILTERREGISTRY_H
-#define GITFILTERREGISTRY_H
-#include <nan.h>
+#ifndef FILTER_REGISTRY_H
+#define FILTER_REGISTRY_H
+
+#include <napi.h>
 #include <string>
-#include <utility>
 
 #include "async_baton.h"
 #include "async_worker.h"
-#include "cleanup_handle.h"
-#include "context.h"
 #include "lock_master.h"
-#include "nodegit_wrapper.h"
 #include "promise_completion.h"
+#include "cleanup_handle.h"
 
 extern "C" {
-#include <git2.h>
+  #include <git2.h>
+  #include <git2/sys/filter.h>
 }
 
-#include "../include/typedefs.h"
+#include <map>
+#include <vector>
 
-#include "../include/filter.h"
+namespace nodegit {
+  class GitFilterRegistry : public Napi::ObjectWrap<GitFilterRegistry> {
+    public:
+      GitFilterRegistry(const Napi::CallbackInfo& info);
+      static void InitializeComponent (Napi::Object target, nodegit::Context *nodegitContext);
 
-using namespace node;
-using namespace v8;
+      static Napi::Value New(void *raw);
 
+      git_filter *GetValue();
+      void Reference();
+      void Unreference();
 
-class GitFilterRegistry : public Nan::ObjectWrap {
-   public:
-    static void InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+      void AddReferenceCallbacks(size_t fieldIndex, std::function<void()> refCb, std::function<void()> unrefCb);
 
-  private:
+      ~GitFilterRegistry();
 
-    static NAN_METHOD(GitFilterRegister);
+    private:
+      GitFilterRegistry(const GitFilterRegistry &) = delete;
+      GitFilterRegistry(GitFilterRegistry &&) = delete;
+      GitFilterRegistry &operator=(const GitFilterRegistry &) = delete;
+      GitFilterRegistry &operator=(GitFilterRegistry &&) = delete;
 
-    static NAN_METHOD(GitFilterUnregister);
+      git_filter *raw;
 
-    struct FilterRegisterBaton {
-      const git_error *error;
-      git_filter *filter;
-      char *filter_name;
-      int filter_priority;
-      int error_code;
-    };
+      static Napi::Value JSNewFunction(const Napi::CallbackInfo& info);
+      static Napi::Value Register(const Napi::CallbackInfo& info);
+      static Napi::Value Unregister(const Napi::CallbackInfo& info);
 
-    struct FilterUnregisterBaton {
-      const git_error *error;
-      char *filter_name;
-      int error_code;
-    };
+      struct RegisterBaton : public nodegit::AsyncBaton {
+        const char *name;
+        git_filter *filter;
+        const git_error *error;
+        int priority;
+        int error_code;
+        bool failedRequest;
+      };
+      class RegisterWorker : public nodegit::AsyncWorker {
+        public:
+          RegisterWorker(
+              RegisterBaton *_baton,
+              Napi::FunctionReference *callback,
+              std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &_cleanupHandles
+          ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:GitFilterRegistry:Register", _cleanupHandles)
+            , baton(_baton) {};
+          RegisterWorker(const RegisterWorker &) = delete;
+          RegisterWorker(RegisterWorker &&) = delete;
+          RegisterWorker &operator=(const RegisterWorker &) = delete;
+          RegisterWorker &operator=(RegisterWorker &&) = delete;
+          ~RegisterWorker(){};
+          void Execute();
+          void HandleErrorCallback();
+          void HandleOKCallback();
+          nodegit::LockMaster AcquireLocks();
 
-    class RegisterWorker : public nodegit::AsyncWorker {
-      public:
-        RegisterWorker(FilterRegisterBaton *_baton, Nan::Callback *callback, std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &cleanupHandles)
-        : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Register", cleanupHandles), baton(_baton) {};
-        RegisterWorker(const RegisterWorker &) = delete;
-        RegisterWorker(RegisterWorker &&) = delete;
-        RegisterWorker &operator=(const RegisterWorker &) = delete;
-        RegisterWorker &operator=(RegisterWorker &&) = delete;
-        ~RegisterWorker() {};
-        void Execute();
-        void HandleErrorCallback();
-        void HandleOKCallback();
-        nodegit::LockMaster AcquireLocks();
+        private:
+          RegisterBaton *baton;
+      };
 
-      private:
-        FilterRegisterBaton *baton;
-    };
+      struct UnregisterBaton : public nodegit::AsyncBaton {
+        const char *name;
+        const git_error *error;
+        int error_code;
+        bool failedRequest;
+      };
+      class UnregisterWorker : public nodegit::AsyncWorker {
+        public:
+          UnregisterWorker(
+              UnregisterBaton *_baton,
+              Napi::FunctionReference *callback
+          ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:GitFilterRegistry:Unregister")
+            , baton(_baton) {};
+          UnregisterWorker(const UnregisterWorker &) = delete;
+          UnregisterWorker(UnregisterWorker &&) = delete;
+          UnregisterWorker &operator=(const UnregisterWorker &) = delete;
+          UnregisterWorker &operator=(UnregisterWorker &&) = delete;
+          ~UnregisterWorker(){};
+          void Execute();
+          void HandleErrorCallback();
+          void HandleOKCallback();
+          nodegit::LockMaster AcquireLocks();
 
-    class UnregisterWorker : public nodegit::AsyncWorker {
-      public:
-        UnregisterWorker(FilterUnregisterBaton *_baton, Nan::Callback *callback)
-        : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:FilterRegistry:Unregister"), baton(_baton) {};
-        UnregisterWorker(const UnregisterWorker &) = delete;
-        UnregisterWorker(UnregisterWorker &&) = delete;
-        UnregisterWorker &operator=(const UnregisterWorker &) = delete;
-        UnregisterWorker &operator=(UnregisterWorker &&) = delete;
-        ~UnregisterWorker() {};
-        void Execute();
-        void HandleErrorCallback();
-        void HandleOKCallback();
-        nodegit::LockMaster AcquireLocks();
-
-      private:
-        FilterUnregisterBaton *baton;
-    };
-};
+        private:
+          UnregisterBaton *baton;
+      };
+  };
+}
 
 #endif

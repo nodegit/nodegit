@@ -1,23 +1,19 @@
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
 #include <string>
 #include <cstring>
 
 #include "../include/str_array_converter.h"
 #include "git2/strarray.h"
 
-using namespace v8;
-using namespace node;
-
-git_strarray *StrArrayConverter::Convert(v8::Local<v8::Value> val) {
-  if (!Nan::To<bool>(val).FromJust()) {
+git_strarray *StrArrayConverter::Convert(Napi::Value val) {
+  if (!val.ToBoolean().Value()) {
     return NULL;
   }
-  else if (val->IsArray()) {
-    return ConvertArray(v8::Local<v8::Array>::Cast(val));
+  else if (val.IsArray()) {
+    return ConvertArray(val.As<Napi::Array>());
   }
-  else if (val->IsString() || val->IsStringObject()) {
-    return ConvertString(Nan::To<v8::String>(val).ToLocalChecked());
+  else if (val.IsString()) {
+    return ConvertString(val.As<Napi::String>());
   }
   else {
     return NULL;
@@ -33,22 +29,22 @@ git_strarray * StrArrayConverter::AllocStrArray(const size_t count) {
   return result;
 }
 
-git_strarray *StrArrayConverter::ConvertArray(v8::Local<v8::Array> val) {
-  git_strarray *result = AllocStrArray(val->Length());
+git_strarray *StrArrayConverter::ConvertArray(Napi::Array val) {
+  git_strarray *result = AllocStrArray(val.Length());
 
   for(size_t i = 0; i < result->count; i++) {
-    Nan::Utf8String entry(Nan::Get(val, i).ToLocalChecked());
-    result->strings[i] = strdup(*entry);
+    std::string entry = val.Get(i).As<Napi::String>().Utf8Value();
+    result->strings[i] = strdup(entry.c_str());
   }
 
   return result;
 }
 
-git_strarray* StrArrayConverter::ConvertString(v8::Local<v8::String> val) {
+git_strarray* StrArrayConverter::ConvertString(Napi::String val) {
   char *strings[1];
-  Nan::Utf8String utf8String(val);
+  std::string utf8String = val.Utf8Value();
 
-  strings[0] = *utf8String;
+  strings[0] = const_cast<char *>(utf8String.c_str());
 
   return ConstructStrArray(1, strings);
 }
@@ -63,18 +59,18 @@ git_strarray *StrArrayConverter::ConstructStrArray(int argc, char** argv) {
   return result;
 }
 
-void StrArrayConverter::ConvertInto(git_strarray *out, v8::Local<v8::Array> val) {
-  out->count = val->Length();
+void StrArrayConverter::ConvertInto(git_strarray *out, Napi::Array val) {
+  out->count = val.Length();
   out->strings = (char**) malloc(out->count * sizeof(char*));
   for (uint32_t i = 0; i < out->count; ++i) {
-    Nan::Utf8String utf8String(Nan::Get(val, i).ToLocalChecked().As<v8::String>());
-    out->strings[i] = strdup(*utf8String);
+    std::string utf8String = val.Get(i).As<Napi::String>().Utf8Value();
+    out->strings[i] = strdup(utf8String.c_str());
   }
 }
 
-void StrArrayConverter::ConvertInto(git_strarray *out, v8::Local<v8::String> val) {
-  Nan::Utf8String utf8String(val);
+void StrArrayConverter::ConvertInto(git_strarray *out, Napi::String val) {
+  std::string utf8String = val.Utf8Value();
   out->count = 1;
   out->strings = (char**) malloc(out->count * sizeof(char*));
-  out->strings[0] = strdup(*utf8String);
+  out->strings[0] = strdup(utf8String.c_str());
 }

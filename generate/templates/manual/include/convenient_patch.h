@@ -1,7 +1,7 @@
 #ifndef CONVENIENTPATCH_H
 #define CONVENIENTPATCH_H
 // generated from class_header.h
-#include <nan.h>
+#include <napi.h>
 #include <string>
 
 #include "async_baton.h"
@@ -37,16 +37,17 @@ void PatchDataFree(PatchData *patch);
 using namespace node;
 using namespace v8;
 
-class ConvenientPatch : public Nan::ObjectWrap {
+class ConvenientPatch : public Napi::ObjectWrap<ConvenientPatch> {
   public:
+    ConvenientPatch(const Napi::CallbackInfo& info);
     ConvenientPatch(const ConvenientPatch &) = delete;
     ConvenientPatch(ConvenientPatch &&) = delete;
     ConvenientPatch &operator=(const ConvenientPatch &) = delete;
     ConvenientPatch &operator=(ConvenientPatch &&) = delete;
 
-    static void InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+    static void InitializeComponent(Napi::Object target, nodegit::Context *nodegitContext);
 
-    static v8::Local<v8::Value> New(void *raw);
+    static Napi::Value New(void *raw);
 
     ConvenientLineStats GetLineStats();
     git_delta_t GetStatus();
@@ -58,19 +59,18 @@ class ConvenientPatch : public Nan::ObjectWrap {
     void Reference();
     void Unreference();
 
-  private:
-    ConvenientPatch(PatchData *raw);
     ~ConvenientPatch();
 
+  private:
     PatchData *patch;
 
-    static NAN_METHOD(JSNewFunction);
+    static Napi::Value JSNewFunction(const Napi::CallbackInfo& info);
 
     // patch methods
-    static NAN_METHOD(LineStats);
+    static Napi::Value LineStats(const Napi::CallbackInfo& info);
 
     // hunk methods
-    static NAN_METHOD(Size);
+    static Napi::Value Size(const Napi::CallbackInfo& info);
 
     struct HunksBaton {
       PatchData *patch;
@@ -80,7 +80,7 @@ class ConvenientPatch : public Nan::ObjectWrap {
       public:
         HunksWorker(
             HunksBaton *_baton,
-            Nan::Callback *callback
+            Napi::FunctionReference *callback
         ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:ConvenientPatch:Hunks")
           , baton(_baton) {};
         HunksWorker(const HunksWorker &) = delete;
@@ -97,27 +97,25 @@ class ConvenientPatch : public Nan::ObjectWrap {
         HunksBaton *baton;
     };
 
-    static NAN_METHOD(Hunks);
+    static Napi::Value Hunks(const Napi::CallbackInfo& info);
 
     // delta methods
-    static NAN_METHOD(OldFile);
-    static NAN_METHOD(NewFile);
+    static Napi::Value OldFile(const Napi::CallbackInfo& info);
+    static Napi::Value NewFile(const Napi::CallbackInfo& info);
 
     // convenient status methods
-    static NAN_METHOD(Status);
-    static NAN_METHOD(IsUnmodified);
-    static NAN_METHOD(IsAdded);
-    static NAN_METHOD(IsDeleted);
-    static NAN_METHOD(IsModified);
-    static NAN_METHOD(IsRenamed);
-    static NAN_METHOD(IsCopied);
-    static NAN_METHOD(IsIgnored);
-    static NAN_METHOD(IsUntracked);
-    static NAN_METHOD(IsTypeChange);
-    static NAN_METHOD(IsUnreadable);
-    static NAN_METHOD(IsConflicted);
-
-    // Hunk methods
+    static Napi::Value Status(const Napi::CallbackInfo& info);
+    static Napi::Value IsUnmodified(const Napi::CallbackInfo& info);
+    static Napi::Value IsAdded(const Napi::CallbackInfo& info);
+    static Napi::Value IsDeleted(const Napi::CallbackInfo& info);
+    static Napi::Value IsModified(const Napi::CallbackInfo& info);
+    static Napi::Value IsRenamed(const Napi::CallbackInfo& info);
+    static Napi::Value IsCopied(const Napi::CallbackInfo& info);
+    static Napi::Value IsIgnored(const Napi::CallbackInfo& info);
+    static Napi::Value IsUntracked(const Napi::CallbackInfo& info);
+    static Napi::Value IsTypeChange(const Napi::CallbackInfo& info);
+    static Napi::Value IsUnreadable(const Napi::CallbackInfo& info);
+    static Napi::Value IsConflicted(const Napi::CallbackInfo& info);
 };
 
 #endif

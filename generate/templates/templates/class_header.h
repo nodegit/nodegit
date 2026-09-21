@@ -1,6 +1,6 @@
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
-#include <nan.h>
+#include <napi.h>
 #include <string>
 #include <utility>
 #include <algorithm>
@@ -17,6 +17,7 @@
 #include "promise_completion.h"
 #include "reference_counter.h"
 #include "worker_pool.h"
+#include "v8_helpers.h"
 
 extern "C" {
 #include <git2.h>
@@ -43,8 +44,6 @@ struct {{ cType }} {
 };
 {%endif%}
 
-using namespace node;
-using namespace v8;
 
 {%if cType %}
 {%partial traits .%}
@@ -54,7 +53,7 @@ class {{ cppClassName }} : public
 {%if cType %}
   NodeGitWrapper<{{ cppClassName }}Traits>
 {%else%}
-  Nan::ObjectWrap
+  Napi::ObjectWrap<{{ cppClassName }}>
 {%endif%}
 {
   {%if cType %}
@@ -67,7 +66,11 @@ class {{ cppClassName }} : public
     {{ cppClassName }} &operator=(const {{ cppClassName }} &) = delete;
     {{ cppClassName }} &operator=({{ cppClassName }} &&) = delete;
 
-    static void InitializeComponent (v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
+    static void InitializeComponent (Napi::Object target, nodegit::Context *nodegitContext);
+
+    {%if cType %}
+    static {{ cType }}* DefaultAllocate(Napi::Env env);
+    {%endif %}
 
     {% each functions as function %}
       {% if not function.ignore %}
@@ -84,7 +87,7 @@ class {{ cppClassName }} : public
 
     static void {{ function.cppFunctionName }}_{{ arg.name }}_cancelAsync(void *baton);
     static void {{ function.cppFunctionName }}_{{ arg.name }}_async(void *baton);
-    static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, v8::Local<v8::Value> result);
+    static void {{ function.cppFunctionName }}_{{ arg.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, Napi::Value result);
     class {{ function.cppFunctionName }}_{{ arg.name|titleCase }}Baton : public nodegit::AsyncBatonWithResult<{{ arg.return.type }}> {
     public:
       {% each arg.args|argsInfo as cbArg %}
@@ -104,24 +107,14 @@ class {{ cppClassName }} : public
 
   private:
     {%if cType%}
-    {{ cppClassName }}()
-      : NodeGitWrapper<{{ cppClassName }}Traits>(
-        {% if createFunctionName %}
-          "A new {{ cppClassName }} cannot be instantiated. Use {{ jsCreateFunctionName }} instead."
-        {% else %}
-          "A new {{ cppClassName }} cannot be instantiated."
-        {% endif %}
-      )
-    {}
-    {{ cppClassName }}({{ cType }} *raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>())
-      : NodeGitWrapper<{{ cppClassName }}Traits>(raw, selfFreeing, owner)
-    {}
+    {{ cppClassName }}(const Napi::CallbackInfo& info);
     ~{{ cppClassName }}();
     {%endif%}
 
     {%each fields as field%}
       {%if not field.ignore%}
-    static NAN_METHOD({{ field.cppFunctionName }});
+    static Napi::Value {{ field.cppFunctionName }}(const Napi::CallbackInfo& info);
+    static Napi::Value {{ field.cppFunctionName }}_thunk(const Napi::CallbackInfo& info);
       {%endif%}
     {%endeach%}
 
@@ -152,7 +145,7 @@ class {{ cppClassName }} : public
       public:
         {{ function.cppFunctionName }}Worker(
             {{ function.cppFunctionName }}Baton *_baton,
-            Nan::Callback *callback,
+            Napi::FunctionReference *callback,
             std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &cleanupHandles
         ) : nodegit::AsyncWorker(callback, "nodegit:AsyncWorker:{{ cppClassName }}:{{ function.cppFunctionName }}", cleanupHandles)
           , baton(_baton) {};
@@ -171,7 +164,8 @@ class {{ cppClassName }} : public
     };
         {%endif%}
 
-    static NAN_METHOD({{ function.cppFunctionName }});
+    static Napi::Value {{ function.cppFunctionName }}(const Napi::CallbackInfo& info);
+    static Napi::Value {{ function.cppFunctionName }}_thunk(const Napi::CallbackInfo& info);
       {%endif%}
     {%endeach%}
 
@@ -182,7 +176,7 @@ class {{ cppClassName }} : public
     struct {{ function.cppFunctionName }}_globalPayload {
           {%each function.args as arg %}
             {%if arg.isCallbackFunction %}
-      Nan::Callback * {{ arg.name }};
+      Napi::FunctionReference * {{ arg.name }};
             {%endif%}
           {%endeach%}
 

@@ -2,7 +2,10 @@
 #define NODEGIT_WRAPPER_H
 
 #include <algorithm>
+#include <functional>
+#include <memory>
 #include <unordered_map>
+#include <napi.h>
 
 #include "tracker_wrap.h"
 #include "cleanup_handle.h"
@@ -17,7 +20,7 @@
 //  static const bool isFreeable
 //  static void free(cType *raw) - frees the object using freeFunctionName
 //
-// nodegit::TrackerWrap allows for cheap tracking of new objects, avoiding searchs
+// nodegit::TrackerWrap allows for cheap tracking of new objects, avoiding searches
 // in a container to remove the tracking of a specific object.
 
 namespace nodegit {
@@ -48,33 +51,44 @@ protected:
 
   // owner of the object, in the memory management sense. only populated
   // when using ownedByThis, and the type doesn't have a dupFunction
-  // CopyablePersistentTraits are used to get the reset-on-destruct behavior.
-  Nan::Persistent<v8::Object, Nan::CopyablePersistentTraits<v8::Object> > owner;
+  std::unique_ptr<Napi::ObjectReference> owner;
 
   // diagnostic count of self-freeing object instances
   thread_local static int SelfFreeingInstanceCount;
   // diagnostic count of constructed non-self-freeing object instances
   thread_local static int NonSelfFreeingConstructedCount;
 
-  static void InitializeTemplate(v8::Local<v8::FunctionTemplate> &tpl);
+  NodeGitWrapper(const Napi::CallbackInfo& info);
 
-  NodeGitWrapper(cType *raw, bool selfFreeing, v8::Local<v8::Object> owner);
-  NodeGitWrapper(const char *error); // calls ThrowError
   NodeGitWrapper(const NodeGitWrapper &) = delete;
   NodeGitWrapper(NodeGitWrapper &&) = delete;
   NodeGitWrapper &operator=(const NodeGitWrapper &) = delete;
   NodeGitWrapper &operator=(NodeGitWrapper &&) = delete;
   ~NodeGitWrapper();
 
-  static NAN_METHOD(JSNewFunction);
+  virtual void DestroyNative() override;
 
-  static NAN_METHOD(GetSelfFreeingInstanceCount);
-  static NAN_METHOD(GetNonSelfFreeingConstructedCount);
+  void InitializeFromRaw(cType *raw, bool selfFreeing, Napi::Object owner);
 
-  void SetNativeOwners(v8::Local<v8::Object> owners);
+  static Napi::Value JSNewFunction(const Napi::CallbackInfo& info);
+  static Napi::Value GetSelfFreeingInstanceCount(const Napi::CallbackInfo& info);
+  static Napi::Value GetNonSelfFreeingConstructedCount(const Napi::CallbackInfo& info);
+
+  void SetNativeOwners(Napi::Object owners);
+
+  static void InitializeTemplate(Napi::Object tpl);
 
 public:
-  static v8::Local<v8::Value> New(const cType *raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+  static Napi::Value New(const cType *raw, bool selfFreeing, Napi::Object owner = Napi::Object(), nodegit::Context *nodegitContext = nullptr);
+
+  template<typename T>
+  static T* Unwrap(Napi::Object object) {
+    return static_cast<T*>(Napi::ObjectWrap<nodegit::TrackerWrap>::Unwrap(object));
+  }
+
+  Napi::Object This() const {
+    return Napi::ObjectWrap<nodegit::TrackerWrap>::Value();
+  }
 
   void SaveCleanupHandle(std::shared_ptr<nodegit::CleanupHandle> cleanupHandle);
 
