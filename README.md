@@ -1,6 +1,6 @@
 # NodeGit
 
-> Node bindings to the [libgit2](http://libgit2.github.com/) project.
+> Node bindings to the [libgit2](https://github.com/libgit2/libgit2) project.
 
 [![Actions Status](https://github.com/nodegit/nodegit/workflows/Testing/badge.svg)](https://github.com/nodegit/nodegit/actions)
 
