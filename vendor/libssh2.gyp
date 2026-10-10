@@ -28,7 +28,7 @@
         "action": ["node", "../utils/configureLibssh2.js"],
         "inputs": [""],
         "outputs": [""],
-        "message": "Confioguring libssh2"
+        "message": "Configuring libssh2"
       }],
       "dependencies": [
         "acquireOpenSSL"
