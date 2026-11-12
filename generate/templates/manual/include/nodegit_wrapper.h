@@ -75,6 +75,11 @@ protected:
 
 public:
   static v8::Local<v8::Value> New(const cType *raw, bool selfFreeing, v8::Local<v8::Object> owner = v8::Local<v8::Object>());
+  static v8::Local<v8::Value> New(v8::Local<v8::Function> constructorTemplate,const cType *raw, bool selfFreeing, v8::Local<v8::Object> owner);
+  static v8::Local<v8::Value> New(v8::Local<v8::Function> constructorTemplate,const cType *raw, bool selfFreeing);
+
+  static v8::Local<v8::Function> GetTemplate();
+
 
   void SaveCleanupHandle(std::shared_ptr<nodegit::CleanupHandle> cleanupHandle);
 

@@ -46,7 +46,9 @@ class ConvenientPatch : public Nan::ObjectWrap {
 
     static void InitializeComponent(v8::Local<v8::Object> target, nodegit::Context *nodegitContext);
 
+    static v8::Local<v8::Function> GetTemplate();
     static v8::Local<v8::Value> New(void *raw);
+    static v8::Local<v8::Value> New(v8::Local<v8::Function> constructorTemplate, void *raw);
 
     ConvenientLineStats GetLineStats();
     git_delta_t GetStatus();

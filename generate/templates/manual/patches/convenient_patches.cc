@@ -151,8 +151,9 @@ void GitPatch::ConvenientFromDiffWorker::HandleOKCallback() {
     unsigned int size = baton->out->size();
     Local<Array> result = Nan::New<Array>(size);
 
+    v8::Local<v8::Function> constructor_template = ConvenientPatch::GetTemplate();
     for (unsigned int i = 0; i < size; ++i) {
-      Nan::Set(result, Nan::New<Number>(i), ConvenientPatch::New((void *)baton->out->at(i)));
+      Nan::Set(result, Nan::New<Number>(i), ConvenientPatch::New(constructor_template, (void *)baton->out->at(i)));
     }
 
     delete baton->out;
