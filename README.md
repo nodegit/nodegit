@@ -4,17 +4,17 @@
 
 [![Actions Status](https://github.com/nodegit/nodegit/workflows/Testing/badge.svg)](https://github.com/nodegit/nodegit/actions)
 
-**Stable (libgit2@v0.28.3): 0.28.3**
+> [!IMPORTANT]
+> **NodeGit is no longer maintained.**
+> No further releases, bug fixes, or security updates are planned,
+> and new issues and pull requests will not be reviewed.
+>
+> Existing versions will remain installable from npm, and their prebuilt binaries
+> will stay available for the foreseeable future.
 
-## Have a problem? Come chat with us! ##
-
-Visit [slack.libgit2.org](http://slack.libgit2.org/) to sign up, then join us in #nodegit.
-
-## Maintained by ##
-Alex Aveillán [@AlexaXs](http://github.com/AlexaXs) with help from tons of
-[awesome contributors](https://github.com/nodegit/nodegit/contributors)!
-
-### Alumni Maintainers ###
+## Alumni Maintainers ##
+NodeGit was built and maintained by
+Alex Aveillán [@AlexaXs](http://github.com/AlexaXs),
 Ian Hattendorf [@ianhattendorf](http://github.com/ianhattendorf),
 John Alden [@zawata](http://github.com/zawata),
 Tyler Ang-Wanek [@twwanek](http://twitter.com/twwanek),
@@ -23,7 +23,8 @@ John Haley [@johnhaley81](http://twitter.com/johnhaley81),
 Max Korp [@maxkorp](http://twitter.com/MaximilianoKorp),
 Steve Smith [@orderedlist](https://twitter.com/orderedlist),
 Michael Robinson [@codeofinterest](http://twitter.com/codeofinterest), and
-Nick Kallen [@nk](http://twitter.com/nk)
+Nick Kallen [@nk](http://twitter.com/nk), with help from tons of
+[awesome contributors](https://github.com/nodegit/nodegit/contributors)!
 
 ## API Documentation. ##
 
